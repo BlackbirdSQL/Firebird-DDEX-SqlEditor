@@ -25,7 +25,7 @@ namespace BlackbirdSql.Common.Ctl.Config;
 /// As a convention we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
 /// descendent tree from the top-level extension lib down to the Core. There is no point using services as
 /// this configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > EditorExtension > Common > Core.
+/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
 public class TransientSettings : PersistentSettings, IBEditorTransientSettings, IBTransientSettings, ICloneable
@@ -97,6 +97,13 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 		get { return (bool)this["EditorGeneralExecuteQueryOnOpen"]; }
 		set { this["EditorGeneralExecuteQueryOnOpen"] = value; }
 	}
+
+	public new EnLanguageService EditorLanguageService
+	{
+		get { return (EnLanguageService)this["EditorGeneralLanguageService"]; }
+		set { this["EditorGeneralLanguageService"] = value; }
+	}
+
 
 	// Editor ContextSettingsModel
 	public new EnStatusBarPosition EditorContextStatusBarPosition
@@ -620,7 +627,7 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 
 	/// <summary>
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
-	/// Only implemented by packages that have settings models.
+	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
 	public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
 	{

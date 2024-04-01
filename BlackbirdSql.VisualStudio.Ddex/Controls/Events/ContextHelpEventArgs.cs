@@ -7,15 +7,11 @@ using BlackbirdSql.VisualStudio.Ddex.Controls.Enums;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Controls.Events;
 
-public class ContextHelpEventArgs : HelpEventArgs
+public class ContextHelpEventArgs(EnDataConnectionDlgContext context, Point mousePos) : HelpEventArgs(mousePos)
 {
-	private readonly EnDataConnectionDlgContext _context;
+	private readonly EnDataConnectionDlgContext _Context = context;
 
-	public EnDataConnectionDlgContext Context => _context;
 
-	public ContextHelpEventArgs(EnDataConnectionDlgContext context, Point mousePos)
-		: base(mousePos)
-	{
-		_context = context;
-	}
+
+	public EnDataConnectionDlgContext Context => _Context;
 }

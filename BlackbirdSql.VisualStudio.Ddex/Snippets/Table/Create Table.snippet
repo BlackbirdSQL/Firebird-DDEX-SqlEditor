@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create Table</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a table.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>SchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>Tablename</ID>
+          <ToolTip>Name of the table</ToolTip>
+          <Default>Sample_Table</Default>
+        </Literal>
+        <Literal>
+          <ID>column1</ID>
+          <ToolTip>Name of the column</ToolTip>
+          <Default>column_1</Default>
+        </Literal>
+        <Literal>
+          <ID>datatype1</ID>
+          <ToolTip>Data type of the column</ToolTip>
+          <Default>int NOT NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>column2</ID>
+          <ToolTip>Name of the column</ToolTip>
+          <Default>column_2</Default>
+        </Literal>
+        <Literal>
+          <ID>datatype2</ID>
+          <ToolTip>Data type of the column</ToolTip>
+          <Default>int NULL</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[CREATE TABLE $SchemaName$.$Tablename$
+(
+    $column1$ $datatype1$,
+    $column2$ $datatype2$
+);$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
+

@@ -134,7 +134,7 @@ StringCell^ WExpressionListParser::Parse(StringCell^ root)
 				// if we have a colref followed by a parenthesis pair,
 				// it isn"t a colref, it is a user-function
 
-				// TODO: this should be a method, because we need the same code
+				// TO DO: this should be a method, because we need the same code
 				// below for unspecified tokens (expressions).
 
 				localExpr = gcnew ExpressionToken();

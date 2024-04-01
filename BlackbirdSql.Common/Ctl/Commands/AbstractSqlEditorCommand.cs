@@ -20,7 +20,25 @@ namespace BlackbirdSql.Common.Ctl.Commands;
 
 public abstract class AbstractSqlEditorCommand
 {
+
+	public AbstractSqlEditorCommand()
+	{
+	}
+
+	public AbstractSqlEditorCommand(IBSqlEditorWindowPane editorWindow)
+	{
+		EditorWindow = editorWindow;
+	}
+
+
+
+	protected bool _IsDwEditorConnection = false;
+	private IVsTextView _CodeEditorTextView = null;
+
 	public IBSqlEditorWindowPane EditorWindow { get; set; }
+
+	protected QueryManager QryMgr => GetAuxilliaryDocData()?.QryMgr;
+
 
 	public int QueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
@@ -33,7 +51,7 @@ public abstract class AbstractSqlEditorCommand
 	}
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
@@ -41,63 +59,60 @@ public abstract class AbstractSqlEditorCommand
 
 	protected abstract int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 
-	public AbstractSqlEditorCommand()
-	{
-	}
 
-	public AbstractSqlEditorCommand(IBSqlEditorWindowPane editorWindow)
+	protected AuxilliaryDocData GetAuxilliaryDocData()
 	{
-		EditorWindow = editorWindow;
-	}
+		if (EditorWindow == null)
+			return null;
 
-	protected AuxiliaryDocData GetAuxiliaryDocDataForEditor()
-	{
-		AuxiliaryDocData result = null;
-		if (EditorWindow != null)
+		AuxilliaryDocData result = null;
+
+		_CodeEditorTextView ??= ((IBEditorWindowPane)EditorWindow).GetCodeEditorTextView();
+
+		if (_CodeEditorTextView != null)
 		{
-			IVsTextView codeEditorTextView = ((IBEditorWindowPane)EditorWindow).GetCodeEditorTextView();
-			if (codeEditorTextView != null)
+			IVsTextLines textLinesForTextView = GetTextLinesForTextView(_CodeEditorTextView);
+
+			if (textLinesForTextView != null)
 			{
-				IVsTextLines textLinesForTextView = GetTextLinesForTextView(codeEditorTextView);
-				if (textLinesForTextView != null)
-				{
-					result = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(textLinesForTextView);
-				}
+				result = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(textLinesForTextView);
 			}
 		}
 
 		return result;
 	}
 
-	protected QueryManager GetQueryManagerForEditor()
-	{
-		return GetAuxiliaryDocDataForEditor()?.QryMgr;
-	}
 
 	public static IVsTextLines GetTextLinesForTextView(IVsTextView textView)
 	{
 		IVsTextLines ppBuffer = null;
+
 		if (textView != null)
-		{
 			___(textView.GetBuffer(out ppBuffer));
-		}
 
 		return ppBuffer;
 	}
 
 	protected bool IsEditorExecuting()
 	{
-		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+		QueryManager qryMgr = QryMgr;
 
-		if (qryMgrForEditor != null)
-			return qryMgrForEditor.IsExecuting;
+		if (qryMgr != null)
+			return qryMgr.IsExecuting;
 
 		return false;
 	}
 
 	protected bool IsDwEditorConnection()
 	{
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(EditorWindow.DocData);
+		// Always false.
+		if (!_IsDwEditorConnection)
+			return false;
+
+		// Never happens.
+
+		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(EditorWindow.DocData);
+
 		if (auxDocData != null)
 		{
 			IBSqlEditorStrategy strategy = auxDocData.Strategy;
@@ -107,6 +122,7 @@ public abstract class AbstractSqlEditorCommand
 			{
 				case EnEditorMode.Standard:
 					QueryManager qryMgr = auxDocData.QryMgr;
+
 					if (qryMgr != null && qryMgr.ConnectionStrategy != null)
 					{
 						return qryMgr.ConnectionStrategy?.IsDwConnection ?? false;

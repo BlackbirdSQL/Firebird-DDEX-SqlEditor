@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create Unique Non-Clustered Index</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a unique, non-clustered index.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>IndexName</ID>
+          <ToolTip>Name of the index</ToolTip>
+          <Default>IX_TableName_Col1</Default>
+        </Literal>
+        <Literal>
+          <ID>SchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>TableName</ID>
+          <ToolTip>Name of the table on which the index is applied</ToolTip>
+          <Default>TableName</Default>
+        </Literal>
+        <Literal>
+          <ID>Column1</ID>
+          <ToolTip>Name of the column on which the index is applied</ToolTip>
+          <Default>column_1</Default>
+        </Literal>
+        <Literal>
+          <ID>asc_desc1</ID>
+          <ToolTip>Order of column values in the index</ToolTip>
+          <Default>ASC</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE UNIQUE NONCLUSTERED INDEX $IndexName$
+    ON $SchemaName$.$TableName$
+    ($Column1$)
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

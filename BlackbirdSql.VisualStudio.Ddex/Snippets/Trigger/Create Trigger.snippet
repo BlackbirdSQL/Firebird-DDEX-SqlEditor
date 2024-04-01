@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create Trigger</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a trigger.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>TargetSchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>TriggerSchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>TableName</ID>
+          <ToolTip>Name of the table</ToolTip>
+          <Default>TableName</Default>
+        </Literal>
+        <Literal>
+          <ID>TriggerName</ID>
+          <ToolTip>Name of the trigger</ToolTip>
+          <Default>TriggerName</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE TRIGGER [$TriggerSchemaName$].[$TriggerName$]
+    ON [$TargetSchemaName$].[$TableName$]
+    FOR DELETE, INSERT, UPDATE
+    AS
+    BEGIN
+    SET NOCOUNT ON
+    END
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
+

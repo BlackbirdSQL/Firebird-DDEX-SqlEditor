@@ -7,7 +7,7 @@
 
 namespace BlackbirdDsl {
 
-// TODO: we could replace it with a constructor new ExpressionToken(this, "*")
+// TO DO: we could replace it with a constructor new ExpressionToken(this, "*")
 void ExpressionToken::AddToken(StringCell^ value)
 {
 	Token->Add(value);

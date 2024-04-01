@@ -2,7 +2,6 @@
 // Microsoft.Data.Tools.Components.Diagnostics.SqlTracer
 #define TRACE
 using System;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -11,8 +10,12 @@ using System.Text;
 using System.Threading;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using FirebirdSql.Data.FirebirdClient;
+
+
 
 namespace BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 internal static class SqlTracer
 {
@@ -143,18 +146,19 @@ internal static class SqlTracer
 	private static string GetMessageForException(Exception exception)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		if (exception is SqlException)
+		if (exception is FbException)
 		{
-			SqlException obj = exception as SqlException;
-			stringBuilder.AppendLine("SqlException:  Message = " + exception.Message);
+			FbException obj = exception as FbException;
+			stringBuilder.AppendLine("FbException:  Message = " + exception.Message);
 			if (!string.IsNullOrWhiteSpace(exception.StackTrace))
 			{
 				stringBuilder.AppendLine("               StackTrace = " + exception.StackTrace);
 			}
 			stringBuilder.AppendLine("Errors:");
-			foreach (SqlError error in obj.Errors)
+			foreach (FbError error in obj.Errors)
 			{
-				stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "Number = {0}, State = {1}, Server = {2}, Message = {3}", error.Number, error.State, error.Server, error.Message);
+				stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "Number = {0}, State = {1}, Server = {2}, Message = {3}",
+					error.Number, obj.GetState(), obj.GetServer(), error.Message);
 			}
 		}
 		else

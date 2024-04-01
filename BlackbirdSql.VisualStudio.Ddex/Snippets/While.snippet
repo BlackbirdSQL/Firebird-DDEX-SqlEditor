@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>While</Title>
+      <Shortcut></Shortcut>
+      <Description>Code Snippet for While loop.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>SurroundsWith</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>Condition</ID>
+          <ToolTip>Condition to evaluate</ToolTip>
+          <Default>Condition</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+WHILE( $Condition$ )
+BEGIN
+
+$selected$ $end$
+
+END
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

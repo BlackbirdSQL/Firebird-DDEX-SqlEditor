@@ -74,10 +74,11 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		get
 		{
-			if (Native.Failed(_CodeWindow.GetLastActiveView(out var ppView)))
+			if (!__(_CodeWindow.GetLastActiveView(out var ppView)))
 			{
 				___(_CodeWindow.GetPrimaryView(out ppView));
 			}
+
 			return ppView;
 		}
 	}
@@ -155,6 +156,15 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		}
 	}
 
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
+
+
 	private void ConnectView(IVsTextView view)
 	{
 		_ConnectedViews ??= [];
@@ -164,7 +174,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
@@ -225,20 +235,26 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			int num = _CmdTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
-			if (num == (int)OleConstants.OLECMDERR_E_NOTSUPPORTED || num == (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP)
+			int hresult = _CmdTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+
+			if (hresult == (int)OleConstants.OLECMDERR_E_NOTSUPPORTED || hresult == (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP)
 			{
 				if (VSConstants.GUID_VSStandardCommandSet97.Equals(pguidCmdGroup) && nCmdID == 332)
 				{
 					_TabbedEditorService?.Activate(VSConstants.LOGVIEWID_Designer, EnTabViewMode.Default);
-					num = 0;
+					hresult = VSConstants.S_OK;
 				}
-				Native.Failed(num);
+
+				// !__(hresult);
 			}
-			return num;
+
+			return hresult;
 		}
-		return 0;
+
+		return VSConstants.S_OK;
 	}
+
+
 
 	int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{

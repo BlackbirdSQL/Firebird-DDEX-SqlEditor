@@ -4,14 +4,11 @@
 #endregion
 
 using System.Drawing;
-
-using BlackbirdSql.Core;
-using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
-
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System.Drawing.Imaging;
+
+
 
 namespace BlackbirdSql.Common.Model;
 

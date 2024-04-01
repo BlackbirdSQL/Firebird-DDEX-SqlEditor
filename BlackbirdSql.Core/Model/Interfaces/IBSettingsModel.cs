@@ -2,12 +2,9 @@
 // Plagiarized from Community.VisualStudio.Toolkit extension
 //
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Forms;
 using BlackbirdSql.Core.Controls.Events;
-using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
@@ -25,11 +22,12 @@ public interface IBSettingsModel : IComponent
 	event EditControlFocusEventHandler EditControlLostFocusEvent;
 	event AutomationPropertyValueChangedEventHandler AutomationPropertyValueChangedEvent;
 
-	PropertyWrapper this[string propertyName] { get; }
+	IBModelPropertyWrapper this[string propertyName] { get; }
 
 	string LivePrefix { get; }
 
-	List<IBSettingsModelPropertyWrapper> PropertyWrappers { get; }
+	List<IBModelPropertyWrapper> PropertyWrappers { get; }
+	IEnumerable<IBModelPropertyWrapper> PropertyWrappersEnumeration { get; }
 
 	string GetPackage();
 	string GetGroup();

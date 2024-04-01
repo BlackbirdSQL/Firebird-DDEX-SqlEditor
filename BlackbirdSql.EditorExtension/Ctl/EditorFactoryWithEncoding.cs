@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 
-[Guid(SystemData.DslEditorEncodedFactoryGuid)]
+[Guid(SystemData.EditorEncodedFactoryGuid)]
 [ProvideMenuResource("Menus.ctmenu", 1)]
 
 public sealed class EditorFactoryWithEncoding : AbstractEditorFactory

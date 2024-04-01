@@ -37,8 +37,6 @@ public interface IBPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataConn
 	// string[] AdvancedOptions { get; }
 
 
-	IBEventsChannel Channel { get; set; }
-
 	DbConnection DataConnection { get; }
 
 

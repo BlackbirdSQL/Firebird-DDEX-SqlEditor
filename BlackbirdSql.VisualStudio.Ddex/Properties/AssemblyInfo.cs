@@ -1,14 +1,14 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using BlackbirdSql.VisualStudio.Ddex;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BlackbirdSql.VisualStudio.Ddex")]
-[assembly: AssemblyDescription("BlackbirdSql IVs Provider for Firebird")]
+[assembly: AssemblyTitle(Vsix.Name)]
+[assembly: AssemblyDescription(Vsix.Description)]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("BlackbirdSql")]
+[assembly: AssemblyCompany(Vsix.Author)]
 [assembly: AssemblyProduct("BlackbirdSql.VisualStudio.Ddex")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("11.2.0.3")]
-[assembly: AssemblyFileVersion("11.2.0.3")]
+[assembly: AssemblyVersion(Vsix.Version)]
+[assembly: AssemblyFileVersion(Vsix.Version)]

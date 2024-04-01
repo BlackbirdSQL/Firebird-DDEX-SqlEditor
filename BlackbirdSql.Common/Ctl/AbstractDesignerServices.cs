@@ -12,6 +12,7 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model.Enums;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
@@ -23,13 +24,15 @@ namespace BlackbirdSql.Common.Ctl;
 //
 /// <summary>
 /// Base class service for handling open query commands.
+/// </summary>
 // =========================================================================================================
 public abstract class AbstractDesignerServices
 {
 
-	// -----------------------------------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	#region Constructors / Destructors - AbstractDesignerServices
-	// -----------------------------------------------------------------------------------------------------
+	// ----------------------------------------------------------
+
 
 	public AbstractDesignerServices()
 	{
@@ -42,13 +45,12 @@ public abstract class AbstractDesignerServices
 
 
 
-	// =========================================================================================================
+	// =====================================================================================================
 	#region Fields - AbstractDesignerServices
-	// =========================================================================================================
+	// =====================================================================================================
 
 
-	protected static Guid _DslEditorFactoryClsid = Guid.Empty;
-	protected static event EventHandler<BeforeOpenDocumentEventArgs> _S_BeforeOpenDocumentEvent;
+	private static event EventHandler<BeforeOpenDocumentEventArgs> _S_BeforeOpenDocumentEvent;
 
 
 	#endregion Fields
@@ -57,9 +59,9 @@ public abstract class AbstractDesignerServices
 
 
 
-	// =========================================================================================================
+	// =====================================================================================================
 	#region Property accessors - AbstractDesignerServices
-	// =========================================================================================================
+	// =====================================================================================================
 
 
 	public static event EventHandler<BeforeOpenDocumentEventArgs> SBeforeOpenDocumentEvent
@@ -71,19 +73,22 @@ public abstract class AbstractDesignerServices
 
 	protected static EventHandler<BeforeOpenDocumentEventArgs> S_BeforeOpenDocumentHandler => _S_BeforeOpenDocumentEvent;
 
-	
+
 	#endregion Property accessors
 
 
 
 
 
-	// =========================================================================================================
+	// =====================================================================================================
 	#region Methods - AbstractDesignerServices
-	// =========================================================================================================
+	// =====================================================================================================
 
 
-
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
 
 
 
@@ -161,7 +166,6 @@ public abstract class AbstractDesignerServices
 	// =========================================================================================================
 	#region Event handling - AbstractDesignerServices
 	// =========================================================================================================
-
 
 
 	protected static void RaiseBeforeOpenDocument(string mkDocument, DbConnectionStringBuilder csb,

@@ -1,6 +1,7 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.FindTargetAdapter
 
+using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Controls.Tabs;
 using BlackbirdSql.Common.Ctl.Enums;
@@ -15,11 +16,35 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Ctl;
 
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
-public class FindTargetAdapter(AbstractTabbedEditorWindowPane editorPane) : IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
+
+public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
 
-	protected AbstractTabbedEditorWindowPane TabbedEditorPane { get; set; } = editorPane;
+	public FindTargetAdapter(AbstractTabbedEditorWindowPane editorPane)
+	{
+		TabbedEditorPane = editorPane;
+	}
+
+
+	protected AbstractTabbedEditorWindowPane TabbedEditorPane { get; set; }
+
+
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
 
 
 
@@ -109,19 +134,22 @@ public class FindTargetAdapter(AbstractTabbedEditorWindowPane editorPane) : IVsF
 		Diag.ThrowIfNotOnUIThread();
 
 		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)((System.IServiceProvider)TabbedEditorPane).GetService(typeof(SVsWindowFrame));
+
 		if (vsWindowFrame != null)
 		{
-			int num = vsWindowFrame.Show();
-			if (ErrorHandler.Failed(num))
-			{
-				return num;
-			}
+			int hresult = vsWindowFrame.Show();
+
+			if (!__(hresult))
+				return hresult;
+
 			IVsFindTarget findTarget = GetFindTarget(ensureTabs: true);
+
 			if (findTarget != null)
 			{
 				ActivateTabForNavigateTo();
 				return findTarget.NavigateTo(pts);
 			}
+
 			return VSConstants.E_NOTIMPL;
 		}
 		return VSConstants.E_NOTIMPL;

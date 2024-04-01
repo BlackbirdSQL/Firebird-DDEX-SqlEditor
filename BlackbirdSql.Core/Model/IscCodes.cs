@@ -171,7 +171,7 @@ internal static class IscCodes
 	public const int op_prepare2 = 51;  // Message form	of prepare
 	public const int op_event = 52; // Completed event request (asynchronous)
 	public const int op_connect_request = 53;   // Request to establish	connection
-	public const int op_aux_connect = 54;   // Establish auxiliary connection
+	public const int op_aux_connect = 54;   // Establish auxilliary connection
 	public const int op_ddl = 55;   // DDL call
 	public const int op_open_blob2 = 56;
 	public const int op_create_blob2 = 57;
@@ -956,7 +956,7 @@ internal static class IscCodes
 
 	#region Event Codes
 
-	public const int P_REQ_async = 1;   // Auxiliary asynchronous port
+	public const int P_REQ_async = 1;   // Auxilliary asynchronous port
 	public const int EPB_version1 = 1;
 
 	#endregion

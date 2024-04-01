@@ -24,65 +24,109 @@ namespace BlackbirdSql.Core;
 //											RdtManager Class
 //
 /// <summary>
-/// Provides application-wide static member access to the RunningDocumentTable.
+/// Provides application-wide static member access to the RunningDocumentTable. Consumers should always
+/// access the Rdt through this class.
 /// </summary>
 // =========================================================================================================
 public sealed class RdtManager : AbstractRdtManager
 {
 
+	// ----------------------------------------------------
+	#region Constructors / Destructors - AbstractRdtManager
+	// ----------------------------------------------------
 
+
+	/// <summary>
+	/// Default .ctor of the singleton instance.
+	/// </summary>
 	private RdtManager() : base()
 	{
 	}
 
+
 	/// <summary>
-	/// Gets or creates the instance of the RdtManager for this session.
+	/// Gets or creates the singelton instance of the RdtManager for this session.
 	/// </summary>
 	private static RdtManager Instance => (RdtManager)(_Instance ??= new RdtManager());
 
 
+	/// <summary>
+	/// IDisposable implementation
+	/// </summary>
 	public override void Dispose()
 	{
 		base.Dispose();
 	}
 
 
-	public static string ExplorerMonikerStack
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - RdtManager
+	// =====================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Operates as a push/pop stack. Whenever inflight documents are added by the shell
+	/// their monikers are assigned here against our internal fbsql++:// url document
+	/// moniker for an SE node.
+	/// This allows the Editor to do a single pass pop to associate an SE ConnectionNode
+	/// against a new AuxilliaryDocData object.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string InflightMonikerStack
 	{
 		get
 		{
-			if (_ExplorerMonikerEntry == -1)
+			if (_InflightMonikerCursor == -1)
 				return null;
 
-			string moniker = _ExplorerMonikers[_ExplorerMonikerEntry];
+			string moniker = _InflightMonikers[_InflightMonikerCursor];
 
-			_ExplorerMonikers.Remove(_ExplorerMonikerEntry);
+			_InflightMonikers.Remove(_InflightMonikerCursor);
 
-			_ExplorerMonikerEntry++;
+			_InflightMonikerCursor++;
 
-			if (_ExplorerMonikerEntry > _ExplorerMonikerSeed)
+			if (_InflightMonikerCursor > _InflightMonikerSeed)
 			{
-				_ExplorerMonikerEntry = _ExplorerMonikerSeed = -1;
-				_ExplorerMonikers = null;
+				_InflightMonikerCursor = _InflightMonikerSeed = -1;
+				_InflightMonikers = null;
 			}
 
 			return moniker;
 		}
 		set
 		{
-			_ExplorerMonikers ??= [];
+			_InflightMonikers ??= [];
 
-			if (_ExplorerMonikerEntry == -1)
-				_ExplorerMonikerEntry = 0;
+			if (_InflightMonikerCursor == -1)
+				_InflightMonikerCursor = 0;
 
-			_ExplorerMonikerSeed++;
+			_InflightMonikerSeed++;
 
-			_ExplorerMonikers[_ExplorerMonikerSeed] = value;
+			_InflightMonikers[_InflightMonikerSeed] = value;
 
 		}
 	}
 
-	public static Dictionary<string, object> MonikerCsaTable => _MonikerCsaTable ??= [];
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Contains the registered fbsql++:// monikers of active editor documents in the
+	/// Rdt that were spawned from SE nodes.
+	/// The value is the CsbAgent csb of the SE ConnectionNode the moniker was spawned
+	/// from.
+	/// Once an AuxilliaryDocData has used what it needs from the csb it should set it
+	/// to null but leave the entry intact.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static Dictionary<string, object> InflightMonikerCsbTable => _InflightMonikerCsbTable ??= [];
+
 
 	public static IEnumerable<RunningDocumentInfo> Enumerator => Instance.Rdt;
 
@@ -91,6 +135,15 @@ public sealed class RdtManager : AbstractRdtManager
 	public static bool ServiceAvailable => Instance.RdtSvc != null;
 
 
+	#endregion Property Accessors
+
+
+
+
+
+	// =====================================================================================================
+	#region Methods - RdtManager
+	// =====================================================================================================
 
 
 	public static int AdviseRunningDocTableEvents(IVsRunningDocTableEvents pSink, out uint pdwCookie) =>
@@ -108,37 +161,6 @@ public sealed class RdtManager : AbstractRdtManager
 		Instance.FindAndLockDocumentImpl(dwRDTLockType, pszMkDocument, out ppHier, out pitemid,
 			out ppunkDocData, out pdwCookie);
 
-
-	public static bool GetChangeTrackingStatus(string mkDocument)
-	{
-		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "mkDocument: {0}.", mkDocument);
-
-		if (!TryGetCodeWindow(mkDocument, out IVsCodeWindow codeWindow) || codeWindow == null)
-		{
-			return false;
-		}
-
-
-		IVsTextView ppView = ((IBEditorWindowPane)codeWindow).GetCodeEditorTextView();
-
-		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "CodeWindow primary view found for mkDocument: {0}.", mkDocument);
-
-		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModel)
-			return false;
-
-		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-		if (service == null)
-			return false;
-
-		IWpfTextViewHost wpfTextViewHost = service.GetWpfTextViewHost(ppView);
-		if (wpfTextViewHost == null)
-			return false;
-
-		return wpfTextViewHost.TextView.Options.GetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId);
-
-		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "TRACKING {0}", suppress ? "OFF" : "ON");
-
-	}
 
 
 	public static RunningDocumentInfo GetDocumentInfo(uint docCookie) =>
@@ -175,12 +197,12 @@ public sealed class RdtManager : AbstractRdtManager
 	public static bool IsFileInRdt(string mkDocument) =>
 		Instance.IsFileInRdtImpl(mkDocument);
 
-	public static bool IsMonikerRegistered(string mkDocument)
+	public static bool IsInflightMonikerRegistered(string mkDocument)
 	{
-		if (_MonikerCsaTable == null)
+		if (_InflightMonikerCsbTable == null)
 			return false;
 
-		return _MonikerCsaTable.ContainsKey(mkDocument);
+		return _InflightMonikerCsbTable.ContainsKey(mkDocument);
 	}
 
 
@@ -225,40 +247,29 @@ public sealed class RdtManager : AbstractRdtManager
 
 
 
-
-	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-	// Microsoft.VisualStudio.Data.Tools.Package.DesignerServices.OnlineDocumentHelpers:SuppressChangeTracking
-	public static void SuppressChangeTracking(string mkDocument, bool suppress)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Deprecated because we let the shell create the document so we don't do any of
+	/// the prep, but leaving this method in, in case we ever need it again.
+	/// Provide either a moniker or codeWindow.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void SuppressChangeTracking(string mkDocument, IVsCodeWindow codeWindow, bool suppress)
 	{
 		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "mkDocument: {0}.", mkDocument);
 
-		if (!TryGetCodeWindow(mkDocument, out IVsCodeWindow codeWindow) || codeWindow == null)
-		{
+		if (codeWindow == null && !TryGetCodeWindow(mkDocument, out codeWindow))
 			return;
-		}
-
-		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "CodeWindow '{0}' found for mkDocument: {1}.", codeWindow.GetType().FullName, mkDocument);
-
-		/*
-		if (codeWindow.GetPrimaryView(out IVsTextView ppView) != 0 || ppView == null)
-		{
-			return;
-		}
-		*/
 
 		IVsTextView ppView = ((IBEditorWindowPane)codeWindow).GetCodeEditorTextView();
 
-		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "CodeWindow primary view found for mkDocument: {0}.", mkDocument);
-
-		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModel)
+		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModelSvc)
 			return;
 
-		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-		if (service == null)
+		if (componentModelSvc.GetService<IVsEditorAdaptersFactoryService>() is not IVsEditorAdaptersFactoryService factorySvc)
 			return;
 
-		IWpfTextViewHost wpfTextViewHost = service.GetWpfTextViewHost(ppView);
-		if (wpfTextViewHost == null)
+		if (factorySvc.GetWpfTextViewHost(ppView) is not IWpfTextViewHost wpfTextViewHost)
 			return;
 
 		if (suppress)
@@ -270,13 +281,11 @@ public sealed class RdtManager : AbstractRdtManager
 			wpfTextViewHost.TextView.Options.ClearOptionValue(DefaultTextViewHostOptions.ChangeTrackingId);
 		}
 
-		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "TRACKING {0}", suppress ? "OFF" : "ON");
-
 	}
 
 
 	public static bool TryGetDocDataFromCookie(uint cookie, out object docData) =>
-	Instance.TryGetDocDataFromCookieImpl(cookie, out docData);
+		Instance.TryGetDocDataFromCookieImpl(cookie, out docData);
 
 
 
@@ -284,23 +293,24 @@ public sealed class RdtManager : AbstractRdtManager
 	{
 		codeWindow = null;
 
-		if (!string.IsNullOrEmpty(mkDocument))
-		{
-			IVsWindowFrame windowFrame = Instance.GetWindowFrameImpl(mkDocument);
-			if (windowFrame != null)
-			{
-				Diag.ThrowIfNotOnUIThread();
+		if (string.IsNullOrEmpty(mkDocument))
+			return false;
 
-				___(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
-				if (pvar != null)
-				{
-					codeWindow = pvar as IVsCodeWindow;
-					return codeWindow != null;
-				}
-			}
-		}
+		IVsWindowFrame windowFrame = Instance.GetWindowFrameImpl(mkDocument);
 
-		return false;
+		if (windowFrame == null)
+			return false;
+
+			Diag.ThrowIfNotOnUIThread();
+
+			___(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
+
+		if (pvar == null)
+			return false;
+
+		codeWindow = pvar as IVsCodeWindow;
+
+		return codeWindow != null;
 	}
 
 
@@ -314,16 +324,11 @@ public sealed class RdtManager : AbstractRdtManager
 
 
 
-	public static int UnlockDocument(uint grfRDTLockType, uint dwCookie) =>
-		Instance.RdtSvc.UnlockDocument(grfRDTLockType, dwCookie);
-
-
-
 	public static int UnregisterDocumentLockHolder(uint dwLHCookie) =>
 		Instance.RdtSvc.UnregisterDocumentLockHolder(dwLHCookie);
 
 
-	public static void UpdateDirtyState(uint cookie) =>
-		Instance.RdtSvc3.UpdateDirtyState(cookie);
+	#endregion Property Accessors
+
 
 }

@@ -14,13 +14,13 @@
 		<ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <None Remove="Properties\Originals\**" />
-	</ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+		<NoWarn>1701;1702;CS0618</NoWarn>
+	</PropertyGroup>
 
-	<ItemGroup>
-	  <None Remove="blackbirdsql.ico" />
-	</ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+		<NoWarn>1701;1702;CS0618</NoWarn>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<Reference Include="PresentationFramework" />
@@ -29,8 +29,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="BrokeredServices\ComponentModel\Microsoft.VisualStudio.LiveShare.FileSystemProvider.CustomProvideFileSystemProviderAttribute.cs" />
-		<Compile Include="BrokeredServices\ComponentModel\VsProvideFileSystemProviderAttribute.cs" />
 		<Compile Include="Controls\Config\AbstractLiveSettingsDialog.cs">
 			<SubType>Form</SubType>
 		</Compile>
@@ -40,13 +38,9 @@
 		<Compile Include="Controls\Config\LiveSettingsDialog.cs">
 			<SubType>Form</SubType>
 		</Compile>
-		<Compile Include="BrokeredServices\EnumerableExtensions.cs" />
-		<Compile Include="BrokeredServices\WatchResultComparer.cs" />
-		<Compile Include="BrokeredServices\FbsqlPlusFileSystemProvider.cs" />
 		<Compile Include="Model\Config\ContextSettingsModel.cs" />
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
 		<Compile Include="Controls\ComponentModel\AdvancedFolderNameEditor.cs" />
-		<None Include="Controls\ComponentModel\NumericUpDownPropertyEditor.cs" />
 		<Compile Include="Model\Config\ExecutionAdvancedSettingsModel.cs" />
 		<Compile Include="Model\Config\ResultsGridSettingsModel.cs" />
 		<Compile Include="Model\Config\ResultsTextSettingsModel.cs" />
@@ -70,9 +64,9 @@
 		<Compile Include="Model\Config\ResultsSettingsModel.cs" />
 		<Compile Include="PackageData.cs" />
 		<Compile Include="Properties\AttributeResources.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>AttributeResources.resx</DependentUpon>
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>AttributeResources.resx</DependentUpon>
 		</Compile>
 		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	</ItemGroup>
@@ -83,6 +77,10 @@
 			<DesignTime>True</DesignTime>
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
+		<EmbeddedResource Include="Properties\Resources.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
 		<EmbeddedResource Include="Controls\Config\AbstractLiveSettingsDialog.resx">
 			<DependentUpon>AbstractLiveSettingsDialog.cs</DependentUpon>
 		</EmbeddedResource>
@@ -90,49 +88,10 @@
 			<DependentUpon>LiveSettingsDialog.cs</DependentUpon>
 		</EmbeddedResource>
 		<EmbeddedResource Include="Properties\AttributeResources.resx">
-		  <Generator>ResXFileCodeGenerator</Generator>
-		  <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
-		<EmbeddedResource Include="Properties\Resources.resx">
-			<Generator>PublicResXFileCodeGenerator</Generator>
-			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-	</ItemGroup>
 
-	<ItemGroup>
-		<Content Include="blackbirdsql.ico" />
-		<Content Include="Resources\arrowDown.bmp" />
-		<Content Include="Resources\arrowFlat.bmp" />
-		<Content Include="Resources\arrowUp.bmp" />
-		<Content Include="Resources\ExecutionPlan.bmp" />
-		<Content Include="Resources\FileEncodingDialog.ico" />
-		<Content Include="Resources\Messages.bmp" />
-		<Content Include="Resources\blackbirdsql.ico" />
-		<Content Include="Resources\Properties_16x.ico" />
-		<Content Include="Resources\Results.bmp" />
-		<Content Include="Resources\Run.png" />
-		<EmbeddedResource Include="Resources\SqlEditorScriptToolbar.png" />
-		<Content Include="Resources\Statistics.bmp" />
-		<Content Include="Resources\StatusBar_cancel.bmp" />
-		<Content Include="Resources\StatusBar_connect.bmp" />
-		<Content Include="Resources\StatusBar_error.bmp" />
-		<Content Include="Resources\StatusBar_offline.bmp" />
-		<Content Include="Resources\StatusBar_spin1.bmp" />
-		<Content Include="Resources\StatusBar_spin10.bmp" />
-		<Content Include="Resources\StatusBar_spin11.bmp" />
-		<Content Include="Resources\StatusBar_spin12.bmp" />
-		<Content Include="Resources\StatusBar_spin13.bmp" />
-		<Content Include="Resources\StatusBar_spin14.bmp" />
-		<Content Include="Resources\StatusBar_spin2.bmp" />
-		<Content Include="Resources\StatusBar_spin3.bmp" />
-		<Content Include="Resources\StatusBar_spin4.bmp" />
-		<Content Include="Resources\StatusBar_spin5.bmp" />
-		<Content Include="Resources\StatusBar_spin6.bmp" />
-		<Content Include="Resources\StatusBar_spin7.bmp" />
-		<Content Include="Resources\StatusBar_spin8.bmp" />
-		<Content Include="Resources\StatusBar_spin9.bmp" />
-		<Content Include="Resources\StatusBar_success.bmp" />
-		<Content Include="Resources\TSQL.bmp" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -151,10 +110,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
 		<ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
+		<ProjectReference Include="..\BlackbirdSql.LanguageExtension\BlackbirdSql.LanguageExtension.csproj" />
 	</ItemGroup>
-
-
-	<Import Project="$(MSBuildToolsRoot)\Microsoft\VisualStudio\v17.0\VSSDK\Microsoft.VsSDK.targets" Condition="'$(MSBuildToolsRoot)' != ''" />
-
-
 </Project>

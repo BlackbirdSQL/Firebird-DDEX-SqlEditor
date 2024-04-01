@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.IO;
-using BlackbirdSql.Common.Ctl.Structs;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
@@ -108,7 +107,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 		get
 		{
 			if (_MandatedXmlLanguageServiceClsid == Guid.Empty)
-				_MandatedXmlLanguageServiceClsid = new(SystemData.MandatedXmlLanguageServiceGuid);
+				_MandatedXmlLanguageServiceClsid = new(VS.XmlLanguageServiceGuid);
 
 			return _MandatedXmlLanguageServiceClsid;
 		}
@@ -274,7 +273,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 	}
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
@@ -476,10 +475,9 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 	protected override void OnGotFocus(EventArgs e)
 	{
 		base.OnGotFocus(e);
+
 		if (_EditorHandle != IntPtr.Zero)
-		{
 			Native.SetFocus(_EditorHandle);
-		}
 	}
 
 	public void GetCoordinatesForPopupMenu(object[] vIn, out int x, out int y)
@@ -505,7 +503,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 				POINT[] array = new POINT[1];
 				___(currentView.GetPointOfLineColumn(piLine, piColumn, array));
 
-				if (Native.GetClientRect(currentView.GetWindowHandle(), out UIRECT val)
+				if (Native.GetClientRect(currentView.GetWindowHandle(), out Native.UIRECT val)
 					&& (array[0].y < val.Top || array[0].x > val.Bottom || array[0].x < val.Left || array[0].y > val.Right))
 				{
 					array[0].x = 0;
@@ -723,9 +721,9 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 		{
 			if (_TextBuffer.TextStream is IVsUserData vsUserData)
 			{
-				Guid riidKey = LibraryData.CLSID_PropertyDisableXmlEditorPropertyWindowIntegration;
+				Guid riidKey = VS.CLSID_PropDisableXmlEditorPropertyWindowIntegration;
 				___(vsUserData.SetData(ref riidKey, true));
-				riidKey = LibraryData.CLSID_PropertyOverrideXmlEditorSaveAsFileFilter;
+				riidKey = VS.CLSID_PropOverrideXmlEditorSaveAsFileFilter;
 				___(vsUserData.SetData(ref riidKey, ControlsResources.SaveAsXmlaFilterString));
 			}
 		}

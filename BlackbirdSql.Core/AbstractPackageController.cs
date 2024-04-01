@@ -12,7 +12,6 @@ using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
@@ -63,7 +62,7 @@ public abstract class AbstractPackageController : IBPackageController
 
 
 		_Instance = this;
-		_DdexPackage = ddex;
+		_PackageInstance = ddex;
 
 		if (Package.GetGlobalService(typeof(DTE)) is DTE2 dte)
 		{
@@ -116,8 +115,8 @@ public abstract class AbstractPackageController : IBPackageController
 	// ---------------------------------------------------------------------------------
 	public virtual void Dispose()
 	{
-		_DdexPackage.OnLoadSolutionOptionsEvent -= OnLoadSolutionOptions;
-		_DdexPackage.OnSaveSolutionOptionsEvent -= OnSaveSolutionOptions;
+		_PackageInstance.OnLoadSolutionOptionsEvent -= OnLoadSolutionOptions;
+		_PackageInstance.OnSaveSolutionOptionsEvent -= OnSaveSolutionOptions;
 
 		UnadviseEvents(true);
 
@@ -157,7 +156,7 @@ public abstract class AbstractPackageController : IBPackageController
 	private readonly object _LockGlobal = new object();
 
 
-	private IBAsyncPackage _DdexPackage;
+	private readonly IBAsyncPackage _PackageInstance;
 
 	protected IVsMonitorSelection _MonitorSelection = null;
 	private IVsTaskStatusCenterService _StatusCenterService = null;
@@ -214,14 +213,8 @@ public abstract class AbstractPackageController : IBPackageController
 	public static bool IdeShutdownState => _IdeShutdownState;
 
 
-	public abstract ServiceRpcDescriptor FileSystemRpcDescriptor2 { get; }
+	public IBAsyncPackage PackageInstance => _PackageInstance;
 
-
-	public IBAsyncPackage DdexPackage
-	{
-		get { return _DdexPackage; }
-		set { _DdexPackage = value; }
-	}
 
 
 	public DTE Dte
@@ -234,7 +227,7 @@ public abstract class AbstractPackageController : IBPackageController
 			if (_Dte != null)
 				return _Dte;
 
-			_Dte = DdexPackage.GetService<DTE, DTE>();
+			_Dte = PackageInstance.GetService<DTE, DTE>();
 
 			if (_Dte == null)
 				ResetDte();
@@ -253,7 +246,7 @@ public abstract class AbstractPackageController : IBPackageController
 	public abstract bool SolutionValidating { get; }
 
 
-	public IVsSolution VsSolution => _DdexPackage.VsSolution;
+	public IVsSolution VsSolution => _PackageInstance.VsSolution;
 
 	public bool IsCmdLineBuild
 	{
@@ -311,7 +304,7 @@ public abstract class AbstractPackageController : IBPackageController
 	}
 
 
-	public IAsyncServiceContainer Services => (IAsyncServiceContainer)_DdexPackage;
+	public IAsyncServiceContainer Services => (IAsyncServiceContainer)_PackageInstance;
 
 
 	/// <summary>
@@ -684,7 +677,7 @@ public abstract class AbstractPackageController : IBPackageController
 
 	public TInterface EnsureService<TService, TInterface>() where TInterface : class
 	{
-		TInterface @interface = DdexPackage.GetService<TService, TInterface>();
+		TInterface @interface = PackageInstance.GetService<TService, TInterface>();
 		Diag.ThrowIfServiceUnavailable(@interface, typeof(TInterface));
 
 		return @interface;
@@ -692,7 +685,7 @@ public abstract class AbstractPackageController : IBPackageController
 
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
@@ -702,7 +695,7 @@ public abstract class AbstractPackageController : IBPackageController
 
 
 	public TInterface GetService<TService, TInterface>() where TInterface : class
-		=> DdexPackage.GetService<TService, TInterface>();
+		=> PackageInstance.GetService<TService, TInterface>();
 
 
 	public async Task<TInterface> GetServiceAsync<TInterface>() where TInterface : class
@@ -710,7 +703,7 @@ public abstract class AbstractPackageController : IBPackageController
 
 
 	public async Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class
-		=> await DdexPackage.GetServiceAsync<TService, TInterface>();
+		=> await PackageInstance.GetServiceAsync<TService, TInterface>();
 
 
 

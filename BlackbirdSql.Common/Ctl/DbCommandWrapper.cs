@@ -3,21 +3,12 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
-
 using System;
 using System.Data;
-
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Properties;
-
 using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.Common.Model.Events;
-
-// using Microsoft.Data.SqlClient;
-
-
-// using Microsoft.Data.Tools.Schema.Common.SqlClient;
-// using Ns = Microsoft.Data.Tools.Schema.Common.SqlClient;
 
 
 

@@ -12,15 +12,11 @@ using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Controls.Interfaces;
 using EnvDTE;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using DpiAwareness = Microsoft.VisualStudio.Utilities.DpiAwareness;
@@ -80,7 +76,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	// private readonly uint _toolbarID;
 	private IVsTextLines _DocData;
 	private IList<uint> _OverrideSaveDocCookieList;
-	// private bool _FirstTimeShowEventHandled;
+	private bool _FirstTimeShowEventHandled;
 	private bool _IsHelpInitialized;
 
 
@@ -196,9 +192,16 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
 
 	protected override void OnCreate()
 	{
@@ -406,7 +409,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			vsUIShell?.SetWaitCursor();
 			LoadXamlPane(editorTab2, isPrimary, showSplitter);
 			LoadDesignerPane(editorTab, !isPrimary, showSplitter);
-			if (topIsTextView | isPrimary)
+			if (topIsTextView || isPrimary)
 			{
 				editorTab2.Activate(setFocus: false);
 				editorTab.UpdateActive(isActive: false);
@@ -611,7 +614,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 			hresult = RdtManager.SaveDocuments(saveOpts, null, uint.MaxValue, primaryDocCookie);
 
-			if (Core.Native.Succeeded(hresult))
+			if (__(hresult))
 				saveFlags = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
 		}
 
@@ -673,7 +676,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 		try
 		{
-			if (Core.Native.Succeeded(RdtManager.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _, out var _, out var _, out ppunkDocData)))
+			if (__(RdtManager.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _, out var _, out var _, out ppunkDocData)))
 			{
 				docData = Marshal.GetObjectForIUnknown(ppunkDocData);
 				result = true;
@@ -730,16 +733,16 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	public AbstractEditorTab GetTab(ref Guid rguidLogicalView)
 	{
 		Guid tabLogicalView = GetTabLogicalView(rguidLogicalView);
-		if (_TabbedEditorUI.Tabs.Count > 0)
+
+		if (_TabbedEditorUI.Tabs.Count == 0)
+			return null;
+
+		foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
 		{
-			foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
-			{
-				if (tab.LogicalView.Equals(tabLogicalView))
-				{
-					return tab;
-				}
-			}
+			if (tab.LogicalView.Equals(tabLogicalView))
+				return tab;
 		}
+
 		return null;
 	}
 
@@ -948,11 +951,11 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 		}
 
-		if (Core.Native.Succeeded(hresult))
+		if (__(hresult))
 		{
 			hresult = HandleCloseEditorOrDesigner();
 
-			if (Core.Native.Succeeded(hresult))
+			if (__(hresult))
 				_IsClosing = true;
 		}
 
@@ -1030,7 +1033,16 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 					EnsureToolbarAssociatedWithTabs();
 					OnShow(fShow);
 				}
-				// _FirstTimeShowEventHandled = true;
+
+				// TODO: Attempt to focus the textview on first show.
+				if (!_FirstTimeShowEventHandled)
+				{
+					Guid clsid = VSConstants.LOGVIEWID_TextView;
+					ActivateView(ref clsid, EnTabViewMode.Default);
+				}
+
+				_FirstTimeShowEventHandled = true;
+
 				break;
 			case __FRAMESHOW.FRAMESHOW_TabActivated:
 			case __FRAMESHOW.FRAMESHOW_TabDeactivated:
@@ -1099,7 +1111,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 						flag = true;
 						editorTab = tab;
 					}
-					else if (tab.CurrentFrame == vsWindowFrame && vsWindowFrame != null && (!Core.Native.Succeeded(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_RDTDocData, out object pvar)) || pvar == null))
+					else if (tab.CurrentFrame == vsWindowFrame && vsWindowFrame != null && (!__(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_RDTDocData, out object pvar)) || pvar == null))
 					{
 						return 0;
 					}
@@ -1246,7 +1258,9 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		{
 			return vsDocOutlineProvider.GetOutlineCaption(nCaptionType, out pbstrCaption);
 		}
+
 		pbstrCaption = null;
+
 		return VSConstants.E_NOTIMPL;
 	}
 
@@ -1272,7 +1286,9 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		{
 			return vsToolboxActiveUserHook.InterceptDataObject(pIn, out ppOut);
 		}
+
 		ppOut = null;
+
 		return VSConstants.E_NOTIMPL;
 	}
 
@@ -1294,7 +1310,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	int IVsToolboxPageChooser.GetPreferredToolboxPage(out Guid pguidPage)
 	{
 		pguidPage = Guid.Empty;
-		return 1;
+
+		return VSConstants.S_FALSE;
 	}
 
 	/// <summary>
@@ -1305,13 +1322,15 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	int IVsDesignerInfo.get_DesignerTechnology(out string pbstrTechnology)
 	{
 		pbstrTechnology = string.Empty;
-		return 0;
+
+		return VSConstants.S_OK;
 	}
 
 	int IVsDefaultToolboxTabState.GetDefaultTabExpansion(string pszTabID, out int pfExpanded)
 	{
 		pfExpanded = 0;
-		return 0;
+
+		return VSConstants.S_OK;
 	}
 
 	int IVsExtensibleObject.GetAutomationObject(string pszPropName, out object ppDisp)
@@ -1322,7 +1341,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	protected virtual int GetAutomationObjectImpl(string pszPropName, out object ppDisp)
 	{
 		ppDisp = this;
-		return 0;
+
+		return VSConstants.S_OK;
 	}
 
 	int IVsHasRelatedSaveItems.GetRelatedSaveTreeItems(VSSAVETREEITEM saveItem, uint celt, VSSAVETREEITEM[] rgSaveTreeItems, out uint pcActual)
@@ -1368,32 +1388,6 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	private bool GetChangeTrackingStatus()
-	{
-		___(Frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
-
-		if (pvar is not IVsCodeWindow codeWindow)
-			throw Diag.ExceptionInstance(typeof(IVsCodeWindow));
-
-
-		IVsTextView ppView = ((IBEditorWindowPane)codeWindow).GetCodeEditorTextView();
-
-		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "CodeWindow primary view found for mkDocument: {0}.", mkDocument);
-
-		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModel)
-			return false;
-
-		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-		if (service == null)
-			return false;
-
-		IWpfTextViewHost wpfTextViewHost = service.GetWpfTextViewHost(ppView);
-		if (wpfTextViewHost == null)
-			return false;
-
-		return wpfTextViewHost.TextView.Options.GetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId);
-	}
-
 
 	public void SuppressChangeTracking(bool suppress)
 	{
@@ -1402,29 +1396,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		if (pvar is not IVsCodeWindow codeWindow)
 			throw Diag.ExceptionInstance(typeof(IVsCodeWindow));
 
-		IVsTextView ppView = ((IBEditorWindowPane)codeWindow).GetCodeEditorTextView();
-
-
-		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModel)
-			return;
-
-		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-		if (service == null)
-			return;
-
-		IWpfTextViewHost wpfTextViewHost = service.GetWpfTextViewHost(ppView);
-		if (wpfTextViewHost == null)
-			return;
-
-		if (suppress)
-		{
-			wpfTextViewHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId, value: false);
-		}
-		else
-		{
-			wpfTextViewHost.TextView.Options.ClearOptionValue(DefaultTextViewHostOptions.ChangeTrackingId);
-		}
-
+		RdtManager.SuppressChangeTracking(null, codeWindow, suppress);
 	}
 
 
@@ -1433,6 +1405,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	{
 		return 0;
 	}
+
+
 
 	private IVsUserContext CreateF1HelpUserContext()
 	{

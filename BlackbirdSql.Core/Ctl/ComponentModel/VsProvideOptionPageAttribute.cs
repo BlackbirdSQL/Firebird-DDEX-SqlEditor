@@ -3,21 +3,82 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading;
 using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio.Shell;
 
 
+
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+
+
 public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttribute
 {
+
+	[Browsable(false)]
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short pageNameResourceID, bool supportsAutomation = true)
+	: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, new string[0])
+	{
+	}
+
+	[Browsable(false)]
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string subSubCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short subSubCategoryResourceID, short pageNameResourceID, bool supportsAutomation = true)
+	: this(pageType, categoryName, subCategoryName, subSubCategoryName, pageName, categoryResourceID, subCategoryResourceID, subSubCategoryResourceID, pageNameResourceID, supportsAutomation, new string[0])
+	{
+	}
+
+	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short pageNameResourceID, bool supportsAutomation, string keywordListResourceName)
+		: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, new string[1] { "@" + keywordListResourceName })
+	{
+	}
+
+	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string subSubCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short subSubCategoryResourceID, short pageNameResourceID, bool supportsAutomation, string keywordListResourceName)
+	: this(pageType, categoryName, subCategoryName, subSubCategoryName, pageName, categoryResourceID, subCategoryResourceID, subSubCategoryResourceID, pageNameResourceID, supportsAutomation, new string[1] { "@" + keywordListResourceName })
+	{
+	}
+
+	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short pageNameResourceID, bool supportsAutomation, int keywordListResourceId)
+		: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, new string[1] { "#" + keywordListResourceId })
+	{
+	}
+
+	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string subSubCategoryName,
+		string pageName, short categoryResourceID, short subCategoryResourceID, short subSubCategoryResourceID,
+		short pageNameResourceID, bool supportsAutomation, string[] keywords) : base(pageType, "#" + pageNameResourceID)
+	{
+		CategoryName = categoryName ?? throw new ArgumentNullException("categoryName");
+		SubCategoryName = subCategoryName ?? throw new ArgumentNullException("pageName");
+		SubSubCategoryName = subSubCategoryName;
+		PageName = pageName ?? throw new ArgumentNullException("pageName");
+
+		CategoryResourceID = categoryResourceID;
+		SubCategoryResourceID = subCategoryResourceID;
+		SubSubCategoryResourceID = subSubCategoryResourceID;
+
+		SupportsAutomation = supportsAutomation;
+		Keywords = keywords;
+		Sort = C_UnspecifiedSortValue;
+		ProfileMigrationType = ProfileMigrationType.None;
+		ProvidesLocalizedCategoryName = true;
+		// _PageType = pageType;
+		// _PageNameResourceId = "#" + pageNameResourceID;
+	}
+
+
+
+
+
 	private const int C_UnspecifiedSortValue = int.MinValue;
 	private const string C_IsServerAware = "IsServerAware";
 
-	private static readonly char[] S_UIContextSeparators = new char[1] { ';' };
+	private static readonly char[] S_UIContextSeparators = [';'];
 
 	// private readonly Type _PageType;
 
@@ -76,56 +137,7 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 		: string.Format(CultureInfo.InvariantCulture, "{0}\\{1}|{2}|{3}", AutomationCategoryRegKey, SubCategoryName, SubSubCategoryName, PageName);
 	// private string AutomationSubCategoryPageRegKey => string.Format(CultureInfo.InvariantCulture, "{0}\\{1}", AutomationSubCategoryRegKey, PageName);
 
-	[Browsable(false)]
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short pageNameResourceID, bool supportsAutomation = true)
-		: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, new string[0])
-	{
-	}
 
-	[Browsable(false)]
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string subSubCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short subSubCategoryResourceID, short pageNameResourceID, bool supportsAutomation = true)
-	: this(pageType, categoryName, subCategoryName, subSubCategoryName, pageName, categoryResourceID, subCategoryResourceID, subSubCategoryResourceID, pageNameResourceID, supportsAutomation, new string[0])
-	{
-	}
-
-	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short pageNameResourceID, bool supportsAutomation, string keywordListResourceName)
-		: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, new string[1] { "@" + keywordListResourceName })
-	{
-	}
-
-	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string subSubCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short subSubCategoryResourceID, short pageNameResourceID, bool supportsAutomation, string keywordListResourceName)
-	: this(pageType, categoryName, subCategoryName, subSubCategoryName, pageName, categoryResourceID, subCategoryResourceID, subSubCategoryResourceID, pageNameResourceID, supportsAutomation, new string[1] { "@" + keywordListResourceName })
-	{
-	}
-
-	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short pageNameResourceID, bool supportsAutomation, int keywordListResourceId)
-		: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, new string[1] { "#" + keywordListResourceId })
-	{
-	}
-
-	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string subSubCategoryName,
-		string pageName, short categoryResourceID, short subCategoryResourceID, short subSubCategoryResourceID,
-		short pageNameResourceID, bool supportsAutomation, string[] keywords) : base(pageType, "#" + pageNameResourceID)
-	{
-		CategoryName = categoryName ?? throw new ArgumentNullException("categoryName");
-		SubCategoryName = subCategoryName ?? throw new ArgumentNullException("pageName");
-		SubSubCategoryName = subSubCategoryName;
-		PageName = pageName ?? throw new ArgumentNullException("pageName");
-
-		CategoryResourceID = categoryResourceID;
-		SubCategoryResourceID = subCategoryResourceID;
-		SubSubCategoryResourceID = subSubCategoryResourceID;
-
-		SupportsAutomation = supportsAutomation;
-		Keywords = keywords;
-		Sort = C_UnspecifiedSortValue;
-		ProfileMigrationType = ProfileMigrationType.None;
-		ProvidesLocalizedCategoryName = true;
-		// _PageType = pageType;
-		// _PageNameResourceId = "#" + pageNameResourceID;
-	}
 
 	public override void Register(RegistrationContext context)
 	{

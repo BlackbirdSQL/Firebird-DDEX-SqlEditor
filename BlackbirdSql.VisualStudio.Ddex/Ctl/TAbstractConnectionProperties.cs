@@ -173,7 +173,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 

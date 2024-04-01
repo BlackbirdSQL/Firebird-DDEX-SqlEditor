@@ -18,10 +18,21 @@ using Microsoft.VisualStudio.OLE.Interop;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
-public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractViewFilter
+
+public class SqlEditorViewFilter : AbstractViewFilter
 {
-	public IBSqlEditorWindowPane Editor { get; private set; } = editorWindow;
+
+	public SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow)
+	{
+		Editor = editorWindow;
+	}
+
+
+
+
+	public IBSqlEditorWindowPane Editor { get; private set; }
 
 
 	public override int Exec(ref Guid pguidCmdGroup, uint cmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
@@ -112,7 +123,8 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 
 	public override int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		int num = (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
+		int hresult = (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
+
 		for (int i = 0; i < cCmds; i++)
 		{
 			EnCommandSet cmdID = (EnCommandSet)prgCmds[i].cmdID;
@@ -194,7 +206,7 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 
 				if (sqlEditorCommand != null)
 				{
-					num = sqlEditorCommand.QueryStatus(ref prgCmds[i], pCmdText);
+					hresult = sqlEditorCommand.QueryStatus(ref prgCmds[i], pCmdText);
 				}
 			}
 
@@ -205,7 +217,7 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 					case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
 					case VSConstants.VSStd2KCmdID.SURROUNDWITH:
 						{
-							AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
+							AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(Editor.DocData);
 							if (auxDocData != null && auxDocData.QryMgr != null && !auxDocData.QryMgr.IsExecuting)
 							{
 								prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
@@ -215,12 +227,12 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 								prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
 							}
 
-							num = 0;
+							hresult = VSConstants.S_OK;
 							break;
 						}
 					case VSConstants.VSStd2KCmdID.FORMATSELECTION:
 						prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
-						num = 0;
+						hresult = VSConstants.S_OK;
 						break;
 				}
 			}
@@ -234,12 +246,12 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 					case VSConstants.VSStd97CmdID.GotoDecl:
 					case VSConstants.VSStd97CmdID.GotoRef:
 						prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
-						num = 0;
+						hresult = VSConstants.S_OK;
 						break;
 					case VSConstants.VSStd97CmdID.GotoDefn:
 					case VSConstants.VSStd97CmdID.FindReferences:
 						{
-							AuxiliaryDocData auxillaryDocData2 = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
+							AuxilliaryDocData auxillaryDocData2 = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(Editor.DocData);
 							if (auxillaryDocData2 != null && (auxillaryDocData2.Strategy.IsOnline || auxillaryDocData2.Strategy is DefaultSqlEditorStrategy))
 							{
 								prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
@@ -249,12 +261,12 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 								prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 							}
 
-							num = 0;
+							hresult = VSConstants.S_OK;
 							break;
 						}
 					case VSConstants.VSStd97CmdID.ShowProperties:
 						prgCmds[i].cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-						num = 0;
+						hresult = VSConstants.S_OK;
 						break;
 				}
 			}
@@ -262,12 +274,12 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 			if (pguidCmdGroup == VS.ClsidVSDebugCommand)
 			{
 				prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
-				num = 0;
+				hresult = VSConstants.S_OK;
 			}
 			else if (pguidCmdGroup == VSConstants.VsStd14 && prgCmds[i].cmdID == (uint)VSConstants.VSStd14CmdID.ShowQuickFixesForPosition)
 			{
 				prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
-				num = 0;
+				hresult = VSConstants.S_OK;
 			}
 			/*
 			else if (pguidCmdGroup == SqlGuidList.cmdSetGuidTeamSystemData && cmdID == EnCommandSet.MenuIdToplevel)
@@ -278,11 +290,11 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 			*/
 		}
 
-		if (Core.Cmd.Failed(num))
+		if (!__(hresult))
 		{
-			num = base.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+			hresult = base.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 		}
 
-		return num;
+		return hresult;
 	}
 }

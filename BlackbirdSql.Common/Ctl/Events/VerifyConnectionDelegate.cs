@@ -6,12 +6,9 @@
 using System.Data;
 using BlackbirdSql.Core.Model;
 
-// using Microsoft.SqlServer.ConnectionDlg.Core;
-// using Microsoft.SqlServer.Management.Smo.RegSvrEnum;
 
 
 namespace BlackbirdSql.Common.Ctl.Events;
-// namespace Microsoft.SqlServer.ConnectionDlg.UI
 
 
 public delegate IDbConnection VerifyConnectionDelegate(ConnectionPropertyAgent ci /*, IServerConnectionProvider serverType */);

@@ -132,27 +132,32 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
+
+		Progress(progress, "Initializing ApcManager ...");
+		
 		await base.InitializeAsync(cancellationToken, progress);
 
-		ServiceProgressData progressData = new("Loading BlackbirdSql", "Loading Controller Event Manager", 2, 15);
-		progress.Report(progressData);
+
+
+		Progress(progress, "Loading ApcManager Event manager...");
 
 		// First try.
 		await ApcInstance.AdviseEventsAsync();
 
-		progressData = new("Loading BlackbirdSql", "Done Loading Controller Event Manager", 3, 15);
-		progress.Report(progressData);
+		Progress(progress, "Loading ApcManager Event manager... Done.");
 
+		
 
-
-		progressData = new("Loading BlackbirdSql", "Loading Controller Service", 4, 15);
-		progress.Report(progressData);
-
+		Progress(progress, "Loading ApcManager service...");
+		
 		ServiceContainer.AddService(typeof(IBPackageController), ServicesCreatorCallbackAsync, promote: true);
 
-		progressData = new("Loading BlackbirdSql", "Done Loading Controller Service", 5, 15);
-		progress.Report(progressData);
+		Progress(progress, "Loading ApcManager service... Done.");
+		
 
+
+		Progress(progress, "Initializing ApcManager ... Done.");
+		
 	}
 
 
@@ -171,30 +176,35 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
-		ServiceProgressData progressData = new("Loading BlackbirdSql", "Finalizing: Advising Controller Events", 8, 15);
-		progress.Report(progressData);
+
+		Progress(progress, "Finalizing ApcManager initialization...");
+		Progress(progress, "Finalizing: Advising ApcManager Events...");
 
 		// Second try.
 		_ApcInstance.AdviseEvents();
 
-		progressData = new("Loading BlackbirdSql", "Finalizing: Done Advising Controller Events", 9, 15);
-		progress.Report(progressData);
+
+
+		Progress(progress, "Finalizing: Advising ApcManager Events... Done.");
 
 		await base.FinalizeAsync(cancellationToken, progress);
+
 
 
 		// If we get here and the Rct is not loaded/loading it means "no solution".
 		if (!RctManager.Loading)
 		{
-			progressData = new("Loading BlackbirdSql", "Finalizing: Loading Running Connection Table", 13, 15);
-			progress.Report(progressData);
+			Progress(progress, "Finalizing: Loading Running Connection Table...");
 
 			RctManager.LoadConfiguredConnections();
 
-			progressData = new("Loading BlackbirdSql", "Finalizing: Loaded Running Connection Table", 14, 15);
-			progress.Report(progressData);
+			Progress(progress, "Finalizing: Loading Running Connection Table... Done.");
 		}
 
+
+
+		Progress(progress, "Finalizing ApcManager initialization... Done.");
+		
 	}
 
 

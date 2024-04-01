@@ -60,7 +60,7 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 	}
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 

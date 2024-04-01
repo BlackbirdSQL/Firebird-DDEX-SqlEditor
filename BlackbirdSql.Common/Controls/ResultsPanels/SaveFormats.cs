@@ -7,6 +7,8 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Properties;
 
+
+
 namespace BlackbirdSql.Common.Controls.ResultsPanels;
 
 

@@ -73,10 +73,21 @@ public abstract class AbstractTextBuffer
 	{
 	}
 
+
+
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
+
 
 	public abstract string GetText(int startPosition, int chars);
 

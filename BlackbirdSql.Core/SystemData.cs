@@ -88,7 +88,7 @@ public static class SystemData
 	/// <summary>
 	/// The underlying package guid (Not used).
 	/// </summary>
-	public const string PackageGuid = "0eb9ba1b-3114-397d-822f-2d306db02058";
+	public const string PackageGuid = "0EB9BA1B-3114-397D-822F-2D306DB02058";
 
 	/// <summary>
 	/// The AsyncPackage guid for IBAsyncPackage.
@@ -103,7 +103,7 @@ public static class SystemData
 	/// <summary>
 	/// The DataProvider registration guid.
 	/// </summary>
-	public const string ProviderGuid = "43015f6e-757f-408b-966e-c2bce34686ba";
+	public const string ProviderGuid = "43015F6E-757F-408B-966E-C2BCE34686BA";
 
 	/// <summary>
 	/// The factory service guid.
@@ -136,26 +136,19 @@ public static class SystemData
 
 
 	// ---------------------------------------------------------------------------------------------------------
-	#region Editor and Language Service Guids
+	#region Editor and Event Service Guids
 	// ---------------------------------------------------------------------------------------------------------
 
 
-	// Mandated services for each service type that will be used by BlackbirdSql 
-	public const string MandatedSqlEditorFactoryGuid = DslEditorFactoryGuid;
-	// public const string MandatedSqlEditorFactoryGuid = VS.SqlEditorFactoryGuid;
-	public const string MandatedSqlLanguageServiceGuid = VS.SSDTLanguageServiceGuid;
-	public const string MandatedXmlLanguageServiceGuid = VS.XmlLanguageServiceGuid;
-	public const string MandatedExpressionEvaluatorGuid = VS.TSqlExpressionEvaluatorGuid;
-	public const string MandatedEventProviderGuid = VS.SqlEventProviderGuid;
-
 	// BlackbirdSql Guids
-	public const string DslEditorFactoryGuid = "D5797F62-22B1-41BC-9B8C-E248EE895966";
-	public const string DslEditorEncodedFactoryGuid = "A548D241-D8B6-4219-9B07-C69733805F73";
-	public const string DslEditorCommandsGuid = "993564A4-0186-4382-B143-7388277887B9";
-	public const string DslEditorPaneGuid = "ADE35F8D-9953-4E4C-9190-A0DDE7075840";
+	public const string EditorFactoryGuid = "D5797F62-22B1-41BC-9B8C-E248EE895966";
+	public const string EditorEncodedFactoryGuid = "A548D241-D8B6-4219-9B07-C69733805F73";
 
 
-	public const string DslEventProviderGuid = "2025C8D6-6399-45DD-98B4-EEF358BDF87D";
+	// Mandated services for each service type that will be used by BlackbirdSql 
+	public const string MandatedSqlEditorFactoryGuid = EditorFactoryGuid;
+	// public const string MandatedSqlEditorFactoryGuid = VS.SqlEditorFactoryGuid;
+	public const string MandatedEventProviderGuid = VS.SqlEventProviderGuid;
 
 
 	#endregion Editor and Language Service Guids

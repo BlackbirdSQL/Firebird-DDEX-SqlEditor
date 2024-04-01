@@ -34,7 +34,7 @@ public sealed class DefaultSqlEditorStrategy : IBSqlEditorStrategy, IDisposable
 
 	public bool IsDw => false;
 
-	public IBMetadataProviderProvider MetadataProviderProvider => null;
+	public object MetadataProviderProvider => null;
 
 	public EnEditorMode Mode => EnEditorMode.Standard;
 

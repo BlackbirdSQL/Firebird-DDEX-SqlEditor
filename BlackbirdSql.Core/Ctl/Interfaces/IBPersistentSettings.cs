@@ -30,7 +30,7 @@ public interface IBPersistentSettings
 
 	/// <summary>
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
-	/// Only implemented by packages that have settings models.
+	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
 	void RegisterSettingsEventHandlers(SettingsSavedDelegate onSettingSaved);
 

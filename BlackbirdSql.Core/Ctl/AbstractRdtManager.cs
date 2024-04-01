@@ -24,8 +24,63 @@ namespace BlackbirdSql.Core.Ctl;
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 
 
+// =========================================================================================================
+//											Abstract RdtManager Class
+//
+/// <summary>
+/// Implementation of instance members of the <see cref="RdtManager"/>.
+/// </summary>
+// =========================================================================================================
 public abstract class AbstractRdtManager : IDisposable
 {
+
+	// ----------------------------------------------------
+	#region Constructors / Destructors - AbstractRdtManager
+	// ----------------------------------------------------
+
+
+	/// <summary>
+	/// Default .ctor of the singleton instance.
+	/// </summary>
+	protected AbstractRdtManager()
+	{
+		if (!Application.MessageLoop)
+		{
+			InvalidOperationException ex = new("Must create Events Manager on the UI Thread");
+			Diag.Dug(ex);
+			throw ex;
+		}
+		Diag.ThrowIfNotOnUIThread();
+
+	}
+
+
+	/// <summary>
+	/// IDisposable implementation
+	/// </summary>
+	public virtual void Dispose()
+	{
+		lock (_KeepAliveLockLocal)
+		{
+			if (_KeepAliveDocCookies.Keys.Count != 0)
+			{
+				Diag.Dug(new ApplicationException("Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data."));
+			}
+		}
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =====================================================================================================
+	#region Fields - AbstractRdtManager
+	// =====================================================================================================
+
+
 	protected static volatile AbstractRdtManager _Instance = null;
 
 	// A static class lock
@@ -38,11 +93,11 @@ public abstract class AbstractRdtManager : IDisposable
 
 	private IVsUIShell _UiShell = null;
 
-	protected static int _ExplorerMonikerEntry = -1;
-	protected static int _ExplorerMonikerSeed = -1;
+	protected static int _InflightMonikerCursor = -1;
+	protected static int _InflightMonikerSeed = -1;
 
-	protected static Dictionary<int, string> _ExplorerMonikers = null;
-	protected static Dictionary<string, object> _MonikerCsaTable = null;
+	protected static Dictionary<int, string> _InflightMonikers = null;
+	protected static Dictionary<string, object> _InflightMonikerCsbTable = null;
 
 
 	private readonly Dictionary<uint, int> _KeepAliveDocCookies = [];
@@ -53,15 +108,19 @@ public abstract class AbstractRdtManager : IDisposable
 	private IVsRunningDocumentTable _RdtSvc = null;
 
 
+	#endregion Fields
 
-	/// <summary>
-	/// Gets or creates the instance of the RdtManager for this session.
-	/// </summary>
 
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - AbstractRdtManager
+	// =====================================================================================================
 
 
 	protected RunningDocumentTable Rdt => _Rdt
-		??= new RunningDocumentTable((IServiceProvider)ApcManager.DdexPackage);
+		??= new RunningDocumentTable((IServiceProvider)ApcManager.PackageInstance);
 
 
 	protected IVsRunningDocumentTable RdtSvc => _RdtSvc
@@ -85,18 +144,29 @@ public abstract class AbstractRdtManager : IDisposable
 	protected IVsUIShell UiShell => _UiShell ??= Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
 
 
+	#endregion Property Accessors
 
-	protected AbstractRdtManager()
-	{
-		if (!Application.MessageLoop)
-		{
-			InvalidOperationException ex = new("Must create Events Manager on the UI Thread");
-			Diag.Dug(ex);
-			throw ex;
-		}
-		Diag.ThrowIfNotOnUIThread();
 
-	}
+
+
+
+	// =====================================================================================================
+	#region Methods - AbstractRdtManager
+	// =====================================================================================================
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
 
 
 	protected void AddKeepAlive(uint docCookie)
@@ -116,10 +186,7 @@ public abstract class AbstractRdtManager : IDisposable
 		}
 	}
 
-	/// <summary>
-	/// ThrowOnFailure token
-	/// </summary>
-	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
 
 	protected void RemoveKeepAlive(uint docCookie)
 	{
@@ -330,11 +397,12 @@ public abstract class AbstractRdtManager : IDisposable
 		}
 
 		/*
-		if (Cmd.Failed(runningDocumentTable.GetRunningDocumentsEnum(out var ppenum)))
+		if (!__(runningDocumentTable.GetRunningDocumentsEnum(out var ppenum)))
 		{
 			ppenum = null;
 		}
 		*/
+
 		Diag.ThrowIfNotOnUIThread();
 
 		___(RdtSvc.RenameDocument(oldMkDoc, newMkDoc, ppv, newNodeId));
@@ -479,7 +547,7 @@ public abstract class AbstractRdtManager : IDisposable
 			IntPtr ppunkDocData = IntPtr.Zero;
 			try
 			{
-				if (Native.Succeeded(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_NoLock, fileName, out hierarchy, out itemId, out ppunkDocData, out docCookie)))
+				if (__(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_NoLock, fileName, out hierarchy, out itemId, out ppunkDocData, out docCookie)))
 				{
 					return true;
 				}
@@ -522,7 +590,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 		docData = null;
 
-		if (RdtSvc != null && Native.Succeeded(RdtSvc.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _, out var _, out var _, out var ppunkDocData)))
+		if (RdtSvc != null && __(RdtSvc.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _, out var _, out var _, out var ppunkDocData)))
 		{
 			docData = Marshal.GetObjectForIUnknown(ppunkDocData);
 			Marshal.Release(ppunkDocData);
@@ -544,7 +612,7 @@ public abstract class AbstractRdtManager : IDisposable
 				IntPtr ppunkDocData = IntPtr.Zero;
 				try
 				{
-					if (!Native.Succeeded(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var ppHier, out var pitemid, out ppunkDocData, out var pdwCookie)))
+					if (!__(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var ppHier, out var pitemid, out ppunkDocData, out var pdwCookie)))
 					{
 						Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to find document {0}.", fileName);
 						return false;
@@ -552,13 +620,13 @@ public abstract class AbstractRdtManager : IDisposable
 
 					Diag.ThrowIfNotOnUIThread();
 
-					if (!Native.Succeeded(RdtSvc.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, pdwCookie)))
+					if (!__(RdtSvc.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, pdwCookie)))
 					{
 						Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to unlock document {0}.", fileName);
 						return false;
 					}
 
-					if (!Native.Succeeded(RdtSvc.GetDocumentInfo(pdwCookie, out var _, out var _, out var _, out var _, out ppHier, out pitemid, out var ppunkDocData2)))
+					if (!__(RdtSvc.GetDocumentInfo(pdwCookie, out var _, out var _, out var _, out var _, out ppHier, out pitemid, out var ppunkDocData2)))
 					{
 						Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to get document info {0}.", fileName);
 						return false;
@@ -570,7 +638,7 @@ public abstract class AbstractRdtManager : IDisposable
 						{
 							if (Marshal.GetObjectForIUnknown(ppunkDocData2) is IVsPersistDocData2 vsPersistDocData)
 							{
-								if (Native.Succeeded(vsPersistDocData.SetDocDataDirty(dirty ? 1 : 0)))
+								if (__(vsPersistDocData.SetDocDataDirty(dirty ? 1 : 0)))
 								{
 									return true;
 								}
@@ -640,7 +708,8 @@ public abstract class AbstractRdtManager : IDisposable
 
 	protected int NotifyDocChanged(string fileName)
 	{
-		int result = 0;
+		int hresult = 0;
+
 		if (string.IsNullOrEmpty(fileName))
 		{
 			ArgumentNullException ex = new("fileName");
@@ -653,13 +722,13 @@ public abstract class AbstractRdtManager : IDisposable
 			IntPtr ppunkDocData = IntPtr.Zero;
 			try
 			{
-				result = FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var _, out var _, out ppunkDocData, out var pdwCookie);
+				hresult = FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var _, out var _, out ppunkDocData, out var pdwCookie);
 
-				if (result == VSConstants.S_FALSE)
-					result = VSConstants.E_FAIL;
+				if (hresult == VSConstants.S_FALSE)
+					hresult = VSConstants.E_FAIL;
 
 
-				if (Native.Succeeded(result))
+				if (__(hresult))
 				{
 					Diag.ThrowIfNotOnUIThread();
 
@@ -673,7 +742,7 @@ public abstract class AbstractRdtManager : IDisposable
 					}
 				}
 
-				return result;
+				return hresult;
 			}
 			finally
 			{
@@ -684,12 +753,13 @@ public abstract class AbstractRdtManager : IDisposable
 			}
 		}
 
-		return result;
+		return hresult;
 	}
 
 	protected int SetDocumentSaveNotSupported(string fileName, bool isNotSupported)
 	{
-		int result = VSConstants.E_FAIL;
+		int hresult = VSConstants.E_FAIL;
+
 		if (!string.IsNullOrEmpty(fileName))
 		{
 			if (RdtSvc != null)
@@ -697,8 +767,9 @@ public abstract class AbstractRdtManager : IDisposable
 				IntPtr ppunkDocData = IntPtr.Zero;
 				try
 				{
-					result = FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var _, out var _, out ppunkDocData, out var pdwCookie);
-					if (Native.Succeeded(result))
+					hresult = FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var _, out var _, out ppunkDocData, out var pdwCookie);
+
+					if (__(hresult))
 					{
 						Diag.ThrowIfNotOnUIThread();
 
@@ -712,7 +783,7 @@ public abstract class AbstractRdtManager : IDisposable
 						}
 					}
 
-					return result;
+					return hresult;
 				}
 				finally
 				{
@@ -724,7 +795,7 @@ public abstract class AbstractRdtManager : IDisposable
 			}
 		}
 
-		return result;
+		return hresult;
 	}
 
 	protected bool CloseOpenDocument(string fileName)
@@ -1062,15 +1133,6 @@ public abstract class AbstractRdtManager : IDisposable
 	}
 
 
+	#endregion Methods
 
-	public virtual void Dispose()
-	{
-		lock (_KeepAliveLockLocal)
-		{
-			if (_KeepAliveDocCookies.Keys.Count != 0)
-			{
-				Diag.Dug(new ApplicationException("Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data."));
-			}
-		}
-	}
 }

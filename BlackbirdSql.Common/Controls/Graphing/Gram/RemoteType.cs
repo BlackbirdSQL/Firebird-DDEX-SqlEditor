@@ -19,7 +19,7 @@ namespace BlackbirdSql.Common.Controls.Graphing.Gram;
 [GeneratedCode("xsd", "4.8.3928.0")]
 [DebuggerStepThrough]
 [DesignerCategory("code")]
-[XmlType(Namespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan")]
+[XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
 public class RemoteType : RelOpBaseType
 {
 	private string remoteDestinationField;

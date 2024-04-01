@@ -2,11 +2,11 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.RpcContracts.FileSystem;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -33,7 +33,7 @@ public interface IBAsyncPackage
 
 	IAsyncServiceContainer ServiceContainer { get; }
 
-	IFileSystemProvider FileSystemBrokeredService { get; }
+	IServiceContainer SyncServiceContainer { get; }
 
 	delegate void LoadSolutionOptionsDelegate(Stream stream);
 	delegate void SaveSolutionOptionsDelegate(Stream stream);
@@ -52,6 +52,10 @@ public interface IBAsyncPackage
 	TInterface GetService<TService, TInterface>() where TInterface : class;
 
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
+
+	void SaveUserPreferences();
+
+	object ServicesCreatorCallback(IServiceContainer container, Type serviceType);
 
 	Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType);
 

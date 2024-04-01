@@ -1,21 +1,18 @@
-﻿// Microsoft.SqlServer.ConnectionDlg.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// Microsoft.SqlServer.ConnectionDlg.Core.Impl.Tracer
-// combined with
-// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.TraceUtils
+
 #define TRACE
+
 using System;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
-
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
-using static System.Windows.Forms.AxHost;
+using FirebirdSql.Data.FirebirdClient;
+
 
 
 namespace BlackbirdSql.Core.Ctl.Diagnostics;
@@ -58,18 +55,19 @@ internal class Tracer : IBTrace // , IBExportable
 	private static string GetMessageForException(Exception exception)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		if (exception is SqlException)
+		if (exception is FbException)
 		{
-			SqlException obj = exception as SqlException;
-			stringBuilder.AppendLine("SqlException:  Message = " + exception.Message);
+			FbException obj = exception as FbException;
+			stringBuilder.AppendLine("FbException:  Message = " + exception.Message);
 			if (!string.IsNullOrWhiteSpace(exception.StackTrace))
 			{
 				stringBuilder.AppendLine("               StackTrace = " + exception.StackTrace);
 			}
 			stringBuilder.AppendLine("Errors:");
-			foreach (SqlError error in obj.Errors)
+			foreach (FbError error in obj.Errors)
 			{
-				stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "Number = {0}, State = {1}, Server = {2}, Message = {3}", error.Number, error.State, error.Server, error.Message);
+				stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "Number = {0}, State = {1}, Server = {2}, Message = {3}",
+					error.Number, obj.GetState(), obj.GetServer(), error.Message);
 			}
 		}
 		else

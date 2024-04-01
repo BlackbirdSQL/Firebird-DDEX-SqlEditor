@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<SnippetCollection>
+  <Language Lang="SQL_FIREBIRD" Guid="{B482BCAE-A222-4DAD-BFD1-0676C38D4DC0}">
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\Function\</DirPath>
+      <LocalizedName>Function</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\Table\</DirPath>
+      <LocalizedName>Table</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\Index\</DirPath>
+      <LocalizedName>Index</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\Login\</DirPath>
+      <LocalizedName>Login</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\Role\</DirPath>
+      <LocalizedName>Role</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\Schema\</DirPath>
+      <LocalizedName>Schema</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\Stored Procedure\</DirPath>
+      <LocalizedName>Stored Procedure</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\Synonym\</DirPath>
+      <LocalizedName>Synonym</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\Trigger\</DirPath>
+      <LocalizedName>Trigger</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\User\</DirPath>
+      <LocalizedName>User</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\User Defined Data Type\</DirPath>
+      <LocalizedName>User Defined Data Type</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\User Defined Table Type\</DirPath>
+      <LocalizedName>User Defined Table Type</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\User Defined Type\</DirPath>
+      <LocalizedName>User Defined Type</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>LOCALE_ID</Locale>
+      <DirPath>%PackageFolder%\Snippets\View\</DirPath>
+      <LocalizedName>View</LocalizedName>
+    </SnippetDir>
+  </Language>
+</SnippetCollection>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create User-Defined Table Type</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a user-defined table type.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>SchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>TypeName</ID>
+          <ToolTip>Name of the data type</ToolTip>
+          <Default>MyTableType</Default>
+        </Literal>
+        <Literal>
+          <ID>Column1</ID>
+          <ToolTip>Name of the column</ToolTip>
+          <Default>Id</Default>
+        </Literal>
+        <Literal>
+          <ID>Datatype_Column1</ID>
+          <ToolTip>Datatype of the column</ToolTip>
+          <Default>INT</Default>
+        </Literal>
+        <Literal>
+          <ID>Column2</ID>
+          <ToolTip>Name of the column</ToolTip>
+          <Default>Name</Default>
+        </Literal>
+        <Literal>
+          <ID>Datatype_Column2</ID>
+          <ToolTip>Datatype of the column</ToolTip>
+          <Default>VARCHAR(128)</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE TYPE [$SchemaName$].[$TypeName$] AS TABLE
+(
+    $Column1$ $Datatype_Column1$, $Column2$ $Datatype_Column2$
+)
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

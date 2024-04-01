@@ -40,6 +40,47 @@ namespace BlackbirdSql.Common.Controls.Grid;
 public class GridControl : Control, ISupportInitialize, IBGridControl
 {
 
+	static GridControl()
+	{
+		s_nMaxNumOfVisibleRows = 80;
+	}
+
+	public GridControl()
+	{
+		SetStyle(ControlStyles.Opaque, value: true);
+		SetStyle(ControlStyles.UserMouse, value: true);
+		SetStyle(ControlStyles.OptimizedDoubleBuffer, value: true);
+		BackColor = SystemColors.Window;
+		m_scrollMgr.SetColumns(m_Columns);
+		m_scrollMgr.RowCount = 0L;
+		m_gridTooltip = new ToolTip
+		{
+			InitialDelay = 1000,
+			ShowAlways = true,
+			Active = false
+		};
+		m_gridTooltip.SetToolTip(this, "");
+		ResetHeaderFont();
+		InitializeCachedGDIObjects();
+		_UpdateGridInternalDelegate = UpdateGridInternal;
+		_OnEmbeddedControlContentsChangedHandler = OnEmbeddedControlContentsChanged;
+		_OnEmbeddedControlLostFocusHandler = OnEmbeddedControlLostFocusInternal;
+		HandleCreated += delegate
+		{
+			BeginInvoke(new VoidInvoker(InitDefaultEmbeddedControls));
+		};
+		GetFontInfo(Font, out var height, out m_cAvCharWidth);
+		m_scrollMgr.CellHeight = height + GridButton.ButtonAdditionalHeight;
+		m_scrollMgr.SetHorizontalScrollUnitForArrows((int)m_cAvCharWidth);
+		m_autoScrollTimer.Interval = 75;
+		m_autoScrollTimer.Tick += AutoscrollTimerProcessor;
+		m_linkFont = new Font(Font, FontStyle.Underline | Font.Style);
+	}
+
+
+
+
+
 	private class InvokerInOutArgs
 	{
 		public object InOutParam;
@@ -2114,42 +2155,17 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 		GridConstants.ScaleFactor = factor.Width;
 	}
 
-	static GridControl()
-	{
-		s_nMaxNumOfVisibleRows = 80;
-	}
 
-	public GridControl()
-	{
-		SetStyle(ControlStyles.Opaque, value: true);
-		SetStyle(ControlStyles.UserMouse, value: true);
-		SetStyle(ControlStyles.OptimizedDoubleBuffer, value: true);
-		BackColor = SystemColors.Window;
-		m_scrollMgr.SetColumns(m_Columns);
-		m_scrollMgr.RowCount = 0L;
-		m_gridTooltip = new ToolTip
-		{
-			InitialDelay = 1000,
-			ShowAlways = true,
-			Active = false
-		};
-		m_gridTooltip.SetToolTip(this, "");
-		ResetHeaderFont();
-		InitializeCachedGDIObjects();
-		_UpdateGridInternalDelegate = UpdateGridInternal;
-		_OnEmbeddedControlContentsChangedHandler = OnEmbeddedControlContentsChanged;
-		_OnEmbeddedControlLostFocusHandler = OnEmbeddedControlLostFocusInternal;
-		HandleCreated += delegate
-		{
-			BeginInvoke(new VoidInvoker(InitDefaultEmbeddedControls));
-		};
-		GetFontInfo(Font, out var height, out m_cAvCharWidth);
-		m_scrollMgr.CellHeight = height + GridButton.ButtonAdditionalHeight;
-		m_scrollMgr.SetHorizontalScrollUnitForArrows((int)m_cAvCharWidth);
-		m_autoScrollTimer.Interval = 75;
-		m_autoScrollTimer.Tick += AutoscrollTimerProcessor;
-		m_linkFont = new Font(Font, FontStyle.Underline | Font.Style);
-	}
+
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
+
 
 	private void InitDefaultEmbeddedControls()
 	{

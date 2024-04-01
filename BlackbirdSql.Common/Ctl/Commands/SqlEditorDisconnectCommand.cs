@@ -30,18 +30,18 @@ public class SqlEditorDisconnectCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
-		if (qryMgrForEditor != null && qryMgrForEditor.IsConnected && !qryMgrForEditor.IsExecuting)
-		{
+		QueryManager qryMgr = QryMgr;
+
+		if (qryMgr != null && qryMgr.IsConnected && !qryMgr.IsExecuting)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-		}
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgr = GetQueryManagerForEditor();
+		QueryManager qryMgr = QryMgr;
+
 		if (qryMgr != null)
 		{
 			qryMgr.ConnectionStrategy.Transaction?.Dispose();

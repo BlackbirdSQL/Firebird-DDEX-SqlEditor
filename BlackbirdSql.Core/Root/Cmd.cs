@@ -58,6 +58,11 @@ public abstract class Cmd
 	// =========================================================================================================
 
 
+	/// <summary>
+	/// Always true without warning message.
+	/// </summary>
+	public static bool ToBeCompleted => true;
+
 	#endregion Property accessors
 
 
@@ -186,16 +191,9 @@ public abstract class Cmd
 	}
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
-
-	// Failed
-	public static bool Failed(int hr)
-	{
-		return hr < 0;
-	}
-
 
 
 

@@ -871,6 +871,78 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ◉ Firebird-SQL.
+        /// </summary>
+        internal static string EnLanguageService_FbSql_Selected {
+            get {
+                return ResourceManager.GetString("EnLanguageService_FbSql_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Firebird-SQL.
+        /// </summary>
+        internal static string EnLanguageService_FbSql_Unselected {
+            get {
+                return ResourceManager.GetString("EnLanguageService_FbSql_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Transact-SQL SSDT.
+        /// </summary>
+        internal static string EnLanguageService_SSDT_Selected {
+            get {
+                return ResourceManager.GetString("EnLanguageService_SSDT_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Transact-SQL SSDT.
+        /// </summary>
+        internal static string EnLanguageService_SSDT_Unselected {
+            get {
+                return ResourceManager.GetString("EnLanguageService_SSDT_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Transact-SQL90.
+        /// </summary>
+        internal static string EnLanguageService_TSql90_Selected {
+            get {
+                return ResourceManager.GetString("EnLanguageService_TSql90_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Transact-SQL90.
+        /// </summary>
+        internal static string EnLanguageService_TSql90_Unselected {
+            get {
+                return ResourceManager.GetString("EnLanguageService_TSql90_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Unified-SQL Azure Data Lake.
+        /// </summary>
+        internal static string EnLanguageService_USql_Selected {
+            get {
+                return ResourceManager.GetString("EnLanguageService_USql_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Unified-SQL Azure Data Lake.
+        /// </summary>
+        internal static string EnLanguageService_USql_Unselected {
+            get {
+                return ResourceManager.GetString("EnLanguageService_USql_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ◉ 1 MB.
         /// </summary>
         internal static string EnMegabytes_1_Selected {
@@ -1510,6 +1582,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The mandated language service the editor must use. Requires IDE restart..
+        /// </summary>
+        internal static string OptionDescriptionGeneralLanguageService {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralLanguageService", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Prompt to save unsaved SQL query windows on close..
         /// </summary>
         internal static string OptionDescriptionGeneralPromptToSave {
@@ -2032,7 +2113,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable Intellisense.
+        ///   Looks up a localized string similar to  Enable Intellisense.
         /// </summary>
         internal static string OptionDisplayGeneralEnableIntellisense {
             get {
@@ -2046,6 +2127,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         internal static string OptionDisplayGeneralExecuteQueryOnOpen {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralExecuteQueryOnOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language Service.
+        /// </summary>
+        internal static string OptionDisplayGeneralLanguageService {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralLanguageService", resourceCulture);
             }
         }
         

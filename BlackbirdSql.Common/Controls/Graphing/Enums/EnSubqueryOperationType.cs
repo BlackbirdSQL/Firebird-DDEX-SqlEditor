@@ -9,7 +9,7 @@ namespace BlackbirdSql.Common.Controls.Graphing.Enums;
 
 [Serializable]
 [GeneratedCode("xsd", "4.8.3928.0")]
-[XmlType(Namespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan")]
+[XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
 public enum EnSubqueryOperationType
 {
 	[XmlEnum("EQ ALL")]

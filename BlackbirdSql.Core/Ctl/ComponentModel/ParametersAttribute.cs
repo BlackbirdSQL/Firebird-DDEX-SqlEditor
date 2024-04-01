@@ -3,12 +3,15 @@ using System;
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
+
+
 /// <summary>
 /// /// Provides parameters for use by other descriptors.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-public sealed class ParametersAttribute(params object[] args) : Attribute
+public sealed class ParametersAttribute(params object[] args) : Attribute()
 {
+
 	private readonly object[] _Args = args;
 
 

@@ -5,8 +5,11 @@ using System;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls;
+using BlackbirdSql.Common.Controls.Tabs;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
@@ -16,6 +19,8 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
+
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 
@@ -41,10 +46,10 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 		{
 			if (WithEncoding)
 			{
-				return new Guid(SystemData.DslEditorEncodedFactoryGuid);
+				return new Guid(SystemData.EditorEncodedFactoryGuid);
 			}
 
-			return new Guid(SystemData.DslEditorFactoryGuid);
+			return new Guid(SystemData.EditorFactoryGuid);
 		}
 	}
 
@@ -139,7 +144,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 
 					Guid clsid = typeof(VsTextBufferClass).GUID;
 					Guid iid = VSConstants.IID_IUnknown;
-					object obj = ((AsyncPackage)ApcManager.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
+					object obj = ((AsyncPackage)ApcManager.PackageInstance).CreateInstance(ref clsid, ref iid, typeof(object));
 
 					if (WithEncoding)
 					{
@@ -178,9 +183,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 				Guid riidKey2 = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
 				___(obj3.SetData(ref riidKey2, false));
 
-				result2 = 0;
-
-				return result2;
+				return VSConstants.S_OK;
 			}
 			catch (Exception ex)
 			{

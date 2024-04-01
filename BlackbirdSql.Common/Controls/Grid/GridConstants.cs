@@ -107,46 +107,44 @@ namespace BlackbirdSql.Common.Controls.Grid
 			Rectangle rectangle = new Rectangle(0, 0, ActualCheckBoxSize, ActualCheckBoxSize);
 			using Graphics graphics = Graphics.FromImage(bmp);
 			graphics.Clear(Color.Transparent);
-			if (!Application.RenderWithVisualStyles)
+
+			if (Application.RenderWithVisualStyles)
 			{
-				goto IL_0051;
+				VisualStyleElement checkBox = DrawManager.GetCheckBox(ButtonState.Flat);
+
+				if (checkBox != null && VisualStyleRenderer.IsElementDefined(checkBox))
+				{
+					new VisualStyleRenderer(checkBox).DrawBackground(graphics, rectangle);
+					return;
+				}
 			}
 
-			VisualStyleElement checkBox = DrawManager.GetCheckBox(ButtonState.Flat);
-			if (checkBox == null || !VisualStyleRenderer.IsElementDefined(checkBox))
-			{
-				goto IL_0051;
-			}
-
-			new VisualStyleRenderer(checkBox).DrawBackground(graphics, rectangle);
-			goto end_IL_001a;
-		IL_0051:
 			ControlPaint.DrawMixedCheckBox(graphics, rectangle, ButtonState.Checked);
-		end_IL_001a:;
 		}
+
 
 		private static void GetStdBitmap(Bitmap bmp, ButtonState state)
 		{
 			Rectangle rectangle = new Rectangle(0, 0, ActualCheckBoxSize, ActualCheckBoxSize);
 			using Graphics graphics = Graphics.FromImage(bmp);
 			graphics.Clear(Color.Transparent);
-			if (!Application.RenderWithVisualStyles)
+
+			if (Application.RenderWithVisualStyles)
 			{
-				goto IL_004d;
+
+				VisualStyleElement checkBox = DrawManager.GetCheckBox(state);
+
+				if (checkBox != null && VisualStyleRenderer.IsElementDefined(checkBox))
+				{
+					new VisualStyleRenderer(checkBox).DrawBackground(graphics, rectangle);
+					return;
+				}
 			}
 
-			VisualStyleElement checkBox = DrawManager.GetCheckBox(state);
-			if (checkBox == null || !VisualStyleRenderer.IsElementDefined(checkBox))
-			{
-				goto IL_004d;
-			}
-
-			new VisualStyleRenderer(checkBox).DrawBackground(graphics, rectangle);
-			goto end_IL_001a;
-		IL_004d:
 			ControlPaint.DrawCheckBox(graphics, rectangle, state);
-		end_IL_001a:;
 		}
+
+
 
 		public static void AdjustFormatFlagsForAlignment(ref TextFormatFlags inputFlags, HorizontalAlignment ha)
 		{

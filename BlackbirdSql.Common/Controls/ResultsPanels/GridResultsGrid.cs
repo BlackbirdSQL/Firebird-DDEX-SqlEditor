@@ -221,7 +221,7 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 			Diag.ThrowIfNotOnUIThread();
 
 			if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell2 vsUIShell
-				&& Core.Native.Succeeded(vsUIShell.GetVSSysColorEx((int)__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT, out var pdwRGBval)))
+				&& __(vsUIShell.GetVSSysColorEx((int)__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT, out var pdwRGBval)))
 			{
 				return ColorTranslator.FromWin32((int)pdwRGBval);
 			}

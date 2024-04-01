@@ -176,7 +176,7 @@ StringCell^ TIndexParser::Parse(StringCell^ root)
 			{
 				// the table name
 				expr->Add(GetConstantType(trim));
-				// TODO: the base_expr should contain the column-def too
+				// TO DO: the base_expr should contain the column-def too
 				cell = CellPairs(( CellPair("expr_type", Expressions::TABLE),
 					CellPair("base_expr", base_expr), CellPair("name", trim),
 					CellPair("no_quotes", ExtractQuotesPairs(trim)), CellPair("sub_tree", NullCell) ));

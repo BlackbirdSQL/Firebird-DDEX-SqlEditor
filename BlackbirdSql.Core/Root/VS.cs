@@ -101,6 +101,12 @@ public abstract class VS
 
 
 	/// <summary>
+	/// Visual Studio built-in Sql Editor Command Set Guid
+	/// </summary>
+	public const string SqlEditorCommandsGuid = "52692960-56BC-4989-B5D3-94C47A513E8D";
+
+
+	/// <summary>
 	/// Suffix of Sql Results Column returning Xml data from SqlServer.
 	/// </summary>
 	public const string IXMLDocumentGuid = "F52E2B61-18A1-11d1-B105-00805F49916B";
@@ -177,6 +183,16 @@ public abstract class VS
 	/// </summary>
 	public static Guid CLSID_LanguageServiceDefault = new("8239bec4-ee87-11d0-8c98-00c04fc2ab22");
 
+
+	// Property Guids
+	public static readonly Guid CLSID_PropIntelliSenseEnabled = new("097A840C-BDDA-4573-8F6D-671EBB21746D");
+	public static readonly Guid CLSID_PropDatabaseChanged = new("D63AB40F-C17E-44a4-8017-0770EEF27FF5");
+	public static readonly Guid CLSID_PropDisableXmlEditorPropertyWindowIntegration = new("b8b94ef1-79a4-446a-95bb-002419e4453a");
+	public static readonly Guid CLSID_PropOverrideXmlEditorSaveAsFileFilter = new("8D88CCA5-7567-4b5c-9CD7-67A3AC136D2D");
+	public static readonly Guid CLSID_PropOleSql = new("F78AEC67-32DB-445e-B1AA-97BFB5BB5163");
+	public static readonly Guid CLSID_PropSqlVersion = new("C856A011-E8D4-4095-AC48-B46814D9FC2F");
+	public static readonly Guid CLSID_PropBatchSeparator = new("8F2F533D-81AF-4270-84CF-BB8EDF7B5A76");
+
 	/// <summary>
 	/// Transact-SQL Message error marker clsid
 	/// </summary>
@@ -185,7 +201,7 @@ public abstract class VS
 
 
 	/// <summary>
-	/// Transact-SQL Language service guid
+	/// Transact-SQL 90 Language service guid
 	/// </summary>
 	public const string TSql90LanguageServiceGuid = "43AF1158-FED5-432e-8E8F-23B6FD592857";
 
@@ -259,7 +275,7 @@ public abstract class VS
 
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 

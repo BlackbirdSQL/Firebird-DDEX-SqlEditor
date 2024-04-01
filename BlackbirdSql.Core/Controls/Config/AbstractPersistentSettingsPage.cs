@@ -2,7 +2,6 @@
 // Plagiarized from Community.VisualStudio.Toolkit extension
 //
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Model.Config;
@@ -28,9 +27,53 @@ public abstract class AbstractPersistentSettingsPage<TPage, T> : AbstractSetting
 	where TPage : AbstractSettingsPage<T> where T : AbstractSettingsModel<T>, new()
 {
 
-	// ---------------------------------------------------------------------------------
+	// ----------------------------------------------------------------
+	#region Constructors / Destructors - AbstractPersistentSettingsPage
+	// ----------------------------------------------------------------
+
+
+	public AbstractPersistentSettingsPage()
+	{
+		try
+		{
+			_Model = ThreadHelper.JoinableTaskFactory.Run(new Func<Task<T>>(AbstractSettingsModel<T>.CreateAsync));
+			_Model.SettingsResetEvent += OnResetSettings;
+
+			EditControlGotFocusEvent += _Model.OnEditControlGotFocus;
+			EditControlLostFocusEvent += _Model.OnEditControlLostFocus;
+			AutomationPropertyValueChangedEvent += _Model.OnAutomationPropertyValueChanged;
+		}
+		catch (Exception ex)
+		{
+			Diag.DebugDug(ex);
+		}
+	}
+
+	protected override void Dispose(bool disposing)
+	{
+		if (!disposing)
+			return;
+
+		if (_Model != null)
+		{
+			EditControlGotFocusEvent -= _Model.OnEditControlGotFocus;
+			EditControlLostFocusEvent -= _Model.OnEditControlLostFocus;
+			AutomationPropertyValueChangedEvent -= _Model.OnAutomationPropertyValueChanged;
+			_Model = null;
+		}
+
+		base.Dispose(disposing);
+	}
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =====================================================================================================
 	#region Fields - AbstractPersistentSettingsPage
-	// ---------------------------------------------------------------------------------
+	// =====================================================================================================
 
 
 	#endregion Fields
@@ -58,43 +101,6 @@ public abstract class AbstractPersistentSettingsPage<TPage, T> : AbstractSetting
 
 
 
-	// =========================================================================================================
-	#region Constructors / Destructors - AbstractPersistentSettingsPage
-	// =========================================================================================================
-
-
-	public AbstractPersistentSettingsPage()
-	{
-		// Tracer.Trace(GetType(), ".ctor");
-
-		_Model = ThreadHelper.JoinableTaskFactory.Run(new Func<Task<T>>(AbstractSettingsModel<T>.CreateAsync));
-		_Model.SettingsResetEvent += OnResetSettings;
-
-		EditControlGotFocusEvent += _Model.OnEditControlGotFocus;
-		EditControlLostFocusEvent += _Model.OnEditControlLostFocus;
-		AutomationPropertyValueChangedEvent += _Model.OnAutomationPropertyValueChanged;
-	}
-
-	protected override void Dispose(bool disposing)
-	{
-		if (!disposing)
-			return;
-
-		if (_Model != null)
-		{
-			EditControlGotFocusEvent -= _Model.OnEditControlGotFocus;
-			EditControlLostFocusEvent -= _Model.OnEditControlLostFocus;
-			AutomationPropertyValueChangedEvent -= _Model.OnAutomationPropertyValueChanged;
-			_Model = null;
-		}
-
-		base.Dispose(disposing);
-	}
-
-	#endregion Constructors / Destructors
-
-
-
 
 	// =========================================================================================================
 	#region Methods - AbstractPersistentSettingsPage
@@ -102,7 +108,7 @@ public abstract class AbstractPersistentSettingsPage<TPage, T> : AbstractSetting
 
 
 
-	#endregion Event Handling
+	#endregion Methods
 
 
 }

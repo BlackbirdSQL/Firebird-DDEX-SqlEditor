@@ -57,10 +57,11 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+
 		if (auxDocData == null)
 		{
-			Exception ex = new("AuxiliaryDocData NOT FOUND");
+			Exception ex = new("AuxilliaryDocData NOT FOUND");
 			Diag.Dug(ex);
 			return VSConstants.S_OK;
 		}
@@ -122,11 +123,11 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 		return VSConstants.S_OK;
 	}
 
-	private void SetDatasetKeyDisplayMember(AuxiliaryDocData docData, string selectedDatasetKey)
+	private void SetDatasetKeyDisplayMember(AuxilliaryDocData auxDocData, string selectedDatasetKey)
 	{
-		IVsUserData userData = docData.VsUserData;
+		IVsUserData vsUserData = auxDocData.VsUserData;
 
-		if (userData == null)
+		if (vsUserData == null)
 		{
 			ArgumentNullException ex = new("IVsUserData is null");
 			Diag.Dug(ex);
@@ -135,7 +136,7 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 		RctManager.Invalidate();
 
-		CsbAgent csa = (CsbAgent)docData.GetUserDataCsb();
+		CsbAgent csa = (CsbAgent)auxDocData.UserDataCsb;
 
 		if (csa != null && csa.DatasetKey == null)
 		{
@@ -173,7 +174,7 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 		}
 
 
-		AbstractConnectionStrategy connectionStrategy = docData.QryMgr.ConnectionStrategy;
+		AbstractConnectionStrategy connectionStrategy = auxDocData.QryMgr.ConnectionStrategy;
 
 		connectionStrategy.SetDatasetKeyOnConnection(selectedDatasetKey, csa);
 		// IDbConnection connection = connectionStrategy.Connection;
@@ -181,13 +182,13 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 		// if (connection != null && connection.State == ConnectionState.Open)
 		// {
 
-		Guid clsid = LibraryData.CLSID_PropertyDatabaseConnectionChanged;
-		___(userData.SetData(ref clsid, connectionString));
+		Guid clsid = VS.CLSID_PropDatabaseChanged;
+		___(vsUserData.SetData(ref clsid, connectionString));
 
 		// Tracer.Trace(GetType(), "SetDatasetKeyDisplayMember()", "csa.ConnectionString: {0}", csa.ConnectionString);
 
-		Guid clsid2 = new(LibraryData.SqlEditorConnectionStringGuid);
-		___(userData.SetData(ref clsid2, (object)csa));
+		Guid clsid2 = new(LibraryData.UserDataCsbGuid);
+		___(vsUserData.SetData(ref clsid2, (object)csa));
 
 		_Csa = csa;
 		_Csa.RegisterValidationState(connectionString);

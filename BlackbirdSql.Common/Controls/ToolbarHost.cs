@@ -50,9 +50,9 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 	}
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
-	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	public void SetToolbar(IVsUIShell4 uiShell, Guid clsidCmdSet, uint menuId, IOleCommandTarget commandTarget)
 	{

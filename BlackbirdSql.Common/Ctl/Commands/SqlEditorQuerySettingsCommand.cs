@@ -27,8 +27,9 @@ public class SqlEditorQuerySettingsCommand(IBSqlEditorWindowPane editorWindow)
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
-		if (qryMgrForEditor != null && !qryMgrForEditor.IsExecuting)
+		QueryManager qryMgr = QryMgr;
+
+		if (qryMgr != null && !qryMgr.IsExecuting)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -38,13 +39,14 @@ public class SqlEditorQuerySettingsCommand(IBSqlEditorWindowPane editorWindow)
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+
 		if (auxDocData == null)
 			return VSConstants.S_OK;
 
 		// EnSqlOutputMode mode = auxDocData.QryMgr.LiveSettings.EditorResultsOutputMode;
 
-		IBEditorPackage editorPackage = (IBEditorPackage)ApcManager.DdexPackage;
+		IBEditorPackage editorPackage = (IBEditorPackage)ApcManager.PackageInstance;
 
 		editorPackage.ShowExecutionSettingsDialogFrame(auxDocData, FormStartPosition.CenterParent);
 

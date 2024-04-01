@@ -90,12 +90,10 @@ public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 		if (RctManager.ShutdownState)
 			return VSConstants.S_OK;
 
-		QueryManager qryMgr = GetQueryManagerForEditor();
+		QueryManager qryMgr = QryMgr;
 
 		if (qryMgr != null)
 		{
-
-
 			if (EditorWindow != null && (_Csa == null || _Seed != RctManager.Seed))
 			{
 				_Csa = null;

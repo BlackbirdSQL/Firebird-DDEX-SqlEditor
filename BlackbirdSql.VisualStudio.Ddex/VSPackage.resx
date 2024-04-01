@@ -127,7 +127,7 @@
     <value>BlackbirdSql, Results Editor</value>
   </data>
   <data name="100" xml:space="preserve">
-    <value>BlackbirdSQL Server Data Tools</value>
+    <value>BlackbirdSQL Server Tools</value>
   </data>
   <data name="102" xml:space="preserve">
     <value>BlackbirdSQL DDEX 2.0 and SqlEditor Data Tools for Firebird Server</value>
@@ -153,26 +153,29 @@
   <data name="301" xml:space="preserve">
     <value>SqlEditor</value>
   </data>
+  <data name="303" xml:space="preserve">
+    <value>BlackbirdSQL Server Tools, FB-SQL Language Service</value>
+  </data>
   <data name="311" xml:space="preserve">
-    <value>BlackbirdSQL Server Data Tools, SQL Editor</value>
+    <value>BlackbirdSQL Server Tools, FB-SQL Editor</value>
   </data>
   <data name="312" xml:space="preserve">
-    <value>BlackbirdSQL Server Data Tools, Results Editor</value>
+    <value>BlackbirdSQL Server Tools, Results Editor</value>
   </data>
   <data name="313" xml:space="preserve">
-    <value>BlackbirdSQL Server Data Tools, Message Editor</value>
+    <value>BlackbirdSQL Server Tools, Message Editor</value>
   </data>
   <data name="314" xml:space="preserve">
-    <value>BlackbirdSQL Server Data Tools, Statistics Editor</value>
+    <value>BlackbirdSQL Server Tools, Statistics Editor</value>
   </data>
   <data name="315" xml:space="preserve">
-    <value>BlackbirdSQL Server Data Tools, Showplan Editor</value>
+    <value>BlackbirdSQL Server Tools, Showplan Editor</value>
   </data>
   <data name="317" xml:space="preserve">
-    <value>BlackbirdSQL Server Data Tools, FB-SQL Editor (with Encoding)</value>
+    <value>BlackbirdSQL Server Tools, FB-SQL Editor (with Encoding)</value>
   </data>
   <data name="318" xml:space="preserve">
-    <value>BlackbirdSQL Server Data Tools, Spatial Results Editor</value>
+    <value>BlackbirdSQL Server Tools, Spatial Results Editor</value>
   </data>
   <data name="321" xml:space="preserve">
     <value>General</value>
@@ -200,6 +203,12 @@
   </data>
   <data name="329" xml:space="preserve">
     <value>Text Results</value>
+  </data>
+  <data name="330" xml:space="preserve">
+    <value>Firebird-SQL</value>
+  </data>
+  <data name="331" xml:space="preserve">
+    <value>IntelliSense</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="400" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

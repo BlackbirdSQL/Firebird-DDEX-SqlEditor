@@ -14,7 +14,7 @@ namespace BlackbirdSql.Common.Controls.Graphing;
 [GeneratedCode("xsd", "4.8.3928.0")]
 [DebuggerStepThrough]
 [DesignerCategory("code")]
-[XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan")]
+[XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
 public class CursorPlanTypeOperation
 {
 	private ParameterSensitivePredicateType[] dispatcherField;

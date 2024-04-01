@@ -3,28 +3,16 @@
 //
 using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using BlackbirdSql.Core.Controls.Events;
-using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
-using BlackbirdSql.Core.Properties;
+using Microsoft.VisualStudio.Shell.Interop;
 
-using Microsoft.VisualStudio.Shell;
-
-using Control = System.Windows.Forms.Control;
-using TextBox = System.Windows.Forms.TextBox;
 
 
 namespace BlackbirdSql.Core.Controls.Config;
+
 
 // =========================================================================================================
 //										AbstractSettingsPage Class
@@ -135,9 +123,16 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 	public override void LoadSettingsFromStorage()
 	{
 		lock (_LockObject)
+		{
 			_Model.Load();
+		}
 	}
 
+
+	public override void LoadSettingsFromXml(IVsSettingsReader reader)
+	{
+		base.LoadSettingsFromXml(reader);
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -149,6 +144,7 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 	{
 		lock (_LockObject)
 			_Model.LoadDefaults();
+
 
 		base.ResetSettings();
 	}

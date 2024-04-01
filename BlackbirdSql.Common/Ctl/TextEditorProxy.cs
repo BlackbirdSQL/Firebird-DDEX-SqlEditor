@@ -1,33 +1,41 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TextEditorProxy
 using System;
+using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Common.Ctl.Interfaces;
 
 
 
 namespace BlackbirdSql.Common.Ctl;
 
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
+
+
 public class TextEditorProxy : MarshalByRefObject, IBTextEditor, IDisposable
 {
-	private IBTextEditor _underlyingEditor;
-
-	private IBTextEditorEvents _textEditorEvents;
-
-	public IBTextEditorEvents TextEditorEvents => _textEditorEvents;
 
 	public TextEditorProxy(IBTextEditor editor)
 	{
-		_underlyingEditor = editor;
+		_UnderlyingEditor = editor;
 	}
+
+
+
+	private IBTextEditor _UnderlyingEditor;
+
+	private IBTextEditorEvents _TextEditorEvents;
+
+	public IBTextEditorEvents TextEditorEvents => _TextEditorEvents;
+
 
 	public void Select(int offset, int length)
 	{
-		_underlyingEditor?.Select(offset, length);
+		_UnderlyingEditor?.Select(offset, length);
 	}
 
 	public void Focus()
 	{
-		_underlyingEditor?.Focus();
+		_UnderlyingEditor?.Focus();
 	}
 
 	public void SetTextEditorEvents(IBTextEditorEvents events)
@@ -41,32 +49,32 @@ public class TextEditorProxy : MarshalByRefObject, IBTextEditor, IDisposable
 				throw new NotSupportedException();
 			}
 		}
-		IBTextEditorEvents textEditorEvents = _textEditorEvents;
-		_textEditorEvents = null;
+		IBTextEditorEvents textEditorEvents = _TextEditorEvents;
+		_TextEditorEvents = null;
 		textEditorEvents?.SetTextEditor(null);
-		_textEditorEvents = events;
-		if (_textEditorEvents != null && marshalByRefObject != null)
+		_TextEditorEvents = events;
+		if (_TextEditorEvents != null && marshalByRefObject != null)
 		{
-			_textEditorEvents.SetTextEditor(this);
+			_TextEditorEvents.SetTextEditor(this);
 			SyncState();
 		}
 	}
 
 	public void SyncState()
 	{
-		_underlyingEditor?.SyncState();
+		_UnderlyingEditor?.SyncState();
 	}
 
 	private void Dispose(bool disposing)
 	{
 		if (disposing)
 		{
-			if (_textEditorEvents != null)
+			if (_TextEditorEvents != null)
 			{
-				_textEditorEvents.SetTextEditor(null);
-				_textEditorEvents = null;
+				_TextEditorEvents.SetTextEditor(null);
+				_TextEditorEvents = null;
 			}
-			_underlyingEditor = null;
+			_UnderlyingEditor = null;
 		}
 	}
 

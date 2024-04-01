@@ -11,13 +11,9 @@ using System.Security.Permissions;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Model.Events;
-using BlackbirdSql.Common.Ctl.Interfaces;
 
 
 
-
-
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution
 namespace BlackbirdSql.Common.Controls.Widgets;
 
 

@@ -41,7 +41,7 @@ void Scanner::ConcatNegativeNumbers(StringCell^ tokens)
 			continue;
 		}
 
-		// TODO: we can have sign of a number after "(" and ",", are others possible?
+		// TO DO: we can have sign of a number after "(" and ",", are others possible?
 		ch = cell->Value[cell->Length - 1];
 
 		if (ch == ',' || ch == '(')

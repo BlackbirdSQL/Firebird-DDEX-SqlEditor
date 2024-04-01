@@ -41,23 +41,24 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
-		if (auxDocData != null)
-		{
-			QueryManager qryMgr = auxDocData.QryMgr;
-			if (qryMgr != null && !qryMgr.IsExecuting)
-			{
-				try
-				{
-					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
-					auxDocData.EstimatedExecutionPlanEnabled = true;
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 
-					EditorWindow.ExecuteQuery(false);
-				}
-				finally
-				{
-					auxDocData.EstimatedExecutionPlanEnabled = false;
-				}
+		if (auxDocData == null)
+			return VSConstants.S_OK;
+
+		QueryManager qryMgr = auxDocData.QryMgr;
+		if (qryMgr != null && !qryMgr.IsExecuting)
+		{
+			try
+			{
+				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
+				auxDocData.EstimatedExecutionPlanEnabled = true;
+
+				EditorWindow.ExecuteQuery(false);
+			}
+			finally
+			{
+				auxDocData.EstimatedExecutionPlanEnabled = false;
 			}
 		}
 

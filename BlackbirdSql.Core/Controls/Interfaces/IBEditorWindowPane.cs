@@ -8,5 +8,5 @@ namespace BlackbirdSql.Core.Controls.Interfaces;
 
 public interface IBEditorWindowPane
 {
-	IVsTextView GetCodeEditorTextView();
+	IVsTextView GetCodeEditorTextView(object editorCodeTab = null);
 }

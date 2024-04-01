@@ -34,9 +34,10 @@ public class SqlEditorParseQueryCommand : SqlEditorExecuteQueryCommand
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
+
 		if (auxDocData != null)
 		{
 			if (!IsEditorExecuting())

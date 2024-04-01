@@ -290,7 +290,7 @@ StringCell^ TFromParser::Parse(StringCell^ root)
 		{
 			if (tokenCategory == "CREATE")
 			{
-				tokenCategory = upper; // TODO: what is it for a statement?
+				tokenCategory = upper; // TO DO: what is it for a statement?
 				continue;
 			}
 			if (tokenCategory == "IDX_HINT")
@@ -385,7 +385,7 @@ StringCell^ TFromParser::Parse(StringCell^ root)
 		}
 		else
 		{
-			// TODO: enhance it, so we can have base_expr to calculate the position of the keywords
+			// TO DO: enhance it, so we can have base_expr to calculate the position of the keywords
 			// build a subtree under "hints"
 			if (tokenCategory == "IDX_HINT")
 			{

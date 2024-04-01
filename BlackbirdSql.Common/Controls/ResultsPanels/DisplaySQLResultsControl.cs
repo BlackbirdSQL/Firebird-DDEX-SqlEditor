@@ -65,7 +65,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	// private bool _HasTextPlan;
 	private bool _HadExecutionErrors;
 	protected int _GridCount;
-	private AuxiliaryDocData _AuxDocData;
+	private AuxilliaryDocData _AuxDocData;
 	private string _DefaultResultsDirectory = "";
 	private const int C_MaxGridResultSets = 10000000;
 	// private const int C_MaxExecutionPlanControls = 100;
@@ -97,13 +97,13 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 
 
-	public AuxiliaryDocData AuxDocData
+	public AuxilliaryDocData AuxDocData
 	{
 		get
 		{
 			if (_AuxDocData == null && SqlEditorPane != null)
 			{
-				_AuxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
+				_AuxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(SqlEditorPane.DocData);
 			}
 
 			return _AuxDocData;
@@ -382,16 +382,16 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		OnHosted();
 	}
 
-	private void OnSqlExecutionModeChanged(object sender, AuxiliaryDocData.SqlExecutionModeChangedEventArgs sqlExecutionModeArgs)
+	private void OnSqlExecutionModeChanged(object sender, AuxilliaryDocData.SqlExecutionModeChangedEventArgs sqlExecutionModeArgs)
 	{
 		EnSqlOutputMode sqlExecutionMode = sqlExecutionModeArgs.SqlOutputMode;
 		ProcessSqlExecMode(sqlExecutionMode);
 		ApplyLiveSettingsToBatchConsumer(_BatchConsumer, AuxDocData.LiveSettings);
 	}
 
-	private void OnLiveSettingsChanged(object sender, AuxiliaryDocData.LiveSettingsChangedEventArgs liveSettingsChangedArgs)
+	private void OnLiveSettingsChanged(object sender, AuxilliaryDocData.LiveSettingsChangedEventArgs liveSettingsChangedArgs)
 	{
-		OnSqlExecutionModeChanged(sender, new AuxiliaryDocData.SqlExecutionModeChangedEventArgs(AuxDocData.SqlOutputMode));
+		OnSqlExecutionModeChanged(sender, new AuxilliaryDocData.SqlExecutionModeChangedEventArgs(AuxDocData.SqlOutputMode));
 		_GridResultsPage.SetGridTabOptions(AuxDocData.LiveSettings.EditorResultsGridSaveIncludeHeaders,
 			AuxDocData.LiveSettings.EditorResultsGridCsvQuoteStringsCommas);
 		DefaultResultsDirectory = AuxDocData.LiveSettings.EditorResultsDirectory;
@@ -429,7 +429,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	public bool PrepareForExecution(bool prepareForParse)
 	{
 		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.PrepareForExecution", "prepareForParse = {0}", prepareForParse);
-		((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData).QryMgr.ResultsHandler = BatchConsumer;
+		((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(SqlEditorPane.DocData).QryMgr.ResultsHandler = BatchConsumer;
 		AbstractResultsWriter resultsWriter = null;
 		if (AuxDocData.SqlOutputMode == EnSqlOutputMode.ToFile && !prepareForParse
 			&& !AuxDocData.LiveSettings.EditorResultsTextDiscardResults && !WithEstimatedExecutionPlan)
@@ -626,7 +626,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		{
 			Name = "_TextMessagesPage"
 		};
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
+		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(SqlEditorPane.DocData);
 		RegisterToQueryExecutorEvents(auxDocData.QryMgr);
 
 		IVsFontAndColorStorage vsFontAndColorStorage = ApcManager.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();

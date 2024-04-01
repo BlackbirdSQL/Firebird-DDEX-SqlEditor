@@ -3,9 +3,9 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration
 
-namespace BlackbirdSql.Common.Ctl.Events
-{
-	public delegate void FontChangedEventHandler(object sender, FontChangedEventArgs e);
-}
+
+namespace BlackbirdSql.Common.Ctl.Events;
+
+
+public delegate void FontChangedEventHandler(object sender, FontChangedEventArgs e);

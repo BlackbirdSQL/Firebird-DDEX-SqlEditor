@@ -16,11 +16,12 @@ public interface IBSqlEditorStrategy : IDisposable
 
 	bool IsDw { get; }
 
-	IBMetadataProviderProvider MetadataProviderProvider { get; }
 
 	EnEditorMode Mode { get; }
 
 	IBSqlEditorExtendedCommandHandler ExtendedCommandHandler { get; }
+
+	object MetadataProviderProvider {  get; }
 
 	IBSqlEditorErrorTaskFactory GetErrorTaskFactory();
 

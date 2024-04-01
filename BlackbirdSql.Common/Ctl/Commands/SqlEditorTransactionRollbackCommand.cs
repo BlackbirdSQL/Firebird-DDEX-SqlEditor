@@ -32,7 +32,7 @@ public class SqlEditorTransactionRollbackCommand : AbstractSqlEditorCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		QueryManager qryMgr = GetQueryManagerForEditor();
+		QueryManager qryMgr = QryMgr;
 
 		if (qryMgr != null && qryMgr.IsConnected && !qryMgr.IsExecuting
 			&& qryMgr.ConnectionStrategy != null && qryMgr.ConnectionStrategy.HasTransactions)
@@ -45,9 +45,9 @@ public class SqlEditorTransactionRollbackCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData docData = GetAuxiliaryDocDataForEditor();
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 
-		docData.RollbackTransactions();
+		auxDocData.RollbackTransactions();
 
 		return VSConstants.S_OK;
 

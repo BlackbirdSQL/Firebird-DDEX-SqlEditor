@@ -73,9 +73,16 @@ public abstract class UnsafeCmd
 
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
 
 
 
@@ -270,7 +277,7 @@ public abstract class UnsafeCmd
 	{
 		int hresult = hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_TypeGuid, out Guid guid);
 
-		if (!Native.Succeeded(hresult))
+		if (!__(hresult))
 			return false;
 
 		return IsVirtualProjectKind(guid);
@@ -307,7 +314,7 @@ public abstract class UnsafeCmd
 	{
 		int hresult = hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ProjectIDGuid, out Guid clsid);
 
-		if (!Native.Succeeded(hresult))
+		if (!__(hresult))
 			return false;
 
 		return IsMiscFilesProject(clsid);

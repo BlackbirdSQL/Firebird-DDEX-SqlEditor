@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create User as DBO</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a database user.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>UserName</ID>
+          <ToolTip>Name of the user</ToolTip>
+          <Default>UserName</Default>
+        </Literal>
+        <Literal>
+          <ID>SchemaName</ID>
+          <ToolTip>Name of the default schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE USER $UserName$
+    WITHOUT LOGIN
+    WITH DEFAULT_SCHEMA = $SchemaName$
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
+
+

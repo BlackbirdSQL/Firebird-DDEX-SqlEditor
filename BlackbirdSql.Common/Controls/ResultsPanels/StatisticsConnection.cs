@@ -1,13 +1,8 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.StatisticsConnection
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Data;
 using BlackbirdSql.Common.Model.QueryExecution;
-using BlackbirdSql.Core;
-
 using FirebirdSql.Data.FirebirdClient;
 
 

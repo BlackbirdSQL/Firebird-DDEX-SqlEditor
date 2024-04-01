@@ -22,10 +22,11 @@ namespace BlackbirdSql.Common.Ctl.Config;
 //
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
-/// As a convention we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
-/// descendent tree from the top-level extension lib down to the Core. There is no point using services as
-/// this configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > EditorExtension > Common > Core.
+/// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
+/// descendent tree from the top-level extension lib down to the Core.
+/// PersistentSettings can be either consumers or providers of options, or both.
+/// There is no point using services as this configuration is fixed. ie:
+/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
 public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
@@ -34,6 +35,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	// ---------------------------------------------------------------------------------
 	#region Sub-classes - PersistentSettings
 	// ---------------------------------------------------------------------------------
+
 
 
 	public class CommandObject(ResourceManager resMgr)
@@ -72,10 +74,25 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 	public static CommandObject CmdObject => _CmdObject ??= new(SqlResources.ResourceManager);
 
+	// LanguageService AdvancedPreferencesModel
+
+	public static bool LanguageServiceEnableIntellisense => (bool)GetSetting("LanguageServiceAdvancedEnableIntellisense", true);
+	public static bool LanguageServiceAutoOutlining => LanguageServiceEnableIntellisense
+		&& (bool)GetSetting("LanguageServiceAdvancedAutoOutlining", true);
+	public static bool LanguageServiceUnderlineErrors => LanguageServiceEnableIntellisense
+		&& (bool)GetSetting("LanguageServiceAdvancedUnderlineErrors", true);
+	public static int LanguageServiceMaxScriptSize => (int)GetSetting("LanguageServiceAdvancedMaxScriptSize", 1048576);
+	public static EnCasingStyle LanguageServiceTextCasing => (EnCasingStyle)GetSetting("LanguageServiceAdvancedTextCasing", EnCasingStyle.Uppercase);
+	// _DisplayInfoProvider.BuiltInCasing = Prefs.TextCasing == 0 ? CasingStyle.Uppercase : CasingStyle.Lowercase;
+
+
+
 	// Editor GeneralSettingsModel
 
 	public static bool EditorEnableIntellisense => (bool)GetSetting("EditorGeneralEnableIntellisense", true);
 	public static bool EditorExecuteQueryOnOpen => (bool)GetSetting("EditorGeneralExecuteQueryOnOpen", true);
+	public static EnLanguageService EditorLanguageService => (EnLanguageService)GetSetting("EditorGeneralLanguageService",
+		EnLanguageService.SSDT);
 	public static bool EditorPromptToSave => (bool)GetSetting("EditorGeneralPromptToSave", false);
 
 
@@ -249,7 +266,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 	/// <summary>
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
-	/// Only implemented by packages that have settings models.
+	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
 	// public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
 

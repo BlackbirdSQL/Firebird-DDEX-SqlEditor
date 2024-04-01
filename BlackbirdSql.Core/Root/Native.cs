@@ -3,6 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
 
@@ -145,6 +146,21 @@ public abstract class Native
 	// =========================================================================================================
 
 
+
+	/// <summary>
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
+
+
 	[DllImport("user32", CharSet = CharSet.Auto)]
 	public static extern int DispatchMessage([In] ref MSG msg);
 
@@ -152,22 +168,6 @@ public abstract class Native
 	[DllImport("user32.dll")]
 	public static extern bool EnableWindow(IntPtr hWnd, bool enable);
 
-
-	// Failed
-	public static bool Failed(int hr)
-	{
-		return hr < 0;
-	}
-
-	public static bool Failed(int hr, params int[] expectedFailures)
-	{
-		if (Failed(hr) && (expectedFailures == null || Array.IndexOf(expectedFailures, hr) < 0))
-		{
-			return true;
-		}
-
-		return false;
-	}
 
 
 	// FindWindowEx
@@ -181,6 +181,11 @@ public abstract class Native
 	// GetMessage
 	[DllImport("user32", CharSet = CharSet.Auto)]
 	public static extern bool GetMessage([In][Out] ref MSG msg, int hWnd, int uMsgFilterMin, int uMsgFilterMax);
+
+
+	// GetParent
+	[DllImport("user32.dll")]
+	public static extern IntPtr GetParent(IntPtr hwnd);
 
 
 	// GetScrollInfo
@@ -200,6 +205,10 @@ public abstract class Native
 	[return: MarshalAs(UnmanagedType.Bool)]
 	public static extern bool IsWindow(IntPtr hWnd);
 
+
+	// MapDialogRect
+	[DllImport("user32.dll")]
+	public static extern bool MapDialogRect(IntPtr hDlg, ref RECT rect);
 
 
 	// PostMessage
@@ -249,13 +258,6 @@ public abstract class Native
 	public static extern int SetProp(HandleRef hWnd, string propName, HandleRef data);
 
 
-	// Succeeded
-	public static bool Succeeded(int hr)
-	{
-		return hr >= 0;
-	}
-
-
 
 	// TranslateMessage
 	[DllImport("user32", CharSet = CharSet.Auto)]
@@ -264,7 +266,7 @@ public abstract class Native
 	// WrapComCall
 	public static int WrapComCall(int hr)
 	{
-		if (Cmd.Failed(hr))
+		if (!__(hr))
 			throw Marshal.GetExceptionForHR(hr);
 
 		return hr;
@@ -273,7 +275,7 @@ public abstract class Native
 	// WrapComCall
 	public static int WrapComCall(int hr, params int[] expectedFailures)
 	{
-		if (Cmd.Failed(hr) && (expectedFailures == null || Array.IndexOf(expectedFailures, hr) < 0))
+		if (!__(hr) && (expectedFailures == null || Array.IndexOf(expectedFailures, hr) < 0))
 		{
 			throw Marshal.GetExceptionForHR(hr);
 		}

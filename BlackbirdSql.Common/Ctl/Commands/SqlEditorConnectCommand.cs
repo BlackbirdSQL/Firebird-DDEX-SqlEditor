@@ -24,19 +24,19 @@ public class SqlEditorConnectCommand : AbstractSqlEditorCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (GetQueryManager() != null)
-		{
+		QueryManager qryMgr = QryMgr;
+
+		if (qryMgr != null && !qryMgr.IsExecuting && !qryMgr.IsConnected)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-		}
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgr = GetQueryManager();
+		QueryManager qryMgr = QryMgr;
 
-		if (qryMgr != null)
+		if (qryMgr != null && !qryMgr.IsExecuting && !qryMgr.IsConnected)
 		{
 			try
 			{
@@ -53,12 +53,5 @@ public class SqlEditorConnectCommand : AbstractSqlEditorCommand
 		return VSConstants.S_OK;
 	}
 
-
-	private QueryManager GetQueryManager()
-	{
-		QueryManager qryMgr = GetQueryManagerForEditor();
-
-		return qryMgr != null && (qryMgr.IsExecuting || qryMgr.IsConnected) ? null : qryMgr;
-	}
 
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create Synonym</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a synonym.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>SynonymName</ID>
+          <ToolTip>Name of the synonym</ToolTip>
+          <Default>SynonymName</Default>
+        </Literal>
+        <Literal>
+          <ID>DefaultSchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>SchemaName</ID>
+          <ToolTip>Name of the object schema</ToolTip>
+          <Default>SchemaName</Default>
+        </Literal>
+        <Literal>
+          <ID>ObjectName</ID>
+          <ToolTip>Name of the database object for the synonym</ToolTip>
+          <Default>object_name</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE SYNONYM $DefaultSchemaName$.$SynonymName$
+    FOR $SchemaName$.$ObjectName$
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

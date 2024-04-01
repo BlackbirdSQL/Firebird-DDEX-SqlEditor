@@ -59,9 +59,9 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 	}
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
-	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 	void IMenuCommandService.RemoveVerb(DesignerVerb verb)

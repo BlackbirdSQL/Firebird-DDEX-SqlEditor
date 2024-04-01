@@ -2,6 +2,15 @@
 
 ## Change log
 
+### v11.2.9.1001 (Interim release for 11.3.0.0)
+__New/ Enhancements__</br>
+-- Implemented Phase 1 of Firebird Language Service.</br>
+-- Added a user option for selecting the mandated language service for the`SqlEditor`. The available language services are `Firebird-SQL`, `Transact-SQL SSDT`, `Transact-SQL90` and `Unified-SQL Azure Data Lake`.</br>
+-- Added language service preferences for `Firebird-SQL`.</br>
+-- Implemented several performance enhancements.</br>
+__Fixes__</br>
+-- Intellisense no longer reports the Firebird string concatenation operator `||` as an error. This is part of phase 1 of the Firebird language service implementation. 
+
 ### v11.2.0.3
 __New/ Enhancements__</br>
 -- None.</br>

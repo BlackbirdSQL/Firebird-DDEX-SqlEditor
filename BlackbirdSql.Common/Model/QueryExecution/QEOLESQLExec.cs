@@ -4,11 +4,11 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
-
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Ctl.Interfaces;
@@ -20,21 +20,27 @@ using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-
 using FirebirdSql.Data.FirebirdClient;
-
 using Microsoft.VisualStudio;
-
 
 
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
-public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResolver,
-		QueryManager qryMgr)
-	: AbstractQESQLExec(qryMgr), IBBatchSource, IBCommandExecuter, IBVariableResolver
+
+public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, IBVariableResolver
 {
+
+	public QEOLESQLExec(ResolveSqlCmdVariable sqlCmdVariableResolver, QueryManager qryMgr)
+		: base(qryMgr)
+	{
+		SqlCmdVariableResolver = sqlCmdVariableResolver;
+	}
+
+
+
 	public const int C_ReadBufferSizeInBytes = 1024;
 
 	public delegate string ResolveSqlCmdVariable(string variableName);
@@ -123,7 +129,7 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 
 	private AsyncCallback _readBufferCallback;
 
-	public ResolveSqlCmdVariable SqlCmdVariableResolver { get; set; } = sqlCmdVariableResolver;
+	public ResolveSqlCmdVariable SqlCmdVariableResolver { get; set; }
 
 	public GetCurrentWorkingDirectoryPath CurrentWorkingDirectoryPath { get; set; }
 
@@ -783,56 +789,6 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 	}
 
-	/*
-	private IDbConnection AttemptToEstablishCurConnection(Microsoft.SqlServer.Management.Common.SqlConnectionInfo ci)
-	{
-		// Tracer.Trace(GetType(), "QEOLESQLExec.AttemptToEstablishCurConnection", "ci = {0}", ci.ToString());
-		try
-		{
-			if (ci.ServerName == null || ci.ServerName.Length == 0 && _SSconn != null)
-			{
-				ci.DataSource = ((SqlConnection)_SSconn).DataSource;
-			}
-
-			if (ci.UserID != null && ci.UserID.Length != 0)
-			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.DataSource, ci.UserID));
-			}
-			else
-			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.DataSource));
-			}
-
-			ci.ApplicationName = "Microsoft SQL Server Data Tools, T-SQL Editor";
-			string connectionString = ci.ConnectionString;
-			connectionString += ";Pooling=false";
-			if (_encryptConnectionOptions)
-			{
-				connectionString += ";Encrypt=true";
-			}
-
-			if (_trustServerCertificateOption)
-			{
-				connectionString += ";TrustServerCertificate=true";
-			}
-
-			// Tracer.Warning(GetType(), "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
-			IDbConnection dbConnection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
-			dbConnection.Open();
-			SqlCmdNewConnectionOpenedEvent?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));
-
-			ProcessExecOptions(dbConnection);
-			SetRestoreConnectionOptions(bSet: true, dbConnection);
-			return dbConnection;
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			OnQEOLESQLErrorMessage(ControlsResources.ErrUnableToConnect, ex.Message, EnQESQLScriptProcessingMessageType.FatalError);
-			return null;
-		}
-	}
-	*/
 
 
 	private void RedirectOutputCallback(IAsyncResult ar)

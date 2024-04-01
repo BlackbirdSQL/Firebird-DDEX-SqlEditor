@@ -3,14 +3,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Management.Instrumentation;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.RpcContracts.FileSystem;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
@@ -167,23 +163,21 @@ internal static class ApcManager
 	/// Accessor to the singleton package instance as a service container.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IAsyncServiceContainer Services => (IAsyncServiceContainer)Instance.DdexPackage;
+	public static IAsyncServiceContainer Services => (IAsyncServiceContainer)Instance.PackageInstance;
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets the singleton DdexPackage instance
+	/// Gets the singleton PackageInstance instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IBAsyncPackage DdexPackage => Instance.DdexPackage;
+	public static IBAsyncPackage PackageInstance => Instance.PackageInstance;
 
-	public static IFileSystemProvider FileSystemBrokeredService => Instance.DdexPackage.FileSystemBrokeredService;
-
-	public static Type SchemaFactoryType => Instance.DdexPackage.SchemaFactoryType;
+	public static Type SchemaFactoryType => Instance.PackageInstance.SchemaFactoryType;
 
 	public static bool IdeShutdownState => AbstractPackageController.IdeShutdownState;
 
-	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance.DdexPackage;
+	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance.PackageInstance;
 
 	public static IVsTaskStatusCenterService StatusCenterService => Instance.StatusCenterService;
 
@@ -200,17 +194,14 @@ internal static class ApcManager
 		}
 	}
 
-	public static ServiceRpcDescriptor FileSystemRpcDescriptor2 =>
-		Instance.FileSystemRpcDescriptor2;
-
 	public static IDisposable DisposableWaitCursor
 	{
-		get { return DdexPackage.DisposableWaitCursor; }
-		set { DdexPackage.DisposableWaitCursor = value; }
+		get { return PackageInstance.DisposableWaitCursor; }
+		set { PackageInstance.DisposableWaitCursor = value; }
 	}
 
 	public static Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider
-		=> Instance.DdexPackage.OleServiceProvider;
+		=> Instance.PackageInstance.OleServiceProvider;
 
 	public static IVsMonitorSelection SelectionMonitor => Instance.SelectionMonitor;
 

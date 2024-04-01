@@ -364,7 +364,7 @@ StringCell^ SqlParser::Parse(StringCell^ root)
 			if (prev_category != "SHOW" && token_category == "FROM")
 			{
 				skip_next = 1;
-				retnode["OPTIONS"] = "FOR UPDATE"; // TODO: this could be generate problems within the position calculator
+				retnode["OPTIONS"] = "FOR UPDATE"; // TO DO: this could be generate problems within the position calculator
 				continue;
 			}
 
@@ -385,7 +385,7 @@ StringCell^ SqlParser::Parse(StringCell^ root)
 		else if (upper == "START")
 		{
 			trim = "BEGIN";
-			retnode[upper, 0] = upper; // TODO: this could be generate problems within the position calculator
+			retnode[upper, 0] = upper; // TO DO: this could be generate problems within the position calculator
 			skip_next = 1;
 
 		}
@@ -449,7 +449,7 @@ StringCell^ SqlParser::Parse(StringCell^ root)
 			if (token_category == "GROUP")
 			{
 				skip_next = 1;
-				retnode->Add("OPTIONS", "WITH ROLLUP"); // TODO: this could be generate problems within the position calculator
+				retnode->Add("OPTIONS", "WITH ROLLUP"); // TO DO: this could be generate problems within the position calculator
 				continue;
 			}
 			if (token_category == "")

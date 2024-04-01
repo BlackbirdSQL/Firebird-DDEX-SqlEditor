@@ -171,7 +171,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 
 		_Dependents = new Dictionary<string, bool>(model.PropertyWrappers.Count);
 
-		foreach (IBSettingsModelPropertyWrapper property in model.PropertyWrappers)
+		foreach (IBModelPropertyWrapper property in model.PropertyWrappers)
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{

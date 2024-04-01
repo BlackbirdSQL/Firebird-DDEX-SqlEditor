@@ -10,15 +10,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BlackbirdSql.BrokeredServices;
-using BlackbirdSql.BrokeredServices.ComponentModel;
-using BlackbirdSql.Common;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Ctl.ComponentModel;
-using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
@@ -26,23 +22,17 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.EditorExtension.Controls.Config;
 using BlackbirdSql.EditorExtension.Ctl;
 using BlackbirdSql.EditorExtension.Ctl.Config;
 using BlackbirdSql.EditorExtension.Properties;
-using Microsoft;
-using Microsoft.ServiceHub.Framework;
+using BlackbirdSql.LanguageExtension;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.RpcContracts.FileSystem;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell.ServiceBroker;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
 
@@ -92,9 +82,6 @@ namespace BlackbirdSql.EditorExtension;
 	SettingsProvider.SubCategoryName, SettingsProvider.ResultsSettingsPageName,
 	SettingsProvider.ResultsTextSettingsPageName, 300, 301, 326, 329)]
 
-[VsProvideFileSystemProvider(SystemData.Protocol, PackageData.FileSystemBrokeredServiceName,
-	PackageData.ServiceVersion2, IsDisplayInfoProvider = true, IsRemoteProvider = true,
-	Audience = (ServiceAudience.AllClientsIncludingGuests | ServiceAudience.PublicSdk | ServiceAudience.Process))]
 
 [VsProvideEditorFactory(typeof(EditorFactoryWithoutEncoding), 311, false, DefaultName = PackageData.ServiceName,
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
@@ -107,24 +94,25 @@ namespace BlackbirdSql.EditorExtension;
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.TextView_string)]
 [VsProvideFileExtensionMapping(typeof(EditorFactoryWithoutEncoding), PackageData.ServiceName, 311, 100)]
 
-[VsProvideEditorFactory(typeof(EditorFactoryWithEncoding), 312, false,
+[VsProvideEditorFactory(typeof(EditorFactoryWithEncoding), 317, false,
 	DefaultName = $"{PackageData.ServiceName} with Encoding",
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
 [ProvideEditorExtension(typeof(EditorFactoryWithEncoding), SystemData.Extension, 100,
-	DefaultName = $"{PackageData.ServiceName} with Encoding", NameResourceID = 312, RegisterFactory = true)]
+	DefaultName = $"{PackageData.ServiceName} with Encoding", NameResourceID = 317, RegisterFactory = true)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Code_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Designer_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.TextView_string)]
-[VsProvideFileExtensionMapping(typeof(EditorFactoryWithEncoding), $"{PackageData.ServiceName} with Encoding", 312, 96)]
+[VsProvideFileExtensionMapping(typeof(EditorFactoryWithEncoding), $"{PackageData.ServiceName} with Encoding", 317, 96)]
 
-[VsProvideEditorFactory(typeof(SqlResultsEditorFactory), 313, false,
+[VsProvideEditorFactory(typeof(SqlResultsEditorFactory), 312, false,
 	DefaultName = "BlackbirdSql Results", CommonPhysicalViewAttributes = 0)]
 [ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Code_string)]
 [ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Designer_string)]
 [ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.TextView_string)]
+
 
 
 #endregion Class Attributes
@@ -134,7 +122,7 @@ namespace BlackbirdSql.EditorExtension;
 // =========================================================================================================
 #region							EditorExtensionPackage Class Declaration
 // =========================================================================================================
-public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPackage,
+public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEditorPackage,
 	IVsTextMarkerTypeProvider, IVsFontAndColorDefaultsProvider, IVsBroadcastMessageEvents,
 	OleServiceProvider
 {
@@ -151,9 +139,9 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 
 	/// <summary>
-	/// Gets the singleton AbstractPackageController instance
+	/// Gets the singleton Package instance
 	/// </summary>
-	public static EditorExtensionPackage Instance
+	public static new EditorExtensionPackage Instance
 	{
 		get
 		{
@@ -172,9 +160,10 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	{
 		if (disposing)
 		{
-			// Tracer.Trace(GetType(), "Dispose()", "", null);
+			_CurrentDocData = null;
+			_CurrentAuxilliaryDocData = null;
 
-			((IDisposable)_FileSystemBrokeredService)?.Dispose();
+			// Tracer.Trace(GetType(), "Dispose()", "", null);
 
 			if (ThreadHelper.CheckAccess() && GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 			{
@@ -195,7 +184,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	#endregion Constructors / Destructors
 
 
 
@@ -208,16 +197,13 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
-#pragma warning disable ISB001 // Dispose of proxies
-	private IFileSystemProvider _FileSystemBrokeredService = null;
-#pragma warning restore ISB001 // Dispose of proxies
 
-	private Dictionary<object, AuxiliaryDocData> _AuxiliaryDocDataTable = null;
+	private Dictionary<object, AuxilliaryDocData> _AuxilliaryDocDataTable = null;
 
+	private object _CurrentDocData = null;
+	private AuxilliaryDocData _CurrentAuxilliaryDocData = null;
 
 	// private static readonly string _TName = typeof(EditorExtensionPackage).Name;
-	public const string BrokeredServiceName = PackageData.FileSystemBrokeredServiceName;
-	public const string BrokeredServiceVersion = PackageData.ServiceVersion2;
 
 	private readonly EditorEventsManager _EventsManager;
 	private uint _VsBroadcastMessageEventsCookie;
@@ -247,35 +233,9 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	public IBSqlEditorWindowPane LastFocusedSqlEditor { get; set; }
 
 
-	public override IFileSystemProvider FileSystemBrokeredService
-	{
-		get
-		{
-			// Fire and wait
-			if (_FileSystemBrokeredService != null)
-				return _FileSystemBrokeredService;
 
-			ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				IBrokeredServiceContainer brokeredServiceContainer =
-					await GetServiceAsync<SVsBrokeredServiceContainer, IBrokeredServiceContainer>();
 
-				Diag.ThrowIfServiceUnavailable(brokeredServiceContainer, typeof(IBrokeredServiceContainer));
-
-				IServiceBroker serviceBroker = brokeredServiceContainer.GetFullAccessServiceBroker();
-
-#pragma warning disable ISB001 // Dispose of proxies
-				_FileSystemBrokeredService = await serviceBroker.GetProxyAsync<IFileSystemProvider>(PackageData.FileSystemRpcDescriptor2, default);
-#pragma warning restore ISB001 // Dispose of proxies
-			});
-
-			return _FileSystemBrokeredService;
-		}
-	}
-
-	private FbsqlPlusFileSystemProvider FileSystemProvider => (FbsqlPlusFileSystemProvider)FileSystemBrokeredService;
-
-	public Dictionary<object, AuxiliaryDocData> AuxiliaryDocDataTable => _AuxiliaryDocDataTable ??= [];
+	public Dictionary<object, AuxilliaryDocData> AuxilliaryDocDataTable => _AuxilliaryDocDataTable ??= [];
 
 
 	public bool EnableSpatialResultsTab { get; set; }
@@ -304,17 +264,12 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	/// </summary>
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		ServiceProgressData progressData = new("Loading BlackbirdSql", "Loading FileSystemProvider", 1, 15);
-		progress.Report(progressData);
-
-		// Deprecated.
-		// await RegisterFileSystemProviderAsync();
-
-
-		progressData = new("Loading BlackbirdSql", "Done Loading FileSystemProvider", 2, 15);
-		progress.Report(progressData);
+		Progress(progress, "InitialIzing Editor ...");
 
 		await base.InitializeAsync(cancellationToken, progress);
+
+		Progress(progress, "InitialIzing Editor ... Done.");
+
 	}
 
 
@@ -333,20 +288,24 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
+
+		Progress(progress, "Finalizing Editor initialization...");
+
 		await base.FinalizeAsync(cancellationToken, progress);
 
-		ServiceProgressData progressData = new("Loading BlackbirdSql", "Finalizing: Proffering Editor Services", 9, 12);
-		progress.Report(progressData);
+
+
+		Progress(progress, "Finalizing: Proffering Editor Services...");
 
 		await RegisterOleCommandsAsync();
 
 		if (await GetServiceAsync(typeof(IProfferService)) is not IProfferService profferSvc)
 			throw Diag.ExceptionService(typeof(IProfferService));
 
-		Guid rguidMarkerService = LibraryData.CLSID_EditorMarkerService;
+		Guid rguidMarkerService = PackageData.CLSID_EditorMarkerService;
 		___(profferSvc.ProfferService(ref rguidMarkerService, this, out _MarkerServiceCookie));
 
-		Guid rguidService = LibraryData.CLSID_FontAndColorService;
+		Guid rguidService = PackageData.CLSID_FontAndColorService;
 		___(profferSvc.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
 
 
@@ -354,11 +313,11 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 		// ServiceContainer.AddService(typeof(IBDesignerOnlineServices), ServicesCreatorCallbackAsync, promote: true);
 		// Services.AddService(typeof(ISqlEditorStrategyProvider), ServicesCreatorCallbackAsync, promote: true);
 
-		progressData = new("Loading BlackbirdSql", "Finalizing: Done Proffering Editor Services", 10, 15);
-		progress.Report(progressData);
+		Progress(progress, "Finalizing: Proffering Editor Services... Done.");
 
-		progressData = new("Loading BlackbirdSql", "Finalizing: Registering Editor Factories", 10, 15);
-		progress.Report(progressData);
+
+
+		Progress(progress, "Finalizing: Registering Editor Factories...");
 
 		_SqlEditorFactory = new EditorFactoryWithoutEncoding();
 		_SqlEditorFactoryWithEncoding = new EditorFactoryWithEncoding();
@@ -371,16 +330,19 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 		___((GetGlobalService(typeof(SVsShell)) as IVsShell).AdviseBroadcastMessages(this, out _VsBroadcastMessageEventsCookie));
 
-		progressData = new("Loading BlackbirdSql", "Finalizing: Done Registering Editor Factories", 11, 15);
-		progress.Report(progressData);
+		Progress(progress, "Finalizing: Registering Editor Factories... Done.");
 
-		progressData = new("Loading BlackbirdSql", "Finalizing: Initializing Tabbed Toolbar Manager", 11, 15);
-		progress.Report(progressData);
+
+
+		Progress(progress, "Finalizing: Initializing Tabbed Toolbar Manager...");
 
 		InitializeTabbedEditorToolbarHandlerManager();
 
-		progressData = new("Loading BlackbirdSql", "Finalizing: Done Initializing Tabbed Toolbar Manager", 13, 15);
-		progress.Report(progressData);
+		Progress(progress, "Finalizing: Initializing Tabbed Toolbar Manager... Done.");
+
+
+
+		Progress(progress, "Finalizing Editor initialization... Done.");
 
 	}
 
@@ -462,20 +424,25 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	// =========================================================================================================
 
 
-	public bool ContainsEditorStatus(object docData)
+	public bool AuxilliaryDocDataExists(object docData)
 	{
 		lock (_LockLocal)
 		{
-			if (docData == null || _AuxiliaryDocDataTable == null)
-			{
-				return false;
-			}
-
-			if (_AuxiliaryDocDataTable == null)
+			if (docData == null || _AuxilliaryDocDataTable == null)
 				return false;
 
-			if (_AuxiliaryDocDataTable.ContainsKey(docData))
+			if (_CurrentDocData != null && object.ReferenceEquals(docData, _CurrentDocData))
 				return true;
+
+			if (AuxilliaryDocData.GetUserDataAuxilliaryDocData(docData) != null)
+				return true;
+
+			// Sanity check
+			if (_AuxilliaryDocDataTable.TryGetValue(docData, out AuxilliaryDocData value))
+			{
+				AuxilliaryDocData.SetUserDataAuxilliaryDocData(docData, value);
+				return true;
+			}
 		}
 
 		return false;
@@ -487,53 +454,79 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	{
 		lock (_LockLocal)
 		{
-			if (_AuxiliaryDocDataTable == null || !_AuxiliaryDocDataTable.TryGetValue(docData, out AuxiliaryDocData auxDocData))
+			if (AuxilliaryDocDataExists(docData))
+				return;
+
+
+			// Accessing the stack and pop.
+			string explorerMoniker = RdtManager.InflightMonikerStack;
+
+			// Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()", "explorerMoniker: {0}, documentMoniker: {1}.", explorerMoniker, documentMoniker);
+
+			AuxilliaryDocData auxDocData = new AuxilliaryDocData(documentMoniker, explorerMoniker, docData);
+			// hierarchy.GetSite(out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP);
+
+			if (explorerMoniker != null && RdtManager.InflightMonikerCsbTable.TryGetValue(explorerMoniker, out object csaObject))
 			{
-				// Accessing the stack and pop.
-				string explorerMoniker = RdtManager.ExplorerMonikerStack;
-
-				// Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()", "explorerMoniker: {0}, documentMoniker: {1}.", explorerMoniker, documentMoniker);
-
-				auxDocData = new AuxiliaryDocData(documentMoniker, explorerMoniker, docData);
-				// hierarchy.GetSite(out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP);
-
-				if (explorerMoniker != null && RdtManager.MonikerCsaTable.TryGetValue(explorerMoniker, out object csaObject))
-				{
-					auxDocData.SetUserDataCsb((System.Data.Common.DbConnectionStringBuilder)csaObject);
-					RdtManager.MonikerCsaTable[explorerMoniker] = null;
-				}
-				// Not point looking because This will always be null for us
-				IBSqlEditorStrategyProvider sqlEditorStrategyProvider = null;
-				// ISqlEditorStrategyProvider sqlEditorStrategyProvider = new ServiceProvider(ppSP).GetService(typeof(ISqlEditorStrategyProvider)) as ISqlEditorStrategyProvider;
-
-				// We always use DefaultSqlEditorStrategy and use the csb passed via userdata that was
-				// contructed from the SE node
-				IBSqlEditorStrategy sqlEditorStrategy = (sqlEditorStrategyProvider == null
-					? new DefaultSqlEditorStrategy(auxDocData.GetUserDataCsb())
-					: sqlEditorStrategyProvider.CreateEditorStrategy(documentMoniker, auxDocData));
-
-				auxDocData.Strategy = sqlEditorStrategy;
-				if (auxDocData.Strategy.IsDw)
-					auxDocData.IntellisenseEnabled = false;
-
-				AuxiliaryDocDataTable.Add(docData, auxDocData);
+				auxDocData.UserDataCsb = (System.Data.Common.DbConnectionStringBuilder)csaObject;
+				RdtManager.InflightMonikerCsbTable[explorerMoniker] = null;
 			}
+
+			// No point looking because This will always be null for us
+
+			// IBSqlEditorStrategyProvider sqlEditorStrategyProvider = null;
+			// ISqlEditorStrategyProvider sqlEditorStrategyProvider = new ServiceProvider(ppSP).GetService(typeof(ISqlEditorStrategyProvider)) as ISqlEditorStrategyProvider;
+
+			// We always use DefaultSqlEditorStrategy and use the csb passed via userdata that was
+			// constructed from the SE node
+			IBSqlEditorStrategy sqlEditorStrategy = new DefaultSqlEditorStrategy(auxDocData.UserDataCsb);
+
+			auxDocData.Strategy = sqlEditorStrategy;
+			if (auxDocData.Strategy.IsDw)
+				auxDocData.IntellisenseEnabled = false;
+
+			AuxilliaryDocDataTable.Add(docData, auxDocData);
+
+			AuxilliaryDocData.SetUserDataAuxilliaryDocData(docData, auxDocData);
+
+			// Set as the current for performance.
+			_CurrentDocData = docData;
+			_CurrentAuxilliaryDocData = auxDocData;
+
 		}
 	}
 
 
 
-	public AuxiliaryDocData GetAuxiliaryDocData(object docData)
+	public AuxilliaryDocData GetAuxilliaryDocData(object docData)
 	{
 		lock (_LockLocal)
 		{
-			if (docData == null || _AuxiliaryDocDataTable == null)
+			if (docData == null || _AuxilliaryDocDataTable == null)
 				return null;
 
-			_AuxiliaryDocDataTable.TryGetValue(docData, out AuxiliaryDocData value);
+			if (_CurrentDocData != null && object.ReferenceEquals(docData, _CurrentDocData))
+				return _CurrentAuxilliaryDocData;
+
+			AuxilliaryDocData value = AuxilliaryDocData.GetUserDataAuxilliaryDocData(docData);
+
+			if (value == null)
+			{
+				// Sanity check
+				if (_AuxilliaryDocDataTable.TryGetValue(docData, out value))
+					AuxilliaryDocData.SetUserDataAuxilliaryDocData(docData, value);
+			}
+
+			if (value != null)
+			{
+				_CurrentDocData = docData;
+				_CurrentAuxilliaryDocData = value;
+			}
+
 			return value;
 		}
 	}
+
 
 
 
@@ -594,7 +587,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	public bool HasAnyAuxillaryDocData()
 	{
 		lock (_LockLocal)
-			return _AuxiliaryDocDataTable != null && _AuxiliaryDocDataTable.Count > 0;
+			return _AuxilliaryDocDataTable != null && _AuxilliaryDocDataTable.Count > 0;
 	}
 
 
@@ -651,57 +644,21 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 	int OleServiceProvider.QueryService(ref Guid serviceGuid, ref Guid interfaceGuid, out IntPtr service)
 	{
-		if (interfaceGuid == typeof(IVsTextMarkerTypeProvider).GUID && serviceGuid == LibraryData.CLSID_EditorMarkerService)
+		if (interfaceGuid == typeof(IVsTextMarkerTypeProvider).GUID && serviceGuid == PackageData.CLSID_EditorMarkerService)
 		{
 			GetServicePointer(interfaceGuid, this, out service);
 			return VSConstants.S_OK;
 		}
 
-		if (interfaceGuid == typeof(IVsFontAndColorDefaultsProvider).GUID && serviceGuid == LibraryData.CLSID_FontAndColorService)
-		{
-			GetServicePointer(interfaceGuid, this, out service);
-			return VSConstants.S_OK;
-		}
-
-		if (interfaceGuid == typeof(IVsTextMarkerTypeProvider).GUID && serviceGuid == LibraryData.CLSID_EditorMarkerService)
+		if (interfaceGuid == typeof(IVsFontAndColorDefaultsProvider).GUID && serviceGuid == PackageData.CLSID_FontAndColorService)
 		{
 			GetServicePointer(interfaceGuid, this, out service);
 			return VSConstants.S_OK;
 		}
 
 		service = (IntPtr)0;
+
 		return VSConstants.E_NOINTERFACE;
-	}
-
-
-
-	private async Task<bool> RegisterFileSystemProviderAsync()
-	{
-
-		IComponentModel componentModelSvc = await GetServiceAsync<SComponentModel, IComponentModel>();
-		Assumes.Present(componentModelSvc);
-		componentModelSvc.DefaultCompositionService.SatisfyImportsOnce(this);
-
-
-		IBrokeredServiceContainer brokeredServiceContainer = await GetServiceAsync<SVsBrokeredServiceContainer, IBrokeredServiceContainer>();
-		Assumes.Present(brokeredServiceContainer);
-
-		Assumes.Present(JoinableTaskContext);
-		JoinableTaskContext joinableTaskContext2 = JoinableTaskContext;
-
-
-		Func<Task<IVsAsyncFileChangeEx>> fileChangeSvc = GetServiceAsync<SVsFileChangeEx, IVsAsyncFileChangeEx>;
-		Assumes.Present(fileChangeSvc);
-		Func<Task<IVsAsyncFileChangeEx>> fileChangeSvc2 = fileChangeSvc;
-
-
-		IDisposable disposable2 = brokeredServiceContainer.Proffer(PackageData.FileSystemRpcDescriptor2,
-			(ServiceMoniker moniker, ServiceActivationOptions options, IServiceBroker broker, CancellationToken token) =>
-				new ValueTask<object>(new FbsqlPlusFileSystemProvider(fileChangeSvc2, joinableTaskContext2, true)));
-
-
-		return true;
-
 	}
 
 
@@ -736,35 +693,27 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 
 
-	public void RemoveEditorStatus(object docData)
+	public void RemoveAuxilliaryDocData(object docData)
 	{
 		lock (_LockLocal)
 		{
-			if (_AuxiliaryDocDataTable == null)
+			if (_AuxilliaryDocDataTable == null)
 				return;
 
-			if (_AuxiliaryDocDataTable.TryGetValue(docData, out AuxiliaryDocData auxDocData))
+			if (_AuxilliaryDocDataTable.TryGetValue(docData, out AuxilliaryDocData auxDocData))
 			{
-				Guid clsidUserData = typeof(IVsUserData).GUID;
-				IVsUserData vsUserData = docData as IVsUserData;
+				if (auxDocData.ExplorerMoniker != null)
+					RdtManager.InflightMonikerCsbTable.Remove(auxDocData.ExplorerMoniker);
 
-				vsUserData.GetData(ref clsidUserData, out object objData);
-
-				string moniker = objData as string;
-
-				if (_FileSystemBrokeredService != null
-					&& FileSystemProvider.Unwatch(moniker)
-					&& FileSystemProvider.WatchedFileSystemEntries.Count == 0)
+				if (_CurrentDocData != null && ReferenceEquals(docData, _CurrentDocData))
 				{
-					FileSystemProvider.Dispose();
-					_FileSystemBrokeredService = null;
+					_CurrentDocData = null;
+					_CurrentAuxilliaryDocData = null;
 				}
 
+				AuxilliaryDocData.SetUserDataAuxilliaryDocData(docData, null);
 
-				if (auxDocData.ExplorerMoniker != null)
-					RdtManager.MonikerCsaTable.Remove(auxDocData.ExplorerMoniker);
-
-				_AuxiliaryDocDataTable.Remove(docData);
+				_AuxilliaryDocDataTable.Remove(docData);
 				auxDocData?.Dispose();
 			}
 		}
@@ -776,41 +725,22 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	{
 		lock (_LockLocal)
 		{
-			if (_AuxiliaryDocDataTable == null || !_AuxiliaryDocDataTable.TryGetValue(docData, out var value))
+			AuxilliaryDocData auxDocData = GetAuxilliaryDocData(docData);
+
+			if (auxDocData == null)
 			{
 				ArgumentException ex = new("No auxillary information for DocData");
 				Diag.Dug(ex);
 				throw ex;
 			}
 
-			value.Strategy = strategy;
+			auxDocData.Strategy = strategy;
 		}
 	}
 
 
 
-	public bool? ShowConnectionDialogFrame(IntPtr parent, EventsChannel channel,
-		ConnectionPropertyAgent ci, VerifyConnectionDelegate verifierDelegate, ConnectionDialogConfiguration config,
-		ref ConnectionPropertyAgent connectionInfo)
-	{
-		// Tracer.Trace(GetType(), "ShowConnectionDialogFrame()");
-
-		/*
-		ConnectionDialogFrame connectionDialogFrame = new ConnectionDialogFrame(channel, ci, verifierDelegate, config);
-
-		connectionDialogFrame.ShowModal(parent);
-		connectionInfo = connectionDialogFrame.ConnectionInfo;
-		connectionDialogFrame.ViewModel.CloseSections();
-
-		return connectionDialogFrame.DialogResult;
-		*/
-
-		return false;
-	}
-
-
-
-	public DialogResult ShowExecutionSettingsDialogFrame(AuxiliaryDocData auxDocData,
+	public DialogResult ShowExecutionSettingsDialogFrame(AuxilliaryDocData auxDocData,
 		FormStartPosition startPosition)
 	{
 		// Tracer.Trace(GetType(), "ShowExecutionSettingsDialogFrame()");
@@ -850,7 +780,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 		IVsUIShellOpenDocument shellOpenDocumentSvc = ApcInstance.EnsureService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 
-		
+
 		Guid rguidEditorType = new(SystemData.MandatedSqlEditorFactoryGuid);
 		uint[] pitemidOpen = new uint[1];
 		IVsUIHierarchy pHierCaller = null;
@@ -876,7 +806,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 			out _, out pitemidOpen[0], out IVsWindowFrame ppWindowFrame, out int pfOpen);
 
 
-		if (!ErrorHandler.Succeeded(hresult) || !pfOpen.AsBool() || ppWindowFrame == null)
+		if (!__(hresult) || !pfOpen.AsBool() || ppWindowFrame == null)
 		{
 			Diag.Dug(new COMException($"Failed to find window frame for moniker {mkDocument} using document cookie {docCookie}."));
 			tabbedEditorService = null;
@@ -884,7 +814,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 		}
 
 
-		if (!Native.Succeeded(ppWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
+		if (!__(ppWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
 		{
 			Diag.Dug(new COMException($"Failed to get window frame DocView property for moniker {mkDocument} using document cookie {docCookie}."));
 			tabbedEditorService = null;
@@ -913,7 +843,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 
 	// =========================================================================================================
-	#region Event handlers - BlackbirdSqlDdexExtension
+	#region Event handlers - EditorExtensionPackage
 	// =========================================================================================================
 
 
@@ -969,7 +899,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 			if (lastFocusedSqlEditor != null)
 			{
 				new SqlEditorNewQueryCommand(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
-				GetAuxiliaryDocData(lastFocusedSqlEditor.DocData).IsVirtualWindow = true;
+				GetAuxilliaryDocData(lastFocusedSqlEditor.DocData).IsVirtualWindow = true;
 			}
 		}
 	}
@@ -978,14 +908,15 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 	private void OnPowerBroadcast(IntPtr wParam, IntPtr lParam)
 	{
-		if ((int)wParam != 4 || _AuxiliaryDocDataTable == null)
+		if ((int)wParam != 4 || _AuxilliaryDocDataTable == null)
 		{
 			return;
 		}
 
-		foreach (AuxiliaryDocData value in _AuxiliaryDocDataTable.Values)
+		foreach (AuxilliaryDocData value in _AuxilliaryDocDataTable.Values)
 		{
 			QueryManager qryMgr = value.QryMgr;
+
 			if (qryMgr != null && qryMgr.IsConnected)
 			{
 				qryMgr.ConnectionStrategy.Transaction?.Dispose();

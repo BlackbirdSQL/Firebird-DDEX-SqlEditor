@@ -486,12 +486,13 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			___(vsTextStream.CanReplaceStream(startPosition, count, length));
 			count = Math.Min(count, textLength);
 			changingText = true;
+
 			try
 			{
 				IntPtr intPtr = Marshal.StringToCoTaskMemUni(text);
 				try
 				{
-					if (Core.Native.Failed(vsTextStream.ReplaceStream(startPosition, count, intPtr, text.Length)))
+					if (!__(vsTextStream.ReplaceStream(startPosition, count, intPtr, text.Length)))
 					{
 						Exception ex = new("Couldn't replace text");
 						throw ex;

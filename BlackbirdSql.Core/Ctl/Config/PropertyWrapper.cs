@@ -49,11 +49,11 @@ namespace BlackbirdSql.Core.Ctl.Config;
 //     in Google's Protocol Buffers.
 public class PropertyWrapper : IBSettingsModelPropertyWrapper
 {
-	public sealed class OrderComparer : IComparer<IBSettingsModelPropertyWrapper>
+	public sealed class OrderComparer : IComparer<IBModelPropertyWrapper>
 	{
 		public static readonly OrderComparer Default = new OrderComparer();
 
-		public int Compare(IBSettingsModelPropertyWrapper x, IBSettingsModelPropertyWrapper y)
+		public int Compare(IBModelPropertyWrapper x, IBModelPropertyWrapper y)
 		{
 			return x.DisplayOrder - y.DisplayOrder;
 		}
@@ -301,8 +301,9 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	//     The delegate to get a value, as described above.
 	private static Func<SettingsStore, string, string, object> CreateSettingsStoreGetMethod<T>(MethodInfo mi)
 	{
-		Func<SettingsStore, string, string, T> func = (Func<SettingsStore, string, string, T>)Delegate.CreateDelegate(typeof(Func<SettingsStore, string, string, T>), mi, throwOnBindFailure: true);
-		return (settingsStore, collectionName, propertyName) => func(settingsStore, collectionName, propertyName);
+		Func<SettingsStore, string, string, T> localfunc = (Func<SettingsStore, string, string, T>)Delegate.CreateDelegate(typeof(Func<SettingsStore, string, string, T>), mi, throwOnBindFailure: true);
+
+		return (settingsStore, collectionName, propertyName) => localfunc(settingsStore, collectionName, propertyName);
 	}
 
 	//
@@ -441,8 +442,9 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	//     A delegate as described above.
 	private static Func<object, object> PropertyGetHelper<TTarget, TReturn>(MethodInfo method)
 	{
-		Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)Delegate.CreateDelegate(typeof(Func<TTarget, TReturn>), method);
-		return (target) => func((TTarget)target);
+		Func<TTarget, TReturn> localfunc = (Func<TTarget, TReturn>)Delegate.CreateDelegate(typeof(Func<TTarget, TReturn>), method);
+
+		return (target) => localfunc((TTarget)target);
 	}
 
 	//

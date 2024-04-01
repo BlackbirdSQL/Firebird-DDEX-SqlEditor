@@ -92,7 +92,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 	}
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 

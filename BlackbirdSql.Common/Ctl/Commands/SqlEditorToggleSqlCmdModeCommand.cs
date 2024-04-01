@@ -30,15 +30,16 @@ public class SqlEditorToggleSqlCmdModeCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
-		if (qryMgrForEditor != null)
+		QueryManager qryMgr = QryMgr;
+
+		if (qryMgr != null)
 		{
 			if (!IsEditorExecuting())
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}
 
-			if (qryMgrForEditor.IsWithOleSQLScripting)
+			if (qryMgr.IsWithOleSQLScripting)
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 			}
@@ -49,10 +50,11 @@ public class SqlEditorToggleSqlCmdModeCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
-		if (qryMgrForEditor != null)
+		QueryManager qryMgr = QryMgr;
+
+		if (qryMgr != null)
 		{
-			qryMgrForEditor.IsWithOleSQLScripting = !qryMgrForEditor.IsWithOleSQLScripting;
+			qryMgr.IsWithOleSQLScripting = !qryMgr.IsWithOleSQLScripting;
 		}
 
 		return VSConstants.S_OK;

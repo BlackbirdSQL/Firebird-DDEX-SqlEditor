@@ -46,8 +46,8 @@ public class SqlEditorExecuteTtsQueryCommand : AbstractSqlEditorCommand
 
 	protected bool ShouldRunCommand()
 	{
-		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+		QueryManager qryMgr = QryMgr;
 
-		return (qryMgrForEditor != null && !qryMgrForEditor.IsExecuting);
+		return (qryMgr != null && !qryMgr.IsExecuting);
 	}
 }

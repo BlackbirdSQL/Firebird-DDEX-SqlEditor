@@ -19,7 +19,7 @@ namespace BlackbirdSql.EditorExtension.Ctl.Config;
 // =========================================================================================================
 public class SettingsProvider
 {
-	public const string CategoryName = "BlackbirdSql Server Tools";
+	public const string CategoryName = "BlackbirdSQL Server Tools";
 	public const string SubCategoryName = "SqlEditor";
 	public const string GeneralSettingsPageName = "General";
 	public const string TabAndStatusBarSettingsPageName = "Editor Tab and Status Bar";

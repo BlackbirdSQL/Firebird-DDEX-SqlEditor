@@ -9,7 +9,7 @@ namespace BlackbirdSql.Common.Controls.Graphing.Enums;
 
 [Serializable]
 [GeneratedCode("xsd", "4.8.3928.0")]
-[XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan")]
+[XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
 public enum EnCursorPlanTypeOperationOperationType
 {
 	FetchQuery,

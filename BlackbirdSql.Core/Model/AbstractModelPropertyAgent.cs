@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
@@ -7,16 +6,18 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Windows.Media.Imaging;
-
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Properties;
-
 using FirebirdSql.Data.FirebirdClient;
 
 
+
 namespace BlackbirdSql.Core.Model;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor")]
+
 
 // =========================================================================================================
 //										AbstractModelPropertyAgent Class
@@ -48,36 +49,35 @@ namespace BlackbirdSql.Core.Model;
 /// descriptors. <see cref="ICustomTypeDescriptor"/> members will still need to be overloaded.
 /// </remarks>
 // =========================================================================================================
-public abstract class AbstractModelPropertyAgent(IBEventsChannel channel, IBPropertyAgent rhs,
-		bool generateNewId)
-	: AbstractPropertyAgent(channel, rhs, generateNewId)
+public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - AbstractModelPropertyAgent
+	#region Constructors / Destructors - AbstractModelPropertyAgent
 	// ---------------------------------------------------------------------------------
 
-
-	public AbstractModelPropertyAgent(IBPropertyAgent rhs, bool generateNewId) : this(null, rhs, generateNewId)
-	{
-	}
-
-	public AbstractModelPropertyAgent(bool generateNewId) : this(null, null, generateNewId)
+	public AbstractModelPropertyAgent(IBPropertyAgent rhs, bool generateNewId)
+		: base (rhs, generateNewId)
 	{
 	}
 
 
-	public AbstractModelPropertyAgent() : this(null, null, true)
+	public AbstractModelPropertyAgent(bool generateNewId) : this(null, generateNewId)
 	{
 	}
 
 
-	public AbstractModelPropertyAgent(IBPropertyAgent rhs) : this(null, rhs, true)
+	public AbstractModelPropertyAgent() : this(null, true)
+	{
+	}
+
+
+	public AbstractModelPropertyAgent(IBPropertyAgent rhs) : this(rhs, true)
 	{
 	}
 
 	public AbstractModelPropertyAgent(string server, int port, string database, string userId, string password)
-		: this(null, null, true)
+		: this(null, true)
 	{
 		DataSource = server;
 		Port = port;

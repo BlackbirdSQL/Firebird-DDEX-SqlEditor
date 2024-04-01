@@ -57,7 +57,7 @@ public static class FormHost
 	}
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 

@@ -62,7 +62,7 @@ public static class Diag
 	static Guid _OutputPaneGuid = default;
 
 
-#endregion Fields
+	#endregion Fields
 
 
 
@@ -654,7 +654,21 @@ public static class Diag
 
 		message += (message != "" ? Environment.NewLine : "") + "INFORMATION TRACE: " + Environment.StackTrace.ToString();
 
-		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+		lock (_LockGlobal)
+			_InternalActive++;
+
+		_IgnoreSettings++;
+
+		try
+		{
+			Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+		}
+		catch { }
+
+		_IgnoreSettings--;
+
+		lock (_LockGlobal)
+			_InternalActive--;
 
 	}
 
@@ -1080,48 +1094,28 @@ public static class Diag
 		value ??= string.Empty;
 
 
-		if (_OutputPane is IVsOutputWindowPaneNoPump noPump)
+		try
 		{
-			try
-			{
+			if (_OutputPane is IVsOutputWindowPaneNoPump noPump)
 				noPump.OutputStringNoPump(value + Environment.NewLine);
-			}
-			catch (Exception ex)
-			{
-				if (_IgnoreSettings == 0)
-				{
-
-					lock (_LockGlobal)
-					{
-						_TaskLogActive++;
-						Dug(ex);
-						_TaskLogActive--;
-					}
-				}
-
-				throw ex;
-			}
-		}
-		else
-		{
-			try
-			{
+			else
 				_OutputPane.OutputStringThreadSafe(value + Environment.NewLine);
-			}
-			catch (Exception ex)
-			{
-				if (_IgnoreSettings == 0)
-				{
-					lock (_LockGlobal)
-					{
-						_TaskLogActive++;
-						Dug(ex);
-						_TaskLogActive--;
-					}
-				}
 
-				throw ex;
+		}
+		catch (Exception ex)
+		{
+			if (_IgnoreSettings == 0)
+			{
+
+				lock (_LockGlobal)
+				{
+					_TaskLogActive++;
+					Dug(ex);
+					_TaskLogActive--;
+				}
 			}
+
+			throw ex;
 		}
 
 		if (isException && _OutputPane != null)
@@ -1209,6 +1203,6 @@ public static class Diag
 		}
 	}
 
-#endregion Methods
+	#endregion Methods
 
 }

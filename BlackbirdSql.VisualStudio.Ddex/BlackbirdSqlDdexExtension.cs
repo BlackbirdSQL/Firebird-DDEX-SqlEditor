@@ -1,7 +1,6 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
 using System;
 using System.Data.Common;
 using System.Threading;
@@ -61,7 +60,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 // 'Help About' registration. productName & productDetails resource integers must be prefixed with #.
-[InstalledProductRegistration("#100", "#102", "11.2.0.3", IconResourceID = 400)]
+[InstalledProductRegistration("#100", "#102", Vsix.Version, IconResourceID = 400)]
 
 
 // We start loading as soon as the VS shell is available.
@@ -259,10 +258,22 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// ---------------------------------------------------------------------------------
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
+		Progress(progress, "Initializing extension...");
+
+
+		Progress(progress, "Propagating user settings...");
+
+		// Load all packages settings models and propogate throughout the extension hierarchy.
+		PropagateSettings();
+
+		Progress(progress, "Propagating user settings... Done.");
+
+
 		await base.InitializeAsync(cancellationToken, progress);
 
-		ServiceProgressData progressData = new("Loading BlackbirdSql", "Loading DDEX Provider Factories", 5, 15);
-		progress.Report(progressData);
+
+
+		Progress(progress, "Registering DDEX Provider services...");
 
 		if (ApcManager.IdeShutdownState)
 			return;
@@ -272,17 +283,18 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		ServiceContainer.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
 		ServiceContainer.AddService(typeof(IBDataConnectionDlgHandler), ServicesCreatorCallbackAsync, promote: true);
 
-		progressData = new("Loading BlackbirdSql", "Done Loading DDEX Provider Factories", 6, 15);
-		progress.Report(progressData);
+		Progress(progress, "Registering DDEX Provider services... Done.");
+		
 
 
 		// Perform any final initialization tasks.
 		// It is the final descendent package class's responsibility to initiate the call to FinalizeAsync.
 		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
+		Progress(progress, "Initialization phase complete.");
+
 		// We are the final descendent package class so call FinalizeAsync().
 		await FinalizeAsync(cancellationToken, progress);
-
 
 	}
 
@@ -303,21 +315,14 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
-		ServiceProgressData progressData = new("Loading BlackbirdSql", "Finalizing: Propagating User Settings", 7, 15);
-		progress.Report(progressData);
 
-
-		// Load all packages settings models and propogate throughout the extension hierarchy.
-		PropagateSettings();
-
-		progressData = new("Loading BlackbirdSql", "Finalizing: Done Propagating User Settings", 8, 15);
-		progress.Report(progressData);
+		Progress(progress, "Finalizing...");
+	
 
 		// Descendents have completed their final async initialization now we perform ours.
 		await base.FinalizeAsync(cancellationToken, progress);
 
-		progressData = new("Loading BlackbirdSql", "Finalizing: Load completed", 15, 15);
-		progress.Report(progressData);
+		Progress(progress, "Loading completed.");
 
 	}
 

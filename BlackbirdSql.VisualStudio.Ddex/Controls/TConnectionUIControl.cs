@@ -1425,6 +1425,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		if (RctManager.ShutdownState)
 			return;
 
+
 		if (ConnectionSource == EnConnectionSource.Application || !_HandleVerification
 			|| (ConnectionSource == EnConnectionSource.EntityDataModel && !_HandleNewInternally
 			&& !_HandleModifyInternally))

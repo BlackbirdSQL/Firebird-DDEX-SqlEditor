@@ -121,7 +121,7 @@ public class PropagateSettingsEventArgs : EventArgs
 		Arguments.Add(pair);
 	}
 
-	public void Add(IBSettingsModel model, IBSettingsModelPropertyWrapper wrapper)
+	public void Add(IBSettingsModel model, IBModelPropertyWrapper wrapper)
 	{
 		object value = wrapper.WrappedPropertyGetMethod(model);
 		Arguments.Add(new MutablePair<string, object>(model.LivePrefix + wrapper.PropertyName, value));
@@ -155,7 +155,10 @@ public class PropagateSettingsEventArgs : EventArgs
 
 	public void AddRange(IBSettingsModel model)
 	{
-		foreach (IBSettingsModelPropertyWrapper wrapper in model.PropertyWrappers)
+		if (model == null)
+			return;
+
+		foreach (IBModelPropertyWrapper wrapper in model.PropertyWrappersEnumeration)
 		{
 			Add(model, wrapper);
 		}

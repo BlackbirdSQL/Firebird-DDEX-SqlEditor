@@ -68,31 +68,26 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	/// <summary>
 	/// Universal .ctor
 	/// </summary>
-	public AbstractPropertyAgent(IBEventsChannel channel, IBPropertyAgent rhs, bool generateNewId)
+	public AbstractPropertyAgent(IBPropertyAgent rhs, bool generateNewId)
 	{
 		rhs?.CopyTo(this);
-
-		_Channel = channel;
 
 		if (generateNewId)
 			_Id = NewId();
 	}
 
-	public AbstractPropertyAgent(IBPropertyAgent rhs, bool generateNewId) : this(null, rhs, generateNewId)
-	{
-	}
 
-	public AbstractPropertyAgent(bool generateNewId) : this(null, null, generateNewId)
-	{
-	}
-
-
-	public AbstractPropertyAgent() : this(null, null, false)
+	public AbstractPropertyAgent(bool generateNewId) : this(null, generateNewId)
 	{
 	}
 
 
-	public AbstractPropertyAgent(IBPropertyAgent rhs) : this(null, rhs, false)
+	public AbstractPropertyAgent() : this(null, false)
+	{
+	}
+
+
+	public AbstractPropertyAgent(IBPropertyAgent rhs) : this(rhs, false)
 	{
 	}
 
@@ -426,8 +421,6 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		{
 			lhs.SetProperty(pair.Key, pair.Value);
 		}
-
-		lhs.Channel = Channel;
 	}
 
 

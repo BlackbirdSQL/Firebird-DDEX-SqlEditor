@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Model.Enums;
 using EnvDTE;
-using Microsoft.ServiceHub.Framework;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -94,11 +92,9 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 
 	string UserDataDirectory { get; }
 
-	IBAsyncPackage DdexPackage { get; set; }
+	IBAsyncPackage PackageInstance { get; }
 
 	DTE Dte { get; }
-
-	ServiceRpcDescriptor FileSystemRpcDescriptor2 { get; }
 
 	object SolutionObject { get; }
 

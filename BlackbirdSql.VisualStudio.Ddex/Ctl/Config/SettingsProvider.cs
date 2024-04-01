@@ -18,7 +18,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 // =========================================================================================================
 public class SettingsProvider
 {
-	public const string CategoryName = "BlackbirdSql Server Tools";
+	public const string CategoryName = "BlackbirdSQL Server Tools";
 	public const string SubCategoryName = "Ddex Provider";
 	public const string GeneralSettingsPageName = "General";
 	public const string DebugSettingsPageName = "Debugging";

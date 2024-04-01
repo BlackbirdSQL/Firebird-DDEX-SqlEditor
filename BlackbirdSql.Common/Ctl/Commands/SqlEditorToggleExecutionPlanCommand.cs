@@ -28,41 +28,36 @@ public class SqlEditorToggleExecutionPlanCommand : AbstractSqlEditorCommand
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+
 		if (IsDwEditorConnection())
 		{
 			if (auxDocData != null)
-			{
 				auxDocData.ActualExecutionPlanEnabled = false;
-			}
 
 			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 		}
 
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		if (auxDocData != null)
-		{
-			if (!IsEditorExecuting())
-			{
-				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-			}
 
-			if (auxDocData.ActualExecutionPlanEnabled)
-			{
-				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
-			}
-		}
+		if (auxDocData == null)
+			return VSConstants.S_OK;
+
+		if (!IsEditorExecuting())
+			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
+
+		if (auxDocData.ActualExecutionPlanEnabled)
+			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+
 		if (auxDocData != null)
-		{
 			auxDocData.ActualExecutionPlanEnabled = !auxDocData.ActualExecutionPlanEnabled;
-		}
 
 		return VSConstants.S_OK;
 	}

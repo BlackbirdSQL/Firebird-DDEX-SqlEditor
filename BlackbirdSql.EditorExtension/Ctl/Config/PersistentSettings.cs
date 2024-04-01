@@ -2,7 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-
+using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -17,13 +17,14 @@ namespace BlackbirdSql.EditorExtension.Ctl.Config;
 //
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
-/// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings descendent
-/// tree from the top-level extension lib down to the Core. There is no point using services as this
-/// configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > EditorExtension > Common > Core.
+/// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
+/// descendent tree from the top-level extension lib down to the Core.
+/// PersistentSettings can be either consumers or providers of options, or both.
+/// There is no point using services as this configuration is fixed. ie:
+/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
-public abstract class PersistentSettings : Common.Ctl.Config.PersistentSettings
+public abstract class PersistentSettings : LanguageExtension.Ctl.Config.PersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
@@ -45,7 +46,24 @@ public abstract class PersistentSettings : Common.Ctl.Config.PersistentSettings
 	// =========================================================================================================
 
 
-	// public static bool PromptToSaveKey => _PromptToSaveKey;
+	public static string MandatedLanguageServiceGuid
+	{
+		get
+		{
+			switch (EditorLanguageService)
+			{
+				case EnLanguageService.USql:
+					return VS.USqlLanguageServiceGuid;
+				case EnLanguageService.TSql90:
+					return VS.TSql90LanguageServiceGuid;
+				case EnLanguageService.FbSql:
+					return LanguageExtension.PackageData.LanguageServiceGuid;
+				default:
+					return VS.SSDTLanguageServiceGuid;
+			}
+		}
+
+	}
 
 
 	#endregion Property Accessors
@@ -81,12 +99,11 @@ public abstract class PersistentSettings : Common.Ctl.Config.PersistentSettings
 
 	/// <summary>
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
-	/// Only implemented by packages that have settings models.
+	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
 	public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
 	{
-		// There is no base. We're the first.
-		// base.RegisterSettingsEventHandlers(onSettingsSavedDelegate);
+		base.RegisterSettingsEventHandlers(onSettingsSavedDelegate);
 
 		try
 		{
@@ -112,15 +129,15 @@ public abstract class PersistentSettings : Common.Ctl.Config.PersistentSettings
 	/// That event handler then requests each package to populate SettingsEventArgs
 	/// if it has settings relevant to the model.
 	/// PopulateSettingsEventArgs is also called on loading by the extension without
-	/// a specific model specified for a universal request for settings.
+	/// a specific model specified for a universal request for settings. That effectively
+	/// instantiates all option page models.
 	/// </summary>
 	public override bool PopulateSettingsEventArgs(ref PropagateSettingsEventArgs e)
 	{
 		bool result = false;
 
-		// There is no base. We're the first.
-		// if (args.Package == null || args.Package != "Editor")
-		//	result = base.PopulateSettingsEventArgs(ref args);
+		if (e.Package == null || e.Package != "Editor")
+			result = base.PopulateSettingsEventArgs(ref e);
 
 
 		if (e.Package == null || e.Package == "Editor")

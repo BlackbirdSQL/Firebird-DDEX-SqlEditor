@@ -13,7 +13,10 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio.Shell.Interop;
 using BlackbirdSql.Common.Controls.Tabs;
 
+
+
 namespace BlackbirdSql.Common.Controls.Widgets;
+
 
 [DesignerCategory("code")]
 public class SplitViewContainer : Control, IServiceProvider

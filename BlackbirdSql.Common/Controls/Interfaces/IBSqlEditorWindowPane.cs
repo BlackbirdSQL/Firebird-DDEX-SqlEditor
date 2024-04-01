@@ -2,7 +2,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces.ISqlEditorWindowPane
 
 using System;
-using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.ResultsPanels;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Interfaces;

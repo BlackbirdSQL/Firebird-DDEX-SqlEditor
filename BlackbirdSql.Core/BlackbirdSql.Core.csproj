@@ -15,12 +15,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-	  <NoWarn>1701;1702</NoWarn>
+	  <NoWarn>1701;1702;CS0618</NoWarn>
 	  <DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-	  <NoWarn>1701;1702</NoWarn>
+	  <NoWarn>1701;1702;CS0618</NoWarn>
 	  <DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
@@ -91,6 +91,7 @@
 	  <Compile Include="Ctl\Diagnostics\IBEnumerableDescribers.cs" />
 	  <Compile Include="Ctl\Diagnostics\SqlEtwProvider.cs" />
 	  <Compile Include="Ctl\Extensions\DbProviderFactoriesEx.cs" />
+	  <Compile Include="Ctl\Interfaces\IBModelPropertyWrapper.cs" />
 	  <Compile Include="Ctl\FbsqlStyleUriParser.cs" />
 	  <Compile Include="Ctl\Interfaces\IBDataConnectionProperties.cs" />
 	  <Compile Include="Model\AbstractRunningConnectionTable.cs" />
@@ -98,6 +99,7 @@
 	  <Compile Include="Ctl\Extensions\Index.cs" />
 	  <Compile Include="Ctl\Extensions\Range.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEditConverter.cs" />
+	  <Compile Include="Model\Interfaces\IBSettingsModel.cs" />
 	  <Compile Include="Root\RdtManager.cs" />
 	  <Compile Include="Model\AbstruseRunningConnectionTable.cs" />
 	  <Compile Include="Model\Interfaces\IBRunningConnectionTable.cs" />
@@ -193,12 +195,10 @@
 	  <Compile Include="GlobalSuppressions.cs" />
 	  <Compile Include="Ctl\Interfaces\IBAsyncPackage.cs" />
 	  <Compile Include="Ctl\Interfaces\IBDesignerExplorerServices.cs" />
-	  <Compile Include="Ctl\Interfaces\IBEventsChannel.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEventsManager.cs" />
 	  <Compile Include="Ctl\Interfaces\IBGlobalsAgent.cs" />
 	  <Compile Include="Ctl\Interfaces\IBIconsCollection.cs" />
 	  <Compile Include="Ctl\Interfaces\IBIconType.cs" />
-	  <Compile Include="Model\Interfaces\IBSettingsModel.cs" />
 	  <Compile Include="Ctl\Interfaces\IBSettingsModelPropertyWrapper.cs" />
 	  <Compile Include="Ctl\Interfaces\IBPackageController.cs" />
 	  <Compile Include="Ctl\Interfaces\IBPropertyAgent.cs" />
@@ -219,7 +219,6 @@
 	  <Compile Include="Ctl\ComponentModel\OverridePropertyNameAttribute.cs" />
 	  <Compile Include="Ctl\Enums\EnSettingDataType.cs" />
 	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
-	  <Compile Include="Properties\Resources.Designer.cs" />
 	  <Compile Include="AbstractCorePackage.cs" />
 	  <Compile Include="AbstractEventsManager.cs" />
 	  <Compile Include="Ctl\GlobalsAgent.cs" />
@@ -260,7 +259,15 @@
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
-	  <EmbeddedResource Include="Properties\Resources.resx" />
+		<Compile Include="Properties\Resources.Designer.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<EmbeddedResource Include="Properties\Resources.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
@@ -281,14 +288,6 @@
 	  <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
 	  <Reference Include="UIAutomationProvider" />
 	  <Reference Include="UIAutomationTypes" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Update="Properties\Resources.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>Resources.resx</DependentUpon>
-		</Compile>
 	</ItemGroup>
 
 

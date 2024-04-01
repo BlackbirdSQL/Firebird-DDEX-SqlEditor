@@ -6,7 +6,10 @@
 using System;
 using System.Drawing;
 
+
+
 namespace BlackbirdSql.Common.Ctl.Events;
+
 
 public class FontChangedEventArgs : EventArgs
 {

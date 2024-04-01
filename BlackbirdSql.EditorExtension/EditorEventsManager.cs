@@ -6,22 +6,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using BlackbirdSql.Common.Controls;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.EditorExtension.Ctl.Events;
 using EnvDTE;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
 
 using Cmd = BlackbirdSql.Common.Cmd;
@@ -45,13 +39,13 @@ namespace BlackbirdSql.EditorExtension;
 public sealed class EditorEventsManager : AbstractEventsManager
 {
 
-	// ---------------------------------------------------------------------------------
+	// -----------------------------------------------------
 	#region Constructors / Destructors - EditorEventsManager
-	// ---------------------------------------------------------------------------------
+	// -----------------------------------------------------
 
 
 	/// <summary>
-	/// .ctor
+	/// Default .ctor fror singleton instance.
 	/// </summary>
 	private EditorEventsManager(IBPackageController controller) : base(controller)
 	{
@@ -59,8 +53,9 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 	/// <summary>
-	/// Access to the static at the instance local level. This allows the base class to access and update
-	/// the localized static instance.
+	/// Access to the singleton static at the instance local level.
+	/// This allows the base class to access and update the localized
+	/// static instance.
 	/// </summary>
 	protected override IBEventsManager InternalInstance
 	{
@@ -88,6 +83,9 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
+	/// <summary>
+	/// Implementation of <see cref="IDisposable"/>.
+	/// </summary>
 	public override void Dispose()
 	{
 		Controller.OnAfterAttributeChangeEvent -= OnAfterAttributeChange;
@@ -111,8 +109,9 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
+
 	// =========================================================================================================
-	#region Constants and Fields - EditorEventsManager
+	#region Constants - EditorEventsManager
 	// =========================================================================================================
 
 
@@ -126,19 +125,28 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	public const int C_EID_LastWindowFrame = 7;
 
 
+	#endregion Constants
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - EditorEventsManager
+	// =========================================================================================================
+
+
 	private static IBEventsManager _Instance;
 
 	private uint _PublishingPreviewCommitOffCookie;
 	// private uint _PreviewCommitOffCookie;
 	private uint _NotBuildingCookie;
 	private uint _SolutionOpeningCookie;
-
 	private uint _SolutionOrProjectUpgradingCookie;
-
 	private uint _ServerExplorerCookie;
 
 
-	#endregion Constants and Fields
+	#endregion Fields
 
 
 
@@ -149,15 +157,13 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	// =========================================================================================================
 
 
-	EditorExtensionPackage EditorPackage => (EditorExtensionPackage)DdexPackage;
-
+	EditorExtensionPackage EditorPackage => (EditorExtensionPackage)PackageInstance;
 
 
 
 	public bool IsServerExplorerActive
 	{
 		get { return GetUiContextValue(_ServerExplorerCookie); }
-
 		set { SetUiContextValue(_ServerExplorerCookie, value); }
 	}
 
@@ -167,7 +173,8 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		get
 		{
 			if (GetUiContextValue(_NotBuildingCookie) && !GetUiContextValue(_SolutionOpeningCookie)
-				&& !GetUiContextValue(_SolutionOrProjectUpgradingCookie) && !GetUiContextValue(_PublishingPreviewCommitOffCookie))
+				&& !GetUiContextValue(_SolutionOrProjectUpgradingCookie)
+				&& !GetUiContextValue(_PublishingPreviewCommitOffCookie))
 			{
 				return false;
 			}
@@ -180,7 +187,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	public bool IsPublishing
 	{
 		get { return GetUiContextValue(_PublishingPreviewCommitOffCookie); }
-
 		set { SetUiContextValue(_PublishingPreviewCommitOffCookie, value); }
 	}
 
@@ -188,7 +194,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	public bool IsPreviewCommitOff
 	{
 		get { return IsPublishing; }
-
 		set { IsPublishing = value; }
 	}
 
@@ -258,7 +263,9 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	public event EventHandler<MonitorSelectionEventArgs> MonitorUndoManagerChangedEvent;
 	public event EventHandler<MonitorSelectionEventArgs> MonitorSelectionChangedEvent;
 
+
 	#endregion Property Accessors
+
 
 
 
@@ -309,9 +316,9 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			{
 				continue;
 			}
-			AuxiliaryDocData docData = EditorPackage.GetAuxiliaryDocData(docInfo.DocData);
+			AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(docInfo.DocData);
 
-			if (docData == null)
+			if (auxDocData == null)
 				continue;
 
 			try
@@ -359,28 +366,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		return true;
 	}
 
-
-	public static void RegisterForDirtyChangeNotification(uint docCookie)
-	{
-		if (!RdtManager.TryGetDocDataFromCookie(docCookie, out object docData))
-			return;
-
-		IComponentModel componentModel = ApcManager.GetService<SComponentModel, IComponentModel>();
-		if (componentModel == null)
-			return;
-
-		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-		if (service == null)
-			return;
-
-		ITextBuffer documentBuffer = service.GetDocumentBuffer((IVsTextBuffer)docData);
-		ITextDocumentFactoryService service2 = componentModel.GetService<ITextDocumentFactoryService>();
-		if (service2 != null)
-		{
-			service2.TryGetTextDocument(documentBuffer, out ITextDocument textDocument);
-			textDocument.DirtyStateChanged += OnTextDocumentDirtyStateChanged;
-		}
-	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -507,8 +492,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		Controller.EnsureMonitorSelection();
-
 		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
 		CurrentDocumentFrame = pvarValue as IVsWindowFrame;
 
@@ -541,15 +524,15 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-	public bool HasAnyAuxiliaryDocData()
+	public bool HasAnyAuxilliaryDocData()
 	{
 		lock (EditorPackage.LockLocal)
-			return EditorPackage.AuxiliaryDocDataTable.Count > 0;
+			return EditorPackage.AuxilliaryDocDataTable.Count > 0;
 	}
 
 
 
-	private async Task<bool> ResetDocumentStatusAsync(AuxiliaryDocData auxDocData, bool resetIntellisense)
+	private async Task<bool> ResetDocumentStatusAsync(AuxilliaryDocData auxDocData, bool resetIntellisense)
 	{
 		try
 		{
@@ -557,11 +540,11 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			// Hack to correct intellisense target. 
+			// HACK: to correct intellisense target. 
 			if (resetIntellisense)
 				auxDocData.IntellisenseEnabled = true;
 
-			// Hack to kickstart dirty state title update.
+			// HACK: to kickstart dirty state title update.
 			uint saveOpts = (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_ForceSave;
 			RdtManager.SaveDocuments(saveOpts, null, uint.MaxValue, auxDocData.DocCookie);
 
@@ -598,9 +581,9 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			if (item.Hierarchy == hierarchy && !string.IsNullOrWhiteSpace(item.Moniker)
 				&& item.DocData != null)
 			{
-				AuxiliaryDocData docData = EditorPackage.GetAuxiliaryDocData(item.DocData);
+				AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(item.DocData);
 
-				if (docData != null && Cmd.ShouldStopCloseDialog(docData, GetType()))
+				if (auxDocData != null && Cmd.ShouldStopCloseDialog(auxDocData, GetType()))
 				{
 					return true;
 				}
@@ -649,7 +632,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 		object docData = docInfo.DocData;
 
-		AuxiliaryDocData auxDocData = EditorPackage.GetAuxiliaryDocData(docData);
+		AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(docData);
 
 		// If no auxdocdata, it's not ours, exit.
 		if (auxDocData == null)
@@ -662,16 +645,16 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		// Break the link between auxdocdata and the explorer moniker, if it exists, because this is now a disk file.
 		if (auxDocData.ExplorerMoniker != null)
 		{
-			RdtManager.MonikerCsaTable.Remove(auxDocData.ExplorerMoniker);
+			RdtManager.InflightMonikerCsbTable.Remove(auxDocData.ExplorerMoniker);
 			auxDocData.ExplorerMoniker = null;
 		}
 
 
 
 		// If no intellisense, no need to fix targeting.
-		bool resetIntellisense = auxDocData.IntellisenseEnabled.HasValue && auxDocData.IntellisenseEnabled.Value;
+		bool resetIntellisense = auxDocData.IntellisenseEnabled.AsBool();
 
-		// Tracer.Trace(GetType(), "OnAfterAttributeChangeEx()", "AuxiliaryDocData exists. \nOld mk: {0}\nNew mk: {1}",
+		// Tracer.Trace(GetType(), "OnAfterAttributeChangeEx()", "AuxilliaryDocData exists. \nOld mk: {0}\nNew mk: {1}",
 		//	pszMkDocumentOld, pszMkDocumentNew);
 
 		// Disable rdt events to avoid any recursion.
@@ -702,7 +685,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			docInfo = RdtManager.GetDocumentInfo(docCookie);
 
 		if (docInfo.IsDocumentInitialized
-			&& Native.Succeeded(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
+			&& __(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
 		{
 			if (pvar is TabbedEditorWindowPane sqlEditorTabbedEditorPane
 				&& sqlEditorTabbedEditorPane == EditorPackage.LastFocusedSqlEditor)
@@ -738,7 +721,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 		documentInfo.Sync();
 
-		AuxiliaryDocData auxDocData = EditorPackage.GetAuxiliaryDocData(documentInfo.DocData);
+		AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(documentInfo.DocData);
 
 		if (auxDocData == null)
 			return null;
@@ -767,7 +750,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			return VSConstants.S_OK;
 
 
-		if (!Native.Succeeded(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
+		if (!__(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
 			return VSConstants.S_OK;
 
 		if (pvar is TabbedEditorWindowPane sqlEditorTabbedEditorPane)
@@ -784,18 +767,18 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		{
 			RunningDocumentInfo documentInfo = RdtManager.GetDocumentInfo(docCookie);
 
-			if (documentInfo.IsDocumentInitialized && EditorPackage.ContainsEditorStatus(documentInfo.DocData))
+			if (documentInfo.IsDocumentInitialized && EditorPackage.AuxilliaryDocDataExists(documentInfo.DocData))
 			{
-				EditorPackage.RemoveEditorStatus(documentInfo.DocData);
+				EditorPackage.RemoveAuxilliaryDocData(documentInfo.DocData);
 			}
 		}
 		else if (dwEditLocksRemaining == 1 && RdtManager.ShouldKeepDocDataAliveOnClose(docCookie))
 		{
 			RunningDocumentInfo documentInfo2 = RdtManager.GetDocumentInfo(docCookie);
 
-			if (documentInfo2.IsDocumentInitialized && EditorPackage.ContainsEditorStatus(documentInfo2.DocData))
+			if (documentInfo2.IsDocumentInitialized && EditorPackage.AuxilliaryDocDataExists(documentInfo2.DocData))
 			{
-				AuxiliaryDocData auxDocData = EditorPackage.GetAuxiliaryDocData(documentInfo2.DocData);
+				AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(documentInfo2.DocData);
 
 				if (auxDocData != null)
 					auxDocData.IntellisenseEnabled = null;
@@ -884,7 +867,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		if (!UnsafeCmd.IsVirtualProjectKind(hierarchy))
 			return VSConstants.S_OK;
 
-		if (!HasAnyAuxiliaryDocData())
+		if (!HasAnyAuxilliaryDocData())
 			return VSConstants.S_OK;
 
 		if (QueryAbortClose(hierarchy))
@@ -929,25 +912,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	// =========================================================================================================
 	#region Event handling - EditorEventsManager
 	// =========================================================================================================
-
-
-	private static void OnTextDocumentDirtyStateChanged(object sender, EventArgs e)
-	{
-		try
-		{
-			ITextDocument textDocument = (ITextDocument)sender;
-			uint docCookie = RdtManager.GetRdtCookie(textDocument.FilePath);
-
-			// Tracer.Trace(typeof(EditorEventsManager), "OnTextDocumentDirtyStateChanged()", "DocCookie: {0}, Filepath: {1}.", docCookie, textDocument.FilePath);
-
-			// RdtManager.UpdateDirtyState(docCookie);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
-	}
-
 
 
 	#endregion Event handling

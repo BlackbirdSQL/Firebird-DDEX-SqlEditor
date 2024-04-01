@@ -27,30 +27,26 @@ public class SqlEditorResultsAsGridCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
-		if (auxDocData != null)
-		{
-			if (!IsEditorExecuting())
-			{
-				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-			}
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 
-			if (auxDocData.SqlOutputMode == EnSqlOutputMode.ToGrid)
-			{
-				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
-			}
-		}
+		if (auxDocData == null)
+			return VSConstants.S_OK;
+
+		if (!IsEditorExecuting())
+			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
+
+		if (auxDocData.SqlOutputMode == EnSqlOutputMode.ToGrid)
+			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+
 		if (auxDocData != null)
-		{
 			auxDocData.SqlOutputMode = EnSqlOutputMode.ToGrid;
-		}
 
 		return VSConstants.S_OK;
 	}

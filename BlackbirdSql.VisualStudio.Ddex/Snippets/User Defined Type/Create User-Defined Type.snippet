@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create User-Defined Type</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a CLR integration user-defined type.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>TypeName</ID>
+          <ToolTip>Name of the type</ToolTip>
+          <Default>Utf8String</Default>
+        </Literal>
+        <Literal>
+          <ID>AssemblyName</ID>
+          <ToolTip>Name of the assembly</ToolTip>
+          <Default>utf8string</Default>
+        </Literal>
+        <Literal>
+          <ID>ClassName</ID>
+          <ToolTip>Class name of the Assembly</ToolTip>
+          <Default>Microsoft.Samples.SqlServer.utf8string</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE TYPE $TypeName$
+EXTERNAL NAME $AssemblyName$.[$ClassName$];
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

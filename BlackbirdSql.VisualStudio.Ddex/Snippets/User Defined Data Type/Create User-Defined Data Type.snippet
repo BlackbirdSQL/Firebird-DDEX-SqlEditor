@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create User-Defined Data Type</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a user-defined data type.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>SchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>TypeName</ID>
+          <ToolTip>Name of the data type</ToolTip>
+          <Default>MyDataType</Default>
+        </Literal>
+        <Literal>
+          <ID>BaseType</ID>
+          <ToolTip>Data type from which the user-defined type is inherited</ToolTip>
+          <Default>varchar(11)</Default>
+        </Literal>
+        <Literal>
+          <ID>AllowNull</ID>
+          <ToolTip>Null or not null</ToolTip>
+          <Default>NOT NULL</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE TYPE [$SchemaName$].[$TypeName$]
+    FROM $BaseType$ $AllowNull$
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

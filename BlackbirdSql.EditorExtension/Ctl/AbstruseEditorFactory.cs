@@ -4,6 +4,7 @@
 using System;
 using BlackbirdSql.Common.Controls.Tabs;
 using BlackbirdSql.Core;
+using BlackbirdSql.EditorExtension.Ctl.Config;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -37,7 +38,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 		get
 		{
 			if (_MandatedSqlLanguageServiceClsid == Guid.Empty)
-				_MandatedSqlLanguageServiceClsid = new(SystemData.MandatedSqlLanguageServiceGuid);
+				_MandatedSqlLanguageServiceClsid = new(PersistentSettings.MandatedLanguageServiceGuid);
 
 			return _MandatedSqlLanguageServiceClsid;
 		}
@@ -50,7 +51,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 	public abstract int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr docViewIntPtr, out IntPtr docDataIntPtr, out string caption, out Guid cmdUIGuid, out int result);
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 

@@ -26,6 +26,8 @@ public interface IBEditorTransientSettings
 	bool EditorEnableIntellisense { get; set; }
 	bool EditorExecuteQueryOnOpen { get; set; }
 	bool EditorPromptToSave { get; set; }
+	EnLanguageService EditorLanguageService { get; set; }
+
 
 	// Editor ContextSettingsModel
 	EnStatusBarPosition EditorContextStatusBarPosition { get; set; }

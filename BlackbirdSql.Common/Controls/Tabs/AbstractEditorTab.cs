@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -21,6 +22,8 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 
 namespace BlackbirdSql.Common.Controls.Tabs;
+
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMultiViewDocumentView,
@@ -302,9 +305,16 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
 
 
 	protected Panel GetPanelForCurrentFrame()
@@ -456,10 +466,12 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		try
 		{
 			_SavedSelection = null;
-			if (Core.Native.Succeeded(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
+			if (__(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
 			{
 				using ServiceProvider serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)pvar);
-				if (serviceProvider.GetService(typeof(SVsTrackSelectionEx)) is IVsTrackSelectionEx vsTrackSelectionEx && Core.Native.Succeeded(vsTrackSelectionEx.GetCurrentSelection(out var ppHier, out var _, out var _, out var ppSC)) && ppSC != IntPtr.Zero)
+				if (serviceProvider.GetService(typeof(SVsTrackSelectionEx)) is IVsTrackSelectionEx vsTrackSelectionEx
+					&& __(vsTrackSelectionEx.GetCurrentSelection(out var ppHier, out var _, out var _, out var ppSC))
+					&& ppSC != IntPtr.Zero)
 				{
 					try
 					{
@@ -548,36 +560,39 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			{
 				_CmdTarget = cmdTarget;
 			}
-			if (_SavedSelection != null && Core.Native.Succeeded(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
+			if (_SavedSelection != null && __(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
 			{
 				using ServiceProvider serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)pvar);
 				(serviceProvider.GetService(typeof(SVsTrackSelectionEx)) as IVsTrackSelectionEx).OnSelectChange(_SavedSelection);
 				_SavedSelection = null;
 			}
+
 			int hr = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar2);
-			if (!Core.Native.Succeeded(hr))
-			{
+			if (!__(hr))
 				return;
-			}
+
 			ServiceProvider serviceProvider2 = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)pvar2);
 			using (serviceProvider2)
 			{
 				IVsHierarchy o = null;
 				uint itemid = 0u;
+
 				hr = _CurrentFrame.GetProperty((int)VsFramePropID.Hierarchy, out var pvar3);
-				if (Core.Native.Succeeded(hr))
+
+				if (__(hr))
 				{
 					o = (IVsHierarchy)pvar3;
 					hr = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out var pvar4);
-					if (Core.Native.Succeeded(hr))
-					{
+
+					if (__(hr))
 						itemid = (uint)(int)pvar4;
-					}
 				}
-				if (!Core.Native.Succeeded(hr) || serviceProvider2.GetService(typeof(SVsTrackSelectionEx)) is not IVsTrackSelectionEx vsTrackSelectionEx)
+
+				if (!__(hr) || serviceProvider2.GetService(typeof(SVsTrackSelectionEx)) is not IVsTrackSelectionEx vsTrackSelectionEx)
 				{
 					return;
 				}
+
 				IntPtr pSC = (IntPtr)(-1);
 				IntPtr ppv = IntPtr.Zero;
 				IntPtr intPtrUnknown = Marshal.GetIUnknownForObject(o);
@@ -585,7 +600,8 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				{
 					Guid iid = typeof(IVsHierarchy).GUID;
 					hr = Marshal.QueryInterface(intPtrUnknown, ref iid, out ppv);
-					if (Core.Native.Succeeded(hr))
+
+					if (__(hr))
 					{
 						try
 						{
@@ -620,6 +636,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		{
 			return vsMultiViewDocumentView.ActivateLogicalView(ref rguidLogicalView);
 		}
+
 		return VSConstants.E_NOTIMPL;
 	}
 
@@ -644,6 +661,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			return vsMultiViewDocumentView.IsLogicalViewActive(ref rguidLogicalView, out pIsActive);
 		}
 		pIsActive = 0;
+
 		return VSConstants.E_NOTIMPL;
 	}
 
@@ -656,23 +674,26 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			int num = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar);
-			if (Core.Native.Succeeded(num))
+			int hresult = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar);
+
+			if (__(hresult))
 			{
 				if (pvar is IVsWindowFrameNotify3 vsWindowFrameNotify)
 				{
 					uint pgrfSaveOptions2 = pgrfSaveOptions;
-					num = vsWindowFrameNotify.OnClose(ref pgrfSaveOptions2);
+					hresult = vsWindowFrameNotify.OnClose(ref pgrfSaveOptions2);
 				}
 				else if (pvar is IVsWindowFrameNotify2 vsWindowFrameNotify2)
 				{
 					uint pgrfSaveOptions2 = pgrfSaveOptions;
-					num = vsWindowFrameNotify2.OnClose(ref pgrfSaveOptions2);
+					hresult = vsWindowFrameNotify2.OnClose(ref pgrfSaveOptions2);
 				}
 			}
-			return num;
+
+			return hresult;
 		}
-		return 0;
+
+		return VSConstants.S_OK;
 	}
 
 	int IVsWindowFrameNotify3.OnDockableChange(int fDockable, int x, int y, int w, int h)
@@ -695,21 +716,21 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 		Diag.ThrowIfNotOnUIThread();
 
-		int result = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar);
+		int hresult = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar);
 		AbstractTabbedEditorWindowPane AbstractTabbedEditorPane = pvar as AbstractTabbedEditorWindowPane;
 
-		if (Core.Native.Succeeded(result) && AbstractTabbedEditorPane == null)
+		if (__(hresult) && AbstractTabbedEditorPane == null)
 		{
 			if (pvar is IVsWindowFrameNotify3 vsWindowFrameNotify)
 			{
-				result = vsWindowFrameNotify.OnShow(fShow);
+				hresult = vsWindowFrameNotify.OnShow(fShow);
 			}
 			else if (pvar is IVsWindowFrameNotify vsWindowFrameNotify2)
 			{
-				result = vsWindowFrameNotify2.OnShow(fShow);
+				hresult = vsWindowFrameNotify2.OnShow(fShow);
 			}
 		}
-		return result;
+		return hresult;
 	}
 
 	int IVsWindowFrameNotify3.OnSize(int x, int y, int w, int h)
@@ -739,11 +760,12 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		int num = _TabbedEditorPane.HandleQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-		if (num == 0)
-			return num;
+		int hresult = _TabbedEditorPane.HandleQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
-		num = (int)Microsoft.VisualStudio.OLE.Interop.Constants.MSOCMDERR_E_NOTSUPPORTED;
+		if (hresult == VSConstants.S_OK)
+			return hresult;
+
+		hresult = (int)Microsoft.VisualStudio.OLE.Interop.Constants.MSOCMDERR_E_NOTSUPPORTED;
 
 		for (int i = 0; i < prgCmds.Length; i++)
 		{
@@ -753,6 +775,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				return commandHandler.HandleQueryStatus(_TabbedEditorPane, ref prgCmds[i], pCmdText);
 			}
 		}
+
 		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97)
 		{
 			for (int j = 0; j < cCmds; j++)
@@ -760,7 +783,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				if (prgCmds[j].cmdID == (uint)EnCommandSet.ToolbarIdOnlineWindow)
 				{
 					prgCmds[j].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
-					num = 0;
+					hresult = VSConstants.S_OK;
 				}
 			}
 		}
@@ -771,17 +794,17 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				if (prgCmds[k].cmdID == (int)VSConstants.VSStd2KCmdID.BrowseToFileInExplorer && !AllowBrowseToFileInExplorer)
 				{
 					prgCmds[k].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
-					num = 0;
+					hresult = VSConstants.S_OK;
 				}
 			}
 		}
 
-		if (Core.Native.Failed(num) && _CmdTarget != null)
+		if (!__(hresult) && _CmdTarget != null)
 		{
-			num = _CmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+			hresult = _CmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 		}
 
-		return num;
+		return hresult;
 	}
 
 	int IVsToolboxActiveUserHook.InterceptDataObject(Microsoft.VisualStudio.OLE.Interop.IDataObject pIn, out Microsoft.VisualStudio.OLE.Interop.IDataObject ppOut)

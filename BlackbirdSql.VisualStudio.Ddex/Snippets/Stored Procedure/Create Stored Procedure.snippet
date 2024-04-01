@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create Procedure Basic Template</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a simple stored procedure.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>SchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>storedprocname</ID>
+          <ToolTip>Name of the stored procedure</ToolTip>
+          <Default>Sample_Procedure</Default>
+        </Literal>
+        <Literal>
+          <ID>Param1</ID>
+          <ToolTip>Name of the input parameter</ToolTip>
+          <Default>param1</Default>
+        </Literal>
+        <Literal>
+          <ID>datatype1</ID>
+          <ToolTip>Datatype of the input parameter</ToolTip>
+          <Default>int</Default>
+        </Literal>
+        <Literal>
+          <ID>DefValue1</ID>
+          <ToolTip>Default value of the input parameter</ToolTip>
+          <Default>0</Default>
+        </Literal>
+        <Literal>
+          <ID>Param2</ID>
+          <ToolTip>Name of the input parameter</ToolTip>
+          <Default>param2</Default>
+        </Literal>
+        <Literal>
+          <ID>datatype2</ID>
+          <ToolTip>Datatype of the input parameter</ToolTip>
+          <Default>int</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[CREATE PROCEDURE $SchemaName$.$storedprocname$ 
+    @$Param1$ $datatype1$ = $DefValue1$,
+    @$Param2$ $datatype2$  
+AS
+    SELECT @$Param1$,@$Param2$ 
+RETURN 0 $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
+

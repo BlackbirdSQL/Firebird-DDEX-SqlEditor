@@ -14,7 +14,7 @@ namespace BlackbirdSql.Common.Ctl.Interfaces;
 
 
 [ComImport]
-[Guid(SystemData.DslEditorPaneGuid)]
+[Guid(LibraryData.EditorPaneGuid)]
 [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 public interface IBVsFindTarget3
 {

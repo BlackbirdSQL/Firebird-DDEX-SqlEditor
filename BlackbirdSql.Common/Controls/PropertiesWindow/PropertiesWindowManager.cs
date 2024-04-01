@@ -35,7 +35,7 @@ public class PropertiesWindowManager : IDisposable
 	public PropertiesWindowManager(TabbedEditorWindowPane editorPane)
 	{
 		EditorPane = editorPane;
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(editorPane.DocData);
+		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(editorPane.DocData);
 		QryMgr = auxDocData.QryMgr;
 		TabbedEditorUiCtl = editorPane.TabbedEditorUiCtl;
 		RegistererEventHandlers();

@@ -32,8 +32,6 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	protected PropertyChangedEventHandler _DispatcherPropertyChangedHandler;
 	protected EventHandler<DataErrorsChangedEventArgs> _ErrorsChanged;
 
-	protected IBEventsChannel _Channel;
-
 
 	#endregion Event Fields
 
@@ -45,12 +43,6 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	#region Event Accessors - AbstractPropertyAgent
 	// =========================================================================================================
 
-
-	public virtual IBEventsChannel Channel
-	{
-		get { return _Channel; }
-		set { _Channel = value; }
-	}
 
 	public virtual event EventHandler PropertyChanged;
 

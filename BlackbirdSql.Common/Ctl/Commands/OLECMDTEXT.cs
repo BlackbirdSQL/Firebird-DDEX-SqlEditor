@@ -9,9 +9,8 @@ using System.Text;
 
 
 
-
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration
 namespace BlackbirdSql.Common.Ctl.Commands;
+
 
 [StructLayout(LayoutKind.Sequential)]
 [ComVisible(false)]

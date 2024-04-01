@@ -28,9 +28,9 @@ namespace BlackbirdSql.Core;
 public abstract class AbstractEventsManager : IBEventsManager
 {
 
-	// ---------------------------------------------------------------------------------
+	// -------------------------------------------------------
 	#region Constructors / Destructors - AbstractEventsManager
-	// ---------------------------------------------------------------------------------
+	// -------------------------------------------------------
 
 	protected AbstractEventsManager(IBPackageController controller)
 	{
@@ -93,7 +93,7 @@ public abstract class AbstractEventsManager : IBEventsManager
 	protected abstract IBEventsManager InternalInstance { get; set; }
 
 	public IBPackageController Controller => _Controller;
-	public IBAsyncPackage DdexPackage => _Controller.DdexPackage;
+	public IBAsyncPackage PackageInstance => _Controller.PackageInstance;
 	public IVsMonitorSelection SelectionMonitor => _Controller.SelectionMonitor;
 
 
@@ -114,9 +114,17 @@ public abstract class AbstractEventsManager : IBEventsManager
 
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
 
 
 	// ---------------------------------------------------------------------------------

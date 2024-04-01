@@ -124,7 +124,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 
 
-	public static bool ShouldStopCloseDialog(AuxiliaryDocData add, Type type)
+	public static bool ShouldStopCloseDialog(AuxilliaryDocData add, Type type)
 	{
 		DialogResult dialogResult = DialogResult.Yes;
 		bool flag = Cmd.IsInAutomationFunction();

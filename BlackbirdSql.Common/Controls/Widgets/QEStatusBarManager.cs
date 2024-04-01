@@ -27,7 +27,9 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.Win32;
 
 
+
 namespace BlackbirdSql.Common.Controls.Widgets;
+
 
 public sealed class QEStatusBarManager : IDisposable
 {
@@ -128,7 +130,7 @@ public sealed class QEStatusBarManager : IDisposable
 		get
 		{
 			QueryManager result = null;
-			AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
+			AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(EditorWindowPane.DocData);
 			if (auxDocData != null)
 			{
 				result = auxDocData.QryMgr;
@@ -512,7 +514,7 @@ public sealed class QEStatusBarManager : IDisposable
 				}
 
 				SetRowsAffected(QryMgr.RowsAffected);
-				AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
+				AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(EditorWindowPane.DocData);
 				if (auxDocData != null && auxDocData.LiveSettings.EditorResultsPlaySounds)
 				{
 					new SoundPlayer().Play();

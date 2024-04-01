@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.SqlEditorCodeTab
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Core;
@@ -13,6 +14,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common.Controls.Tabs;
+
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 public class SqlEditorCodeTab : AbstractSqlEditorTab

@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.SqlEditorTabbedEditorUI
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Controls.Widgets;
@@ -10,6 +11,8 @@ using BlackbirdSql.Common.Properties;
 
 
 namespace BlackbirdSql.Common.Controls;
+
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 public class TabbedEditorUIControl : AbstractTabbedEditorUIControl

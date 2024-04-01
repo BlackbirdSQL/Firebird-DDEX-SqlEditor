@@ -222,7 +222,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		_Model.Disposed += OnModelDisposed;
 
 		string name = context.PropertyDescriptor.Name;
-		IBSettingsModelPropertyWrapper wrapper = model[name];
+		IBModelPropertyWrapper wrapper = model[name];
 
 
 		_PropertyName = name;
@@ -248,7 +248,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 		_Dependents = new Dictionary<string, int>(model.PropertyWrappers.Count);
 
-		foreach (IBSettingsModelPropertyWrapper property in model.PropertyWrappers)
+		foreach (IBModelPropertyWrapper property in model.PropertyWrappers)
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{

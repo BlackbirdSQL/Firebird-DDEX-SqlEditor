@@ -2,18 +2,20 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.SqlEditorTabBase
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Core;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 
 namespace BlackbirdSql.Common.Controls.Tabs;
+
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 public abstract class AbstractSqlEditorTab : AbstractEditorTab
@@ -29,7 +31,7 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 	public static readonly string S_PhysicalViewString = "ResultFrame";
 
 	protected virtual Guid ClsidEditorTabEditorFactory => Guid.Empty;
-	protected override Guid ClsidEditorFactory => new(SystemData.DslEditorFactoryGuid);
+	protected override Guid ClsidEditorFactory => new(SystemData.EditorFactoryGuid);
 	protected abstract Guid ClsidLogicalView { get; }
 
 

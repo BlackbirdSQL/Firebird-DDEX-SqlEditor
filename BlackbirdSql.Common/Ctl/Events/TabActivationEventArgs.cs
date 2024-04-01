@@ -2,7 +2,10 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TabActivationEventArgs
 using System;
 
+
+
 namespace BlackbirdSql.Common.Ctl.Events;
+
 
 public class TabActivationEventArgs : EventArgs
 {

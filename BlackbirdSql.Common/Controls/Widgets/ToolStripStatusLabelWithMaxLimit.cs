@@ -1,15 +1,15 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.Data.Tools.Design.Core.Controls.ToolStripStatusLabelWithMaxLimit
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core;
 
+
+
 namespace BlackbirdSql.Common.Controls.Widgets;
+
 
 public sealed class ToolStripStatusLabelWithMaxLimit : ToolStripStatusLabel
 {

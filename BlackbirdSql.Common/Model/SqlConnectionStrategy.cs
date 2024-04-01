@@ -65,7 +65,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 	private bool? _IsCloudConnection;
 
-	private bool? _IsDwConnection;
+	protected bool _IsDwConnection = false;
 
 	private int? _Spid;
 
@@ -75,7 +75,6 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 	public static readonly CsbAgent BuilderWithDefaultApplicationName = new("server=localhost;", false);
 
-	public const string C_ApplicationName = LibraryData.ApplicationName;
 
 	private ConnectedPropertiesWindow _propertiesWindowObject;
 
@@ -141,9 +140,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	{
 		get
 		{
-			if (!_IsDwConnection.HasValue)
-				_IsDwConnection = false;
-			return (bool)_IsDwConnection;
+			return _IsDwConnection;
 			/*
 			lock (_LockObject)
 			{
@@ -407,13 +404,9 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	public override void ApplyConnectionOptions(IDbConnection conn, IBEditorTransientSettings s)
 	{
 		if (!IsDwConnection)
-		{
 			base.ApplyConnectionOptions(conn, s);
-		}
 		else
-		{
 			DwApplyConnectionOptions(conn, s);
-		}
 	}
 
 
@@ -1039,9 +1032,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	public virtual bool ShouldShowColumnWithXmlHyperLinkEnabled(QEResultSet resultSet, int columnIndex, string script)
 	{
 		if (!IsDwConnection)
-		{
 			return false;
-		}
 
 		return DwShouldShowColumnWithXmlHyperLinkEnabled(resultSet, columnIndex, script);
 	}

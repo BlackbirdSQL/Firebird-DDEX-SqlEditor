@@ -9,7 +9,7 @@ namespace BlackbirdSql.Common.Controls.Graphing.Enums;
 
 [Serializable]
 [GeneratedCode("xsd", "4.8.3928.0")]
-[XmlType(Namespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan", IncludeInSchema = false)]
+[XmlType(Namespace = LibraryData.C_ShowPlanNamespace, IncludeInSchema = false)]
 public enum EnItemChoiceType
 {
 	AdaptiveJoin,

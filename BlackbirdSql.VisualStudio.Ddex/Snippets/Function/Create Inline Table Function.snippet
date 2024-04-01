@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create Inline Table Function</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates an inline table function.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>SchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>FunctionName</ID>
+          <ToolTip>Name of the function</ToolTip>
+          <Default>FunctionName</Default>
+        </Literal>
+        <Literal>
+          <ID>Param1</ID>
+          <ToolTip>Name of the input parameter</ToolTip>
+          <Default>param1</Default>
+        </Literal>
+        <Literal>
+          <ID>Datatype_Param1</ID>
+          <ToolTip>Data type of the input parameter</ToolTip>
+          <Default>int</Default>
+        </Literal>
+        <Literal>
+          <ID>Param2</ID>
+          <ToolTip>Name of the input parameter</ToolTip>
+          <Default>param2</Default>
+        </Literal>
+        <Literal>
+          <ID>Datatype_Param2</ID>
+          <ToolTip>Data type of the input parameter</ToolTip>
+          <Default>char(5)</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE FUNCTION [$SchemaName$].[$FunctionName$]
+(
+    @$Param1$ $Datatype_Param1$,
+    @$Param2$ $Datatype_Param2$
+)
+RETURNS TABLE AS RETURN
+(
+    SELECT @$Param1$ AS c1,
+           @$Param2$ AS c2
+)
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

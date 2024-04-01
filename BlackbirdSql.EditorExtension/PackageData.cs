@@ -2,8 +2,8 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using Microsoft.ServiceHub.Framework;
-using Microsoft.VisualStudio;
+
+
 
 namespace BlackbirdSql.EditorExtension;
 
@@ -18,21 +18,17 @@ namespace BlackbirdSql.EditorExtension;
 static class PackageData
 {
 	public const string ServiceName = "BlackbirdSql Editor";
-	public const string FileSystemBrokeredServiceName = "BlackbirdSql.BrokeredServices.FileSystemProvider";
-	public const string ServiceVersion2 = "2.0";
-
-
-	private static ServiceMoniker FileSystemBrokeredServiceMoniker2 =>
-		new ServiceMoniker(FileSystemBrokeredServiceName, Version.Parse(ServiceVersion2));
-
-
-	public static ServiceRpcDescriptor FileSystemRpcDescriptor2 =>
-		VisualStudioServices.VS2022_6.CreateFileSystemProviderServiceDescriptor(FileSystemBrokeredServiceMoniker2);
 
 
 	// ---------------------------------------------------------------------------------------------------------
 	#region Package Guids - PackageData
 	// ---------------------------------------------------------------------------------------------------------
+
+	
+	// Private Proffered Services and Object CLSIDs
+	public static readonly Guid CLSID_FontAndColorService = new("2EF6AAA5-7BAE-452B-AA43-6472FB2FFFFB");
+	public static readonly Guid CLSID_EditorMarkerService = new("984A3634-C7DE-41D9-992E-CE35638B513F");
+
 
 	// Settings Guids
 	public const string GeneralSettingsGuid = "8D99B934-CBF9-4C90-B937-458D032D557D";
@@ -48,7 +44,6 @@ static class PackageData
 	public const string TransientResultsSettingsGuid = "1B4928F1-38D7-4DFA-8637-36BE9ACA3905";
 	public const string TransientResultsGridSettingsGuid = "C9456FF6-A97E-4F8E-9FF7-49ABFF4944B8";
 	public const string TransientResultsTextSettingsGuid = "4C3E170F-C567-442C-ABB4-559F43610AEC";
-
 
 
 	#endregion Package Guids - PackageData

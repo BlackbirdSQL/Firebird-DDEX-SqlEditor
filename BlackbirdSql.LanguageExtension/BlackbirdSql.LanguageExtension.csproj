@@ -1,0 +1,95 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Nullable>disable</Nullable>
+		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
+		<RootNamespace>BlackbirdSql.LanguageExtension</RootNamespace>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<EnableDefaultPageItems>false</EnableDefaultPageItems>
+		<EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+		<PlatformTarget>x64</PlatformTarget>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.LanguageExtension.snk</AssemblyOriginatorKeyFile>
+		<ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+	  <NoWarn>1701;1702;CS0618,CS0169,CS0649</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+	  <NoWarn>1701;1702;CS0618,CS0169,CS0649</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Include="Ctl\ComponentModel\GlobalEnableDisableConverter.cs" />
+	  <Compile Include="Ctl\ComponentModel\GlobalEnumConverter.cs" />
+	  <Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\GlobalizedRadioAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\VsProvideEditorAutomationPageAttribute.cs" />
+	  <Compile Include="Ctl\Config\LsbConfiguration.cs" />
+	  <Compile Include="Ctl\Config\LsbLanguagePreferences.cs" />
+	  <Compile Include="Ctl\Config\PersistentSettings.cs" />
+	  <Compile Include="Ctl\Config\SettingsProvider.cs" />
+	  <Compile Include="Ctl\LsbAuthoringScope.cs" />
+	  <Compile Include="Ctl\LsbColorableItem.cs" />
+	  <Compile Include="Ctl\LsbCompletionSet.cs" />
+	  <Compile Include="Ctl\LsbDeclarations.cs" />
+	  <Compile Include="Model\AbstractMetadataProvider.cs" />
+	  <Compile Include="Model\AbstractMetadataProviderProvider.cs" />
+	  <Compile Include="Model\Interfaces\IBBinderQueue.cs" />
+	  <Compile Include="Model\Interfaces\IBMetadataProviderProvider.cs" />
+	  <Compile Include="Model\LsbMetadataProvider.cs" />
+	  <Compile Include="Properties\AttributeResources.Designer.cs">
+	    <DependentUpon>AttributeResources.resx</DependentUpon>
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	  </Compile>
+	  <Compile Include="Services\LsbLanguageService.cs" />
+	  <Compile Include="Ctl\LsbLanguageServiceTestEvents.cs" />
+	  <Compile Include="Ctl\LsbLineScanner.cs" />
+	  <Compile Include="Ctl\LsbMethods.cs" />
+	  <Compile Include="Ctl\LsbNoOpAuthoringScope.cs" />
+	  <Compile Include="Ctl\LsbParseManager.cs" />
+	  <Compile Include="Ctl\LsbSource.cs" />
+	  <Compile Include="Model\LsbMetadataProviderProvider.cs" />
+	  <Compile Include="LanguageExtensionPackage.cs" />
+	  <Compile Include="Model\Config\AdvancedPreferencesModel.cs" />
+	  <Compile Include="PackageData.cs" />
+	  <Compile Include="Properties\Resources.Designer.cs">
+	    <DependentUpon>Resources.resx</DependentUpon>
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	  </Compile>
+	  <Compile Include="GlobalSuppressions.cs" />
+	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Properties\AttributeResources.resx">
+	    <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+	    <Generator>ResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Properties\Resources.resx">
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.SqlServer.Management.SqlParser" Version="172.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="System.Runtime.Caching" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
+	  <ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
+	</ItemGroup>
+
+</Project>

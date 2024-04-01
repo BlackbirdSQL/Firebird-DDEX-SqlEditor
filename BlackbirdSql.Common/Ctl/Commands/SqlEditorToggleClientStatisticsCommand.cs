@@ -28,32 +28,27 @@ public class SqlEditorToggleClientStatisticsCommand : AbstractSqlEditorCommand
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (auxDocData != null)
-		{
-			if (!IsEditorExecuting())
-			{
-				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-			}
+		if (auxDocData == null)
+			return VSConstants.S_OK;
 
-			if (auxDocData.ClientStatisticsEnabled)
-			{
-				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
-			}
-		}
+		if (!IsEditorExecuting())
+			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
+
+		if (auxDocData.ClientStatisticsEnabled)
+			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+
 		if (auxDocData != null)
-		{
 			auxDocData.ClientStatisticsEnabled = !auxDocData.ClientStatisticsEnabled;
-		}
 
 		return VSConstants.S_OK;
 	}

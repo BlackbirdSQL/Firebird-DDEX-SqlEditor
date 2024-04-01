@@ -17,11 +17,9 @@ using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
-using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -428,7 +426,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		lock (_LockObject)
 		{
-			ConnectionChangedEventArgs args = new ConnectionChangedEventArgs(previousConnection);
+			ConnectionChangedEventArgs args = new (previousConnection);
 			ConnectionChanged?.Invoke(this, args);
 		}
 	}
@@ -437,7 +435,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		lock (_LockObject)
 		{
-			ConnectionChangedEventArgs args = new ConnectionChangedEventArgs(previousConnection);
+			ConnectionChangedEventArgs args = new (previousConnection);
 			ConnectionChangedPriority?.Invoke(this, args);
 		}
 	}

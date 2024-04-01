@@ -10,7 +10,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 
 
-
 namespace BlackbirdSql.Common.Ctl;
 
 public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
@@ -20,6 +19,15 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	private IVsTextView _TextView;
 
 	public IVsTextView TextView => _TextView;
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
+
 
 	private void SetView(IVsTextView view)
 	{
@@ -36,7 +44,7 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	}
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 

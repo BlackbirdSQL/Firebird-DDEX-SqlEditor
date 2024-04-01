@@ -7,7 +7,6 @@ using BlackbirdSql.Controller.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using EnvDTE80;
-using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -78,10 +77,7 @@ public sealed class PackageController : AbstractPackageController
 	// =========================================================================================================
 
 
-	public ControllerPackage ControllerPackage => (ControllerPackage)DdexPackage;
-
-	public override ServiceRpcDescriptor FileSystemRpcDescriptor2 =>
-		EditorExtension.PackageData.FileSystemRpcDescriptor2;
+	public ControllerPackage ControllerPackage => (ControllerPackage)PackageInstance;
 
 	public override bool SolutionValidating => ControllerEventsManager.Validating;
 

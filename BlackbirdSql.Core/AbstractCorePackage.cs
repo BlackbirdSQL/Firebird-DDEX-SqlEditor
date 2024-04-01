@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,7 +7,6 @@ using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.RpcContracts.FileSystem;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -35,7 +35,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	/// AbstractCorePackage package .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public AbstractCorePackage()
+	public AbstractCorePackage() : base()
 	{
 		if (_Instance != null)
 		{
@@ -64,6 +64,21 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 
 
+	/// <summary>
+	/// Gets the singleton Package instance
+	/// </summary>
+	public static AbstractCorePackage Instance
+	{
+		get
+		{
+			if (_Instance == null)
+				DemandLoadPackage(SystemData.AsyncPackageGuid, out _);
+			return (AbstractCorePackage)_Instance;
+		}
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// AbstractCorePackage package destructor 
@@ -85,12 +100,14 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 
 	// =========================================================================================================
-	#region Fields - AbstractCorePackage
+	#region Fields and Constants - AbstractCorePackage
 	// =========================================================================================================
 
 
+	protected const int C_ProgressTotal = 43;
 
 	protected static Package _Instance = null;
+	protected int _InitializationSeed = 0;
 
 	protected IBPackageController _ApcInstance = null;
 	private IDisposable _DisposableWaitCursor;
@@ -100,7 +117,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	protected IBAsyncPackage.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
 	protected IBAsyncPackage.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
 
-	#endregion Fields
+	#endregion Fields and Constants
 
 
 
@@ -179,7 +196,6 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 		}
 	}
 
-	public abstract IFileSystemProvider FileSystemBrokeredService { get; }
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -187,6 +203,14 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public virtual IAsyncServiceContainer ServiceContainer => this;
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Accessor to the 'this' cast as the <see cref="IServiceContainer"/>.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public virtual IServiceContainer SyncServiceContainer => this;
 
 
 	/// <summary>
@@ -244,17 +268,18 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
 
-		// Sample format of FinalizeAsync in descendents
+		Progress(progress, "Finalizing Core initialization...");
 
+		// Sample format of FinalizeAsync in descendents
 		// if (cancellationToken.IsCancellationRequested)
 		//	return;
-
 		// await base.FinalizeAsync(cancellationToken, progress);
 
-
 		// Sample add service call
-
 		// ServiceContainer.AddService(typeof(ICustomService), ServiceCreatorCallbackMethod, promote: true);
+
+		Progress(progress, "Finalizing Core initialization... Done.");
+		
 	}
 
 	public abstract TInterface GetService<TService, TInterface>() where TInterface : class;
@@ -272,7 +297,13 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
+
+		Progress(progress, "Initializing Core...");
+
 		await base.InitializeAsync(cancellationToken, progress);
+
+		Progress(progress, "Initializing Core... Done.");
+		
 	}
 
 
@@ -280,6 +311,22 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Implementation of the <see cref="IBAsyncPackage"/> ServicesCreatorCallback
+	/// method.
+	/// Initializes and configures a service of the specified type that is used by this
+	/// Package.
+	/// Configuration is performed by the class requiring the service.
+	/// The actual instance creation of the service is the responsibility of the class
+	/// Package that has access to the final descendent class of the Service.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public virtual object ServicesCreatorCallback(IServiceContainer container,
+		Type serviceType) => null;
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Implementation of the <see cref="IBAsyncPackage"/> ServicesCreatorCallbackAsync
 	/// method.
 	/// Initializes and configures a service of the specified type that is used by this
 	/// Package.
@@ -306,13 +353,21 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	// =========================================================================================================
 
 
-	protected abstract IBPackageController CreateController();
+	/// <summary>
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
 
 
 	/// <summary>
-	/// ThrowOnFailure token
+	/// <see cref="ErrorHandler.Succeeded"/> token.
 	/// </summary>
-	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
+
+
+	protected abstract IBPackageController CreateController();
 
 
 
@@ -340,6 +395,13 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 
 
+	protected void Progress(IProgress<ServiceProgressData> progress, string message)
+	{
+		ServiceProgressData progressData = new("Loading BlackbirdSql", message, _InitializationSeed++, C_ProgressTotal);
+		progress.Report(progressData);
+	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -349,6 +411,11 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	// ---------------------------------------------------------------------------------
 	protected abstract void PropagateSettings();
 
+
+
+	public virtual void SaveUserPreferences()
+	{
+	}
 
 	#endregion Methods
 

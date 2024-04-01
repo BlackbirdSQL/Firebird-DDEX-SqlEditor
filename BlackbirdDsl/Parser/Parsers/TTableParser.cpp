@@ -370,7 +370,7 @@ StringCell^ TTableParser::Parse(StringCell^ root)
 			}
 			else if (currCategory == "UNION")
 			{
-				// TODO: this pair.Value starts and ends with parenthesis
+				// TO DO: this pair.Value starts and ends with parenthesis
 				// and contains a list of table names (comma-separated)
 				// split the pair.Value and add the list as subtree
 				// we must change the DefaultProcessor

@@ -7,6 +7,7 @@ using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
 
+
 namespace BlackbirdSql.EditorExtension.Model.Config;
 
 // =========================================================================================================
@@ -60,6 +61,19 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	public override string CollectionName { get; } = "\\BlackbirdSql\\SqlEditor.GeneralSettings";
 
 
+	[TypeConverter(typeof(GlobalEnumConverter))]
+	public enum EnGlobalizedLanguageService
+	{
+		[GlobalizedRadio("EnLanguageService_SSDT")]
+		SSDT = 0,
+		[GlobalizedRadio("EnLanguageService_USql")]
+		USql,
+		[GlobalizedRadio("EnLanguageService_TSql90")]
+		TSql90,
+		[GlobalizedRadio("EnLanguageService_FbSql")]
+		FbSql
+	}
+
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayGeneralExecuteQueryOnOpen")]
@@ -83,6 +97,13 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(false)]
 	public bool PromptToSave { get; set; } = false;
+
+
+	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayGeneralLanguageService")]
+	[GlobalizedDescription("OptionDescriptionGeneralLanguageService")]
+	[DefaultValue(EnGlobalizedLanguageService.FbSql)]
+	public EnGlobalizedLanguageService LanguageService { get; set; } = EnGlobalizedLanguageService.FbSql;
 
 
 	#endregion Property Accessors

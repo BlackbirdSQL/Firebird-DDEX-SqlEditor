@@ -59,10 +59,6 @@ public abstract class VS : Core.VS
 	/// </summary>
 	public const string SqlEditorEncodedFactoryGuid = "F9D1E5B1-8A59-439C-9BB9-D5598B830ECB";
 
-	/// <summary>
-	/// Visual Studio built-in Sql Editor Command Set Guid
-	/// </summary>
-	public const string SqlEditorCommandsGuid = "52692960-56BC-4989-B5D3-94C47A513E8D";
 
 	public const string VSDebugCommandGuid = "C9DD4A59-47FB-11d2-83E7-00C04F9902C1";
 

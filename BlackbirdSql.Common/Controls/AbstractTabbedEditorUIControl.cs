@@ -44,8 +44,10 @@ public abstract class AbstractTabbedEditorUIControl : Control, IServiceProvider
 		_SplitContainer.IsSplitterVisibleChangedEvent += SplitContainer_IsSplitterVisibleChanged;
 		_SplitContainer.TabActivationRequestEvent += SplitContainer_TabActivationRequest;
 		_SplitContainer.UseCustomTabActivation = true;
-		_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.ImageAndText, ControlsResources.TabbedEditor_SplitContainerButton1Text, ControlsResources.design);
-		_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_TextView, EnSplitterBarButtonDisplayStyle.ImageAndText, "FB-SQL", ControlsResources.sql);
+		_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.ImageAndText,
+			ControlsResources.TabbedEditor_SplitContainerButton1Text, ControlsResources.design);
+		_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_TextView, EnSplitterBarButtonDisplayStyle.ImageAndText,
+			LibraryData.LanguageName, ControlsResources.sql);
 		ResumeLayout(performLayout: false);
 		_Panel.ResumeLayout(performLayout: false);
 		PerformLayout();
@@ -347,9 +349,8 @@ public abstract class AbstractTabbedEditorUIControl : Control, IServiceProvider
 	public void ActivateTab(AbstractEditorTab tab, EnTabViewMode mode)
 	{
 		if (tab == null)
-		{
 			return;
-		}
+
 		switch (mode)
 		{
 			case EnTabViewMode.Maximize:

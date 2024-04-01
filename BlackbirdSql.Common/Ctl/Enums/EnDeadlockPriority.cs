@@ -3,7 +3,7 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces
+
 
 namespace BlackbirdSql.Common.Ctl.Enums;
 

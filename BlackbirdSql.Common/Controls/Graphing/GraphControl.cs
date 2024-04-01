@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Graphing.ComponentModel;
 using BlackbirdSql.Common.Controls.Graphing.Enums;
 using BlackbirdSql.Common.Controls.Graphing.Interfaces;
+using BlackbirdSql.Common.Controls.Graphing.Widgets
 using BlackbirdSql.Common.Controls.Widgets;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Exceptions;

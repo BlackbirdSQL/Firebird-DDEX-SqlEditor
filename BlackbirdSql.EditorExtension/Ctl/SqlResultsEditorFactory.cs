@@ -75,7 +75,7 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 
 			Guid clsid = typeof(VsTextBufferClass).GUID;
 			Guid iid = VSConstants.IID_IUnknown;
-			object obj = ((AsyncPackage)ApcManager.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
+			object obj = ((AsyncPackage)ApcManager.PackageInstance).CreateInstance(ref clsid, ref iid, typeof(object));
 			(obj as IObjectWithSite)?.SetSite(OleServiceProvider);
 			IVsTextLines vsTextLines = obj as IVsTextLines;
 			intPtrDocData = Marshal.GetIUnknownForObject(vsTextLines);

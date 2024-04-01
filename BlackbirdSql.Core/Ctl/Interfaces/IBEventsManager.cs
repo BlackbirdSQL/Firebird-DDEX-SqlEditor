@@ -21,7 +21,7 @@ namespace BlackbirdSql.Core.Ctl.Interfaces;
 public interface IBEventsManager : IBTaskHandlerClient, IDisposable
 {
 	IBPackageController Controller { get; }
-	IBAsyncPackage DdexPackage { get; }
+	IBAsyncPackage PackageInstance { get; }
 	IVsMonitorSelection SelectionMonitor { get; }
 
 

@@ -7,13 +7,8 @@ using System;
 using System.Data;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Properties;
-
-// using Microsoft.Data.SqlClient;
-
 using FirebirdSql.Data.FirebirdClient;
 
-// using Microsoft.Data.Tools.Schema.Common.SqlClient;
-// using Ns = Microsoft.Data.Tools.Schema.Common.SqlClient;
 
 
 namespace BlackbirdSql.Common.Ctl;

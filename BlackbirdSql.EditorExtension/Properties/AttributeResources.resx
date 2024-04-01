@@ -387,6 +387,30 @@
   <data name="EnKilobytes_Qtr_Unselected" xml:space="preserve">
     <value>◎ 256 Bytes</value>
   </data>
+  <data name="EnLanguageService_FbSql_Selected" xml:space="preserve">
+    <value>◉ Firebird-SQL</value>
+  </data>
+  <data name="EnLanguageService_FbSql_Unselected" xml:space="preserve">
+    <value>◎ Firebird-SQL</value>
+  </data>
+  <data name="EnLanguageService_SSDT_Selected" xml:space="preserve">
+    <value>◉ Transact-SQL SSDT</value>
+  </data>
+  <data name="EnLanguageService_SSDT_Unselected" xml:space="preserve">
+    <value>◎ Transact-SQL SSDT</value>
+  </data>
+  <data name="EnLanguageService_TSql90_Selected" xml:space="preserve">
+    <value>◉ Transact-SQL90</value>
+  </data>
+  <data name="EnLanguageService_TSql90_Unselected" xml:space="preserve">
+    <value>◎ Transact-SQL90</value>
+  </data>
+  <data name="EnLanguageService_USql_Selected" xml:space="preserve">
+    <value>◉ Unified-SQL Azure Data Lake</value>
+  </data>
+  <data name="EnLanguageService_USql_Unselected" xml:space="preserve">
+    <value>◎ Unified-SQL Azure Data Lake</value>
+  </data>
   <data name="EnMegabytes_1_Selected" xml:space="preserve">
     <value>◉ 1 MB</value>
   </data>
@@ -600,6 +624,9 @@
   <data name="OptionDescriptionGeneralExecuteQueryOnOpen" xml:space="preserve">
     <value>Executes a table select or view definition query automatically on open.</value>
   </data>
+  <data name="OptionDescriptionGeneralLanguageService" xml:space="preserve">
+    <value>The mandated language service the editor must use. Requires IDE restart.</value>
+  </data>
   <data name="OptionDescriptionGeneralPromptToSave" xml:space="preserve">
     <value>Prompt to save unsaved SQL query windows on close.</value>
   </data>
@@ -775,10 +802,13 @@
     <value>Execution time-out</value>
   </data>
   <data name="OptionDisplayGeneralEnableIntellisense" xml:space="preserve">
-    <value>Enable Intellisense</value>
+    <value> Enable Intellisense</value>
   </data>
   <data name="OptionDisplayGeneralExecuteQueryOnOpen" xml:space="preserve">
     <value>Auto-execute select query</value>
+  </data>
+  <data name="OptionDisplayGeneralLanguageService" xml:space="preserve">
+    <value>Language Service</value>
   </data>
   <data name="OptionDisplayGeneralPromptToSave" xml:space="preserve">
     <value>Prompt to save</value>

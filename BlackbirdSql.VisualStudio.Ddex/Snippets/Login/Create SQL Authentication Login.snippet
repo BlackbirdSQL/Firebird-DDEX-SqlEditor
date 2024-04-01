@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create SQL Authentication Login</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a SQL Server Authentication login.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>LoginName</ID>
+          <ToolTip>Name of the SQL login</ToolTip>
+          <Default>LoginName</Default>
+        </Literal>
+        <Literal>
+          <ID>Password_val</ID>
+          <ToolTip>Password for the SQL login</ToolTip>
+          <Default>StrongP@ssword</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE LOGIN $LoginName$ WITH PASSWORD = N'$Password_val$'
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
+
+
+

@@ -17,7 +17,6 @@ using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
@@ -32,20 +31,81 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Common.Ctl;
 
 
+// =========================================================================================================
+//
+//										DesignerServices Class
+//
+/// <summary>
+/// Service for handling open query commands.
+/// </summary>
+// =========================================================================================================
 public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExplorerServices
 {
+
+	// ----------------------------------------------------------
+	#region Constructors / Destructors - DesignerServices
+	// ----------------------------------------------------------
+
 
 	public DesignerExplorerServices() : base()
 	{
 	}
 
 
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =====================================================================================================
+	#region Methods - DesignerServices
+	// =====================================================================================================
+
+
+	private static void OpenAsMiscellaneousFile(string path, string caption, Guid editor,
+		string physicalView, Guid logicalView)
+	{
+		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
+
+		Diag.ThrowIfNotOnUIThread();
+
+		try
+		{
+			IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject();
+
+			VSADDRESULT[] array = new VSADDRESULT[1];
+			VSADDITEMOPERATION addItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
+
+			uint flags = (uint)__VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen;
+
+			flags |= (uint)(!(editor == Guid.Empty)
+				? __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor
+				: __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseView);
+
+			Native.WrapComCall(miscellaneousProject.AddItemWithSpecific(grfEditorFlags: flags,
+				itemidLoc: uint.MaxValue, dwAddItemOperation: addItemOperation, pszItemName: caption, cFilesToOpen: 1u,
+				rgpszFilesToOpen: [path], hwndDlgOwner: IntPtr.Zero, rguidEditorType: ref editor,
+				pszPhysicalView: physicalView, rguidLogicalView: ref logicalView, pResult: array), []);
+
+			if (array[0] != VSADDRESULT.ADDRESULT_Success)
+			{
+				throw new ApplicationException(array[0].ToString());
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+	}
+
 
 
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerServiceHelper.OpenOnlineEditor
 	// combined with local methods
-	public static void OpenExplorerEditor(IVsDataExplorerNode node, EnModelObjectType objectType,
+	private static void OpenExplorerEditor(IVsDataExplorerNode node, EnModelObjectType objectType,
 		IList<string> identifierList, EnModelTargetType targetType, Guid editorFactory,
 		Action<DbConnectionStringBuilder, bool> documentLoadedCallback, string physicalViewName = null)
 	{
@@ -83,45 +143,8 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	}
 
 
-	public static void OpenAsMiscellaneousFile(string path, string caption,
-	Guid editor, string physicalView, Guid logicalView)
-	{
-		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
 
-		Diag.ThrowIfNotOnUIThread();
-
-		try
-		{
-			IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject();
-
-			VSADDRESULT[] array = new VSADDRESULT[1];
-			VSADDITEMOPERATION addItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
-
-			uint flags = (uint)__VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen;
-
-			flags |= (uint)(!(editor == Guid.Empty)
-				? __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor
-				: __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseView);
-
-			Native.WrapComCall(miscellaneousProject.AddItemWithSpecific(grfEditorFlags: flags,
-				itemidLoc: uint.MaxValue, dwAddItemOperation: addItemOperation, pszItemName: caption, cFilesToOpen: 1u,
-				rgpszFilesToOpen: [path], hwndDlgOwner: IntPtr.Zero, rguidEditorType: ref editor,
-				pszPhysicalView: physicalView, rguidLogicalView: ref logicalView, pResult: array), []);
-
-			if (array[0] != VSADDRESULT.ADDRESULT_Success)
-			{
-				throw new ApplicationException(array[0].ToString());
-			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-	}
-
-
-	public static bool OpenMiscellaneousSqlFile(string explorerMoniker, IVsDataExplorerNode node, EnModelTargetType targetType, CsbAgent csa)
+	private static bool OpenMiscellaneousSqlFile(string explorerMoniker, IVsDataExplorerNode node, EnModelTargetType targetType, CsbAgent csa)
 	{
 		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "ExplorerMoniker: {0}.", explorerMoniker);
 
@@ -129,9 +152,9 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		uint documentCookie = 0;
 
-		if (RdtManager.MonikerCsaTable.ContainsKey(explorerMoniker))
+		if (RdtManager.InflightMonikerCsbTable.ContainsKey(explorerMoniker))
 		{
-			foreach (KeyValuePair<object, AuxiliaryDocData> pair in ((IBEditorPackage)ApcManager.DdexPackage).AuxiliaryDocDataTable)
+			foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
 			{
 				if (pair.Value.ExplorerMoniker == null)
 					continue;
@@ -144,7 +167,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			}
 
 			if (documentCookie == 0)
-				RdtManager.MonikerCsaTable.Remove(explorerMoniker);
+				RdtManager.InflightMonikerCsbTable.Remove(explorerMoniker);
 		}
 
 		if (documentCookie != 0)
@@ -163,7 +186,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 			_ = ppHierOpen; // Suppress
 
-			bool editorAlreadyOpened = ErrorHandler.Succeeded(hresult) && pfOpen.AsBool();
+			bool editorAlreadyOpened = __(hresult) && pfOpen.AsBool();
 
 			if (editorAlreadyOpened && ppWindowFrame != null)
 			{
@@ -204,16 +227,16 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			streamWriter.Close();
 			streamWriter = null;
 
-			RdtManager.ExplorerMonikerStack = explorerMoniker;
-			RdtManager.MonikerCsaTable.Add(explorerMoniker, csa);
+			RdtManager.InflightMonikerStack = explorerMoniker;
+			RdtManager.InflightMonikerCsbTable.Add(explorerMoniker, csa);
 
-			OpenAsMiscellaneousFile(tempFilename, filename + SystemData.Extension, new Guid(SystemData.DslEditorFactoryGuid),
+			OpenAsMiscellaneousFile(tempFilename, filename + SystemData.Extension, new Guid(SystemData.EditorFactoryGuid),
 				string.Empty, VSConstants.LOGVIEWID_Primary);
 		}
 		catch
 		{
-			_ = RdtManager.ExplorerMonikerStack;
-			RdtManager.MonikerCsaTable.Remove(explorerMoniker);
+			_ = RdtManager.InflightMonikerStack;
+			RdtManager.InflightMonikerCsbTable.Remove(explorerMoniker);
 		}
 		finally
 		{
@@ -222,7 +245,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			Directory.Delete(tempDirectory);
 		}
 
-		foreach (KeyValuePair<object, AuxiliaryDocData> pair in ((IBEditorPackage)ApcManager.DdexPackage).AuxiliaryDocDataTable)
+		foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
 		{
 			if (explorerMoniker.Equals(pair.Value.ExplorerMoniker) && pair.Value.DocCookie == 0)
 			{
@@ -259,7 +282,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			streamWriter.Flush();
 			streamWriter.Close();
 			streamWriter = null;
-			OpenAsMiscellaneousFile(tempFileName, pbstrItemName, new Guid(SystemData.DslEditorFactoryGuid),
+			OpenAsMiscellaneousFile(tempFileName, pbstrItemName, new Guid(SystemData.EditorFactoryGuid),
 				string.Empty, VSConstants.LOGVIEWID_Primary);
 		}
 		finally
@@ -270,7 +293,8 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	}
 
 
-	public static void OpenNewQueryEditor(string datasetKey, Guid editorFactory, Action<DbConnectionStringBuilder> documentLoadedCallback,
+
+	private static void OpenNewQueryEditor(string datasetKey, Guid editorFactory, Action<DbConnectionStringBuilder> documentLoadedCallback,
 		string physicalViewName = null)
 	{
 		if (editorFactory == Guid.Empty)
@@ -309,51 +333,17 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	}
 
 
+
 	public void NewSqlQuery(string datasetKey)
 	{
 		// Sanity check.
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
 		Diag.ThrowIfNotOnUIThread();
 
-		Guid clsidEditorFactory = new Guid(SystemData.DslEditorFactoryGuid);
+		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
 
 		OpenNewQueryEditor(datasetKey, clsidEditorFactory, null);
 	}
-
-
-
-	public void OnSqlQueryLoaded(DbConnectionStringBuilder csb, bool alreadyLoaded)
-	{
-		if (alreadyLoaded)
-			return;
-
-		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)ApcManager.DdexPackage).LastFocusedSqlEditor;
-
-		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
-
-		if (lastFocusedSqlEditor != null)
-		{
-			SqlEditorExecuteQueryCommand command = new (lastFocusedSqlEditor);
-
-			_ = Task.Run(() => OnSqlQueryLoadedAsync(command, 50));
-		}
-	}
-
-	private async Task<bool> OnSqlQueryLoadedAsync(AbstractSqlEditorCommand command, int delay)
-	{
-		// Tracer.Trace(GetType(), "OnSqlQueryLoadedAsync()");
-
-		// Give editor time to breath.
-		if (delay > 0)
-			Thread.Sleep(delay);
-
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		command.Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
-
-		return true;
-	}
-
 
 
 
@@ -372,7 +362,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		EnModelObjectType objectType = EnModelObjectType.Unknown;
 		Action<DbConnectionStringBuilder, bool> callback = null;
 
-		Guid clsidEditorFactory = new Guid(SystemData.DslEditorFactoryGuid);
+		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
 
 		try
 		{
@@ -388,10 +378,10 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 		try
-		{ 
+		{
 			identifierList = moniker.Identifier.ToArray();
 			objectType = moniker.ObjectType;
-			
+
 			if ((objectType == EnModelObjectType.Table || objectType == EnModelObjectType.View)
 				&& targetType == EnModelTargetType.QueryScript && PersistentSettings.EditorExecuteQueryOnOpen)
 			{
@@ -405,7 +395,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		}
 
 		try
-		{ 
+		{
 			OpenExplorerEditor(node, objectType, identifierList, targetType, clsidEditorFactory, callback, null);
 		}
 		catch (Exception ex)
@@ -415,5 +405,53 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		}
 	}
 
+
+	#endregion Methods
+
+
+
+
+
+	// =====================================================================================================
+	#region Event Handling - DesignerServices
+	// =====================================================================================================
+
+
+	public void OnSqlQueryLoaded(DbConnectionStringBuilder csb, bool alreadyLoaded)
+	{
+		if (alreadyLoaded)
+			return;
+
+		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
+
+		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
+
+		if (lastFocusedSqlEditor != null)
+		{
+			SqlEditorExecuteQueryCommand command = new (lastFocusedSqlEditor);
+
+			_ = Task.Run(() => OnSqlQueryLoadedAsync(command, 50));
+		}
+	}
+
+
+
+	private async Task<bool> OnSqlQueryLoadedAsync(AbstractSqlEditorCommand command, int delay)
+	{
+		// Tracer.Trace(GetType(), "OnSqlQueryLoadedAsync()");
+
+		// Give editor time to breath.
+		if (delay > 0)
+			Thread.Sleep(delay);
+
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		command.Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
+
+		return true;
+	}
+
+
+	#endregion Event Handling
 
 }

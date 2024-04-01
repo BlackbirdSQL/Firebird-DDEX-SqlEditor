@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create View</Title>
+      <Shortcut></Shortcut>
+      <Description>Creates a view.</Description>
+      <Author>BlackbirdSql</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>SchemaName</ID>
+          <ToolTip>Name of the schema</ToolTip>
+          <Default>dbo</Default>
+        </Literal>
+        <Literal>
+          <ID>viewname</ID>
+          <ToolTip>Name of the view</ToolTip>
+          <Default>Sample_View</Default>
+        </Literal>
+        <Literal>
+          <ID>tablename</ID>
+          <ToolTip>Name of the table</ToolTip>
+          <Default>Sample_Table</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="SQL_FIREBIRD">
+        <![CDATA[
+CREATE VIEW $SchemaName$.$viewname$
+AS
+    Select * from $SchemaName$.$tablename$
+]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
+

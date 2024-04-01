@@ -466,7 +466,7 @@ public class Moniker
 		{
 			for (int i = 2; i < 1000; i++)
 			{
-				if (!RdtManager.IsMonikerRegistered(fullname))
+				if (!RdtManager.IsInflightMonikerRegistered(fullname))
 					break;
 
 				if (i > 100)

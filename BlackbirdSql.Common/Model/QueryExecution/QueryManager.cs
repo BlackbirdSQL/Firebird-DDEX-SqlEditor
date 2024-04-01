@@ -4,7 +4,6 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Transactions;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
@@ -12,17 +11,16 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Enums;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Utilities;
 
-using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
+
 public sealed class QueryManager : IDisposable
 {
+
 	public QueryManager(SqlConnectionStrategy connectionStrategy, QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVarResolver)
 	{
 		ConnectionStrategy = connectionStrategy;
@@ -31,6 +29,7 @@ public sealed class QueryManager : IDisposable
 
 		RegisterSqlExecWithEvenHandlers();
 	}
+
 
 
 

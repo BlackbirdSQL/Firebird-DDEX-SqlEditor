@@ -92,7 +92,7 @@ StringCell^ WSelectExpressionParser::Parse(StringCell^ root)
 
 	stripped = ParserInstance(WExpressionListParser)->Parse(stripped);
 
-	// TODO: the last part can also be a comment, don"t use array_pop
+	// TO DO: the last part can also be a comment, don"t use array_pop
 
 	// we remove the last token, if it is a colref,
 	// it can be an alias without an AS
@@ -100,7 +100,7 @@ StringCell^ WSelectExpressionParser::Parse(StringCell^ root)
 	if (!alias && IsColumnReference(last))
 	{
 
-		// TODO: it can be a comment, don"t use array_pop
+		// TO DO: it can be a comment, don"t use array_pop
 
 		// check the token before the colref
 		prev = stripped->ArrayPop();
@@ -120,7 +120,7 @@ StringCell^ WSelectExpressionParser::Parse(StringCell^ root)
 
 	baseExpr = _Sql;
 
-	// TODO: this is always done with stripped, how we do it twice?
+	// TO DO: this is always done with stripped, how we do it twice?
 	processed = ParserInstance(WExpressionListParser)->Parse(root);
 
 	// if there is only one part, we copy the expr_type

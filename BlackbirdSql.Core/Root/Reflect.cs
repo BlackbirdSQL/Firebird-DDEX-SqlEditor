@@ -23,11 +23,55 @@ public abstract class Reflect
 	public static T CreateInstance<T>(params object[] args)
 	{
 		var type = typeof(T);
-		var instance = type.Assembly.CreateInstance(
-			type.FullName, false,
-			BindingFlags.Instance | BindingFlags.NonPublic,
-			null, args, null, null);
+		var instance = type.Assembly.CreateInstance(type.FullName, false,
+			BindingFlags.Instance | BindingFlags.NonPublic, null, args, null, null);
+
 		return (T)instance;
+	}
+
+	public static object CreateInstance(string containerClassName, params object[] args)
+	{
+		Type typeContainerClass;
+
+		try
+		{
+			typeContainerClass = Type.GetType(containerClassName);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return null;
+		}
+
+		if (typeContainerClass == null)
+		{
+			TypeLoadException ex = new($"Could not get type: {containerClassName}. Aborting.");
+			Diag.Dug(ex);
+			return null;
+		}
+
+		object instance;
+
+		try
+		{ 
+			instance = typeContainerClass.Assembly.CreateInstance(typeContainerClass.FullName, false,
+				BindingFlags.Instance | BindingFlags.NonPublic, null, args, null, null);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return null;
+		}
+
+		if (instance == null)
+		{
+			NotSupportedException ex = new($"Could not create instance of type: {typeContainerClass.AssemblyQualifiedName}. Aborting.");
+			Diag.Dug(ex);
+			return null;
+		}
+
+
+		return instance;
 	}
 
 
@@ -397,14 +441,43 @@ public abstract class Reflect
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	public static object GetPropertyValue(object containerClassInstance, string propertyName,
-		BindingFlags bindingFlags)
+		BindingFlags bindingFlags = BindingFlags.Default)
 	{
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+
 		PropertyInfo propertyInfo = GetPropertyInfo(containerClassInstance, propertyName, bindingFlags);
 
 		if (propertyInfo == null)
 			return null;
 
 		return GetPropertyInfoValue(containerClassInstance, propertyInfo);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Get a class static property's value given the containing class fqn, the
+	/// property name and access modifier binding flags.
+	/// </summary>
+	/// <returns>
+	/// Returns the property's value else logs a diagnostics exception and returns null
+	/// on error
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static object GetPropertyValue(string containerClassName, string propertyName,
+		BindingFlags bindingFlags = BindingFlags.Default)
+	{
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+
+		Type typeContainerClass = Type.GetType(containerClassName);
+		PropertyInfo propertyInfo = typeContainerClass.GetProperty(propertyName, bindingFlags);
+
+		if (propertyInfo == null)
+			return null;
+
+		return propertyInfo.GetValue(null);
 	}
 
 
@@ -488,11 +561,14 @@ public abstract class Reflect
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	public static object InvokeMethod(object containerClassInstance, string method,
-		BindingFlags bindingFlags, object[] args = null)
+		BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
 	{
 		// Tracer.Trace(GetType(), "InvokeMethod()", "Method: {0}", method);
 
-		try 
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+
+		try
 		{
 			args ??= [];
 
@@ -636,6 +712,9 @@ public abstract class Reflect
 	public static bool SetFieldValue(object containerClassInstance, string fieldName,
 		BindingFlags bindingFlags, object value)
 	{
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+
 		FieldInfo fieldInfo = GetFieldInfo(containerClassInstance, fieldName, bindingFlags);
 
 		if (fieldInfo == null)
@@ -713,7 +792,41 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not set Field Value for static field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Dug(ex, $"Could not set Field Value for field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
+			return false;
+		}
+
+		return true;
+	}
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Sets a class property's value given the containing class instance, the property
+	/// name, access modifier binding flags and the value.
+	/// </summary>
+	/// <returns>
+	/// Returns true if successful else Logs a diagnostics exception on error and
+	/// returns false.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static bool SetPropertyValue(object containerClassInstance, string propertyName,
+		BindingFlags bindingFlags, object value)
+	{
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+
+		PropertyInfo propInfo = GetPropertyInfo(containerClassInstance, propertyName, bindingFlags);
+
+		if (propInfo == null)
+			return false;
+
+		try
+		{
+			propInfo.SetValue(containerClassInstance, value);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, $"Could not set Property Value for property '{propInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
 			return false;
 		}
 

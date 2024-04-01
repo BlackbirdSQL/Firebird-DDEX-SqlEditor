@@ -18,11 +18,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 //
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
-/// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings descendent
-/// tree from the top-level extension lib (this lib) down to the Core. There is no point using services as
-/// this configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > [Intermediate Libs] > Core.
-/// Current intermediate libs are: EditorExtension > Common.
+/// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
+/// descendent tree from the top-level extension lib down to the Core.
+/// PersistentSettings can be either consumers or providers of options, or both.
+/// There is no point using services as this configuration is fixed. ie:
+/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
 public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
@@ -80,7 +80,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 
 	/// <summary>
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
-	/// Only implemented by packages that have settings models.
+	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
 	public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
 	{
