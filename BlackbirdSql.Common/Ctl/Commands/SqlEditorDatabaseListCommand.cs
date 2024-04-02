@@ -22,7 +22,7 @@ namespace BlackbirdSql.Common.Ctl.Commands;
 public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 {
 	private static CsbAgent _Csa = null;
-	private static long _Seed = -1;
+	private static long _Stamp = -1;
 	private static string[] _DatabaseList = null;
 
 	private static string[] DatabaseList
@@ -32,7 +32,7 @@ public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 			if (RctManager.ShutdownState)
 				return new string[0];
 
-			if (_DatabaseList == null || _Seed != RctManager.Seed)
+			if (_DatabaseList == null || _Stamp != RctManager.Stamp)
 			{
 				string nodeDisplayMember = _Csa?.DatasetKey;
 
@@ -61,7 +61,7 @@ public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 
 
 				_DatabaseList = [.. list];
-				_Seed = RctManager.Seed;
+				_Stamp = RctManager.Stamp;
 			}
 
 			return _DatabaseList;
@@ -94,7 +94,7 @@ public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 
 		if (qryMgr != null)
 		{
-			if (EditorWindow != null && (_Csa == null || _Seed != RctManager.Seed))
+			if (EditorWindow != null && (_Csa == null || _Stamp != RctManager.Stamp))
 			{
 				_Csa = null;
 				_DatabaseList = null;

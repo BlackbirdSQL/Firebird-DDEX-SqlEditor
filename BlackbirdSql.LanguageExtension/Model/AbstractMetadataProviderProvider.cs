@@ -52,14 +52,53 @@ public abstract class AbstractMetadataProviderProvider : IBMetadataProviderProvi
 
 
 
+
+
 	private class BinderQueueImpl : IBBinderQueue, IDisposable
 	{
+		internal BinderQueueImpl()
+		{
+		}
+
+		public void Dispose()
+		{
+			Dispose(isDisposing: true);
+			GC.SuppressFinalize(this);
+		}
+
+		private void Dispose(bool isDisposing)
+		{
+			if (!isDisposing)
+			{
+				return;
+			}
+			lock (_LockLocal)
+			{
+				for (int i = 0; i < _Actions.Length; i++)
+				{
+					if (_Actions[i] != null)
+					{
+						_Actions[i].Item2.Complete(isCompleted: false);
+						_Actions[i] = null;
+					}
+				}
+				_JobsToProcessSignal.Set();
+				_JobsToProcessSignal.Dispose();
+				_IsDisposed = true;
+			}
+		}
+
+
+
+
 		private enum Priority
 		{
 			UIThread,
 			Bind,
 			RecomputeMetadata
 		}
+
+
 
 		private class BinderAsyncResult : IAsyncResult
 		{
@@ -105,9 +144,6 @@ public abstract class AbstractMetadataProviderProvider : IBMetadataProviderProvi
 
 		private readonly object _LockLocal = new object();
 
-		internal BinderQueueImpl()
-		{
-		}
 
 		public IAsyncResult EnqueueUIThreadAction(Func<object> a)
 		{
@@ -226,34 +262,12 @@ public abstract class AbstractMetadataProviderProvider : IBMetadataProviderProvi
 			}
 		}
 
-		public void Dispose()
-		{
-			Dispose(isDisposing: true);
-			GC.SuppressFinalize(this);
-		}
 
-		private void Dispose(bool isDisposing)
-		{
-			if (!isDisposing)
-			{
-				return;
-			}
-			lock (_LockLocal)
-			{
-				for (int i = 0; i < _Actions.Length; i++)
-				{
-					if (_Actions[i] != null)
-					{
-						_Actions[i].Item2.Complete(isCompleted: false);
-						_Actions[i] = null;
-					}
-				}
-				_JobsToProcessSignal.Set();
-				_JobsToProcessSignal.Dispose();
-				_IsDisposed = true;
-			}
-		}
 	}
+
+
+
+
 
 	private IMetadataProvider _SchemaModelMetadata;
 

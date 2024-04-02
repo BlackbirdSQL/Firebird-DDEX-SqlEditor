@@ -30,8 +30,8 @@ namespace BlackbirdSql.Common.Model;
 public abstract class AbstractConnectionStrategy : IDisposable
 {
 	protected CsbAgent _Csa = null;
-	protected long _Seed = -1;
-	protected long _ConnectionSeed = -1;
+	protected long _Stamp = -1;
+	protected long _ConnectionStamp = -1;
 	protected string _LastDatasetKey = null;
 
 	public delegate void ConnectionChangedEvent(object sender, ConnectionChangedEventArgs args);
@@ -84,7 +84,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
-				if (_Connection == null || _ConnectionInfo == null || _ConnectionSeed == RctManager.Seed)
+				if (_Connection == null || _ConnectionInfo == null || _ConnectionStamp == RctManager.Stamp)
 					return _Connection;
 
 				// We have to ensure the connection hasn't changed.
@@ -100,7 +100,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				// Compare the current connection with the registered connection.
 				if (CsbAgent.AreEquivalent(csaRegistered, csaCurrent, CsbAgent.DescriberKeys))
 				{
-					_ConnectionSeed = RctManager.Seed;
+					_ConnectionStamp = RctManager.Stamp;
 					return _Connection;
 				}
 
@@ -284,7 +284,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		lock (_LockObject)
 		{
-			_ConnectionSeed = RctManager.Seed;
+			_ConnectionStamp = RctManager.Stamp;
 			ConnectionInfo = ci;
 			SetDbConnection(connection);
 		}
@@ -416,7 +416,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		lock (_LockObject)
 		{
-			_ConnectionSeed = -1;
+			_ConnectionStamp = -1;
 			ConnectionInfo = null;
 			SetDbConnection(null);
 		}
@@ -473,12 +473,12 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			lock (_LockObject)
 			{
 				_Csa = (CsbAgent)csb;
-				_Seed = RctManager.Seed;
+				_Stamp = RctManager.Stamp;
 
 				if (csb == null || _Csa.DatasetKey != selectedDatasetKey)
 				{
 					_Csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(selectedDatasetKey);
-					_Seed = RctManager.Seed;
+					_Stamp = RctManager.Stamp;
 				}
 
 				if (_Csa != null)
@@ -500,7 +500,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 					if (ConnectionInfo == null)
 						ConnectionInfo = new();
 
-					_ConnectionSeed = RctManager.Seed;
+					_ConnectionStamp = RctManager.Stamp;
 					ConnectionInfo.Parse(_Csa);
 					DatabaseChanged?.Invoke(this, new EventArgs());
 					if (isOpen)

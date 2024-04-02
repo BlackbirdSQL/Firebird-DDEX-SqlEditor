@@ -215,28 +215,29 @@ public sealed class RctManager : IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns the sequential seed of the last attempt to modify the
-	/// <see cref="RunningConnectionTable"/> and is used to ensure uniformity of
-	/// connections and <see cref="CsbAgent"/>s globally across the extension.
+	/// Returns the sequential stamp of the last attempt to modify the
+	/// <see cref="RunningConnectionTable"/> and is used to perform drift detection
+	/// to ensure uniformity of connections and <see cref="CsbAgent"/>s globally across
+	/// the extension.
 	/// </summary>
 	/// <remarks>
-	/// Objects that use connections or <see cref="CsbAgent"/>s record the seed at the
+	/// Objects that use connections or <see cref="CsbAgent"/>s record the stamp at the
 	/// time their connection or Csa is created.
-	/// Whenever the connection or Csa is accessed it must compare it's saved seed value
-	/// against the Rct's seed. If they differ it must check if it's connection requires
-	/// updating or Csa requires renewing and also always update it's seed irrelevant of
-	/// any updates.
-	/// If a Csa requires tracking the built-in seed tracking should be enabled and
-	/// used.
+	/// Whenever the connection or Csa is accessed it must perform drift detection and
+	/// compare it's saved stamp value against the Rct's stamp. If they differ it must
+	/// check if it's connection requires updating or Csa requires renewing and also
+	/// always update it's stamp to the most recent value irrelevant of any updates.
+	/// If a Csa requires drift detection the built-in stamp drift detection should be
+	/// enabled and used.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static long Seed => RunningConnectionTable.Seed;
+	public static long Stamp => RunningConnectionTable.Stamp;
 
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns the seed of the last connection registered or updated.
+	/// Returns the global shutdown state.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static bool ShutdownState => _Instance != null && _Instance._Rct != null && _Instance._Rct.ShutdownState;
@@ -739,7 +740,7 @@ public sealed class RctManager : IDisposable
 
 		Rct.Invalidate();
 
-		// Tracer.Trace(typeof(RctManager), "Invalidate()", "New seed: {0}", Seed);
+		// Tracer.Trace(typeof(RctManager), "Invalidate()", "New stamp: {0}", Stamp);
 	}
 
 

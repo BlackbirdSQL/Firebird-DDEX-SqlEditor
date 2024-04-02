@@ -6,7 +6,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
         public const string Name = "BlackbirdSql DDEX and SqlEditor for Firebird";
         public const string Description = @"The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the ""look and feel"" of Microsoft's SqlServer extensions";
         public const string Language = "en-US";
-        public const string Version = "11.2.9.1001";
+        public const string Version = "11.3.0.1001";
         public const string Author = "BlackbirdSql";
         public const string Tags = "DDEX;Firebird;FirebirdSql;DDEX 2.0;SqlEditor";
     }

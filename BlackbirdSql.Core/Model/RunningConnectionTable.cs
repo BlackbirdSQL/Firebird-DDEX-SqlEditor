@@ -204,10 +204,11 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// The sequential seed of the last attempt to modify the Rct.
+	/// The sequential drift detection stamp of the last attempt to modify the Rct.
+	/// The stamp may be updated even if the update was unsuccesful.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static long Seed => _Seed;
+	public static long Stamp => _Stamp;
 
 
 	#endregion Property accessors

@@ -1,13 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="11.2.9.1001" Language="en-US" Publisher="BlackbirdSql" />
+        <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="11.3.0.1001" Language="en-US" Publisher="BlackbirdSql" />
         <DisplayName>BlackbirdSql DDEX and SqlEditor for Firebird</DisplayName>
         <Description xml:space="preserve"> The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the "look and feel" of Microsoft's SqlServer extensions</Description>
         <License>license.txt</License>
         <Icon>blackbird-90x90.png</Icon>
         <PreviewImage>blackbird-vsix-preview.jpg</PreviewImage>
         <Tags>DDEX;Firebird;FirebirdSql;DDEX 2.0;SqlEditor</Tags>
+        <Preview>true</Preview>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 18.0)">

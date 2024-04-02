@@ -3,7 +3,6 @@
 using System;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using BlackbirdSql.Common;
 using Microsoft.SqlServer.Management.SqlParser.Metadata;
 using Microsoft.SqlServer.Management.SqlParser.MetadataProvider;
 using Microsoft.Win32;

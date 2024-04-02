@@ -753,12 +753,12 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				try
 				{
 					_Csa = (CsbAgent)csb;
-					_Seed = RctManager.Seed;
+					_Stamp = RctManager.Stamp;
 
 					if (csb == null || _Csa.DatasetKey != selectedDatasetKey)
 					{
 						_Csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(selectedDatasetKey);
-						_Seed = RctManager.Seed;
+						_Stamp = RctManager.Stamp;
 					}
 
 					if (_Csa != null)

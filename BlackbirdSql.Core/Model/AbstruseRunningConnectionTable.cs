@@ -92,7 +92,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (disposing)
 		{
 			_Instance = null;
-			_Seed++;
+			_Stamp++;
 
 			bool launchersActive = false;
 
@@ -188,7 +188,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// <summary>
 	/// Must be incremented on every possible update and registration.
 	/// </summary>
-	protected static long _Seed = -1;
+	protected static long _Stamp = -1;
 
 
 	// Task handling fields.
@@ -736,12 +736,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Increments the Rct seed after changes to the internal tables.
+	/// Increments the Rct stamp after changes to the internal tables.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public long Invalidate()
 	{
-		return ++_Seed;
+		return ++_Stamp;
 	}
 
 

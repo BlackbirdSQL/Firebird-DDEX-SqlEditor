@@ -57,7 +57,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 
 	public CsbAgent() : base()
 	{
-		_Id = RctManager.Seed;
+		_Stamp = RctManager.Stamp;
 	}
 
 
@@ -72,25 +72,25 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 	/// </param>
 	public CsbAgent(string connectionString, bool validateServerName = true) : base(connectionString, validateServerName)
 	{
-		_Id = RctManager.Seed;
+		_Stamp = RctManager.Stamp;
 	}
 
 
 	public CsbAgent(IDbConnection connection, bool validateServerName = true) : base(connection, validateServerName)
 	{
-		_Id = RctManager.Seed;
+		_Stamp = RctManager.Stamp;
 	}
 
 
 	public CsbAgent(IBPropertyAgent ci, bool validateServerName = true) : base(ci, validateServerName)
 	{
-		_Id = RctManager.Seed;
+		_Stamp = RctManager.Stamp;
 	}
 
 
 	public CsbAgent(IVsDataExplorerNode node, bool validateServerName = true) : base(node, validateServerName)
 	{
-		_Id = RctManager.Seed;
+		_Stamp = RctManager.Stamp;
 	}
 
 
@@ -120,7 +120,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 
 			clone._EquivalencyConnectionString = _EquivalencyConnectionString;
 			clone._EquivalencyMoniker = _EquivalencyMoniker;
-			clone._Id = _Id;
+			clone._Stamp = _Stamp;
 		}
 
 		return clone;
@@ -138,7 +138,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 
 	private string _EquivalencyConnectionString = null;
 	private string _EquivalencyMoniker = null;
-	private long _Id = -1;
+	private long _Stamp = -1;
 
 
 	#endregion Fields
@@ -171,8 +171,12 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 	public static IEnumerable<Describer> PublicMandatoryKeys => Describers.PublicMandatoryKeys;
 	public static IEnumerable<Describer> WeakEquivalencyKeys => Describers.WeakEquivalencyKeys;
 
+	/// <summary>
+	/// Drift detection stamp of a csb.
+	/// </summary>
 	[Browsable(false)]
-	public long Id => _Id;
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public long Stamp => _Stamp;
 
 	#endregion Property accessors
 
@@ -279,7 +283,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 	/// commands as well as PropertyWindows use CsbAgent to do status validations and
 	/// updates on pulsed events.
 	/// This can result in a very high volume of calls, so the agent stores the
-	/// <see cref="RctManager.Seed"/>, database moniker and connection string by a call
+	/// <see cref="RctManager.Stamp"/>, database moniker and connection string by a call
 	/// to <see cref="RegisterValidationState"/>, for low overhead responses when the
 	/// connection has not changed.
 	/// </summary>
@@ -297,11 +301,11 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 			throw ex;
 		}
 
-		// Before constructing anything this equivalency checks the RctManager seed and compares
-		// the connection strings.
+		// Before constructing anything we perform drift detection against the RctManager stamp and then
+		// perform equivalency checks between the connection strings.
 		// This will be fast low-overhead call and suitable for operations like QueryStatus()
 		// event handling.
-		return _Id != RctManager.Seed || _EquivalencyConnectionString != connection.ConnectionString
+		return _Stamp != RctManager.Stamp || _EquivalencyConnectionString != connection.ConnectionString
 			|| !SafeDatasetMoniker.Equals(_EquivalencyMoniker, StringComparison.InvariantCulture);
 	}
 
@@ -403,7 +407,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 	// ---------------------------------------------------------------------------------
 	public void UpdateValidationRctState()
 	{
-		_Id = RctManager.Seed;
+		_Stamp = RctManager.Stamp;
 	}
 
 

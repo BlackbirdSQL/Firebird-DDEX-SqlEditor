@@ -84,6 +84,7 @@ public abstract class AbstractMetadataProvider : IMetadataProvider
 
 	protected AbstractMetadataProvider(IBuiltInFunctionLookup builtInFunctionLookup, ICollationLookup collationLookup, ISystemDataTypeLookup systemDataTypeLookup, IMetadataFactory metadataFactory)
 	{
+		// TBC: Implementation of metadata factory and providers. These classes will provide the real 'meat' for predictive text.
 		// m_builtInFunctionLookup = builtInFunctionLookup ?? Microsoft.SqlServer.Management.SqlParser.MetadataProvider.Internals.BuiltInFunctionLookup.Instance;
 		// m_collationLookup = collationLookup ?? Microsoft.SqlServer.Management.SqlParser.MetadataProvider.Internals.CollationLookup.Instance;
 		// m_systemDataTypeLookup = systemDataTypeLookup ?? Microsoft.SqlServer.Management.SqlParser.MetadataProvider.Internals.SystemDataTypeLookup.Instance;

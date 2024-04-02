@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
@@ -20,9 +22,7 @@ using Microsoft.VisualStudio.Threading;
 
 namespace BlackbirdSql.LanguageExtension.Model;
 
-[SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "TBC")]
-[SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "TBC`")]
-[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "TBC")]
+// [SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "TBC`")]
 
 
 /// <summary>
@@ -97,6 +97,8 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 			return value;
 		}
 
+
+
 		internal void Release(LsbMetadataProviderProvider mpp)
 		{
 			lock (_LockLocal)
@@ -115,9 +117,18 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 			}
 		}
 
-		internal static string GetKeyForQueryManager(QueryManager value)
+		internal static string GetKeyForQueryManager(QueryManager qryMgr)
 		{
+			if (!qryMgr.IsConnected)
+				return null;
+
 			string text = null;
+
+			if (qryMgr.ConnectionStrategy is SqlConnectionStrategy { ConnectionInfo: ConnectionPropertyAgent connectionInfo })
+			{
+				text = connectionInfo.DatasetKey;
+			}
+
 			return text;
 		}
 	}
@@ -126,11 +137,11 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 	private delegate void InitializeMetadataProviderDelegate();
 
 	private readonly object _LockLocal = new();
-	private SemaphoreSlim _LockSem = new SemaphoreSlim(1);
+	private readonly SemaphoreSlim _LockSem = new(1);
 
 	// private Dictionary<string, CatalogStamp> _CatalogStamps = new Dictionary<string, CatalogStamp>();
 
-	private Type _DspType;
+	// private Type _DspType;
 
 	public static readonly bool CheckForDatabaseChangesAfterQueryExecution = true;
 
@@ -331,6 +342,9 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	private void CheckForDatabaseChangesAndRecreateProvider()
 	{
+		// We're unlikely to ever implement any server database drift detection. The only drift detection
+		// there will be is changes to a connection's stamp versus the RunningConnectionTable. This is
+		// local and affects only changes within a user session.
 		/*
 		lock (_LockLocal)
 		{
@@ -424,22 +438,14 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	private CsbAgent GetMetadataConnectionStringBuilder()
 	{
-		return null;
-		/*
-		UIConnectionInfo uIConnectionInfo = null;
-		if (!IsCloudConnection)
-		{
-			uIConnectionInfo = ConnectionInfo.Copy();
-			SqlServerConnectionService.SetDatabaseName(uIConnectionInfo, string.Empty);
-		}
-		else
-		{
-			uIConnectionInfo = ConnectionInfo;
-		}
-		SqlConnectionStringBuilder sqlConnectionStringBuilder = new SqlConnectionStringBuilder();
+		ConnectionPropertyAgent uIConnectionInfo = null;
+
+		uIConnectionInfo = ConnectionInfo;
+
+		CsbAgent sqlConnectionStringBuilder = [];
 		SqlConnectionStrategy.PopulateConnectionStringBuilder(sqlConnectionStringBuilder, uIConnectionInfo);
+
 		return sqlConnectionStringBuilder;
-		*/
 	}
 
 	private void DisposeConnections()
@@ -453,16 +459,14 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	private void DisposeMetadataConnection()
 	{
-		/*
 		lock (_LockLocal)
 		{
 			if (ServerConnection != null)
 			{
-				ServerConnection.Disconnect();
+				ServerConnection.Close();
 				ServerConnection = null;
 			}
 		}
-		*/
 	}
 
 	private void DisposeDriftDetectionConnection()
@@ -478,56 +482,19 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		}
 	}
 
+
+	/*
 	private static DatabaseCompatibilityLevel GetDatabaseCompatibilityLevel(Version serverVersion, bool isCloudConnection)
 	{
-		if (isCloudConnection)
-		{
-			return DatabaseCompatibilityLevel.Version150;
-		}
-		return Math.Max(serverVersion.Major, 8) switch
-		{
-			8 => DatabaseCompatibilityLevel.Version80,
-			9 => DatabaseCompatibilityLevel.Version90,
-			10 => DatabaseCompatibilityLevel.Version100,
-			11 => DatabaseCompatibilityLevel.Version110,
-			12 => DatabaseCompatibilityLevel.Version120,
-			13 => DatabaseCompatibilityLevel.Version130,
-			14 => DatabaseCompatibilityLevel.Version140,
-			15 => DatabaseCompatibilityLevel.Version150,
-			_ => DatabaseCompatibilityLevel.Current,
-		};
+		return DatabaseCompatibilityLevel.Current;
 	}
 
 	private static TransactSqlVersion GetTransactSqlVersion(Version serverVersion, bool isCloudConnection)
 	{
 		return TransactSqlVersion.Current;
-
-		/*
-
-		if (isCloudConnection)
-		{
-			return TransactSqlVersion.Version150;
-		}
-		switch (Math.Max(serverVersion.Major, 9))
-		{
-			case 9:
-			case 10:
-				return TransactSqlVersion.Version105;
-			case 11:
-				return TransactSqlVersion.Version110;
-			case 12:
-				return TransactSqlVersion.Version120;
-			case 13:
-				return TransactSqlVersion.Version130;
-			case 14:
-				return TransactSqlVersion.Version140;
-			case 15:
-				return TransactSqlVersion.Version150;
-			default:
-				return TransactSqlVersion.Current;
-		}
-		*/
 	}
+	*/
+
 
 	protected override void Dispose(bool disposing)
 	{
