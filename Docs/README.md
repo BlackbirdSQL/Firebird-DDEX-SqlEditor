@@ -5,8 +5,8 @@ The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"*
 [Download BlackbirdSql DDEX with SqlEditor Extension (Release v11.2.0.3)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v11.2.0.3/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
 
 #### Screenshots
-![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/8c2515a0-6ee2-49f5-8293-3dba1b51f3b5)
-</br>`Open image in new tab to view fullscreen`
+![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/e22c80d4-56d9-4982-ac17-15a7a73eef76)
+</br>`Click on image to view fullscreen`
 </br></br>
 
 
