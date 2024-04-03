@@ -37,17 +37,17 @@ namespace BlackbirdSql.LanguageExtension;
 #region							LanguageExtensionPackage Class Attributes
 // ---------------------------------------------------------------------------------------------------------
 
-[ProvideLanguageCodeExpansion(typeof(LsbLanguageService), "SQL_FIREBIRD", 303, "SQL_FIREBIRD", "%PackageFolder%\\Snippets\\SnippetsIndex.xml", SearchPaths = "%PackageFolder%\\Snippets\\Function;%PackageFolder%\\Snippets\\Index;%PackageFolder%\\Snippets\\Login;%PackageFolder%\\Snippets\\Role;%PackageFolder%\\Snippets\\Schema;%PackageFolder%\\Snippets\\Stored Procedure;%PackageFolder%\\Snippets\\Synonym;%PackageFolder%\\Snippets\\Table;%PackageFolder%\\Snippets\\Trigger;%PackageFolder%\\Snippets\\User;%PackageFolder%\\Snippets\\User Defined Data Type;%PackageFolder%\\Snippets\\User Defined Table Type;%PackageFolder%\\Snippets\\User Defined Type;%PackageFolder%\\Snippets\\View;%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets", ForceCreateDirs = "%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets")]
+[ProvideLanguageCodeExpansion(typeof(AbstractLanguageService), "SQL_FIREBIRD", 303, "SQL_FIREBIRD", "%PackageFolder%\\Snippets\\SnippetsIndex.xml", SearchPaths = "%PackageFolder%\\Snippets\\Function;%PackageFolder%\\Snippets\\Index;%PackageFolder%\\Snippets\\Login;%PackageFolder%\\Snippets\\Role;%PackageFolder%\\Snippets\\Schema;%PackageFolder%\\Snippets\\Stored Procedure;%PackageFolder%\\Snippets\\Synonym;%PackageFolder%\\Snippets\\Table;%PackageFolder%\\Snippets\\Trigger;%PackageFolder%\\Snippets\\User;%PackageFolder%\\Snippets\\User Defined Data Type;%PackageFolder%\\Snippets\\User Defined Table Type;%PackageFolder%\\Snippets\\User Defined Type;%PackageFolder%\\Snippets\\View;%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets", ForceCreateDirs = "%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets")]
 
-[ProvideService(typeof(LsbLanguageService), IsAsyncQueryable = true, ServiceName = PackageData.LanguageServiceName)]
-[ProvideLanguageService(typeof(LsbLanguageService), PackageData.LanguageLongName, 330, CodeSense = true, EnableCommenting = true, MatchBraces = true, ShowCompletion = true, ShowMatchingBrace = true, AutoOutlining = true, EnableAsyncCompletion = true, MaxErrorMessages = 200, CodeSenseDelay = 500)]
+[ProvideService(typeof(AbstractLanguageService), IsAsyncQueryable = true, ServiceName = PackageData.LanguageServiceName)]
+[ProvideLanguageService(typeof(AbstractLanguageService), PackageData.LanguageLongName, 330, CodeSense = true, EnableCommenting = true, MatchBraces = true, ShowCompletion = true, ShowMatchingBrace = true, AutoOutlining = true, EnableAsyncCompletion = true, MaxErrorMessages = 200, CodeSenseDelay = 500)]
 
 [VsProvideEditorAutomationPage(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Advanced", 300, 330)]
 [ProvideLanguageEditorOptionPage(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Advanced", null, "#331")]
 [ProvideProfile(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Editor", 300, 330, false, AlternateParent = "AutomationProperties\\TextEditor")]
 
 
-[ProvideLanguageExtension(typeof(LsbLanguageService), SystemData.Extension)]
+[ProvideLanguageExtension(typeof(AbstractLanguageService), SystemData.Extension)]
 
 
 
@@ -61,9 +61,9 @@ namespace BlackbirdSql.LanguageExtension;
 public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleComponent
 {
 
-	// ---------------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	#region Constructors / Destructors - LanguageExtensionPackage
-	// ---------------------------------------------------------------------------------
+	// ----------------------------------------------------------
 
 
 	public LanguageExtensionPackage() : base()
@@ -122,7 +122,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 
 	private uint _ComponentID;
-	private LsbLanguageService _LanguageService;
+	private AbstractLanguageService _LanguageService;
 	private LsbLanguagePreferences _UserPreferences = null;
 
 
@@ -147,7 +147,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 
 
-	public LsbLanguageService LanguageService
+	public AbstractLanguageService LanguageService
 	{
 		get
 		{
@@ -155,7 +155,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 			{
 				ThreadHelper.Generic.Invoke(delegate
 				{
-					GetService(typeof(LsbLanguageService));
+					GetService(typeof(AbstractLanguageService));
 				});
 			}
 			return _LanguageService;
@@ -193,6 +193,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	/// Asynchronous initialization of the package. The class must register services it
 	/// requires using the ServicesCreatorCallback method.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
 		Progress(progress, "Initializing Language services...");
@@ -200,7 +201,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 		Progress(progress, "Registering Language service...");
 
-		ServiceContainer.AddService(typeof(LsbLanguageService), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(AbstractLanguageService), ServicesCreatorCallbackAsync, promote: true);
 
 		Progress(progress, "Registering Language service... Done.");
 
@@ -321,7 +322,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	public override object ServicesCreatorCallback(IServiceContainer container, Type serviceType)
 	{
 
-		if (typeof(LsbLanguageService) == serviceType)
+		if (typeof(AbstractLanguageService) == serviceType)
 		{
 			if (_LanguageService != null)
 				return _LanguageService;
@@ -362,7 +363,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	{
 
 
-		if (serviceType == typeof(LsbLanguageService))
+		if (serviceType == typeof(AbstractLanguageService))
 			return ServicesCreatorCallback(this, serviceType);
 
 
@@ -419,7 +420,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	{
 		if (_UserPreferences == null)
 		{
-			_UserPreferences = new LsbLanguagePreferences(this, typeof(LsbLanguageService).GUID, PackageData.LanguageLongName);
+			_UserPreferences = new LsbLanguagePreferences(this, typeof(AbstractLanguageService).GUID, PackageData.LanguageLongName);
 			_UserPreferences.Init();
 		}
 		return _UserPreferences;
@@ -463,9 +464,11 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Updates and saves LanguagePreferences from the settings model if exists and dirty.
+	/// Updates and saves LanguagePreferences from the settings model if exists.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public void UpdateUserPreferences()
 	{
 		if (_UserPreferences != null /* && _UserPreferences.IsDirty */)

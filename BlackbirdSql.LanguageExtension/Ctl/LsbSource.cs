@@ -35,7 +35,7 @@ namespace BlackbirdSql.LanguageExtension.Ctl;
 public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDataEvents
 {
 
-	public LsbSource(LsbLanguageService service, IVsTextLines textLines, Colorizer colorizer)
+	public LsbSource(AbstractLanguageService service, IVsTextLines textLines, Colorizer colorizer)
 		: base(service, textLines, colorizer)
 	{
 		// Tracer.Trace(typeof(LsbSource), ".ctor.");
@@ -84,7 +84,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	private readonly LsbParseManager _ParseManager;
 
-	private readonly LsbLanguageService _SqlLanguageService;
+	private readonly AbstractLanguageService _SqlLanguageService;
 
 	public ITextUndoTransaction CurrentCommitUndoTransaction { get; set; }
 

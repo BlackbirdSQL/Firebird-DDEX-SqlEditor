@@ -42,6 +42,7 @@
 	  <Compile Include="Model\AbstractMetadataProviderProvider.cs" />
 	  <Compile Include="Model\Interfaces\IBBinderQueue.cs" />
 	  <Compile Include="Model\Interfaces\IBMetadataProviderProvider.cs" />
+	  <Compile Include="Services\LsbLanguageService.cs" />
 	  <Compile Include="Model\LsbMetadataFactory.cs" />
 	  <Compile Include="Model\LsbMetadataProvider.cs" />
 	  <Compile Include="Properties\AttributeResources.Designer.cs">
@@ -49,7 +50,7 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	  </Compile>
-	  <Compile Include="Services\LsbLanguageService.cs" />
+	  <Compile Include="Services\AbstractLanguageService.cs" />
 	  <Compile Include="Ctl\LsbLanguageServiceTestEvents.cs" />
 	  <Compile Include="Ctl\LsbLineScanner.cs" />
 	  <Compile Include="Ctl\LsbMethods.cs" />

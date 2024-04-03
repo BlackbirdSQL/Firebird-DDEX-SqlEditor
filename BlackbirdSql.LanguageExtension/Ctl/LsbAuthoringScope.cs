@@ -51,7 +51,7 @@ internal class LsbAuthoringScope : Microsoft.VisualStudio.Package.AuthoringScope
 		{
 			IAsyncResult asyncResult = metadataProviderProvider.BinderQueue.EnqueueUIThreadAction(localfunc);
 
-			if (asyncResult.AsyncWaitHandle.WaitOne(LsbLanguageService.C_UIThreadWaitMilliseconds) && asyncResult.IsCompleted)
+			if (asyncResult.AsyncWaitHandle.WaitOne(AbstractLanguageService.C_UIThreadWaitMilliseconds) && asyncResult.IsCompleted)
 			{
 				codeObjectQuickInfo = asyncResult.AsyncState as CodeObjectQuickInfo;
 			}
@@ -96,7 +96,7 @@ internal class LsbAuthoringScope : Microsoft.VisualStudio.Package.AuthoringScope
 						object localfunc() => Resolver.FindCompletions(_ParseResult, line + 1, col + 1, _DisplayInfoProvider);
 						IAsyncResult asyncResult = metadataProviderProvider.BinderQueue.EnqueueUIThreadAction(localfunc);
 
-						if (asyncResult.AsyncWaitHandle.WaitOne(LsbLanguageService.C_UIThreadWaitMilliseconds) && asyncResult.IsCompleted)
+						if (asyncResult.AsyncWaitHandle.WaitOne(AbstractLanguageService.C_UIThreadWaitMilliseconds) && asyncResult.IsCompleted)
 						{
 							list = asyncResult.AsyncState as IList<Declaration>;
 						}

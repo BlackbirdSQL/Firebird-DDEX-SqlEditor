@@ -7,6 +7,9 @@ using Microsoft.SqlServer.Management.SqlParser.MetadataProvider;
 namespace BlackbirdSql.LanguageExtension.Model;
 
 
+/// <summary>
+/// Placeholder. Under development.
+/// </summary>
 internal class LsbMetadataFactory : MetadataFactory
 {
 	private static class Singleton

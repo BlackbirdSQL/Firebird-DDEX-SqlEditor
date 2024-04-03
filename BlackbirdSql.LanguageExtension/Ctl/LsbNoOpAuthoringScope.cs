@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.LanguageExtension.Ctl;
 
 
-internal class LsbNoOpAuthoringScope : AuthoringScope
+public class LsbNoOpAuthoringScope : AuthoringScope
 {
 
 	private readonly LsbDeclarations _Declarations;
