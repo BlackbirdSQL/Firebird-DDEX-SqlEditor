@@ -11,9 +11,9 @@ The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"*
 
 
 ### Features
-* Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.0.0.0. __New:__ Auto-close edmx models and xsd datasets on solution close user options.
-* Microsoft SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions, SQL scripts and `.fbsql` files.</br>__Note:__ The editor service execution plan visualizer is not currently functional. Execution plans are text based.</br>Intellisense is based on Microsoft's Transaction-SQL language service. Firebird specific grammar may be reported as errors or warnings but still successfully execute.
-* Trigger/Generator auto-increment linkage. __New:__ Linkage can now be set to *On Demand* in user options. If enabled linkage will only take place when actually required. 
+* Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.0.0.0. 
+* Microsoft SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions, SQL scripts and `.fbsql` files.</br>__Note:__ The Firebird Language Service is a phased implementation of Microsoft's Transaction-SQL SSDT language service. Intellisense may report Firebird specific grammar as errors or warnings but still successfully execute.
+* Trigger/Generator auto-increment linkage. Linkage can be set to *On Demand* in user options. If enabled linkage will only take place when actually required. 
 * Full integration of Server Explorer with asynchronous loading. Connection dialogs include Host and Database drop-down selection; derived from Server Explorer, FlameRobin and the current solution projects' settings and EDM connection strings.
 * SqlEditor text-based execution plans and statistics snapshot comparer.
 * Configurable connection equivalency keys under `BlackbirdSql Server Tools` DDEX user options.
@@ -25,7 +25,8 @@ The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"*
 * Procedures, functions, views, triggers and computed columns display the decoded blr if no source exists.
 * Display of initial value (seed), increment and next value within column primary key, trigger and sequence generator property windows.
 * New query and data retrieval for both user and system tables.
-* Automated DbProviderFactories and EDM validation and update of a Solution's App.Config, and upgrade of EDMX models to DDEX 2.0. This procedure can be run from the context menu of any open node in Server Explorer.
+* Local database connection drift detection across all connections in use within an IDE session. This applies to `local` drift and does not detect remote database drift.
+* Automated DbProviderFactories and EDM validation and update of a Solution's App.Config, and upgrade of EDMX models to DDEX 2.0. This procedure can be launched from the context menu of any Firebird node in Server Explorer.
 * Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
 * BlackbirdSql background and UI thread tasks compliant with the IDE TaskHandler and implements the user cancel feature for background tasks from the TaskHandler window.
 * All exception, task progress and task status reporting logged to the output window accessible under *BlackbirdSql* in the dropdown (Enabled by default under Options).
