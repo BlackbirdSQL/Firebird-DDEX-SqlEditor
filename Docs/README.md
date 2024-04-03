@@ -49,7 +49,7 @@ For a clearer understanding of BlackbirdSql's RunningConnectionTable management 
 
 ## Known issues and limitations
 * Operations within the EDMX UI can take some time. For even a single table the wizard executes over 100 SELECT statements with the primary SELECT statement having 20+ JOINS and 5+ UNIONS. Even a Cancel request can lock up the IDE for some time. Be patient.
-* Intellisense and Firebird grammar: The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures, Functions, Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
+* Intellisense and Firebird grammar: Development of the Firebird Language Service is ongoing and support for Firebird grammar will be progressively extended over time. The Firebird Language Service uses the Visual Studio built-in T-SQL SSDT Language service as it's basis. This means that Intellisense may mark incompatible DML and DDL as errors. The scripts will still successfully execute.
 * Support for embedded databases: BlackbirdSql uses the FirebirdSql.Data.FirebirdClient client, so embedded databases 'should' work, however no testing has been performed on embedded databases as of this writing.
 * The SqlEditor port does not currently support script parameter loading.
 * The BlackbirdSql Editor settings in Visual Studio Options have been ported as is from the Microsoft SqlServer SqlEditor settings. This means that several options are not currently being used or are not applicable.
