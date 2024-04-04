@@ -123,7 +123,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 			object localfunc() => declaration.Description;
 
 			IAsyncResult asyncResult = metadataProviderProvider.BinderQueue.EnqueueUIThreadAction(localfunc);
-			if (asyncResult.AsyncWaitHandle.WaitOne(AbstractLanguageService.C_UIThreadWaitMilliseconds) && asyncResult.IsCompleted)
+			if (asyncResult.AsyncWaitHandle.WaitOne(LsbLanguageService.C_UIThreadWaitMilliseconds) && asyncResult.IsCompleted)
 			{
 				return asyncResult.AsyncState as string;
 			}
@@ -143,7 +143,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 			object localfunc() => declaration.Title;
 			IAsyncResult asyncResult = metadataProviderProvider.BinderQueue.EnqueueUIThreadAction(localfunc);
 
-			if (asyncResult.AsyncWaitHandle.WaitOne(AbstractLanguageService.C_UIThreadWaitMilliseconds)
+			if (asyncResult.AsyncWaitHandle.WaitOne(LsbLanguageService.C_UIThreadWaitMilliseconds)
 				&& asyncResult.IsCompleted)
 			{
 				return asyncResult.AsyncState as string;
@@ -166,7 +166,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 			object localfunc() => declaration.Type;
 			IAsyncResult asyncResult = metadataProviderProvider.BinderQueue.EnqueueUIThreadAction(localfunc);
 
-			if (asyncResult.AsyncWaitHandle.WaitOne(AbstractLanguageService.C_UIThreadWaitMilliseconds) && asyncResult.IsCompleted)
+			if (asyncResult.AsyncWaitHandle.WaitOne(LsbLanguageService.C_UIThreadWaitMilliseconds) && asyncResult.IsCompleted)
 			{
 				declarationType = (DeclarationType)asyncResult.AsyncState;
 			}
@@ -361,7 +361,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 				text2 = ((text3[^1] != commitCharacter) ? text3 : text3[..^1]);
 			}
 			text = text2;
-			if (LanguageExtensionPackage.Instance.LanguageService is AbstractLanguageService languageService
+			if (LanguageExtensionPackage.Instance.LanguageService is LsbLanguageService languageService
 				&& languageService.GetSource(textView) is LsbSource source)
 			{
 				IWpfTextView wpfTextView = LanguageExtensionPackage.Instance.EditorAdaptersFactorySvc.GetWpfTextView(textView);

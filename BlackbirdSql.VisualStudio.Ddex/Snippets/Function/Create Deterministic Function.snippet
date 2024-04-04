@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Create Deterministic Function</Title>
+			<Shortcut></Shortcut>
+			<Description>Creates a cached determministic function.</Description>
+			<Author>BlackbirdSql</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>FunctionName</ID>
+					<ToolTip>Name of the function</ToolTip>
+					<Default>FB_FUNCTIONNAME</Default>
+				</Literal>
+				<Literal>
+					<ID>Param1</ID>
+					<ToolTip>Name of the input parameter</ToolTip>
+					<Default>PARAM1</Default>
+				</Literal>
+				<Literal>
+					<ID>Param2</ID>
+					<ToolTip>Name of the input parameter</ToolTip>
+					<Default>PARAM2</Default>
+				</Literal>
+				<Literal>
+					<ID>Datatype_Param1</ID>
+					<ToolTip>Data type of the input parameter</ToolTip>
+					<Default>INT</Default>
+				</Literal>
+				<Literal>
+					<ID>Datatype_Param2</ID>
+					<ToolTip>Data type of the input parameter</ToolTip>
+					<Default>INT DEFAULT 0</Default>
+				</Literal>
+				<Literal>
+					<ID>Returned_datatype</ID>
+					<ToolTip>Data type returned by the scalar function</ToolTip>
+					<Default>INT</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="SQL_FIREBIRD">
+				<![CDATA[
+CREATE FUNCTION $FunctionName$
+(
+    @$Param1$ $Datatype_Param1$,
+    @$Param2$ $Datatype_Param2$
+)
+RETURNS $Returned_datatype$ DETERMINISTIC
+AS
+BEGIN
+
+    RETURN @$Param1$ + @$Param2$
+
+END
+]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

@@ -4,7 +4,7 @@
     <Header>
       <Title>Create Table</Title>
       <Shortcut></Shortcut>
-      <Description>Creates a table.</Description>
+      <Description>Creates a table. (Not yet in Firebird syntax)</Description>
       <Author>BlackbirdSql</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -13,38 +13,33 @@
     <Snippet>
       <Declarations>
         <Literal>
-          <ID>SchemaName</ID>
-          <ToolTip>Name of the schema</ToolTip>
-          <Default>dbo</Default>
-        </Literal>
-        <Literal>
           <ID>Tablename</ID>
           <ToolTip>Name of the table</ToolTip>
-          <Default>Sample_Table</Default>
+          <Default>FB_TABLENAME</Default>
         </Literal>
         <Literal>
           <ID>column1</ID>
           <ToolTip>Name of the column</ToolTip>
-          <Default>column_1</Default>
+          <Default>COLUMN_1</Default>
         </Literal>
         <Literal>
           <ID>datatype1</ID>
           <ToolTip>Data type of the column</ToolTip>
-          <Default>int NOT NULL</Default>
+          <Default>INT NOT NULL</Default>
         </Literal>
         <Literal>
           <ID>column2</ID>
           <ToolTip>Name of the column</ToolTip>
-          <Default>column_2</Default>
+          <Default>COLUMN_2</Default>
         </Literal>
         <Literal>
           <ID>datatype2</ID>
           <ToolTip>Data type of the column</ToolTip>
-          <Default>int NULL</Default>
+          <Default>INT DEFAULT NULL</Default>
         </Literal>
       </Declarations>
       <Code Language="SQL_FIREBIRD">
-        <![CDATA[CREATE TABLE $SchemaName$.$Tablename$
+        <![CDATA[CREATE TABLE $Tablename$
 (
     $column1$ $datatype1$,
     $column2$ $datatype2$

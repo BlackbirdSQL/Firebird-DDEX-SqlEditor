@@ -36,7 +36,6 @@ namespace BlackbirdSql.LanguageExtension.Services;
 /// BlackbirdSql Language Service base class. This class abstraction handles all legacy SSDT functionality.
 /// </summary>
 // =========================================================================================================
-[Guid(PackageData.LanguageServiceGuid)]
 public abstract class AbstractLanguageService : LanguageService, IVsLanguageBlock
 {
 
@@ -197,21 +196,6 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 
 
 	#endregion Private classes
-
-
-
-
-	// =========================================================================================================
-	#region Constants - AbstractLanguageService
-	// =========================================================================================================
-
-
-	private const string C_DefaultMessagePrefix = "FB-SQL: ";
-	public const int C_UIThreadWaitMilliseconds = 500;
-	public const int C_BinderWaitMilliseconds = 2000;
-
-
-	#endregion Constants
 
 
 
@@ -522,7 +506,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 					if (OverrideError(script, error))
 						continue;
 
-					req.Sink.AddError(req.FileName, C_DefaultMessagePrefix + error.Message, GetTextSpan(error.Start, error.End), error.IsWarning ? Severity.Warning : Severity.Error);
+					req.Sink.AddError(req.FileName, PackageData.DefaultMessagePrefix + error.Message, GetTextSpan(error.Start, error.End), error.IsWarning ? Severity.Warning : Severity.Error);
 				}
 			}
 		}

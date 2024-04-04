@@ -21,6 +21,8 @@ static class PackageData
 	public const string LanguageLongName = "Firebird-SQL";
 	public const string RegistrySettingsKey = "BlackbirdSql\\LanguageService";
 
+	public const string DefaultMessagePrefix = "FB-SQL: ";
+
 
 
 	// ---------------------------------------------------------------------------------------------------------

@@ -4,7 +4,7 @@
     <Header>
       <Title>Create Procedure with CURSOR OUTPUT Parameter</Title>
       <Shortcut></Shortcut>
-      <Description>Creates a stored procedure that has a Cursor output parameter.</Description>
+      <Description>Creates a stored procedure that has a Cursor output parameter. (Not yet in Firebird syntax)</Description>
       <Author>BlackbirdSql</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -12,11 +12,6 @@
     </Header>
     <Snippet>
       <Declarations>
-        <Literal>
-          <ID>SchemaName</ID>
-          <ToolTip>Name of the schema</ToolTip>
-          <Default>dbo</Default>
-        </Literal>
         <Literal>
           <ID>storedprocname</ID>
           <ToolTip>Name of the stored procedure</ToolTip>
@@ -34,7 +29,7 @@
         </Literal>
       </Declarations>
       <Code Language="SQL_FIREBIRD">
-        <![CDATA[CREATE PROCEDURE $SchemaName$.$storedprocname$ 
+        <![CDATA[CREATE PROCEDURE $storedprocname$ 
     @$Param1$ $datatype1$ VARYING OUTPUT
 AS
     SET @$Param1$ = CURSOR FOR

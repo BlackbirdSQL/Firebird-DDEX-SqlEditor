@@ -40,7 +40,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 	{
 		// Tracer.Trace(typeof(LsbSource), ".ctor.");
 
-		_SqlLanguageService = service;
+		_SqlLanguageService = (LsbLanguageService)service;
 		_IntelliSenseEnabled = service.Prefs.EnableIntellisense;
 		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 
@@ -84,7 +84,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	private readonly LsbParseManager _ParseManager;
 
-	private readonly AbstractLanguageService _SqlLanguageService;
+	private readonly LsbLanguageService _SqlLanguageService;
 
 	public ITextUndoTransaction CurrentCommitUndoTransaction { get; set; }
 

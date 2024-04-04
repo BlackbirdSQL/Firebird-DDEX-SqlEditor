@@ -130,7 +130,7 @@ internal class LsbParseManager
 				{
 					IAsyncResult asyncResult = metadataProviderProvider.BinderQueue.EnqueueBindAction(localfunc);
 
-					if (!asyncResult.AsyncWaitHandle.WaitOne(AbstractLanguageService.C_BinderWaitMilliseconds) ||
+					if (!asyncResult.AsyncWaitHandle.WaitOne(LsbLanguageService.C_BinderWaitMilliseconds) ||
 						!asyncResult.IsCompleted || asyncResult.AsyncState == null || !(bool)asyncResult.AsyncState)
 					{
 						_LastBinderUsed = null;

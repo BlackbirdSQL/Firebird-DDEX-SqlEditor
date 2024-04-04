@@ -4,7 +4,7 @@
     <Header>
       <Title>Create Procedure with OUTPUT Parameter</Title>
       <Shortcut></Shortcut>
-      <Description>Creates a stored procedure that has an output parameter.</Description>
+      <Description>Creates a stored procedure that has an output parameter. (Not yet in Firebird syntax)</Description>
       <Author>BlackbirdSql</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -12,11 +12,6 @@
     </Header>
     <Snippet>
       <Declarations>
-        <Literal>
-          <ID>SchemaName</ID>
-          <ToolTip>Name of the schema</ToolTip>
-          <Default>dbo</Default>
-        </Literal>
         <Literal>
           <ID>storedprocname</ID>
           <ToolTip>Name of the stored procedure</ToolTip>
@@ -29,7 +24,7 @@
         </Literal>
         <Literal>
           <ID>datatype1</ID>
-          <ToolTip>Datatype of the input parameter</ToolTip>
+          <ToolTip>Datatype of the input parameter (Not yet available)</ToolTip>
           <Default>int</Default>
         </Literal>
         <Literal>
@@ -49,7 +44,7 @@
         </Literal>
       </Declarations>
       <Code Language="SQL_FIREBIRD">
-        <![CDATA[CREATE PROCEDURE $SchemaName$.$storedprocname$ 
+        <![CDATA[CREATE PROCEDURE $storedprocname$ 
     @$Param1$ $datatype1$ = $DefValue1$,
     @$Param2$ $datatype2$ OUTPUT 
 AS

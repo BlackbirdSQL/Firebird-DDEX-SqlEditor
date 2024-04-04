@@ -13,34 +13,29 @@
     <Snippet>
       <Declarations>
         <Literal>
-          <ID>SchemaName</ID>
-          <ToolTip>Name of the schema</ToolTip>
-          <Default>dbo</Default>
-        </Literal>
-        <Literal>
           <ID>FunctionName</ID>
           <ToolTip>Name of the function</ToolTip>
-          <Default>FunctionName</Default>
+          <Default>FB_FUNCTIONNAME</Default>
         </Literal>
         <Literal>
           <ID>Param1</ID>
           <ToolTip>Name of the input parameter</ToolTip>
-          <Default>param1</Default>
+          <Default>PARAM1</Default>
         </Literal>
         <Literal>
           <ID>Param2</ID>
           <ToolTip>Name of the input parameter</ToolTip>
-          <Default>param2</Default>
+          <Default>PARAM2</Default>
         </Literal>
         <Literal>
           <ID>Datatype_Param1</ID>
           <ToolTip>Data type of the input parameter</ToolTip>
-          <Default>int</Default>
+          <Default>INT</Default>
         </Literal>
         <Literal>
           <ID>Datatype_Param2</ID>
           <ToolTip>Data type of the input parameter</ToolTip>
-          <Default>int</Default>
+          <Default>INT DEFAULT 0</Default>
         </Literal>
         <Literal>
           <ID>Returned_datatype</ID>
@@ -50,7 +45,7 @@
       </Declarations>
       <Code Language="SQL_FIREBIRD">
         <![CDATA[
-CREATE FUNCTION [$SchemaName$].[$FunctionName$]
+CREATE FUNCTION $FunctionName$
 (
     @$Param1$ $Datatype_Param1$,
     @$Param2$ $Datatype_Param2$

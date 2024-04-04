@@ -4,7 +4,7 @@
     <Header>
       <Title>Create Procedure Basic Template</Title>
       <Shortcut></Shortcut>
-      <Description>Creates a simple stored procedure.</Description>
+      <Description>Creates a simple stored procedure. (Not yet in Firebird syntax)</Description>
       <Author>BlackbirdSql</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -12,11 +12,6 @@
     </Header>
     <Snippet>
       <Declarations>
-        <Literal>
-          <ID>SchemaName</ID>
-          <ToolTip>Name of the schema</ToolTip>
-          <Default>dbo</Default>
-        </Literal>
         <Literal>
           <ID>storedprocname</ID>
           <ToolTip>Name of the stored procedure</ToolTip>
@@ -49,7 +44,7 @@
         </Literal>
       </Declarations>
       <Code Language="SQL_FIREBIRD">
-        <![CDATA[CREATE PROCEDURE $SchemaName$.$storedprocname$ 
+        <![CDATA[CREATE PROCEDURE $storedprocname$ 
     @$Param1$ $datatype1$ = $DefValue1$,
     @$Param2$ $datatype2$  
 AS

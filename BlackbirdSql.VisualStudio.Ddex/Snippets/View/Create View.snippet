@@ -4,7 +4,7 @@
     <Header>
       <Title>Create View</Title>
       <Shortcut></Shortcut>
-      <Description>Creates a view.</Description>
+      <Description>Creates a view. (Not yet in Firebird syntax)</Description>
       <Author>BlackbirdSql</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -12,11 +12,6 @@
     </Header>
     <Snippet>
       <Declarations>
-        <Literal>
-          <ID>SchemaName</ID>
-          <ToolTip>Name of the schema</ToolTip>
-          <Default>dbo</Default>
-        </Literal>
         <Literal>
           <ID>viewname</ID>
           <ToolTip>Name of the view</ToolTip>
@@ -30,9 +25,9 @@
       </Declarations>
       <Code Language="SQL_FIREBIRD">
         <![CDATA[
-CREATE VIEW $SchemaName$.$viewname$
+CREATE VIEW $viewname$
 AS
-    Select * from $SchemaName$.$tablename$
+    Select * from $tablename$
 ]]>
       </Code>
     </Snippet>

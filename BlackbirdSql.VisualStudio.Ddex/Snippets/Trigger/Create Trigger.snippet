@@ -4,7 +4,7 @@
     <Header>
       <Title>Create Trigger</Title>
       <Shortcut></Shortcut>
-      <Description>Creates a trigger.</Description>
+      <Description>Creates a trigger. (Not yet in Firebird syntax)</Description>
       <Author>BlackbirdSql</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -12,11 +12,6 @@
     </Header>
     <Snippet>
       <Declarations>
-        <Literal>
-          <ID>TargetSchemaName</ID>
-          <ToolTip>Name of the schema</ToolTip>
-          <Default>dbo</Default>
-        </Literal>
         <Literal>
           <ID>TriggerSchemaName</ID>
           <ToolTip>Name of the schema</ToolTip>
@@ -35,7 +30,7 @@
       </Declarations>
       <Code Language="SQL_FIREBIRD">
         <![CDATA[
-CREATE TRIGGER [$TriggerSchemaName$].[$TriggerName$]
+CREATE TRIGGER $TriggerName$
     ON [$TargetSchemaName$].[$TableName$]
     FOR DELETE, INSERT, UPDATE
     AS

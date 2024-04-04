@@ -1,5 +1,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.LanguageService
+using System.Runtime.InteropServices;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 
 
@@ -14,6 +15,7 @@ namespace BlackbirdSql.LanguageExtension.Services;
 /// BlackbirdSql Language Service final class. This class level will handle all Firebird specific grammar.
 /// </summary>
 // =========================================================================================================
+[Guid(PackageData.LanguageServiceGuid)]
 public class LsbLanguageService : AbstractLanguageService
 {
 
@@ -28,6 +30,21 @@ public class LsbLanguageService : AbstractLanguageService
 
 
 	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Constants - AbstractLanguageService
+	// =========================================================================================================
+
+
+	public const int C_UIThreadWaitMilliseconds = 500;
+	public const int C_BinderWaitMilliseconds = 2000;
+
+
+	#endregion Constants
 
 
 

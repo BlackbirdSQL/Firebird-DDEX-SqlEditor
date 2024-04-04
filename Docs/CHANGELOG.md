@@ -2,6 +2,12 @@
 
 ## Change log
 
+### v11.3.0.1 Patch to address Snippet insertion error.
+__New/ Enhancements__</br>
+-- None.</br>
+__Fixes__</br>
+-- Insertion of snippets into scripts caused a lock requiring the escape key to be pressed. Note that the majority of snippets are not yet updated to Firebird syntax. 
+
 ### v11.3.0.0 Firebird Intellisense and Language Service phase 1 implementation.
 __New/ Enhancements__</br>
 -- Implemented Phase 1 of Firebird Language Service.</br>
