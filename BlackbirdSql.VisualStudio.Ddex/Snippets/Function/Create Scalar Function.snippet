@@ -4,7 +4,7 @@
     <Header>
       <Title>Create Scalar Function</Title>
       <Shortcut></Shortcut>
-      <Description>Creates a scalar function.</Description>
+      <Description>Creates a scalar Firebird function.</Description>
       <Author>BlackbirdSql</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -15,7 +15,7 @@
         <Literal>
           <ID>FunctionName</ID>
           <ToolTip>Name of the function</ToolTip>
-          <Default>FB_FUNCTIONNAME</Default>
+          <Default>FUNCTIONNAME</Default>
         </Literal>
         <Literal>
           <ID>Param1</ID>
@@ -30,33 +30,30 @@
         <Literal>
           <ID>Datatype_Param1</ID>
           <ToolTip>Data type of the input parameter</ToolTip>
-          <Default>INT</Default>
+          <Default>INTEGER</Default>
         </Literal>
         <Literal>
           <ID>Datatype_Param2</ID>
           <ToolTip>Data type of the input parameter</ToolTip>
-          <Default>INT DEFAULT 0</Default>
+          <Default>INTEGER DEFAULT 0</Default>
         </Literal>
         <Literal>
           <ID>Returned_datatype</ID>
           <ToolTip>Data type returned by the scalar function</ToolTip>
-          <Default>INT</Default>
+          <Default>INTEGER</Default>
         </Literal>
       </Declarations>
       <Code Language="SQL_FIREBIRD">
-        <![CDATA[
-CREATE FUNCTION $FunctionName$
+        <![CDATA[CREATE FUNCTION $FunctionName$
 (
-    @$Param1$ $Datatype_Param1$,
-    @$Param2$ $Datatype_Param2$
+	$Param1$ $Datatype_Param1$,
+	$Param2$ $Datatype_Param2$
 )
 RETURNS $Returned_datatype$
 AS
 BEGIN
-
-    RETURN @$Param1$ + @$Param2$
-
-END
+	RETURN :$Param1$ + :$Param2$
+END;
 ]]>
       </Code>
     </Snippet>

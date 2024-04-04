@@ -2,9 +2,9 @@
 <CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
 	<CodeSnippet Format="1.0.0">
 		<Header>
-			<Title>Create Trigger</Title>
+			<Title>Create Legacy Trigger</Title>
 			<Shortcut></Shortcut>
-			<Description>Creates a Firebird 3.0 trigger.</Description>
+			<Description>Creates a Legacy Firebird trigger.</Description>
 			<Author>BlackbirdSql</Author>
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
@@ -44,8 +44,8 @@
 				</Literal>
 			</Declarations>
 			<Code Language="SQL_FIREBIRD">
-				<![CDATA[CREATE TRIGGER $TriggerName$ ACTIVE
-BEFORE $mutation$ POSITION $priority$ ON $TableName$
+				<![CDATA[CREATE TRIGGER $TriggerName$ FOR $TableName$ ACTIVE
+BEFORE $mutation$ POSITION $priority$
 AS
 BEGIN
 	IF (NEW.$ColumnName$ IS NULL) THEN

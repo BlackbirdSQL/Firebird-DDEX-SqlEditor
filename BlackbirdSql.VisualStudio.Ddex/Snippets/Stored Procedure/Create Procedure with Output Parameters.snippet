@@ -1,57 +1,89 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
-  <CodeSnippet Format="1.0.0">
-    <Header>
-      <Title>Create Procedure with OUTPUT Parameter</Title>
-      <Shortcut></Shortcut>
-      <Description>Creates a stored procedure that has an output parameter. (Not yet in Firebird syntax)</Description>
-      <Author>BlackbirdSql</Author>
-      <SnippetTypes>
-        <SnippetType>Expansion</SnippetType>
-      </SnippetTypes>
-    </Header>
-    <Snippet>
-      <Declarations>
-        <Literal>
-          <ID>storedprocname</ID>
-          <ToolTip>Name of the stored procedure</ToolTip>
-          <Default>Sample_Procedure</Default>
-        </Literal>
-        <Literal>
-          <ID>Param1</ID>
-          <ToolTip>Name of the input parameter</ToolTip>
-          <Default>param1</Default>
-        </Literal>
-        <Literal>
-          <ID>datatype1</ID>
-          <ToolTip>Datatype of the input parameter (Not yet available)</ToolTip>
-          <Default>int</Default>
-        </Literal>
-        <Literal>
-          <ID>DefValue1</ID>
-          <ToolTip>Default value of the input parameter</ToolTip>
-          <Default>0</Default>
-        </Literal>
-        <Literal>
-          <ID>Param2</ID>
-          <ToolTip>Name of the output parameter</ToolTip>
-          <Default>param2</Default>
-        </Literal>
-        <Literal>
-          <ID>datatype2</ID>
-          <ToolTip>Datatype of the output parameter </ToolTip>
-          <Default>int</Default>
-        </Literal>
-      </Declarations>
-      <Code Language="SQL_FIREBIRD">
-        <![CDATA[CREATE PROCEDURE $storedprocname$ 
-    @$Param1$ $datatype1$ = $DefValue1$,
-    @$Param2$ $datatype2$ OUTPUT 
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Create Procedure with OUTPUT Parameters</Title>
+			<Shortcut></Shortcut>
+			<Description>Creates a Firebird stored procedure that has 2 output parameters.</Description>
+			<Author>BlackbirdSql</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>storedprocname</ID>
+					<ToolTip>Name of the stored procedure</ToolTip>
+					<Default>PROCNAME</Default>
+				</Literal>
+				<Literal>
+					<ID>Param1</ID>
+					<ToolTip>Name of the input parameter</ToolTip>
+					<Default>PARAM1</Default>
+				</Literal>
+				<Literal>
+					<ID>datatype1</ID>
+					<ToolTip>Datatype of the input parameter</ToolTip>
+					<Default>INTEGER</Default>
+				</Literal>
+				<Literal>
+					<ID>Param2</ID>
+					<ToolTip>Name of the input parameter</ToolTip>
+					<Default>PARAM2</Default>
+				</Literal>
+				<Literal>
+					<ID>datatype2</ID>
+					<ToolTip>Datatype of the input parameter</ToolTip>
+					<Default>INTEGER</Default>
+				</Literal>
+				<Literal>
+					<ID>DefValue2</ID>
+					<ToolTip>Default value of the input parameter</ToolTip>
+					<Default>0</Default>
+				</Literal>
+				<Literal>
+					<ID>OutParam1</ID>
+					<ToolTip>Name of the output parameter</ToolTip>
+					<Default>OUT_PARAM1</Default>
+				</Literal>
+				<Literal>
+					<ID>outdatatype1</ID>
+					<ToolTip>Datatype of the output parameter </ToolTip>
+					<Default>INTEGER</Default>
+				</Literal>
+				<Literal>
+					<ID>OutParam2</ID>
+					<ToolTip>Name of the output parameter</ToolTip>
+					<Default>OUT_PARAM2</Default>
+				</Literal>
+				<Literal>
+					<ID>outdatatype2</ID>
+					<ToolTip>Datatype of the output parameter </ToolTip>
+					<Default>VARCHAR(100)</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="SQL_FIREBIRD">
+				<![CDATA[CREATE PROCEDURE $storedprocname$
+(
+    $Param1$ $datatype1$ NOT NULL,
+    $Param2$ $datatype2$ NOT NULL DEFAULT $DefValue2$,
+)
+RETURNS
+(
+	$OutParam1$ $outdatatype1$,
+    $OutParam2$ $outdatatype2$
+)
 AS
-    SELECT @$Param2$ = @$Param2$ + @$Param1$ 
-RETURN 0 $end$]]>
-      </Code>
-    </Snippet>
-  </CodeSnippet>
+BEGIN
+    SELECT R.COL1, R.COL2
+	FROM TABLENAME AS R
+	INTO :$OutParam1$, :$OutParam2$;
+	SUSPEND;
+END
+]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
 </CodeSnippets>
 

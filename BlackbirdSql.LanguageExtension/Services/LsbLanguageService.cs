@@ -36,7 +36,7 @@ public class LsbLanguageService : AbstractLanguageService
 
 
 	// =========================================================================================================
-	#region Constants - AbstractLanguageService
+	#region Constants - LsbLanguageService
 	// =========================================================================================================
 
 

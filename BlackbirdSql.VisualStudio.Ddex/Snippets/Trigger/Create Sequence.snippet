@@ -2,9 +2,9 @@
 <CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
 	<CodeSnippet Format="1.0.0">
 		<Header>
-			<Title>Create User</Title>
+			<Title>Create Sequence</Title>
 			<Shortcut></Shortcut>
-			<Description>Creates a Firebird database user.</Description>
+			<Description>Creates a Firebird sequence/generator.</Description>
 			<Author>BlackbirdSql</Author>
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
@@ -13,29 +13,28 @@
 		<Snippet>
 			<Declarations>
 				<Literal>
-					<ID>UserName</ID>
-					<ToolTip>Name of the user</ToolTip>
-					<Default>UserName</Default>
+					<ID>SequenceName</ID>
+					<ToolTip>Name of the sequence/generator</ToolTip>
+					<Default>TABLENAME_GEN</Default>
 				</Literal>
 				<Literal>
-					<ID>Password</ID>
-					<ToolTip>User password</ToolTip>
-					<Default>fYe_3Ksw</Default>
+					<ID>startvalue</ID>
+					<ToolTip>Initial value of the sequence</ToolTip>
+					<Default>5</Default>
 				</Literal>
 				<Literal>
-					<ID>RoleName</ID>
-					<ToolTip>Role of the user</ToolTip>
-					<Default>ADMIN</Default>
+					<ID>increment</ID>
+					<ToolTip>Increment of the sequence</ToolTip>
+					<Default>1</Default>
 				</Literal>
 			</Declarations>
 			<Code Language="SQL_FIREBIRD">
-				<![CDATA[CREATE USER $UserName$
-	PASSWORD '$Password$'
-	GRANT $RoleName$ ROLE;
+				<![CDATA[CREATE SEQUENCE $SequenceName$
+	START WITH $startvalue$
+	INCREMENT $increment$;
 ]]>
 			</Code>
 		</Snippet>
 	</CodeSnippet>
 </CodeSnippets>
-
 

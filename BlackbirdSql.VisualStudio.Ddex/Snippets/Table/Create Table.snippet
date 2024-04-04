@@ -1,51 +1,52 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
-  <CodeSnippet Format="1.0.0">
-    <Header>
-      <Title>Create Table</Title>
-      <Shortcut></Shortcut>
-      <Description>Creates a table. (Not yet in Firebird syntax)</Description>
-      <Author>BlackbirdSql</Author>
-      <SnippetTypes>
-        <SnippetType>Expansion</SnippetType>
-      </SnippetTypes>
-    </Header>
-    <Snippet>
-      <Declarations>
-        <Literal>
-          <ID>Tablename</ID>
-          <ToolTip>Name of the table</ToolTip>
-          <Default>FB_TABLENAME</Default>
-        </Literal>
-        <Literal>
-          <ID>column1</ID>
-          <ToolTip>Name of the column</ToolTip>
-          <Default>COLUMN_1</Default>
-        </Literal>
-        <Literal>
-          <ID>datatype1</ID>
-          <ToolTip>Data type of the column</ToolTip>
-          <Default>INT NOT NULL</Default>
-        </Literal>
-        <Literal>
-          <ID>column2</ID>
-          <ToolTip>Name of the column</ToolTip>
-          <Default>COLUMN_2</Default>
-        </Literal>
-        <Literal>
-          <ID>datatype2</ID>
-          <ToolTip>Data type of the column</ToolTip>
-          <Default>INT DEFAULT NULL</Default>
-        </Literal>
-      </Declarations>
-      <Code Language="SQL_FIREBIRD">
-        <![CDATA[CREATE TABLE $Tablename$
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Create Table</Title>
+			<Shortcut></Shortcut>
+			<Description>Creates a Firebird table.</Description>
+			<Author>BlackbirdSql</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>Tablename</ID>
+					<ToolTip>Name of the table</ToolTip>
+					<Default>TABLENAME</Default>
+				</Literal>
+				<Literal>
+					<ID>column1</ID>
+					<ToolTip>Name of the column</ToolTip>
+					<Default>COLUMN_1</Default>
+				</Literal>
+				<Literal>
+					<ID>datatype1</ID>
+					<ToolTip>Data type of the column</ToolTip>
+					<Default>INT NOT NULL</Default>
+				</Literal>
+				<Literal>
+					<ID>column2</ID>
+					<ToolTip>Name of the column</ToolTip>
+					<Default>COLUMN_2</Default>
+				</Literal>
+				<Literal>
+					<ID>datatype2</ID>
+					<ToolTip>Data type of the column</ToolTip>
+					<Default>INT DEFAULT NULL</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="SQL_FIREBIRD">
+				<![CDATA[CREATE TABLE $Tablename$
 (
     $column1$ $datatype1$,
     $column2$ $datatype2$
-);$end$]]>
-      </Code>
-    </Snippet>
-  </CodeSnippet>
+);
+]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
 </CodeSnippets>
 

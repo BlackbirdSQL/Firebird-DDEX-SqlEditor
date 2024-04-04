@@ -2,6 +2,12 @@
 
 ## Change log
 
+### v11.3.0.2 Updated snippets.
+__New/ Enhancements__</br>
+-- Updated Language service snippets to Firebird syntax.</br>
+__Fixes__</br>
+-- None. 
+
 ### v11.3.0.1 Patch to address Snippet insertion error.
 __New/ Enhancements__</br>
 -- None.</br>

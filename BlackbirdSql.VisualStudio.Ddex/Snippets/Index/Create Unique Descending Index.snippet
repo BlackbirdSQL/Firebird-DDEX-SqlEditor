@@ -2,9 +2,9 @@
 <CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
 	<CodeSnippet Format="1.0.0">
 		<Header>
-			<Title>Create Index Basic</Title>
+			<Title>Create Unique Descending Index</Title>
 			<Shortcut></Shortcut>
-			<Description>Creates a simple, non-unique Firebird index.</Description>
+			<Description>Creates a unique descending Firebird index.</Description>
 			<Author>BlackbirdSql</Author>
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
@@ -13,24 +13,35 @@
 		<Snippet>
 			<Declarations>
 				<Literal>
+					<ID>IndexName</ID>
+					<ToolTip>Name of the index</ToolTip>
+					<Default>IX_TABLENAME_COL1_COL2</Default>
+				</Literal>
+				<Literal>
 					<ID>TableName</ID>
 					<ToolTip>Name of the table on which the index is applied</ToolTip>
 					<Default>TABLENAME</Default>
-				</Literal>
-				<Literal>
-					<ID>IndexName</ID>
-					<ToolTip>Name of the index</ToolTip>
-					<Default>IX_TABLENAME_COL1</Default>
 				</Literal>
 				<Literal>
 					<ID>Column1</ID>
 					<ToolTip>Name of the column on which the index is applied</ToolTip>
 					<Default>COLUMN_1</Default>
 				</Literal>
+				<Literal>
+					<ID>Column2</ID>
+					<ToolTip>Name of the column on which the index is applied</ToolTip>
+					<Default>COLUMN_2</Default>
+				</Literal>
+				<Literal>
+					<ID>asc_desc</ID>
+					<ToolTip>Order of column values in the index</ToolTip>
+					<Default>DESC</Default>
+				</Literal>
 			</Declarations>
 			<Code Language="SQL_FIREBIRD">
-				<![CDATA[CREATE INDEX $IndexName$
-	ON $TableName$ ($Column1$)
+				<![CDATA[CREATE UNIQUE $asc_desc$ INDEX $IndexName$
+	ON $TableName$
+	($Column1$, $Column2$)
 ]]>
 			</Code>
 		</Snippet>

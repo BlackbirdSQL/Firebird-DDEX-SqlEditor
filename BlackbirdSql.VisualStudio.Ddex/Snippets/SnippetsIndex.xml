@@ -54,20 +54,6 @@
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\User Defined Data Type\</DirPath>
-      <LocalizedName>User Defined Data Type</LocalizedName>
-    </SnippetDir>
-    <SnippetDir>
-      <OnOff>On</OnOff>
-      <Installed>true</Installed>
-      <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\User Defined Type\</DirPath>
-      <LocalizedName>User Defined Type</LocalizedName>
-    </SnippetDir>
-    <SnippetDir>
-      <OnOff>On</OnOff>
-      <Installed>true</Installed>
-      <Locale>LOCALE_ID</Locale>
       <DirPath>%PackageFolder%\Snippets\View\</DirPath>
       <LocalizedName>View</LocalizedName>
     </SnippetDir>

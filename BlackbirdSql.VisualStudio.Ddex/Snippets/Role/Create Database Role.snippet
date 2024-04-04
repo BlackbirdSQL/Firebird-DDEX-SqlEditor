@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
-  <CodeSnippet Format="1.0.0">
-    <Header>
-      <Title>Create Database Role</Title>
-      <Shortcut></Shortcut>
-      <Description>Creates a database role. (Not yet in Firebird syntax)</Description>
-      <Author>BlackbirdSql</Author>
-      <SnippetTypes>
-        <SnippetType>Expansion</SnippetType>
-      </SnippetTypes>
-    </Header>
-    <Snippet>
-      <Declarations>
-        <Literal>
-          <ID>RoleName</ID>
-          <ToolTip>Name of the database role</ToolTip>
-          <Default>RoleName</Default>
-        </Literal>
-      </Declarations>
-      <Code Language="SQL_FIREBIRD">
-        <![CDATA[
-CREATE ROLE $RoleName$
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Create Database Role</Title>
+			<Shortcut></Shortcut>
+			<Description>Creates a Firebird database role.</Description>
+			<Author>BlackbirdSql</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>RoleName</ID>
+					<ToolTip>Name of the database role</ToolTip>
+					<Default>ROLE_NAME</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="SQL_FIREBIRD">
+				<![CDATA[CREATE ROLE $RoleName$
 ]]>
-      </Code>
-    </Snippet>
-  </CodeSnippet>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
 </CodeSnippets>

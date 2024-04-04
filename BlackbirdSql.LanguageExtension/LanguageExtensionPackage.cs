@@ -37,7 +37,6 @@ namespace BlackbirdSql.LanguageExtension;
 #region							LanguageExtensionPackage Class Attributes
 // ---------------------------------------------------------------------------------------------------------
 
-[ProvideLanguageCodeExpansion(typeof(LsbLanguageService), "SQL_FIREBIRD", 303, "SQL_FIREBIRD", "%PackageFolder%\\Snippets\\SnippetsIndex.xml", SearchPaths = "%PackageFolder%\\Snippets\\Function;%PackageFolder%\\Snippets\\Index;%PackageFolder%\\Snippets\\Role;%PackageFolder%\\Snippets\\Stored Procedure;%PackageFolder%\\Snippets\\Table;%PackageFolder%\\Snippets\\Trigger;%PackageFolder%\\Snippets\\User;%PackageFolder%\\Snippets\\User Defined Data Type;%PackageFolder%\\Snippets\\User Defined Type;%PackageFolder%\\Snippets\\View;%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets", ForceCreateDirs = "%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets")]
 
 [ProvideService(typeof(LsbLanguageService), IsAsyncQueryable = true, ServiceName = PackageData.LanguageServiceName)]
 [ProvideLanguageService(typeof(LsbLanguageService), PackageData.LanguageLongName, 330, CodeSense = true, EnableCommenting = true, MatchBraces = true, ShowCompletion = true, ShowMatchingBrace = true, AutoOutlining = true, EnableAsyncCompletion = true, MaxErrorMessages = 200, CodeSenseDelay = 500)]
@@ -46,9 +45,9 @@ namespace BlackbirdSql.LanguageExtension;
 [ProvideLanguageEditorOptionPage(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Advanced", null, "#331")]
 [ProvideProfile(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Editor", 300, 330, false, AlternateParent = "AutomationProperties\\TextEditor")]
 
-
 [ProvideLanguageExtension(typeof(LsbLanguageService), SystemData.Extension)]
 
+[ProvideLanguageCodeExpansion(typeof(LsbLanguageService), "SQL_FIREBIRD", 303, "SQL_FIREBIRD", "%PackageFolder%\\Snippets\\SnippetsIndex.xml", SearchPaths = "%PackageFolder%\\Snippets\\Function;%PackageFolder%\\Snippets\\Index;%PackageFolder%\\Snippets\\Role;%PackageFolder%\\Snippets\\Stored Procedure;%PackageFolder%\\Snippets\\Table;%PackageFolder%\\Snippets\\Trigger;%PackageFolder%\\Snippets\\User;%PackageFolder%\\Snippets\\View;%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets", ForceCreateDirs = "%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets")]
 
 
 #endregion Class Attributes

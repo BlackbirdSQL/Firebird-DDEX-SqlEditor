@@ -4,7 +4,7 @@
     <Header>
       <Title>Create View</Title>
       <Shortcut></Shortcut>
-      <Description>Creates a view. (Not yet in Firebird syntax)</Description>
+      <Description>Creates a Firebird view.</Description>
       <Author>BlackbirdSql</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -15,19 +15,34 @@
         <Literal>
           <ID>viewname</ID>
           <ToolTip>Name of the view</ToolTip>
-          <Default>Sample_View</Default>
+          <Default>SAMPLE_VIEW</Default>
         </Literal>
         <Literal>
           <ID>tablename</ID>
           <ToolTip>Name of the table</ToolTip>
-          <Default>Sample_Table</Default>
+          <Default>SAMPLE_TABLE</Default>
         </Literal>
-      </Declarations>
+		  <Literal>
+			  <ID>OutParam1</ID>
+			  <ToolTip>Name of the output parameter</ToolTip>
+			  <Default>OUT_PARAM1</Default>
+		  </Literal>
+		  <Literal>
+			  <ID>OutParam2</ID>
+			  <ToolTip>Name of the output parameter</ToolTip>
+			  <Default>OUT_PARAM2</Default>
+		  </Literal>
+	  </Declarations>
       <Code Language="SQL_FIREBIRD">
-        <![CDATA[
-CREATE VIEW $viewname$
+        <![CDATA[CREATE VIEW $viewname$
+(
+	$OutParam1$,
+	$OutParam2$
+)
 AS
-    Select * from $tablename$
+SELECT
+	$tablename$.COL1 as $OutParam1$,
+	$tablename$.COL2 as $OutParam2$;
 ]]>
       </Code>
     </Snippet>

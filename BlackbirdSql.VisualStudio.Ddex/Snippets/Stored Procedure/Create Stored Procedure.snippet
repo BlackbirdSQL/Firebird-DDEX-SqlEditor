@@ -1,57 +1,73 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
-  <CodeSnippet Format="1.0.0">
-    <Header>
-      <Title>Create Procedure Basic Template</Title>
-      <Shortcut></Shortcut>
-      <Description>Creates a simple stored procedure. (Not yet in Firebird syntax)</Description>
-      <Author>BlackbirdSql</Author>
-      <SnippetTypes>
-        <SnippetType>Expansion</SnippetType>
-      </SnippetTypes>
-    </Header>
-    <Snippet>
-      <Declarations>
-        <Literal>
-          <ID>storedprocname</ID>
-          <ToolTip>Name of the stored procedure</ToolTip>
-          <Default>Sample_Procedure</Default>
-        </Literal>
-        <Literal>
-          <ID>Param1</ID>
-          <ToolTip>Name of the input parameter</ToolTip>
-          <Default>param1</Default>
-        </Literal>
-        <Literal>
-          <ID>datatype1</ID>
-          <ToolTip>Datatype of the input parameter</ToolTip>
-          <Default>int</Default>
-        </Literal>
-        <Literal>
-          <ID>DefValue1</ID>
-          <ToolTip>Default value of the input parameter</ToolTip>
-          <Default>0</Default>
-        </Literal>
-        <Literal>
-          <ID>Param2</ID>
-          <ToolTip>Name of the input parameter</ToolTip>
-          <Default>param2</Default>
-        </Literal>
-        <Literal>
-          <ID>datatype2</ID>
-          <ToolTip>Datatype of the input parameter</ToolTip>
-          <Default>int</Default>
-        </Literal>
-      </Declarations>
-      <Code Language="SQL_FIREBIRD">
-        <![CDATA[CREATE PROCEDURE $storedprocname$ 
-    @$Param1$ $datatype1$ = $DefValue1$,
-    @$Param2$ $datatype2$  
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Create Procedure Basic Template</Title>
+			<Shortcut></Shortcut>
+			<Description>Creates a simple Firebird stored procedure.</Description>
+			<Author>BlackbirdSql</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>storedprocname</ID>
+					<ToolTip>Name of the stored procedure</ToolTip>
+					<Default>PROCNAME</Default>
+				</Literal>
+				<Literal>
+					<ID>Param1</ID>
+					<ToolTip>Name of the input parameter</ToolTip>
+					<Default>PARAM1</Default>
+				</Literal>
+				<Literal>
+					<ID>datatype1</ID>
+					<ToolTip>Datatype of the input parameter</ToolTip>
+					<Default>INTEGER</Default>
+				</Literal>
+				<Literal>
+					<ID>Param2</ID>
+					<ToolTip>Name of the input parameter</ToolTip>
+					<Default>PARAM2</Default>
+				</Literal>
+				<Literal>
+					<ID>datatype2</ID>
+					<ToolTip>Datatype of the input parameter</ToolTip>
+					<Default>INTEGER</Default>
+				</Literal>
+				<Literal>
+					<ID>DefValue2</ID>
+					<ToolTip>Default value of the input parameter</ToolTip>
+					<Default>0</Default>
+				</Literal>
+				<Literal>
+					<ID>Param3</ID>
+					<ToolTip>Name of the input parameter</ToolTip>
+					<Default>PARAM3</Default>
+				</Literal>
+				<Literal>
+					<ID>datatype2</ID>
+					<ToolTip>Datatype of the input parameter</ToolTip>
+					<Default>VARCHAR(50)</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="SQL_FIREBIRD">
+				<![CDATA[CREATE PROCEDURE $storedprocname$
+(
+    $Param1$ $datatype1$ NOT NULL,
+    $Param2$ $datatype2$ NOT NULL DEFAULT $DefValue2$,
+)
 AS
-    SELECT @$Param1$,@$Param2$ 
-RETURN 0 $end$]]>
-      </Code>
-    </Snippet>
-  </CodeSnippet>
+BEGIN
+	UPDATE UPDATE_TABLENAME U
+		SET U.COL1 = :$Param1$, U.COL2 = :$Param2$
+	WHERE U.INDEXCOL = :$Param3$;
+END
+]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
 </CodeSnippets>
 
