@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -16,7 +18,6 @@ using BlackbirdSql.Core.Controls.Enums;
 using BlackbirdSql.Core.Controls.Widgets;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Properties;
-using FirebirdSql.Data.FirebirdClient;
 
 
 
@@ -340,7 +341,7 @@ public partial class AdvancedMessageBox : Form
 
 
 
-	public string BuildAdvancedInfo()
+	public string BuildAdvancedInfo<T>() where T : class
 	{
 		if (_ExMessage == null)
 		{
@@ -381,6 +382,23 @@ public partial class AdvancedMessageBox : Form
 				stringBuilder2.AppendFormat(" ({0})", innerException.Source);
 			}
 
+			if (innerException is DbException dbex && dbex.HasSqlException())
+			{
+				IList<object> errors = dbex.GetErrors();
+
+				if (errors != null)
+				{
+					foreach (object error in DbNative.GetErrorEnumerator(errors))
+					{
+						stringBuilder.Append(Environment.NewLine);
+						stringBuilder.Append($"Error#: {DbNative.GetErrorNumber(error)}  Line: {DbNative.GetErrorLineNumber(error)}  Class: {DbNative.GetErrorClass(error)}  Error: {DbNative.GetErrorMessage(error)}");
+					}
+
+				}
+			}
+
+
+
 			stringBuilder2.Append(Environment.NewLine);
 			string text = BuildHelpURL(innerException);
 			if (text.Length > 0)
@@ -409,94 +427,115 @@ public partial class AdvancedMessageBox : Form
 			throw ex;
 		}
 
-		if (type == EnAdvancedInfoType.All)
+		try
 		{
-			stringBuilder.Append("===================================");
 			if (type == EnAdvancedInfoType.All)
 			{
-				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append("===================================");
+				if (type == EnAdvancedInfoType.All)
+				{
+					stringBuilder.Append(Environment.NewLine);
+					stringBuilder.Append(Environment.NewLine);
+				}
+			}
+
+			if (ex.Message != null && ex.Message.Length != 0 && (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.Message))
+			{
+				stringBuilder.Append(ex.Message);
+				if (ex.Source != null && ex.Source.Length > 0)
+				{
+					stringBuilder.AppendFormat(" ({0})", ex.Source);
+				}
+
+				if (ex is DbException dbex && dbex.IsSqlException())
+				{
+					IList<object> errors = dbex.GetErrors();
+
+					if (errors != null)
+					{
+						foreach (object error in DbNative.GetErrorEnumerator(errors))
+						{
+							stringBuilder.Append(Environment.NewLine);
+							stringBuilder.Append($"Error#: {DbNative.GetErrorNumber(error)}  Line: {DbNative.GetErrorLineNumber(error)}  Class: {DbNative.GetErrorClass(error)}  Error: {DbNative.GetErrorMessage(error)}");
+						}
+					}
+				}
+
+				if (type == EnAdvancedInfoType.All)
+				{
+					stringBuilder.Append(Environment.NewLine);
+					stringBuilder.Append(Environment.NewLine);
+				}
+			}
+
+			string text = BuildHelpURL(ex);
+			if (text.Length > 0)
+			{
+				if (type == EnAdvancedInfoType.All)
+				{
+					stringBuilder.Append("------------------------------");
+					stringBuilder.Append(Environment.NewLine);
+				}
+
+				if (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.HelpLink)
+				{
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
+				}
+
+				if (type == EnAdvancedInfoType.All)
+				{
+					stringBuilder.Append(Environment.NewLine);
+					stringBuilder.Append(Environment.NewLine);
+				}
+			}
+
+			string text2 = BuildAdvancedInfoProperties(ex);
+			if (text2 != null && text2.Length > 0)
+			{
+				if (type == EnAdvancedInfoType.All)
+				{
+					stringBuilder.Append("------------------------------");
+					stringBuilder.Append(Environment.NewLine);
+				}
+
+				if (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.Data)
+				{
+					stringBuilder.Append(text2);
+				}
+
+				if (type == EnAdvancedInfoType.All)
+				{
+					stringBuilder.Append(Environment.NewLine);
+					stringBuilder.Append(Environment.NewLine);
+				}
+			}
+
+			if (ex.StackTrace != null && ex.StackTrace.Length > 0)
+			{
+				if (type == EnAdvancedInfoType.All)
+				{
+					stringBuilder.Append("------------------------------");
+					stringBuilder.Append(Environment.NewLine);
+					stringBuilder.Append(ControlsResources.CodeLocation);
+					stringBuilder.Append(Environment.NewLine);
+					stringBuilder.Append(Environment.NewLine);
+				}
+
+				if (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.StackTrace)
+				{
+					stringBuilder.Append(ex.StackTrace);
+				}
+
+				if (type == EnAdvancedInfoType.All)
+				{
+					stringBuilder.Append(Environment.NewLine);
+					stringBuilder.Append(Environment.NewLine);
+				}
 			}
 		}
-
-		if (ex.Message != null && ex.Message.Length != 0 && (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.Message))
+		catch (Exception ex2)
 		{
-			stringBuilder.Append(ex.Message);
-			if (ex.Source != null && ex.Source.Length > 0)
-			{
-				stringBuilder.AppendFormat(" ({0})", ex.Source);
-			}
-
-			if (type == EnAdvancedInfoType.All)
-			{
-				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(Environment.NewLine);
-			}
-		}
-
-		string text = BuildHelpURL(ex);
-		if (text.Length > 0)
-		{
-			if (type == EnAdvancedInfoType.All)
-			{
-				stringBuilder.Append("------------------------------");
-				stringBuilder.Append(Environment.NewLine);
-			}
-
-			if (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.HelpLink)
-			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
-			}
-
-			if (type == EnAdvancedInfoType.All)
-			{
-				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(Environment.NewLine);
-			}
-		}
-
-		string text2 = BuildAdvancedInfoProperties(ex);
-		if (text2 != null && text2.Length > 0)
-		{
-			if (type == EnAdvancedInfoType.All)
-			{
-				stringBuilder.Append("------------------------------");
-				stringBuilder.Append(Environment.NewLine);
-			}
-
-			if (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.Data)
-			{
-				stringBuilder.Append(text2);
-			}
-
-			if (type == EnAdvancedInfoType.All)
-			{
-				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(Environment.NewLine);
-			}
-		}
-
-		if (ex.StackTrace != null && ex.StackTrace.Length > 0)
-		{
-			if (type == EnAdvancedInfoType.All)
-			{
-				stringBuilder.Append("------------------------------");
-				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(ControlsResources.CodeLocation);
-				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(Environment.NewLine);
-			}
-
-			if (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.StackTrace)
-			{
-				stringBuilder.Append(ex.StackTrace);
-			}
-
-			if (type == EnAdvancedInfoType.All)
-			{
-				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(Environment.NewLine);
-			}
+			Diag.Dug(ex2);
 		}
 
 		return stringBuilder.ToString();
@@ -507,50 +546,57 @@ public partial class AdvancedMessageBox : Form
 	private string BuildAdvancedInfoProperties(Exception ex)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		bool flag = false;
-		if (ex.GetType() == typeof(FbException) || ex.GetType() == typeof(FbException))
+
+		try
 		{
-			FbException ex2 = (FbException)ex;
-			if (ex2.GetServer() != null && ex2.GetServer().Length > 0)
+			bool flag = false;
+			if (ex is DbException exf && exf.IsSqlException())
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlServerName, ex2.GetServer()));
-				stringBuilder.Append(Environment.NewLine);
-			}
-
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlError, ex2.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlSeverity, ex2.GetClass().ToString(CultureInfo.CurrentCulture)));
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlState, ex2.GetState().ToString(CultureInfo.CurrentCulture)));
-			stringBuilder.Append(Environment.NewLine);
-			if (ex2.GetProcedure() != null && ex2.GetProcedure().Length > 0)
-			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlProcedure, ex2.GetProcedure()));
-				stringBuilder.Append(Environment.NewLine);
-			}
-
-			if (ex2.GetLineNumber() != 0)
-			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlLineNumber, ex2.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
-				stringBuilder.Append(Environment.NewLine);
-			}
-
-			flag = true;
-		}
-
-		foreach (DictionaryEntry datum in ex.Data)
-		{
-			if (datum.Key != null && !(datum.Key.GetType() != typeof(string)) && datum.Value != null && string.Compare((string)datum.Key, 0, C_AdvancedKey, 0, C_AdvancedKey.Length, ignoreCase: false, CultureInfo.CurrentCulture) == 0 && datum.Value != null && datum.Value.ToString().Length > 0)
-			{
-				if (flag)
+				if (exf.GetServer() != null && exf.GetServer().Length > 0)
 				{
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlServerName, exf.GetServer()));
 					stringBuilder.Append(Environment.NewLine);
-					flag = false;
 				}
 
-				stringBuilder.AppendFormat("{0} = {1}", ((string)datum.Key)[C_AdvancedKey.Length..], datum.Value.ToString());
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlError, exf.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlSeverity, exf.GetClass().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlState, exf.GetState().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(Environment.NewLine);
+				if (exf.GetProcedure() != null && exf.GetProcedure().Length > 0)
+				{
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlProcedure, exf.GetProcedure()));
+					stringBuilder.Append(Environment.NewLine);
+				}
+
+				if (exf.GetLineNumber() != 0)
+				{
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlLineNumber, exf.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
+					stringBuilder.Append(Environment.NewLine);
+				}
+
+				flag = true;
 			}
+
+			foreach (DictionaryEntry datum in ex.Data)
+			{
+				if (datum.Key != null && !(datum.Key.GetType() != typeof(string)) && datum.Value != null && string.Compare((string)datum.Key, 0, C_AdvancedKey, 0, C_AdvancedKey.Length, ignoreCase: false, CultureInfo.CurrentCulture) == 0 && datum.Value != null && datum.Value.ToString().Length > 0)
+				{
+					if (flag)
+					{
+						stringBuilder.Append(Environment.NewLine);
+						flag = false;
+					}
+
+					stringBuilder.AppendFormat("{0} = {1}", ((string)datum.Key)[C_AdvancedKey.Length..], datum.Value.ToString());
+					stringBuilder.Append(Environment.NewLine);
+				}
+			}
+		}
+		catch (Exception ex2)
+		{
+			Diag.Dug(ex2);
 		}
 
 		return stringBuilder.ToString();
@@ -657,85 +703,93 @@ public partial class AdvancedMessageBox : Form
 		}
 
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(Environment.NewLine);
-		stringBuilder.Append("------------------------------");
-		stringBuilder.Append(Environment.NewLine);
-		string value = stringBuilder.ToString();
-		bool flag = _ExMessage.InnerException != null;
-		int num = 1;
 		StringBuilder stringBuilder2 = new StringBuilder();
-		if (isInternal)
+
+		try
 		{
-			stringBuilder2.Append(ControlsResources.MessageTitle);
-			stringBuilder2.Append(Caption);
-		}
-
-		for (Exception innerException = _ExMessage; innerException != null; innerException = innerException.InnerException)
-		{
-			if (isInternal || num > 1)
+			stringBuilder.Append(Environment.NewLine);
+			stringBuilder.Append("------------------------------");
+			stringBuilder.Append(Environment.NewLine);
+			string value = stringBuilder.ToString();
+			bool flag = _ExMessage.InnerException != null;
+			int num = 1;
+			if (isInternal)
 			{
-				stringBuilder2.Append(value);
+				stringBuilder2.Append(ControlsResources.MessageTitle);
+				stringBuilder2.Append(Caption);
 			}
 
-			if (flag && num == 2)
+			for (Exception innerException = _ExMessage; innerException != null; innerException = innerException.InnerException)
 			{
-				stringBuilder2.Append(ControlsResources.AdditionalInfo);
-				stringBuilder2.Append(Environment.NewLine);
-			}
-
-			if (isInternal || num > 1)
-			{
-				stringBuilder2.Append(Environment.NewLine);
-			}
-
-			if (innerException.Message == null || innerException.Message.Length == 0)
-			{
-				stringBuilder2.Append(ControlsResources.CantComplete);
-			}
-			else
-			{
-				stringBuilder2.Append(innerException.Message);
-			}
-
-			if (innerException.Source != null && innerException.Source.Length > 0 && (num != 1 || Caption != innerException.Source))
-			{
-				stringBuilder2.Append(' ');
-				if (innerException.GetType() == typeof(FbException) || innerException.GetType() == typeof(FbException))
+				if (isInternal || num > 1)
 				{
-					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSourceNumber, ControlsResources.SqlServerSource, ((FbException)innerException).GetErrorCode()));
+					stringBuilder2.Append(value);
+				}
+
+				if (flag && num == 2)
+				{
+					stringBuilder2.Append(ControlsResources.AdditionalInfo);
+					stringBuilder2.Append(Environment.NewLine);
+				}
+
+				if (isInternal || num > 1)
+				{
+					stringBuilder2.Append(Environment.NewLine);
+				}
+
+				if (innerException.Message == null || innerException.Message.Length == 0)
+				{
+					stringBuilder2.Append(ControlsResources.CantComplete);
 				}
 				else
 				{
-					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSource, innerException.Source));
+					stringBuilder2.Append(innerException.Message);
 				}
+
+				if (innerException.Source != null && innerException.Source.Length > 0 && (num != 1 || Caption != innerException.Source))
+				{
+					stringBuilder2.Append(' ');
+					if (innerException is DbException dbInnerException && dbInnerException.HasSqlException())
+					{
+						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSourceNumber, DbNative.DataProviderName, dbInnerException.GetErrorCode()));
+					}
+					else
+					{
+						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSource, innerException.Source));
+					}
+				}
+
+				stringBuilder2.Append(Environment.NewLine);
+				string text = BuildHelpURL(innerException);
+				if (text.Length > 0)
+				{
+					stringBuilder2.Append(Environment.NewLine);
+					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
+					stringBuilder2.Append(Environment.NewLine);
+				}
+
+				num++;
 			}
 
-			stringBuilder2.Append(Environment.NewLine);
-			string text = BuildHelpURL(innerException);
-			if (text.Length > 0)
+			if (isInternal)
 			{
+				stringBuilder2.Append(value);
+				stringBuilder2.Append(ControlsResources.Buttons);
 				stringBuilder2.Append(Environment.NewLine);
-				stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
-				stringBuilder2.Append(Environment.NewLine);
+				for (int i = 0; i < _ButtonCount; i++)
+				{
+					stringBuilder2.Append(Environment.NewLine);
+					stringBuilder2.Append(_ButtonTextArray[i]);
+				}
+
+				stringBuilder2.Append(value);
 			}
-
-			num++;
 		}
-
-		if (isInternal)
+		catch (Exception ex)
 		{
-			stringBuilder2.Append(value);
-			stringBuilder2.Append(ControlsResources.Buttons);
-			stringBuilder2.Append(Environment.NewLine);
-			for (int i = 0; i < _ButtonCount; i++)
-			{
-				stringBuilder2.Append(Environment.NewLine);
-				stringBuilder2.Append(_ButtonTextArray[i]);
-			}
-
-			stringBuilder2.Append(value);
+			Diag.Dug(ex);
 		}
-
+		
 		return stringBuilder2.ToString();
 	}
 
@@ -744,52 +798,60 @@ public partial class AdvancedMessageBox : Form
 	private string BuildTechnicalDetails(Exception ex)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		if (ex.GetType() == typeof(FbException) || ex.GetType() == typeof(FbException))
+
+
+		try
 		{
-			FbException ex2 = (FbException)ex;
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append("---------------");
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(ControlsResources.SqlServerInfo);
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(Environment.NewLine);
-
-			if (ex2.GetServer() != null && ex2.GetServer().Length > 0)
+			if (ex is DbException exf && exf.HasSqlException())
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlServerName, ex2.GetServer()));
 				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append("---------------");
+				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append(ControlsResources.SqlServerInfo);
+				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append(Environment.NewLine);
+
+				if (exf.GetServer() != null && exf.GetServer().Length > 0)
+				{
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlServerName, exf.GetServer()));
+					stringBuilder.Append(Environment.NewLine);
+				}
+
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlError, exf.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlSeverity, exf.GetClass().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlState, exf.GetState().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(Environment.NewLine);
+
+				if (exf.GetProcedure() != null && exf.GetProcedure().Length > 0)
+				{
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlProcedure, exf.GetProcedure()));
+					stringBuilder.Append(Environment.NewLine);
+				}
+
+				if (exf.GetLineNumber() != 0)
+				{
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlLineNumber, exf.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
+					stringBuilder.Append(Environment.NewLine);
+				}
 			}
 
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlError, ex2.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlSeverity, ex2.GetClass().ToString(CultureInfo.CurrentCulture)));
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlState, ex2.SQLSTATE.ToString(CultureInfo.CurrentCulture)));
-			stringBuilder.Append(Environment.NewLine);
-
-			if (ex2.GetProcedure() != null && ex2.GetProcedure().Length > 0)
+			if (ex.StackTrace != null && ex.StackTrace.Length > 0)
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlProcedure, ex2.GetProcedure()));
 				stringBuilder.Append(Environment.NewLine);
-			}
-
-			if (ex2.GetLineNumber() != 0)
-			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlLineNumber, ex2.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append("---------------");
+				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append(ControlsResources.CodeLocation);
+				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append(Environment.NewLine);
+				stringBuilder.Append(ex.StackTrace);
 				stringBuilder.Append(Environment.NewLine);
 			}
 		}
-
-		if (ex.StackTrace != null && ex.StackTrace.Length > 0)
+		catch (Exception ex2)
 		{
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append("---------------");
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(ControlsResources.CodeLocation);
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(ex.StackTrace);
-			stringBuilder.Append(Environment.NewLine);
+			Diag.Dug(ex2);
 		}
 
 		return stringBuilder.ToString();
@@ -890,20 +952,28 @@ public partial class AdvancedMessageBox : Form
 
 	private bool HasTechnicalDetails()
 	{
-		for (Exception innerException = _ExMessage; innerException != null; innerException = innerException.InnerException)
+		try
 		{
-			if (innerException.StackTrace != null && innerException.StackTrace.Length > 0 || innerException.GetType() == typeof(FbException) || innerException.GetType() == typeof(FbException))
+			for (Exception innerException = _ExMessage; innerException != null; innerException = innerException.InnerException)
 			{
-				return true;
-			}
-
-			foreach (DictionaryEntry datum in innerException.Data)
-			{
-				if (string.Compare((string)datum.Key, 0, C_AdvancedKey, 0, C_AdvancedKey.Length, ignoreCase: false, CultureInfo.CurrentCulture) == 0)
+				if (innerException.StackTrace != null && innerException.StackTrace.Length > 0
+					|| (innerException is DbException dbInnerException && dbInnerException.HasSqlException()))
 				{
 					return true;
 				}
+
+				foreach (DictionaryEntry datum in innerException.Data)
+				{
+					if (string.Compare((string)datum.Key, 0, C_AdvancedKey, 0, C_AdvancedKey.Length, ignoreCase: false, CultureInfo.CurrentCulture) == 0)
+					{
+						return true;
+					}
+				}
 			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 
 		return false;
@@ -1017,107 +1087,116 @@ public partial class AdvancedMessageBox : Form
 
 	private void InitializeMessage()
 	{
-		int num = 0;
-		int num2 = 0;
-		_Dropdown.Items.Clear();
-		for (Exception innerException = _ExMessage.InnerException; innerException != null; innerException = innerException.InnerException)
+		try
 		{
-			num2++;
-		}
-
-		if (_MaxMessages > 0 && num2 > _MaxMessages - 1)
-		{
-			num2 = _MaxMessages - 1;
-		}
-
-		if (num2 > 0)
-		{
-			for (int i = 0; i < num2; i++)
+			int num = 0;
+			int num2 = 0;
+			_Dropdown.Items.Clear();
+			for (Exception innerException = _ExMessage.InnerException; innerException != null; innerException = innerException.InnerException)
 			{
-				pnlAdditional.ColumnStyles.Insert(0, new ColumnStyle(SizeType.Absolute, 20f));
-				pnlAdditional.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+				num2++;
 			}
 
-			pnlAdditional.ColumnCount = num2 + 1;
-			pnlAdditional.RowCount = num2;
-		}
-
-		Label label = lblAdditionalInfo;
-		bool visible = pnlAdditional.Visible = num2 > 0;
-		label.Visible = visible;
-		Exception innerException2 = _ExMessage;
-		while (innerException2 != null && (_MaxMessages < 0 || num < _MaxMessages))
-		{
-			StringBuilder stringBuilder = new StringBuilder();
-			string text = innerException2.Message != null && innerException2.Message.Length != 0 ? innerException2.Message : ControlsResources.CantComplete;
-			if (_ShowHelpButton)
+			if (_MaxMessages > 0 && num2 > _MaxMessages - 1)
 			{
-				string text2 = BuildHelpURL(innerException2);
-				bool num3 = text2.Length > 0;
-				_HelpUrlArray.Add(text2);
-				text2 = text.Length <= 50 ? text : string.Format(CultureInfo.CurrentCulture, ControlsResources.AddEllipsis, text[..50]);
-				ToolStripItem toolStripItem;
-				if (num3)
+				num2 = _MaxMessages - 1;
+			}
+
+			if (num2 > 0)
+			{
+				for (int i = 0; i < num2; i++)
 				{
-					toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.HelpMenuText, text2), null, ItemHelp_Click);
-					_HelpUrlCount++;
+					pnlAdditional.ColumnStyles.Insert(0, new ColumnStyle(SizeType.Absolute, 20f));
+					pnlAdditional.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+				}
+
+				pnlAdditional.ColumnCount = num2 + 1;
+				pnlAdditional.RowCount = num2;
+			}
+
+			Label label = lblAdditionalInfo;
+			bool visible = pnlAdditional.Visible = num2 > 0;
+			label.Visible = visible;
+			Exception innerException2 = _ExMessage;
+			while (innerException2 != null && (_MaxMessages < 0 || num < _MaxMessages))
+			{
+				StringBuilder stringBuilder = new StringBuilder();
+				string text = innerException2.Message != null && innerException2.Message.Length != 0 ? innerException2.Message : ControlsResources.CantComplete;
+				if (_ShowHelpButton)
+				{
+					string text2 = BuildHelpURL(innerException2);
+					bool num3 = text2.Length > 0;
+					_HelpUrlArray.Add(text2);
+					text2 = text.Length <= 50 ? text : string.Format(CultureInfo.CurrentCulture, ControlsResources.AddEllipsis, text[..50]);
+					ToolStripItem toolStripItem;
+					if (num3)
+					{
+						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.HelpMenuText, text2), null, ItemHelp_Click);
+						_HelpUrlCount++;
+					}
+					else
+					{
+						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.NoHelpMenuText, text2), null, ItemHelp_Click);
+						toolStripItem.Enabled = false;
+					}
+
+					toolStripItem.Tag = num;
+					toolStripItem.MouseEnter += OnHelpButtonMouseEnter;
+					toolStripItem.MouseLeave += OnHelpButtonMouseLeave;
+				}
+
+				stringBuilder.Remove(0, stringBuilder.Length);
+				stringBuilder.Append(text);
+				int num4 = 0;
+
+				if (innerException2 is DbException dbInnerException2 && dbInnerException2.HasSqlException())
+				{
+					num4 = dbInnerException2.ErrorCode;
 				}
 				else
 				{
-					toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.NoHelpMenuText, text2), null, ItemHelp_Click);
-					toolStripItem.Enabled = false;
+					dbInnerException2 = null;
 				}
 
-				toolStripItem.Tag = num;
-				toolStripItem.MouseEnter += OnHelpButtonMouseEnter;
-				toolStripItem.MouseLeave += OnHelpButtonMouseLeave;
-			}
-
-			stringBuilder.Remove(0, stringBuilder.Length);
-			stringBuilder.Append(text);
-			int num4 = 0;
-			if (innerException2 is FbException ex)
-			{
-				num4 = ex.ErrorCode;
-			}
-
-			if (innerException2.Source != null && innerException2.Source.Length > 0 && (num != 0 || Caption != innerException2.Source))
-			{
-				stringBuilder.Append(' ');
-				string arg = !(innerException2.GetType() == typeof(FbException)) && !(innerException2.GetType() == typeof(FbException)) ? innerException2.Source : ControlsResources.SqlServerSource;
-				if (num4 > 0)
+				if (innerException2.Source != null && innerException2.Source.Length > 0 && (num != 0 || Caption != innerException2.Source))
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSourceNumber, arg, num4));
+					stringBuilder.Append(' ');
+					string arg = (dbInnerException2 != null) ? innerException2.Source : DbNative.DataProviderName;
+
+					if (num4 > 0)
+						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSourceNumber, arg, num4));
+					else
+						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSource, arg));
+				}
+				else if (num4 > 0)
+				{
+					stringBuilder.Append(' ');
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorNumber, num4));
+				}
+
+				if (num == 0)
+				{
+					lblTopMessage.Text = stringBuilder.ToString();
+					lblTopMessage.LinkArea = new LinkArea(0, 0);
+					lblTopMessage.Tag = innerException2;
 				}
 				else
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSource, arg));
+					AddAdditionalInfoMessage(num - 1, stringBuilder.ToString(), innerException2);
 				}
-			}
-			else if (num4 > 0)
-			{
-				stringBuilder.Append(' ');
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorNumber, num4));
+
+				innerException2 = innerException2.InnerException;
+				num++;
 			}
 
-			if (num == 0)
+			if (Location.Y + GetPreferredSize(Size.Empty).Height > Screen.PrimaryScreen.WorkingArea.Bottom)
 			{
-				lblTopMessage.Text = stringBuilder.ToString();
-				lblTopMessage.LinkArea = new LinkArea(0, 0);
-				lblTopMessage.Tag = innerException2;
+				Location = new Point(Location.X, Screen.PrimaryScreen.WorkingArea.Bottom - Size.Height - 10);
 			}
-			else
-			{
-				AddAdditionalInfoMessage(num - 1, stringBuilder.ToString(), innerException2);
-			}
-
-			innerException2 = innerException2.InnerException;
-			num++;
 		}
-
-		if (Location.Y + GetPreferredSize(Size.Empty).Height > Screen.PrimaryScreen.WorkingArea.Bottom)
+		catch (Exception ex)
 		{
-			Location = new Point(Location.X, Screen.PrimaryScreen.WorkingArea.Bottom - Size.Height - 10);
+			Diag.Dug(ex);
 		}
 	}
 
@@ -1350,6 +1429,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception exError)
 		{
+			Diag.Dug(exError);
 			ShowError(ControlsResources.CantShowTechnicalDetailsError, exError);
 		}
 	}

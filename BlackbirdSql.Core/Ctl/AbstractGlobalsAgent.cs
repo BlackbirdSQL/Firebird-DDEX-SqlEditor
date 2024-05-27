@@ -2,8 +2,8 @@
 using System.IO;
 using System.Text;
 using System.Xml;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.Core.Ctl;

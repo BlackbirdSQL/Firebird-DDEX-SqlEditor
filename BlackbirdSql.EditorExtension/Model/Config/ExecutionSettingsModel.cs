@@ -6,16 +6,17 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
-using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
+
 
 
 namespace BlackbirdSql.EditorExtension.Model.Config;
+
 
 // =========================================================================================================
 //										ExecutionSettingsModel Class
@@ -85,41 +86,65 @@ public class ExecutionSettingsModel(IBTransientSettings transientSettings)
 	}
 
 
+	[TypeConverter(typeof(GlobalEnumConverter))]
+	public enum EnGlobalizedExecutionTimeout
+	{
+		[GlobalizedRadio("EnExecutionTimeout_1m")]
+		Timeout_1m = 1,
+		[GlobalizedRadio("EnExecutionTimeout_2m")]
+		Timeout_2m = 2,
+		[GlobalizedRadio("EnExecutionTimeout_5m")]
+		Timeout_5m = 5,
+		[GlobalizedRadio("EnExecutionTimeout_10m")]
+		Timeout_10m = 10,
+		[GlobalizedRadio("EnExecutionTimeout_15m")]
+		Timeout_15m = 15,
+		[GlobalizedRadio("EnExecutionTimeout_None")]
+		Timeout_None = 0
+	}
+
+
 	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayExecutionAutoDdlTts")]
-	[GlobalizedDescription("OptionDescriptionExecutionAutoDdlTts")]
+	[GlobalizedDisplayName("OptionDisplayExecutionAsynchronous")]
+	[GlobalizedDescription("OptionDescriptionExecutionAsynchronous")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(false)]
+	public bool Asynchronous { get; set; } = false;
+
+	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayExecutionTtsDefault")]
+	[GlobalizedDescription("OptionDescriptionExecutionTtsDefault")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(true)]
-	public bool AutoDdlTts { get; set; } = true;
+	public bool TtsDefault { get; set; } = true;
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetRowCount")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetRowCount")]
 	[TypeConverter(typeof(RangeConverter)), Range(0, 999999999)]
-	[DefaultValue(ModelConstants.C_DefaultSetRowCount)]
-	public int SetRowCount { get; set; } = ModelConstants.C_DefaultSetRowCount;
+	[DefaultValue(SysConstants.C_DefaultSetRowCount)]
+	public int SetRowCount { get; set; } = SysConstants.C_DefaultSetRowCount;
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetBlobDisplay")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetBlobDisplay")]
-	[DefaultValue((EnGlobalizedBlobSubType)ModelConstants.C_DefaultSetBlobDisplay)]
-	public EnGlobalizedBlobSubType SetBlobDisplay { get; set; } = (EnGlobalizedBlobSubType)ModelConstants.C_DefaultSetBlobDisplay;
+	[DefaultValue((EnGlobalizedBlobSubType)SysConstants.C_DefaultSetBlobDisplay)]
+	public EnGlobalizedBlobSubType SetBlobDisplay { get; set; } = (EnGlobalizedBlobSubType)SysConstants.C_DefaultSetBlobDisplay;
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayExecutionDefaultOleScripting")]
 	[GlobalizedDescription("OptionDescriptionExecutionDefaultOleScripting")]
 	[Browsable(false)]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultDefaultOleScripting)]
-	public bool DefaultOleScripting { get; set; } = ModelConstants.C_DefaultDefaultOleScripting;
+	[DefaultValue(SysConstants.C_DefaultDefaultOleScripting)]
+	public bool DefaultOleScripting { get; set; } = SysConstants.C_DefaultDefaultOleScripting;
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayExecutionTimeout")]
 	[GlobalizedDescription("OptionDescriptionExecutionTimeout")]
-	[TypeConverter(typeof(UomConverter)), LiteralRange(0, 32000, "SecondsUnlimited")]
-	[DefaultValue(ModelConstants.C_DefaultCommandTimeout)]
-	public int Timeout { get; set; } = ModelConstants.C_DefaultCommandTimeout;
+	[DefaultValue(SysConstants.C_DefaultExecutionTimeout)]
+	public EnGlobalizedExecutionTimeout ExecutionTimeout { get; set; } = SysConstants.C_DefaultExecutionTimeout;
 
 
 	#endregion Property Accessors

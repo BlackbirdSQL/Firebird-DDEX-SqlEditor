@@ -7,7 +7,7 @@ using System.Data.Common;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Xml;
-
+using BlackbirdSql.Sys;
 using Microsoft.Data.ConnectionUI;
 
 

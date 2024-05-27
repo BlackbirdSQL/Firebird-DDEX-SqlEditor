@@ -3,6 +3,7 @@
 //
 
 using BlackbirdSql.Core.Model.Config;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Settings;
 
 

@@ -327,6 +327,42 @@
   <data name="EnDeadlockPriority_Normal_Unselected" xml:space="preserve">
     <value>◎ Normal</value>
   </data>
+  <data name="EnExecutionTimeout_10m_Selected" xml:space="preserve">
+    <value>◉ 10 minutes</value>
+  </data>
+  <data name="EnExecutionTimeout_10m_Unselected" xml:space="preserve">
+    <value>◎ 10 minutes</value>
+  </data>
+  <data name="EnExecutionTimeout_15m_Selected" xml:space="preserve">
+    <value>◉ 15 minutes</value>
+  </data>
+  <data name="EnExecutionTimeout_15m_Unselected" xml:space="preserve">
+    <value>◎ 15 minutes</value>
+  </data>
+  <data name="EnExecutionTimeout_1m_Selected" xml:space="preserve">
+    <value>◉ 1 minute</value>
+  </data>
+  <data name="EnExecutionTimeout_1m_Unselected" xml:space="preserve">
+    <value>◎ 1 minute</value>
+  </data>
+  <data name="EnExecutionTimeout_2m_Selected" xml:space="preserve">
+    <value>◉ 2 minutes</value>
+  </data>
+  <data name="EnExecutionTimeout_2m_Unselected" xml:space="preserve">
+    <value>◎ 2 minutes</value>
+  </data>
+  <data name="EnExecutionTimeout_5m_Selected" xml:space="preserve">
+    <value>◉ 5 minutes</value>
+  </data>
+  <data name="EnExecutionTimeout_5m_Unselected" xml:space="preserve">
+    <value>◎ 5 minutes</value>
+  </data>
+  <data name="EnExecutionTimeout_None_Selected" xml:space="preserve">
+    <value>◉ No timeout</value>
+  </data>
+  <data name="EnExecutionTimeout_None_Unselected" xml:space="preserve">
+    <value>◎ No timeout</value>
+  </data>
   <data name="EnIsolationLevel_ReadCommitted_Selected" xml:space="preserve">
     <value>◉ Read Committed</value>
   </data>
@@ -552,8 +588,8 @@
   <data name="OptionDescriptionContextStatusBarPosition" xml:space="preserve">
     <value>The position of the status base in the editor window.</value>
   </data>
-  <data name="OptionDescriptionExecutionAutoDdlTts" xml:space="preserve">
-    <value>If enabled will enable TTS on queries that may be DDL statements. This includes all statements that do not return a result set.</value>
+  <data name="OptionDescriptionExecutionAsynchronous" xml:space="preserve">
+    <value>Enable asynchronous query execution?</value>
   </data>
   <data name="OptionDescriptionExecutionCostLimit" xml:space="preserve">
     <value>Overrides the currently configured query governor cost limit value for the current connection. Valid range: 'Min[imum]', 'Default' or 0 to 'Max[imum]' or 100000. (Case insensitive)</value>
@@ -598,7 +634,7 @@
     <value>This command prevents Firebird from actually executing the SQL statement and instead, simply shows the plan that it would use to access the data. This command relies on the set plan command. If set plan off had been executed, this command would have no effect, so turning planonly on has the additional effect of executing set plan on implicitly. Executing set planonly off does not implicitly execute set plan off.</value>
   </data>
   <data name="OptionDescriptionExecutionSetPlanText" xml:space="preserve">
-    <value>Causes Microsoft SQL Server not to execute Transact-SQL statements. Instead, SQL Server returns detailed information about how the statements are executed.</value>
+    <value>Causes BlackbirdSQL not to execute SQL statements. Instead, Firebird returns detailed information about how the statements are executed.</value>
   </data>
   <data name="OptionDescriptionExecutionSetRowCount" xml:space="preserve">
     <value>Specify the maximum number of rows to return before the server stops processing your query.</value>
@@ -616,7 +652,10 @@
     <value>This command turns the display of column headings on or off as desired.</value>
   </data>
   <data name="OptionDescriptionExecutionTimeout" xml:space="preserve">
-    <value>Valid range: 'Default', 'Min[imum]', 'Unlimited' or 0 (no time-out) to 'Max[imum]' or 32000 seconds. (Case insensitive)</value>
+    <value>The maximum time in minutes to wait for an async query request to complete. Async query requests include DbCommand.ExecuteAsync(), DbReader.ReadAsync and DbReader.NextResultAsync().</value>
+  </data>
+  <data name="OptionDescriptionExecutionTtsDefault" xml:space="preserve">
+    <value>The default initial TTS state when a SQL script is opened.</value>
   </data>
   <data name="OptionDescriptionGeneralEnableIntellisense" xml:space="preserve">
     <value>Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar.</value>
@@ -655,7 +694,7 @@
     <value>Collapse grid results pane after query execution.</value>
   </data>
   <data name="OptionDescriptionResultsGridSingleTab" xml:space="preserve">
-    <value>Use a single tab for grid results.</value>
+    <value>If set to 'Yes' then each grid in a batch will be seperately placed in the output tab with a double scrollbar otherwise only the first will be displayed.</value>
   </data>
   <data name="OptionDescriptionResultsGridSwitchToResults" xml:space="preserve">
     <value>Switch focus to grid results pane after query execution.</value>
@@ -735,8 +774,8 @@
   <data name="OptionDisplayContextStatusBarPosition" xml:space="preserve">
     <value>Status bar position</value>
   </data>
-  <data name="OptionDisplayExecutionAutoDdlTts" xml:space="preserve">
-    <value>Auto TTS on DDL</value>
+  <data name="OptionDisplayExecutionAsynchronous" xml:space="preserve">
+    <value>Asynchronous execution?</value>
   </data>
   <data name="OptionDisplayExecutionCostLimit" xml:space="preserve">
     <value>SET QUERY_GOVERNOR_COST_LIMIT</value>
@@ -799,7 +838,10 @@
     <value>SET HEADING</value>
   </data>
   <data name="OptionDisplayExecutionTimeout" xml:space="preserve">
-    <value>Execution time-out</value>
+    <value>Execution timeout</value>
+  </data>
+  <data name="OptionDisplayExecutionTtsDefault" xml:space="preserve">
+    <value>Default initial TTS state</value>
   </data>
   <data name="OptionDisplayGeneralEnableIntellisense" xml:space="preserve">
     <value> Enable Intellisense</value>

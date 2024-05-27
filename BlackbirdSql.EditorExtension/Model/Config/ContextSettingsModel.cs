@@ -3,12 +3,13 @@
 
 using System.ComponentModel;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
 
+
 namespace BlackbirdSql.EditorExtension.Model.Config;
+
 
 // =========================================================================================================
 //										ContextSettingsModel Class
@@ -81,8 +82,8 @@ public class ContextSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayContextBatchSeparator")]
 	[GlobalizedDescription("OptionDescriptionContextBatchSeparator")]
-	[DefaultValue(ModelConstants.C_DefaultBatchSeparator)]
-	public string BatchSeparator { get; set; } = ModelConstants.C_DefaultBatchSeparator;
+	[DefaultValue(SysConstants.C_DefaultBatchSeparator)]
+	public string BatchSeparator { get; set; } = SysConstants.C_DefaultBatchSeparator;
 
 
 	#endregion Property Accessors

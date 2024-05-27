@@ -11,12 +11,13 @@ using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
+
 
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
+
 
 public abstract class AbstractQESQLExec : IDisposable
 {
@@ -48,10 +49,11 @@ public abstract class AbstractQESQLExec : IDisposable
 	protected IBQESQLBatchConsumer _BatchConsumer;
 	protected IDbConnection _Conn;
 	protected IDbConnection _SSconn;
-	protected EnQESQLBatchSpecialAction _SpecialActions;
+	protected EnSqlSpecialActions _SpecialActions;
 	protected int _ExecTimeout;
 	private TransientSettings _ExecLiveSettings;
 	protected IBTextSpan _TextSpan;
+	protected EnSqlExecutionType _ExecutionType;
 	private bool _ExecOptionHasBeenChanged;
 	protected int _CurBatchIndex = -1;
 	protected QESQLBatch _CurBatch;
@@ -77,9 +79,7 @@ public abstract class AbstractQESQLExec : IDisposable
 	public event QESQLBatchExecutedEventHandler BatchExecutionCompletedEvent;
 	public event QESQLStartingBatchEventHandler StartingBatchExecutionEvent;
 
-	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
 	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
-	public event QESQLDataLoadedEventHandler DataLoadedEvent;
 
 
 
@@ -93,15 +93,17 @@ public abstract class AbstractQESQLExec : IDisposable
 		};
 	}
 
-	public void Execute(IBTextSpan textSpan, IDbConnection conn, IBQESQLBatchConsumer batchConsumer, TransientSettings sqlLiveSettings)
+	public void ExecuteQuery(IBTextSpan textSpan, EnSqlExecutionType executionType, IDbConnection conn,
+		IBQESQLBatchConsumer batchConsumer, TransientSettings sqlLiveSettings)
 	{
 		_Conn = conn;
 		_BatchConsumer = batchConsumer;
 		_ExecTimeout = sqlLiveSettings.EditorExecutionTimeout;
-		// Tracer.Trace(GetType(), "QESQLExec.Execute", " execOptions.WithEstimatedExecutionPlan: " + execOptions.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), "ExecuteQuery()", " execOptions.EstimatedPlanOnly: " + execOptions.EstimatedPlanOnly);
 		_ExecLiveSettings = sqlLiveSettings.Clone() as TransientSettings;
 		_TextSpan = textSpan;
-		_SpecialActions = EnQESQLBatchSpecialAction.None;
+		_ExecutionType = executionType;
+		_SpecialActions = EnSqlSpecialActions.None;
 
 		if (_ExecState == EnExecState.Executing || _ExecState == EnExecState.ExecutingBatch)
 		{
@@ -112,8 +114,9 @@ public abstract class AbstractQESQLExec : IDisposable
 		_ExecState = EnExecState.Initial;
 
 		// ------------------------------------------------------------------------- //
-		// ******************** Execution Point (5) - Execute() ******************** //
+		// ******************** Execution Point (3) - ExecuteQuery() ******************** //
 		// ------------------------------------------------------------------------- //
+
 		_ExecThread = new(ProcessScript)
 		{
 			CurrentCulture = CultureInfo.CurrentCulture,
@@ -121,10 +124,11 @@ public abstract class AbstractQESQLExec : IDisposable
 			Name = "Batch Execution"
 		};
 
+
 		_ExecThread.Start();
 	}
 
-	public void Cancel(bool bSync, TimeSpan timeout)
+	public void Cancel(bool synchronous, TimeSpan timeout)
 	{
 		// Tracer.Trace(GetType(), "QESQLExec.Cancel", "", null);
 		if (_ExecThread == null || _ExecThread.ThreadState == ThreadState.Unstarted || _ExecThread.ThreadState == ThreadState.Stopped)
@@ -138,32 +142,29 @@ public abstract class AbstractQESQLExec : IDisposable
 			CurrentUICulture = CultureInfo.CurrentUICulture
 		};
 		thread.Start();
-		if (!bSync)
-		{
+
+		if (!synchronous)
 			return;
-		}
 
 		TimeSpan timeSpan = S_SleepTimeout;
-		Thread thread2 = null;
+		Thread execThread = null;
+
 		try
 		{
 			lock (_LockObject)
-			{
-				thread2 = _ExecThread;
-			}
+				execThread = _ExecThread;
 
-			while (timeSpan < timeout && thread2 != null && thread2.IsAlive)
+			while (timeSpan < timeout && execThread != null && execThread.IsAlive)
 			{
 				Thread.Sleep(S_SleepTimeout);
 				Application.DoEvents();
 				timeSpan += S_SleepTimeout;
+
 				lock (_LockObject)
-				{
-					thread2 = _ExecThread;
-				}
+					execThread = _ExecThread;
 			}
 
-			if (thread2 != null && thread2.IsAlive)
+			if (execThread != null && execThread.IsAlive)
 			{
 				Tracer.Warning(GetType(), "Cancel()", "Execution thread won't cancel. Forgetting about it.");
 				HookupBatchWithConsumer(_CurBatch, _BatchConsumer, false);
@@ -189,7 +190,7 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 		finally
 		{
-			thread2 = null;
+			execThread = null;
 		}
 	}
 
@@ -204,13 +205,14 @@ public abstract class AbstractQESQLExec : IDisposable
 
 		try
 		{
-			// Tracer.Trace(GetType(), "QESQLExec.ProcessScript");
+			// Tracer.Trace(GetType(), "ProcessScript()");
 			ProcessExecOptions(_Conn);
 
 			_ExecOptionHasBeenChanged = false;
 			_ExecResult = EnScriptExecutionResult.Failure;
 			_CurBatchIndex = 0;
 			_CurBatch.ExecTimeout = _ExecTimeout;
+			_CurBatch.ResetTotal();
 
 			_CurBatch.SetSuppressProviderMessageHeaders(ExecLiveSettings.SuppressProviderMessageHeaders);
 
@@ -232,10 +234,10 @@ public abstract class AbstractQESQLExec : IDisposable
 
 
 			// ------------------------------------------------------------------------------- //
-			// ******************** Execution Point (6) - ProcessScript() ******************** //
+			// ******************** Execution Point (4) - ProcessScript() ******************** //
 			// ------------------------------------------------------------------------------- //
 			if (_ExecResult == EnScriptExecutionResult.Success)
-				ExecuteScript(_TextSpan);
+				ExecuteScript();
 
 			// Tracer.Trace(GetType(), "ProcessScript()", "_ExecResult: {0}, _ExecState: {1}.", _ExecResult, _ExecState);
 
@@ -265,13 +267,14 @@ public abstract class AbstractQESQLExec : IDisposable
 				return;
 			}
 
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessScript", "execution was NOT discarded");
+			// Tracer.Trace(GetType(), "ProcessScript()", "execution was NOT discarded");
 			// EstimatedExecutionPlan = gets the plan without executing the script. MS still seem to execute the script.
 			// We have bypassed that and get the plan at ExecuteReader above.
 			// ActualExecutionPlan = the WithExecutionPlan toggle is latched so we can get the actual because
 			// ExecuteReader has been called.
-			if (_ExecResult == EnScriptExecutionResult.Success && ExecLiveSettings.WithExecutionPlan
-				&& !ExecLiveSettings.WithEstimatedExecutionPlan)
+			if (_ExecResult == EnScriptExecutionResult.Success
+				&& ExecLiveSettings.ExecutionType != EnSqlExecutionType.PlanOnly
+				&& ExecLiveSettings.WithActualPlan)
 			{
 				PostProcessSqlCeExecutionPlan();
 			}
@@ -337,38 +340,6 @@ public abstract class AbstractQESQLExec : IDisposable
 	private void PostProcessSqlCeExecutionPlan()
 	{
 		// Tracer.Trace(GetType(), "QESQLExec.PostProcessSqlCeExecutionPlan", "", null);
-
-		QESQLBatch qESQLBatch;
-
-		// We do all this logically because the FirebirdSql client does not currently support any of the required commands.
-		// The SELECT @@showplan command doesn't exist. We load the actual plan from the last command using GetCommandPlan() and
-		// do a hack by placing the result in the query script instead.
-		// QESQLBatch qESQLBatch = new QESQLBatch(bNoResultsExpected: false, "SELECT @@showplan", _ExecTimeout, QryMgr);
-		lock (_LockObject)
-		{
-			_TextPlan ??= "FbCommand.GetCommandPlan() returned null";
-			qESQLBatch = new QESQLBatch(bNoResultsExpected: false,
-				"SELECT @@showplan:" + _TextPlan, _ExecTimeout, QryMgr);
-
-			_TextPlan = null;
-		}
-
-		qESQLBatch.SpecialActions = EnQESQLBatchSpecialAction.YukonXmlExecutionPlansMask;
-
-		HookupBatchWithConsumer(qESQLBatch, _BatchConsumer, bHookUp: true);
-		try
-		{
-			qESQLBatch.ProcessStatement(_Conn, qESQLBatch.SpecialActions);
-		}
-		catch (Exception e)
-		{
-			Diag.Dug(e);
-			_ExecResult = EnScriptExecutionResult.Failure;
-		}
-		finally
-		{
-			HookupBatchWithConsumer(qESQLBatch, _BatchConsumer, bHookUp: false);
-		}
 	}
 
 	/// <summary>
@@ -379,16 +350,20 @@ public abstract class AbstractQESQLExec : IDisposable
 	/// <param name="dbConnection"></param>
 	protected void ProcessExecOptions(IDbConnection dbConnection)
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.ProcessExecOptions");
+		// Tracer.Trace(GetType(), "ProcessExecOptions()");
 
 		_ExecOptionHasBeenChanged = true;
-		_SpecialActions = EnQESQLBatchSpecialAction.None;
 
-		if (_ExecLiveSettings.WithTransactionTracking && !QryMgr.ConnectionStrategy.TtsActive)
+		_SpecialActions = EnSqlSpecialActions.None;
+
+		if (_ExecLiveSettings.ExecutionType == EnSqlExecutionType.PlanOnly)
+			_SpecialActions |= EnSqlSpecialActions.EstimatedPlanOnly;
+		else if (_ExecLiveSettings.ExecutionType == EnSqlExecutionType.QueryWithPlan)
+			_SpecialActions |= EnSqlSpecialActions.ActualPlanIncluded;
+
+		if (_ExecLiveSettings.TtsEnabled && !QryMgr.ConnectionStrategy.TtsActive)
 		{
-			FbConnection connection = dbConnection as FbConnection;
-
-			FbTransaction transaction = connection.BeginTransaction(_ExecLiveSettings.EditorExecutionIsolationLevel);
+			IDbTransaction transaction = dbConnection.BeginTransaction(_ExecLiveSettings.EditorExecutionIsolationLevel);
 			QryMgr.ConnectionStrategy.Transaction = transaction;
 		}
 
@@ -400,7 +375,7 @@ public abstract class AbstractQESQLExec : IDisposable
 			...
 			string cmd1, cmd2, cmd3, cmd4;
 
-			if (ExecLiveSettings.WithEstimatedExecutionPlan)
+			if (ExecLiveSettings.EstimatedPlanOnly)
 			{
 				cmd1 = ExecLiveSettings.EditorExecutionSetPlanXml.SqlCmd(true);
 				...
@@ -433,7 +408,7 @@ public abstract class AbstractQESQLExec : IDisposable
 			HookupBatchWithConsumer(qESQLBatch, _BatchConsumer, bHookUp: true);
 			try
 			{
-				scriptExecutionResult = qESQLBatchCollection[i].ProcessStatement(connection, _SpecialActions);
+				scriptExecutionResult = qESQLBatchCollection[i].Process(connection, _SpecialActions);
 			}
 			catch
 			{
@@ -450,13 +425,16 @@ public abstract class AbstractQESQLExec : IDisposable
 		return scriptExecutionResult;
 	}
 
-	protected void ProcessBatchRepeatStatement(string sqlScript, IBTextSpan textSpan, out bool continueProcessing)
+
+
+
+	protected void ProcessBatchStatementRepetition(IBsNativeDbStatementWrapper sqlStatement, out bool continueProcessing)
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.ProcessBatchRepeatStatement", " ExecLiveSettings.WithEstimatedExecutionPlan: " + ExecLiveSettings.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), "ProcessBatchStatementRepetition()", " ExecLiveSettings.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
 
 		continueProcessing = true;
 
-		if (sqlScript.Trim().Length <= 0)
+		if (sqlStatement == null)
 		{
 			_ExecResult |= EnScriptExecutionResult.Success;
 			return;
@@ -471,8 +449,9 @@ public abstract class AbstractQESQLExec : IDisposable
 			else
 			{
 				_CurBatch.Reset();
-				_CurBatch.SqlScript = sqlScript;
-				_CurBatch.TextSpan = textSpan;
+				_CurBatch.SqlStatement = sqlStatement;
+				// _CurBatch.SqlScript = sqlScript;
+				// _CurBatch.TextSpan = textSpan;
 				_CurBatch.BatchIndex = _CurBatchIndex;
 				_CurBatchIndex++;
 				_ExecState = EnExecState.ExecutingBatch;
@@ -488,15 +467,15 @@ public abstract class AbstractQESQLExec : IDisposable
 				OnStartBatchExecution(_CurBatch);
 
 				// ---------------------------------------------------------------------------------------------- //
-				// ******************** Execution Point (10) - ProcessBatchRepeatStatement() ******************** //
+				// ******************** Execution Point (8) - ProcessBatchStatementRepetition() ******************** //
 				// ---------------------------------------------------------------------------------------------- //
-				scriptExecutionResult = ExecuteBatchRepeatStatement(_CurBatch);
+				scriptExecutionResult = ExecuteBatchRepetition(_CurBatch);
 			}
 			finally
 			{
 				lock (_LockObject)
 				{
-					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessBatchRepeatStatement", "execState = {0}", _ExecState);
+					// Tracer.Trace(GetType(), "ProcessBatchStatementRepetition()", "execState = {0}", _ExecState);
 					if (_ExecState == EnExecState.Cancelling || _ExecState == EnExecState.Discarded)
 					{
 						scriptExecutionResult = EnScriptExecutionResult.Cancel;
@@ -532,6 +511,8 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 	}
 
+
+
 	protected void HookupBatchWithConsumer(QESQLBatch batch, IBQESQLBatchConsumer batchConsumer, bool bHookUp)
 	{
 		// Tracer.Trace(GetType(), "QESQLExec.HookupBatchWithConsumer", "bHookUp = {0}", bHookUp);
@@ -547,8 +528,6 @@ public abstract class AbstractQESQLExec : IDisposable
 				batch.SpecialActionEvent -= batchConsumer.OnSpecialAction;
 				batch.StatementCompletedEvent -= batchConsumer.OnStatementCompleted;
 				batch.StatementCompletedEvent -= OnStatementCompleted;
-				// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
-				batch.DataLoadedEvent -= DataLoadedEvent;
 			}
 			else
 			{
@@ -558,17 +537,15 @@ public abstract class AbstractQESQLExec : IDisposable
 				batch.CancellingEvent += batchConsumer.OnCancelling;
 				batch.FinishedResultSetEvent += batchConsumer.OnFinishedProcessingResultSet;
 				batch.SpecialActionEvent += batchConsumer.OnSpecialAction;
-				// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
-				batch.DataLoadedEvent += DataLoadedEvent;
 				batch.StatementCompletedEvent += OnStatementCompleted;
 				batch.StatementCompletedEvent += batchConsumer.OnStatementCompleted;
 			}
 		}
 	}
 
-	protected abstract void ExecuteScript(IBTextSpan textSpan);
+	protected abstract void ExecuteScript();
 
-	protected abstract EnScriptExecutionResult ExecuteBatchRepeatStatement(QESQLBatch batch);
+	protected abstract EnScriptExecutionResult ExecuteBatchRepetition(QESQLBatch batch);
 
 	protected virtual void OnStartBatchExecution(QESQLBatch batch)
 	{
@@ -576,20 +553,17 @@ public abstract class AbstractQESQLExec : IDisposable
 		StartingBatchExecutionEvent?.Invoke(this, new QESQLStartingBatchEventArgs(-1, batch));
 	}
 
+
 	protected virtual void OnBatchExecutionCompleted(QESQLBatch batch, EnScriptExecutionResult batchResult)
 	{
 		// Tracer.Trace(GetType(), "QESQLExec.OnBatchExecutionCompleted", "m_curBatchIndex = {0}, batchResult = {1}, _ExecState = {2}", _CurBatchIndex, batchResult, _ExecState);
 		if (BatchExecutionCompletedEvent != null)
 		{
-			bool isParseOnly = false;
-			bool withEstimatedPlan = false;
+			EnSqlExecutionType executionType = EnSqlExecutionType.QueryOnly;
 			if (ExecLiveSettings != null)
-			{
-				isParseOnly = ExecLiveSettings.ParseOnly;
-				withEstimatedPlan = ExecLiveSettings.WithEstimatedExecutionPlan;
-			}
+				executionType = ExecLiveSettings.ExecutionType;
 
-			BatchExecutionCompletedEvent(this, new(batchResult, batch, withEstimatedPlan, isParseOnly));
+			BatchExecutionCompletedEvent(this, new(batchResult, batch, executionType));
 		}
 	}
 
@@ -601,8 +575,9 @@ public abstract class AbstractQESQLExec : IDisposable
 		// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
 		StatementCompletedEvent?.Invoke(sender, args);
 
+		/*
 		// Added for hitching the text plan onto the sql query
-		if (ExecLiveSettings.WithExecutionPlan && !ExecLiveSettings.WithEstimatedExecutionPlan)
+		if (ExecLiveSettings.WithActualPlan)
 		{
 			lock (_LockObject)
 			{
@@ -610,9 +585,10 @@ public abstract class AbstractQESQLExec : IDisposable
 					_TextPlan = "";
 				else
 					_TextPlan += "\n";
-				_TextPlan += ((FbCommand)sender).GetCommandExplainedPlan();
+				_TextPlan += ((IDbCommand)sender).GetTextBasedExecutionPlan();
 			}
 		}
+		*/
 
 	}
 
@@ -621,14 +597,10 @@ public abstract class AbstractQESQLExec : IDisposable
 	{
 		// Tracer.Trace(GetType(), "OnExecutionCompleted()", "execResult = {0}", execResult);
 
-		bool withEstimatedPlan = false;
-		bool isParseOnly = false;
+		EnSqlExecutionType executionType = EnSqlExecutionType.QueryOnly;
 
 		if (ExecLiveSettings != null)
-		{
-			withEstimatedPlan = ExecLiveSettings.WithEstimatedExecutionPlan;
-			isParseOnly = ExecLiveSettings.ParseOnly;
-		}
+			executionType = ExecLiveSettings.ExecutionType;
 
 		try
 		{
@@ -650,7 +622,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 		try
 		{
-			ExecutionCompletedEvent?.Invoke(this, new ScriptExecutionCompletedEventArgs(execResult, withEstimatedPlan, isParseOnly));
+			ExecutionCompletedEvent?.Invoke(this, new ScriptExecutionCompletedEventArgs(execResult, executionType));
 		}
 		catch (Exception ex)
 		{

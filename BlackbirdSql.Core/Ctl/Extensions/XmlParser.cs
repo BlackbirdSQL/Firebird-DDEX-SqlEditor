@@ -162,8 +162,8 @@ public static class XmlParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Checks if a project has the FirebirdSql.Data.FirebirdClient db provider
-	/// configured in the app.config and configures it if it doesn't
+	/// Checks if a project has the db provider invariant configured in the app.config
+	/// and configures it if it doesn't
 	/// </summary>
 	/// <param name="project"></param>
 	/// <exception cref="Exception">
@@ -233,8 +233,8 @@ public static class XmlParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Checks if a project has Firebird EntityFramework configured in the app.config
-	/// and configures it if it doesn't
+	/// Checks if a project has database EntityFramework configured in the app.config
+	/// and configures it if it doesn't.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <exception cref="Exception">
@@ -309,7 +309,7 @@ public static class XmlParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Updates the app.config xml Firebird EntityFramework section
+	/// Updates the app.config xml EntityFramework section.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <exception cref="Exception">
@@ -353,7 +353,7 @@ public static class XmlParser
 
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "defaultConnectionFactory", "");
 				xmlAttr = xmlDoc.CreateAttribute("type");
-				xmlAttr.Value = SystemData.EFConnectionFactory + ", " + SystemData.EFProvider;
+				xmlAttr.Value = DbNative.EFConnectionFactory + ", " + DbNative.EFProvider;
 				xmlNode.Attributes.Append(xmlAttr);
 				xmlParent.AppendChild(xmlNode);
 			}
@@ -373,7 +373,7 @@ public static class XmlParser
 				xmlParent = xmlNode;
 			}
 
-			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:provider[@invariantName='" + SystemData.Invariant + "']", xmlNs);
+			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:provider[@invariantName='" + DbNative.Invariant + "']", xmlNs);
 
 			if (xmlNode == null)
 			{
@@ -381,10 +381,10 @@ public static class XmlParser
 
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "provider", "");
 				xmlAttr = xmlDoc.CreateAttribute("invariantName");
-				xmlAttr.Value = SystemData.Invariant;
+				xmlAttr.Value = DbNative.Invariant;
 				xmlNode.Attributes.Append(xmlAttr);
 				xmlAttr = xmlDoc.CreateAttribute("type");
-				xmlAttr.Value = SystemData.EFProviderServices + ", " + SystemData.EFProvider;
+				xmlAttr.Value = DbNative.EFProviderServices + ", " + DbNative.EFProvider;
 				xmlNode.Attributes.Append(xmlAttr);
 				xmlParent.AppendChild(xmlNode);
 			}
@@ -395,13 +395,13 @@ public static class XmlParser
 				{
 					modified = true;
 					xmlAttr = xmlDoc.CreateAttribute("invariantName");
-					xmlAttr.Value = SystemData.Invariant;
+					xmlAttr.Value = DbNative.Invariant;
 					xmlNode.Attributes.Append(xmlAttr);
 				}
-				else if (xmlAttr.Value != SystemData.Invariant)
+				else if (xmlAttr.Value != DbNative.Invariant)
 				{
 					modified = true;
-					xmlAttr.Value = SystemData.Invariant;
+					xmlAttr.Value = DbNative.Invariant;
 				}
 
 				xmlAttr = (XmlAttribute)xmlNode.Attributes.GetNamedItem("type");
@@ -409,13 +409,13 @@ public static class XmlParser
 				{
 					modified = true;
 					xmlAttr = xmlDoc.CreateAttribute("type");
-					xmlAttr.Value = SystemData.EFProviderServices + ", " + SystemData.EFProvider;
+					xmlAttr.Value = DbNative.EFProviderServices + ", " + DbNative.EFProvider;
 					xmlNode.Attributes.Append(xmlAttr);
 				}
-				else if (xmlAttr.Value.ToLower().Replace(" ", "") != SystemData.EFProviderServices.ToLower() + "," + SystemData.EFProvider.ToLower())
+				else if (xmlAttr.Value.ToLower().Replace(" ", "") != DbNative.EFProviderServices.ToLower() + "," + DbNative.EFProvider.ToLower())
 				{
 					modified = true;
-					xmlAttr.Value = SystemData.EFProviderServices + ", " + SystemData.EFProvider;
+					xmlAttr.Value = DbNative.EFProviderServices + ", " + DbNative.EFProvider;
 				}
 			}
 
@@ -435,8 +435,7 @@ public static class XmlParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Updates the app.config xml system.data section with the
-	/// FirebirdSql.Data.FirebirdClient db provider.
+	/// Updates the app.config xml system.data section with the db provider invariant.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <exception cref="Exception">
@@ -486,11 +485,11 @@ public static class XmlParser
 				xmlParent = xmlNode;
 			}
 
-			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:add[@invariant='" + SystemData.Invariant + "']", xmlNs);
+			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:add[@invariant='" + DbNative.Invariant + "']", xmlNs);
 
 			// We're using the current latest version of the client (on this build it's 9.1.1.0)
 			string factoryQualifiedNameType;
-			string factoryNameType = SystemData.ProviderFactoryClassName + ", " + SystemData.Invariant;
+			string factoryNameType = DbNative.ProviderFactoryClassName + ", " + DbNative.Invariant;
 
 			if (xmlNode == null)
 			{
@@ -499,15 +498,15 @@ public static class XmlParser
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "add", "");
 
 				xmlAttr = xmlDoc.CreateAttribute("invariant");
-				xmlAttr.Value = SystemData.Invariant;
+				xmlAttr.Value = DbNative.Invariant;
 				xmlNode.Attributes.Append(xmlAttr);
 
 				xmlAttr = xmlDoc.CreateAttribute("name");
-				xmlAttr.Value = SystemData.ProviderFactoryName;
+				xmlAttr.Value = DbNative.ProviderFactoryName;
 				xmlNode.Attributes.Append(xmlAttr);
 
 				xmlAttr = xmlDoc.CreateAttribute("description");
-				xmlAttr.Value = SystemData.ProviderFactoryDescription;
+				xmlAttr.Value = DbNative.ProviderFactoryDescription;
 				xmlNode.Attributes.Append(xmlAttr);
 
 				xmlAttr = xmlDoc.CreateAttribute("type");
@@ -555,7 +554,7 @@ public static class XmlParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Updates an edmx if it was using the legacy Firebird client.
+	/// Updates an edmx if it was using the legacy database client.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <exception cref="Exception">
@@ -598,7 +597,7 @@ public static class XmlParser
 			// You have to denote your private namespaces after every forwardslash in the markup tree.
 			try
 			{
-				xmlNode = xmlRoot.SelectSingleNode("edmxBlackbird:Runtime/edmxBlackbird:StorageModels/ssdlBlackbird:Schema[@Provider='" + SystemData.Invariant + "']", xmlNs);
+				xmlNode = xmlRoot.SelectSingleNode("edmxBlackbird:Runtime/edmxBlackbird:StorageModels/ssdlBlackbird:Schema[@Provider='" + DbNative.Invariant + "']", xmlNs);
 			}
 			catch (Exception ex)
 			{

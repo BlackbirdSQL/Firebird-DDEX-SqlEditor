@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.Core.Model;

@@ -24,6 +24,8 @@ public interface IBSqlQueryExecutionHandler : IBQueryExecutionHandler
 
 	void ClearResultsTabs();
 
+	void AddStringToInfoMessages(string message, bool flush);
+
 	void AddStringToMessages(string message, bool flush);
 
 	void AddStringToErrors(string message, int lineNumber, IBTextSpan textSpan, bool flush);

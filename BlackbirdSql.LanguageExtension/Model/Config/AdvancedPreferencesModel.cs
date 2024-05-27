@@ -103,7 +103,7 @@ public class AdvancedPreferencesModel(IBTransientSettings transientSettings)
 	[GlobalizedDisplayName("OptionDisplayLanguageEnableIntellisense")]
 	[GlobalizedDescription("OptionDescriptionLanguageEnableIntellisense")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[Automation, RefreshProperties(RefreshProperties.All)]
+	[Automator, RefreshProperties(RefreshProperties.All)]
 	[DefaultValue(true)]
 	public bool EnableIntellisense { get; set; } = true;
 
@@ -112,7 +112,7 @@ public class AdvancedPreferencesModel(IBTransientSettings transientSettings)
 	[GlobalizedDescription("OptionDescriptionLanguageAutoOutlining")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(true)]
-	[Automation("EnableIntellisense"), ReadOnly(true)]
+	[Automator("EnableIntellisense"), ReadOnly(true)]
 	public bool AutoOutlining { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryLanguage")]
@@ -120,20 +120,20 @@ public class AdvancedPreferencesModel(IBTransientSettings transientSettings)
 	[GlobalizedDescription("OptionDescriptionLanguageUnderlineErrors")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(true)]
-	[Automation("EnableIntellisense"), ReadOnly(true)]
+	[Automator("EnableIntellisense"), ReadOnly(true)]
 	public bool UnderlineErrors { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryLanguage")]
 	[GlobalizedDisplayName("OptionDisplayLanguageMaxScriptSize")]
 	[GlobalizedDescription("OptionDescriptionLanguageMaxScriptSize")]
-	[Automation("EnableIntellisense"), ReadOnly(true)]
+	[Automator("EnableIntellisense"), ReadOnly(true)]
 	[DefaultValue(EnGlobalizedScriptSize.Megabytes1)]
 	public EnGlobalizedScriptSize MaxScriptSize { get; set; } = EnGlobalizedScriptSize.Megabytes1;
 
 	[GlobalizedCategory("OptionCategoryLanguage")]
 	[GlobalizedDisplayName("OptionDisplayLanguageTextCasing")]
 	[GlobalizedDescription("OptionDescriptionLanguageTextCasing")]
-	[Automation("EnableIntellisense"), ReadOnly(true)]
+	[Automator("EnableIntellisense"), ReadOnly(true)]
 	[DefaultValue(EnGlobalizedCasingStyle.Uppercase)]
 	public EnGlobalizedCasingStyle TextCasing { get; set; } = EnGlobalizedCasingStyle.Uppercase;
 

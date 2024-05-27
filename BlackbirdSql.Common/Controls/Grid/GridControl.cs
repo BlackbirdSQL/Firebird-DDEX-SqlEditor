@@ -21,15 +21,14 @@ using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.Win32;
 
-using ColumnWidthChangedEventArgs = BlackbirdSql.Common.Controls.Events.ColumnWidthChangedEventArgs;
 using ColumnWidthChangedEventHandler = BlackbirdSql.Common.Controls.Events.ColumnWidthChangedEventHandler;
+
+
 
 namespace BlackbirdSql.Common.Controls.Grid;
 

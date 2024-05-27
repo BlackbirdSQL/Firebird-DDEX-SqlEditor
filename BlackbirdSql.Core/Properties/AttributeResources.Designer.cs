@@ -250,7 +250,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Applicable to live connections only. The number of server connected users (Firebird 3+ only)..
+        ///   Looks up a localized string similar to Applicable to live connections only. The number of server connected users (for Firebird port version 3+ only)..
         /// </summary>
         internal static string PropertyDescriptionActiveUsers {
             get {
@@ -259,7 +259,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The FirbirdSql.Data.FirebirdClient library version..
+        ///   Looks up a localized string similar to The database client library version. (For the Firebird port FirbirdSql.Data.FirebirdClient)..
         /// </summary>
         internal static string PropertyDescriptionClientVersion {
             get {

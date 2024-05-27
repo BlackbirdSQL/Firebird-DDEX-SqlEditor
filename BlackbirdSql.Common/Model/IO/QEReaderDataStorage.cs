@@ -16,6 +16,7 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Common.Model.IO;
 
@@ -138,7 +139,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 		return _IsClosed;
 	}
 
-	public void InitStorage(IDataReader reader)
+	public void InitStorage(IBsNativeDbStatementWrapper sqlStatement, IDataReader reader)
 	{
 		if (reader == null)
 		{
@@ -147,7 +148,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 			throw ex;
 		}
 
-		_StorageReader = new StorageDataReader(reader);
+		_StorageReader = new StorageDataReader(sqlStatement, reader);
 		_StorageReader.GetSchemaTable();
 		int fieldCount = _StorageReader.FieldCount;
 		for (int i = 0; i < fieldCount; i++)

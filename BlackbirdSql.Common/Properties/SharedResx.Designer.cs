@@ -22,7 +22,7 @@ namespace BlackbirdSql.Common.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class SharedResx {
+    internal class SharedResx {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace BlackbirdSql.Common.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BlackbirdSql.Common.Properties.SharedResx", typeof(SharedResx).Assembly);
@@ -51,7 +51,7 @@ namespace BlackbirdSql.Common.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Failed to create an editor..
         /// </summary>
-        public static string BaseEditorFactory_FailedToCreateEditor {
+        internal static string BaseEditorFactory_FailedToCreateEditor {
             get {
                 return ResourceManager.GetString("BaseEditorFactory_FailedToCreateEditor", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Browse.
         /// </summary>
-        public static string BrowseTab {
+        internal static string BrowseTab {
             get {
                 return ResourceManager.GetString("BrowseTab", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
-        public static string Cancel {
+        internal static string Cancel {
             get {
                 return ResourceManager.GetString("Cancel", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Connect.
         /// </summary>
-        public static string Connect {
+        internal static string Connect {
             get {
                 return ResourceManager.GetString("Connect", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Connected.
         /// </summary>
-        public static string ConnectedText {
+        internal static string ConnectedText {
             get {
                 return ResourceManager.GetString("ConnectedText", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Connecting....
         /// </summary>
-        public static string ConnectingText {
+        internal static string ConnectingText {
             get {
                 return ResourceManager.GetString("ConnectingText", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Advanced....
         /// </summary>
-        public static string Connection_AdvancedProperties {
+        internal static string Connection_AdvancedProperties {
             get {
                 return ResourceManager.GetString("Connection_AdvancedProperties", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Authentication:.
         /// </summary>
-        public static string Connection_Authentication {
+        internal static string Connection_Authentication {
             get {
                 return ResourceManager.GetString("Connection_Authentication", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Database:.
         /// </summary>
-        public static string Connection_Database {
+        internal static string Connection_Database {
             get {
                 return ResourceManager.GetString("Connection_Database", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Database dataset name:.
         /// </summary>
-        public static string Connection_Dataset {
+        internal static string Connection_Dataset {
             get {
                 return ResourceManager.GetString("Connection_Dataset", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Data Source:.
         /// </summary>
-        public static string Connection_DataSource {
+        internal static string Connection_DataSource {
             get {
                 return ResourceManager.GetString("Connection_DataSource", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to ....
         /// </summary>
-        public static string Connection_DataSourceOption {
+        internal static string Connection_DataSourceOption {
             get {
                 return ResourceManager.GetString("Connection_DataSourceOption", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Password:.
         /// </summary>
-        public static string Connection_Password {
+        internal static string Connection_Password {
             get {
                 return ResourceManager.GetString("Connection_Password", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Remember Password.
         /// </summary>
-        public static string Connection_RememberPassword {
+        internal static string Connection_RememberPassword {
             get {
                 return ResourceManager.GetString("Connection_RememberPassword", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Server Name:.
         /// </summary>
-        public static string Connection_ServerName {
+        internal static string Connection_ServerName {
             get {
                 return ResourceManager.GetString("Connection_ServerName", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to User Name:.
         /// </summary>
-        public static string Connection_UserName {
+        internal static string Connection_UserName {
             get {
                 return ResourceManager.GetString("Connection_UserName", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Connect.
         /// </summary>
-        public static string ConnectionDialogTitle {
+        internal static string ConnectionDialogTitle {
             get {
                 return ResourceManager.GetString("ConnectionDialogTitle", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Expand/Collapse Property Section.
         /// </summary>
-        public static string ConnectionPropertyToggleToolTip {
+        internal static string ConnectionPropertyToggleToolTip {
             get {
                 return ResourceManager.GetString("ConnectionPropertyToggleToolTip", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Description.
         /// </summary>
-        public static string DataConnectionAdvancedDialog_Description {
+        internal static string DataConnectionAdvancedDialog_Description {
             get {
                 return ResourceManager.GetString("DataConnectionAdvancedDialog_Description", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Remo&amp;ve.
         /// </summary>
-        public static string DataConnectionAdvancedDialog_Remove {
+        internal static string DataConnectionAdvancedDialog_Remove {
             get {
                 return ResourceManager.GetString("DataConnectionAdvancedDialog_Remove", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Reset.
         /// </summary>
-        public static string DataConnectionAdvancedDialog_Reset {
+        internal static string DataConnectionAdvancedDialog_Reset {
             get {
                 return ResourceManager.GetString("DataConnectionAdvancedDialog_Reset", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
-        public static string Error {
+        internal static string Error {
             get {
                 return ResourceManager.GetString("Error", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Please fill in all required fields..
         /// </summary>
-        public static string Error_MissingSomeConnectionProperties {
+        internal static string Error_MissingSomeConnectionProperties {
             get {
                 return ResourceManager.GetString("Error_MissingSomeConnectionProperties", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The maximum number of favorite connections has reached. Please unpin some connection before pining again..
         /// </summary>
-        public static string Error_ReachMaximumNumberOfFavoriteConnection {
+        internal static string Error_ReachMaximumNumberOfFavoriteConnection {
             get {
                 return ResourceManager.GetString("Error_ReachMaximumNumberOfFavoriteConnection", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unable to set up page..
         /// </summary>
-        public static string ErrUnableToPageSetup {
+        internal static string ErrUnableToPageSetup {
             get {
                 return ResourceManager.GetString("ErrUnableToPageSetup", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unable to print results..
         /// </summary>
-        public static string ErrUnableToPrintResults {
+        internal static string ErrUnableToPrintResults {
             get {
                 return ResourceManager.GetString("ErrUnableToPrintResults", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap ExecutionPlan {
+        internal static System.Drawing.Bitmap ExecutionPlan {
             get {
                 object obj = ResourceManager.GetObject("ExecutionPlan", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -307,7 +307,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Favorites.
         /// </summary>
-        public static string FavoriteConnectionTitle {
+        internal static string FavoriteConnectionTitle {
             get {
                 return ResourceManager.GetString("FavoriteConnectionTitle", resourceCulture);
             }
@@ -316,7 +316,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Type here to filter the list.
         /// </summary>
-        public static string FilterTextBoxToolTip {
+        internal static string FilterTextBoxToolTip {
             get {
                 return ResourceManager.GetString("FilterTextBoxToolTip", resourceCulture);
             }
@@ -325,7 +325,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Hide Connection Properties.
         /// </summary>
-        public static string HideConnectionProperty {
+        internal static string HideConnectionProperty {
             get {
                 return ResourceManager.GetString("HideConnectionProperty", resourceCulture);
             }
@@ -334,7 +334,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Blackbird History.
         /// </summary>
-        public static string HistoryTab {
+        internal static string HistoryTab {
             get {
                 return ResourceManager.GetString("HistoryTab", resourceCulture);
             }
@@ -343,7 +343,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0} database under {1} server.
         /// </summary>
-        public static string ListViewItemAutomationProperty {
+        internal static string ListViewItemAutomationProperty {
             get {
                 return ResourceManager.GetString("ListViewItemAutomationProperty", resourceCulture);
             }
@@ -352,7 +352,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Loading....
         /// </summary>
-        public static string LoadingText {
+        internal static string LoadingText {
             get {
                 return ResourceManager.GetString("LoadingText", resourceCulture);
             }
@@ -361,7 +361,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No connection history to display..
         /// </summary>
-        public static string NoConnectionListDescription {
+        internal static string NoConnectionListDescription {
             get {
                 return ResourceManager.GetString("NoConnectionListDescription", resourceCulture);
             }
@@ -370,7 +370,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
-        public static string Ok {
+        internal static string Ok {
             get {
                 return ResourceManager.GetString("Ok", resourceCulture);
             }
@@ -379,7 +379,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Pin.
         /// </summary>
-        public static string PinMenuAction {
+        internal static string PinMenuAction {
             get {
                 return ResourceManager.GetString("PinMenuAction", resourceCulture);
             }
@@ -388,7 +388,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Click to pin.
         /// </summary>
-        public static string PinToolTip {
+        internal static string PinToolTip {
             get {
                 return ResourceManager.GetString("PinToolTip", resourceCulture);
             }
@@ -397,7 +397,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Current connection parameters.
         /// </summary>
-        public static string PropertyWindowCurrentConnectionParameters {
+        internal static string PropertyWindowCurrentConnectionParameters {
             get {
                 return ResourceManager.GetString("PropertyWindowCurrentConnectionParameters", resourceCulture);
             }
@@ -406,7 +406,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Recent Connections.
         /// </summary>
-        public static string RecentConnectionTitle {
+        internal static string RecentConnectionTitle {
             get {
                 return ResourceManager.GetString("RecentConnectionTitle", resourceCulture);
             }
@@ -415,7 +415,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Remove from History.
         /// </summary>
-        public static string RemoveMenuAction {
+        internal static string RemoveMenuAction {
             get {
                 return ResourceManager.GetString("RemoveMenuAction", resourceCulture);
             }
@@ -424,25 +424,16 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Show Connection Properties.
         /// </summary>
-        public static string ShowConnectionProperty {
+        internal static string ShowConnectionProperty {
             get {
                 return ResourceManager.GetString("ShowConnectionProperty", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Microsoft SQL Server (SqlClient).
-        /// </summary>
-        public static string SqlDataSource {
-            get {
-                return ResourceManager.GetString("SqlDataSource", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SSDT Results Window.
         /// </summary>
-        public static string SqlResultsEditorFactory_Caption {
+        internal static string SqlResultsEditorFactory_Caption {
             get {
                 return ResourceManager.GetString("SqlResultsEditorFactory_Caption", resourceCulture);
             }
@@ -451,7 +442,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Test Connection.
         /// </summary>
-        public static string TestConnection {
+        internal static string TestConnection {
             get {
                 return ResourceManager.GetString("TestConnection", resourceCulture);
             }
@@ -460,7 +451,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This connection cannot be tested because the specified database does not exist or is not visible to the specified user..
         /// </summary>
-        public static string TestConnection_databaseDoesNotExist {
+        internal static string TestConnection_databaseDoesNotExist {
             get {
                 return ResourceManager.GetString("TestConnection_databaseDoesNotExist", resourceCulture);
             }
@@ -469,7 +460,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Test connection succeeded..
         /// </summary>
-        public static string TestConnection_succeeded {
+        internal static string TestConnection_succeeded {
             get {
                 return ResourceManager.GetString("TestConnection_succeeded", resourceCulture);
             }
@@ -478,7 +469,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unpin.
         /// </summary>
-        public static string UnPinMenuAction {
+        internal static string UnPinMenuAction {
             get {
                 return ResourceManager.GetString("UnPinMenuAction", resourceCulture);
             }
@@ -487,7 +478,7 @@ namespace BlackbirdSql.Common.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Click to unpin.
         /// </summary>
-        public static string UnpinToolTip {
+        internal static string UnpinToolTip {
             get {
                 return ResourceManager.GetString("UnpinToolTip", resourceCulture);
             }

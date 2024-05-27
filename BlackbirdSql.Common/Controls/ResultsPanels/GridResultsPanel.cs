@@ -20,7 +20,6 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Enums;
@@ -164,29 +163,28 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		// Tracer.Trace(GetType(), "GridResultsTabPanel.Initialize", "", null);
 		SuspendLayout();
-		base.Initialize(rawServiceProvider);
-		_FirstGridPanel.Dock = DockStyle.Fill;
-		_FirstGridPanel.Height = ClientRectangle.Height;
-		_FirstGridPanel.Tag = -1;
-		Controls.Add(_FirstGridPanel);
-		if (m_brushNullObjects == null)
-		{
-			Color color = Color.FromKnownColor(KnownColor.Info);
-			m_brushNullObjects = new SolidBrush(color);
-		}
 
-		ResumeLayout();
+		try
+		{
+			base.Initialize(rawServiceProvider);
+			_FirstGridPanel.Dock = DockStyle.Fill;
+			_FirstGridPanel.Height = ClientRectangle.Height;
+			_FirstGridPanel.Tag = -1;
+			Controls.Add(_FirstGridPanel);
+			if (m_brushNullObjects == null)
+			{
+				Color color = Color.FromKnownColor(KnownColor.Info);
+				m_brushNullObjects = new SolidBrush(color);
+			}
+		}
+		finally
+		{
+			ResumeLayout();
+		}
 	}
 
 	public override void Clear()
 	{
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Expected O, but got Unknown
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Expected O, but got Unknown
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009e: Expected O, but got Unknown
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.Clear", "", null);
 		base.Clear();
 
 		if (_FirstGridPanel != null)
@@ -286,14 +284,6 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public GridResultsGrid AddGridContainer(ResultSetAndGridContainer cont, Font curGridFont, Color curBkColor, Color curFkColor, Color selectedCellColor, Color inactiveSelectedCellColor)
 	{
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Expected O, but got Unknown
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Expected O, but got Unknown
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Expected O, but got Unknown
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Expected O, but got Unknown
 		m_gridContainers.Add(cont);
 		GridResultsGrid gridResultsGrid = new GridResultsGrid();
 		((Control)(object)gridResultsGrid).Visible = false;

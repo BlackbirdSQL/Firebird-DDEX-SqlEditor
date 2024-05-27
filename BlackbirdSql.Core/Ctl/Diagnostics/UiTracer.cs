@@ -2,7 +2,7 @@
 // Microsoft.SqlServer.ConnectionDlg.Core.ConnectionDialogTracer
 
 using System.Threading;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Core.Ctl.Diagnostics;
 

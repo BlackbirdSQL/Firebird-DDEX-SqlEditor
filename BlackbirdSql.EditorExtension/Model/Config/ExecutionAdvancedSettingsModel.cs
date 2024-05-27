@@ -4,16 +4,17 @@
 using System.ComponentModel;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
-using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
+
 
 
 namespace BlackbirdSql.EditorExtension.Model.Config;
+
 
 // =========================================================================================================
 //										ExecutionAdvancedSettingsModel Class
@@ -96,78 +97,78 @@ public class ExecutionAdvancedSettingsModel(IBTransientSettings transientSetting
 	[GlobalizedDisplayName("OptionDisplayExecutionSetCount")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetCount")]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetCount)]
-	public bool SetCount { get; set; } = ModelConstants.C_DefaultSetCount;
+	[DefaultValue(SysConstants.C_DefaultSetCount)]
+	public bool SetCount { get; set; } = SysConstants.C_DefaultSetCount;
 
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetPlanOnly")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetPlanOnly")]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetPlanOnly)]
-	public bool SetNoExec { get; set; } = ModelConstants.C_DefaultSetPlanOnly;
+	[DefaultValue(SysConstants.C_DefaultSetPlanOnly)]
+	public bool SetNoExec { get; set; } = SysConstants.C_DefaultSetPlanOnly;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetPlan")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetPlan")]
 	[Browsable(false)]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetPlan)]
-	public bool SetShowplanText { get; set; } = ModelConstants.C_DefaultSetPlan;
+	[DefaultValue(SysConstants.C_DefaultSetPlan)]
+	public bool SetShowplanText { get; set; } = SysConstants.C_DefaultSetPlan;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetExplain")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetExplain")]
 	[Browsable(false)]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetExplain)]
-	public bool SetPlanXml { get; set; } = ModelConstants.C_DefaultSetExplain;
+	[DefaultValue(SysConstants.C_DefaultSetExplain)]
+	public bool SetPlanXml { get; set; } = SysConstants.C_DefaultSetExplain;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetParseOnly")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetParseOnly")]
 	[Browsable(false)]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetParseOnly)]
-	public bool SetParseOnly { get; set; } = ModelConstants.C_DefaultSetParseOnly;
+	[DefaultValue(SysConstants.C_DefaultSetParseOnly)]
+	public bool SetParseOnly { get; set; } = SysConstants.C_DefaultSetParseOnly;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetConcatenationNull")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetConcatenationNull")]
 	[Browsable(false)]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetConcatenationNull)]
-	public bool SetConcatenationNull { get; set; } = ModelConstants.C_DefaultSetConcatenationNull;
+	[DefaultValue(SysConstants.C_DefaultSetConcatenationNull)]
+	public bool SetConcatenationNull { get; set; } = SysConstants.C_DefaultSetConcatenationNull;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetBail")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetBail")]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetBail)]
-	public bool SetBail { get; set; } = ModelConstants.C_DefaultSetBail;
+	[DefaultValue(SysConstants.C_DefaultSetBail)]
+	public bool SetBail { get; set; } = SysConstants.C_DefaultSetBail;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetPlanText")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetPlanText")]
 	[Browsable(false)]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetPlanText)]
-	public bool SetPlanText { get; set; } = ModelConstants.C_DefaultSetPlanText;
+	[DefaultValue(SysConstants.C_DefaultSetPlanText)]
+	public bool SetPlanText { get; set; } = SysConstants.C_DefaultSetPlanText;
 
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetStats")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetStats")]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetStats)]
-	public bool SetStats { get; set; } = ModelConstants.C_DefaultSetStats;
+	[DefaultValue(SysConstants.C_DefaultSetStats)]
+	public bool SetStats { get; set; } = SysConstants.C_DefaultSetStats;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetWarnings")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetWarnings")]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetWarnings)]
-	public bool SetWarnings { get; set; } = ModelConstants.C_DefaultSetWarnings;
+	[DefaultValue(SysConstants.C_DefaultSetWarnings)]
+	public bool SetWarnings { get; set; } = SysConstants.C_DefaultSetWarnings;
 
 
 
@@ -176,14 +177,14 @@ public class ExecutionAdvancedSettingsModel(IBTransientSettings transientSetting
 	[GlobalizedDescription("OptionDescriptionExecutionSetStatisticsIO")]
 	[Browsable(false)]
 	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(ModelConstants.C_DefaultSetStatisticsIO)]
-	public bool SetStatisticsIO { get; set; } = ModelConstants.C_DefaultSetStatisticsIO;
+	[DefaultValue(SysConstants.C_DefaultSetStatisticsIO)]
+	public bool SetStatisticsIO { get; set; } = SysConstants.C_DefaultSetStatisticsIO;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionIsolationLevel")]
 	[GlobalizedDescription("OptionDescriptionExecutionIsolationLevel")]
-	[DefaultValue((EnGlobalizedIsolationLevel)ModelConstants.C_DefaultIsolationLevel)]
-	public EnGlobalizedIsolationLevel IsolationLevel { get; set; } = (EnGlobalizedIsolationLevel)ModelConstants.C_DefaultIsolationLevel;
+	[DefaultValue((EnGlobalizedIsolationLevel)SysConstants.C_DefaultIsolationLevel)]
+	public EnGlobalizedIsolationLevel IsolationLevel { get; set; } = (EnGlobalizedIsolationLevel)SysConstants.C_DefaultIsolationLevel;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionDeadlockPriority")]
@@ -196,8 +197,8 @@ public class ExecutionAdvancedSettingsModel(IBTransientSettings transientSetting
 	[GlobalizedDisplayName("OptionDisplayExecutionLockTimeout")]
 	[GlobalizedDescription("OptionDescriptionExecutionLockTimeout")]
 	[TypeConverter(typeof(UomConverter)), LiteralRange(0, int.MaxValue, "SecondsDisabled")]
-	[DefaultValue(ModelConstants.C_DefaultLockTimeout)]
-	public int LockTimeout { get; set; } = ModelConstants.C_DefaultLockTimeout;
+	[DefaultValue(SysConstants.C_DefaultLockTimeout)]
+	public int LockTimeout { get; set; } = SysConstants.C_DefaultLockTimeout;
 
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
@@ -212,8 +213,8 @@ public class ExecutionAdvancedSettingsModel(IBTransientSettings transientSetting
 	[GlobalizedDisplayName("OptionDisplayExecutionSuppressHeaders")]
 	[GlobalizedDescription("OptionDescriptionExecutionSuppressHeaders")]
 	[TypeConverter(typeof(GlobalOnOffInverter))]
-	[DefaultValue(ModelConstants.C_DefaultSuppressHeaders)]
-	public bool SuppressHeaders { get; set; } = ModelConstants.C_DefaultSuppressHeaders;
+	[DefaultValue(SysConstants.C_DefaultSuppressHeaders)]
+	public bool SuppressHeaders { get; set; } = SysConstants.C_DefaultSuppressHeaders;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionDisconnectOnCompletion")]

@@ -1,14 +1,12 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TextEditorProxy
+
 using System;
-using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Common.Ctl.Interfaces;
 
 
 
 namespace BlackbirdSql.Common.Ctl;
-
-[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 public class TextEditorProxy : MarshalByRefObject, IBTextEditor, IDisposable

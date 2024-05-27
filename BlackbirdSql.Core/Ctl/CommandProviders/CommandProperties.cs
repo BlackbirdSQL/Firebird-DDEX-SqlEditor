@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Core.Ctl.CommandProviders;
 

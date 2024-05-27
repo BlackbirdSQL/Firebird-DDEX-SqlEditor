@@ -6,7 +6,6 @@
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -30,20 +29,15 @@ public class SqlEditorToggleSqlCmdModeCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryManager qryMgr = QryMgr;
 
-		if (qryMgr != null)
-		{
-			if (!IsEditorExecuting())
-			{
-				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-			}
+		if (QryMgr == null)
+			return VSConstants.S_OK;
 
-			if (qryMgr.IsWithOleSQLScripting)
-			{
-				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
-			}
-		}
+		if (!StoredIsExecuting)
+			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
+
+		if (StoredQryMgr.IsWithOleSQLScripting)
+			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
 	}

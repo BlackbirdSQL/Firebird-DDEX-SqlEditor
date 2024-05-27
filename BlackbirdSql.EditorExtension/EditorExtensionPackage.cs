@@ -36,7 +36,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
 
-using Native = BlackbirdSql.Common.Native;
 using OleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 
@@ -86,7 +85,7 @@ namespace BlackbirdSql.EditorExtension;
 [VsProvideEditorFactory(typeof(EditorFactoryWithoutEncoding), 311, false, DefaultName = PackageData.ServiceName,
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
-[ProvideEditorExtension(typeof(EditorFactoryWithoutEncoding), SystemData.Extension, 110,
+[ProvideEditorExtension(typeof(EditorFactoryWithoutEncoding), LanguageExtension.PackageData.Extension, 110,
 	DefaultName = PackageData.ServiceName, NameResourceID = 311, RegisterFactory = true)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Code_string)]
@@ -98,7 +97,7 @@ namespace BlackbirdSql.EditorExtension;
 	DefaultName = $"{PackageData.ServiceName} with Encoding",
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
-[ProvideEditorExtension(typeof(EditorFactoryWithEncoding), SystemData.Extension, 100,
+[ProvideEditorExtension(typeof(EditorFactoryWithEncoding), LanguageExtension.PackageData.Extension, 100,
 	DefaultName = $"{PackageData.ServiceName} with Encoding", NameResourceID = 317, RegisterFactory = true)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Code_string)]
@@ -533,15 +532,15 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 	int IVsFontAndColorDefaultsProvider.GetObject(ref Guid rguidCategory, out object ppObj)
 	{
 		ppObj = null;
-		if (rguidCategory == Core.VS.CLSID_FontAndColorsSqlResultsTextCategory)
+		if (rguidCategory == VS.CLSID_FontAndColorsSqlResultsTextCategory)
 		{
 			ppObj = FontAndColorProviderTextResults.Instance;
 		}
-		else if (rguidCategory == Core.VS.CLSID_FontAndColorsSqlResultsGridCategory)
+		else if (rguidCategory == VS.CLSID_FontAndColorsSqlResultsGridCategory)
 		{
 			ppObj = FontAndColorProviderGridResults.Instance;
 		}
-		else if (rguidCategory == Core.VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory)
+		else if (rguidCategory == VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory)
 		{
 			ppObj = FontAndColorProviderExecutionPlan.Instance;
 		}
@@ -572,7 +571,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 
 	int IVsTextMarkerTypeProvider.GetTextMarkerType(ref Guid markerGuid, out IVsPackageDefinedTextMarkerType vsTextMarker)
 	{
-		if (markerGuid == Core.VS.CLSID_TSqlEditorMessageErrorMarker)
+		if (markerGuid == VS.CLSID_TSqlEditorMessageErrorMarker)
 		{
 			vsTextMarker = new VsTextMarker((uint)MARKERVISUAL.MV_COLOR_ALWAYS, COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK, Resources.ErrorMarkerDisplayName, Resources.ErrorMarkerDescription, "Error Message");
 			return VSConstants.S_OK;
@@ -606,11 +605,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 			new SqlEditorToolbarCommandHandler<SqlEditorDatabaseListCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabasesGetList));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new SqlEditorToolbarCommandHandler<SqlEditorExecuteTtsQueryCommand>(clsid, (uint)EnCommandSet.CmdIdExecuteTtsQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 			new SqlEditorToolbarCommandHandler<SqlEditorExecuteQueryCommand>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new SqlEditorToolbarCommandHandler<SqlEditorParseQueryCommand>(clsid, (uint)EnCommandSet.CmdIdParseQuery));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 			new SqlEditorToolbarCommandHandler<SqlEditorCancelQueryCommand>(clsid, (uint)EnCommandSet.CmdIdCancelQuery));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
@@ -637,6 +632,8 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 			new SqlEditorToolbarCommandHandler<SqlEditorTransactionCommitCommand>(clsid, (uint)EnCommandSet.CmdIdTransactionCommit));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 			new SqlEditorToolbarCommandHandler<SqlEditorTransactionRollbackCommand>(clsid, (uint)EnCommandSet.CmdIdTransactionRollback));
+		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+			new SqlEditorToolbarCommandHandler<SqlEditorToggleTTSCommand>(clsid, (uint)EnCommandSet.CmdIdToggleTTS));
 
 	}
 

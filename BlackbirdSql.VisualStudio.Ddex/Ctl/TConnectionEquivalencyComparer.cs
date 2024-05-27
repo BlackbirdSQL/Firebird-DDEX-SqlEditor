@@ -7,6 +7,7 @@ using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -75,10 +76,10 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 			return false;
 		}
 
-		CsbAgent csa1 = new(connectionProperties1.ToString(), false);
-		CsbAgent csa2 = new(connectionProperties2.ToString(), false);
+		Csb csa1 = new(connectionProperties1.ToString(), false);
+		Csb csa2 = new(connectionProperties2.ToString(), false);
 
-		return CsbAgent.AreEquivalent(csa1, csa2);
+		return Csb.AreEquivalent(csa1, csa2);
 
 	}
 

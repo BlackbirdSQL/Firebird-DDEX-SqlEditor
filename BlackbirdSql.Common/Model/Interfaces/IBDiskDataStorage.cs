@@ -3,6 +3,7 @@
 using System;
 using System.Data;
 using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Common.Model.Interfaces;
 
@@ -10,9 +11,9 @@ public interface IBDiskDataStorage : IBDataStorage, IDisposable
 {
 	event StorageNotifyDelegate StorageNotify;
 
-	void InitStorage(IDataReader reader);
+	void InitStorage(IBsNativeDbStatementWrapper sqlStatement, IDataReader reader);
 
-	void AddToStorage(IDataReader reader);
+	void AddToStorage(IBsNativeDbStatementWrapper sqlStatement, IDataReader reader);
 
 	void StartStoringData();
 

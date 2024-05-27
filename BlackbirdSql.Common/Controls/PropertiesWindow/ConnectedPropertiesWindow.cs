@@ -2,23 +2,18 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.PropertyWindow.SqlConnectionPropertiesDisplay
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
-using System.Reflection;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.ComponentModel;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-using FirebirdSql.Data.FirebirdClient;
-using FirebirdSql.Data.Services;
+
 
 
 namespace BlackbirdSql.Common.Controls.PropertiesWindow
@@ -27,7 +22,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		: AbstractPropertiesWindow, IBPropertyWindowQueryManagerInitialize
 	{
 		private bool _Initialized;
-		private CsbAgent _Csa = null;
+		private Csb _Csa = null;
 		private string _ConnectionInfo = null;
 		private string _ServerVersion = null;
 		private string _ClientVersion = null;
@@ -88,19 +83,10 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 				if (_ServerVersion != null)
 					return _ServerVersion;
 
-
-				Version version = null;
 				if (Connection != null && Connection.State == ConnectionState.Open)
-				{
-					version = FbServerProperties.ParseServerVersion(((FbConnection)Connection).ServerVersion);
-					// string text = ReliableConnectionHelper.ReadServerVersion(Connection);
-					// version = ((text != null) ? new Version(text) : null);
-				}
-
-				if (version == null)
-					_ServerVersion = string.Empty;
+					_ServerVersion = Connection.GetDataSourceVersion();
 				else
-					_ServerVersion = "Firebird " + version.ToString();
+					_ServerVersion = string.Empty;
 
 				return _ServerVersion;
 			}
@@ -109,8 +95,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		[GlobalizedCategory("PropertyWindowConnectionDetails")]
 		[GlobalizedDescription("PropertyWindowClientVersionDescription")]
 		[GlobalizedDisplayName("PropertyWindowClientVersionDisplayName")]
-		public string ClientVersion =>
-			_ClientVersion ??= $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
+		public string ClientVersion => _ClientVersion ??= DbNative.ClientVersion;
 
 
 		[GlobalizedCategory("PropertyWindowConnectionDetails")]
@@ -154,9 +139,9 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 				if (_Csa == null)
 					return string.Empty;
 
-				CsbAgent csa = new(_Csa.ConnectionString);
+				Csb csa = new(_Csa.ConnectionString);
 
-				if (csa.ContainsKey(CoreConstants.C_KeyPassword))
+				if (csa.ContainsKey(SysConstants.C_KeyPassword))
 					csa.Password = "********";
 
 				return csa.ConnectionString;

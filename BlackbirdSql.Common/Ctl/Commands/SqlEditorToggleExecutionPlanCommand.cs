@@ -6,6 +6,7 @@
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -28,25 +29,15 @@ public class SqlEditorToggleExecutionPlanCommand : AbstractSqlEditorCommand
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-		if (IsDwEditorConnection())
-		{
-			if (auxDocData != null)
-				auxDocData.ActualExecutionPlanEnabled = false;
-
-			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
-		}
-
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (auxDocData == null)
+		if (AuxDocData == null)
 			return VSConstants.S_OK;
 
-		if (!IsEditorExecuting())
+		if (!StoredIsExecuting)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
-		if (auxDocData.ActualExecutionPlanEnabled)
+		if (StoredAuxDocData.HasActualPlan)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
@@ -54,10 +45,8 @@ public class SqlEditorToggleExecutionPlanCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-		if (auxDocData != null)
-			auxDocData.ActualExecutionPlanEnabled = !auxDocData.ActualExecutionPlanEnabled;
+		if (AuxDocData != null)
+			StoredAuxDocData.HasActualPlan = !StoredAuxDocData.HasActualPlan;
 
 		return VSConstants.S_OK;
 	}

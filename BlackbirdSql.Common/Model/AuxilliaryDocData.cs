@@ -1,8 +1,4 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
-
+﻿
 using System;
 using System.Data;
 using System.Data.Common;
@@ -12,9 +8,9 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -23,7 +19,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Model;
 
-[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 // =========================================================================================================
@@ -153,6 +148,8 @@ public sealed class AuxilliaryDocData
 		}
 	}
 
+
+
 	public bool? IntellisenseEnabled
 	{
 		get
@@ -198,60 +195,38 @@ public sealed class AuxilliaryDocData
 		}
 	}
 
-	public bool ActualExecutionPlanEnabled
+	public EnSqlExecutionType ExecutionType
+	{
+		get { return QryMgr.LiveSettings.ExecutionType; }
+	}
+
+	public bool HasExecutionPlan => QryMgr.LiveSettings.HasExecutionPlan;
+
+	public bool HasActualPlan
+	{
+		get { return QryMgr.LiveSettings.WithActualPlan; }
+		set { QryMgr.LiveSettings.WithActualPlan = value; }
+	}
+
+
+	public bool TtsEnabled
 	{
 		get
 		{
 			lock (_LockLocal)
 			{
-				return QryMgr.LiveSettings.WithExecutionPlan;
+				return QryMgr.LiveSettings.TtsEnabled;
 			}
 		}
 		set
 		{
 			lock (_LockLocal)
 			{
-				QryMgr.LiveSettings.WithExecutionPlan = value;
+				QryMgr.LiveSettings.TtsEnabled = value;
 			}
 		}
 	}
 
-
-	public bool TransactionTrackingEnabled
-	{
-		get
-		{
-			lock (_LockLocal)
-			{
-				return QryMgr.LiveSettings.WithTransactionTracking;
-			}
-		}
-		set
-		{
-			lock (_LockLocal)
-			{
-				QryMgr.LiveSettings.WithTransactionTracking = value;
-			}
-		}
-	}
-
-	public bool EstimatedExecutionPlanEnabled
-	{
-		get
-		{
-			lock (_LockLocal)
-			{
-				return QryMgr.LiveSettings.WithEstimatedExecutionPlan;
-			}
-		}
-		set
-		{
-			lock (_LockLocal)
-			{
-				QryMgr.LiveSettings.WithEstimatedExecutionPlan = value;
-			}
-		}
-	}
 
 
 	public IBEditorTransientSettings LiveSettings => QryMgr.LiveSettings;
@@ -472,7 +447,6 @@ public sealed class AuxilliaryDocData
 						if (QryMgr.ConnectionStrategy is SqlConnectionStrategy connectionStrategy
 							&& connectionStrategy.IsDwConnection)
 						{
-							ActualExecutionPlanEnabled = false;
 							IntellisenseEnabled = false;
 						}
 					}
@@ -493,7 +467,7 @@ public sealed class AuxilliaryDocData
 		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
 
 		if (connection != null)
-			_DatabaseAtQueryExecutionStart = CsbAgent.CreateConnectionUrl(connection);
+			_DatabaseAtQueryExecutionStart = Csb.CreateConnectionUrl(connection);
 		else
 			_DatabaseAtQueryExecutionStart = null;
 
@@ -506,7 +480,7 @@ public sealed class AuxilliaryDocData
 		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
 
 		if (connection != null)
-			connectionUrl = CsbAgent.CreateConnectionUrl(connection);
+			connectionUrl = Csb.CreateConnectionUrl(connection);
 
 		bool flag = false;
 		if (connectionUrl != null && _DatabaseAtQueryExecutionStart == null || connectionUrl == null && _DatabaseAtQueryExecutionStart != null)

@@ -691,6 +691,114 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ◉ 10 minutes.
+        /// </summary>
+        internal static string EnExecutionTimeout_10m_Selected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_10m_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ 10 minutes.
+        /// </summary>
+        internal static string EnExecutionTimeout_10m_Unselected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_10m_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ 15 minutes.
+        /// </summary>
+        internal static string EnExecutionTimeout_15m_Selected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_15m_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ 15 minutes.
+        /// </summary>
+        internal static string EnExecutionTimeout_15m_Unselected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_15m_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ 1 minute.
+        /// </summary>
+        internal static string EnExecutionTimeout_1m_Selected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_1m_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ 1 minute.
+        /// </summary>
+        internal static string EnExecutionTimeout_1m_Unselected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_1m_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ 2 minutes.
+        /// </summary>
+        internal static string EnExecutionTimeout_2m_Selected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_2m_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ 2 minutes.
+        /// </summary>
+        internal static string EnExecutionTimeout_2m_Unselected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_2m_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ 5 minutes.
+        /// </summary>
+        internal static string EnExecutionTimeout_5m_Selected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_5m_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ 5 minutes.
+        /// </summary>
+        internal static string EnExecutionTimeout_5m_Unselected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_5m_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ No timeout.
+        /// </summary>
+        internal static string EnExecutionTimeout_None_Selected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_None_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ No timeout.
+        /// </summary>
+        internal static string EnExecutionTimeout_None_Unselected {
+            get {
+                return ResourceManager.GetString("EnExecutionTimeout_None_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ◉ Read Committed.
         /// </summary>
         internal static string EnIsolationLevel_ReadCommitted_Selected {
@@ -1366,11 +1474,11 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled will enable TTS on queries that may be DDL statements. This includes all statements that do not return a result set..
+        ///   Looks up a localized string similar to Enable asynchronous query execution?.
         /// </summary>
-        internal static string OptionDescriptionExecutionAutoDdlTts {
+        internal static string OptionDescriptionExecutionAsynchronous {
             get {
-                return ResourceManager.GetString("OptionDescriptionExecutionAutoDdlTts", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionExecutionAsynchronous", resourceCulture);
             }
         }
         
@@ -1501,7 +1609,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Causes Microsoft SQL Server not to execute Transact-SQL statements. Instead, SQL Server returns detailed information about how the statements are executed..
+        ///   Looks up a localized string similar to Causes BlackbirdSQL not to execute SQL statements. Instead, Firebird returns detailed information about how the statements are executed..
         /// </summary>
         internal static string OptionDescriptionExecutionSetPlanText {
             get {
@@ -1555,11 +1663,20 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Valid range: &apos;Default&apos;, &apos;Min[imum]&apos;, &apos;Unlimited&apos; or 0 (no time-out) to &apos;Max[imum]&apos; or 32000 seconds. (Case insensitive).
+        ///   Looks up a localized string similar to The maximum time in minutes to wait for an async query request to complete. Async query requests include DbCommand.ExecuteAsync(), DbReader.ReadAsync and DbReader.NextResultAsync()..
         /// </summary>
         internal static string OptionDescriptionExecutionTimeout {
             get {
                 return ResourceManager.GetString("OptionDescriptionExecutionTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default initial TTS state when a SQL script is opened..
+        /// </summary>
+        internal static string OptionDescriptionExecutionTtsDefault {
+            get {
+                return ResourceManager.GetString("OptionDescriptionExecutionTtsDefault", resourceCulture);
             }
         }
         
@@ -1672,7 +1789,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use a single tab for grid results..
+        ///   Looks up a localized string similar to If set to &apos;Yes&apos; then each grid in a batch will be seperately placed in the output tab with a double scrollbar otherwise only the first will be displayed..
         /// </summary>
         internal static string OptionDescriptionResultsGridSingleTab {
             get {
@@ -1915,11 +2032,11 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Auto TTS on DDL.
+        ///   Looks up a localized string similar to Asynchronous execution?.
         /// </summary>
-        internal static string OptionDisplayExecutionAutoDdlTts {
+        internal static string OptionDisplayExecutionAsynchronous {
             get {
-                return ResourceManager.GetString("OptionDisplayExecutionAutoDdlTts", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayExecutionAsynchronous", resourceCulture);
             }
         }
         
@@ -2104,11 +2221,20 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execution time-out.
+        ///   Looks up a localized string similar to Execution timeout.
         /// </summary>
         internal static string OptionDisplayExecutionTimeout {
             get {
                 return ResourceManager.GetString("OptionDisplayExecutionTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default initial TTS state.
+        /// </summary>
+        internal static string OptionDisplayExecutionTtsDefault {
+            get {
+                return ResourceManager.GetString("OptionDisplayExecutionTtsDefault", resourceCulture);
             }
         }
         

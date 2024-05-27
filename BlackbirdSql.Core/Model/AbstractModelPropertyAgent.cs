@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
@@ -7,16 +6,13 @@ using System.Net;
 using System.Text;
 using System.Windows.Media.Imaging;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Properties;
-using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Sys;
 
 
 
 namespace BlackbirdSql.Core.Model;
-
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor")]
 
 
 // =========================================================================================================
@@ -163,7 +159,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	{
 		get
 		{
-			_DataConnection ??= new FbConnection(ConnectionStringBuilder.ConnectionString);
+			_DataConnection ??= (DbConnection)DbNative.CreateDbConnection(ConnectionStringBuilder.ConnectionString);
 
 			return _DataConnection;
 		}
@@ -354,9 +350,9 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	}
 
 
-	public FbWireCrypt WireCrypt
+	public EnWireCrypt WireCrypt
 	{
-		get { return (FbWireCrypt)GetProperty("WireCrypt"); }
+		get { return (EnWireCrypt)GetProperty("WireCrypt"); }
 		set { SetProperty("WireCrypt", value); }
 	}
 
@@ -396,7 +392,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 	public override (IBIconType, bool) GetSet_Icon()
 	{
-		if (ServerType == FbServerType.Embedded)
+		if (ServerType == EnServerType.Embedded)
 		{
 			Icon = CoreIconsCollection.Instance.EmbeddedDatabase_32;
 
@@ -453,7 +449,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	{
 		EnEngineType serverEngine;
 
-		if (ServerType == FbServerType.Embedded)
+		if (ServerType == EnServerType.Embedded)
 		{
 			serverEngine = EnEngineType.EmbeddedDatabase;
 			return (serverEngine, false);
@@ -508,7 +504,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 			if (string.IsNullOrEmpty(serverClass))
 			{
-				ArgumentException ex = new("The Firebird server return an empty argument for ServerMode");
+				ArgumentException ex = new("The Database server return an empty argument for ServerMode");
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -534,7 +530,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 				serverEngine = isLocalHost ? EnEngineType.LocalSuperServer : EnEngineType.SuperServer;
 				break;
 			default:
-				ArgumentException ex = new("The Firebird server returned a bad argument for ServerMode: " + serverClass);
+				ArgumentException ex = new("The Database server returned a bad argument for ServerMode: " + serverClass);
 				Diag.Dug(ex);
 				throw ex;
 		}
@@ -560,16 +556,13 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 	public override DbCommand CreateCommand(string cmd = null)
 	{
-		if (cmd == null)
-			return new FbCommand();
-
-		return new FbCommand(cmd);
+		return DbNative.CreateDbCommand(cmd);
 	}
 
 
 	public override void Parse(string connectionString)
 	{
-		Parse(new CsbAgent(connectionString));
+		Parse(new Csb(connectionString));
 	}
 
 

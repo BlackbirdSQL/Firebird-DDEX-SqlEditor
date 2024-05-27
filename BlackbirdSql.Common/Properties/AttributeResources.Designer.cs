@@ -232,7 +232,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Tcpip port utilized by the Firebird server.
+        ///   Looks up a localized string similar to The Tcpip port utilized by the Database server.
         /// </summary>
         internal static string PropertyWindowPortDescription {
             get {
@@ -470,7 +470,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Snapshot Timestamp.
+        ///   Looks up a localized string similar to Time Statistics (Snapshot Timestamp).
         /// </summary>
         internal static string StatisticsPanelCategorySnapshotTimestamp {
             get {
@@ -479,7 +479,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Time Statistics.
+        ///   Looks up a localized string similar to Snapshot Timestamp.
         /// </summary>
         internal static string StatisticsPanelCategoryTimeStats {
             get {
@@ -578,7 +578,16 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execution end time.
+        ///   Looks up a localized string similar to Tables affected by DELETE statements.
+        /// </summary>
+        internal static string StatisticsPanelStatDelRowEntities {
+            get {
+                return ResourceManager.GetString("StatisticsPanelStatDelRowEntities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution end time (UTC).
         /// </summary>
         internal static string StatisticsPanelStatExecutionEndTimeEpoch {
             get {
@@ -587,7 +596,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execution start time.
+        ///   Looks up a localized string similar to Execution start time (UTC).
         /// </summary>
         internal static string StatisticsPanelStatExecutionStartTimeEpoch {
             get {
@@ -605,11 +614,20 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server expunge requests.
+        ///   Looks up a localized string similar to Expunged records.
         /// </summary>
         internal static string StatisticsPanelStatExpungeCount {
             get {
                 return ResourceManager.GetString("StatisticsPanelStatExpungeCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tabled affected by expunged records.
+        /// </summary>
+        internal static string StatisticsPanelStatExpungeEntities {
+            get {
+                return ResourceManager.GetString("StatisticsPanelStatExpungeEntities", resourceCulture);
             }
         }
         
@@ -632,11 +650,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server marks.
+        ///   Looks up a localized string similar to Tables affected by INSERT statements.
         /// </summary>
-        internal static string StatisticsPanelStatMarks {
+        internal static string StatisticsPanelStatInsRowEntities {
             get {
-                return ResourceManager.GetString("StatisticsPanelStatMarks", resourceCulture);
+                return ResourceManager.GetString("StatisticsPanelStatInsRowEntities", resourceCulture);
             }
         }
         
@@ -677,7 +695,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server purge requests.
+        ///   Looks up a localized string similar to Purged records.
         /// </summary>
         internal static string StatisticsPanelStatPurgeCount {
             get {
@@ -686,7 +704,16 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server read requests.
+        ///   Looks up a localized string similar to Tables affected by purged records.
+        /// </summary>
+        internal static string StatisticsPanelStatPurgeEntities {
+            get {
+                return ResourceManager.GetString("StatisticsPanelStatPurgeEntities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server page reads.
         /// </summary>
         internal static string StatisticsPanelStatReadCount {
             get {
@@ -695,7 +722,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Server index read requests.
+        ///   Looks up a localized string similar to Number of index read requests.
         /// </summary>
         internal static string StatisticsPanelStatReadIdxCount {
             get {
@@ -704,11 +731,29 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Server sequential read requests.
+        ///   Looks up a localized string similar to Index tables used for read requests.
+        /// </summary>
+        internal static string StatisticsPanelStatReadIdxEntities {
+            get {
+                return ResourceManager.GetString("StatisticsPanelStatReadIdxEntities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of sequential read requests.
         /// </summary>
         internal static string StatisticsPanelStatReadSeqCount {
             get {
                 return ResourceManager.GetString("StatisticsPanelStatReadSeqCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tables used in sequential read requests.
+        /// </summary>
+        internal static string StatisticsPanelStatReadSeqEntities {
+            get {
+                return ResourceManager.GetString("StatisticsPanelStatReadSeqEntities", resourceCulture);
             }
         }
         
@@ -722,16 +767,25 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server fetches.
+        ///   Looks up a localized string similar to Server cache reads.
         /// </summary>
-        internal static string StatisticsPanelStatServerRoundtrips {
+        internal static string StatisticsPanelStatServerCacheReadCount {
             get {
-                return ResourceManager.GetString("StatisticsPanelStatServerRoundtrips", resourceCulture);
+                return ResourceManager.GetString("StatisticsPanelStatServerCacheReadCount", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of transactions .
+        ///   Looks up a localized string similar to Server cache writes.
+        /// </summary>
+        internal static string StatisticsPanelStatServerCacheWriteCount {
+            get {
+                return ResourceManager.GetString("StatisticsPanelStatServerCacheWriteCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active transactions .
         /// </summary>
         internal static string StatisticsPanelStatTransactions {
             get {
@@ -749,7 +803,16 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server write requests.
+        ///   Looks up a localized string similar to Tables affected by UPDATE statements.
+        /// </summary>
+        internal static string StatisticsPanelStatUpdRowEntities {
+            get {
+                return ResourceManager.GetString("StatisticsPanelStatUpdRowEntities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server page writes.
         /// </summary>
         internal static string StatisticsPanelStatWriteCount {
             get {

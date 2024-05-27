@@ -10,22 +10,17 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using BlackbirdSql.Core.Controls.Events;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
-
-using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 
@@ -283,7 +278,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	// public event IBSettingsModel.SelectedItemChangedEventHandler SelectedItemChangedEvent;
 	public event IBSettingsModel.EditControlFocusEventHandler EditControlGotFocusEvent;
 	public event IBSettingsModel.EditControlFocusEventHandler EditControlLostFocusEvent;
-	public event IBSettingsModel.AutomationPropertyValueChangedEventHandler AutomationPropertyValueChangedEvent;
+	public event IBSettingsModel.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
 
 	public event EventHandler BeforeLoadEvent;
 	public event EventHandler Disposed;
@@ -527,9 +522,9 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 
 
-	public void OnAutomationPropertyValueChanged(object sender, AutomationPropertyValueChangedEventArgs e)
+	public void OnAutomatorPropertyValueChanged(object sender, AutomatorPropertyValueChangedEventArgs e)
 	{
-		AutomationPropertyValueChangedEvent?.Invoke(sender, e);
+		AutomatorPropertyValueChangedEvent?.Invoke(sender, e);
 	}
 
 

@@ -17,7 +17,6 @@
 
 
 
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 
 

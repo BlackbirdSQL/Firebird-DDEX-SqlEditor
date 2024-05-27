@@ -1,0 +1,127 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Nullable>disable</Nullable>
+		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
+		<RootNamespace>BlackbirdSql.Sys</RootNamespace>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<EnableDefaultPageItems>false</EnableDefaultPageItems>
+		<EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Sys.snk</AssemblyOriginatorKeyFile>
+		<PlatformTarget>x64</PlatformTarget>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
+		<Title>Advanced Class Library and Common Data Interfaces Library (between extension and native db library)</Title>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+		<NoWarn>1701;1702;CS0618</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+		<NoWarn>1701;1702;CS0618</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Include="Cmd.cs" />
+	  <Compile Include="Ctl\Describer.cs" />
+	  <Compile Include="Ctl\DescriberDictionary.cs" />
+	  <Compile Include="Ctl\EnumeratorDescribers.cs" />
+	  <Compile Include="Ctl\HashLog.cs" />
+	  <Compile Include="DbNative.cs" />
+	  <Compile Include="Diag.cs" />
+	  <Compile Include="Diagnostics\EventProviderVersionTwo.cs" />
+	  <Compile Include="Enums\EnNullEquality.cs" />
+	  <Compile Include="Interfaces\IBsNativeDbConnectionWrapper.cs" />
+	  <Compile Include="Diagnostics\LogObject.cs" />
+	  <Compile Include="Diagnostics\SqlEtwProvider.cs" />
+	  <Compile Include="Diagnostics\SqlTracer.cs" />
+	  <Compile Include="Diagnostics\Tracer.cs" />
+	  <Compile Include="Enums\EnBlobSubType.cs" />
+	  <Compile Include="Enums\EnConnectionSource.cs" />
+	  <Compile Include="Enums\EnDbDataType.cs" />
+	  <Compile Include="Enums\EnEngineType.cs" />
+	  <Compile Include="Enums\EnLogComplianceLevel.cs" />
+	  <Compile Include="Enums\EnModelObjectType.cs" />
+	  <Compile Include="Enums\EnModelTargetType.cs" />
+	  <Compile Include="Enums\EnNodeSystemType.cs" />
+	  <Compile Include="Enums\EnParserAction.cs" />
+	  <Compile Include="Enums\EnServerType.cs" />
+	  <Compile Include="Enums\EnSqlExecutionType.cs" />
+	  <Compile Include="Enums\EnSqlStatementAction.cs" />
+	  <Compile Include="Enums\EnSqlStatementType.cs" />
+	  <Compile Include="Enums\EnSqlTraceId.cs" />
+	  <Compile Include="Enums\EnWinEventTracingLevel.cs" />
+	  <Compile Include="Enums\EnWireCrypt.cs" />
+	  <Compile Include="Events\AutomationVerbEventHandler.cs" />
+	  <Compile Include="Events\AutomatorPropertyValueChangedEventArgs.cs" />
+	  <Compile Include="Events\EditControlFocusEventArgs.cs" />
+	  <Compile Include="Events\DbInfoMessageEventArgs.cs" />
+	  <Compile Include="Events\StatementExecutionEventArgs.cs" />
+	  <Compile Include="Extensions\ErmBindingSource.cs">
+	    <SubType>Component</SubType>
+	  </Compile>
+	  <Compile Include="Extensions\ExtensionMembers.cs" />
+	  <Compile Include="Extensions\MutablePair.cs" />
+	  <Compile Include="Extensions\PublicDictionary.cs" />
+	  <Compile Include="Extensions\PublicDictionaryEnumerator.cs" />
+	  <Compile Include="Extensions\PublicKeyCollection.cs" />
+	  <Compile Include="Extensions\PublicValueCollection.cs" />
+	  <Compile Include="Extensions\HashHelpersEx.cs" />
+	  <Compile Include="Interfaces\IBEnumerableDescribers.cs" />
+	  <Compile Include="Interfaces\IBIconType.cs" />
+	  <Compile Include="Interfaces\IBQueryManager.cs" />
+	  <Compile Include="Interfaces\IBsNativeDbBatchParser.cs" />
+	  <Compile Include="Model\NativeDbConnectionWrapperProxy.cs" />
+	  <Compile Include="Services\SBsNativeDbConnectionWrapper.cs" />
+	  <Compile Include="SysConstants.cs" />
+	  <Compile Include="Model\NativeDatabaseInfoProxy.cs" />
+	  <Compile Include="Model\NativeDbBatchParserProxy.cs" />
+	  <Compile Include="Model\NativeDbStatementWrapperProxy.cs" />
+	  <Compile Include="Model\NativeDbCsbProxy.cs" />
+	  <Compile Include="Services\SBsNativeDbBatchParser.cs" />
+	  <Compile Include="Interfaces\IBsNativeDbStatementWrapper.cs" />
+	  <Compile Include="Interfaces\IBsNativeDatabaseEngine.cs" />
+	  <Compile Include="Interfaces\IBsNativeDatabaseInfo.cs" />
+	  <Compile Include="Interfaces\IBsNativeDbConnection.cs" />
+	  <Compile Include="Services\SBsNativeDatabaseEngine.cs" />
+	  <Compile Include="Services\SBsNativeDatabaseInfo.cs" />
+	  <Compile Include="Services\SBsNativeDbConnection.cs" />
+	  <Compile Include="Interfaces\IBsNativeDbCommand.cs" />
+	  <Compile Include="Events\PropagateSettingsEventArgs.cs" />
+	  <Compile Include="GlobalSuppressions.cs" />
+	  <Compile Include="Extensions\Index.cs" />
+	  <Compile Include="Interfaces\IBModelPropertyWrapper.cs" />
+	  <Compile Include="Interfaces\IBPersistentSettings.cs" />
+	  <Compile Include="Interfaces\IBSettingsModel.cs" />
+	  <Compile Include="Interfaces\IBSqlTraceTelemetryProvider.cs" />
+	  <Compile Include="Interfaces\IBTaskHandlerClient.cs" />
+	  <Compile Include="Interfaces\IBTrace.cs" />
+	  <Compile Include="Services\SBsNativeDbCommand.cs" />
+	  <Compile Include="Extensions\Range.cs" />
+	  <Compile Include="Reflect.cs" />
+	  <Compile Include="Services\SBsNativeDbException.cs" />
+	  <Compile Include="Interfaces\IBsNativeDbException.cs" />
+	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
+	  <Compile Include="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	  <Compile Include="LibraryData.cs" />
+	  <Compile Include="VS.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
+	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.5.33428.388" />
+	</ItemGroup>
+
+</Project>

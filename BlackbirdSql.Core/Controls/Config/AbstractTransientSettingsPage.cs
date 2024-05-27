@@ -33,7 +33,7 @@ public abstract class AbstractTransientSettingsPage<TPage, T> : AbstractSettings
 
 		EditControlGotFocusEvent += _Model.OnEditControlGotFocus;
 		EditControlLostFocusEvent += _Model.OnEditControlLostFocus;
-		AutomationPropertyValueChangedEvent += _Model.OnAutomationPropertyValueChanged;
+		AutomatorPropertyValueChangedEvent += _Model.OnAutomatorPropertyValueChanged;
 	}
 
 
@@ -46,7 +46,7 @@ public abstract class AbstractTransientSettingsPage<TPage, T> : AbstractSettings
 		{
 			EditControlGotFocusEvent -= _Model.OnEditControlGotFocus;
 			EditControlLostFocusEvent -= _Model.OnEditControlLostFocus;
-			AutomationPropertyValueChangedEvent -= _Model.OnAutomationPropertyValueChanged;
+			AutomatorPropertyValueChangedEvent -= _Model.OnAutomatorPropertyValueChanged;
 			_Model = null;
 		}
 

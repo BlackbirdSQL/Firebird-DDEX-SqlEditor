@@ -2,6 +2,14 @@
 
 ## Change log
 
+### v12.0.0.0 Multi-statement (batch) SQL and iSql support.
+__New/ Enhancements__</br>
+-- Implemented multi-statement SQL support. Note: For block sql statements the statement terminator will need to be changed to 'GO' or similar if it contains a semi-colon and should be reset back to the default semi-colon to continue processing subsequent statements that are terminated using the default.</br>
+-- First phase of database independence from the extension to a service hub. All data access now takes place in BlackbirdSql.Data.</br>
+-- Added additional statistics to the SqlEditor statistics output. </br>
+__Fixes__</br>
+-- Bypassed FirebirdClient statistics bugs. SQL statstics are now correctly reported. 
+
 ### v11.3.0.2 Updated snippets.
 __New/ Enhancements__</br>
 -- Updated Language service snippets to Firebird syntax.</br>
@@ -91,7 +99,7 @@ Removed a 10 second debugging test Thread.Sleep() that was left in the AbstractR
 First official full release of BlackbirdSql.</br>
 Improved interactive synchronization between Connection Dialog and RunningConnectionTable.
 Resolved RunningConnectionTable deadlock red zone issues.</br>
-Removed redundant CsbAgent DataSource Case name mangling validations.</br>
+Removed redundant Csb DataSource Case name mangling validations.</br>
 Resolved several SE, edmx and RunningConnectionTable sync issues.</br>
 Removed ConnectionSource debug messages.</br>
 Prevented DatasetId glyph removal in Session connection dialogs when connection has not changed.

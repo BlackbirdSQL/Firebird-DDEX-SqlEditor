@@ -3,14 +3,11 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Ctl.IO;
-using BlackbirdSql.Core;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
@@ -40,7 +37,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPanels
 
 		int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint commandNumber, OLECMD[] commands, IntPtr oleText)
 		{
-			if (guidGroup.Equals(Core.VS.CLSID_CTextViewCommandGroup))
+			if (guidGroup.Equals(VS.CLSID_CTextViewCommandGroup))
 			{
 				switch ((VSConstants.VSStd2KCmdID)commands[0].cmdID)
 				{
@@ -56,7 +53,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPanels
 				}
 			}
 
-			if (guidGroup.Equals(Core.VS.CLSID_XmlUiCmds))
+			if (guidGroup.Equals(VS.CLSID_XmlUiCmds))
 			{
 				return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 			}
@@ -87,7 +84,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPanels
 
 		int IOleCommandTarget.Exec(ref Guid guidGroup, uint commandId, uint nCmdExcept, IntPtr vIn, IntPtr vOut)
 		{
-			if (guidGroup.Equals(Core.VS.CLSID_CTextViewCommandGroup))
+			if (guidGroup.Equals(VS.CLSID_CTextViewCommandGroup))
 			{
 				switch ((VSConstants.VSStd2KCmdID)commandId)
 				{
@@ -103,7 +100,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPanels
 				}
 			}
 
-			if (guidGroup.Equals(Core.VS.CLSID_XmlUiCmds))
+			if (guidGroup.Equals(VS.CLSID_XmlUiCmds))
 			{
 				return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 			}

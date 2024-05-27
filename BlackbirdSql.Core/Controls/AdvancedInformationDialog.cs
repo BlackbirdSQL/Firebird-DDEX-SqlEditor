@@ -106,9 +106,15 @@ public partial class AdvancedInformationDialog : Form
 		{
 			try
 			{
-				TreeNode treeNode3 = new(ex.Message)
+				string msg = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.All);
+				bool isDbClientInfo = msg.Contains(DbNative.DbEngineName);
+				string[] msgList = ex.Message.Split('\n');
+
+				string nodeLabel = ControlsResources.NodeExceptionInfo.FmtRes(isDbClientInfo ? DbNative.DbEngineName : "BlackbirdSql", msgList[0]);
+
+				TreeNode treeNode3 = new(nodeLabel)
 				{
-					Tag = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.All)
+					Tag = msg
 				};
 				TreeNode treeNode2 = new(ControlsResources.AdvInfoMessage)
 				{
@@ -129,8 +135,9 @@ public partial class AdvancedInformationDialog : Form
 						treeNode3.Nodes.Add(treeNode2);
 					}
 				}
-				catch (Exception)
+				catch (Exception ex2)
 				{
+					Diag.Dug(ex2);
 				}
 
 				try
@@ -145,8 +152,9 @@ public partial class AdvancedInformationDialog : Form
 						treeNode3.Nodes.Add(treeNode2);
 					}
 				}
-				catch (Exception)
+				catch (Exception ex2)
 				{
+					Diag.Dug(ex2);
 				}
 
 				if (ex.StackTrace != null)
@@ -163,13 +171,15 @@ public partial class AdvancedInformationDialog : Form
 							treeNode3.Nodes.Add(treeNode2);
 						}
 					}
-					catch (Exception)
+					catch (Exception ex2)
 					{
+						Diag.Dug(ex2);
 					}
 				}
 			}
-			catch (Exception)
+			catch (Exception ex2)
 			{
+				Diag.Dug(ex2);
 			}
 		}
 

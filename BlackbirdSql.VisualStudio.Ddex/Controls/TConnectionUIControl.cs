@@ -3,27 +3,26 @@
 
 
 using System;
-using System.Reflection;
-using System.Web.UI.Design.WebControls;
+using System.Data;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 
+using Cmd = BlackbirdSql.Sys.Cmd;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Controls;
+
 
 // =========================================================================================================
 //										TConnectionUIControl Class
@@ -287,7 +286,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			if (Site != null && Site.TryGetValue("DataSource", out object value))
 				txtDataSource.Text = (string)value;
 			else
-				txtDataSource.Text = CoreConstants.C_DefaultDataSource;
+				txtDataSource.Text = SysConstants.C_DefaultDataSource;
 
 			if (txtDataSource.Text != "")
 				cmbDataSource.SelectedValue = txtDataSource.Text.ToLower();
@@ -298,44 +297,44 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			if (Site != null && Site.TryGetValue("User ID", out value))
 				txtUserName.Text = (string)value;
 			else
-				txtUserName.Text = CoreConstants.C_DefaultUserID;
+				txtUserName.Text = SysConstants.C_DefaultUserID;
 
 			if (Site != null && Site.TryGetValue("Database", out value))
 				txtDatabase.Text = (string)value;
 			else
-				txtDatabase.Text = CoreConstants.C_DefaultDatabase;
+				txtDatabase.Text = SysConstants.C_DefaultDatabase;
 
 
 			if (Site != null && Site.TryGetValue("Password", out value))
 				txtPassword.Text = (string)value;
 			else
-				txtPassword.Text = CoreConstants.C_DefaultPassword;
+				txtPassword.Text = SysConstants.C_DefaultPassword;
 
 
 			if (Site != null && Site.TryGetValue("Role", out value))
 				txtRole.Text = (string)value;
 			else
-				txtRole.Text = ModelConstants.C_DefaultRole;
+				txtRole.Text = SysConstants.C_DefaultRole;
 
 			if (Site != null && Site.TryGetValue("Character Set", out value))
 				cboCharset.SetSelectedValueX(value);
 			else
-				cboCharset.SetSelectedValueX(ModelConstants.C_DefaultCharset);
+				cboCharset.SetSelectedValueX(SysConstants.C_DefaultCharset);
 
 			if (Site != null && Site.TryGetValue("Port", out value))
 				txtPort.Text = (string)value;
 			else
-				txtPort.Text = CoreConstants.C_DefaultPort.ToString();
+				txtPort.Text = SysConstants.C_DefaultPort.ToString();
 
 			if (Site != null && Site.TryGetValue("Dialect", out value))
 				cboDialect.SetSelectedValueX(value);
 			else
-				cboDialect.SetSelectedValueX(ModelConstants.C_DefaultDialect);
+				cboDialect.SetSelectedValueX(SysConstants.C_DefaultDialect);
 
 			if (Site != null && Site.TryGetValue("ServerType", out value))
 				cboServerType.SelectedIndex = Convert.ToInt32((string)value);
 			else
-				cboServerType.SelectedIndex = (int)CoreConstants.C_DefaultServerType;
+				cboServerType.SelectedIndex = (int)SysConstants.C_DefaultServerType;
 
 
 			// Move the cursor to it's correct position.
@@ -352,9 +351,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			// Update the database name label.
 
-			@object = DataSources.DependentRow[CoreConstants.C_KeyExDisplayName];
+			@object = DataSources.DependentRow[SysConstants.C_KeyExDisplayName];
 
-			lblCurrentDisplayName.Text = @object != DBNull.Value && @object != null
+			lblCurrentDisplayName.Text = !Cmd.IsNullValue(@object)
 				? (string)@object : ControlsResources.TConnectionUIControl_NewDatabaseConnection;
 
 
@@ -373,42 +372,42 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			{
 				// We're leaving proposed keys from Advanced intact.
 
-				if (Site.ContainsKey(CoreConstants.C_KeyExConnectionName)
-					&& string.IsNullOrWhiteSpace((string)Site[CoreConstants.C_KeyExConnectionName]))
+				if (Site.ContainsKey(SysConstants.C_KeyExConnectionName)
+					&& string.IsNullOrWhiteSpace((string)Site[SysConstants.C_KeyExConnectionName]))
 				{
-					Site.Remove(CoreConstants.C_KeyExConnectionName);
+					Site.Remove(SysConstants.C_KeyExConnectionName);
 				}
 
-				if (Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
-					&& string.IsNullOrWhiteSpace((string)Site[CoreConstants.C_KeyExDatasetId]))
+				if (Site.ContainsKey(SysConstants.C_KeyExDatasetId)
+					&& string.IsNullOrWhiteSpace((string)Site[SysConstants.C_KeyExDatasetId]))
 				{
-					Site.Remove(CoreConstants.C_KeyExDatasetId);
+					Site.Remove(SysConstants.C_KeyExDatasetId);
 				}
 
 
-				@object = DataSources.DependentRow[CoreConstants.C_KeyExDatasetKey];
-				if (@object != DBNull.Value && @object != null && (string)@object != string.Empty)
-					Site[CoreConstants.C_KeyExDatasetKey] = (string)@object;
+				@object = DataSources.DependentRow[SysConstants.C_KeyExDatasetKey];
+				if (!Cmd.IsNullValue(@object) && (string)@object != string.Empty)
+					Site[SysConstants.C_KeyExDatasetKey] = (string)@object;
 				else
-					Site.Remove(CoreConstants.C_KeyExDatasetKey);
+					Site.Remove(SysConstants.C_KeyExDatasetKey);
 
-				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionKey];
-				if (@object != DBNull.Value && @object != null && (string)@object != string.Empty)
-					Site[CoreConstants.C_KeyExConnectionKey] = (string)@object;
+				@object = DataSources.DependentRow[SysConstants.C_KeyExConnectionKey];
+				if (!Cmd.IsNullValue(@object) && (string)@object != string.Empty)
+					Site[SysConstants.C_KeyExConnectionKey] = (string)@object;
 				else
-					Site.Remove(CoreConstants.C_KeyExConnectionKey);
+					Site.Remove(SysConstants.C_KeyExConnectionKey);
 
-				@object = DataSources.DependentRow[CoreConstants.C_KeyExDataset];
-				if (@object != DBNull.Value && @object != null && (string)@object != string.Empty)
-					Site[CoreConstants.C_KeyExDataset] = (string)@object;
+				@object = DataSources.DependentRow[SysConstants.C_KeyExDataset];
+				if (!Cmd.IsNullValue(@object) && (string)@object != string.Empty)
+					Site[SysConstants.C_KeyExDataset] = (string)@object;
 				else
-					Site.Remove(CoreConstants.C_KeyExDataset);
+					Site.Remove(SysConstants.C_KeyExDataset);
 
-				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionSource];
-				if (@object != DBNull.Value && @object != null && (EnConnectionSource)(int)@object > EnConnectionSource.None)
-					Site[CoreConstants.C_KeyExConnectionSource] = (int)@object;
+				@object = DataSources.DependentRow[SysConstants.C_KeyExConnectionSource];
+				if (!Cmd.IsNullValue(@object) && (EnConnectionSource)(int)@object > EnConnectionSource.None)
+					Site[SysConstants.C_KeyExConnectionSource] = (int)@object;
 				else
-					Site.Remove(CoreConstants.C_KeyExConnectionSource);
+					Site.Remove(SysConstants.C_KeyExConnectionSource);
 
 				Site.ValidateKeys();
 
@@ -458,16 +457,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		// form.FormClosing += OnFormClosing;
 		// form.FormClosed += OnFormClosed;
 
-		_OnVerifySettingsDelegate = Reflect.AddEventHandler(this, nameof(OnVerifySettings),
-			BindingFlags.Instance | BindingFlags.NonPublic, form, "VerifySettings",
-			BindingFlags.Instance | BindingFlags.Public);
+		_OnVerifySettingsDelegate = Reflect.AddEventHandler(this, nameof(OnVerifySettings), form, "VerifySettings");
 
-		Button btnAccept = (Button)Reflect.GetFieldValue(form, "acceptButton",
-			BindingFlags.Instance | BindingFlags.NonPublic);
+		Button btnAccept = (Button)Reflect.GetFieldValue(form, "acceptButton");
 
-		_OnAcceptDelegate = Reflect.AddEventHandler(this, nameof(OnAccept),
-			BindingFlags.Instance | BindingFlags.NonPublic, btnAccept, "Click",
-			BindingFlags.Instance | BindingFlags.Public);
+		_OnAcceptDelegate = Reflect.AddEventHandler(this, nameof(OnAccept), btnAccept, "Click");
 
 		if (ConnectionSource == EnConnectionSource.Session)
 			SessionDlg.UpdateServerExplorerChangedEvent += OnUpdateServerExplorerChanged;
@@ -573,14 +567,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		// Tracer.Trace(GetType(), "RemoveEventHandlers()", "Container: {0}, Parent: {1}, ParentForm: {2}, Enabled: {3}, Visible: {4}.",
 		//	Container, Parent, ParentForm, Enabled, Visible);
 
-		Reflect.RemoveEventHandler(_ParentParentForm, "VerifySettings", _OnVerifySettingsDelegate,
-			BindingFlags.Instance | BindingFlags.Public);
+		Reflect.RemoveEventHandler(_ParentParentForm, "VerifySettings", _OnVerifySettingsDelegate);
 
-		Button btnAccept = (Button)Reflect.GetFieldValue(_ParentParentForm, "acceptButton",
-			BindingFlags.Instance | BindingFlags.NonPublic);
+		Button btnAccept = (Button)Reflect.GetFieldValue(_ParentParentForm, "acceptButton");
 
-		Reflect.RemoveEventHandler(btnAccept, "Click", _OnAcceptDelegate,
-			BindingFlags.Instance | BindingFlags.Public);
+		Reflect.RemoveEventHandler(btnAccept, "Click", _OnAcceptDelegate);
 
 		if (ConnectionSource == EnConnectionSource.Session)
 			SessionDlg.UpdateServerExplorerChangedEvent -= OnUpdateServerExplorerChanged;
@@ -600,13 +591,13 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 		try
 		{
-			EnConnectionSource source = (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource];
+			EnConnectionSource source = (EnConnectionSource)Site[SysConstants.C_KeyExConnectionSource];
 
 			if (source == EnConnectionSource.EntityDataModel || source == EnConnectionSource.Application
 				|| source == EnConnectionSource.ExternalUtility)
 			{
 				int pos;
-				string datasetId = (string)Site[CoreConstants.C_KeyExDatasetId];
+				string datasetId = (string)Site[SysConstants.C_KeyExDatasetId];
 
 				if ((pos = datasetId.IndexOf(RctManager.EdmGlyph)) != -1)
 					datasetId = datasetId.Remove(pos, 1);
@@ -620,9 +611,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					if (siteInitialization && ConnectionSource == EnConnectionSource.Session)
 						_UnstrippedConnectionString = Site.ToString();
 
-					Site[CoreConstants.C_KeyExDatasetId] = datasetId;
-					Site[CoreConstants.C_KeyExDatasetKey] =
-						SystemData.DatasetKeyFmt.FmtRes((string)Site[CoreConstants.C_KeyDataSource], datasetId);
+					Site[SysConstants.C_KeyExDatasetId] = datasetId;
+					Site[SysConstants.C_KeyExDatasetKey] =
+						SysConstants.C_DatasetKeyFmt.FmtRes((string)Site[SysConstants.C_KeyDataSource], datasetId);
 
 					if (siteInitialization && ConnectionSource == EnConnectionSource.Session)
 						_StrippedConnectionString = Site.ToString();
@@ -683,8 +674,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			// First see if the DataSources cursor has changed.
 
-			string dataSource = Site.ContainsKey(CoreConstants.C_KeyDataSource)
-				? (string)Site[CoreConstants.C_KeyDataSource] : "";
+			string dataSource = Site.ContainsKey(SysConstants.C_KeyDataSource)
+				? (string)Site[SysConstants.C_KeyDataSource] : "";
 
 
 			// Try to move the Datasource combo table to it's correct position.
@@ -702,12 +693,12 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			// Now the database.
 
-			string connectionUrl = CsbAgent.CreateConnectionUrl(Site.ToString());
+			string connectionUrl = Csb.CreateConnectionUrl(Site.ToString());
 
 			// Try to move the Dependent combo table to it's correct position.
 
 			if (connectionUrl != null)
-				dbPosition = DataSources.FindDependent(CoreConstants.C_KeyExConnectionUrl, connectionUrl);
+				dbPosition = DataSources.FindDependent(SysConstants.C_KeyExConnectionUrl, connectionUrl);
 
 			if (dbPosition == -1)
 				dbPosition = 0;
@@ -773,17 +764,17 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 		try
 		{
-			Site.Remove(CoreConstants.C_KeyExDatasetKey);
-			Site.Remove(CoreConstants.C_KeyExConnectionKey);
-			Site.Remove(CoreConstants.C_KeyExDataset);
+			Site.Remove(SysConstants.C_KeyExDatasetKey);
+			Site.Remove(SysConstants.C_KeyExConnectionKey);
+			Site.Remove(SysConstants.C_KeyExDataset);
 
 			if (removeProposed)
 			{
-				Site.Remove(CoreConstants.C_KeyExConnectionName);
-				Site.Remove(CoreConstants.C_KeyExDatasetId);
+				Site.Remove(SysConstants.C_KeyExConnectionName);
+				Site.Remove(SysConstants.C_KeyExDatasetId);
 			}
 
-			Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
+			Site[SysConstants.C_KeyExConnectionSource] = ConnectionSource;
 
 			lblCurrentDisplayName.Text = ControlsResources.TConnectionUIControl_NewDatabaseConnection;
 
@@ -796,7 +787,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				connectionSource = EnConnectionSource.ServerExplorer;
 			}
 
-			Site[CoreConstants.C_KeyExConnectionSource] = connectionSource;
+			Site[SysConstants.C_KeyExConnectionSource] = connectionSource;
 		}
 		catch (Exception ex)
 		{
@@ -864,16 +855,16 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			if (_StrippedConnectionString != null)
 			{
-				CsbAgent csa1 = new(_StrippedConnectionString, false);
-				CsbAgent csa2 = new(Site.ToString(), false);
+				Csb csa1 = new(_StrippedConnectionString, false);
+				Csb csa2 = new(Site.ToString(), false);
 
-				if (CsbAgent.AreEquivalent(csa1, csa2, CsbAgent.DescriberKeys, true))
+				if (AbstractCsb.AreEquivalent(csa1, csa2, Csb.DescriberKeys, true))
 				{
 					// They are equivalent. Validate here.
 
 					if (PersistentSettings.ValidateConnectionOnFormAccept)
 					{
-						FbConnection connection = new(site.ToString());
+						IDbConnection connection = DbNative.CreateDbConnection(site.ToString());
 
 						connection.Open();
 					}
@@ -922,14 +913,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				if (ConnectionSource != EnConnectionSource.Session || addInternally || modifyInternally
 					|| PersistentSettings.ValidateConnectionOnFormAccept)
 				{
-					FbConnection connection = new(site.ToString());
+					IDbConnection connection = DbNative.CreateDbConnection(site.ToString());
 
 					connection.Open();
 				}
 
 				// If a new unique SE connection is going to be created in a Session set the connection source.
 				if (ConnectionSource == EnConnectionSource.Session && addInternally)
-					site[CoreConstants.C_KeyExConnectionKey] = site[CoreConstants.C_KeyExDatasetKey];
+					site[SysConstants.C_KeyExConnectionKey] = site[SysConstants.C_KeyExDatasetKey];
 
 				_HandleNewInternally = addInternally;
 				_HandleModifyInternally = modifyInternally;
@@ -1020,7 +1011,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			}
 			else if (Site != null)
 			{
-				if (cboCharset.Text.Trim() == "" || cboCharset.Text.Trim().ToUpper() == ModelConstants.C_DefaultCharset)
+				if (cboCharset.Text.Trim() == "" || cboCharset.Text.Trim().ToUpper() == SysConstants.C_DefaultCharset)
 					Site.Remove("Character Set");
 				else
 					Site["Character Set"] = cboCharset.Text;
@@ -1049,14 +1040,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				}
 			}
 
-			object @object = DataSources.DependentRow[CoreConstants.C_KeyExDisplayName];
+			object @object = DataSources.DependentRow[SysConstants.C_KeyExDisplayName];
 
-			lblCurrentDisplayName.Text = @object != DBNull.Value && @object != null
+			lblCurrentDisplayName.Text = !Cmd.IsNullValue(@object)
 				? (string)@object : ControlsResources.TConnectionUIControl_NewDatabaseConnection;
 
 			if (Site != null)
 			{
-				foreach (Describer describer in CsbAgent.AdvancedKeys)
+				foreach (Describer describer in Csb.AdvancedKeys)
 				{
 					if (!describer.DefaultEqualsOrEmpty(DataSources.DependentRow[describer.Name]))
 					{
@@ -1075,8 +1066,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				// Take the glyph out of Application, DataSources and ExternalUtility source
 				// dataset ids.
 				if ((ConnectionSource != EnConnectionSource.Application)
-					&& Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
-					&& Site.ContainsKey(CoreConstants.C_KeyExConnectionSource))
+					&& Site.ContainsKey(SysConstants.C_KeyExDatasetId)
+					&& Site.ContainsKey(SysConstants.C_KeyExConnectionSource))
 				{
 					RemoveGlyph(false);
 				}
@@ -1128,26 +1119,26 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		{
 			if ((int)DataSources.Row["Orderer"] == 1)
 			{
-				txtDataSource.Text = CoreConstants.C_DefaultDataSource;
-				txtPort.Text = CoreConstants.C_DefaultPort.ToString();
-				cboServerType.SetSelectedIndexX((int)CoreConstants.C_DefaultServerType);
-				txtDatabase.Text = CoreConstants.C_DefaultDatabase;
-				cboDialect.SetSelectedValueX(ModelConstants.C_DefaultDialect);
-				txtUserName.Text = CoreConstants.C_DefaultUserID;
-				txtPassword.Text = CoreConstants.C_DefaultPassword;
-				txtRole.Text = ModelConstants.C_DefaultRole;
-				cboCharset.SetSelectedValueX(ModelConstants.C_DefaultCharset);
+				txtDataSource.Text = SysConstants.C_DefaultDataSource;
+				txtPort.Text = SysConstants.C_DefaultPort.ToString();
+				cboServerType.SetSelectedIndexX((int)SysConstants.C_DefaultServerType);
+				txtDatabase.Text = SysConstants.C_DefaultDatabase;
+				cboDialect.SetSelectedValueX(SysConstants.C_DefaultDialect);
+				txtUserName.Text = SysConstants.C_DefaultUserID;
+				txtPassword.Text = SysConstants.C_DefaultPassword;
+				txtRole.Text = SysConstants.C_DefaultRole;
+				cboCharset.SetSelectedValueX(SysConstants.C_DefaultCharset);
 
 				if (Site != null)
 				{
-					foreach (Describer describer in CsbAgent.Describers.DescriberKeys)
+					foreach (Describer describer in Csb.Describers.DescriberKeys)
 					{
 						if (describer.IsAdvanced || describer.IsConnectionParameter)
 							Site.Remove(describer.Key);
 					}
 				}
 
-				Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
+				Site[SysConstants.C_KeyExConnectionSource] = ConnectionSource;
 
 				DataSources.Position = 0;
 			}
@@ -1171,7 +1162,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					txtPort.Text = DataSources.Row["Port"].ToString();
 					if (Site != null)
 					{
-						if (Convert.ToInt32(txtPort.Text) == CoreConstants.C_DefaultPort)
+						if (Convert.ToInt32(txtPort.Text) == SysConstants.C_DefaultPort)
 							Site.Remove("Port");
 						else
 							Site["Port"] = txtPort.Text;
@@ -1221,27 +1212,27 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			if (sender.Equals(txtDataSource))
 			{
-				propertyName = CoreConstants.C_KeyDataSource;
+				propertyName = SysConstants.C_KeyDataSource;
 				Site[propertyName] = txtDataSource.Text.Trim();
 			}
 			else if (sender.Equals(txtDatabase))
 			{
-				propertyName = CoreConstants.C_KeyDatabase;
+				propertyName = SysConstants.C_KeyDatabase;
 				Site[propertyName] = txtDatabase.Text.Trim();
 			}
 			else if (sender.Equals(txtUserName))
 			{
-				propertyName = CoreConstants.C_KeyUserID;
+				propertyName = SysConstants.C_KeyUserID;
 				Site[propertyName] = txtUserName.Text.Trim();
 			}
 			else if (sender.Equals(txtPassword))
 			{
-				propertyName = CoreConstants.C_KeyPassword;
+				propertyName = SysConstants.C_KeyPassword;
 				Site[propertyName] = txtPassword.Text.Trim();
 			}
 			else if (sender.Equals(txtRole))
 			{
-				propertyName = ModelConstants.C_KeyRole;
+				propertyName = SysConstants.C_KeyRole;
 				if (txtRole.Text.Trim() == "")
 					Site.Remove(propertyName);
 				else
@@ -1249,32 +1240,32 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			}
 			else if (sender.Equals(cboCharset))
 			{
-				propertyName = ModelConstants.C_KeyCharset;
-				if (cboCharset.Text.Trim() == "" || cboCharset.Text.Trim().ToUpper() == ModelConstants.C_DefaultCharset)
+				propertyName = SysConstants.C_KeyCharset;
+				if (cboCharset.Text.Trim() == "" || cboCharset.Text.Trim().ToUpper() == SysConstants.C_DefaultCharset)
 					Site.Remove(propertyName);
 				else
 					Site[propertyName] = cboCharset.Text.Trim();
 			}
 			else if (sender.Equals(txtPort))
 			{
-				propertyName = CoreConstants.C_KeyPort;
-				if (String.IsNullOrWhiteSpace(txtPort.Text) || Convert.ToInt32(txtPort.Text.Trim()) == CoreConstants.C_DefaultPort)
+				propertyName = SysConstants.C_KeyPort;
+				if (string.IsNullOrWhiteSpace(txtPort.Text) || Convert.ToInt32(txtPort.Text.Trim()) == SysConstants.C_DefaultPort)
 					Site.Remove(propertyName);
 				else
 					Site[propertyName] = Convert.ToInt32(txtPort.Text);
 			}
 			else if (sender.Equals(cboDialect))
 			{
-				propertyName = ModelConstants.C_KeyDialect;
-				if (String.IsNullOrWhiteSpace(cboDialect.Text) || Convert.ToInt32(cboDialect.Text.Trim()) == ModelConstants.C_DefaultDialect)
+				propertyName = SysConstants.C_KeyDialect;
+				if (string.IsNullOrWhiteSpace(cboDialect.Text) || Convert.ToInt32(cboDialect.Text.Trim()) == SysConstants.C_DefaultDialect)
 					Site.Remove(propertyName);
 				else
 					Site[propertyName] = Convert.ToInt32(cboDialect.Text);
 			}
 			else if (sender.Equals(cboServerType))
 			{
-				propertyName = CoreConstants.C_KeyServerType;
-				if (cboServerType.SelectedIndex == -1 || cboServerType.SelectedIndex == (int)CoreConstants.C_DefaultServerType)
+				propertyName = SysConstants.C_KeyServerType;
+				if (cboServerType.SelectedIndex == -1 || cboServerType.SelectedIndex == (int)SysConstants.C_DefaultServerType)
 					Site.Remove(propertyName);
 				else
 					Site[propertyName] = cboServerType.SelectedIndex;
@@ -1333,8 +1324,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			_InsertMode = _OriginalConnectionString == null;
 
-			EnConnectionSource storedConnectionSource = Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
-				? (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] : EnConnectionSource.Undefined;
+			EnConnectionSource storedConnectionSource = Site.ContainsKey(SysConstants.C_KeyExConnectionSource)
+				? (EnConnectionSource)Site[SysConstants.C_KeyExConnectionSource] : EnConnectionSource.Undefined;
 
 			DisablePropertyEvents();
 
@@ -1343,14 +1334,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 				if (ConnectionSource == EnConnectionSource.Application)
 				{
-					foreach (Describer describer in CsbAgent.AdvancedKeys)
+					foreach (Describer describer in Csb.AdvancedKeys)
 					{
-						if (!describer.IsConnectionParameter && describer.Key != CoreConstants.C_KeyExConnectionSource)
+						if (!describer.IsConnectionParameter && describer.Key != SysConstants.C_KeyExConnectionSource)
 							Site.Remove(describer.Key);
 					}
 
 					if (storedConnectionSource <= EnConnectionSource.None)
-						Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
+						Site[SysConstants.C_KeyExConnectionSource] = ConnectionSource;
 				}
 				else
 				{
@@ -1360,12 +1351,12 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 						string connectionKey = Site.FindConnectionKey();
 
 						if (connectionKey != null)
-							Site[CoreConstants.C_KeyExConnectionKey] = connectionKey;
+							Site[SysConstants.C_KeyExConnectionKey] = connectionKey;
 						else
-							Site.Remove(CoreConstants.C_KeyExConnectionKey);
+							Site.Remove(SysConstants.C_KeyExConnectionKey);
 					}
 
-					if (Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
+					if (Site.ContainsKey(SysConstants.C_KeyExDatasetId)
 						&& (storedConnectionSource == EnConnectionSource.Application
 						|| storedConnectionSource == EnConnectionSource.EntityDataModel
 						|| storedConnectionSource == EnConnectionSource.ExternalUtility))
@@ -1377,8 +1368,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 						_StrippedConnectionString = Site.ToString();
 
 
-					if (!Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
-						|| (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] <= EnConnectionSource.None)
+					if (!Site.ContainsKey(SysConstants.C_KeyExConnectionSource)
+						|| (EnConnectionSource)Site[SysConstants.C_KeyExConnectionSource] <= EnConnectionSource.None)
 					{
 						EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.EntityDataModel
 							? EnConnectionSource.ServerExplorer : ConnectionSource;
@@ -1389,7 +1380,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 							connectionSource = EnConnectionSource.ServerExplorer;
 						}
 
-						Site[CoreConstants.C_KeyExConnectionSource] = connectionSource;
+						Site[SysConstants.C_KeyExConnectionSource] = connectionSource;
 					}
 
 				}
@@ -1491,9 +1482,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		try
 		{
 			if (SessionDlg.UpdateServerExplorer)
-				Site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
+				Site[SysConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
 			else
-				Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
+				Site[SysConstants.C_KeyExConnectionSource] = ConnectionSource;
 		}
 		finally
 		{

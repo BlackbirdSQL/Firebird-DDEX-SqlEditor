@@ -8,13 +8,12 @@ using System.Data;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Utilities;
+
+
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
@@ -43,7 +42,8 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 		{
 			DesignerExplorerServices.OpenNewMiscellaneousSqlFile();
 
-			AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+			AuxilliaryDocData auxDocData = AuxDocData;
+
 			IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
 
 			if (lastFocusedSqlEditor == null)
@@ -51,14 +51,14 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 
 			AuxilliaryDocData newAuxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(lastFocusedSqlEditor.DocData);
 
-			if (newAuxDocData == null)
+			if (newAuxDocData == null || QryMgr == null)
 				return VSConstants.S_OK;
 
-			QueryManager qryMgr = auxDocData.QryMgr;
 			AbstractConnectionStrategy connectionStrategy = newAuxDocData.QryMgr.ConnectionStrategy;
-			connectionStrategy.SetConnectionInfo(qryMgr.ConnectionStrategy.ConnectionInfo);
+			connectionStrategy.SetConnectionInfo(StoredQryMgr.ConnectionStrategy.ConnectionInfo);
 			IDbConnection connection = connectionStrategy.Connection;
-			if (qryMgr.IsConnected && connection.State != ConnectionState.Open)
+
+			if (StoredQryMgr.IsConnected && connection.State != ConnectionState.Open)
 			{
 				connection.Open();
 			}

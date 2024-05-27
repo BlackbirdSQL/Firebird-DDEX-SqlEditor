@@ -13,6 +13,7 @@ using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -23,7 +24,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Controls.Tabs;
 
-[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMultiViewDocumentView,
@@ -398,18 +398,25 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		if (_Owner != null)
 		{
 			ParentPanel.SuspendLayout();
-			Panel panel = new Panel
+
+			try
 			{
-				Name = "EditorTabFrameWrapper",
-				Dock = DockStyle.Fill,
-				Height = 0,
-				Width = 0,
-				BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW)
-			};
-			frame.SetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, panel.Handle);
-			ParentPanel.Controls.Add(panel);
-			panel.BringToFront();
-			ParentPanel.ResumeLayout();
+				Panel panel = new Panel
+				{
+					Name = "EditorTabFrameWrapper",
+					Dock = DockStyle.Fill,
+					Height = 0,
+					Width = 0,
+					BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW)
+				};
+				frame.SetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, panel.Handle);
+				ParentPanel.Controls.Add(panel);
+				panel.BringToFront();
+			}
+			finally
+			{
+				ParentPanel.ResumeLayout();
+			}
 		}
 	}
 
@@ -456,6 +463,8 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	public void Hide()
 	{
+		// Tracer.Trace(GetType(), "Hide()", "Guid: {0}.", _LogicalView);
+
 		_Visible = false;
 
 		if (_CurrentFrame == null)
@@ -547,6 +556,8 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	public void Show()
 	{
 		Diag.ThrowIfNotOnUIThread();
+
+		// Tracer.Trace(GetType(), "Show()", "Guid: {0}.", _LogicalView);
 
 		try
 		{

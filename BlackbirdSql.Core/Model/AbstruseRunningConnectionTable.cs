@@ -11,20 +11,19 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
+using BlackbirdSql.Sys;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
-using static BlackbirdSql.Core.Ctl.CoreConstants;
+using static BlackbirdSql.SysConstants;
 
 
 
@@ -178,7 +177,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	private readonly object _LockObject = new();
 	private int _LoadingSyncCardinal = 0;
 	private int _LoadingAsyncCardinal = 0;
-	protected static string _Scheme = SystemData.Scheme;
+	protected static string _Scheme = DbNative.Scheme;
 
 	protected DataTable _Databases = null, _DataSources = null;
 	protected DataTable _InternalConnectionsTable = null;
@@ -300,7 +299,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				{
 					// Tracer.Trace(GetType(), "AdviseServerExplorerConnectionsEvents()", "Advising SE events for: {0}.", pair.Key);
 
-					Reflect.InvokeMethod(explorerConnection, "InitializeModel", BindingFlags.Instance | BindingFlags.NonPublic);
+					Reflect.InvokeMethod(explorerConnection, "InitializeModel", BindingFlags.Default);
 
 					/*
 					object viewSupport = Reflect.GetPropertyValue(explorerConnection, "ViewSupport",
@@ -511,13 +510,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		TaskScheduler scheduler = TaskScheduler.Default;
 		CancellationToken cancellationToken = _AsyncPayloadLauncherToken;
 
-		// Fire and forget with task tracking
+		// Fire and remember.
 
 		if (_AsyncPayloadLauncher != null && _AsyncPayloadLauncher.IsCompleted)
 			_AsyncPayloadLauncher?.Dispose();
 
 		// Run on new thread in thread pool.
-		// Fire and forget with token tracking.
+		// Fire and remember.
 
 		async Task<bool> payloadAsync() => await LoadUnsafeConfiguredConnectionsAsync(cancellationToken, probject);
 
@@ -620,7 +619,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (key == null)
 			return false;
 
-		IEnumerable<DataRow> rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[CoreConstants.C_KeyExConnectionUrl]));
+		IEnumerable<DataRow> rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[C_KeyExConnectionUrl]));
 
 		return rows.Count() > 0;
 	}
@@ -632,7 +631,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// Creates and initializes a configured connection row.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private DataRow CreateDataRow(CsbAgent csa = null)
+	private DataRow CreateDataRow(Csb csa = null)
 	{
 		DataRow row = _InternalConnectionsTable.NewRow();
 
@@ -665,7 +664,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		dataTable.Columns.Add("DatabaseLc", typeof(string));
 		dataTable.Columns.Add("DisplayName", typeof(string));
 
-		foreach (Describer describer in CsbAgent.DescriberKeys)
+		foreach (Describer describer in Csb.DescriberKeys)
 			dataTable.Columns.Add(describer.Name, describer.DataType);
 
 		dataTable.Columns.Add(C_KeyExConnectionString, typeof(string));
@@ -956,7 +955,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			// because that would create node.Object.
 			try
 			{
-				@object = Reflect.GetFieldValueBase(pair.Value.ConnectionNode, "_object", BindingFlags.Instance | BindingFlags.NonPublic);
+				@object = Reflect.GetFieldValueBase(pair.Value.ConnectionNode, "_object");
 			}
 			catch (Exception ex)
 			{
@@ -1043,7 +1042,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnectionsImpl()", "Connection name: {0}", connectionName);
 
 		string datasetId;
-		CsbAgent csa;
+		Csb csa;
 		DataRow row;
 
 		csa = new(connectionString)
@@ -1270,9 +1269,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		DataRow row;
 
-		string xmlPath = SystemData.ExternalUtilityConfigurationPath;
+		string xmlPath = DbNative.ExternalUtilityConfigurationPath;
 
-		if (!File.Exists(xmlPath))
+		if (string.IsNullOrEmpty(xmlPath) || !File.Exists(xmlPath))
 			return;
 
 		BeginLoadData(true);
@@ -1294,7 +1293,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			*/
 			XmlNodeList xmlServers, xmlDatabases;
 			XmlNode xmlNode = null;
-			CsbAgent csa;
+			Csb csa;
 			int port;
 			string serverName, datasource, authentication, user, password, path, charset;
 			string datasetId;
@@ -1318,7 +1317,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				port = Convert.ToInt32(xmlNode.InnerText.Trim());
 
 				if (port == 0)
-					port = CoreConstants.C_DefaultPort;
+					port = C_DefaultPort;
 
 
 				// To keep uniformity of server names, the case of the first connection
@@ -1735,7 +1734,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			XmlNode xmlNode = null, xmlParent;
 			string datasetId;
 			string[] arr;
-			CsbAgent csa;
+			Csb csa;
 			DataRow row;
 
 			xmlNode = xmlRoot.SelectSingleNode("//confBlackbirdNs:connectionStrings", xmlNs);
@@ -1751,10 +1750,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			int i = 0;
 			string sortkey;
 			List<string> sortlist = [];
-			Dictionary<string, CsbAgent> sortdict = [];
+			Dictionary<string, Csb> sortdict = [];
 
 
-			XmlNodeList xmlNodes = xmlParent.SelectNodes($"confBlackbirdNs:add[@providerName='{SystemData.Invariant}']", xmlNs);
+			XmlNodeList xmlNodes = xmlParent.SelectNodes($"confBlackbirdNs:add[@providerName='{DbNative.Invariant}']", xmlNs);
 
 
 			if (xmlNodes.Count > 0)
@@ -1766,7 +1765,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 					csa = new(connectionNode.Attributes["connectionString"].Value);
 
-					foreach (Describer describer in CsbAgent.AdvancedKeys)
+					foreach (Describer describer in Csb.AdvancedKeys)
 					{
 						if (!describer.IsConnectionParameter)
 							csa.Remove(describer.Key);
@@ -1803,7 +1802,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				};
 
 				if (!csb.ContainsKey("provider")
-					|| !((string)csb["provider"]).Equals(SystemData.Invariant, StringComparison.InvariantCultureIgnoreCase))
+					|| !((string)csb["provider"]).Equals(DbNative.Invariant, StringComparison.InvariantCultureIgnoreCase))
 				{
 					continue;
 				}
@@ -1818,7 +1817,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 				csa = new(connectionString);
 
-				foreach (Describer describer in CsbAgent.AdvancedKeys)
+				foreach (Describer describer in Csb.AdvancedKeys)
 				{
 					if (!describer.IsConnectionParameter)
 						csa.Remove(describer.Key);
@@ -1852,8 +1851,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				datasetId = csa.DatasetId;
 				connectionSource = csa.ConnectionSource;
 
-				csa.Remove(CoreConstants.C_KeyExDatasetId);
-				csa.Remove(CoreConstants.C_KeyExConnectionSource);
+				csa.Remove(C_KeyExDatasetId);
+				csa.Remove(C_KeyExConnectionSource);
 
 				// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "datasource: {0}, dataset: {1}, serverName: {2}, ConnectionName: {3}, datasetId: {4}, Connectionstring: {5}, storedConnectionString: {6}.", datasource, csa.Dataset, serverName, csa.ConnectionName, datasetId, csa.ConnectionString, connectionNode.Attributes["connectionString"].Value);
 
@@ -1966,7 +1965,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	public bool RegisterUniqueConnection(string proposedDatasetKey,
-		string proposedDatasetId, EnConnectionSource source, ref CsbAgent csa)
+		string proposedDatasetId, EnConnectionSource source, ref Csb csa)
 	{
 
 		if (_Instance == null)
@@ -2022,7 +2021,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	private DataRow RegisterUniqueConnectionImpl(string proposedConnectionName,
-		string proposedDatasetId, EnConnectionSource source, ref CsbAgent csa)
+		string proposedDatasetId, EnConnectionSource source, ref Csb csa)
 	{
 		// Tracer.Trace(GetType(), "RegisterUniqueConnectionDatsetKey()");
 
@@ -2079,14 +2078,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			csa.DatasetKey = uniqueDatasetKey;
 
 			if (uniqueConnectionName == string.Empty)
-				csa.Remove(CoreConstants.C_KeyExConnectionName);
+				csa.Remove(C_KeyExConnectionName);
 			else if (uniqueConnectionName != null)
 				csa.ConnectionName = uniqueConnectionName;
 			else if (proposedConnectionName != null)
 				csa.ConnectionName = proposedConnectionName;
 
 			if (uniqueDatasetId == string.Empty)
-				csa.Remove(CoreConstants.C_KeyExDatasetId);
+				csa.Remove(C_KeyExDatasetId);
 			else if (uniqueDatasetId != null)
 				csa.DatasetId = uniqueDatasetId;
 			else if (proposedDatasetId != null)
@@ -2227,7 +2226,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			PayloadSyncWaiter(cancellationToken);
 
 		// Start up the payload launcher with tracking.
-		// Fire and forget with task tracking
+		// Fire and remember - switch to thread pool
 
 		_SyncPayloadLauncher = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
 
@@ -2295,13 +2294,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			(hybridKey.StartsWith("data source=", StringComparison.InvariantCultureIgnoreCase)
 			|| hybridKey.ToLowerInvariant().Contains(";data source=")))
 		{
-			hybridKey = CsbAgent.CreateConnectionUrl(hybridKey);
+			hybridKey = Csb.CreateConnectionUrl(hybridKey);
 			isConnectionUrl = true;
 		}
 
 		if (isConnectionUrl)
 		{
-			DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExConnectionUrl])).ToArray();
+			DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[SysConstants.C_KeyExConnectionUrl])).ToArray();
 
 			value = rows.Length > 0 ? rows[0] : null;
 		}
@@ -2354,7 +2353,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// </summary>
 	/// <returns>True if the row was updated else false.</returns>
 	// ---------------------------------------------------------------------------------
-	protected bool UpdateDataRowFromCsa(DataRow row, CsbAgent csa = null)
+	protected bool UpdateDataRowFromCsa(DataRow row, Csb csa = null)
 	{
 		bool updated = false;
 		object csaValue;
@@ -2366,7 +2365,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			row[C_KeyExDisplayName] = DBNull.Value;
 
-			foreach (Describer describer in CsbAgent.DescriberKeys)
+			foreach (Describer describer in Csb.DescriberKeys)
 			{
 				csaValue = csa != null && csa.ContainsKey(describer.Name)
 					? csa[describer.Name]
@@ -2469,7 +2468,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// <seealso cref="AbstractRunningConnectionTable.UpdateRegisteredConnection"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract CsbAgent UpdateRegisteredConnection(string connectionString,
+	public abstract Csb UpdateRegisteredConnection(string connectionString,
 		EnConnectionSource source, bool forceOwnership);
 
 
@@ -2685,11 +2684,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			return;
 		}
 
-		CsbAgent csa = new(e.Node.ExplorerConnection.DecryptedConnectionString());
+		Csb csa = new(e.Node.ExplorerConnection.DecryptedConnectionString());
 
 		// If the ConnectionString contains any UIHierarchyMarshaler or DataSources ToolWindow identifiers we skip the
 		// DatasetKey check because the Connection is earmarked for repair.
-		if (!csa.ContainsKey("edmx") && !csa.ContainsKey("edmu") && csa.ContainsKey(CoreConstants.C_KeyExDatasetKey))
+		if (!csa.ContainsKey("edmx") && !csa.ContainsKey("edmu") && csa.ContainsKey(C_KeyExDatasetKey))
 		{
 			// Check if node.Object exists before accessing it otherwise the root node will be initialized
 			// with a call to TObjectSelectorRoot.SelectObjects.

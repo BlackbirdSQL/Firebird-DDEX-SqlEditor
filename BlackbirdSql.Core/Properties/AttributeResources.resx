@@ -181,10 +181,10 @@
     <value> Identifiers</value>
   </data>
   <data name="PropertyDescriptionActiveUsers" xml:space="preserve">
-    <value>Applicable to live connections only. The number of server connected users (Firebird 3+ only).</value>
+    <value>Applicable to live connections only. The number of server connected users (for Firebird port version 3+ only).</value>
   </data>
   <data name="PropertyDescriptionClientVersion" xml:space="preserve">
-    <value>The FirbirdSql.Data.FirebirdClient library version.</value>
+    <value>The database client library version. (For the Firebird port FirbirdSql.Data.FirebirdClient).</value>
   </data>
   <data name="PropertyDescriptionConnectionKey" xml:space="preserve">
     <value>The internal Server Explorer connection id for Server Explorer connections.</value>

@@ -6,6 +6,7 @@
 
 using System.Data;
 using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Sys;
 
 
 
@@ -14,7 +15,7 @@ namespace BlackbirdSql.Common.Model.Interfaces;
 
 public interface IBBatchExecutionHandler
 {
-	void Register(IDbConnection conn, IDbCommand command, QESQLBatch batch);
+	void Register(IDbConnection conn, IBsNativeDbStatementWrapper sqlStatement, QESQLBatch batch);
 
-	void UnRegister(IDbConnection conn, IDbCommand command, QESQLBatch batch);
+	void UnRegister(IDbConnection conn, IBsNativeDbStatementWrapper sqlStatement, QESQLBatch batch);
 }

@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Widgets;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Model;
-using BlackbirdSql.Core;
 // using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -391,9 +390,9 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine("/ * ");
 			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "USE {0}", missingIndexDatabase));
-			stringBuilder.AppendLine("GO");
+			stringBuilder.AppendLine(?Settings.EditorContextBatchSeparator);
 			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0}", missingIndexQueryText));
-			stringBuilder.AppendLine("GO");
+			stringBuilder.AppendLine(?Settings.EditorContextBatchSeparator);
 			stringBuilder.AppendLine("* /");
 			Cmd.OpenNewMiscellaneousSqlFile(new ServiceProvider(Controller.OleServiceProvider), stringBuilder.ToString());
 		}
@@ -732,7 +731,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 		Diag.ThrowIfNotOnUIThread();
 
 		IVsFontAndColorStorage vsFontAndColorStorage = (IVsFontAndColorStorage)GetService(typeof(SVsFontAndColorStorage));
-		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(Core.VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory, FontAndColorProviderExecutionPlan.Text, vsFontAndColorStorage, out var categoryFont, out var _, out var _, readFont: true))
+		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory, FontAndColorProviderExecutionPlan.Text, vsFontAndColorStorage, out var categoryFont, out var _, out var _, readFont: true))
 		{
 			return categoryFont;
 		}

@@ -5,8 +5,6 @@
 
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -29,26 +27,24 @@ public class SqlEditorToggleIntellisenseCommand : AbstractSqlEditorCommand
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-		if (IsDwEditorConnection())
+		if (IsDwEditorConnection)
 		{
-			if (auxDocData != null)
-				auxDocData.IntellisenseEnabled = false;
+			if (AuxDocData != null)
+				StoredAuxDocData.IntellisenseEnabled = false;
 
 			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 		}
 
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (auxDocData == null)
+		if (AuxDocData == null)
 			return VSConstants.S_OK;
 
-		if (!IsEditorExecuting())
+		if (!StoredIsExecuting)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 
-		if (auxDocData.IntellisenseEnabled.AsBool())
+		if (StoredAuxDocData.IntellisenseEnabled.AsBool())
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
@@ -56,9 +52,8 @@ public class SqlEditorToggleIntellisenseCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-		auxDocData.IntellisenseEnabled = !auxDocData.IntellisenseEnabled.AsBool();
+		if (AuxDocData != null)
+			StoredAuxDocData.IntellisenseEnabled = !StoredAuxDocData.IntellisenseEnabled.AsBool();
 
 		return VSConstants.S_OK;
 	}

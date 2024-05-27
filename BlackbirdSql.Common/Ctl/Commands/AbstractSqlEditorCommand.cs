@@ -2,12 +2,15 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorCommand
 
 using System;
+using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Controls.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -34,53 +37,184 @@ public abstract class AbstractSqlEditorCommand
 
 	protected bool _IsDwEditorConnection = false;
 	private IVsTextView _CodeEditorTextView = null;
+	private QueryManager _QryMgr = null;
+	private AuxilliaryDocData _AuxDocData = null;
+
+
+	protected AuxilliaryDocData AuxDocData
+	{
+		get
+		{
+			_AuxDocData = null;
+
+			if (EditorWindow == null)
+			{
+				_QryMgr = null;
+				return null;
+			}
+
+
+			_CodeEditorTextView ??= ((IBEditorWindowPane)EditorWindow).GetCodeEditorTextView();
+
+			if (_CodeEditorTextView != null)
+			{
+				IVsTextLines textLinesForTextView = GetTextLinesForTextView(_CodeEditorTextView);
+
+				if (textLinesForTextView != null)
+					_AuxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(textLinesForTextView);
+			}
+
+			if (_AuxDocData == null)
+				_QryMgr = null;
+
+			return _AuxDocData;
+		}
+	}
+
+
+	protected AuxilliaryDocData StoredAuxDocData => _AuxDocData;
+
 
 	public IBSqlEditorWindowPane EditorWindow { get; set; }
 
-	protected QueryManager QryMgr => GetAuxilliaryDocData()?.QryMgr;
 
-
-	public int QueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	protected bool IsDwEditorConnection
 	{
-		return HandleQueryStatus(ref prgCmd, pCmdText);
+		get
+		{
+			// Always false.
+			if (!_IsDwEditorConnection)
+				return false;
+
+			// Never happens.
+
+			if (AuxDocData == null)
+			{
+				_QryMgr = null;
+				return false;
+			}
+
+			IBSqlEditorStrategy strategy = StoredAuxDocData.Strategy;
+
+			if (strategy == null)
+				return false;
+
+			if (QryMgr == null)
+				return false;
+
+			// Alway EnEditorMode.Standard atm
+			switch (strategy.Mode)
+			{
+				case EnEditorMode.Standard:
+
+					if (StoredQryMgr.ConnectionStrategy != null)
+						return StoredQryMgr.ConnectionStrategy?.IsDwConnection ?? false;
+					break;
+				case EnEditorMode.CustomProject:
+				case EnEditorMode.CustomOnline:
+					return strategy.IsDw;
+			}
+
+			return false;
+		}
+
 	}
 
-	public int Exec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+
+	protected bool ExecutionLocked
 	{
-		return HandleExec(nCmdexecopt, pvaIn, pvaOut);
+		get
+		{
+			return (QryMgr == null || StoredQryMgr.IsExecuting);
+		}
 	}
+
+	protected bool CancellationLocked
+	{
+		get
+		{
+			return (QryMgr == null || StoredQryMgr.IsCancelling || !StoredQryMgr.IsExecuting);
+		}
+	}
+
+	protected bool StoredIsCancelling
+	{
+		get
+		{
+			_QryMgr = StoredAuxDocData?.QryMgr;
+
+			return (StoredQryMgr != null && StoredQryMgr.IsCancelling);
+		}
+	}
+
+
+	protected bool StoredIsExecuting
+	{
+		get
+		{
+			_QryMgr = StoredAuxDocData?.QryMgr;
+
+			return (StoredQryMgr == null || StoredQryMgr.IsExecuting);
+		}
+	}
+
+
+
+	protected QueryManager QryMgr
+	{
+		get
+		{
+			_QryMgr = AuxDocData?.QryMgr;
+			return _QryMgr;
+		}
+	}
+
+	protected QueryManager StoredQryMgr => _QryMgr;
+
+
+
 
 	/// <summary>
 	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
+	protected bool CanDisposeTransaction(string caption = null)
+	{
+		QueryManager qryMgr = _QryMgr ?? QryMgr;
+
+		if (!qryMgr.HasTransactions)
+			return true;
+
+
+		string message = ControlsResources.ErrTransactionsActive;
+
+		MessageCtl.ShowEx(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+
+		return false;
+	}
+
+
+
+
+public int QueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	{
+		return HandleQueryStatus(ref prgCmd, pCmdText);
+	}
+
+
+
+	public int Exec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	{
+		return HandleExec(nCmdexecopt, pvaIn, pvaOut);
+	}
+
+
+
 	protected abstract int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText);
 
 	protected abstract int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 
-
-	protected AuxilliaryDocData GetAuxilliaryDocData()
-	{
-		if (EditorWindow == null)
-			return null;
-
-		AuxilliaryDocData result = null;
-
-		_CodeEditorTextView ??= ((IBEditorWindowPane)EditorWindow).GetCodeEditorTextView();
-
-		if (_CodeEditorTextView != null)
-		{
-			IVsTextLines textLinesForTextView = GetTextLinesForTextView(_CodeEditorTextView);
-
-			if (textLinesForTextView != null)
-			{
-				result = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(textLinesForTextView);
-			}
-		}
-
-		return result;
-	}
 
 
 	public static IVsTextLines GetTextLinesForTextView(IVsTextView textView)
@@ -93,54 +227,5 @@ public abstract class AbstractSqlEditorCommand
 		return ppBuffer;
 	}
 
-	protected bool IsEditorExecuting()
-	{
-		QueryManager qryMgr = QryMgr;
-
-		if (qryMgr != null)
-			return qryMgr.IsExecuting;
-
-		return false;
-	}
-
-	protected bool IsDwEditorConnection()
-	{
-		// Always false.
-		if (!_IsDwEditorConnection)
-			return false;
-
-		// Never happens.
-
-		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(EditorWindow.DocData);
-
-		if (auxDocData != null)
-		{
-			IBSqlEditorStrategy strategy = auxDocData.Strategy;
-
-			// Alway EnEditorMode.Standard atm
-			switch (strategy.Mode)
-			{
-				case EnEditorMode.Standard:
-					QueryManager qryMgr = auxDocData.QryMgr;
-
-					if (qryMgr != null && qryMgr.ConnectionStrategy != null)
-					{
-						return qryMgr.ConnectionStrategy?.IsDwConnection ?? false;
-					}
-
-					break;
-				case EnEditorMode.CustomProject:
-				case EnEditorMode.CustomOnline:
-					if (strategy != null)
-					{
-						return strategy.IsDw;
-					}
-
-					break;
-			}
-		}
-
-		return false;
-	}
 
 }

@@ -4,11 +4,9 @@
 #endregion
 
 using System;
-using System.Data;
-using BlackbirdSql.Core;
-using BlackbirdSql.Common.Properties;
-using FirebirdSql.Data.FirebirdClient;
+using System.Data.Common;
 using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Common.Properties;
 
 
 
@@ -16,16 +14,17 @@ namespace BlackbirdSql.Common.Ctl;
 
 public sealed class DbCommandWrapper
 {
-	private readonly IDbCommand _Command;
+	private readonly object _Command;
 
 	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
 
-	public DbCommandWrapper(IDbCommand command)
+	public DbCommandWrapper(object command)
 	{
 		try
 		{
 			Cmd.CheckForNullReference(command, "command");
-			if (command is not FbCommand)
+
+			if (!IsSupportedCommandType(command))
 			{
 				InvalidOperationException ex = new(ControlsResources.InvalidCommandType);
 				throw ex;
@@ -42,18 +41,18 @@ public sealed class DbCommandWrapper
 
 
 	
-	public FbCommand GetAsSqlCommand()
+	public DbCommand GetAsSqlCommand()
 	{
-		
-		return (FbCommand)_Command;
+		return (DbCommand)_Command;
 	}
+
 
 	public void Dummy()
 	{
-		StatementCompletedEvent?.Invoke(this, new(0, false));
+		StatementCompletedEvent?.Invoke(this, new(0, 0, false));
 	}
 
-	public static bool IsSupportedCommand(IDbCommand command)
+	public static bool IsSupportedCommandType(object command)
 	{
 		if (command == null)
 		{
@@ -62,15 +61,13 @@ public sealed class DbCommandWrapper
 			throw ex;
 		}
 
-		bool result = command is FbCommand;
-
-		if (!result)
+		if(!DbNative.IsSupportedCommandType(command))
 		{
-			NotSupportedException ex = new("Invalid comman type: " + command.GetType().FullName);
+			NotSupportedException ex = new("Invalid command type: " + command.GetType().FullName);
 			Diag.Dug(ex);
 		}
 
-		return result;
+		return true;
 	}
 
 

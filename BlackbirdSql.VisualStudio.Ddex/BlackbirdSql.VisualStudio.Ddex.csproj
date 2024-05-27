@@ -249,6 +249,10 @@
       <Project>{7a8d1bc8-ad28-421c-9d95-1e316566bce6}</Project>
       <Name>BlackbirdSql.LanguageExtension</Name>
     </ProjectReference>
+    <ProjectReference Include="..\BlackbirdSql.Sys\BlackbirdSql.Sys.csproj">
+      <Project>{e480ef45-f7e3-4d3b-bc26-c6611ccf52a5}</Project>
+      <Name>BlackbirdSql.Sys</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\DataTools\TDataConnectionAdvancedDlg.Designer.cs">
@@ -526,7 +530,6 @@
     <Compile Include="Ctl\ComponentModel\VsPackageRegistrationAttribute.cs" />
     <Compile Include="Model\DslColumns.cs" />
     <Compile Include="Model\DslFunctionArguments.cs" />
-    <Compile Include="Model\DslFunctionArgumentsLegacy.cs" />
     <Compile Include="Model\DslIndexColumns.cs" />
     <Compile Include="Model\DslObjectTypes.cs" />
     <Compile Include="Model\DslProcedureParameters.cs" />

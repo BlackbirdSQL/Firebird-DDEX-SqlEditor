@@ -4,14 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 

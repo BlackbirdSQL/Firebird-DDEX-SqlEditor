@@ -41,7 +41,7 @@ public abstract class AbstractPersistentSettingsPage<TPage, T> : AbstractSetting
 
 			EditControlGotFocusEvent += _Model.OnEditControlGotFocus;
 			EditControlLostFocusEvent += _Model.OnEditControlLostFocus;
-			AutomationPropertyValueChangedEvent += _Model.OnAutomationPropertyValueChanged;
+			AutomatorPropertyValueChangedEvent += _Model.OnAutomatorPropertyValueChanged;
 		}
 		catch (Exception ex)
 		{
@@ -58,7 +58,7 @@ public abstract class AbstractPersistentSettingsPage<TPage, T> : AbstractSetting
 		{
 			EditControlGotFocusEvent -= _Model.OnEditControlGotFocus;
 			EditControlLostFocusEvent -= _Model.OnEditControlLostFocus;
-			AutomationPropertyValueChangedEvent -= _Model.OnAutomationPropertyValueChanged;
+			AutomatorPropertyValueChangedEvent -= _Model.OnAutomatorPropertyValueChanged;
 			_Model = null;
 		}
 

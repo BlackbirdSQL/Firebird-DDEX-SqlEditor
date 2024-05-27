@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -60,7 +59,7 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 	// =================================================================================
 
 
-	public CsbAgent Csa => ConnectionStringBuilder;
+	public Csb Csa => ConnectionStringBuilder;
 
 
 	/// <summary>
@@ -72,7 +71,7 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 		get
 		{
 			IEnumerable<Describer> describers = (ConnectionSource == EnConnectionSource.Application)
-				? CsbAgent.PublicMandatoryKeys : CsbAgent.MandatoryKeys;
+				? Csb.PublicMandatoryKeys : Csb.MandatoryKeys;
 
 			foreach (Describer describer in describers)
 			{

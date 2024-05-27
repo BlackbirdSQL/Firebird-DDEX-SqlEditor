@@ -441,6 +441,15 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		return true;
 	}
 
+	public virtual bool UpdateTabs(QESQLQueryDataEventArgs args)
+	{
+		/* 
+		await TaskScheduler.Default;
+		*/
+
+		return _TabbedEditorUI != null && _TabbedEditorUI.Tabs.Count > 0 && !_IsClosing;
+	}
+
 	public void LoadXamlPane(AbstractEditorTab xamlTab, bool asPrimary, bool showSplitter)
 	{
 		if (asPrimary)

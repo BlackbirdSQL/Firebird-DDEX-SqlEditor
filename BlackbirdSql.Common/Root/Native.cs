@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
-using System.Windows.Automation.Provider;
 using BlackbirdSql.Common.Ctl.Events;
 
 
@@ -123,6 +122,9 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 
 
+			// A private 'this' object lock
+			private readonly object _LockLocal = new object();
+
 			private int handleCount;
 
 
@@ -134,7 +136,7 @@ public abstract class Native : BlackbirdSql.Core.Native
 				}
 				bool flag = false;
 				int currentHandleCount = 0;
-				lock (this)
+				lock (_LockLocal)
 				{
 					handleCount++;
 					flag = NeedCollection();
@@ -153,10 +155,8 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 			public int GetHandleCount()
 			{
-				lock (this)
-				{
+				lock (_LockLocal)
 					return handleCount;
-				}
 			}
 
 			public bool NeedCollection()
@@ -185,7 +185,7 @@ public abstract class Native : BlackbirdSql.Core.Native
 					return handle;
 				}
 				int currentHandleCount = 0;
-				lock (this)
+				lock (_LockLocal)
 				{
 					handleCount--;
 					if (handleCount < 0)
@@ -868,10 +868,6 @@ public abstract class Native : BlackbirdSql.Core.Native
 	public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, int flags);
 
 
-
-	// UiaRaiseNotificationEvent
-	[DllImport("UIAutomationCore.dll", CharSet = CharSet.Unicode)]
-	public static extern int UiaRaiseNotificationEvent(IRawElementProviderSimple provider, EnNotificationKind notificationKind, EnNotificationProcessing notificationProcessing, string notificationText, string notificationId);
 
 
 	#endregion Static Methods

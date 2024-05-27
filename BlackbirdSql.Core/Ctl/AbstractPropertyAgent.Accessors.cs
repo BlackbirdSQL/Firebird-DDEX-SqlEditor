@@ -6,25 +6,22 @@ using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
-
-using FirebirdSql.Data.FirebirdClient;
-
+using BlackbirdSql.Sys;
 using Microsoft.Data.ConnectionUI;
 
-using static BlackbirdSql.Core.Ctl.CoreConstants;
+using static BlackbirdSql.SysConstants;
+
 
 
 namespace BlackbirdSql.Core;
+
 
 // =========================================================================================================
 //									AbstractPropertyAgent Class - Accessors
@@ -33,7 +30,7 @@ namespace BlackbirdSql.Core;
 /// The base class for all property based dispatcher and connection classes used in conjunction with
 /// PropertySet static classes.
 /// A conglomerate base class that supports dynamic addition of properties and parsing functionality for
-/// <see cref="DbConnectionStringBuilder"/>, <see cref="CsbAgent"/> and property strings as
+/// <see cref="DbConnectionStringBuilder"/>, <see cref="Csb"/> and property strings as
 /// well as support for the <see cref="IDisposable"/>, <see cref="ICustomTypeDescriptor"/>,
 /// <see cref="IDataConnectionProperties"/>, <see cref="IComparable{T}"/>, <see cref="IEquatable{T}"/>,
 /// <see cref="INotifyPropertyChanged"/>, <see cref="INotifyDataErrorInfo"/> and
@@ -311,9 +308,9 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	}
 
 
-	public FbServerType ServerType
+	public EnServerType ServerType
 	{
-		get { return (FbServerType)GetProperty("ServerType"); }
+		get { return (EnServerType)GetProperty("ServerType"); }
 		set { SetProperty("ServerType", value); }
 	}
 
@@ -346,7 +343,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 		_ParametersChanged = false;
 
-		_ConnectionStringBuilder ??= new CsbAgent();
+		_ConnectionStringBuilder ??= new Csb();
 		PopulateConnectionStringBuilder(_ConnectionStringBuilder, secure);
 
 		return _ConnectionStringBuilder;
@@ -365,7 +362,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (!IsComplete)
 			return (null, false);
 
-		CsbAgent csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(this);
+		Csb csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(this);
 		if (csa == null)
 			return (null, false);
 
@@ -386,7 +383,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	{
 		IBIconType iconType;
 
-		if (ServerType == FbServerType.Embedded)
+		if (ServerType == EnServerType.Embedded)
 			iconType = CoreIconsCollection.Instance.EmbeddedDatabase_32;
 		else
 			iconType = CoreIconsCollection.Instance.ClassicServer_32;
@@ -410,7 +407,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	{
 		EnEngineType serverEngine;
 
-		if (ServerType == FbServerType.Embedded)
+		if (ServerType == EnServerType.Embedded)
 			serverEngine = EnEngineType.EmbeddedDatabase;
 		else
 			serverEngine = EnEngineType.ClassicServer;
@@ -457,7 +454,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	{
 
 		bool opened = false;
-		Version version = new(typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
+		Version version = new(DbNative.ClientVersion);
 
 		if (version != null)
 			ClientVersion = version;
@@ -571,7 +568,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			return false;
 
 		// We will always store as string.
-		if (value == null || value == DBNull.Value)
+		if (Cmd.IsNullValue(value))
 			_AssignedConnectionProperties.Remove(name);
 		else if (value.GetType() == typeof(byte[]))
 			_AssignedConnectionProperties[name] = Encoding.Default.GetString((byte[])value);

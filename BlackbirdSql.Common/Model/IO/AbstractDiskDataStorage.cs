@@ -14,6 +14,7 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Common.Ctl.IO;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Common.Model.IO;
 
@@ -29,6 +30,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 
 	protected ArrayList _ColumnInfoArray;
 
+	IBsNativeDbStatementWrapper _SqlStatement;
 	protected StorageDataReader _StorageReader;
 
 	protected IBFileStreamWriter _FsWriter;
@@ -115,15 +117,18 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		}
 	}
 
-	public virtual void InitStorage(IDataReader storageReader)
+	public virtual void InitStorage(IBsNativeDbStatementWrapper sqlStatement, IDataReader storageReader)
 	{
 		if (storageReader == null)
 		{
 			throw new Exception(ControlsResources.ReaderCannotBeNull);
 		}
 
-		_StorageReader = new StorageDataReader(storageReader);
+		_SqlStatement = sqlStatement;
+		_StorageReader = new StorageDataReader(sqlStatement, storageReader);
+
 		_FileName = Path.GetTempFileName();
+
 		if (_FileName.Length == 0)
 		{
 			throw new Exception(ControlsResources.FailedToGetTempFileName);
@@ -139,11 +144,11 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		}
 	}
 
-	public virtual void AddToStorage(IDataReader storageReader)
+	public virtual void AddToStorage(IBsNativeDbStatementWrapper sqlStatement, IDataReader storageReader)
 	{
 		if (_StorageReader == null)
 		{
-			InitStorage(storageReader);
+			InitStorage(sqlStatement, storageReader);
 			return;
 		}
 		if (storageReader == null)
@@ -166,7 +171,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		{
 			throw new Exception(ControlsResources.CannotAddReaderWhenStoringData);
 		}
-		_StorageReader = new StorageDataReader(storageReader);
+		_StorageReader = new StorageDataReader(sqlStatement, storageReader);
 	}
 
 	public void StartStoringData()

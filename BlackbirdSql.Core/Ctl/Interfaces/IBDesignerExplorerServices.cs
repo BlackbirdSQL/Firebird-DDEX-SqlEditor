@@ -2,7 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.ISqlServerObjectExplorerService
 
 using System.Runtime.InteropServices;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Data.Services;
 
 

@@ -10,62 +10,26 @@ namespace BlackbirdSql.Core;
 //											SystemData Class
 //
 /// <summary>
-/// System wide and the current data provider (in this case Firebird) specific constants and statics
+/// System wide and the current data provider specific constants and statics.
 /// </summary>
 // =========================================================================================================
 public static class SystemData
 {
 
-	public const string Invariant = "FirebirdSql.Data.FirebirdClient";
-	public const string ProviderFactoryName = "FirebirdClient Data Provider";
-	public const string ProviderFactoryClassName = "FirebirdSql.Data.FirebirdClient.FirebirdClientFactory";
-	public const string ProviderFactoryDescription = ".NET Framework Data Provider for Firebird";
-
-	public const string EFProvider = "EntityFramework.Firebird";
-	public const string EFProviderServices = "EntityFramework.Firebird.FbProviderServices";
-	public const string EFConnectionFactory = "EntityFramework.Firebird.FbConnectionFactory";
-
-	public const string DataProviderName = "Firebird Server"; // Firebird
-
-	public const string UIContextName = "BlackbirdSql UIContext Autoload";
-
-	public static Type ProviderFactoryType = typeof(FirebirdSql.Data.FirebirdClient.FirebirdClientFactory);
-
-
-	/// <summary>
-	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).
-	/// </summary>
-	public static string ExternalUtilityConfigurationPath
-		= Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-		+ "\\flamerobin\\fr_databases.conf";
-
-
-
-
-
 	// ---------------------------------------------------------------------------------------------------------
 	#region Extension wide constants & statics - SystemData
 	// ---------------------------------------------------------------------------------------------------------
 
+	public const string UIContextName = "BlackbirdSql UIContext Autoload";
 
-	/// <summary>
-	/// The base protocol used by monikers
-	/// </summary>
-	public const string Protocol = "fbsql++";
-	public const string Scheme = Protocol + "://";
-	public const string Extension = ".fbsql";
 
 	public const char UnixFieldSeparator = '/';
 	public const char WinFieldSeparator = '\\';
 	public const char CompositeSeparator = '.';
 
 
-	public const string DatasetKeyFmt = "{0} ({1})";
-	public const string DatasetKeyAlternateFmt = "Database[\"{0} ({1})\"]";
-
 	public const string ServiceFolder = "ServerxExplorer";
 	public const string TempSqlFolder = "SqlTemporaryFiles";
-
 
 	public const GenericUriParserOptions UriParserOptions =
 		GenericUriParserOptions.AllowEmptyAuthority | GenericUriParserOptions.NoPort
@@ -115,10 +79,6 @@ public static class SystemData
 	/// </summary>
 	public const string DataSourceGuid = "2979569E-416D-4DD8-B06B-EBCB70DE7A4E";
 
-	/// <summary>
-	/// BlackbirdSql Output pane.
-	/// </summary>
-	public const string OutputPaneGuid = "9E2B946C-4D46-4067-ABEB-E181F3B3768E";
 
 	public const string PackageControllerGuid = "CF77D510-C1DB-44EA-85F5-8201089D6FAF";
 	public const string ProviderSchemaFactoryGuid = "9FDE2679-7080-4C88-A734-71AEC4CB099A";
@@ -148,7 +108,6 @@ public static class SystemData
 	// Mandated services for each service type that will be used by BlackbirdSql 
 	public const string MandatedSqlEditorFactoryGuid = EditorFactoryGuid;
 	// public const string MandatedSqlEditorFactoryGuid = VS.SqlEditorFactoryGuid;
-	public const string MandatedEventProviderGuid = VS.SqlEventProviderGuid;
 
 
 	#endregion Editor and Language Service Guids

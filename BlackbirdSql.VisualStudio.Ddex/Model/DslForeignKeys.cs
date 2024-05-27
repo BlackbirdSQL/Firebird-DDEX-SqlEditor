@@ -15,11 +15,10 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System;
 using System.Data;
 using System.Globalization;
-using System;
 using System.Text;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 

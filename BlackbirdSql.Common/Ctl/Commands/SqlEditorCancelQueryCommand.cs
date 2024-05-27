@@ -5,7 +5,6 @@
 
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model.QueryExecution;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -26,24 +25,19 @@ public class SqlEditorCancelQueryCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryManager qryMgr = QryMgr;
 
-		if (qryMgr != null && qryMgr.IsExecuting)
-		{
+		if (!CancellationLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-		}
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgr = QryMgr;
+		if (CancellationLocked)
+			return VSConstants.S_OK;
 
-		if (qryMgr != null && qryMgr.IsExecuting)
-		{
-			qryMgr.Cancel(bSync: false);
-		}
+		StoredQryMgr?.Cancel(synchronous: false);
 
 		return VSConstants.S_OK;
 	}

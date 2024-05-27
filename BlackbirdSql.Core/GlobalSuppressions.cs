@@ -13,5 +13,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Usage", "VSTHRD108:Assert thread affinity unconditionally")]
 [assembly: SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 [assembly: SuppressMessage("Style", "IDE1006:Naming Styles")]
+[assembly: SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 // [assembly: SuppressMessage("Usage", "VSTHRD110:Observe result of async calls")]
 // [assembly: SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]

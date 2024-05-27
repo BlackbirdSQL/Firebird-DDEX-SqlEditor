@@ -249,6 +249,9 @@
   <data name="ExceptionConnectionNull" xml:space="preserve">
     <value>Connection is null</value>
   </data>
+  <data name="ExceptionCreateBatchExecutionObject" xml:space="preserve">
+    <value>Unable to create batch execution object: {0}.</value>
+  </data>
   <data name="ExceptionDuplicateSingletonInstances" xml:space="preserve">
     <value>Singleton instance already exists. Attempt to create duplicate {0} instances.</value>
   </data>

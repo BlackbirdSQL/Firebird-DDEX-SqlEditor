@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Core.Ctl.Diagnostics;
 

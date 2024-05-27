@@ -3,16 +3,21 @@
 
 
 using BlackbirdSql.Common.Model.Enums;
+using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Common.Model.Interfaces;
 
 public interface IBCommandExecuter
 {
-	EnParserAction ProcessParsedBatchStatement(string str, int numberOfTimes);
+	EnParserAction ProcessParsedBatchStatement(IBsNativeDbStatementWrapper statement, int numberOfTimes);
 
 	EnParserAction Reset();
 
-	EnParserAction Ed(string batch, ref IBBatchSource pIBatchSource);
+	EnParserAction Ed(string batch, ref IBsNativeDbBatchParser pIBatchSource);
 
 	EnParserAction ExecuteShellCommand(string command);
 
@@ -20,7 +25,7 @@ public interface IBCommandExecuter
 
 	EnParserAction Exit(string batch, string exitBatch);
 
-	EnParserAction IncludeFileName(string fileName, ref IBBatchSource ppIBatchSource);
+	EnParserAction IncludeFileName(string fileName, ref IBsNativeDbBatchParser ppIBatchSource);
 
 	EnParserAction ServerList();
 
@@ -35,6 +40,8 @@ public interface IBCommandExecuter
 	EnParserAction PerfTrace(EnOutputDestination od, string fileName);
 
 	EnParserAction Connect(int timeout, string server, string user, string password);
+
+	void OnBatchDataLoaded(object sender, QESQLQueryDataEventArgs eventArgs);
 
 	EnParserAction OnError(EnErrorAction ea);
 

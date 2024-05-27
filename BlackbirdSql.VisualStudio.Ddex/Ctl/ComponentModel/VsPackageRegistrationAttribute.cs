@@ -7,12 +7,8 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-
 using BlackbirdSql.Core;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
-
-using FirebirdSql.Data.FirebirdClient;
-
 using Microsoft.VisualStudio.Shell;
 
 
@@ -42,7 +38,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 
 		try
 		{
-			Type providerFactoryClass = typeof(FirebirdClientFactory);
+			Type providerFactoryClass = BlackbirdSqlDdexExtension.DatabaseEngineSvc.ClientFactoryType_;
 			string invariantName = providerFactoryClass.Assembly.GetName().Name;
 			// string invariantFullName = providerFactoryClass.Assembly.FullName;
 
@@ -63,7 +59,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			// Add the Firebird data source (if not exists???)
 			key = context.CreateKey("DataSources\\" + dataSourceGuid);
 
-			key.SetValue(null, SystemData.DataProviderName);
+			key.SetValue(null, BlackbirdSqlDdexExtension.DatabaseEngineSvc.DataProviderName_);
 			key.SetValue("DefaultProvider", providerGuid);
 
 			// Add this package as a provider for the Firebird data source

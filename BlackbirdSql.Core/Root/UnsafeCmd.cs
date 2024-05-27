@@ -2,10 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using EnvDTE;
 using Microsoft;
 using Microsoft.VisualStudio;

@@ -5,5 +5,5 @@ namespace BlackbirdSql.Core.Ctl.Interfaces;
 
 public interface IBDataConnectionProperties
 {
-	CsbAgent Csa { get; }
+	Csb Csa { get; }
 }

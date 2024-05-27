@@ -7,14 +7,10 @@ using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Reflection;
-using System.Security.Policy;
 using System.Text;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio.Data.Core;
-
-using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 
@@ -164,7 +160,7 @@ public static class DbProviderFactoriesEx
 
 		}
 
-		// Diag.DebugTrace(String.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
+		// Diag.DebugTrace(String.Format("Adding inveriant in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
 		//	table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName));
 
 		table.Rows.Add(factoryName, factoryDescription, invariant, assemblyQualifiedName);
@@ -221,7 +217,7 @@ public static class DbProviderFactoriesEx
 			return false;
 
 
-		// Diag.DebugTrace(String.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
+		// Diag.DebugTrace(String.Format("Adding inveriant in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
 		//	table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName));
 
 		object @object = row[0] == DBNull.Value ? null : row[0];
@@ -303,8 +299,7 @@ public static class DbProviderFactoriesEx
 
 			string fmt;
 
-			DataTable providerTable = (DataTable)Reflect.InvokeMethod(typeof(DbProviderFactories), "GetProviderTable",
-				BindingFlags.Static | BindingFlags.NonPublic);
+			DataTable providerTable = (DataTable)Reflect.InvokeMethod(typeof(DbProviderFactories), "GetProviderTable");
 
 			while (stopwatch.ElapsedMilliseconds <= C_MaxLateGracePeriod && remainingProviders.Count > 0)
 			{
@@ -534,15 +529,14 @@ public static class DbProviderFactoriesEx
 			return false;
 		}
 
-		// Diag.DebugTrace(String.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}::{2}::{3}::{4}]",
+		// Diag.DebugTrace(String.Format("Adding invariant in DbProviderFactories section (Columns:{0}) [{1}::{2}::{3}::{4}]",
 		//	table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName));
 
 
 		table.Rows.Add(factoryName, factoryDescription, invariant, assemblyQualifiedName);
 		table.AcceptChanges();
 
-		return Reflect.SetFieldValue(typeof(DbProviderFactories), "_providerTable",
-			BindingFlags.Static | BindingFlags.NonPublic, table);
+		return Reflect.SetFieldValue(typeof(DbProviderFactories), "_providerTable", table);
 
 	}
 
@@ -582,8 +576,7 @@ public static class DbProviderFactoriesEx
 		table.Rows.Remove(row);
 		table.AcceptChanges();
 
-		return Reflect.SetFieldValue(typeof(DbProviderFactories), "_providerTable",
-			BindingFlags.Static | BindingFlags.NonPublic, table);
+		return Reflect.SetFieldValue(typeof(DbProviderFactories), "_providerTable", table);
 	}
 
 

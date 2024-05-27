@@ -8,11 +8,8 @@ using System.Globalization;
 using System.Resources;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Events;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.Common.Ctl.Config;
@@ -115,41 +112,42 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static EnStatusBarPosition EditorContextStatusBarPosition =>
 		(EnStatusBarPosition)GetSetting("EditorContextStatusBarPosition", EnStatusBarPosition.Bottom);
 	public static string EditorContextBatchSeparator =>
-		(string)GetSetting("EditorContextBatchSeparator", ModelConstants.C_DefaultBatchSeparator);
+		(string)GetSetting("EditorContextBatchSeparator", SysConstants.C_DefaultBatchSeparator);
 
 
 	// Editor ExecutionSettingsModel
 
-	public static bool EditorExecutionAutoDdlTts => (bool)GetSetting("EditorExecutionGeneralAutoDdlTts", true);
-	public static int EditorExecutionSetRowCount => (int)GetSetting("EditorExecutionGeneralSetRowCount", ModelConstants.C_DefaultSetRowCount);
-	public static EnBlobSubType EditorExecutionSetBlobDisplay => (EnBlobSubType)GetSetting("EditorExecutionGeneralSetBlobDisplay", ModelConstants.C_DefaultSetBlobDisplay);
+	public static bool EditorExecutionAsynchronous => (bool)GetSetting("EditorExecutionGeneralAsynchronous", false);
+	public static bool EditorExecutionTtsDefault => (bool)GetSetting("EditorExecutionGeneralTtsDefault", true);
+	public static int EditorExecutionSetRowCount => (int)GetSetting("EditorExecutionGeneralSetRowCount", SysConstants.C_DefaultSetRowCount);
+	public static EnBlobSubType EditorExecutionSetBlobDisplay => (EnBlobSubType)GetSetting("EditorExecutionGeneralSetBlobDisplay", SysConstants.C_DefaultSetBlobDisplay);
 	public static bool EditorExecutionDefaultOleScripting => (bool)GetSetting("EditorExecutionGeneralDefaultOleScripting",
-		ModelConstants.C_DefaultDefaultOleScripting);
-	public static int EditorExecutionTimeout => (int)GetSetting("EditorExecutionGeneralTimeout", ModelConstants.C_DefaultCommandTimeout);
+		SysConstants.C_DefaultDefaultOleScripting);
+	public static int EditorExecutionTimeout => (int)GetSetting("EditorExecutionGeneralExecutionTimeout", SysConstants.C_DefaultExecutionTimeout);
 
 	// Editor ExecutionAdvancedSettingsModel
-	public static bool EditorExecutionSetCount => (bool)GetSetting("EditorExecutionAdvancedSetCount", ModelConstants.C_DefaultSetCount);
-	public static bool EditorExecutionSetNoExec => (bool)GetSetting("EditorExecutionAdvancedSetNoExec", ModelConstants.C_DefaultSetPlanOnly);
-	public static bool EditorExecutionSetShowplanText => (bool)GetSetting("EditorExecutionAdvancedSetShowplanText", ModelConstants.C_DefaultSetPlan);
-	public static bool EditorExecutionSetPlanXml => (bool)GetSetting("EditorExecutionAdvancedSetPlanXml", ModelConstants.C_DefaultSetExplain);
+	public static bool EditorExecutionSetCount => (bool)GetSetting("EditorExecutionAdvancedSetCount", SysConstants.C_DefaultSetCount);
+	public static bool EditorExecutionSetNoExec => (bool)GetSetting("EditorExecutionAdvancedSetNoExec", SysConstants.C_DefaultSetPlanOnly);
+	public static bool EditorExecutionSetShowplanText => (bool)GetSetting("EditorExecutionAdvancedSetShowplanText", SysConstants.C_DefaultSetPlan);
+	public static bool EditorExecutionSetPlanXml => (bool)GetSetting("EditorExecutionAdvancedSetPlanXml", SysConstants.C_DefaultSetExplain);
 	public static bool EditorExecutionSetParseOnly =>
-		(bool)GetSetting("EditorExecutionAdvancedSetParseOnly", ModelConstants.C_DefaultSetParseOnly);
+		(bool)GetSetting("EditorExecutionAdvancedSetParseOnly", SysConstants.C_DefaultSetParseOnly);
 	public static bool EditorExecutionSetConcatenationNull =>
-		(bool)GetSetting("EditorExecutionAdvancedSetConcatenationNull", ModelConstants.C_DefaultSetConcatenationNull);
-	public static bool EditorExecutionSetBail => (bool)GetSetting("EditorExecutionAdvancedSetBail", ModelConstants.C_DefaultSetBail);
-	public static bool EditorExecutionSetPlanText => (bool)GetSetting("EditorExecutionAdvancedSetPlanText", ModelConstants.C_DefaultSetPlanText);
-	public static bool EditorExecutionSetStats => (bool)GetSetting("EditorExecutionAdvancedSetStats", ModelConstants.C_DefaultSetStats);
+		(bool)GetSetting("EditorExecutionAdvancedSetConcatenationNull", SysConstants.C_DefaultSetConcatenationNull);
+	public static bool EditorExecutionSetBail => (bool)GetSetting("EditorExecutionAdvancedSetBail", SysConstants.C_DefaultSetBail);
+	public static bool EditorExecutionSetPlanText => (bool)GetSetting("EditorExecutionAdvancedSetPlanText", SysConstants.C_DefaultSetPlanText);
+	public static bool EditorExecutionSetStats => (bool)GetSetting("EditorExecutionAdvancedSetStats", SysConstants.C_DefaultSetStats);
 	public static bool EditorExecutionSetStatisticsIO =>
-		(bool)GetSetting("EditorExecutionAdvancedSetStatisticsIO", ModelConstants.C_DefaultSetStatisticsIO);
-	public static bool EditorExecutionSetWarnings => (bool)GetSetting("EditorExecutionAdvancedSetWarnings", ModelConstants.C_DefaultSetWarnings);
+		(bool)GetSetting("EditorExecutionAdvancedSetStatisticsIO", SysConstants.C_DefaultSetStatisticsIO);
+	public static bool EditorExecutionSetWarnings => (bool)GetSetting("EditorExecutionAdvancedSetWarnings", SysConstants.C_DefaultSetWarnings);
 	public static IsolationLevel EditorExecutionIsolationLevel
-		=> (IsolationLevel)(int)GetSetting("EditorExecutionAdvancedIsolationLevel", ModelConstants.C_DefaultIsolationLevel);
+		=> (IsolationLevel)(int)GetSetting("EditorExecutionAdvancedIsolationLevel", SysConstants.C_DefaultIsolationLevel);
 	public static EnDeadlockPriority EditorExecutionDeadlockPriority
 		=> (EnDeadlockPriority)(int)GetSetting("EditorExecutionAdvancedIsolationLevel", EnDeadlockPriority.Low);
 	public static bool EditorExecutionDeadlockPriorityLow => EditorExecutionDeadlockPriority == EnDeadlockPriority.Low;
-	public static int EditorExecutionLockTimeout => (int)GetSetting("EditorExecutionAdvancedLockTimeout", ModelConstants.C_DefaultLockTimeout);
+	public static int EditorExecutionLockTimeout => (int)GetSetting("EditorExecutionAdvancedLockTimeout", SysConstants.C_DefaultLockTimeout);
 	public static int EditorExecutionCostLimit => (int)GetSetting("EditorExecutionAdvancedCostLimit", 0);
-	public static bool EditorExecutionSuppressHeaders => (bool)GetSetting("EditorExecutionAdvancedSuppressHeaders", ModelConstants.C_DefaultSuppressHeaders);
+	public static bool EditorExecutionSuppressHeaders => (bool)GetSetting("EditorExecutionAdvancedSuppressHeaders", SysConstants.C_DefaultSuppressHeaders);
 	public static bool EditorExecutionDisconnectOnCompletion => (bool)GetSetting("EditorExecutionAdvancedDisconnectOnCompletion", false);
 
 
@@ -170,9 +168,9 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static bool EditorResultsGridSeparateTabs => (bool)GetSetting("EditorResultsGridSeparateTabs", false);
 	public static bool EditorResultsGridSwitchToResults => (bool)GetSetting("EditorResultsGridSwitchToResults", false);
 	public static int EditorResultsGridMaxCharsPerColumnStd =>
-		(int)GetSetting("EditorResultsGridMaxCharsPerColumnStd", ModelConstants.C_DefaultGridMaxCharsPerColumnStd);
+		(int)GetSetting("EditorResultsGridMaxCharsPerColumnStd", SysConstants.C_DefaultGridMaxCharsPerColumnStd);
 	public static int EditorResultsGridMaxCharsPerColumnXml =>
-		(int)GetSetting("EditorResultsGridMaxCharsPerColumnXml", ModelConstants.C_DefaultGridMaxCharsPerColumnXml);
+		(int)GetSetting("EditorResultsGridMaxCharsPerColumnXml", SysConstants.C_DefaultGridMaxCharsPerColumnXml);
 
 
 
@@ -184,7 +182,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static bool EditorResultsTextAlignRightNumerics => (bool)GetSetting("EditorResultsTextAlignRightNumerics", false);
 	public static bool EditorResultsTextDiscardResults => (bool)GetSetting("EditorResultsTextDiscardResults", false);
 	public static int EditorResultsTextMaxCharsPerColumnStd =>
-		(int)GetSetting("EditorResultsTextMaxCharsPerColumnStd", ModelConstants.C_DefaultTextMaxCharsPerColumnStd);
+		(int)GetSetting("EditorResultsTextMaxCharsPerColumnStd", SysConstants.C_DefaultTextMaxCharsPerColumnStd);
 	public static bool EditorResultsTextSeparateTabs => (bool)GetSetting("EditorResultsTextSeparateTabs", false);
 	public static bool EditorResultsTextSwitchToResults => (bool)GetSetting("EditorResultsTextSwitchToResults", false);
 	public static EnSqlOutputFormat EditorResultsTextOutputFormat

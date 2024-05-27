@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
@@ -18,7 +17,6 @@ using Microsoft.VisualStudio.OLE.Interop;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
-[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 public class SqlEditorViewFilter : AbstractViewFilter
@@ -56,14 +54,8 @@ public class SqlEditorViewFilter : AbstractViewFilter
 				case EnCommandSet.CmdIdChangeConnection:
 					sqlEditorCommand = new SqlEditorChangeConnectionCommand(Editor);
 					break;
-				case EnCommandSet.CmdIdExecuteTtsQuery:
-					sqlEditorCommand = new SqlEditorExecuteTtsQueryCommand(Editor);
-					break;
 				case EnCommandSet.CmdIdExecuteQuery:
 					sqlEditorCommand = new SqlEditorExecuteQueryCommand(Editor);
-					break;
-				case EnCommandSet.CmdIdParseQuery:
-					sqlEditorCommand = new SqlEditorParseQueryCommand(Editor);
 					break;
 				case EnCommandSet.CmdIdCancelQuery:
 					sqlEditorCommand = new SqlEditorCancelQueryCommand(Editor);
@@ -110,12 +102,13 @@ public class SqlEditorViewFilter : AbstractViewFilter
 				case EnCommandSet.CmdIdTransactionCommit:
 					sqlEditorCommand = new SqlEditorTransactionCommitCommand(Editor);
 					break;
+				case EnCommandSet.CmdIdToggleTTS:
+					sqlEditorCommand = new SqlEditorToggleTTSCommand(Editor);
+					break;
 			}
 
 			if (sqlEditorCommand != null)
-			{
 				return sqlEditorCommand.Exec(nCmdexecopt, pvaIn, pvaOut);
-			}
 		}
 
 		return base.Exec(ref pguidCmdGroup, cmdId, nCmdexecopt, pvaIn, pvaOut);
@@ -145,14 +138,8 @@ public class SqlEditorViewFilter : AbstractViewFilter
 					case EnCommandSet.CmdIdChangeConnection:
 						sqlEditorCommand = new SqlEditorChangeConnectionCommand(Editor);
 						break;
-					case EnCommandSet.CmdIdExecuteTtsQuery:
-						sqlEditorCommand = new SqlEditorExecuteTtsQueryCommand(Editor);
-						break;
 					case EnCommandSet.CmdIdExecuteQuery:
 						sqlEditorCommand = new SqlEditorExecuteQueryCommand(Editor);
-						break;
-					case EnCommandSet.CmdIdParseQuery:
-						sqlEditorCommand = new SqlEditorParseQueryCommand(Editor);
 						break;
 					case EnCommandSet.CmdIdCancelQuery:
 						sqlEditorCommand = new SqlEditorCancelQueryCommand(Editor);
@@ -202,12 +189,13 @@ public class SqlEditorViewFilter : AbstractViewFilter
 					case EnCommandSet.CmdIdTransactionCommit:
 						sqlEditorCommand = new SqlEditorTransactionCommitCommand(Editor);
 						break;
+					case EnCommandSet.CmdIdToggleTTS:
+						sqlEditorCommand = new SqlEditorToggleTTSCommand(Editor);
+						break;
 				}
 
 				if (sqlEditorCommand != null)
-				{
 					hresult = sqlEditorCommand.QueryStatus(ref prgCmds[i], pCmdText);
-				}
 			}
 
 			if (pguidCmdGroup == VSConstants.CMDSETID.StandardCommandSet2K_guid)
@@ -291,9 +279,7 @@ public class SqlEditorViewFilter : AbstractViewFilter
 		}
 
 		if (!__(hresult))
-		{
 			hresult = base.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-		}
 
 		return hresult;
 	}

@@ -8,9 +8,7 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Config;
-using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -882,25 +880,33 @@ public class SplitViewSplitterStrip : ToolStrip
 	public SplitViewSplitterStrip(IServiceProvider serviceProvider)
 	{
 		SuspendLayout();
-		Name = "_tabStrip";
-		Text = ControlsResources.TabbedEditor_SplitStrip;
-		_lastOrientation = Orientation;
-		GripStyle = ToolStripGripStyle.Hidden;
-		CanOverflow = false;
-		AutoSize = false;
-		Size = new Size(20, 20);
-		foreach (ToolStripButton secondaryPaneButton in SecondaryPaneButtons)
+
+		try
 		{
-			Items.Add(secondaryPaneButton);
+			Name = "_tabStrip";
+			Text = ControlsResources.TabbedEditor_SplitStrip;
+			_lastOrientation = Orientation;
+			GripStyle = ToolStripGripStyle.Hidden;
+			CanOverflow = false;
+			AutoSize = false;
+			Size = new Size(20, 20);
+			foreach (ToolStripButton secondaryPaneButton in SecondaryPaneButtons)
+			{
+				Items.Add(secondaryPaneButton);
+			}
+			Items.Add(SwapButton);
+			foreach (ToolStripButton primaryPaneButton in PrimaryPaneButtons)
+			{
+				Items.Add(primaryPaneButton);
+			}
+			Items.AddRange(new ToolStripItem[3] { ChevronButton, HSplitButton, VSplitButton });
+			UpdateMinimumSize();
 		}
-		Items.Add(SwapButton);
-		foreach (ToolStripButton primaryPaneButton in PrimaryPaneButtons)
+		finally
 		{
-			Items.Add(primaryPaneButton);
+			ResumeLayout(performLayout: false);
 		}
-		Items.AddRange(new ToolStripItem[3] { ChevronButton, HSplitButton, VSplitButton });
-		UpdateMinimumSize();
-		ResumeLayout(performLayout: false);
+
 		Renderer = new SplitBarRenderer(serviceProvider);
 		Button1.DoubleClick += DesignerXamlButton_DoubleClick;
 		Button2.DoubleClick += DesignerXamlButton_DoubleClick;
@@ -1044,20 +1050,29 @@ public class SplitViewSplitterStrip : ToolStrip
 		toolStripButton.Tag = buttonGuid;
 		toolStripButton.Click += DesignerXamlButton_Click;
 		toolStripButton.DoubleClick += DesignerXamlButton_DoubleClick;
+
+
 		SuspendLayout();
-		int num = Items.IndexOf(primaryOrSecondaryButtons[^1]);
-		ToolStripItem[] array = new ToolStripItem[num + 1];
-		ToolStripItem[] array2 = new ToolStripItem[Items.Count - num - 1];
-		ToolStripItem[] array3 = new ToolStripItem[Items.Count];
-		Items.CopyTo(array3, 0);
-		Array.Copy(array3, array, num + 1);
-		Array.ConstrainedCopy(array3, num + 1, array2, 0, Items.Count - num - 1);
-		Items.Clear();
-		Items.AddRange(array);
-		Items.Add(toolStripButton);
-		Items.AddRange(array2);
-		primaryOrSecondaryButtons.Add(toolStripButton);
-		ResumeLayout();
+
+		try
+		{
+			int num = Items.IndexOf(primaryOrSecondaryButtons[^1]);
+			ToolStripItem[] array = new ToolStripItem[num + 1];
+			ToolStripItem[] array2 = new ToolStripItem[Items.Count - num - 1];
+			ToolStripItem[] array3 = new ToolStripItem[Items.Count];
+			Items.CopyTo(array3, 0);
+			Array.Copy(array3, array, num + 1);
+			Array.ConstrainedCopy(array3, num + 1, array2, 0, Items.Count - num - 1);
+			Items.Clear();
+			Items.AddRange(array);
+			Items.Add(toolStripButton);
+			Items.AddRange(array2);
+			primaryOrSecondaryButtons.Add(toolStripButton);
+		}
+		finally
+		{
+			ResumeLayout();
+		}
 	}
 
 	public ToolStripButton GetButtonInCyclicOrderFromChecked(bool forward)
@@ -1241,11 +1256,13 @@ public class SplitViewSplitterStrip : ToolStrip
 	protected override void OnInvalidated(InvalidateEventArgs e)
 	{
 		base.OnInvalidated(e);
+
 		if (_invalidating)
-		{
 			return;
-		}
+
+
 		_invalidating = true;
+
 		try
 		{
 			bool flag = false;
@@ -1404,8 +1421,11 @@ public class SplitViewSplitterStrip : ToolStrip
 			_primaryPaneButtons = null;
 			_secondaryPaneButtons = null;
 		}
+
 		base.OnLayout(e);
+
 		UpdateOrientation();
+
 		if (ShowSplitter)
 		{
 			if (PrimaryPaneButtons != null)
@@ -1450,6 +1470,7 @@ public class SplitViewSplitterStrip : ToolStrip
 		{
 			return;
 		}
+
 		foreach (ToolStripButton secondaryPaneButton2 in SecondaryPaneButtons)
 		{
 			Point location4 = Orientation == Orientation.Horizontal ? new Point(secondaryPaneButton2.Bounds.X, secondaryPaneButton2.Bounds.Y - 2) : new Point(secondaryPaneButton2.Bounds.X - 2, secondaryPaneButton2.Bounds.Y);

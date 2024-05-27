@@ -1,6 +1,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.LineScanner
 using Babel;
+using BlackbirdSql.LanguageExtension.Ctl.Config;
 using Microsoft.VisualStudio.Package;
 
 namespace BlackbirdSql.LanguageExtension.Ctl;
@@ -10,7 +11,10 @@ internal class LsbLineScanner : IScanner
 {
 	public LsbLineScanner()
 	{
-		_BabelScanner = new LineScanner();
+		_BabelScanner = new LineScanner
+		{
+			BatchSeparator = PersistentSettings.EditorContextBatchSeparator
+		};
 	}
 
 

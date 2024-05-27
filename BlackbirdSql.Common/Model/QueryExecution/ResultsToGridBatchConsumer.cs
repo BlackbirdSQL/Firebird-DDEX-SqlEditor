@@ -1,9 +1,8 @@
+using System;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
-using BlackbirdSql.Core;
-using System;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Model;
+
+
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
@@ -18,7 +17,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 		: base(resultsControl)
 	{
 		// Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.ResultsToGridBatchConsumer", "", null);
-		_MaxCharsPerColumn = ModelConstants.C_DefaultGridMaxCharsPerColumnStd;
+		_MaxCharsPerColumn = SysConstants.C_DefaultGridMaxCharsPerColumnStd;
 	}
 
 	public override void CleanupAfterFinishingExecution()

@@ -5,9 +5,8 @@
 
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.QueryExecution;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -31,36 +30,28 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		if (!IsEditorExecuting())
-		{
+
+		if (!ExecutionLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-		}
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-		if (auxDocData == null)
+		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
-		QueryManager qryMgr = auxDocData.QryMgr;
-		if (qryMgr != null && !qryMgr.IsExecuting)
-		{
-			try
-			{
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
-				auxDocData.EstimatedExecutionPlanEnabled = true;
+		if (!CanDisposeTransaction(ControlsResources.ErrExecutionPlanCaption))
+			return VSConstants.S_OK;
 
-				EditorWindow.ExecuteQuery(false);
-			}
-			finally
-			{
-				auxDocData.EstimatedExecutionPlanEnabled = false;
-			}
-		}
+
+		if (AuxDocData.TtsEnabled && QryMgr != null && StoredQryMgr.ConnectionStrategy != null)
+			StoredQryMgr.ConnectionStrategy.DisposeTransaction();
+
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
+		EditorWindow.ExecuteQuery(EnSqlExecutionType.PlanOnly);
+
 
 		return VSConstants.S_OK;
 	}

@@ -2,7 +2,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.SqlEditorTabBase
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
@@ -14,8 +13,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common.Controls.Tabs;
-
-[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 public abstract class AbstractSqlEditorTab : AbstractEditorTab
@@ -79,7 +76,7 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 				out IVsHierarchy ppHier, out uint pitemid, out ppunkDocData, out _);
 			___(hresult);
 
-			hresult = shellOpenDocumentSvc.GetStandardEditorFactory(Core.VS.dwReserved, ref pguidEditorType, null,
+			hresult = shellOpenDocumentSvc.GetStandardEditorFactory(VS.dwReserved, ref pguidEditorType, null,
 				ref rguidLogicalView, out string pbstrPhysicalView, out IVsEditorFactory ppEditorFactory);
 			___(hresult);
 

@@ -8,6 +8,7 @@ using System.Data.Common;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -42,7 +43,7 @@ public class TConnectionUIProperties : TConnectionProperties
 	{
 		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(csb, attributes);
 
-		CsbAgent.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
+		Csb.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
 
 		return descriptors;
 
@@ -57,7 +58,7 @@ public class TConnectionUIProperties : TConnectionProperties
 	{
 		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(csb);
 
-		CsbAgent.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
+		Csb.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
 
 		return descriptors;
 	}

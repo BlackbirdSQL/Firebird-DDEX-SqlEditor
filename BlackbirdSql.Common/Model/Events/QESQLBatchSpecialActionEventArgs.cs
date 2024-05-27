@@ -9,13 +9,13 @@ namespace BlackbirdSql.Common.Model.Events;
 
 public sealed class QESQLBatchSpecialActionEventArgs : EventArgs
 {
-	private readonly EnQESQLBatchSpecialAction m_action;
+	private readonly EnSqlSpecialActions m_action;
 
 	private readonly QESQLBatch m_batch;
 
 	private readonly IDataReader m_dr;
 
-	public EnQESQLBatchSpecialAction Action => m_action;
+	public EnSqlSpecialActions Action => m_action;
 
 	public QESQLBatch Batch => m_batch;
 
@@ -25,7 +25,7 @@ public sealed class QESQLBatchSpecialActionEventArgs : EventArgs
 	{
 	}
 
-	public QESQLBatchSpecialActionEventArgs(EnQESQLBatchSpecialAction action, QESQLBatch batch, IDataReader dr)
+	public QESQLBatchSpecialActionEventArgs(EnSqlSpecialActions action, QESQLBatch batch, IDataReader dr)
 	{
 		m_action = action;
 		m_batch = batch;

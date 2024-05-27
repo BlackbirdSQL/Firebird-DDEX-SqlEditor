@@ -5,8 +5,6 @@ using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Controls.Events;
-using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -539,7 +537,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			if (vsCodeWindow != null)
 			{
 				___(vsCodeWindow.GetBuffer(out var ppBuffer));
-				IVsTextManager vsTextManager = (IVsTextManager)serviceProvider.GetService(Core.VS.CLSID_TextManager);
+				IVsTextManager vsTextManager = (IVsTextManager)serviceProvider.GetService(VS.CLSID_TextManager);
 				if (lineNum > 0)
 				{
 					lineNum--;

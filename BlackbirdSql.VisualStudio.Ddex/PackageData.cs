@@ -33,8 +33,8 @@ static class PackageData
 	// ---------------------------------------------------------------------------------
 
 
-	public const string PackageControllerServiceName = "BlackbirdSql DDEX 2.0 Package Controller";
-	public const string ProviderObjectFactoryServiceName = "BlackbirdSql DDEX 2.0 Provider Object Factory";
+	public const string PackageControllerServiceName = "SBsPackageController";
+	public const string ProviderObjectFactoryServiceName = "SBsProviderObjectFactory";
 
 
 	// ---------------------------------------------------------------------------------

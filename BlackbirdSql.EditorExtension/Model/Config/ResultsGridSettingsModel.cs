@@ -4,17 +4,17 @@
 using System.ComponentModel;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
-using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 
 
 
 namespace BlackbirdSql.EditorExtension.Model.Config;
+
 
 // =========================================================================================================
 //										ResultsGridSettingsModel Class
@@ -147,7 +147,7 @@ public class ResultsGridSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDescription("OptionDescriptionResultsGridSeparateTabs")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]
 	[DefaultValue(false)]
-	[Automation, RefreshProperties(RefreshProperties.All)]
+	[Automator, RefreshProperties(RefreshProperties.All)]
 	public bool SeparateTabs { get; set; } = false;
 
 
@@ -157,20 +157,20 @@ public class ResultsGridSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDescription("OptionDescriptionResultsGridSwitchToResults")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(false)]
-	[Automation("SeparateTabs"), ReadOnly(true)]
+	[Automator("SeparateTabs"), ReadOnly(true)]
 	public bool SwitchToResults { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryGridULimits")]
 	[GlobalizedDisplayName("OptionDisplayResultsGridMaxXml")]
 	[GlobalizedDescription("OptionDescriptionResultsGridMaxXml")]
-	[DefaultValue(ModelConstants.C_DefaultGridMaxCharsPerColumnXml)]
-	public EnGlobalizedMegabytes MaxCharsPerColumnXml { get; set; } = (EnGlobalizedMegabytes)ModelConstants.C_DefaultGridMaxCharsPerColumnXml;
+	[DefaultValue(SysConstants.C_DefaultGridMaxCharsPerColumnXml)]
+	public EnGlobalizedMegabytes MaxCharsPerColumnXml { get; set; } = (EnGlobalizedMegabytes)SysConstants.C_DefaultGridMaxCharsPerColumnXml;
 
 	[GlobalizedCategory("OptionCategoryGridULimits")]
 	[GlobalizedDisplayName("OptionDisplayResultsGridMaxStd")]
 	[GlobalizedDescription("OptionDescriptionResultsGridMaxStd")]
-	[DefaultValue(ModelConstants.C_DefaultGridMaxCharsPerColumnStd)]
-	public EnGlobalizedKilobytes MaxCharsPerColumnStd { get; set; } = (EnGlobalizedKilobytes)ModelConstants.C_DefaultGridMaxCharsPerColumnStd;
+	[DefaultValue(SysConstants.C_DefaultGridMaxCharsPerColumnStd)]
+	public EnGlobalizedKilobytes MaxCharsPerColumnStd { get; set; } = (EnGlobalizedKilobytes)SysConstants.C_DefaultGridMaxCharsPerColumnStd;
 
 
 	#endregion Property Accessors

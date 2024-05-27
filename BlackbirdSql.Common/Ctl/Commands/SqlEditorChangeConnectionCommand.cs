@@ -4,13 +4,14 @@
 using System;
 using System.Data;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model.QueryExecution;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Common.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
 
+
 namespace BlackbirdSql.Common.Ctl.Commands;
+
 
 public class SqlEditorChangeConnectionCommand : AbstractSqlEditorCommand
 {
@@ -27,9 +28,7 @@ public class SqlEditorChangeConnectionCommand : AbstractSqlEditorCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		QueryManager qryMgr = QryMgr;
-
-		if (qryMgr != null && !qryMgr.IsExecuting && qryMgr.IsConnected)
+		if (!ExecutionLocked && StoredQryMgr != null && StoredQryMgr.IsConnected)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
@@ -37,23 +36,24 @@ public class SqlEditorChangeConnectionCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgr = QryMgr;
+		if (ExecutionLocked || StoredQryMgr == null || !StoredQryMgr.IsConnected)
+			return VSConstants.S_OK;
 
-		if (qryMgr != null && !qryMgr.IsExecuting && qryMgr.IsConnected)
+		if (!CanDisposeTransaction(ControlsResources.ErrModifyConnectionCaption))
+			return VSConstants.S_OK;
+
+		IDbConnection newConnection = null;
+
+		try
 		{
-			IDbConnection newConnection = null;
-
-			try
+			newConnection = StoredQryMgr.ConnectionStrategy.ChangeConnection(true);
+		}
+		finally
+		{
+			if (newConnection != null)
 			{
-				newConnection = qryMgr.ConnectionStrategy.ChangeConnection(tryOpenConnection: true);
-			}
-			finally
-			{
-				if (newConnection != null)
-				{
-					qryMgr.IsConnecting = true;
-					qryMgr.IsConnecting = false;
-				}
+				StoredQryMgr.IsConnecting = true;
+				StoredQryMgr.IsConnecting = false;
 			}
 		}
 

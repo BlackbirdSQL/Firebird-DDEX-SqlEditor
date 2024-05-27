@@ -15,13 +15,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-	  <NoWarn>1701;1702;CS0618</NoWarn>
-	  <DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
+		<NoWarn>1701;1702;CS0618</NoWarn>
+		<DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-	  <NoWarn>1701;1702;CS0618</NoWarn>
-	  <DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
+		<NoWarn>1701;1702;CS0618</NoWarn>
+		<DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -29,236 +29,190 @@
 	</Target>
 
 	<ItemGroup>
-	  <Compile Include="Controls\AdvancedInformationDialog.cs">
-		  <SubType>Form</SubType>
-	  </Compile>
-	  <Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
-	  <Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
-	  <Compile Include="Controls\Enums\EnAdvancedInfoType.cs" />
-	  <Compile Include="Controls\Interfaces\IBDataConnectionDlgHandler.cs" />
-	  <Compile Include="Controls\AdvancedMessageBox.cs">
-	    <SubType>Form</SubType>
-	  </Compile>
-	  <Compile Include="Controls\AdvancedMessageBox.Designer.cs">
-		  <DependentUpon>AdvancedMessageBox.cs</DependentUpon>
-	  </Compile>
-	  <Compile Include="Controls\MessageBoxParent.cs" />
-	  <Compile Include="Controls\Config\AbstruseSettingsPage.cs" />
-	  <Compile Include="Controls\Config\AbstractPersistentSettingsPage.cs" />
-	  <Compile Include="Controls\Config\AbstractTransientSettingsPage.cs" />
-	  <Compile Include="Controls\Enums\EnMessageBoxDefaultButton.cs" />
-	  <Compile Include="Controls\Enums\EnMessageBoxDialogResult.cs" />
-	  <Compile Include="Controls\Enums\EnMessageBoxOptions.cs" />
-	  <Compile Include="Controls\Enums\EnMessageBoxSymbol.cs" />
-	  <Compile Include="Controls\Enums\EnMessageBoxButtons.cs" />
-	  <Compile Include="Controls\MessageCtl.cs" />
-	  <Compile Include="Controls\FormHost.cs" />
-	  <Compile Include="Controls\Interfaces\IBDataConnectionDlg.cs" />
-	  <Compile Include="Controls\Events\AutomationPropertyValueChangedEventArgs.cs" />
-	  <Compile Include="Controls\Events\EditControlFocusEventArgs.cs" />
-	  <Compile Include="Controls\Interfaces\IBSettingsPage.cs" />
-	  <Compile Include="Controls\Interfaces\IBEditorWindowPane.cs" />
-	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
-	  <Compile Include="Controls\PrivacyConfirmationDialog.cs">
-		  <SubType>Form</SubType>
-	  </Compile>
-	  <Compile Include="Controls\AdvancedInformationDialog.Designer.cs">
-		  <DependentUpon>AdvancedInformationDialog.cs</DependentUpon>
-	  </Compile>
-	  <Compile Include="Controls\PrivacyConfirmationDialog.Designer.cs">
-		  <DependentUpon>PrivacyConfirmationDialog.cs</DependentUpon>
-	  </Compile>
-	  <Compile Include="Controls\Widgets\PrivateRenderer.cs" />
-	  <Compile Include="Controls\Widgets\WrappingCheckBox.cs" />
-	  <Compile Include="Ctl\AbstractGlobalsAgent.cs" />
-	  <Compile Include="AbstractPackageController.cs" />
-	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\AutomationAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\AdvancedDefaultValueAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\ParametersAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\LiteralRangeAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\MinMaxIncrementAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\AbstractBoolConverter.cs" />
-	  <Compile Include="Ctl\ComponentModel\DisplayOrderAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\GlobalizedVerbTextAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\AbstractUomConverter.cs" />
-	  <Compile Include="Ctl\ComponentModel\VsProvideOptionPageAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\VerbSite.cs" />
-	  <Compile Include="Ctl\AbstractRdtManager.cs" />
-	  <Compile Include="Ctl\Diagnostics\IBEnumerableDescribers.cs" />
-	  <Compile Include="Ctl\Diagnostics\SqlEtwProvider.cs" />
-	  <Compile Include="Ctl\Extensions\DbProviderFactoriesEx.cs" />
-	  <Compile Include="Ctl\Interfaces\IBModelPropertyWrapper.cs" />
-	  <Compile Include="Ctl\FbsqlStyleUriParser.cs" />
-	  <Compile Include="Ctl\Interfaces\IBDataConnectionProperties.cs" />
-	  <Compile Include="Model\AbstractRunningConnectionTable.cs" />
-	  <Compile Include="Ctl\Interfaces\IBAutomationConverter.cs" />
-	  <Compile Include="Ctl\Extensions\Index.cs" />
-	  <Compile Include="Ctl\Extensions\Range.cs" />
-	  <Compile Include="Ctl\Interfaces\IBEditConverter.cs" />
-	  <Compile Include="Model\Interfaces\IBSettingsModel.cs" />
-	  <Compile Include="Root\RdtManager.cs" />
-	  <Compile Include="Model\AbstruseRunningConnectionTable.cs" />
-	  <Compile Include="Model\Interfaces\IBRunningConnectionTable.cs" />
-	  <Compile Include="Root\RctManager.cs" />
-	  <Compile Include="Model\RunningConnectionTable.cs" />
-	  <Compile Include="Model\Enums\EnConnectionSource.cs" />
-	  <Compile Include="Model\Enums\EnLauncherPayloadLaunchState.cs" />
-	  <Compile Include="Model\Enums\EnNodeSystemType.cs" />
-	  <Compile Include="Model\Enums\EnModelTargetType.cs" />
-	  <Compile Include="Ctl\Enums\EnSqlOutputFormat.cs" />
-	  <Compile Include="Ctl\Enums\EnSqlOutputMode.cs" />
-	  <Compile Include="Ctl\Events\AutomationVerbEventHandler.cs" />
-	  <Compile Include="Ctl\Interfaces\IBTransientSettings.cs" />
-	  <Compile Include="Ctl\Interfaces\IBPersistentSettings.cs" />
-	  <Compile Include="Model\AbstractLinkageParser.cs" />
-	  <Compile Include="Model\BinaryEncoding.cs" />
-	  <Compile Include="Model\Charset.cs" />
-	  <Compile Include="Model\AbstractCsbAgent.cs" />
-	  <Compile Include="Model\Enums\EnBlobSubType.cs" />
-	  <Compile Include="Model\Enums\EnDbDataType.cs" />
-	  <Compile Include="Model\AbstruseLinkageParser.cs" />
-	  <Compile Include="Model\CsbAgent.cs" />
-	  <Compile Include="Model\Interfaces\IBProviderSchemaFactory.cs" />
-	  <Compile Include="Model\LinkageParser.cs" />
-	  <Compile Include="Model\TypeHelper.cs" />
-	  <Compile Include="Model\IscCodes.cs" />
-	  <Compile Include="Properties\AttributeResources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>AttributeResources.resx</DependentUpon>
-	  </Compile>
-	  <Compile Include="Ctl\CommandProviders\AbstractCommandProvider.cs" />
-	  <Compile Include="Ctl\CommandProviders\CommandProperties.cs" />
-	  <Compile Include="Ctl\ComponentModel\AbstractEnumConverter.cs" />
-	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedCategoryAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedDescriptionAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedDisplayNameAttribute.cs" />
-	  <Compile Include="Properties\ControlsResources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ControlsResources.resx</DependentUpon>
-	  </Compile>
-	  <Compile Include="Root\UnsafeCmd.cs" />
-	  <Compile Include="Root\ApcManager.cs" />
-	  <Compile Include="Ctl\EnumeratorDescribers.cs" />
-	  <Compile Include="Ctl\AbstractIconsCollection.cs" />
-	  <Compile Include="Ctl\AbstractPropertyAgent.Accessors.cs" />
-	  <Compile Include="Ctl\AbstractPropertyAgent.Events.cs" />
-	  <Compile Include="Ctl\AbstractPropertyAgent.Methods.cs" />
-	  <Compile Include="Ctl\CoreConstants.cs" />
-	  <Compile Include="Ctl\CoreIconsCollection.cs" />
-	  <Compile Include="Ctl\CorePropertySet.cs" />
-	  <Compile Include="Ctl\ComponentModel\DependsOnPropertyAttribute.cs" />
-	  <Compile Include="Ctl\Describer.cs" />
-	  <Compile Include="Ctl\DescriberDictionary.cs" />
-	  <Compile Include="Ctl\Enums\EnCommandSet.cs" />
-	  <Compile Include="Ctl\IconType.cs" />
-	  <Compile Include="Ctl\PropertySet.cs" />
-	  <Compile Include="Ctl\ComponentModel\ValueDependsOnCollectionAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\ValueDependsOnExternalPropertyAttribute.cs" />
-	  <Compile Include="Ctl\Enums\EnLogComplianceLevel.cs" />
-	  <Compile Include="Ctl\Enums\EnSqlTraceId.cs" />
-	  <Compile Include="Ctl\Enums\EnUiTraceId.cs" />
-	  <Compile Include="Ctl\Enums\EnWinEventTracingLevel.cs" />
-	  <Compile Include="Ctl\Diagnostics\EventProviderVersionTwo.cs" />
-	  <Compile Include="Ctl\Interfaces\IBTrace.cs" />
-	  <Compile Include="Ctl\Interfaces\IBSqlTraceTelemetryProvider.cs" />
-	  <Compile Include="Ctl\Diagnostics\LogObject.cs" />
-	  <Compile Include="Ctl\Diagnostics\SqlTracer.cs" />
-	  <Compile Include="Ctl\Diagnostics\Traceable.cs" />
-	  <Compile Include="Ctl\Diagnostics\AbstractTraceableBase.cs" />
-	  <Compile Include="Ctl\Diagnostics\Tracer.cs" />
-	  <Compile Include="Ctl\Diagnostics\UiTracer.cs" />
-	  <Compile Include="Ctl\Enums\EnEngineType.cs" />
-	  <Compile Include="Model\Enums\EnModelObjectType.cs" />
-	  <Compile Include="Ctl\Enums\EnNullEquality.cs" />
-	  <Compile Include="Ctl\Events\AdvancedPropertiesRequestedEventArgs.cs" />
-	  <Compile Include="Ctl\Events\CloseWindowEventArgs.cs" />
-	  <Compile Include="Ctl\Events\ConnectionsLoadedEventArgs.cs" />
-	  <Compile Include="Ctl\Events\CopyToClipboardEventArgs.cs" />
-	  <Compile Include="Ctl\Events\CopyToClipboardEventHandler.cs" />
-	  <Compile Include="Ctl\Events\ExceptionOccurredEventArgs.cs" />
-	  <Compile Include="Ctl\Events\MakeConnectionCompletedEventArgs.cs" />
-	  <Compile Include="Ctl\Events\MessageEventArgs.cs" />
-	  <Compile Include="Ctl\Events\SelectedConnectionChangedEventArgs.cs" />
-	  <Compile Include="Ctl\Extensions\ErmBindingSource.cs" />
-	  <Compile Include="Root\ExtensionMembers.cs" />
-	  <Compile Include="Ctl\Extensions\MutablePair.cs" />
-	  <Compile Include="Ctl\Extensions\PublicDictionary.cs" />
-	  <Compile Include="Ctl\Extensions\PublicKeyCollection.cs" />
-	  <Compile Include="Ctl\Extensions\PublicValueCollection.cs" />
-	  <Compile Include="Ctl\Extensions\XmlParser.cs" />
-	  <Compile Include="GlobalSuppressions.cs" />
-	  <Compile Include="Ctl\Interfaces\IBAsyncPackage.cs" />
-	  <Compile Include="Ctl\Interfaces\IBDesignerExplorerServices.cs" />
-	  <Compile Include="Ctl\Interfaces\IBEventsManager.cs" />
-	  <Compile Include="Ctl\Interfaces\IBGlobalsAgent.cs" />
-	  <Compile Include="Ctl\Interfaces\IBIconsCollection.cs" />
-	  <Compile Include="Ctl\Interfaces\IBIconType.cs" />
-	  <Compile Include="Ctl\Interfaces\IBSettingsModelPropertyWrapper.cs" />
-	  <Compile Include="Ctl\Interfaces\IBPackageController.cs" />
-	  <Compile Include="Ctl\Interfaces\IBPropertyAgent.cs" />
-	  <Compile Include="Ctl\Interfaces\IBStandardMetadata.cs" />
-	  <Compile Include="Ctl\Interfaces\IBTaskHandlerClient.cs" />
-	  <Compile Include="Model\AbstractModelPropertyAgent.cs" />
-	  <Compile Include="Model\ModelConstants.cs" />
-	  <Compile Include="Model\ModelIconsCollection.cs" />
-	  <Compile Include="Model\ModelPropertySet.cs" />
-	  <Compile Include="Model\Moniker.cs" />
-	  <Compile Include="Model\ConnectionPropertyAgent.cs" />
-	  <Compile Include="Model\Config\AbstractSettingsModel.cs" />
-	  <Compile Include="Controls\Config\AbstractSettingsPage.cs" />
-	  <Compile Include="Ctl\Enums\EnNativeSettingsType.cs" />
-	  <Compile Include="Ctl\Config\PropertyWrapper.cs" />
-	  <Compile Include="Ctl\ComponentModel\OverrideCollectionNameAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\OverrideDataTypeAttribute.cs" />
-	  <Compile Include="Ctl\ComponentModel\OverridePropertyNameAttribute.cs" />
-	  <Compile Include="Ctl\Enums\EnSettingDataType.cs" />
-	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
-	  <Compile Include="AbstractCorePackage.cs" />
-	  <Compile Include="AbstractEventsManager.cs" />
-	  <Compile Include="Ctl\GlobalsAgent.cs" />
-	  <Compile Include="Ctl\AbstractHostess.cs" />
-	  <Compile Include="Ctl\Config\PersistentSettings.cs" />
-	  <Compile Include="Ctl\Events\PropagateSettingsEventArgs.cs" />
-	  <Compile Include="Ctl\HashLog.cs" />
-	  <Compile Include="Ctl\Hostess.cs" />
-	  <Compile Include="Root\Cmd.cs" />
-	  <Compile Include="Root\Diag.cs" />
-	  <Compile Include="Ctl\HashHelpersEx.cs" />
-	  <Compile Include="Root\Native.cs" />
-	  <Compile Include="Root\Reflect.cs" />
-	  <Compile Include="Root\StringUtils.cs" />
-	  <Compile Include="Root\UnsafeNative.cs" />
-	  <Compile Include="Root\VS.cs" />
-	  <Compile Include="Ctl\Extensions\PublicDictionaryEnumerator.cs" />
-	  <Compile Include="SystemData.cs" />
+		<Compile Include="Controls\AdvancedInformationDialog.cs">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
+		<Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
+		<Compile Include="Controls\Enums\EnAdvancedInfoType.cs" />
+		<Compile Include="Controls\Interfaces\IBDataConnectionDlgHandler.cs" />
+		<Compile Include="Controls\AdvancedMessageBox.cs">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Include="Controls\AdvancedMessageBox.Designer.cs">
+			<DependentUpon>AdvancedMessageBox.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Controls\MessageBoxParent.cs" />
+		<Compile Include="Controls\Config\AbstruseSettingsPage.cs" />
+		<Compile Include="Controls\Config\AbstractPersistentSettingsPage.cs" />
+		<Compile Include="Controls\Config\AbstractTransientSettingsPage.cs" />
+		<Compile Include="Controls\Enums\EnMessageBoxDefaultButton.cs" />
+		<Compile Include="Controls\Enums\EnMessageBoxDialogResult.cs" />
+		<Compile Include="Controls\Enums\EnMessageBoxOptions.cs" />
+		<Compile Include="Controls\Enums\EnMessageBoxSymbol.cs" />
+		<Compile Include="Controls\Enums\EnMessageBoxButtons.cs" />
+		<Compile Include="Controls\MessageCtl.cs" />
+		<Compile Include="Controls\FormHost.cs" />
+		<Compile Include="Controls\Interfaces\IBDataConnectionDlg.cs" />
+		<Compile Include="Controls\Interfaces\IBSettingsPage.cs" />
+		<Compile Include="Controls\Interfaces\IBEditorWindowPane.cs" />
+		<Compile Include="Controls\LinkageParserTaskHandler.cs" />
+		<Compile Include="Controls\PrivacyConfirmationDialog.cs">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Include="Controls\AdvancedInformationDialog.Designer.cs">
+			<DependentUpon>AdvancedInformationDialog.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Controls\PrivacyConfirmationDialog.Designer.cs">
+			<DependentUpon>PrivacyConfirmationDialog.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Controls\Widgets\PrivateRenderer.cs" />
+		<Compile Include="Controls\Widgets\WrappingCheckBox.cs" />
+		<Compile Include="Ctl\AbstractGlobalsAgent.cs" />
+		<Compile Include="AbstractPackageController.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\AutomatorAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\AdvancedDefaultValueAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\ParametersAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\LiteralRangeAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\MinMaxIncrementAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractBoolConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\DisplayOrderAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedVerbTextAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractUomConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\VsProvideOptionPageAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\VerbSite.cs" />
+		<Compile Include="Ctl\AbstractRdtManager.cs" />
+		<Compile Include="Model\Exceptions\SqlException.cs" />
+		<Compile Include="Model\Enums\EnScriptExecutionResult.cs" />
+		<Compile Include="Ctl\Extensions\DbProviderFactoriesEx.cs" />
+		<Compile Include="Ctl\SqlStyleUriParser.cs" />
+		<Compile Include="Ctl\Interfaces\IBDataConnectionProperties.cs" />
+		<Compile Include="Model\AbstractRunningConnectionTable.cs" />
+		<Compile Include="Ctl\Interfaces\IBAutomatorConverter.cs" />
+		<Compile Include="Ctl\Interfaces\IBEditConverter.cs" />
+		<Compile Include="Model\Interfaces\IBDataReaderHandler.cs" />
+		<Compile Include="Root\DbNativeExtensionMembers.cs" />
+		<Compile Include="Root\RdtManager.cs" />
+		<Compile Include="Model\AbstruseRunningConnectionTable.cs" />
+		<Compile Include="Model\Interfaces\IBRunningConnectionTable.cs" />
+		<Compile Include="Root\RctManager.cs" />
+		<Compile Include="Model\RunningConnectionTable.cs" />
+		<Compile Include="Model\Enums\EnLauncherPayloadLaunchState.cs" />
+		<Compile Include="Ctl\Enums\EnSqlOutputFormat.cs" />
+		<Compile Include="Ctl\Enums\EnSqlOutputMode.cs" />
+		<Compile Include="Ctl\Interfaces\IBTransientSettings.cs" />
+		<Compile Include="Model\AbstractLinkageParser.cs" />
+		<Compile Include="Model\AbstractCsb.cs" />
+		<Compile Include="Model\AbstruseLinkageParser.cs" />
+		<Compile Include="Model\Csb.cs" />
+		<Compile Include="Model\Interfaces\IBProviderSchemaFactory.cs" />
+		<Compile Include="Model\LinkageParser.cs" />
+		<Compile Include="Properties\AttributeResources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>AttributeResources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Ctl\CommandProviders\AbstractCommandProvider.cs" />
+		<Compile Include="Ctl\CommandProviders\CommandProperties.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractEnumConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedCategoryAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedDescriptionAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedDisplayNameAttribute.cs" />
+		<Compile Include="Properties\ControlsResources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ControlsResources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Root\UnsafeCmd.cs" />
+		<Compile Include="Root\ApcManager.cs" />
+		<Compile Include="Ctl\AbstractIconsCollection.cs" />
+		<Compile Include="Ctl\AbstractPropertyAgent.Accessors.cs" />
+		<Compile Include="Ctl\AbstractPropertyAgent.Events.cs" />
+		<Compile Include="Ctl\AbstractPropertyAgent.Methods.cs" />
+		<Compile Include="Ctl\CoreIconsCollection.cs" />
+		<Compile Include="Ctl\CorePropertySet.cs" />
+		<Compile Include="Ctl\ComponentModel\DependsOnPropertyAttribute.cs" />
+		<Compile Include="Ctl\Enums\EnCommandSet.cs" />
+		<Compile Include="Ctl\IconType.cs" />
+		<Compile Include="Ctl\PropertySet.cs" />
+		<Compile Include="Ctl\ComponentModel\ValueDependsOnCollectionAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\ValueDependsOnExternalPropertyAttribute.cs" />
+		<Compile Include="Ctl\Enums\EnUiTraceId.cs" />
+		<Compile Include="Ctl\Diagnostics\Traceable.cs" />
+		<Compile Include="Ctl\Diagnostics\AbstractTraceableBase.cs" />
+		<Compile Include="Ctl\Diagnostics\UiTracer.cs" />
+		<Compile Include="Ctl\Events\AdvancedPropertiesRequestedEventArgs.cs" />
+		<Compile Include="Ctl\Events\CloseWindowEventArgs.cs" />
+		<Compile Include="Ctl\Events\ConnectionsLoadedEventArgs.cs" />
+		<Compile Include="Ctl\Events\CopyToClipboardEventArgs.cs" />
+		<Compile Include="Ctl\Events\CopyToClipboardEventHandler.cs" />
+		<Compile Include="Ctl\Events\ExceptionOccurredEventArgs.cs" />
+		<Compile Include="Ctl\Events\MakeConnectionCompletedEventArgs.cs" />
+		<Compile Include="Ctl\Events\MessageEventArgs.cs" />
+		<Compile Include="Ctl\Events\SelectedConnectionChangedEventArgs.cs" />
+		<Compile Include="Root\ExtensionMembers.cs" />
+		<Compile Include="Ctl\Extensions\XmlParser.cs" />
+		<Compile Include="GlobalSuppressions.cs" />
+		<Compile Include="Ctl\Interfaces\IBAsyncPackage.cs" />
+		<Compile Include="Ctl\Interfaces\IBDesignerExplorerServices.cs" />
+		<Compile Include="Ctl\Interfaces\IBEventsManager.cs" />
+		<Compile Include="Ctl\Interfaces\IBGlobalsAgent.cs" />
+		<Compile Include="Ctl\Interfaces\IBIconsCollection.cs" />
+		<Compile Include="Ctl\Interfaces\IBSettingsModelPropertyWrapper.cs" />
+		<Compile Include="Ctl\Interfaces\IBPackageController.cs" />
+		<Compile Include="Ctl\Interfaces\IBPropertyAgent.cs" />
+		<Compile Include="Ctl\Interfaces\IBStandardMetadata.cs" />
+		<Compile Include="Model\AbstractModelPropertyAgent.cs" />
+		<Compile Include="Model\ModelIconsCollection.cs" />
+		<Compile Include="Model\ModelPropertySet.cs" />
+		<Compile Include="Model\Moniker.cs" />
+		<Compile Include="Model\ConnectionPropertyAgent.cs" />
+		<Compile Include="Model\Config\AbstractSettingsModel.cs" />
+		<Compile Include="Controls\Config\AbstractSettingsPage.cs" />
+		<Compile Include="Ctl\Enums\EnNativeSettingsType.cs" />
+		<Compile Include="Ctl\Config\PropertyWrapper.cs" />
+		<Compile Include="Ctl\ComponentModel\OverrideCollectionNameAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\OverrideDataTypeAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\OverridePropertyNameAttribute.cs" />
+		<Compile Include="Ctl\Enums\EnSettingDataType.cs" />
+		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
+		<Compile Include="AbstractCorePackage.cs" />
+		<Compile Include="AbstractEventsManager.cs" />
+		<Compile Include="Ctl\GlobalsAgent.cs" />
+		<Compile Include="Ctl\AbstractHostess.cs" />
+		<Compile Include="Ctl\Config\PersistentSettings.cs" />
+		<Compile Include="Ctl\Hostess.cs" />
+		<Compile Include="Root\Cmd.cs" />
+		<Compile Include="Root\Native.cs" />
+		<Compile Include="Root\StringUtils.cs" />
+		<Compile Include="Root\UnsafeNative.cs" />
+		<Compile Include="SystemData.cs" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Content Include="blackbirdsql.ico" />
+		<Content Include="blackbirdsql.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <EmbeddedResource Include="Controls\AdvancedInformationDialog.resx">
-		  <DependentUpon>AdvancedInformationDialog.cs</DependentUpon>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Controls\AdvancedMessageBox.resx">
-		  <DependentUpon>AdvancedMessageBox.cs</DependentUpon>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Controls\PrivacyConfirmationDialog.resx">
-		  <DependentUpon>PrivacyConfirmationDialog.cs</DependentUpon>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Properties\AttributeResources.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Properties\ControlsResources.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
+		<EmbeddedResource Include="Controls\AdvancedInformationDialog.resx">
+			<DependentUpon>AdvancedInformationDialog.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Controls\AdvancedMessageBox.resx">
+			<DependentUpon>AdvancedMessageBox.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Controls\PrivacyConfirmationDialog.resx">
+			<DependentUpon>PrivacyConfirmationDialog.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\AttributeResources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\ControlsResources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
 		<Compile Include="Properties\Resources.Designer.cs">
 			<AutoGen>True</AutoGen>
 			<DesignTime>True</DesignTime>
@@ -270,24 +224,25 @@
 		</EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
-	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
-	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.8.37222" />
+		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.5.33428.388" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\BlackbirdDsl\BlackbirdDsl.vcxproj">
-	    <Private>True</Private>
-	  </ProjectReference>
+		<ProjectReference Include="..\BlackbirdDsl\BlackbirdDsl.vcxproj">
+			<Private>True</Private>
+		</ProjectReference>
+		<ProjectReference Include="..\BlackbirdSql.Data\BlackbirdSql.Data.csproj" />
+		<ProjectReference Include="..\BlackbirdSql.Sys\BlackbirdSql.Sys.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="PresentationFramework" />
-	  <Reference Include="System.ComponentModel.DataAnnotations" />
-	  <Reference Include="System.Runtime.Caching" />
-	  <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
-	  <Reference Include="UIAutomationProvider" />
-	  <Reference Include="UIAutomationTypes" />
+		<Reference Include="PresentationFramework" />
+		<Reference Include="System.ComponentModel.DataAnnotations" />
+		<Reference Include="System.Runtime.Caching" />
+		<Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+		<Reference Include="UIAutomationProvider" />
+		<Reference Include="UIAutomationTypes" />
 	</ItemGroup>
 
 

@@ -16,10 +16,7 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Model;
-using FirebirdSql.Data.FirebirdClient;
-using FirebirdSql.Data.Isql;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -29,7 +26,7 @@ namespace BlackbirdSql.Common.Model;
 
 public abstract class AbstractConnectionStrategy : IDisposable
 {
-	protected CsbAgent _Csa = null;
+	protected Csb _Csa = null;
 	protected long _Stamp = -1;
 	protected long _ConnectionStamp = -1;
 	protected string _LastDatasetKey = null;
@@ -94,11 +91,11 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				// connection's connection string.
 				string connectionString = RctManager.UpdateConnectionFromRegistration(_Connection);
 
-				CsbAgent csaCurrent = new(connectionString, false);
-				CsbAgent csaRegistered = RctManager.CloneRegistered(_ConnectionInfo);
+				Csb csaCurrent = new(connectionString, false);
+				Csb csaRegistered = RctManager.CloneRegistered(_ConnectionInfo);
 
 				// Compare the current connection with the registered connection.
-				if (CsbAgent.AreEquivalent(csaRegistered, csaCurrent, CsbAgent.DescriberKeys))
+				if (Csb.AreEquivalent(csaRegistered, csaCurrent, Csb.DescriberKeys))
 				{
 					_ConnectionStamp = RctManager.Stamp;
 					return _Connection;
@@ -109,7 +106,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 				ConnectionPropertyAgent connectionInfo = new();
 				connectionInfo.Parse(csaRegistered.ConnectionString);
-				IDbConnection connection = new FbConnection(csaRegistered.ConnectionString);
+				IDbConnection connection = DbNative.CreateDbConnection(csaRegistered.ConnectionString);
 
 				if (_Connection.State == ConnectionState.Open)
 					connection.Open();
@@ -127,6 +124,17 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
+				if (_Transaction != null)
+				{
+					bool transactionCompleted = _Connection == null || _Transaction.Completed();
+
+					if (transactionCompleted)
+					{
+						_Transaction.Dispose();
+						_Transaction = null;
+					}
+				}
+
 				return _Transaction;
 			}
 		}
@@ -159,13 +167,13 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
-				CsbAgent csa;
+				Csb csa;
 
 				if (Connection != null)
 				{
 					csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(Connection);
 					return csa == null
-						? CoreConstants.C_DefaultExDatasetId
+						? SysConstants.C_DefaultExDatasetId
 						: (string.IsNullOrWhiteSpace(csa.DatasetId)
 							? csa.Dataset : csa.DatasetId);
 				}
@@ -174,7 +182,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				{
 					csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(ConnectionInfo);
 					return csa == null
-						? CoreConstants.C_DefaultExDatasetId
+						? SysConstants.C_DefaultExDatasetId
 						: (string.IsNullOrWhiteSpace(csa.DatasetId)
 							? csa.Dataset : csa.DatasetId);
 				}
@@ -231,6 +239,33 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 	}
 
+
+	public void BeginTransaction(IsolationLevel isolationLevel)
+	{
+		if (Transaction != null)
+			return;
+
+		Transaction = Connection.BeginTransaction(isolationLevel);
+	}
+
+	public void CommitTransaction()
+	{
+		Transaction?.Commit();
+	}
+
+	public void RollbackTransaction()
+	{
+		Transaction?.Rollback();
+	}
+
+
+	public void DisposeTransaction()
+	{
+		_Transaction?.Dispose();
+		_Transaction = null;
+	}
+
+
 	protected void SetDbConnection(IDbConnection value)
 	{
 		lock (_LockObject)
@@ -247,7 +282,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			{
 				if (_Connection.State != ConnectionState.Closed)
 					_Connection.Close();
-
+				DisposeTransaction();
 				_Connection.Dispose();
 			}
 
@@ -255,7 +290,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 			if (_Connection != null)
 			{
-				CsbAgent csa = RctManager.CloneRegistered(_Connection);
+				Csb csa = RctManager.CloneRegistered(_Connection);
 				if (csa == null)
 					return;
 
@@ -307,55 +342,37 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	public virtual void ApplyConnectionOptions(IDbConnection connection, IBEditorTransientSettings s)
 	{
 
+		/*
+
 		lock (_LockObject)
 		{
-			FbConnection conn = (FbConnection)connection;
 
 			// Tracer.Trace(typeof(SqlConnectionStrategy), "ApplyConnectionOptions()", "starting");
 
-			FbScript script = s.CommandBuilder(s.EditorExecutionSetRowCount.SqlCmd(), s.EditorExecutionSetBlobDisplay.SqlCmd(),
+			List<string> statements = [s.EditorExecutionSetRowCount.SqlCmd(), s.EditorExecutionSetBlobDisplay.SqlCmd(),
 				s.EditorExecutionSetCount.SqlCmd(), s.EditorExecutionLockTimeout.SqlCmd(), s.EditorExecutionSetBail.SqlCmd(),
 				s.EditorExecutionSuppressHeaders.SqlCmd(), s.EditorExecutionSetNoExec.SqlCmd(), s.EditorExecutionSetStats.SqlCmd(),
-				s.EditorExecutionSetWarnings.SqlCmd());
+				s.EditorExecutionSetWarnings.SqlCmd()];
 
 
 
-			FbBatchExecution fbe = null;
+			object fbe = null;
 
 			try
 			{
-				fbe = new FbBatchExecution(conn);
-				script.UnknownStatement += OnUnknownStatement;
+				fbe = DbNative.CreateBatchExecutionObject(connection, statements);
 
-				// None of these isql commands are supported by the Firebird client so disabled until they are.
-				// script.Parse();
-				// fbe.AppendSqlStatements(script);
-				// fbe.Execute();
+				// DbNative.ExecuteBatch(connection, fbe, true);
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, script.ToString());
-				StringBuilder sb = new StringBuilder(100);
-				sb.AppendFormat(ControlsResources.UnableToApplyConnectionSettings, ex.Message);
-				MessageCtl.ShowEx(sb.ToString(), string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			}
-			finally
-			{
-				if (fbe != null)
-				{
-					// fbe.Dispose();
-					fbe = null;
-				}
+				Diag.Dug(ex);
+				MessageCtl.ShowEx(ex, "Failed to execute batch", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
 
-	}
+		*/
 
-	private void OnUnknownStatement(object sender, UnknownStatementEventArgs e)
-	{
-		// e.Ignore = true;
-		DataException ex = new($"Firebird unrecognised statement has been ignored: {e.Statement.Text}.");
-		Diag.Dug(ex);
 	}
 
 	public virtual int GetExecutionTimeout()
@@ -472,7 +489,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
-				_Csa = (CsbAgent)csb;
+				_Csa = (Csb)csb;
 				_Stamp = RctManager.Stamp;
 
 				if (csb == null || _Csa.DatasetKey != selectedDatasetKey)
@@ -484,7 +501,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				if (_Csa != null)
 				{
 					if (Connection == null)
-						SetDbConnection(new FbConnection(_Csa.ConnectionString));
+						SetDbConnection(DbNative.CreateDbConnection(_Csa.ConnectionString));
 
 
 					bool isOpen = Connection.State == ConnectionState.Open;
@@ -508,10 +525,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				}
 			}
 		}
-		catch (FbException ex)
+		catch (DbException ex)
 		{
 			Diag.Dug(ex);
-			MessageCtl.ShowEx(ex, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(ex, ControlsResources.ErrDatabaseNotAccessible.FmtRes(selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 	}
 
@@ -749,7 +766,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		}
 
-		((CsbAgent)scsb).Pooling = false;
+		((Csb)scsb).Pooling = false;
 	}
 
 

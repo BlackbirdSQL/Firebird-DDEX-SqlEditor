@@ -5,11 +5,9 @@
 
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model.QueryExecution;
-
+using BlackbirdSql.Common.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-
 
 
 
@@ -30,9 +28,8 @@ public class SqlEditorDisconnectCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryManager qryMgr = QryMgr;
 
-		if (qryMgr != null && qryMgr.IsConnected && !qryMgr.IsExecuting)
+		if (!ExecutionLocked && StoredQryMgr.IsConnected)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
@@ -40,15 +37,16 @@ public class SqlEditorDisconnectCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgr = QryMgr;
+		if (QryMgr == null)
+			return VSConstants.S_OK;
 
-		if (qryMgr != null)
-		{
-			qryMgr.ConnectionStrategy.Transaction?.Dispose();
-			qryMgr.ConnectionStrategy.Transaction = null;
-			qryMgr.ConnectionStrategy.Connection?.Close();
-			qryMgr.ConnectionStrategy.ResetConnection();
-		}
+		if (!CanDisposeTransaction(ControlsResources.ErrDisconnectCaption))
+			return VSConstants.S_OK;
+
+		StoredQryMgr.ConnectionStrategy.Transaction?.Dispose();
+		StoredQryMgr.ConnectionStrategy.Transaction = null;
+		StoredQryMgr.ConnectionStrategy.Connection?.Close();
+		StoredQryMgr.ConnectionStrategy.ResetConnection();
 
 		return VSConstants.S_OK;
 	}

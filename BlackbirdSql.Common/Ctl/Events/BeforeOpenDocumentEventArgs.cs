@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 
 
 

@@ -13,7 +13,6 @@ using System.Windows.Data;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Dialogs;
 using BlackbirdSql.Common.Controls.Grid;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -27,7 +26,7 @@ using Point = System.Drawing.Point;
 namespace BlackbirdSql.Common;
 
 
-public abstract class VS : Core.VS
+public abstract class VS : BlackbirdSql.VS
 {
 
 	// ---------------------------------------------------------------------------------
@@ -97,7 +96,7 @@ public abstract class VS : Core.VS
 			x = (short)xPos,
 			y = (short)yPos
 		};
-		obj.ShowContextMenu(Core.VS.dwReserved, ref rclsidActive, menuId, [pOINTS], commandTarget);
+		obj.ShowContextMenu(dwReserved, ref rclsidActive, menuId, [pOINTS], commandTarget);
 	}
 
 

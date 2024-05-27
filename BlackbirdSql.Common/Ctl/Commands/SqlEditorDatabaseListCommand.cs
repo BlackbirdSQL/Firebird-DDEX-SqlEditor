@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio;
@@ -21,7 +20,7 @@ namespace BlackbirdSql.Common.Ctl.Commands;
 
 public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 {
-	private static CsbAgent _Csa = null;
+	private static Csb _Csa = null;
 	private static long _Stamp = -1;
 	private static string[] _DatabaseList = null;
 
@@ -90,34 +89,8 @@ public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 		if (RctManager.ShutdownState)
 			return VSConstants.S_OK;
 
-		QueryManager qryMgr = QryMgr;
 
-		if (qryMgr != null)
-		{
-			if (EditorWindow != null && (_Csa == null || _Stamp != RctManager.Stamp))
-			{
-				_Csa = null;
-				_DatabaseList = null;
-			}
-
-			if (_Csa == null)
-			{
-				IDbConnection connection = qryMgr.ConnectionStrategy.Connection;
-
-				if (connection != null && !string.IsNullOrEmpty(connection.Database))
-				{
-					_Csa = RctManager.CloneVolatile(connection);
-				}
-			}
-
-			// qryMgrForEditor.ConnectionStrategy.GetAvailableDatabases();
-			if (DatabaseList.Length > 0)
-			{
-				Marshal.GetNativeVariantForObject((object)_DatabaseList, pvaOut);
-			}
-
-		}
-		else
+		if (QryMgr == null)
 		{
 			ArgumentNullException ex = new("QryMgr is null");
 			Diag.Dug(ex);
@@ -125,6 +98,25 @@ public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 		}
 
 
+		if (EditorWindow != null && (_Csa == null || _Stamp != RctManager.Stamp))
+		{
+			_Csa = null;
+			_DatabaseList = null;
+		}
+
+		if (_Csa == null)
+		{
+			IDbConnection connection = StoredQryMgr.ConnectionStrategy.Connection;
+
+			if (connection != null && !string.IsNullOrEmpty(connection.Database))
+			{
+				_Csa = RctManager.CloneVolatile(connection);
+			}
+		}
+
+		// qryMgrForEditor.ConnectionStrategy.GetAvailableDatabases();
+		if (DatabaseList.Length > 0)
+			Marshal.GetNativeVariantForObject((object)_DatabaseList, pvaOut);
 
 		return VSConstants.S_OK;
 	}

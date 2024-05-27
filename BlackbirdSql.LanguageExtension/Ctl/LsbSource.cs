@@ -3,14 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Babel;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.Events;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
 using BlackbirdSql.LanguageExtension.Model;
@@ -25,7 +22,6 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using Cmd = BlackbirdSql.Common.Cmd;
-using VS = BlackbirdSql.Common.VS;
 
 
 
@@ -307,7 +303,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		}
 		else
 		{
-			parseOptions = new ParseOptions("GO");
+			parseOptions = new ParseOptions(auxDocData.QryMgr.LiveSettings.EditorContextBatchSeparator);
 		}
 		return _ParseManager.ExecuteParseRequest(text, parseOptions, binder, DatabaseName);
 	}

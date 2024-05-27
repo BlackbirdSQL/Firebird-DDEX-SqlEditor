@@ -91,8 +91,8 @@ public class GlobalsAgent : AbstractGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Verifies whether or not a project's App.config was validated for
-	/// FirebirdSql.Data.FirebirdClient
+	/// Verifies whether or not a project's App.config was validated for the database
+	/// invariant.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public override bool IsConfiguredDbProviderStatus => GetFlagStatus(G_DbProviderConfigured);
@@ -101,8 +101,8 @@ public class GlobalsAgent : AbstractGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Verifies whether or not a project's App.config was validated for
-	/// EntityFramework.Firebird
+	/// Verifies whether or not a project's App.config was validated for the database
+	/// EntityFramework.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public override bool IsConfiguredEFStatus

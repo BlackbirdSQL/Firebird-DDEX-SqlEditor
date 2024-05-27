@@ -21,8 +21,8 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Model;
-using FirebirdSql.Data.FirebirdClient;
-using FirebirdSql.Data.Services;
+using BlackbirdSql.Data.Model;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -34,26 +34,26 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 {
 	private class SqlBatchExecutionHandler : IBBatchExecutionHandler
 	{
-		public void Register(IDbConnection conn, IDbCommand command, QESQLBatch batch)
+		public void Register(IDbConnection conn, IBsNativeDbStatementWrapper sqlStatement, QESQLBatch batch)
 		{
-			if (DbConnectionWrapper.IsSupportedConnection(conn))
+			if (DbNative.IsSupportedConnection(conn))
 			{
-				new DbConnectionWrapper(conn).InfoMessageEvent += batch.OnSqlInfoMessage;
-				if (DbCommandWrapper.IsSupportedCommand(command))
+				new NativeDbConnectionWrapperProxy(conn).InfoMessageEvent += batch.OnSqlInfoMessage;
+				if (DbCommandWrapper.IsSupportedCommandType(sqlStatement))
 				{
-					new DbCommandWrapper(command).StatementCompletedEvent += batch.OnSqlStatementCompleted;
+					new DbCommandWrapper(sqlStatement).StatementCompletedEvent += batch.OnSqlStatementCompleted;
 				}
 			}
 		}
 
-		public void UnRegister(IDbConnection conn, IDbCommand command, QESQLBatch batch)
+		public void UnRegister(IDbConnection conn, IBsNativeDbStatementWrapper sqlStatement, QESQLBatch batch)
 		{
-			if (DbConnectionWrapper.IsSupportedConnection(conn))
+			if (DbNative.IsSupportedConnection(conn))
 			{
-				new DbConnectionWrapper(conn).InfoMessageEvent -= batch.OnSqlInfoMessage;
-				if (DbCommandWrapper.IsSupportedCommand(command))
+				new NativeDbConnectionWrapperProxy(conn).InfoMessageEvent -= batch.OnSqlInfoMessage;
+				if (DbCommandWrapper.IsSupportedCommandType(sqlStatement))
 				{
-					new DbCommandWrapper(command).StatementCompletedEvent -= batch.OnSqlStatementCompleted;
+					new DbCommandWrapper(sqlStatement).StatementCompletedEvent -= batch.OnSqlStatementCompleted;
 				}
 				else
 				{
@@ -73,7 +73,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 	private string _ProductLevel;
 
-	public static readonly CsbAgent BuilderWithDefaultApplicationName = new("server=localhost;", false);
+	public static readonly Csb BuilderWithDefaultApplicationName = new("server=localhost;", false);
 
 
 	private ConnectedPropertiesWindow _propertiesWindowObject;
@@ -100,8 +100,8 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 						// FbConnection sqlConnection = (FbConnection)Connection;
 						try
 						{
-							CsbAgent csa = new(Connection, false);
-							_IsCloudConnection = result = csa.ServerType == FbServerType.Default;
+							Csb csa = new(Connection, false);
+							_IsCloudConnection = result = csa.IsServerConnection;
 						}
 						catch (Exception e)
 						{
@@ -241,15 +241,15 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "ConnectionPropertyAgent is not null");
 			if (openConnection)
 			{
-				CreateAndOpenDbConnectionFromConnectionInfo(ci, out var connection);
+				CreateAndOpenDbConnectionFromConnectionInfo(ci, out IDbConnection connection);
 				return connection;
 			}
 
-			CsbAgent csa = [];
+			Csb csa = [];
 			PopulateConnectionStringBuilder(csa, ci);
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "Csb connectionString: {0}", csa.ConnectionString);
 
-			return new FbConnection(csa.ConnectionString);
+			return DbNative.CreateDbConnection(csa.ConnectionString);
 		}
 
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "ERROR ConnectionInfo is null.");
@@ -261,10 +261,10 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateAndOpenDbConnectionFromConnectionInfo", "Enter");
 
-		CsbAgent csa = [];
+		Csb csa = [];
 		PopulateConnectionStringBuilder(csa, ci);
 
-		connection = new FbConnection(csa.ToString());
+		connection = DbNative.CreateDbConnection(csa.ToString());
 
 		try
 		{
@@ -444,7 +444,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	private ConnectionPropertyAgent PromptForConnectionForEditor(out IDbConnection connection)
 	{
 		if (Connection != null)
-			connection = new FbConnection(Connection.ConnectionString);
+			connection = DbNative.CreateDbConnection(Connection.ConnectionString);
 		else
 			connection = null;
 
@@ -496,7 +496,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 					ConnectionPropertyAgent connectionInfo = new ();
 					connectionInfo.Parse(connectionString);
-					connection = new FbConnection(connectionString);
+					connection = DbNative.CreateDbConnection(connectionString);
 
 					return connectionInfo;
 				}
@@ -565,11 +565,11 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		}
 		*/
 
-		CsbAgent csa = [];
+		Csb csa = [];
 
 		PopulateConnectionStringBuilder(csa, ci);
 
-		IDbConnection dbConnection = new FbConnection(csa.ConnectionString);
+		IDbConnection dbConnection = DbNative.CreateDbConnection(csa.ConnectionString);
 
 		dbConnection.Open();
 		using IDbCommand dbCommand = dbConnection.CreateCommand();
@@ -752,7 +752,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			{
 				try
 				{
-					_Csa = (CsbAgent)csb;
+					_Csa = (Csb)csb;
 					_Stamp = RctManager.Stamp;
 
 					if (csb == null || _Csa.DatasetKey != selectedDatasetKey)
@@ -773,7 +773,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 						Connection.Open();
 					}
 				}
-				catch (FbException ex)
+				catch (DbException ex)
 				{
 					Diag.Dug(ex);
 					MessageCtl.ShowEx(ex, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
@@ -867,13 +867,13 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	/*
 	public static string GetDefaultDatabaseForLogin(string connectionString, bool useExistingDbOnError)
 	{
-		using FbConnection conn = ConnectionHelperUtils.OpenSqlConnection(new CsbAgent(connectionString));
+		using FbConnection conn = ConnectionHelperUtils.OpenSqlConnection(new Csb(connectionString));
 		return GetDefaultDatabaseForLogin(conn, useExistingDbOnError);
 	}
 	*/
 
 
-	public static string GetDefaultDatabaseForLogin(FbConnection conn, bool useExistingDbOnError)
+	public static string GetDefaultDatabaseForLogin(DbConnection conn, bool useExistingDbOnError)
 	{
 		return conn.Database;
 		/*
@@ -917,7 +917,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		{
 			try
 			{
-				version = FbServerProperties.ParseServerVersion(((FbConnection)Connection).ServerVersion);
+				version = Connection.GetVersion();
 			}
 			catch (InvalidOperationException)
 			{
@@ -947,36 +947,11 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			if (!TtsActive)
 				return false;
 
-			FbDatabaseInfo dbInfo = new((FbConnection)Connection);
-
-			if (dbInfo.GetActiveTransactionsCount() == 0)
-			{
-				Transaction.Dispose();
-				Transaction = null;
-				return false;
-			}
-
-			return true;
+			return Transaction.HasTransactions();
 		}
 	}
 
-	public override bool TtsActive
-	{
-		get
-		{
-			if (Transaction == null)
-				return false;
-
-			if (Connection == null || Connection.State != ConnectionState.Open)
-			{
-				Transaction.Dispose();
-				Transaction = null;
-				return false;
-			}
-
-			return true;
-		}
-	}
+	public override bool TtsActive => Transaction != null;
 
 
 	public override bool CommitTransactions()
@@ -996,7 +971,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		}
 		finally
 		{
-			Transaction.Dispose();
+			Transaction?.Dispose();
 			Transaction = null;
 		}
 	}
@@ -1017,7 +992,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		}
 		finally
 		{
-			Transaction.Dispose();
+			Transaction?.Dispose();
 			Transaction = null;
 		}
 	}
@@ -1029,20 +1004,20 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	}
 
 
-	public virtual bool ShouldShowColumnWithXmlHyperLinkEnabled(QEResultSet resultSet, int columnIndex, string script)
+	public virtual bool ShouldShowColumnWithXmlHyperLinkEnabled(QEResultSet resultSet, int columnIndex, IBsNativeDbStatementWrapper sqlStatement)
 	{
 		if (!IsDwConnection)
 			return false;
 
-		return DwShouldShowColumnWithXmlHyperLinkEnabled(resultSet, columnIndex, script);
+		return DwShouldShowColumnWithXmlHyperLinkEnabled(resultSet, columnIndex, sqlStatement);
 	}
 
-	private bool DwShouldShowColumnWithXmlHyperLinkEnabled(QEResultSet resultSet, int columnIndex, string script)
+	private bool DwShouldShowColumnWithXmlHyperLinkEnabled(QEResultSet resultSet, int columnIndex, IBsNativeDbStatementWrapper sqlStatement)
 	{
 		StringCollection columnNames = resultSet.ColumnNames;
 		if (columnNames != null && columnNames.Count == 1 && string.Compare(columnNames[0], "explain", StringComparison.Ordinal) == 0 && resultSet.GetSchemaRow(columnIndex)["DataType"].ToString() == "System.String")
 		{
-			return PdwExplainRegex.IsMatch(script);
+			return PdwExplainRegex.IsMatch(sqlStatement.ToString());
 		}
 
 		return false;

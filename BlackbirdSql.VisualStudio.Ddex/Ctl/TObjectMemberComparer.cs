@@ -110,7 +110,7 @@ public class TObjectMemberComparer : DataObjectMemberComparer
 			}
 
 
-			if (identifier[identifierPart] != null && !DBNull.Value.Equals(identifier[identifierPart]))
+			if (!Cmd.IsNullValue(identifier[identifierPart]))
 			{
 				value1 = identifier[identifierPart] as string;
 
@@ -121,7 +121,8 @@ public class TObjectMemberComparer : DataObjectMemberComparer
 					throw ex;
 				}
 			}
-			if (value != null && !DBNull.Value.Equals(value))
+
+			if (!Cmd.IsNullValue(value))
 			{
 				value2 = value as string;
 

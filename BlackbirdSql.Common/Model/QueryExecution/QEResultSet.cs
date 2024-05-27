@@ -8,15 +8,15 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
-
-using BlackbirdSql.Core;
 using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
-using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Common.Model.IO;
+using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Sys;
+
+
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
@@ -24,6 +24,8 @@ namespace BlackbirdSql.Common.Model.QueryExecution;
 public sealed class QEResultSet : IDisposable, IBGridStorage
 {
 	public const int C_MaxCharsToStore = 10485760;
+
+	private readonly IBsNativeDbStatementWrapper _SqlStatement = null;
 
 	private static readonly string _SNameOfXMLColumn = "XML_" + VS.IXMLDocumentGuid;
 
@@ -38,7 +40,6 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 	private readonly QueryManager _QryMgr;
 
-	private readonly string _Script;
 
 	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
@@ -140,7 +141,8 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		}
 	}
 
-	public bool SingleColumnXmlExecutionPlan
+
+	public bool IsSingleColumnXmlActualPlan
 	{
 		get
 		{
@@ -152,7 +154,27 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 			if (_ColumnNames.Count == 1)
 			{
-				return string.Compare(_ColumnNames[0], LibraryData.C_YukonXmlExecutionPlanColumn, StringComparison.Ordinal) == 0;
+				return string.Compare(_ColumnNames[0], DbNative.XmlActualPlanColumn, StringComparison.Ordinal) == 0;
+			}
+
+			return false;
+
+		}
+	}
+
+	public bool IsSingleColumnEstimatedPlan
+	{
+		get
+		{
+			if (_ColumnNames == null)
+			{
+				Exception ex = new InvalidOperationException();
+				Diag.ThrowException(ex);
+			}
+
+			if (_ColumnNames.Count == 1)
+			{
+				return string.Compare(_ColumnNames[0], DbNative.XmlEstimatedPlanColumn, StringComparison.Ordinal) == 0;
 			}
 
 			return false;
@@ -164,7 +186,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 	{
 		get
 		{
-			lock (this)
+			lock (_LockLocal)
 			{
 				return _StoredAllData;
 			}
@@ -178,7 +200,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		// Tracer.Trace(GetType(), "QEResultSet.QEResultSet", "", null);
 	}
 
-	public QEResultSet(IDataReader reader, QueryManager qryMgr, string script)
+	public QEResultSet(IDataReader reader, IBsNativeDbStatementWrapper sqlStatement, QueryManager qryMgr)
 		: this()
 	{
 		if (reader == null)
@@ -188,8 +210,8 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		}
 
 		_DataReader = reader;
+		_SqlStatement = sqlStatement;
 		_QryMgr = qryMgr;
-		_Script = script;
 	}
 
 	public void Initialize(bool forwardOnly)
@@ -201,7 +223,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 			Diag.ThrowException(ex);
 		}
 
-		StorageDataReader storageDataReader = new StorageDataReader(_DataReader);
+		StorageDataReader storageDataReader = new StorageDataReader(_SqlStatement, _DataReader);
 		_StorageReaderSchemaTable = storageDataReader.GetSchemaTable();
 		int fieldCount = storageDataReader.FieldCount;
 		_ColumnNames = [];
@@ -222,7 +244,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 			}
 		}
 
-		_QeStorage.InitStorage(_DataReader);
+		_QeStorage.InitStorage(_SqlStatement, _DataReader);
 		// _M_curRowsNum = 0L;
 		_NotifyDelegate = OnStorageNotify;
 		_QeStorage.StorageNotify += _NotifyDelegate;
@@ -267,12 +289,12 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 	public bool IsSyntheticXmlColumn(int nColNum)
 	{
-		if (nColNum == 0 && (SingleColumnXmlResultSet || SingleColumnXmlExecutionPlan))
+		if (nColNum == 0 && (SingleColumnXmlResultSet || IsSingleColumnXmlActualPlan || IsSingleColumnEstimatedPlan))
 		{
 			return true;
 		}
 
-		return _QryMgr.ConnectionStrategy?.ShouldShowColumnWithXmlHyperLinkEnabled(this, nColNum, _Script) ?? false;
+		return _QryMgr.ConnectionStrategy?.ShouldShowColumnWithXmlHyperLinkEnabled(this, nColNum, _SqlStatement) ?? false;
 	}
 
 	public DataRow GetSchemaRow(int nColNum)
@@ -389,7 +411,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 	public bool IsCellDataNull(long iRow, int iCol)
 	{
 		int iCol2 = _InGridMode ? iCol - 1 : iCol;
-		lock (this)
+		lock (_LockLocal)
 		{
 			return _QeStorageView.GetCellData(iRow, iCol2) == null;
 		}
@@ -431,7 +453,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 	public string GetCellDataAsString(long iRow, int iCol)
 	{
-		lock (this)
+		lock (_LockLocal)
 		{
 			if (_InGridMode)
 			{
@@ -444,7 +466,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 	public object GetCellData(long iRow, int iCol)
 	{
-		lock (this)
+		lock (_LockLocal)
 		{
 			if (_InGridMode)
 			{
@@ -503,7 +525,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 		if (storedAllData)
 		{
-			lock (this)
+			lock (_LockLocal)
 			{
 				_StoredAllData = true;
 			}

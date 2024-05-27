@@ -24,6 +24,7 @@ using System.Data;
 using System.Globalization;
 using System.Text;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -110,6 +111,8 @@ internal class DslIndexes : AbstractDslSchema
 		}
 
 		sql.Append(" ORDER BY TABLE_NAME, INDEX_NAME");
+
+		// Tracer.Trace(GetType(), "GetCommandText()", "Sql: {0}.", sql);
 
 		return sql;
 	}

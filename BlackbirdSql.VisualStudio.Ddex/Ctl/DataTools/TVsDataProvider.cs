@@ -801,6 +801,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 		{
 			throw new ArgumentNullException("name");
 		}
+
 		if (_Properties == null)
 		{
 			lock (_LockObject)
@@ -808,6 +809,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 				_Properties ??= new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 			}
 		}
+
 		if (!_Properties.ContainsKey(name))
 		{
 			object propertyFromRegistry = GetPropertyFromRegistry(name, _Guid);
@@ -819,10 +821,10 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 				}
 			}
 		}
+
 		if (_Properties[name] == DBNull.Value)
-		{
 			return null;
-		}
+
 		return _Properties[name];
 	}
 

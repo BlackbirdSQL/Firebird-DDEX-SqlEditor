@@ -3,12 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Babel;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.LanguageExtension.Ctl;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
 using BlackbirdSql.LanguageExtension.Properties;
@@ -229,7 +226,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 
 	public LsbLanguagePreferences Prefs => _Prefs ??= (LsbLanguagePreferences)Preferences;
 
-	private string[] FileExtensions { get; } = [SystemData.Extension];
+	private string[] FileExtensions { get; } = [PackageData.Extension];
 
 
 	#endregion Property accessors

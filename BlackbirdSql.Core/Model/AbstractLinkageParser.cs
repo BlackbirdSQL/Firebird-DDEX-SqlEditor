@@ -4,15 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
-using System.Reflection;
 using System.Text;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
-using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio.LanguageServer.Client;
-using Microsoft.VisualStudio.Package;
 
 
 namespace BlackbirdSql.Core.Model;
@@ -70,20 +66,18 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		// Use reflection. The connection may not be in our app domain.
 
 		// connection.Disposed += OnConnectionDisposed;
-		Reflect.AddEventHandler(this, "OnConnectionDisposed", BindingFlags.Instance | BindingFlags.NonPublic,
-			connection, "Disposed", BindingFlags.Instance | BindingFlags.Public);
+		Reflect.AddEventHandler(this, "OnConnectionDisposed", connection, "Disposed");
 
 		// ((FbConnection)connection).StateChange += OnConnectionStateChange;
-		Reflect.AddEventHandler(this, "OnConnectionStateChange", BindingFlags.Instance | BindingFlags.NonPublic,
-			connection, "StateChange", BindingFlags.Instance | BindingFlags.Public);
+		Reflect.AddEventHandler(this, "OnConnectionStateChange", connection, "StateChange");
 
 		_InstanceConnection = connection;
 		_TransientString = connection.ConnectionString;
 
 		if (!rhsValid)
 		{
-			_DbConnection = new(connection.ConnectionString);
-			_ConnectionUrl = CsbAgent.CreateConnectionUrl(_DbConnection);
+			_DbConnection = (DbConnection)DbNative.CreateDbConnection(connection.ConnectionString);
+			_ConnectionUrl = Csb.CreateConnectionUrl(_DbConnection);
 
 			_DbConnection.Open();
 
@@ -204,7 +198,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 	/// <summary>
-	/// Disposes of a parser given a DBConnection connection.
+	/// Disposes of a parser given a DbConnection connection.
 	/// </summary>
 	/// <param name="site">
 	/// The IVsDataConnection explorer connection object
@@ -284,7 +278,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// <summary>
 	/// The working db connection associated with this LinkageParser
 	/// </summary>
-	protected FbConnection _DbConnection = null;
+	protected DbConnection _DbConnection = null;
 
 	/// <summary>
 	/// The SE db connection associated with this LinkageParser. This object may be
@@ -940,7 +934,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		if (_TransientParser != null && !_TransientParser._IsIntransient)
 		{
-			if (CsbAgent.CreateConnectionUrl(connection) == _TransientParser._ConnectionUrl)
+			if (Csb.CreateConnectionUrl(connection) == _TransientParser._ConnectionUrl)
 			{
 				// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Using up _TransientParser.");
 
@@ -971,8 +965,8 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			return null;
 		}
 
-		CsbAgent csa1 = null;
-		CsbAgent csa2;
+		Csb csa1 = null;
+		Csb csa2;
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Searching instances. Count: {0}.", _Instances.Count);
 
@@ -996,7 +990,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				continue;
 			}
 
-			if (CsbAgent.AreEquivalent(csa1, csa2, CsbAgent.WeakEquivalencyKeys))
+			if (Csb.AreEquivalent(csa1, csa2, Csb.WeakEquivalencyKeys))
 				return parser;
 		}
 
@@ -1015,7 +1009,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		if (_TransientParser != null && !_TransientParser._IsIntransient)
 		{
-			connectionUrl = CsbAgent.CreateConnectionUrl(connectionString);
+			connectionUrl = Csb.CreateConnectionUrl(connectionString);
 
 			if (connectionUrl == _TransientParser._ConnectionUrl)
 				return _TransientParser;
@@ -1025,7 +1019,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		if (_Instances == null)
 			return null;
 
-		connectionUrl ??= CsbAgent.CreateConnectionUrl(connectionString);
+		connectionUrl ??= Csb.CreateConnectionUrl(connectionString);
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "Searching instances. connectionUrl: {0}.", connectionUrl);
 
@@ -1227,8 +1221,8 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			return;
 		}
 
-		CsbAgent csa1 = null;
-		CsbAgent csa2;
+		Csb csa1 = null;
+		Csb csa2;
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Searching instances. Count: {0}.", _Instances.Count);
 
@@ -1254,7 +1248,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				continue;
 			}
 
-			if (CsbAgent.AreEquivalent(csa1, csa2, CsbAgent.WeakEquivalencyKeys))
+			if (Csb.AreEquivalent(csa1, csa2, Csb.WeakEquivalencyKeys))
 				parser._IsIntransient = true;
 		}
 

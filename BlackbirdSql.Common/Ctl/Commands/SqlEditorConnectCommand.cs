@@ -2,12 +2,13 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorConnectCommand
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model.QueryExecution;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
 
+
 namespace BlackbirdSql.Common.Ctl.Commands;
+
 
 public class SqlEditorConnectCommand : AbstractSqlEditorCommand
 {
@@ -24,9 +25,7 @@ public class SqlEditorConnectCommand : AbstractSqlEditorCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		QueryManager qryMgr = QryMgr;
-
-		if (qryMgr != null && !qryMgr.IsExecuting && !qryMgr.IsConnected)
+		if (!ExecutionLocked && StoredQryMgr != null && !StoredQryMgr.IsConnected)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
@@ -34,24 +33,21 @@ public class SqlEditorConnectCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgr = QryMgr;
+		if (ExecutionLocked || StoredQryMgr == null || StoredQryMgr.IsConnected)
+			return VSConstants.S_OK;
 
-		if (qryMgr != null && !qryMgr.IsExecuting && !qryMgr.IsConnected)
+		try
 		{
-			try
-			{
-				// Tracer.Trace(GetType(), "HandleExec()");
-				qryMgr.IsConnecting = true;
-				qryMgr.ConnectionStrategy.EnsureConnection(true);
-			}
-			finally
-			{
-				qryMgr.IsConnecting = false;
-			}
+			// Tracer.Trace(GetType(), "HandleExec()");
+			StoredQryMgr.IsConnecting = true;
+			StoredQryMgr.ConnectionStrategy.EnsureConnection(true);
+		}
+		finally
+		{
+			StoredQryMgr.IsConnecting = false;
 		}
 
 		return VSConstants.S_OK;
 	}
-
 
 }

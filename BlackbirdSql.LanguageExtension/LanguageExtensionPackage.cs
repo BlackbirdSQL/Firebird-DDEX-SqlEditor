@@ -45,7 +45,7 @@ namespace BlackbirdSql.LanguageExtension;
 [ProvideLanguageEditorOptionPage(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Advanced", null, "#331")]
 [ProvideProfile(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Editor", 300, 330, false, AlternateParent = "AutomationProperties\\TextEditor")]
 
-[ProvideLanguageExtension(typeof(LsbLanguageService), SystemData.Extension)]
+[ProvideLanguageExtension(typeof(LsbLanguageService), PackageData.Extension)]
 
 [ProvideLanguageCodeExpansion(typeof(LsbLanguageService), "SQL_FIREBIRD", 303, "SQL_FIREBIRD", "%PackageFolder%\\Snippets\\SnippetsIndex.xml", SearchPaths = "%PackageFolder%\\Snippets\\Function;%PackageFolder%\\Snippets\\Index;%PackageFolder%\\Snippets\\Role;%PackageFolder%\\Snippets\\Stored Procedure;%PackageFolder%\\Snippets\\Table;%PackageFolder%\\Snippets\\Trigger;%PackageFolder%\\Snippets\\User;%PackageFolder%\\Snippets\\View;%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets", ForceCreateDirs = "%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets")]
 
@@ -187,6 +187,49 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	// =========================================================================================================
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Creates a service instance of the specified type if this class has access to the
+	/// final class type of the service being added.
+	/// The class requiring and adding the service may not necessarily be the class that
+	/// creates an instance of the service.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override async Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token)
+	{
+		if (serviceType == null)
+		{
+			ArgumentNullException ex = new("serviceType");
+			Diag.Dug(ex);
+			throw ex;
+		}
+		/*
+		else if (serviceType == typeof(IBDesignerExplorerServices))
+		{
+			object service = new DesignerExplorerServices()
+				?? throw Diag.ExceptionService(serviceType);
+
+			return service;
+		}
+		else if (serviceType == typeof(IBDesignerOnlineServices))
+		{
+			object service = new DesignerOnlineServices()
+				?? throw Diag.ExceptionService(serviceType);
+
+			return service;
+		}
+		*/
+		else if (serviceType.IsInstanceOfType(this))
+		{
+			return this;
+		}
+
+		return await base.CreateServiceInstanceAsync(serviceType, token);
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Asynchronous initialization of the package. The class must register services it
@@ -263,48 +306,6 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 		Progress(progress, "Finalizing Language services initialization... Done.");
 
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Creates a service instance of the specified type if this class has access to the
-	/// final class type of the service being added.
-	/// The class requiring and adding the service may not necessarily be the class that
-	/// creates an instance of the service.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override async Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token)
-	{
-		if (serviceType == null)
-		{
-			ArgumentNullException ex = new("serviceType");
-			Diag.Dug(ex);
-			throw ex;
-		}
-		/*
-		else if (serviceType == typeof(IBDesignerExplorerServices))
-		{
-			object service = new DesignerExplorerServices()
-				?? throw Diag.ExceptionService(serviceType);
-
-			return service;
-		}
-		else if (serviceType == typeof(IBDesignerOnlineServices))
-		{
-			object service = new DesignerOnlineServices()
-				?? throw Diag.ExceptionService(serviceType);
-
-			return service;
-		}
-		*/
-		else if (serviceType.IsInstanceOfType(this))
-		{
-			return this;
-		}
-
-		return await base.CreateServiceInstanceAsync(serviceType, token);
 	}
 
 

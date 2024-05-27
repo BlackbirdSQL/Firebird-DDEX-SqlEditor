@@ -10,11 +10,12 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Sys;
+
 
 
 namespace BlackbirdSql.Common.Model.IO;
+
 
 public class StorageDataReader
 {
@@ -146,9 +147,9 @@ public class StorageDataReader
 
 
 
-	private readonly IDataReader dataReader;
+	private readonly IDataReader _DataReader;
 	private readonly DbDataReader _DbDataReader;
-	private readonly FbDataReader _SqlReader;
+	private readonly IBsNativeDbStatementWrapper _SqlStatement;
 	// private readonly MethodInfo getSqlXmlMethod;
 
 
@@ -163,7 +164,7 @@ public class StorageDataReader
 				return _DbDataReader.VisibleFieldCount;
 			}
 
-			return dataReader.FieldCount;
+			return _DataReader.FieldCount;
 		}
 	}
 
@@ -182,18 +183,11 @@ public class StorageDataReader
 	}
 	*/
 
-	public StorageDataReader(IDataReader reader)
+	public StorageDataReader(IBsNativeDbStatementWrapper sqlStatement, IDataReader reader)
 	{
-		dataReader = reader;
+		_DataReader = reader;
 		_DbDataReader = reader as DbDataReader;
-		if (_DbDataReader != null)
-		{
-			_SqlReader = reader as FbDataReader;
-			if (_SqlReader == null)
-			{
-				_DbDataReader = null;
-			}
-		}
+		_SqlStatement = sqlStatement;
 
 		if (_DbDataReader == null)
 		{
@@ -206,12 +200,12 @@ public class StorageDataReader
 
 	public string GetName(int i)
 	{
-		return dataReader.GetName(i);
+		return _DataReader.GetName(i);
 	}
 
 	public string GetDataTypeName(int i)
 	{
-		return dataReader.GetDataTypeName(i);
+		return _DataReader.GetDataTypeName(i);
 	}
 
 	public string GetProviderSpecificDataTypeName(int i)
@@ -226,32 +220,33 @@ public class StorageDataReader
 			return _DbDataReader.GetProviderSpecificFieldType(i);
 		}
 
-		return dataReader.GetFieldType(i);
+		return _DataReader.GetFieldType(i);
 	}
 
 	public bool Read()
 	{
-		return dataReader.Read();
+		return _SqlStatement.AsyncRead();
+		// return _DataReader.Read();
 	}
 
 	public void GetValues(object[] values)
 	{
-		if (_SqlReader != null)
+		if (_DbDataReader != null)
 		{
-			_SqlReader.GetValues(values);
+			_DbDataReader.GetValues(values);
 			// _SqlReader.GetSqlValues(values, _Statistics);
 		}
 		else
 		{
-			dataReader.GetValues(values);
+			_DataReader.GetValues(values);
 		}
 	}
 
 	public object GetValue(int i)
 	{
-		_SqlReader?.GetValue(i);
+		_DbDataReader?.GetValue(i);
 
-		return dataReader.GetValue(i);
+		return _DataReader.GetValue(i);
 	}
 
 	public bool IsDBNull(int i)
@@ -261,7 +256,7 @@ public class StorageDataReader
 			return _DbDataReader.IsDBNull(i);
 		}
 
-		return dataReader.IsDBNull(i);
+		return _DataReader.IsDBNull(i);
 	}
 
 	public DataTable GetSchemaTable()
@@ -271,7 +266,7 @@ public class StorageDataReader
 			return _DbDataReader.GetSchemaTable();
 		}
 
-		return dataReader.GetSchemaTable();
+		return _DataReader.GetSchemaTable();
 	}
 
 	public byte[] GetBytesWithMaxCapacity(int iCol, int maxNumBytesToReturn)
@@ -396,7 +391,7 @@ public class StorageDataReader
 			return _DbDataReader.GetBytes(i, dataIndex, buffer, bufferIndex, length);
 		}
 
-		return dataReader.GetBytes(i, dataIndex, buffer, bufferIndex, length);
+		return _DataReader.GetBytes(i, dataIndex, buffer, bufferIndex, length);
 	}
 
 	private long GetChars(int i, long dataIndex, char[] buffer, int bufferIndex, int length)
@@ -406,7 +401,7 @@ public class StorageDataReader
 			return _DbDataReader.GetChars(i, dataIndex, buffer, bufferIndex, length);
 		}
 
-		return dataReader.GetChars(i, dataIndex, buffer, bufferIndex, length);
+		return _DataReader.GetChars(i, dataIndex, buffer, bufferIndex, length);
 	}
 
 
@@ -455,7 +450,7 @@ public class StorageDataReader
 
 		if (getSqlXmlMethod != null)
 		{
-			return (SqlXml)getSqlXmlMethod.Invoke(dataReader, new object[1] { i });
+			return (SqlXml)getSqlXmlMethod.Invoke(_DataReader, new object[1] { i });
 		}
 
 		InvalidOperationException ex = new();

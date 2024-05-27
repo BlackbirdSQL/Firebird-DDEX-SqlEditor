@@ -30,7 +30,7 @@ public abstract class LsbMetadataProvider : AbstractMetadataProvider
 
 		private int m_lastRefreshTimestamp;
 
-		private const string RegPath = "Software\\Microsoft\\Microsoft SQL Server\\SMO\\ConnectedMetadataProvider";
+		private const string RegPath = "Software\\BlackbirdSql\\Firebird-SQL Language Service\\ConnectedMetadataProvider";
 
 		public override MetadataProviderEventHandler BeforeBindHandler => OnBeforeBind;
 
@@ -41,7 +41,7 @@ public abstract class LsbMetadataProvider : AbstractMetadataProvider
 			DefaultRefreshDbListMillisecond = 120000;
 			try
 			{
-				using RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Microsoft SQL Server\\SMO\\ConnectedMetadataProvider");
+				using RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software\\BlackbirdSql\\Firebird-SQL Language Service\\ConnectedMetadataProvider");
 				if (registryKey != null)
 				{
 					DefaultRefreshDbListMillisecond = Convert.ToInt32(registryKey.GetValue("DbRefreshDelayMs", DefaultRefreshDbListMillisecond));

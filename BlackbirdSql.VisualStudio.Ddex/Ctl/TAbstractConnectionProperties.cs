@@ -7,9 +7,8 @@ using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
@@ -22,7 +21,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 /// <summary>
 /// Replacement for <see cref="AdoDotNetConnectionProperties"/> implementation of the
-/// IVsDataConnectionProperties and IVsDataConnectionUIProperties interfaces using CsbAgent
+/// IVsDataConnectionProperties and IVsDataConnectionUIProperties interfaces using Csb
 /// instead of FbConnectionStringBuilder.
 /// </summary>
 public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>,
@@ -30,7 +29,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	ICollection<KeyValuePair<string, object>>, IEnumerable<KeyValuePair<string, object>>,
 	IEnumerable, IVsDataConnectionUIProperties, ICustomTypeDescriptor, INotifyPropertyChanged
 {
-	private CsbAgent _ConnectionStringBuilder;
+	private Csb _ConnectionStringBuilder;
 	private EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
 
 
@@ -139,7 +138,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	}
 
 
-	protected CsbAgent ConnectionStringBuilder
+	protected Csb ConnectionStringBuilder
 	{
 		get
 		{
@@ -187,7 +186,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 			if (ConnectionSource == EnConnectionSource.Application
 				|| ConnectionSource == EnConnectionSource.EntityDataModel)
 			{
-				foreach (Describer describer in CsbAgent.AdvancedKeys)
+				foreach (Describer describer in Csb.AdvancedKeys)
 				{
 					if (!describer.IsConnectionParameter)
 						ConnectionStringBuilder.Remove(describer.Key);
@@ -429,7 +428,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	TypeConverter ICustomTypeDescriptor.GetConverter()
 	{
-		return new CsbAgent.CsbConverter();
+		return new Csb.CsbConverter();
 	}
 
 	PropertyDescriptor ICustomTypeDescriptor.GetDefaultProperty()

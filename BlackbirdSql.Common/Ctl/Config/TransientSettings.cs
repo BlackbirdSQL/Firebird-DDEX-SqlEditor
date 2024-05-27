@@ -10,10 +10,10 @@ using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Enums;
-using FirebirdSql.Data.Isql;
+using BlackbirdSql.Sys;
+
+
 
 namespace BlackbirdSql.Common.Ctl.Config;
 
@@ -173,10 +173,15 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 
 
 	// Editor ExecutionSettingsModel
-	public new bool EditorExecutionAutoDdlTts
+	public new bool EditorExecutionAsynchronous
 	{
-		get { return (bool)this["EditorExecutionGeneralAutoDdlTts"]; }
-		set { this["EditorExecutionGeneralAutoDdlTts"] = value; }
+		get { return (bool)this["EditorExecutionGeneralAsynchronous"]; }
+		set { this["EditorExecutionGeneralAsynchronous"] = value; }
+	}
+	public new bool EditorExecutionTtsDefault
+	{
+		get { return (bool)this["EditorExecutionGeneralTtsDefault"]; }
+		set { this["EditorExecutionGeneralTtsDefault"] = value; }
 	}
 	public new int EditorExecutionSetRowCount
 	{
@@ -195,8 +200,8 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 	}
 	public new int EditorExecutionTimeout
 	{
-		get { return (int)this["EditorExecutionGeneralTimeout"]; }
-		set { this["EditorExecutionGeneralTimeout"] = value; }
+		get { return (int)this["EditorExecutionGeneralExecutionTimeout"]; }
+		set { this["EditorExecutionGeneralExecutionTimeout"] = value; }
 	}
 
 	// Editor ExecutionAdvancedSettingsModel
@@ -436,83 +441,106 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 
 
 
-	public bool WithExecutionPlan
+	public EnSqlExecutionType ExecutionType
 	{
-		get { return _ExecOptions[0]; }
-		set { _ExecOptions[0] = value; }
+		get
+		{
+			if (!_ExecOptions[0] && !_ExecOptions[1])
+				return EnSqlExecutionType.QueryOnly;
+
+			if (_ExecOptions[0] && !_ExecOptions[1])
+				return EnSqlExecutionType.QueryWithPlan;
+
+			return EnSqlExecutionType.PlanOnly;
+
+		}
+		set
+		{
+			if (value == EnSqlExecutionType.QueryOnly)
+			{
+				_ExecOptions[0] = false;
+				_ExecOptions[1] = false;
+			}
+			else if (value == EnSqlExecutionType.QueryWithPlan)
+			{
+				_ExecOptions[0] = true;
+				_ExecOptions[1] = false;
+			}
+			else
+			{
+				_ExecOptions[0] = false;
+				_ExecOptions[1] = true;
+			}
+		}
 	}
 
-	public bool WithClientStats
-	{
-		get { return _ExecOptions[1] && !WithEstimatedExecutionPlan; }
-		set { _ExecOptions[1] = value; }
-	}
 
-	public bool WithProfiling
-	{
-		get { return _ExecOptions[2]; }
-		set { _ExecOptions[2] = value; }
-	}
-
-	public bool ParseOnly
+	public bool WithActualPlan
 	{
 		get { return _ExecOptions[3]; }
 		set { _ExecOptions[3] = value; }
 	}
 
-	public bool WithNoExec
+	public bool WithClientStats
 	{
 		get { return _ExecOptions[4]; }
 		set { _ExecOptions[4] = value; }
 	}
 
-	public bool WithExecutionPlanText
+	public bool WithProfiling
 	{
 		get { return _ExecOptions[5]; }
 		set { _ExecOptions[5] = value; }
 	}
 
-	public bool WithStatisticsTime
+
+	public bool WithNoExec
 	{
 		get { return _ExecOptions[6]; }
 		set { _ExecOptions[6] = value; }
 	}
 
-	public bool WithStatisticsIO
+
+	public bool WithStatisticsTime
 	{
 		get { return _ExecOptions[7]; }
 		set { _ExecOptions[7] = value; }
 	}
 
-	public bool WithStatisticsProfile
+	public bool WithStatisticsIO
 	{
 		get { return _ExecOptions[8]; }
 		set { _ExecOptions[8] = value; }
 	}
 
-	public bool WithEstimatedExecutionPlan
+	public bool WithStatisticsProfile
 	{
 		get { return _ExecOptions[9]; }
 		set { _ExecOptions[9] = value; }
 	}
 
-	public bool WithTransactionTracking
+
+	public bool TtsEnabled
 	{
-		get { return _ExecOptions[10] && !WithEstimatedExecutionPlan; }
+		get { return _ExecOptions[10]; }
 		set { _ExecOptions[10] = value; }
 	}
 
 	public bool WithOleSqlScripting
 	{
-		get { return _ExecOptions[13]; }
-		set { _ExecOptions[13] = value; }
+		get { return _ExecOptions[11]; }
+		set { _ExecOptions[11] = value; }
 	}
 
 	public bool SuppressProviderMessageHeaders
 	{
-		get { return _ExecOptions[14]; }
-		set { _ExecOptions[14] = value; }
+		get { return _ExecOptions[12]; }
+		set { _ExecOptions[12] = value; }
 	}
+
+
+	public bool HasExecutionPlan =>
+		ExecutionType == EnSqlExecutionType.PlanOnly || ExecutionType == EnSqlExecutionType.QueryWithPlan;
 
 
 	#endregion Property Accessors
@@ -580,30 +608,6 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 	{
 		lock (_LockGlobal)
 			return CreateInstance(_LiveStore, _ExecOptions);
-	}
-
-
-
-	public FbScript CommandBuilder(params string[] statements)
-	{
-		List<string> cmdList = new(statements.Length + 3)
-		{
-			"SET TERM ^ ;"
-		};
-
-		foreach (string statement in statements)
-		{
-			if (string.IsNullOrWhiteSpace(statement))
-				continue;
-
-			cmdList.Add(statement.Trim());
-		}
-		cmdList.Add("^");
-		cmdList.Add("SET TERM ; ^");
-
-		FbScript script = new(string.Join("\r\n", cmdList));
-
-		return script;
 	}
 
 

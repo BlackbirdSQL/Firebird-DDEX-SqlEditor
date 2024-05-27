@@ -2,10 +2,8 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.LanguageExtension.Properties;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.LanguageExtension.Ctl.Config;

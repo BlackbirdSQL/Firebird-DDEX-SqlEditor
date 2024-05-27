@@ -3,17 +3,15 @@
 
 using System;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
-using Microsoft.VisualStudio.Shell;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 using static BlackbirdSql.Core.Model.AbstractLinkageParser;
+
 
 
 namespace BlackbirdSql.Core.Controls;
@@ -43,8 +41,8 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 	public LinkageParserTaskHandler(IDbConnection connection)
 	{
 		// Tracer.Trace(GetType(), "LinkageParserTaskHandle.LinkageParserTaskHandle");
-		CsbAgent csa = RctManager.CloneRegistered(connection);
-		_DatasetKey = csa == null ? CoreConstants.C_DefaultExDatasetKey : csa.DatasetKey;
+		Csb csa = RctManager.CloneRegistered(connection);
+		_DatasetKey = csa == null ? SysConstants.C_DefaultExDatasetKey : csa.DatasetKey;
 	}
 
 

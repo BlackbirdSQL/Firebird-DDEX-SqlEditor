@@ -4,13 +4,14 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
+using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Utilities;
 
 
@@ -18,7 +19,8 @@ using Microsoft.VisualStudio.Utilities;
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
 
-public sealed class QueryManager : IDisposable
+
+public sealed class QueryManager : IBQueryManager
 {
 
 	public QueryManager(SqlConnectionStrategy connectionStrategy, QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVarResolver)
@@ -52,15 +54,21 @@ public sealed class QueryManager : IDisposable
 		public EnStatusType Change { get; private set; } = changeType;
 	}
 
-	public class ScriptExecutionStartedEventArgs(string queryText, bool isParseOnly,
-			IDbConnection connection)
-		: EventArgs
+	public class ScriptExecutionStartedEventArgs : EventArgs
 	{
-		public string QueryText { get; private set; } = queryText;
 
-		public bool IsParseOnly { get; private set; } = isParseOnly;
+		public ScriptExecutionStartedEventArgs(string queryText, EnSqlExecutionType executionType, IDbConnection connection)
+		{
+			QueryText = queryText;
+			ExecutionType = executionType;
+			Connection = connection;
+		}
 
-		public IDbConnection Connection { get; private set; } = connection;
+		public string QueryText { get; private set; }
+
+		public EnSqlExecutionType ExecutionType { get; private set; }
+
+		public IDbConnection Connection { get; private set; }
 	}
 
 	public delegate bool ScriptExecutionStartedEventHandler(object sender, ScriptExecutionStartedEventArgs args);
@@ -68,6 +76,7 @@ public sealed class QueryManager : IDisposable
 	private uint _Status;
 
 	private long _RowsAffected;
+	private long _TotalRowsAffected;
 
 	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
@@ -86,7 +95,7 @@ public sealed class QueryManager : IDisposable
 
 	private QEOLESQLExec.ResolveSqlCmdVariable _SqlCmdVariableResolver;
 
-	private QEOLESQLExec.GetCurrentWorkingDirectoryPath _currentWorkingDirectoryPath;
+	private QEOLESQLExec.GetCurrentWorkingDirectoryPath _CurrentWorkingDirectoryPath;
 
 	public TransientSettings LiveSettings
 	{
@@ -94,16 +103,29 @@ public sealed class QueryManager : IDisposable
 		{
 			lock (_LockLocal)
 			{
-				return _LiveSettings ??= TransientSettings.CreateInstance();
+				if (_LiveSettings != null)
+					return _LiveSettings;
+
+				_LiveSettings = TransientSettings.CreateInstance();
+				_LiveSettings.TtsEnabled = _LiveSettings.EditorExecutionTtsDefault;
+
+				return _LiveSettings;
 			}
 		}
 	}
 
+	public long ExecutionTimeout => _LiveSettings.EditorExecutionTimeout * 60000L;
+
+	public bool HasTransactions => ConnectionStrategy != null && ConnectionStrategy.HasTransactions;
+
+	public IDbTransaction Transaction => ConnectionStrategy?.Transaction;
+
+
 	public IBQESQLBatchConsumer ResultsHandler { get; set; }
 
-	public DateTime? QueryExecutionStartTime { get; private set; }
+	public DateTime? QueryExecutionStartTime { get; set; }
 
-	public DateTime? QueryExecutionEndTime { get; private set; }
+	public DateTime? QueryExecutionEndTime { get; set; }
 
 	public bool IsConnected
 	{
@@ -124,6 +146,17 @@ public sealed class QueryManager : IDisposable
 			lock (_LockLocal)
 			{
 				return _RowsAffected;
+			}
+		}
+	}
+
+	public long TotalRowsAffected
+	{
+		get
+		{
+			lock (_LockLocal)
+			{
+				return _TotalRowsAffected;
 			}
 		}
 	}
@@ -186,6 +219,11 @@ public sealed class QueryManager : IDisposable
 	}
 
 
+	public bool IsAsync => LiveSettings.EditorExecutionAsynchronous;
+
+	public bool IsWithActualPlan => LiveSettings.WithActualPlan;
+
+	public bool IsWithClientStats => LiveSettings.WithClientStats;
 
 
 	public QEOLESQLExec.ResolveSqlCmdVariable SqlCmdVariableResolver
@@ -213,18 +251,23 @@ public sealed class QueryManager : IDisposable
 		{
 			lock (_LockLocal)
 			{
-				return _currentWorkingDirectoryPath;
+				return _CurrentWorkingDirectoryPath;
 			}
 		}
 		set
 		{
 			lock (_LockLocal)
 			{
-				_currentWorkingDirectoryPath = value;
-				_SqlExec.CurrentWorkingDirectoryPath = _currentWorkingDirectoryPath;
+				_CurrentWorkingDirectoryPath = value;
+				_SqlExec.CurrentWorkingDirectoryPath = _CurrentWorkingDirectoryPath;
 			}
 		}
 	}
+
+
+	IDbConnection IBQueryManager.Connection => ConnectionStrategy.Connection;
+
+
 
 	public SqlConnectionStrategy ConnectionStrategy
 	{
@@ -255,6 +298,8 @@ public sealed class QueryManager : IDisposable
 		}
 	}
 
+
+	public IsolationLevel TtsIsolationLevel => LiveSettings.EditorExecutionIsolationLevel;
 
 
 
@@ -291,32 +336,121 @@ public sealed class QueryManager : IDisposable
 	public event QeSqlCmdMessageFromAppEventHandler SqlCmdMessageFromAppEvent;
 
 	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
-	public event QESQLDataLoadedEventHandler DataLoadedEvent;
+	public event QESQLQueryDataEventHandler DataLoadedEvent;
 
 	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
 
 
 
-
-
-	public bool Run(IBTextSpan textSpan, bool withTts)
+	void IBQueryManager.BeginTransaction()
 	{
-		// --------------------------------------------------------------------- //
-		// ******************** Execution Point (3) - Run() ******************** //
-		// --------------------------------------------------------------------- //
-		return ValidateAndRun(textSpan, false, withTts);
+		ConnectionStrategy?.BeginTransaction(LiveSettings.EditorExecutionIsolationLevel);
+	}
+
+	void IBQueryManager.CommitTransaction()
+	{
+		ConnectionStrategy?.CommitTransaction();
+	}
+
+	void IBQueryManager.RollbackTransaction()
+	{
+		ConnectionStrategy?.RollbackTransaction();
+	}
+
+
+	public bool Execute(IBTextSpan textSpan, EnSqlExecutionType executionType)
+	{
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "Execute()", " Enter. : ExecutionOptions.EstimatedPlanOnly: " + LiveSettings.EstimatedPlanOnly);
+		ConnectionStrategy.EnsureConnection(true);
+		IDbConnection connection = ConnectionStrategy.Connection;
+
+		if (connection == null)
+			return false;
+
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "Execute()", "Ensured connection");
+
+		if (connection.State != ConnectionState.Open)
+		{
+			DataException ex = new("Connection is not open");
+			Diag.Dug(ex);
+			return false;
+		}
+
+		// Tracer.Trace(GetType(), "Execute()", "execTimeout = {0}, bParseOnly = {1}", execTimeout, bParseOnly);
+		if (IsExecuting)
+		{
+			InvalidOperationException ex = new(ControlsResources.ExecutionNotCompleted);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (!LiveSettingsApplied)
+		{
+			ConnectionStrategy.ApplyConnectionOptions(connection, LiveSettings);
+			LiveSettingsApplied = true;
+		}
+
+		if (textSpan == null)
+		{
+			ArgumentNullException ex = new("textSpan");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		LiveSettings.ExecutionType = executionType;
+
+
+		bool ttsEnabled = executionType == EnSqlExecutionType.PlanOnly && LiveSettings.TtsEnabled;
+
+		if (ttsEnabled)
+			LiveSettings.TtsEnabled = false;
+
+		try
+		{
+			TransientSettings liveSettings = CreateLiveSettingsObject();
+
+			// Tracer.Trace(GetType(), "Execute()", "executionType: {0},  LiveSettings.ExecutionType: {1}, liveSettings.ExecutionType: {2}.",
+			//	executionType,  LiveSettings.ExecutionType, liveSettings.ExecutionType);
+
+
+			if (liveSettings.WithClientStats && liveSettings.ExecutionType != EnSqlExecutionType.PlanOnly)
+			{
+				ConnectionStrategy.ResetAndEnableConnectionStatistics();
+			}
+
+
+			if (!OnScriptExecutionStarted(textSpan.Text, executionType, connection))
+			{
+				// OperationCanceledException ex = new("OnScriptExecutionStarted returned false");
+				// Diag.Dug(ex);
+				return false;
+			}
+
+
+
+			IsExecuting = true;
+			QueryExecutionStartTime = DateTime.Now;
+			QueryExecutionEndTime = DateTime.Now;
+
+
+			// -------------------------------------------------------------------------------- //
+			// ******************** Execution Point (2) - Execute() ******************** //
+			// --------------------------------------------------------------------------------
+
+			_SqlExec.ExecuteQuery(textSpan, executionType, connection, ResultsHandler, liveSettings);
+		}
+		finally
+		{
+			if (ttsEnabled)
+				LiveSettings.TtsEnabled = true;
+		}
+
+		return true;
 	}
 
 
 
-	public void Parse(IBTextSpan textSpan)
-	{
-		ValidateAndRun(textSpan, true, false);
-	}
-
-
-
-	public void Cancel(bool bSync)
+	public void Cancel(bool synchronous)
 	{
 		ScriptExecutionCompletedEventHandler scriptExecutionCompletedHandler = null;
 		try
@@ -330,11 +464,11 @@ public sealed class QueryManager : IDisposable
 				try
 				{
 					// Tracer.Trace(GetType(), "QryMgr.Cancel", "Issuing cancel request");
-					_SqlExec.Cancel(bSync, SyncCancelTimeout);
+					_SqlExec.Cancel(synchronous, SyncCancelTimeout);
 				}
 				finally
 				{
-					if (bSync)
+					if (synchronous)
 					{
 						IsExecuting = false;
 						UnRegisterSqlExecWithEventHandlers();
@@ -350,7 +484,7 @@ public sealed class QueryManager : IDisposable
 		finally
 		{
 			IsCancelling = false;
-			if (scriptExecutionCompletedHandler != null && bSync)
+			if (scriptExecutionCompletedHandler != null && synchronous)
 			{
 				scriptExecutionCompletedHandler(this, new ScriptExecutionCompletedEventArgs(EnScriptExecutionResult.Cancel));
 			}
@@ -377,7 +511,7 @@ public sealed class QueryManager : IDisposable
 			{
 				if (IsExecuting)
 				{
-					Cancel(bSync: true);
+					Cancel(synchronous: true);
 				}
 			}
 			catch (Exception ex)
@@ -475,6 +609,7 @@ public sealed class QueryManager : IDisposable
 	{
 		// Tracer.Trace(GetType(), "QryMgr.OnBatchExecutionCompleted", "", null);
 		_RowsAffected += args.Batch.RowsAffected;
+		_TotalRowsAffected += args.Batch.TotalRowsAffected;
 		BatchExecutionCompletedEvent?.Invoke(sender, args);
 	}
 
@@ -503,87 +638,6 @@ public sealed class QueryManager : IDisposable
 		ConnectionStrategy.ApplyConnectionOptions(args.Connection, LiveSettings);
 	}
 
-	private bool ValidateAndRun(IBTextSpan textSpan, bool parseOnly, bool withTts)
-	{
-		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun()", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + LiveSettings.WithEstimatedExecutionPlan);
-		
-		ConnectionStrategy.EnsureConnection(true);
-		IDbConnection connection = ConnectionStrategy.Connection;
-
-		if (connection == null)
-			return false;
-
-		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun()", "Ensured connection");
-
-		if (connection.State != ConnectionState.Open)
-		{
-			DataException ex = new("Connection is not open");
-			Diag.Dug(ex);
-			return false;
-		}
-
-		// Tracer.Trace(GetType(), "ValidateAndRun()", "execTimeout = {0}, bParseOnly = {1}", execTimeout, bParseOnly);
-		if (IsExecuting)
-		{
-			InvalidOperationException ex = new(ControlsResources.ExecutionNotCompleted);
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (!LiveSettingsApplied)
-		{
-			ConnectionStrategy.ApplyConnectionOptions(connection, LiveSettings);
-			LiveSettingsApplied = true;
-		}
-
-		if (textSpan == null)
-		{
-			ArgumentNullException ex = new("textSpan");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		TransientSettings sqlLiveSettings = CreateLiveSettingsObject();
-
-		if (parseOnly)
-		{
-			// Not supported.
-			sqlLiveSettings.ParseOnly = true;
-			sqlLiveSettings.SuppressProviderMessageHeaders = true;
-			// sqlLiveSettings.WithOleSqlScripting = SqlLiveSettings.WithOleSqlScripting;
-		}
-		else
-		{
-			if (sqlLiveSettings.WithClientStats)
-			{
-				ConnectionStrategy.ResetAndEnableConnectionStatistics();
-			}
-		}
-
-		sqlLiveSettings.WithTransactionTracking = withTts;
-
-
-		if (!OnScriptExecutionStarted(textSpan.Text, parseOnly, connection))
-		{
-			// OperationCanceledException ex = new("OnScriptExecutionStarted returned false");
-			// Diag.Dug(ex);
-			return false;
-		}
-
-
-
-		IsExecuting = true;
-		QueryExecutionStartTime = DateTime.Now;
-		QueryExecutionEndTime = DateTime.Now;
-
-
-		// -------------------------------------------------------------------------------- //
-		// ******************** Execution Point (4) - ValidateAndRun() ******************** //
-		// --------------------------------------------------------------------------------
-		_SqlExec.Execute(textSpan, connection, ResultsHandler, sqlLiveSettings);
-
-		return true;
-	}
 
 	private TransientSettings CreateLiveSettingsObject()
 	{
@@ -609,20 +663,16 @@ public sealed class QueryManager : IDisposable
 		IsCancelling = false;
 
 		if (LiveSettings.EditorExecutionDisconnectOnCompletion)
-		{
-			ConnectionStrategy.Transaction?.Dispose();
-			ConnectionStrategy.Transaction = null;
 			ConnectionStrategy.Connection.Close();
-			ConnectionStrategy.SetConnectionInfo(null);
-		}
 	}
 
-	private bool OnScriptExecutionStarted(string text, bool parseOnly, IDbConnection connection)
+	private bool OnScriptExecutionStarted(string text, EnSqlExecutionType executionType, IDbConnection connection)
 	{
 		_RowsAffected = 0L;
+		_TotalRowsAffected = 0L;
 		if (ScriptExecutionStartedEvent != null)
 		{
-			return ScriptExecutionStartedEvent(this, new(text, parseOnly, connection));
+			return ScriptExecutionStartedEvent(this, new(text, executionType, connection));
 		}
 
 		return true;
@@ -635,9 +685,9 @@ public sealed class QueryManager : IDisposable
 		StatementCompletedEvent?.Invoke(sender, args);
 	}
 
-	private void OnDataLoaded(object sender, QESQLDataLoadedEventArgs args)
+	private void OnDataLoaded(object sender, QESQLQueryDataEventArgs eventArgs)
 	{
-		DataLoadedEvent?.Invoke(sender, args);
+		DataLoadedEvent?.Invoke(sender, eventArgs);
 	}
 
 
@@ -685,6 +735,7 @@ public sealed class QueryManager : IDisposable
 		lock (_LockLocal)
 		{
 			_RowsAffected = 0L;
+			_TotalRowsAffected = 0L;
 			QueryExecutionStartTime = null;
 			QueryExecutionEndTime = null;
 			LiveSettingsApplied = false;

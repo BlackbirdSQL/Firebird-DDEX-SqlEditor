@@ -1,16 +1,16 @@
 ﻿
 using System;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Shell;
 
-using static BlackbirdSql.Core.Ctl.CoreConstants;
+using static BlackbirdSql.SysConstants;
+
 
 
 namespace BlackbirdSql.Core.Model;
+
 
 // =========================================================================================================
 //									AbstractRunningConnectionTable Class
@@ -211,10 +211,10 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			rNewRctConnection = false;
 			connectionIndex = Convert.ToInt32(row["Id"]);
 
-			oStoredConnectionSource = (EnConnectionSource)(int)row[CoreConstants.C_KeyExConnectionSource];
+			oStoredConnectionSource = (EnConnectionSource)(int)row[C_KeyExConnectionSource];
 
 			if (originalConnectionUrl != null)
-				oChangedTargetDatasetKey = (string)row[CoreConstants.C_KeyExDatasetKey];
+				oChangedTargetDatasetKey = (string)row[C_KeyExDatasetKey];
 		}
 
 
@@ -237,8 +237,8 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		// If there's a proposed ConnectionName and it's the same as the derived ConnectionName,
 		// it's also not needed.
 		if (proposedConnectionName != null &&
-			(proposedConnectionName == SystemData.DatasetKeyFmt.FmtRes(dataSource, derivedDatasetId)
-			|| proposedConnectionName == SystemData.DatasetKeyAlternateFmt.FmtRes(dataSource, derivedDatasetId)))
+			(proposedConnectionName == C_DatasetKeyFmt.FmtRes(dataSource, derivedDatasetId)
+			|| proposedConnectionName == C_DatasetKeyAlternateFmt.FmtRes(dataSource, derivedDatasetId)))
 		{
 			proposedConnectionNameIsDerived = true;
 			proposedConnectionName = null;
@@ -351,7 +351,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 						: (derivedDatasetIdPrefix + $"_{i + 1}");
 				}
 
-				oUniqueDatasetKey = SystemData.DatasetKeyFmt.FmtRes(dataSource, oUniqueDatasetId);
+				oUniqueDatasetKey = C_DatasetKeyFmt.FmtRes(dataSource, oUniqueDatasetId);
 
 				if (!TryGetEntry(oUniqueDatasetKey, out index))
 					break;
@@ -394,9 +394,9 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// connection.</param>
 	/// <param name="source">The source requesting the update.</param>
 	/// <returns>
-	/// A tuple (bool, CsbAgent) where: Item1 indicates whether or not the returned csa
+	/// A tuple (bool, Csb) where: Item1 indicates whether or not the returned csa
 	/// created from the provided connection string needed to be modified and Item2
-	/// contains the modified or unchanged CsbAgent, or null if no connection exists.
+	/// contains the modified or unchanged Csb, or null if no connection exists.
 	/// </returns>
 	/// <remarks>
 	/// UpdateRegisteredConnection will always return an updated csa, if it was updated,
@@ -405,7 +405,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// connection objects with the new property values.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public override CsbAgent UpdateRegisteredConnection(string connectionString, EnConnectionSource source, bool forceOwnership)
+	public override Csb UpdateRegisteredConnection(string connectionString, EnConnectionSource source, bool forceOwnership)
 	{
 		if (_InternalConnectionsTable == null)
 			return null;
@@ -417,8 +417,8 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			throw ex;
 		}
 
-		CsbAgent csa = new(connectionString);
-		// CsbAgent csaOriginal = (CsbAgent)csa.Clone();
+		Csb csa = new(connectionString);
+		// Csb csaOriginal = (Csb)csa.Clone();
 
 		string connectionUrl = csa.SafeDatasetMoniker;
 
@@ -472,11 +472,11 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			}
 			else if (csa.ContainsKey(C_KeyExDatasetId) && !string.IsNullOrWhiteSpace(csa.DatasetId))
 			{
-				csa.DatasetKey = SystemData.DatasetKeyFmt.FmtRes(csa.DataSource, csa.DatasetId);
+				csa.DatasetKey = C_DatasetKeyFmt.FmtRes(csa.DataSource, csa.DatasetId);
 			}
 			else
 			{
-				csa.DatasetKey = SystemData.DatasetKeyFmt.FmtRes(csa.DataSource, csa.Dataset);
+				csa.DatasetKey = C_DatasetKeyFmt.FmtRes(csa.DataSource, csa.Dataset);
 			}
 		}
 
@@ -484,9 +484,9 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		string rowDatasetKey = (string)row["DatasetKey"];
 
 		object rowObject = row["ConnectionName"];
-		string rowConnectionName = rowObject != null && rowObject != DBNull.Value ? (string)rowObject : null;
+		string rowConnectionName = rowObject != DBNull.Value ? rowObject?.ToString() : null;
 		rowObject = row["DatasetId"];
-		string rowDatasetId = rowObject != null && rowObject != DBNull.Value ? (string)rowObject : null;
+		string rowDatasetId = rowObject != DBNull.Value ? rowObject?.ToString() : null;
 
 		// string str = null;
 
@@ -605,7 +605,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 				Invalidate();
 
 
-			// bool updated = !CsbAgent.AreEquivalent(csa, csaOriginal, CsbAgent.DescriberKeys);
+			// bool updated = !Csb.AreEquivalent(csa, csaOriginal, Csb.DescriberKeys);
 
 			return csa;
 

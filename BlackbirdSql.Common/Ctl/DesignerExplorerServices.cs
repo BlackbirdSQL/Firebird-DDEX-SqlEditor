@@ -19,7 +19,7 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -127,7 +127,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		if (RctManager.ShutdownState)
 			return;
 
-		CsbAgent csa = RctManager.CloneRegistered(node);
+		Csb csa = RctManager.CloneRegistered(node);
 
 		RaiseBeforeOpenDocument(mkDocument, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
@@ -144,7 +144,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	private static bool OpenMiscellaneousSqlFile(string explorerMoniker, IVsDataExplorerNode node, EnModelTargetType targetType, CsbAgent csa)
+	private static bool OpenMiscellaneousSqlFile(string explorerMoniker, IVsDataExplorerNode node, EnModelTargetType targetType, Csb csa)
 	{
 		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "ExplorerMoniker: {0}.", explorerMoniker);
 
@@ -203,7 +203,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		string filename = Path.GetFileNameWithoutExtension(explorerMoniker);
 
-		string tempFilename = tempDirectory + "\\" + filename + SystemData.Extension;
+		string tempFilename = tempDirectory + "\\" + filename + DbNative.Extension;
 
 
 		if (tempFilename == null)
@@ -230,7 +230,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			RdtManager.InflightMonikerStack = explorerMoniker;
 			RdtManager.InflightMonikerCsbTable.Add(explorerMoniker, csa);
 
-			OpenAsMiscellaneousFile(tempFilename, filename + SystemData.Extension, new Guid(SystemData.EditorFactoryGuid),
+			OpenAsMiscellaneousFile(tempFilename, filename + DbNative.Extension, new Guid(SystemData.EditorFactoryGuid),
 				string.Empty, VSConstants.LOGVIEWID_Primary);
 		}
 		catch
@@ -267,7 +267,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject();
 
-		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, SystemData.Extension, "NewQuery", out string pbstrItemName);
+		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, DbNative.Extension, "NewQuery", out string pbstrItemName);
 		string tempFileName = Path.GetTempFileName();
 		if (tempFileName == null)
 		{
@@ -307,7 +307,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		if (RctManager.ShutdownState)
 			return;
 
-		CsbAgent csa = RctManager.CloneRegistered(datasetKey);
+		Csb csa = RctManager.CloneRegistered(datasetKey);
 
 		IList<string> identifierList = new List<string>() { "NewQuery" };
 		IList<string> identifierArray = null;

@@ -2,7 +2,7 @@
 // ManagedBatchParser.IVariableResolver
 
 
-using BlackbirdSql.Common.Model.Enums;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Common.Model.Interfaces;
 

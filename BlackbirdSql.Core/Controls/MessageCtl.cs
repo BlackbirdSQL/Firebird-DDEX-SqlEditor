@@ -8,7 +8,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Controls.Enums;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Properties;
 using Microsoft.Win32;
@@ -41,97 +40,97 @@ public class MessageCtl
 
 	public MessageCtl(Exception exception)
 	{
-		m_message = exception;
+		_ExMessage = exception;
 	}
 
 	public MessageCtl(string text)
 	{
-		m_text = text;
+		_Text = text;
 	}
 
 	public MessageCtl(Exception exception, string text)
 	{
-		m_text = text;
-		m_message = exception;
+		_Text = text;
+		_ExMessage = exception;
 	}
 
 	public MessageCtl(string text, string caption)
 	{
-		m_text = text;
-		m_caption = caption;
+		_Text = text;
+		_Caption = caption;
 	}
 
 	public MessageCtl(Exception exception, EnMessageBoxButtons buttons)
 	{
-		m_message = exception;
-		m_buttons = buttons;
+		_ExMessage = exception;
+		_Buttons = buttons;
 	}
 
 	public MessageCtl(string text, string caption, EnMessageBoxButtons buttons)
 	{
-		m_text = text;
-		m_caption = caption;
-		m_buttons = buttons;
+		_Text = text;
+		_Caption = caption;
+		_Buttons = buttons;
 	}
 
 	public MessageCtl(Exception exception, EnMessageBoxButtons buttons, EnMessageBoxSymbol symbol)
 	{
-		m_message = exception;
-		m_buttons = buttons;
-		m_symbol = symbol;
+		_ExMessage = exception;
+		_Buttons = buttons;
+		_Symbol = symbol;
 	}
 
 
 	public MessageCtl(Exception exception, string text, EnMessageBoxButtons buttons, EnMessageBoxSymbol symbol)
 	{
-		m_text = text;
-		m_message = exception;
-		m_buttons = buttons;
-		m_symbol = symbol;
+		_Text = text;
+		_ExMessage = exception;
+		_Buttons = buttons;
+		_Symbol = symbol;
 	}
 
 	public MessageCtl(string text, string caption, EnMessageBoxButtons buttons, EnMessageBoxSymbol symbol)
 	{
-		m_text = text;
-		m_caption = caption;
-		m_buttons = buttons;
-		m_symbol = symbol;
+		_Text = text;
+		_Caption = caption;
+		_Buttons = buttons;
+		_Symbol = symbol;
 	}
 
 	public MessageCtl(Exception exception, EnMessageBoxButtons buttons, EnMessageBoxSymbol symbol, EnMessageBoxDefaultButton defaultButton)
 	{
-		m_message = exception;
-		m_buttons = buttons;
-		m_symbol = symbol;
-		m_defaultButton = defaultButton;
+		_ExMessage = exception;
+		_Buttons = buttons;
+		_Symbol = symbol;
+		_DefaultButton = defaultButton;
 	}
 
 	public MessageCtl(string text, string caption, EnMessageBoxButtons buttons, EnMessageBoxSymbol symbol, EnMessageBoxDefaultButton defaultButton)
 	{
-		m_text = text;
-		m_caption = caption;
-		m_buttons = buttons;
-		m_symbol = symbol;
-		m_defaultButton = defaultButton;
+		_Text = text;
+		_Caption = caption;
+		_Buttons = buttons;
+		_Symbol = symbol;
+		_DefaultButton = defaultButton;
 	}
 
 	public MessageCtl(Exception exception, EnMessageBoxButtons buttons, EnMessageBoxSymbol symbol, EnMessageBoxDefaultButton defaultButton, EnMessageBoxOptions options)
 	{
-		m_message = exception;
-		m_buttons = buttons;
-		m_symbol = symbol;
-		m_defaultButton = defaultButton;
-		m_options = options;
+		_ExMessage = exception;
+		_Buttons = buttons;
+		_Symbol = symbol;
+		_DefaultButton = defaultButton;
+		_Options = options;
 	}
 
 	public MessageCtl(string text, string caption, EnMessageBoxButtons buttons, EnMessageBoxSymbol symbol, EnMessageBoxDefaultButton defaultButton, EnMessageBoxOptions options)
 	{
-		m_text = text;
-		m_caption = caption;
-		m_buttons = buttons;
-		m_symbol = symbol;
-		m_defaultButton = defaultButton;
-		m_options = options;
+		_Text = text;
+		_Caption = caption;
+		_Buttons = buttons;
+		_Symbol = symbol;
+		_DefaultButton = defaultButton;
+		_Options = options;
 	}
 
 
@@ -161,32 +160,32 @@ public class MessageCtl
 
 
 	private static string _ApplicationTitle;
-	private readonly string[] m_buttonTextArray = new string[5];
-	private int m_buttonCount;
-	private DialogResult m_defaultDialogResult = DialogResult.OK;
-	private string m_checkboxRegistryValue = string.Empty;
-	private bool m_CheckBoxRegistryMeansDoNotShowDialog = true;
-	private RegistryKey m_checkboxRegistryKey;
-	private bool m_useOwnerFont;
-	private string m_text = string.Empty;
-	private string m_helpLink = string.Empty;
-	private readonly Exception m_exData = new ApplicationException();
-	private Exception m_innerException;
-	private bool m_beep = true;
-	private bool m_showHelpButton = true;
-	private bool m_showCheckBox;
-	private bool m_isCheckBoxChecked;
-	private string m_caption = string.Empty;
-	private string m_checkBoxText = string.Empty;
-	private int m_messageLevelCount = -1;
-	private Bitmap m_customSymbol;
-	private Font m_font;
-	private Exception m_message;
-	private EnMessageBoxButtons m_buttons;
-	private EnMessageBoxSymbol m_symbol = EnMessageBoxSymbol.Warning;
-	private EnMessageBoxDefaultButton m_defaultButton;
-	private EnMessageBoxOptions m_options;
-	private EnMessageBoxDialogResult m_customDialogResult;
+	private readonly string[] _ButtonTextArray = new string[5];
+	private int _ButtonCount;
+	private DialogResult _DefaultDialogResult = DialogResult.OK;
+	private string _CheckBoxRegistryValue = string.Empty;
+	private bool _CheckBoxRegistryMeansDoNotShowDialog = true;
+	private RegistryKey _CheckBoxRegistryKey;
+	private bool _UseOwnerFont;
+	private string _Text = string.Empty;
+	private string _HelpLink = string.Empty;
+	private readonly Exception _ExContainer = new ApplicationException();
+	private Exception _InnerException;
+	private bool _Beep = true;
+	private bool _ShowToolBar = true;
+	private bool _ShowCheckBox;
+	private bool _IsCheckBoxChecked;
+	private string _Caption = string.Empty;
+	private string _CheckBoxText = string.Empty;
+	private int _MessageLevelCount = -1;
+	private Bitmap _CustomSymbol;
+	private Font _MessageFont;
+	private Exception _ExMessage;
+	private EnMessageBoxButtons _Buttons;
+	private EnMessageBoxSymbol _Symbol = EnMessageBoxSymbol.Warning;
+	private EnMessageBoxDefaultButton _DefaultButton;
+	private EnMessageBoxOptions _Options;
+	private EnMessageBoxDialogResult _CustomDialogResult;
 
 
 	#endregion Fields
@@ -217,135 +216,135 @@ public class MessageCtl
 		}
 	}
 
-	public Exception Message
+	public Exception ExMessage
 	{
-		get { return m_message; }
-		set { m_message = value; }
+		get { return _ExMessage; }
+		set { _ExMessage = value; }
 	}
 
 	public string Caption
 	{
-		get { return m_caption; }
-		set { m_caption = value; }
+		get { return _Caption; }
+		set { _Caption = value; }
 	}
 
 	public string Text
 	{
-		get { return m_text; }
-		set { m_text = value; }
+		get { return _Text; }
+		set { _Text = value; }
 	}
 
 	public string HelpLink
 	{
-		get { return m_helpLink; }
-		set { m_helpLink = value; }
+		get { return _HelpLink; }
+		set { _HelpLink = value; }
 	}
 
-	public IDictionary Data => m_exData.Data;
+	public IDictionary Data => _ExContainer.Data;
 
 	public Exception InnerException
 	{
-		get { return m_innerException; }
-		set { m_innerException = value; }
+		get { return _InnerException; }
+		set { _InnerException = value; }
 	}
 
 	public EnMessageBoxButtons Buttons
 	{
-		get { return m_buttons; }
-		set { m_buttons = value; }
+		get { return _Buttons; }
+		set { _Buttons = value; }
 	}
 
 	public EnMessageBoxSymbol Symbol
 	{
-		get { return m_symbol; }
-		set { m_symbol = value; }
+		get { return _Symbol; }
+		set { _Symbol = value; }
 	}
 
 	public Bitmap CustomSymbol
 	{
-		get { return m_customSymbol; }
-		set { m_customSymbol = value; }
+		get { return _CustomSymbol; }
+		set { _CustomSymbol = value; }
 	}
 
 	public EnMessageBoxDefaultButton DefaultButton
 	{
-		get { return m_defaultButton; }
-		set { m_defaultButton = value; }
+		get { return _DefaultButton; }
+		set { _DefaultButton = value; }
 	}
 
 	public EnMessageBoxOptions Options
 	{
-		get { return m_options; }
-		set { m_options = value; }
+		get { return _Options; }
+		set { _Options = value; }
 	}
 
 	public int MessageLevelDefault
 	{
-		get { return m_messageLevelCount; }
-		set { m_messageLevelCount = value; }
+		get { return _MessageLevelCount; }
+		set { _MessageLevelCount = value; }
 	}
 
 	public bool ShowToolBar
 	{
-		get { return m_showHelpButton; }
-		set { m_showHelpButton = value; }
+		get { return _ShowToolBar; }
+		set { _ShowToolBar = value; }
 	}
 
 	public bool UseOwnerFont
 	{
-		get { return m_useOwnerFont; }
-		set { m_useOwnerFont = value; }
+		get { return _UseOwnerFont; }
+		set { _UseOwnerFont = value; }
 	}
 
-	public Font Font
+	public Font MessageFont
 	{
-		get { return m_font; }
-		set { m_font = value; m_useOwnerFont = false; }
+		get { return _MessageFont; }
+		set { _MessageFont = value; _UseOwnerFont = false; }
 	}
 
 	public bool ShowCheckBox
 	{
-		get { return m_showCheckBox; }
-		set { m_showCheckBox = value; }
+		get { return _ShowCheckBox; }
+		set { _ShowCheckBox = value; }
 	}
 
 	public bool IsCheckBoxChecked
 	{
-		get { return m_isCheckBoxChecked; }
-		set { m_isCheckBoxChecked = value; }
+		get { return _IsCheckBoxChecked; }
+		set { _IsCheckBoxChecked = value; }
 	}
 
 	public string CheckBoxText
 	{
-		get { return m_checkBoxText; }
-		set {  m_checkBoxText = value; }
+		get { return _CheckBoxText; }
+		set {  _CheckBoxText = value; }
 	}
 
 	public RegistryKey CheckBoxRegistryKey
 	{
-		get { return m_checkboxRegistryKey; }
-		set { m_checkboxRegistryKey = value; }
+		get { return _CheckBoxRegistryKey; }
+		set { _CheckBoxRegistryKey = value; }
 	}
 
 	public string CheckBoxRegistryValue
 	{
-		get { return m_checkboxRegistryValue; }
-		set { m_checkboxRegistryValue = value; }
+		get { return _CheckBoxRegistryValue; }
+		set { _CheckBoxRegistryValue = value; }
 	}
 
 	public bool CheckBoxRegistryMeansDoNotShowDialog
 	{
-		get { return m_CheckBoxRegistryMeansDoNotShowDialog; }
-		set { m_CheckBoxRegistryMeansDoNotShowDialog = value; }
+		get { return _CheckBoxRegistryMeansDoNotShowDialog; }
+		set { _CheckBoxRegistryMeansDoNotShowDialog = value; }
 	}
 
 	public DialogResult DefaultDialogResult
 	{
-		get { return m_defaultDialogResult; }
-		set { m_defaultDialogResult = value; }
+		get { return _DefaultDialogResult; }
+		set { _DefaultDialogResult = value; }
 	}
 
-	public EnMessageBoxDialogResult CustomDialogResult => m_customDialogResult;
+	public EnMessageBoxDialogResult CustomDialogResult => _CustomDialogResult;
 
 	public static string OKButtonText => ControlsResources.OKButton;
 
@@ -365,8 +364,8 @@ public class MessageCtl
 
 	public bool Beep
 	{
-		get { return m_beep; }
-		set	{ m_beep = value; }
+		get { return _Beep; }
+		set	{ _Beep = value; }
 	}
 
 	public event CopyToClipboardEventHandler CopyToClipboardEvent;
@@ -386,34 +385,34 @@ public class MessageCtl
 
 	public void SetButtonText(string button1Text, string button2Text, string button3Text, string button4Text, string button5Text)
 	{
-		m_buttonTextArray[0] = button1Text;
-		m_buttonTextArray[1] = button2Text;
-		m_buttonTextArray[2] = button3Text;
-		m_buttonTextArray[3] = button4Text;
-		m_buttonTextArray[4] = button5Text;
+		_ButtonTextArray[0] = button1Text;
+		_ButtonTextArray[1] = button2Text;
+		_ButtonTextArray[2] = button3Text;
+		_ButtonTextArray[3] = button4Text;
+		_ButtonTextArray[4] = button5Text;
 		if (button1Text == null || button1Text.Length == 0)
 		{
-			m_buttonCount = 0;
+			_ButtonCount = 0;
 		}
 		else if (button2Text == null || button2Text.Length == 0)
 		{
-			m_buttonCount = 1;
+			_ButtonCount = 1;
 		}
 		else if (button3Text == null || button3Text.Length == 0)
 		{
-			m_buttonCount = 2;
+			_ButtonCount = 2;
 		}
 		else if (button4Text == null || button4Text.Length == 0)
 		{
-			m_buttonCount = 3;
+			_ButtonCount = 3;
 		}
 		else if (button5Text == null || button5Text.Length == 0)
 		{
-			m_buttonCount = 4;
+			_ButtonCount = 4;
 		}
 		else
 		{
-			m_buttonCount = 5;
+			_ButtonCount = 5;
 		}
 	}
 
@@ -442,7 +441,7 @@ public class MessageCtl
 	public DialogResult Show(IntPtr hwnd, string message, string source, string sourceAppName, string sourceAppVersion, string sourceModule, string sourceMessageId, string sourceLanguage)
 	{
 		MessageBoxParent owner = new MessageBoxParent(hwnd);
-		Message = new(message)
+		_ExMessage = new(message)
 		{
 			Source = source
 		};
@@ -451,83 +450,83 @@ public class MessageCtl
 
 	public DialogResult Show(IWin32Window owner)
 	{
-		if (m_message == null && (Text == null || Text.Length == 0))
+		if (_ExMessage == null && (Text == null || Text.Length == 0))
 		{
 			ArgumentNullException ex = new("Message");
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		if (m_buttons < EnMessageBoxButtons.OK || m_buttons > EnMessageBoxButtons.Custom)
+		if (_Buttons < EnMessageBoxButtons.OK || _Buttons > EnMessageBoxButtons.Custom)
 		{
-			InvalidEnumArgumentException ex = new("Buttons", (int)m_buttons, typeof(EnMessageBoxButtons));
+			InvalidEnumArgumentException ex = new("Buttons", (int)_Buttons, typeof(EnMessageBoxButtons));
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		if (m_symbol < EnMessageBoxSymbol.None || m_symbol > EnMessageBoxSymbol.Hand)
+		if (_Symbol < EnMessageBoxSymbol.None || _Symbol > EnMessageBoxSymbol.Hand)
 		{
-			InvalidEnumArgumentException ex = new("Symbol", (int)m_symbol, typeof(EnMessageBoxSymbol));
+			InvalidEnumArgumentException ex = new("Symbol", (int)_Symbol, typeof(EnMessageBoxSymbol));
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		if (m_defaultButton < EnMessageBoxDefaultButton.Button1 || m_defaultButton > EnMessageBoxDefaultButton.Button5)
+		if (_DefaultButton < EnMessageBoxDefaultButton.Button1 || _DefaultButton > EnMessageBoxDefaultButton.Button5)
 		{
-			InvalidEnumArgumentException ex = new("DefaultButton", (int)m_defaultButton, typeof(EnMessageBoxDefaultButton));
+			InvalidEnumArgumentException ex = new("DefaultButton", (int)_DefaultButton, typeof(EnMessageBoxDefaultButton));
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		if (((uint)m_options & 0xFFFFFFFCu) != 0)
+		if (((uint)_Options & 0xFFFFFFFCu) != 0)
 		{
-			InvalidEnumArgumentException ex = new("Options", (int)m_options, typeof(EnMessageBoxOptions));
+			InvalidEnumArgumentException ex = new("Options", (int)_Options, typeof(EnMessageBoxOptions));
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		if (m_buttons == EnMessageBoxButtons.Custom && m_buttonCount == 0)
+		if (_Buttons == EnMessageBoxButtons.Custom && _ButtonCount == 0)
 		{
 			Exception ex = new(ControlsResources.CustomButtonTextError);
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		if (m_messageLevelCount != -1 && m_messageLevelCount < 1)
+		if (_MessageLevelCount != -1 && _MessageLevelCount < 1)
 		{
-			ArgumentOutOfRangeException ex = new("MessageLevelDefault", m_messageLevelCount, ControlsResources.MessageLevelCountError);
+			ArgumentOutOfRangeException ex = new("MessageLevelDefault", _MessageLevelCount, ControlsResources.MessageLevelCountError);
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		bool hasError = m_message != null;
-		if (m_message == null)
+		bool hasError = _ExMessage != null;
+		if (_ExMessage == null)
 		{
-			m_message = new ApplicationException(m_text, m_innerException)
+			_ExMessage = new ApplicationException(_Text, _InnerException)
 			{
-				HelpLink = m_helpLink
+				HelpLink = _HelpLink
 			};
-			foreach (DictionaryEntry datum in m_exData.Data)
+			foreach (DictionaryEntry datum in _ExContainer.Data)
 			{
-				m_message.Data.Add(datum.Key, datum.Value);
+				_ExMessage.Data.Add(datum.Key, datum.Value);
 			}
 		}
 
-		if (m_useOwnerFont)
+		if (_UseOwnerFont)
 		{
 			try
 			{
 				if (owner is Form formCtl)
 				{
-					Font = formCtl.Font;
+					MessageFont = formCtl.Font;
 				}
 				else if (owner is UserControl control)
 				{
-					Font = control.Font;
+					MessageFont = control.Font;
 				}
 				else if (owner is Control fontControl)
 				{
-					Font = fontControl.Font;
+					MessageFont = fontControl.Font;
 				}
 			}
 			catch (Exception)
@@ -535,14 +534,14 @@ public class MessageCtl
 			}
 		}
 
-		if (m_showCheckBox && m_checkboxRegistryKey != null)
+		if (_ShowCheckBox && _CheckBoxRegistryKey != null)
 		{
 			try
 			{
-				m_isCheckBoxChecked = (int)m_checkboxRegistryKey.GetValue(m_checkboxRegistryValue, 0) != 0;
-				if (m_CheckBoxRegistryMeansDoNotShowDialog && m_isCheckBoxChecked)
+				_IsCheckBoxChecked = (int)_CheckBoxRegistryKey.GetValue(_CheckBoxRegistryValue, 0) != 0;
+				if (_CheckBoxRegistryMeansDoNotShowDialog && _IsCheckBoxChecked)
 				{
-					return m_defaultDialogResult;
+					return _DefaultDialogResult;
 				}
 			}
 			catch (Exception)
@@ -550,39 +549,39 @@ public class MessageCtl
 			}
 		}
 
-		if (m_caption == null || m_caption.Length == 0)
+		if (_Caption == null || _Caption.Length == 0)
 		{
-			m_caption = m_message.Source;
+			_Caption = _ExMessage.Source;
 		}
 
-		if ((m_caption == null || m_caption.Length == 0) && owner is Form form)
+		if ((_Caption == null || _Caption.Length == 0) && owner is Form form)
 		{
-			m_caption = form.Text;
+			_Caption = form.Text;
 		}
 
 		using AdvancedMessageBox messageBoxForm = new AdvancedMessageBox();
-		messageBoxForm.SetButtonText(m_buttonTextArray);
-		messageBoxForm.Buttons = m_buttons;
-		messageBoxForm.Caption = m_caption;
-		messageBoxForm.ExMessage = m_message;
-		messageBoxForm.Symbol = m_symbol;
-		messageBoxForm.DefaultButton = m_defaultButton;
-		messageBoxForm.Options = m_options;
-		messageBoxForm.DoBeep = m_beep;
-		messageBoxForm.CheckBoxText = m_checkBoxText;
-		messageBoxForm.IsCheckBoxChecked = m_isCheckBoxChecked;
-		messageBoxForm.ShowCheckBox = m_showCheckBox;
-		messageBoxForm.MaxMessages = m_messageLevelCount;
-		messageBoxForm.ShowHelpButton = m_showHelpButton;
+		messageBoxForm.SetButtonText(_ButtonTextArray);
+		messageBoxForm.Buttons = _Buttons;
+		messageBoxForm.Caption = _Caption;
+		messageBoxForm.ExMessage = _ExMessage;
+		messageBoxForm.Symbol = _Symbol;
+		messageBoxForm.DefaultButton = _DefaultButton;
+		messageBoxForm.Options = _Options;
+		messageBoxForm.DoBeep = _Beep;
+		messageBoxForm.CheckBoxText = _CheckBoxText;
+		messageBoxForm.IsCheckBoxChecked = _IsCheckBoxChecked;
+		messageBoxForm.ShowCheckBox = _ShowCheckBox;
+		messageBoxForm.MaxMessages = _MessageLevelCount;
+		messageBoxForm.ShowHelpButton = _ShowToolBar;
 		messageBoxForm.CopyToClipboardInternalEvent += OnCopyToClipboardEventInternal;
-		if (m_customSymbol != null)
+		if (_CustomSymbol != null)
 		{
-			messageBoxForm.CustomSymbol = m_customSymbol;
+			messageBoxForm.CustomSymbol = _CustomSymbol;
 		}
 
-		if (m_font != null)
+		if (_MessageFont != null)
 		{
-			messageBoxForm.Font = m_font;
+			messageBoxForm.Font = _MessageFont;
 		}
 
 		if (owner == null)
@@ -600,17 +599,17 @@ public class MessageCtl
 		{
 			if (hasError)
 			{
-				Trace.TraceError("ExceptionMessageBoxShown@" + m_message.Message);
-				Trace.Write(m_message);
+				Trace.TraceError("ExceptionMessageBoxShown@" + _ExMessage.Message);
+				Trace.Write(_ExMessage);
 			}
 			else
 			{
-				Trace.TraceInformation("ExceptionMessageBoxShown@" + m_message.Message);
+				Trace.TraceInformation("ExceptionMessageBoxShown@" + _ExMessage.Message);
 			}
 		};
 		messageBoxForm.FormClosed += delegate
 		{
-			Trace.TraceInformation("ExceptionMessageBoxClosed@" + m_message.Message);
+			Trace.TraceInformation("ExceptionMessageBoxClosed@" + _ExMessage.Message);
 		};
 		*/
 
@@ -619,13 +618,13 @@ public class MessageCtl
 
 		messageBoxForm.PrepareToShow();
 		DialogResult result = messageBoxForm.ShowDialog(owner);
-		if (messageBoxForm.ShowCheckBox && m_checkboxRegistryKey != null)
+		if (messageBoxForm.ShowCheckBox && _CheckBoxRegistryKey != null)
 		{
-			m_checkboxRegistryKey.SetValue(m_checkboxRegistryValue, messageBoxForm.IsCheckBoxChecked ? 1 : 0);
+			_CheckBoxRegistryKey.SetValue(_CheckBoxRegistryValue, messageBoxForm.IsCheckBoxChecked ? 1 : 0);
 		}
 
-		m_isCheckBoxChecked = messageBoxForm.IsCheckBoxChecked;
-		m_customDialogResult = messageBoxForm.CustomDialogResult;
+		_IsCheckBoxChecked = messageBoxForm.IsCheckBoxChecked;
+		_CustomDialogResult = messageBoxForm.CustomDialogResult;
 		return result;
 	}
 

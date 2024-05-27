@@ -20,12 +20,10 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
-using System.Collections;
 using System.Data;
 using System.Text;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -89,7 +87,7 @@ internal class DslTables : AbstractDslSchema
 			}
 
 			/* TABLE_TYPE */
-			if (restrictions.Length >= 4 && restrictions[3] != null)
+			else if (restrictions.Length >= 4 && restrictions[3] != null)
 			{
 				where.Append(" AND ");
 
@@ -114,7 +112,8 @@ internal class DslTables : AbstractDslSchema
 
 		sql.Append(" ORDER BY IS_SYSTEM_FLAG, OWNER_NAME, TABLE_NAME");
 
-		// Tracer.Trace(sql.ToString());
+		// Tracer.Trace(GetType(), "GetCommandText()", sql.ToString());
+
 		return sql;
 	}
 
@@ -122,26 +121,33 @@ internal class DslTables : AbstractDslSchema
 	{
 		// Tracer.Trace(GetType(), "DslTables.ProcessResult");
 
-		schema.BeginLoadData();
-
-		foreach (DataRow row in schema.Rows)
+		try
 		{
-			row["TABLE_TYPE"] = "TABLE";
-			if (Convert.ToInt32(row["IS_SYSTEM_FLAG"]) == 1)
+			schema.BeginLoadData();
+
+			foreach (DataRow row in schema.Rows)
 			{
-				row["TABLE_TYPE"] = "SYSTEM_TABLE";
+				row["TABLE_TYPE"] = "TABLE";
+				if (Convert.ToInt32(row["IS_SYSTEM_FLAG"]) == 1)
+				{
+					row["TABLE_TYPE"] = "SYSTEM_TABLE";
+				}
+				if (row["VIEW_SOURCE"] != DBNull.Value &&
+					row["VIEW_SOURCE"].ToString().Length > 0)
+				{
+					row["TABLE_TYPE"] = "VIEW";
+				}
 			}
-			if (row["VIEW_SOURCE"] != DBNull.Value &&
-				row["VIEW_SOURCE"].ToString().Length > 0)
-			{
-				row["TABLE_TYPE"] = "VIEW";
-			}
+
+			schema.EndLoadData();
+			schema.AcceptChanges();
+
+			schema.Columns.Remove("VIEW_SOURCE");
 		}
-
-		schema.EndLoadData();
-		schema.AcceptChanges();
-
-		schema.Columns.Remove("VIEW_SOURCE");
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
 	}
 
 	#endregion

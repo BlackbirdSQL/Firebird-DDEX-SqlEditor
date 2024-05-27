@@ -24,6 +24,7 @@ public class SqlEditorToggleResultsPaneCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
+
 		return VSConstants.S_OK;
 	}
 
@@ -33,12 +34,11 @@ public class SqlEditorToggleResultsPaneCommand : AbstractSqlEditorCommand
 		{
 			if (((IBTabbedEditorService)EditorWindow).ActiveTab is SqlEditorCodeTab)
 			{
-				bool flag = !EditorWindow.IsSplitterVisible;
-				EditorWindow.IsSplitterVisible = flag;
-				if (flag)
-				{
-					EditorWindow.SplittersVisible = flag;
-				}
+				bool splitterHidden = !EditorWindow.IsSplitterVisible;
+				EditorWindow.IsSplitterVisible = splitterHidden;
+
+				if (splitterHidden)
+					EditorWindow.SplittersVisible = splitterHidden;
 			}
 			else
 			{

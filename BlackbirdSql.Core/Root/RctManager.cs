@@ -6,18 +6,14 @@ using System.Globalization;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
-
-using CoreConstants = BlackbirdSql.Core.Ctl.CoreConstants;
 
 
 
@@ -217,11 +213,11 @@ public sealed class RctManager : IDisposable
 	/// <summary>
 	/// Returns the sequential stamp of the last attempt to modify the
 	/// <see cref="RunningConnectionTable"/> and is used to perform drift detection
-	/// to ensure uniformity of connections and <see cref="CsbAgent"/>s globally across
+	/// to ensure uniformity of connections and <see cref="Csb"/>s globally across
 	/// the extension.
 	/// </summary>
 	/// <remarks>
-	/// Objects that use connections or <see cref="CsbAgent"/>s record the stamp at the
+	/// Objects that use connections or <see cref="Csb"/>s record the stamp at the
 	/// time their connection or Csa is created.
 	/// Whenever the connection or Csa is accessed it must perform drift detection and
 	/// compare it's saved stamp value against the Rct's stamp. If they differ it must
@@ -245,7 +241,8 @@ public sealed class RctManager : IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// The glyph used to identify connections derived from External utility (Firebird)
+	/// The glyph used to identify connections derived from the External utility
+	/// (FlameRobin for the Firebird port).
 	/// connections.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -264,11 +261,11 @@ public sealed class RctManager : IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Clones and returns a CsbAgent instance from a registered connection using a
+	/// Clones and returns a Csb instance from a registered connection using a
 	/// ConnectionInfo object else null if the rct is in a shutdown state.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static CsbAgent CloneRegistered(IBPropertyAgent connectionInfo)
+	public static Csb CloneRegistered(IBPropertyAgent connectionInfo)
 	{
 		if (connectionInfo == null)
 		{
@@ -280,7 +277,7 @@ public sealed class RctManager : IDisposable
 		if (Rct == null)
 			return null;
 
-		CsbAgent csa = new(connectionInfo, false);
+		Csb csa = new(connectionInfo, false);
 		string connectionUrl = csa.SafeDatasetMoniker;
 
 
@@ -292,7 +289,7 @@ public sealed class RctManager : IDisposable
 		}
 
 
-		return new CsbAgent((string)row[CoreConstants.C_KeyExConnectionString]);
+		return new Csb((string)row[SysConstants.C_KeyExConnectionString]);
 	}
 
 
@@ -303,7 +300,7 @@ public sealed class RctManager : IDisposable
 	/// else null if the rct is in a shutdown state..
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static CsbAgent CloneRegistered(IDbConnection connection)
+	public static Csb CloneRegistered(IDbConnection connection)
 	{
 		if (connection == null)
 		{
@@ -323,7 +320,7 @@ public sealed class RctManager : IDisposable
 		}
 
 
-		return new CsbAgent((string)row[CoreConstants.C_KeyExConnectionString]);
+		return new Csb((string)row[SysConstants.C_KeyExConnectionString]);
 	}
 
 
@@ -334,7 +331,7 @@ public sealed class RctManager : IDisposable
 	/// Explorer node else null if the rct is in a shutdown state.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static CsbAgent CloneRegistered(IVsDataExplorerNode node)
+	public static Csb CloneRegistered(IVsDataExplorerNode node)
 	{
 		if (node == null)
 		{
@@ -346,7 +343,7 @@ public sealed class RctManager : IDisposable
 		if (Rct == null)
 			return null;
 
-		CsbAgent csa = new(node, false);
+		Csb csa = new(node, false);
 		string connectionUrl = csa.SafeDatasetMoniker;
 
 
@@ -358,7 +355,7 @@ public sealed class RctManager : IDisposable
 		}
 
 
-		return new CsbAgent((string)row[CoreConstants.C_KeyExConnectionString]);
+		return new Csb((string)row[SysConstants.C_KeyExConnectionString]);
 	}
 
 
@@ -371,7 +368,7 @@ public sealed class RctManager : IDisposable
 	/// The DatasetKey or ConnectionString.
 	/// </param>
 	// ---------------------------------------------------------------------------------
-	public static CsbAgent CloneRegistered(string hybridKey)
+	public static Csb CloneRegistered(string hybridKey)
 	{
 		if (hybridKey == null)
 		{
@@ -386,19 +383,19 @@ public sealed class RctManager : IDisposable
 		if (!Rct.TryGetHybridRowValue(hybridKey, out DataRow row))
 			return null;
 
-		return new CsbAgent((string)row[CoreConstants.C_KeyExConnectionString]);
+		return new Csb((string)row[SysConstants.C_KeyExConnectionString]);
 	}
 
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Clones a CsbAgent instance from a registered connection using an
+	/// Clones a Csb instance from a registered connection using an
 	/// IDbConnection , else null if the rct is in a shutdown state.
 	/// Finally registers the csa for validity state checks.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static CsbAgent CloneVolatile(IDbConnection connection)
+	public static Csb CloneVolatile(IDbConnection connection)
 	{
 		if (connection == null)
 		{
@@ -411,7 +408,7 @@ public sealed class RctManager : IDisposable
 			return null;
 
 
-		CsbAgent csa = CloneRegistered(connection);
+		Csb csa = CloneRegistered(connection);
 		csa.RegisterValidationState(connection.ConnectionString);
 
 		return csa;
@@ -450,9 +447,9 @@ public sealed class RctManager : IDisposable
 		if (!Rct.TryGetHybridRowValue(connectionValue, out DataRow row))
 			return null;
 
-		object @object = row[CoreConstants.C_KeyExConnectionKey];
+		object @object = row[SysConstants.C_KeyExConnectionKey];
 
-		return @object == DBNull.Value || @object == null ? null : (string)@object;
+		return @object == DBNull.Value  ? null : @object?.ToString();
 	}
 
 
@@ -588,9 +585,9 @@ public sealed class RctManager : IDisposable
 		if (!Rct.TryGetHybridRowValue(connectionValue, out DataRow row))
 			return null;
 
-		object @object = row[CoreConstants.C_KeyExConnectionString];
+		object @object = row[SysConstants.C_KeyExConnectionString];
 
-		return @object == DBNull.Value || @object == null ? null : (string)@object;
+		return @object == DBNull.Value ? null : @object?.ToString();
 	}
 
 
@@ -609,9 +606,9 @@ public sealed class RctManager : IDisposable
 		if (!Rct.TryGetHybridRowValue(connectionValue, out DataRow row))
 			return null;
 
-		object @object = row[CoreConstants.C_KeyExDatasetKey];
+		object @object = row[SysConstants.C_KeyExDatasetKey];
 
-		return @object == DBNull.Value || @object == null ? null : (string)@object;
+		return @object == DBNull.Value ? null : @object?.ToString();
 	}
 
 
@@ -623,7 +620,7 @@ public sealed class RctManager : IDisposable
 	/// rct is in a shutdown state..
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static CsbAgent EnsureInstance(string connectionString, EnConnectionSource source)
+	private static Csb EnsureInstance(string connectionString, EnConnectionSource source)
 	{
 		if (connectionString == null)
 		{
@@ -637,12 +634,12 @@ public sealed class RctManager : IDisposable
 
 
 		if (Rct.TryGetHybridRowValue(connectionString, out DataRow row))
-			return new CsbAgent((string)row[CoreConstants.C_KeyExConnectionString]);
+			return new Csb((string)row[SysConstants.C_KeyExConnectionString]);
 
 		// Calls to this method expect a registered connection. If it doesn't exist it means
 		// we're creating a new configured connection.
 
-		CsbAgent csa = new(connectionString);
+		Csb csa = new(connectionString);
 		string datasetId = csa.DatasetId;
 
 		if (string.IsNullOrWhiteSpace(datasetId))
@@ -650,12 +647,12 @@ public sealed class RctManager : IDisposable
 
 		// If the proposed key matches the proposed generated one, drop it.
 
-		if (csa.ContainsKey(CoreConstants.C_KeyExConnectionName)
+		if (csa.ContainsKey(SysConstants.C_KeyExConnectionName)
 			&& !string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SystemData.DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
-			|| SystemData.DatasetKeyAlternateFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
+			&& (SysConstants.C_DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
+			|| SysConstants.C_DatasetKeyAlternateFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
 		{
-			csa.Remove(CoreConstants.C_KeyExConnectionName);
+			csa.Remove(SysConstants.C_KeyExConnectionName);
 		}
 
 		Rct.RegisterUniqueConnection(csa.ConnectionName, datasetId, source, ref csa);
@@ -673,7 +670,7 @@ public sealed class RctManager : IDisposable
 	/// Finally registers the csa for validity state checks.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static CsbAgent EnsureVolatileInstance(IDbConnection connection, EnConnectionSource source)
+	public static Csb EnsureVolatileInstance(IDbConnection connection, EnConnectionSource source)
 	{
 		if (connection == null)
 		{
@@ -686,22 +683,22 @@ public sealed class RctManager : IDisposable
 			return null;
 
 
-		CsbAgent csa;
+		Csb csa;
 
 
 		if (Rct.TryGetHybridRowValue(connection.ConnectionString, out DataRow row))
 		{
-			csa = new((string)row[CoreConstants.C_KeyExConnectionString]);
+			csa = new((string)row[SysConstants.C_KeyExConnectionString]);
 			csa.RegisterValidationState(connection.ConnectionString);
 
-			// Tracer.Trace(typeof(CsbAgent), "EnsureVolatileInstance()", "Found registered DataRow for dbConnectionString: {0}\nrow ConnectionString: {1}\ncsa.ConnectionString: {2}.", connection.ConnectionString, (string)row[CoreConstants.C_KeyExConnectionString], csa.ConnectionString);
+			// Tracer.Trace(typeof(Csb), "EnsureVolatileInstance()", "Found registered DataRow for dbConnectionString: {0}\nrow ConnectionString: {1}\ncsa.ConnectionString: {2}.", connection.ConnectionString, (string)row[DbConstants.C_KeyExConnectionString], csa.ConnectionString);
 
 			return csa;
 		}
 
 		// New registration.
 
-		// Tracer.Trace(typeof(CsbAgent), "EnsureVolatileInstance()", "Could NOT find registered DataRow for dbConnectionString: {0}.", connection.ConnectionString);
+		// Tracer.Trace(typeof(Csb), "EnsureVolatileInstance()", "Could NOT find registered DataRow for dbConnectionString: {0}.", connection.ConnectionString);
 
 		csa = new(connection);
 		string datasetId = csa.DatasetId;
@@ -710,10 +707,10 @@ public sealed class RctManager : IDisposable
 			datasetId = csa.Dataset;
 
 		if (!string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SystemData.DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
-			|| SystemData.DatasetKeyAlternateFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
+			&& (SysConstants.C_DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
+			|| SysConstants.C_DatasetKeyAlternateFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
 		{
-			csa.ConnectionName = CoreConstants.C_DefaultExConnectionName;
+			csa.ConnectionName = SysConstants.C_DefaultExConnectionName;
 		}
 
 		if (Rct.RegisterUniqueConnection(csa.ConnectionName, datasetId, source, ref csa))
@@ -888,7 +885,7 @@ public sealed class RctManager : IDisposable
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private static bool ModifyServerExplorerConnection(IVsDataExplorerConnection explorerConnection,
-		ref CsbAgent csa, bool modifyExplorerConnection)
+		ref Csb csa, bool modifyExplorerConnection)
 	{
 		// Tracer.Trace(typeof(RctManager), "ModifyServerExplorerConnection()", "csa.ConnectionString: {0}, modifyExplorerConnection: {1}.", csa.ConnectionString, modifyExplorerConnection);
 
@@ -898,7 +895,7 @@ public sealed class RctManager : IDisposable
 		try
 		{
 
-			CsbAgent seCsa = new(explorerConnection.Connection.DecryptedConnectionString(), false);
+			Csb seCsa = new(explorerConnection.Connection.DecryptedConnectionString(), false);
 			string connectionKey = explorerConnection.GetConnectionKey(true);
 
 			if (string.IsNullOrWhiteSpace(csa.ConnectionKey) || csa.ConnectionKey != connectionKey)
@@ -910,7 +907,7 @@ public sealed class RctManager : IDisposable
 			// Sanity check. Should already be done.
 			// Perform a deep validation of the updated csa to ensure an update
 			// is in fact required.
-			bool updateRequired = !AbstractCsbAgent.AreEquivalent(csa, seCsa, CsbAgent.DescriberKeys, true);
+			bool updateRequired = !AbstractCsb.AreEquivalent(csa, seCsa, Csb.DescriberKeys, true);
 
 			if (explorerConnection.DisplayName.Equals(csa.DatasetKey))
 			{
@@ -1033,25 +1030,25 @@ public sealed class RctManager : IDisposable
 
 			foreach (DataRow row in Rct.InternalConnectionsTable.Rows)
 			{
-				datasetKey = row[CoreConstants.C_KeyExDatasetKey];
+				datasetKey = row[SysConstants.C_KeyExDatasetKey];
 
 				if (datasetKey == DBNull.Value || string.IsNullOrWhiteSpace((string)datasetKey))
 					continue;
 				str += "\n--------------------------------------------------------------------------------------";
-				str += $"\nDATASETKEY: {(string)row[CoreConstants.C_KeyExDatasetKey]}, ConnectionUrl: {(string)row[CoreConstants.C_KeyExConnectionUrl]}";
+				str += $"\nDATASETKEY: {(string)row[SysConstants.C_KeyExDatasetKey]}, ConnectionUrl: {(string)row[SysConstants.C_KeyExConnectionUrl]}";
 				str += "\n\t------------------------------------------";
 				str += "\n\t";
 
 				foreach (DataColumn col in Rct.Databases.Columns)
 				{
-					if (col.ColumnName == CoreConstants.C_KeyExDatasetKey || col.ColumnName == CoreConstants.C_KeyExConnectionUrl || col.ColumnName == CoreConstants.C_KeyExConnectionString)
+					if (col.ColumnName == SysConstants.C_KeyExDatasetKey || col.ColumnName == SysConstants.C_KeyExConnectionUrl || col.ColumnName == SysConstants.C_KeyExConnectionString)
 					{
 						continue;
 					}
 					str += $"{col.ColumnName}: {(row[col.ColumnName] == null ? "null" : row[col.ColumnName] == DBNull.Value ? "DBNull" : row[col.ColumnName].ToString())}, ";
 				}
 				str += "\n\t------------------------------------------";
-				str += $"\n\tConnectionString: {(string)row[CoreConstants.C_KeyExConnectionString]}";
+				str += $"\n\tConnectionString: {(string)row[SysConstants.C_KeyExConnectionString]}";
 			}
 
 			str += "\n--------------------------------------------------------------------------------------";
@@ -1095,33 +1092,33 @@ public sealed class RctManager : IDisposable
 			return connectionString;
 
 
-		CsbAgent csa = new(connectionString);
+		Csb csa = new(connectionString);
 
 
 		if (!Rct.TryGetHybridRowValue(csa.SafeDatasetMoniker, out DataRow row))
 			return connectionString;
 
-		object colObject = row[CoreConstants.C_KeyExDatasetKey];
-		if (colObject != null && colObject != DBNull.Value)
+		object colObject = row[SysConstants.C_KeyExDatasetKey];
+		if (!Cmd.IsNullValue(colObject))
 			csa.DatasetKey = (string)colObject;
 
-		colObject = row[CoreConstants.C_KeyExConnectionKey];
-		if (colObject != null && colObject != DBNull.Value)
+		colObject = row[SysConstants.C_KeyExConnectionKey];
+		if (!Cmd.IsNullValue(colObject))
 			csa.ConnectionKey = (string)colObject;
 
-		colObject = row[CoreConstants.C_KeyExConnectionName];
-		if (colObject != null && colObject != DBNull.Value)
+		colObject = row[SysConstants.C_KeyExConnectionName];
+		if (!Cmd.IsNullValue(colObject))
 			csa.ConnectionName = (string)colObject;
 
 		if (!string.IsNullOrEmpty(csa.ConnectionName))
 			colObject = null;
 		else
-			colObject = row[CoreConstants.C_KeyExDatasetId];
-		if (colObject != null && colObject != DBNull.Value)
+			colObject = row[SysConstants.C_KeyExDatasetId];
+		if (!Cmd.IsNullValue(colObject))
 			csa.DatasetId = (string)colObject;
 
-		colObject = row[CoreConstants.C_KeyExConnectionSource];
-		if (colObject != null && colObject != DBNull.Value)
+		colObject = row[SysConstants.C_KeyExConnectionSource];
+		if (!Cmd.IsNullValue(colObject))
 			csa.ConnectionSource = (EnConnectionSource)(int)colObject;
 
 		return csa.ConnectionString;
@@ -1134,14 +1131,14 @@ public sealed class RctManager : IDisposable
 	/// Updates an existing registered connection using the provided connection string.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static CsbAgent UpdateOrRegisterConnection(string connectionString,
+	public static Csb UpdateOrRegisterConnection(string connectionString,
 		EnConnectionSource source, bool addExplorerConnection, bool modifyExplorerConnection)
 	{
 		if (Rct == null)
 			return null;
 
 
-		CsbAgent csa = Rct.UpdateRegisteredConnection(connectionString, source, false);
+		Csb csa = Rct.UpdateRegisteredConnection(connectionString, source, false);
 
 
 		// If it's null force a creation.
@@ -1167,7 +1164,7 @@ public sealed class RctManager : IDisposable
 	/// <see cref="StoreUnadvisedConnection"/>.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	private static bool UpdateServerExplorer(ref CsbAgent csa,
+	private static bool UpdateServerExplorer(ref Csb csa,
 		bool addExplorerConnection, bool modifyExplorerConnection)
 	{
 		// Tracer.Trace(typeof(RctManager), "UpdateServerExplorer()", "csa.ConnectionString: {0}, addServerExplorerConnection: {1}, modifyExplorerConnection: {2}.", csa.ConnectionString, addExplorerConnection, modifyExplorerConnection);
@@ -1221,7 +1218,7 @@ public sealed class RctManager : IDisposable
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static void ValidateAndUpdateExplorerConnectionRename(IVsDataExplorerConnection explorerConnection,
-		string proposedConnectionName, CsbAgent csa)
+		string proposedConnectionName, Csb csa)
 	{
 		if (Rct == null)
 			return;
@@ -1282,16 +1279,16 @@ public sealed class RctManager : IDisposable
 		string caption;
 
 		// Sanity check.
-		if (proposedConnectionName.StartsWith(SystemData.Scheme))
+		if (proposedConnectionName.StartsWith(DbNative.Scheme))
 		{
-			if (csa.ContainsKey(CoreConstants.C_DefaultExDatasetKey))
+			if (csa.ContainsKey(SysConstants.C_DefaultExDatasetKey))
 			{
 				Rct.DisableEvents();
 				explorerConnection.DisplayName = csa.DatasetKey;
 				Rct.EnableEvents();
 
 				caption = ControlsResources.RctManager_CaptionInvalidConnectionName;
-				msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(SystemData.Scheme, proposedConnectionName);
+				msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(DbNative.Scheme, proposedConnectionName);
 				MessageCtl.ShowEx(msg, caption, MessageBoxButtons.OK);
 
 				return;
@@ -1335,14 +1332,14 @@ public sealed class RctManager : IDisposable
 		csa.DatasetKey = uniqueDatasetKey;
 
 		if (uniqueConnectionName == string.Empty)
-			csa.Remove(CoreConstants.C_KeyExConnectionName);
+			csa.Remove(SysConstants.C_KeyExConnectionName);
 		else if (uniqueConnectionName != null)
 			csa.ConnectionName = uniqueConnectionName;
 		else
 			csa.ConnectionName = proposedConnectionName;
 
 		if (uniqueDatasetId == string.Empty)
-			csa.Remove(CoreConstants.C_KeyExDatasetId);
+			csa.Remove(SysConstants.C_KeyExDatasetId);
 		else if (uniqueDatasetId != null)
 			csa.DatasetId = uniqueDatasetId;
 		else
@@ -1402,19 +1399,19 @@ public sealed class RctManager : IDisposable
 		string originalConnectionUrl = null;
 
 		if (originalConnectionString != null)
-			originalConnectionUrl = CsbAgent.CreateConnectionUrl(originalConnectionString);
+			originalConnectionUrl = Csb.CreateConnectionUrl(originalConnectionString);
 
 
-		string proposedConnectionName = site.ContainsKey(CoreConstants.C_KeyExConnectionName)
-			? (string)site[CoreConstants.C_KeyExConnectionName] : null;
+		string proposedConnectionName = site.ContainsKey(SysConstants.C_KeyExConnectionName)
+			? (string)site[SysConstants.C_KeyExConnectionName] : null;
 
 		string msg = null;
 		string caption = null;
 
-		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && proposedConnectionName.StartsWith(SystemData.Scheme))
+		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && proposedConnectionName.StartsWith(DbNative.Scheme))
 		{
 			caption = ControlsResources.RctManager_CaptionInvalidConnectionName;
-			msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(SystemData.Scheme, proposedConnectionName);
+			msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(DbNative.Scheme, proposedConnectionName);
 
 			MessageCtl.ShowEx(msg, caption, MessageBoxButtons.OK);
 
@@ -1422,11 +1419,11 @@ public sealed class RctManager : IDisposable
 			return (rSuccess, rAddInternally, rModifyInternally);
 		}
 
-		string proposedDatasetId = site.ContainsKey(CoreConstants.C_KeyExDatasetId)
-			? (string)site[CoreConstants.C_KeyExDatasetId] : null;
+		string proposedDatasetId = site.ContainsKey(SysConstants.C_KeyExDatasetId)
+			? (string)site[SysConstants.C_KeyExDatasetId] : null;
 
-		string dataSource = (string)site[CoreConstants.C_KeyDataSource];
-		string dataset = (string)site[CoreConstants.C_KeyExDataset];
+		string dataSource = (string)site[SysConstants.C_KeyDataSource];
+		string dataset = (string)site[SysConstants.C_KeyExDataset];
 
 		string connectionUrl = (site as IBDataConnectionProperties).Csa.DatasetMoniker;
 
@@ -1547,23 +1544,23 @@ public sealed class RctManager : IDisposable
 		// At this point we're good to go.
 
 		// Clean up the site properties.
-		if (!site.ContainsKey(CoreConstants.C_KeyExDatasetKey)
-			|| (string)site[CoreConstants.C_KeyExDatasetKey] != uniqueDatasetKey)
+		if (!site.ContainsKey(SysConstants.C_KeyExDatasetKey)
+			|| (string)site[SysConstants.C_KeyExDatasetKey] != uniqueDatasetKey)
 		{
-			site[CoreConstants.C_KeyExDatasetKey] = uniqueDatasetKey;
+			site[SysConstants.C_KeyExDatasetKey] = uniqueDatasetKey;
 		}
 
 		if (uniqueConnectionName == string.Empty)
-			site.Remove(CoreConstants.C_KeyExConnectionName);
+			site.Remove(SysConstants.C_KeyExConnectionName);
 		else if (uniqueConnectionName != null)
 		{
-			site[CoreConstants.C_KeyExConnectionName] = uniqueConnectionName;
+			site[SysConstants.C_KeyExConnectionName] = uniqueConnectionName;
 		}
 
 		if (uniqueDatasetId == string.Empty)
-			site.Remove(CoreConstants.C_KeyExDatasetId);
+			site.Remove(SysConstants.C_KeyExDatasetId);
 		else if (uniqueDatasetId != null)
-			site[CoreConstants.C_KeyExDatasetId] = uniqueDatasetId;
+			site[SysConstants.C_KeyExDatasetId] = uniqueDatasetId;
 
 
 		// Establish the connection owner.
@@ -1582,15 +1579,15 @@ public sealed class RctManager : IDisposable
 		{
 			// If the SE connection exists then it is the owner and we have to set the SE ConnectionKey
 			// and make the SE the owner.
-			string strValue = ((string)site[CoreConstants.C_KeyExConnectionKey]).Trim();
+			string strValue = ((string)site[SysConstants.C_KeyExConnectionKey]).Trim();
 
 			if (strValue != connectionKey)
-				site[CoreConstants.C_KeyExConnectionKey] = connectionKey;
+				site[SysConstants.C_KeyExConnectionKey] = connectionKey;
 
-			EnConnectionSource siteConnectionSource = (EnConnectionSource)site[CoreConstants.C_KeyExConnectionSource];
+			EnConnectionSource siteConnectionSource = (EnConnectionSource)site[SysConstants.C_KeyExConnectionSource];
 
 			if (siteConnectionSource != EnConnectionSource.ServerExplorer)
-				site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
+				site[SysConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
 		}
 
 		if (!serverExplorerInsertMode && createNew)

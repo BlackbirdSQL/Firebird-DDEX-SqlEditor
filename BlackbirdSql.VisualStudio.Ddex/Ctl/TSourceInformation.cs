@@ -2,18 +2,16 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 
-using FirebirdSql.Data.Services;
-using System.Data.Common;
-using System.Data;
-using System.Text;
 using System;
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 // =========================================================================================================
 //										TSourceInformation Class
@@ -117,7 +115,7 @@ public class TSourceInformation : AdoDotNetSourceInformation
 					{
 						string str = Connection.ServerVersion;
 						retval = str != null
-							? "Firebird " + FbServerProperties.ParseServerVersion(Connection.ServerVersion).ToString()
+							? Connection.GetDataSourceVersion()
 							: "";
 					}
 					catch { retval = ""; }

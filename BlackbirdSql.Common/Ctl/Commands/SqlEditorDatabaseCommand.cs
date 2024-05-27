@@ -8,16 +8,17 @@ using System.Data;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
+
 namespace BlackbirdSql.Common.Ctl.Commands;
+
 
 public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 {
@@ -27,9 +28,9 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 	/// This avoids repeatedly creating a new Moniker and going through the
 	/// registration process each time.
 	/// </summary>
-	private static CsbAgent _Csa = null;
+	private static Csb _Csa = null;
 
-	public static CsbAgent Csa => _Csa;
+	public static Csb Csa => _Csa;
 
 
 	public SqlEditorDatabaseCommand()
@@ -46,7 +47,8 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		if (!IsEditorExecuting())
+
+		if (!ExecutionLocked)
 		{
 			// Tracer.Trace("SqlEditorSqlDatabaseCommand:HandleQueryStatus enabled");
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
@@ -57,23 +59,20 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-		if (auxDocData == null)
+		if (AuxDocData == null)
 		{
 			Exception ex = new("AuxilliaryDocData NOT FOUND");
 			Diag.Dug(ex);
 			return VSConstants.S_OK;
 		}
 
-		QueryManager qryMgr = auxDocData.QryMgr;
-
-		if (qryMgr == null)
+		if (QryMgr == null)
 		{
 			ArgumentNullException ex = new("QryMgr is null");
 			Diag.Dug(ex);
 			return VSConstants.S_OK;
 		}
+
 
 		if (pvaIn != IntPtr.Zero)
 		{
@@ -83,7 +82,7 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 			try
 			{
-				SetDatasetKeyDisplayMember(auxDocData, selectedDatasetKey);
+				SetDatasetKeyDisplayMember(selectedDatasetKey);
 			}
 			catch (Exception ex)
 			{
@@ -93,7 +92,7 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 		}
 		else if (pvaOut != IntPtr.Zero)
 		{
-			IDbConnection connection = qryMgr.ConnectionStrategy.Connection;
+			IDbConnection connection = StoredQryMgr.ConnectionStrategy.Connection;
 			object objDatasetKey;
 
 			if (connection == null /* || connection.State != ConnectionState.Open */ || string.IsNullOrEmpty(connection.Database))
@@ -123,9 +122,9 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 		return VSConstants.S_OK;
 	}
 
-	private void SetDatasetKeyDisplayMember(AuxilliaryDocData auxDocData, string selectedDatasetKey)
+	private void SetDatasetKeyDisplayMember(string selectedDatasetKey)
 	{
-		IVsUserData vsUserData = auxDocData.VsUserData;
+		IVsUserData vsUserData = StoredAuxDocData.VsUserData;
 
 		if (vsUserData == null)
 		{
@@ -136,12 +135,12 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 		RctManager.Invalidate();
 
-		CsbAgent csa = (CsbAgent)auxDocData.UserDataCsb;
+		Csb csa = (Csb)StoredAuxDocData.UserDataCsb;
 
 		if (csa != null && csa.DatasetKey == null)
 		{
 			// csa.RegisterDataset();
-			Exception ex = new Exception("CsbAgent from docData.GetUserDataCsb() has no DatasetKey.");
+			Exception ex = new Exception("Csb from docData.GetUserDataCsb() has no DatasetKey.");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -174,13 +173,9 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 		}
 
 
-		AbstractConnectionStrategy connectionStrategy = auxDocData.QryMgr.ConnectionStrategy;
+		AbstractConnectionStrategy connectionStrategy = StoredAuxDocData.QryMgr.ConnectionStrategy;
 
 		connectionStrategy.SetDatasetKeyOnConnection(selectedDatasetKey, csa);
-		// IDbConnection connection = connectionStrategy.Connection;
-
-		// if (connection != null && connection.State == ConnectionState.Open)
-		// {
 
 		Guid clsid = VS.CLSID_PropDatabaseChanged;
 		___(vsUserData.SetData(ref clsid, connectionString));
@@ -192,6 +187,7 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 		_Csa = csa;
 		_Csa.RegisterValidationState(connectionString);
-		// }
+
 	}
+
 }

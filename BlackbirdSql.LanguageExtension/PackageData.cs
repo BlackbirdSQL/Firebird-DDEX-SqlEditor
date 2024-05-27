@@ -1,10 +1,6 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using BlackbirdSql.Core;
-
-
-
 namespace BlackbirdSql.LanguageExtension;
 
 
@@ -17,11 +13,13 @@ namespace BlackbirdSql.LanguageExtension;
 // =========================================================================================================
 static class PackageData
 {
-	public const string LanguageServiceName = "BlackbirdSql Language Service";
+	public const string LanguageServiceName = "SBsLanguageService";
 	public const string LanguageLongName = "Firebird-SQL";
 	public const string RegistrySettingsKey = "BlackbirdSql\\LanguageService";
 
 	public const string DefaultMessagePrefix = "FB-SQL: ";
+
+	public const string Extension = ".fbsql";
 
 
 

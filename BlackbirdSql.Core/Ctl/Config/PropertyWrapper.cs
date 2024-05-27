@@ -12,11 +12,10 @@ using System.IO;
 using System.Reflection;
 
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
-
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Settings;
 
 
@@ -141,8 +140,8 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 
 	public string Automator { get; }
 	public bool IsAutomator { get; }
-	public bool InvertAutomation { get; }
-	public int AutomationEnableValue { get; }
+	public bool InvertAutomator { get; }
+	public int AutomatorEnableValue { get; }
 
 	//
 	// Summary:
@@ -333,14 +332,14 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 				// Tracer.Trace($"Loaded default for {PropertyName}: {DefaultValue}.");
 				continue;
 			}
-			if (customAttribute is AutomationAttribute autoAttr)
+			if (customAttribute is AutomatorAttribute autoAttr)
 			{
 				Automator = autoAttr.Automator;
 				IsAutomator = Automator == null;
-				InvertAutomation = autoAttr.Invert;
-				AutomationEnableValue = autoAttr.EnableValue;
+				InvertAutomator = autoAttr.Invert;
+				AutomatorEnableValue = autoAttr.EnableValue;
 
-				// Tracer.Trace($"Loaded automation for {PropertyName}: Automator: {Automator} IsAutomator: {IsAutomator} InvertAutomation: {InvertAutomation}.");
+				// Tracer.Trace($"Loaded automator for {PropertyName}: Automator: {Automator} IsAutomator: {IsAutomator} InvertAutomator: {InvertAutomator}.");
 				continue;
 			}
 			if (customAttribute is DisplayOrderAttribute displayOrder)

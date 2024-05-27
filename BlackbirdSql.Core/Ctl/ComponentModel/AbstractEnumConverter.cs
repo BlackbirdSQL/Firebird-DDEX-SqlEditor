@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
-using BlackbirdSql.Core.Controls.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
-public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IBAutomationConverter, IDisposable
+public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IBAutomatorConverter, IDisposable
 {
 
 	// ---------------------------------------------------------------------------------
@@ -25,7 +24,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		if (_Model != null)
 		{
 			if (_IsAutomator)
-				_Model.AutomationPropertyValueChangedEvent -= OnAutomationPropertyValueChanged;
+				_Model.AutomatorPropertyValueChangedEvent -= OnAutomatorPropertyValueChanged;
 			_Model = null;
 		}
 	}
@@ -179,8 +178,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 			if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr)
 			{
-				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly",
-					BindingFlags.NonPublic | BindingFlags.Instance);
+				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly");
 
 				readOnly = pair.Value < 0 ? nNewValue == -pair.Value : nNewValue != pair.Value;
 
@@ -229,7 +227,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		_DefaultValue = (int)wrapper.DefaultValue;
 		_PropInfo = wrapper.PropInfo;
 
-		if (context.PropertyDescriptor.Attributes[typeof(AutomationAttribute)] is not AutomationAttribute attr
+		if (context.PropertyDescriptor.Attributes[typeof(AutomatorAttribute)] is not AutomatorAttribute attr
 			|| attr.Automator != null)
 		{
 			// Tracer.Trace($"Property {name} is not an automator.");
@@ -239,10 +237,10 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		// Tracer.Trace($"Property {name} IS an automator.");
 
 		if (prevModel != null)
-			prevModel.AutomationPropertyValueChangedEvent -= OnAutomationPropertyValueChanged;
+			prevModel.AutomatorPropertyValueChangedEvent -= OnAutomatorPropertyValueChanged;
 
 		_IsAutomator = true;
-		_Model.AutomationPropertyValueChangedEvent += OnAutomationPropertyValueChanged;
+		_Model.AutomatorPropertyValueChangedEvent += OnAutomatorPropertyValueChanged;
 
 		// Tracer.Trace($"Registering automator {_PropertyName}.");
 
@@ -252,8 +250,8 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{
-				// Tracer.Trace($"Registering automation dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
-				_Dependents.Add(property.PropertyName, property.AutomationEnableValue);
+				// Tracer.Trace($"Registering automator dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
+				_Dependents.Add(property.PropertyName, property.AutomatorEnableValue);
 			}
 		}
 
@@ -274,7 +272,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 	// =========================================================================================================
 
 
-	public void OnAutomationPropertyValueChanged(object sender, AutomationPropertyValueChangedEventArgs e)
+	public void OnAutomatorPropertyValueChanged(object sender, AutomatorPropertyValueChangedEventArgs e)
 	{
 		if (e.ChangedItem.PropertyDescriptor.Name != _PropertyName)
 			return;

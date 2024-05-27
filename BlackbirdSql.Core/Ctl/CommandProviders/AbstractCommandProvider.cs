@@ -3,13 +3,11 @@
 
 using System;
 using System.ComponentModel.Design;
-using System.Reflection;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
@@ -18,6 +16,7 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 namespace BlackbirdSql.Core.Ctl.CommandProviders;
+
 
 // =========================================================================================================
 //										AbstractCommandProvider Class
@@ -424,8 +423,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			// to create a new command using it's command provider.
 
 			// Get the connection node RetrieveData command's command provider.
-			IVsDataViewCommandProvider commandProvider = (IVsDataViewCommandProvider)Reflect.GetFieldValue(globalCommand,
-				"_commandProvider", BindingFlags.NonPublic | BindingFlags.Instance);
+			IVsDataViewCommandProvider commandProvider = (IVsDataViewCommandProvider)Reflect.GetFieldValue(globalCommand, "_commandProvider");
 
 			if (commandProvider == null)
 				return;
@@ -505,7 +503,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 			IBDesignerExplorerServices service = ApcManager.EnsureService<IBDesignerExplorerServices>();
 
-			CsbAgent csa = RctManager.CloneRegistered(Site.ExplorerConnection.ConnectionNode);
+			Csb csa = RctManager.CloneRegistered(Site.ExplorerConnection.ConnectionNode);
 
 			// Tracer.Trace(GetType(), "OnNewSqlQuery()", "csa.DatasetKey: {0}.", csa.DatasetKey);
 
@@ -548,7 +546,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			EnModelObjectType objectType = moniker.ObjectType;
 			string script = Moniker.GetDecoratedDdlSource(node, targetType);
 
-			CsbAgent csa = RctManager.CloneRegistered(node);
+			Csb csa = RctManager.CloneRegistered(node);
 
 			service.ViewCode(csa, objectType, identifierList, targetType, script);
 			*/

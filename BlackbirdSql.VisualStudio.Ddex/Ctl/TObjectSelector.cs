@@ -7,21 +7,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.CommandProviders;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
-using FirebirdSql.Data.FirebirdClient;
-
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.Shell.Interop;
+
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 
 // =========================================================================================================
@@ -121,10 +120,13 @@ public class TObjectSelector : TObjectSelectorTable
 
 		try
 		{
+			DbConnection connection = DbNative.CastToAssemblyConnection(lockedProviderObject);
+
 			// VS glitch. Null if ado has picked up a project data model firebird assembly.
-			if (lockedProviderObject is not FbConnection connection)
+			if (connection == null)
 			{
-				connection = new(Site.DecryptedConnectionString());
+				// Tracer.Trace(GetType(), "SelectObjects()", "Glitch!!!!");
+				connection = (DbConnection)DbNative.CreateDbConnection(Site.DecryptedConnectionString());
 				connection.Open();
 			}
 			else
@@ -135,11 +137,13 @@ public class TObjectSelector : TObjectSelectorTable
 
 			schema = GetSchema(connection, typeName, ref restrictions, parameters);
 
+			// Tracer.Trace(GetType(), "SelectObjects()", "Typename: {0}, Count: {1}.", typeName, schema.Rows.Count);
+
 			reader = new AdoDotNetTableReader(schema);
 		}
-		catch (FbException exf)
+		catch (DbException exf)
 		{
-			Tracer.Warning(GetType(), "SelectObjects", "Firebird error: {0}.", exf.Message);
+			Tracer.Warning(GetType(), "SelectObjects", "{0} error: {1}.", DbNative.DbEngineName, exf.Message);
 
 			LinkageParser parser = LinkageParser.GetInstance((IDbConnection)lockedProviderObject);
 			if (parser != null)
@@ -172,18 +176,21 @@ public class TObjectSelector : TObjectSelectorTable
 			base.GetSchema(connection, typeName, ref restrictions, parameters);
 
 
-		string[] array = null;
+		string[] restrictionArray = null;
+		string restriction;
 
 		if (restrictions != null)
 		{
-			array = new string[restrictions.Length];
-			for (int i = 0; i < array.Length; i++)
+			restrictionArray = new string[restrictions.Length];
+
+			for (int i = 0; i < restrictionArray.Length; i++)
 			{
-				array[i] = restrictions[i]?.ToString();
+				restriction = restrictions[i] == DBNull.Value ? null : restrictions[i]?.ToString();
+				restrictionArray[i] = restriction;
 			}
 		}
 
-		DataTable schema = DslProviderSchemaFactory.GetSchema((FbConnection)connection, parameters[0].ToString(), array);
+		DataTable schema = DslProviderSchemaFactory.GetSchema(connection, parameters[0].ToString(), restrictionArray);
 
 
 		if (parameters.Length == 2 && parameters[1] is DictionaryEntry entry)

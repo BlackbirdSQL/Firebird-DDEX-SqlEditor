@@ -2,7 +2,7 @@
 // Microsoft.SqlServer.ConnectionDlg.UI.ConnectionsLoadedEventArgs
 
 using System;
-using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.Core.Ctl.Events;

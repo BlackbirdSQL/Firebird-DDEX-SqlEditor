@@ -3,14 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using BlackbirdSql.Core.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Properties;
-using FbConnectionStringBuilder = FirebirdSql.Data.FirebirdClient.FbConnectionStringBuilder;
+using BlackbirdSql.Sys;
+
 
 
 namespace BlackbirdSql.Core.Ctl.Config;
+
 
 // =========================================================================================================
 //										PersistentSettings Class
@@ -33,7 +32,6 @@ public abstract class PersistentSettings : IBPersistentSettings
 
 	protected static IBPersistentSettings _Instance = null;
 	protected static Dictionary<string, object> _SettingsStore;
-	protected static string[] _EquivalencyKeys = new string[0];
 
 	#endregion Fields
 
@@ -120,20 +118,6 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static bool EnableSaveExtrapolatedXml => (bool)GetSetting("DdexDebugEnableSaveExtrapolatedXml", false);
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Equivalency keys are comprised of the mandatory connection properties
-	/// <see cref="FbConnectionStringBuilder.DataSource"/>, <see cref="FbConnectionStringBuilder.Port"/>,
-	/// <see cref="FbConnectionStringBuilder.Database"/>, <see cref="FbConnectionStringBuilder.UserID"/>,
-	/// <see cref="FbConnectionStringBuilder.ServerType"/>, <see cref="FbConnectionStringBuilder.Role"/>,
-	/// <see cref="FbConnectionStringBuilder.Charset"/>, <see cref="FbConnectionStringBuilder.Dialect"/>
-	/// and <see cref="FbConnectionStringBuilder.NoDatabaseTriggers"/>, and any additional optional
-	/// properties defined in the BlackbirdSQL Server Tools user options.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string[] EquivalencyKeys => _EquivalencyKeys;
 
 
 	/// <summary>
@@ -330,18 +314,46 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// </summary>
 	public virtual void PropagateSettings(PropagateSettingsEventArgs e)
 	{
-		List<string> equivalencyKeys = [];
+		PropagateEquivalencyKeys(e);
+		PropagateDiagnosticsSettings(e);
+	}
 
-		foreach (MutablePair<string, object> pair in e.Arguments)
+
+	private void PropagateEquivalencyKeys(PropagateSettingsEventArgs e)
+	{
+		if ((e.Package == null || e.Package == "Ddex") && (e.Group == null || e.Group == "Equivalency"))
 		{
-			this[pair.Key] = pair.Value;
-			if (pair.Key.StartsWith("DdexEquivalency") && (bool)pair.Value)
-				equivalencyKeys.Add(pair.Key[15..]);
+			List<string> equivalencyKeys = [];
+
+			foreach (MutablePair<string, object> pair in e.Arguments)
+			{
+				this[pair.Key] = pair.Value;
+				if (pair.Key.StartsWith("DdexEquivalency") && (bool)pair.Value)
+					equivalencyKeys.Add(pair.Key[15..]);
+			}
+
+			if (equivalencyKeys.Count > 0)
+				DbNative.EquivalencyKeys = [.. equivalencyKeys];
+
+		}
+	}
+
+
+	private void PropagateDiagnosticsSettings(PropagateSettingsEventArgs e)
+	{
+		if ((e.Package == null || e.Package == "Ddex") && (e.Group == null || e.Group == "General"))
+		{
+			Diag.SettingEnableTaskLog = EnableTaskLog;
+			Diag.SettingEnableDiagnostics = EnableDiagnostics;
 		}
 
-		if (equivalencyKeys.Count > 0)
-			_EquivalencyKeys = [.. equivalencyKeys];
-
+		if ((e.Package == null || e.Package == "Ddex") && (e.Group == null || e.Group == "Debug"))
+		{
+			Diag.SettingEnableTrace = EnableTrace;
+			Diag.SettingEnableTracer = EnableTracer;
+			Diag.SettingEnableDiagnosticsLog = EnableDiagnosticsLog;
+			Diag.SettingLogFile = LogFile;
+		}
 	}
 
 	#endregion Event handlers

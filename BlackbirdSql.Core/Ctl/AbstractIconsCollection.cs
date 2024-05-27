@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.Core.Ctl;

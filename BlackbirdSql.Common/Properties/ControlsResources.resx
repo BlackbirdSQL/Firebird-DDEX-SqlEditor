@@ -1018,7 +1018,7 @@
     <value>&lt;default&gt;</value>
   </data>
   <data name="DefaultMessageBoxCaption" xml:space="preserve">
-    <value>Microsoft SQL Server Management Studio</value>
+    <value>BlackbirdSQL SqlEditor</value>
   </data>
   <data name="DeriveToImplementCustomColumn" xml:space="preserve">
     <value>Use class derived from the grid control to implement custom columns.</value>
@@ -1139,6 +1139,15 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="ErrDirWasnotFoundForRCmd" xml:space="preserve">
     <value>Cannot find directory in the path specified for ":r" command.</value>
   </data>
+  <data name="ErrDisableTtsCaption" xml:space="preserve">
+    <value>Disable TTS Error</value>
+  </data>
+  <data name="ErrDisconnectCaption" xml:space="preserve">
+    <value>Disconnect Error</value>
+  </data>
+  <data name="ErrExecutionPlanCaption" xml:space="preserve">
+    <value>Execution Plan Error</value>
+  </data>
   <data name="ErrFatalScriptingErrorNoParam" xml:space="preserve">
     <value>A fatal scripting error occurred.</value>
   </data>
@@ -1172,6 +1181,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="ErrInvalidSetTextsize" xml:space="preserve">
     <value>TEXTSIZE value should be an integer between {0} and {1}.</value>
   </data>
+  <data name="ErrModifyConnectionCaption" xml:space="preserve">
+    <value>Modify Connection Error</value>
+  </data>
   <data name="ErrNotSupportedSqlCmdCommand" xml:space="preserve">
     <value>Command {0} is not supported. String was not processed.</value>
   </data>
@@ -1187,6 +1199,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="ErrPathIsTooLongForRCmd" xml:space="preserve">
     <value>The path specified to the :r command is too long.</value>
   </data>
+  <data name="ErrQueryExecutionCaption" xml:space="preserve">
+    <value>Query execution failed</value>
+  </data>
   <data name="ErrScriptingErrorNoParam" xml:space="preserve">
     <value>A scripting error occurred.</value>
   </data>
@@ -1196,8 +1211,17 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="ErrScriptingWarningNoParam" xml:space="preserve">
     <value>Scripting warning.</value>
   </data>
+  <data name="ErrSelectConnectionCaption" xml:space="preserve">
+    <value>Select Connection Error</value>
+  </data>
   <data name="ErrTextWriterNull" xml:space="preserve">
     <value>Text writer is null.</value>
+  </data>
+  <data name="ErrTransactionsActive" xml:space="preserve">
+    <value>Transactions are still active on this connection. You must Commit or Rollback Active Transactions before proceeding.</value>
+  </data>
+  <data name="ErrTtsCaption" xml:space="preserve">
+    <value>TTS Error</value>
   </data>
   <data name="ErrUnableToCloseCon" xml:space="preserve">
     <value>Unable to close connection specified in the SQLCMD script.</value>
@@ -1585,9 +1609,6 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="InvalidCommandType" xml:space="preserve">
     <value>Unsupported command object.  Use SqlCommand or ReliableSqlCommand.</value>
   </data>
-  <data name="InvalidConnectionType" xml:space="preserve">
-    <value>Invalid connection type</value>
-  </data>
   <data name="InvalidCurrentSelBlockForClicpboard" xml:space="preserve">
     <value>Cannot create clipboard data object for currently selected block of cells because nothing is selected</value>
   </data>
@@ -1923,9 +1944,9 @@ The Query Processor estimates that implementing the following index could improv
   <data name="RowIndexShouldBeInRange" xml:space="preserve">
     <value>Row index must be greater than or equal to zero and less than the number of rows.</value>
   </data>
-  <data name="RowsAffectedMessage" xml:space="preserve">
+  <data name="RowsSelectedMessage" xml:space="preserve">
     <value>
-    ({0} row(s) affected)
+    ({0} row(s) selected, {1} in total)
     </value>
   </data>
   <data name="RuntimeCounterThread" xml:space="preserve">
@@ -2062,17 +2083,32 @@ All files (*.*)
   <data name="SqlEditorTabbedEditorPane_ActualTextPlan_Button_Text" xml:space="preserve">
     <value>Execution plan (Actual)</value>
   </data>
+  <data name="SqlEditorTabbedEditorPane_MessageCount_Button_Text" xml:space="preserve">
+    <value>Messages ({0})</value>
+  </data>
   <data name="SqlEditorTabbedEditorPane_Message_Button_Text" xml:space="preserve">
-    <value>Message</value>
+    <value>Messages</value>
   </data>
   <data name="SqlEditorTabbedEditorPane_Plan_Button_Text" xml:space="preserve">
     <value>Execution visualizer (Estimated)</value>
   </data>
-  <data name="SqlEditorTabbedEditorPane_Results_Button_Text" xml:space="preserve">
-    <value>Results</value>
+  <data name="SqlEditorTabbedEditorPane_ResultsGridCount_Button_Text" xml:space="preserve">
+    <value>Tabulated Results ({0})</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_ResultsGrid_Button_Text" xml:space="preserve">
+    <value>Tabulated Results</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_ResultsTextCount_Button_Text" xml:space="preserve">
+    <value>Text Results ({0})</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_ResultsText_Button_Text" xml:space="preserve">
+    <value>Text Results</value>
   </data>
   <data name="SqlEditorTabbedEditorPane_Sql_Button_Text" xml:space="preserve">
     <value>FB-SQL</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_StatisticsSnapshotCount_Button_Text" xml:space="preserve">
+    <value>Statistics ({0})</value>
   </data>
   <data name="SqlEditorTabbedEditorPane_Statistics_Button_Text" xml:space="preserve">
     <value>Statistics</value>
@@ -2086,7 +2122,7 @@ All files (*.*)
   <data name="SQLErrorFormat4_NoSource" xml:space="preserve">
     <value>Msg {0}, Level {1}, State {2}</value>
   </data>
-  <data name="SQLErrorFormatFirebird" xml:space="preserve">
+  <data name="SQLErrorFormatDbEngine" xml:space="preserve">
     <value>{0}: Msg {1}, Level {2}, Line {3}</value>
   </data>
   <data name="SqlExecutionModeChangeFailed" xml:space="preserve">

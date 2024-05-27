@@ -10,6 +10,7 @@ using Microsoft.VisualStudio;
 namespace BlackbirdSql.Common.Controls.Tabs;
 
 
+
 public class SqlEditorResultsTab: AbstractSqlEditorTab
 {
 

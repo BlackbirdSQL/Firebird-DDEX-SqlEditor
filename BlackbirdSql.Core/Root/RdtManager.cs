@@ -119,7 +119,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// <summary>
 	/// Contains the registered fbsql++:// monikers of active editor documents in the
 	/// Rdt that were spawned from SE nodes.
-	/// The value is the CsbAgent csb of the SE ConnectionNode the moniker was spawned
+	/// The value is the Csb csb of the SE ConnectionNode the moniker was spawned
 	/// from.
 	/// Once an AuxilliaryDocData has used what it needs from the csb it should set it
 	/// to null but leave the entry intact.

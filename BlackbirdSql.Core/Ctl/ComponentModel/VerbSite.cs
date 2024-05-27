@@ -1,9 +1,8 @@
 ﻿using System;
-using System.ComponentModel.Design;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Reflection;
-using BlackbirdSql.Core.Ctl.Events;
-
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Utilities;
 
 

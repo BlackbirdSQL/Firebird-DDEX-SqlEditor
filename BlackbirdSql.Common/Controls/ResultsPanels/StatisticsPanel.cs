@@ -12,9 +12,7 @@ using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -125,15 +123,15 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		}
 	}
 
-	public void PopulateFromStatisticsControl(StatisticsControl control, Font curGridFont, Color curBkColor, Color curFkColor, Color selectedCellColor, Color inactiveSelectedCellColor, Color highlightedCellColor)
+	public void PopulateFromStatisticsCollection(StatisticsSnapshotCollection snapshots, Font curGridFont, Color curBkColor, Color curFkColor, Color selectedCellColor, Color inactiveSelectedCellColor, Color highlightedCellColor)
 	{
-		foreach (StatisticsConnection item in control)
-		{
-			AddGrid(item, curGridFont, curBkColor, curFkColor, selectedCellColor, inactiveSelectedCellColor, highlightedCellColor);
-		}
+		// foreach (ConnectionSnapshotCollection item in control)
+		// {
+			AddGrid(snapshots, curGridFont, curBkColor, curFkColor, selectedCellColor, inactiveSelectedCellColor, highlightedCellColor);
+		// }
 	}
 
-	private void AddGrid(StatisticsConnection connection, Font curGridFont, Color curBkColor, Color curFkColor, Color selectedCellColor, Color inactiveSelectedCellColor, Color highlightedCellColor)
+	private void AddGrid(StatisticsSnapshotCollection snapshots, Font curGridFont, Color curBkColor, Color curFkColor, Color selectedCellColor, Color inactiveSelectedCellColor, Color highlightedCellColor)
 	{
 		StatisticsDlgGridControl statisticsDlgGridControl = new StatisticsDlgGridControl(curBkColor, curFkColor, selectedCellColor, inactiveSelectedCellColor, highlightedCellColor);
 		DlgStorage dlgStorage = new DlgStorage(statisticsDlgGridControl);
@@ -147,7 +145,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		statisticsDlgGridControl.HeaderFont = curGridFont;
 		try
 		{
-			PopulateGrid(statisticsDlgGridControl, connection);
+			PopulateGrid(statisticsDlgGridControl, snapshots);
 		}
 		catch (Exception ex)
 		{
@@ -270,7 +268,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	}
 
 
-	private void AddStatistic(StatisticsDlgGridControl gridControl, StatisticsConnection connection, StatisticEntity[] statisticNames, int numberOfTries)
+	private void AddStatistic(StatisticsDlgGridControl gridControl, StatisticsSnapshotCollection snapshots, StatisticEntity[] statisticNames, int numberOfTries)
 	{
 		for (int i = 0; i < statisticNames.Length; i++)
 		{
@@ -283,18 +281,39 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			float result, nextResult;
 			float rowTotal = 0f;
 			string strAvg = "";
+			string strValue;
 
 			for (int j = 0; j < numberOfTries; j++)
 			{
-				(result, _) = CalculateValue(sn, connection[j].Snapshot, out string strValue);
+				try
+				{
+					(result, _) = CalculateValue(sn, snapshots[j].Snapshot, out strValue);
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex, $"Statistic: {sn.Name}.");
+					throw;
+				}
 
 				if (sn.CalculateAverage)
 					rowTotal += result;
 
 				if (j != numberOfTries - 1)
-					(nextResult, _) = CalculateValue(sn, connection[j + 1].Snapshot, out _);
+				{
+					try
+					{
+						(nextResult, _) = CalculateValue(sn, snapshots[j + 1].Snapshot, out _);
+					}
+					catch (Exception ex)
+					{
+						Diag.Dug(ex, $"Statistic: {sn.Name}.");
+						throw;
+					}
+				}
 				else
+				{
 					nextResult = result;
+				}
 
 				gridCellCollection.Add(new GridCell(strValue));
 
@@ -322,7 +341,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	/// This has all changed for the Firebird port and is now automated using the values
 	/// in StatisticsPropertySet
 	/// </summary>
-	private void PopulateGrid(StatisticsDlgGridControl gridControl, StatisticsConnection connection)
+	private void PopulateGrid(StatisticsDlgGridControl gridControl, StatisticsSnapshotCollection snapshots)
 	{
 		GridColumnInfo gridColumnInfo = new GridColumnInfo();
 		GridCellCollection[] gridCollections = new GridCellCollection[StatisticsPropertySet.SCategoryNames.Length];
@@ -345,10 +364,13 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 		// Add Cell to each category cell collection with the category title
 		for (int i = 0; i < gridCollections.Length; i++)
-			AddDarkColoredCell(gridCollections[i], StatisticsPropertySet.SCategoryNames[i]);
+		{
+			if (StatisticsPropertySet.SCategoryNames[i] != null)
+				AddDarkColoredCell(gridCollections[i], StatisticsPropertySet.SCategoryNames[i]);
+		}
 
 		// Now for each trial add a column to the grid control;
-		int connectionCount = Math.Min(connection.Count, 10);
+		int connectionCount = Math.Min(snapshots.Count, 10);
 		for (int i = 0; i < connectionCount; i++)
 		{
 			gridColumnInfo.ColumnType = 1;
@@ -369,7 +391,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				}
 				else
 				{
-					AddDarkColoredCell(gridCollections[j], StatisticsPropertySet.SCategoryValueDelegates[j](connection[i]));
+					AddDarkColoredCell(gridCollections[j], StatisticsPropertySet.SCategoryValueDelegates[j](snapshots[i]));
 				}
 			}
 
@@ -388,7 +410,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			// Set the header text for the trial column. Changed +2 to +1 because bitmap header column
 			// and column to it's left are no longer merged.
 			gridControl.SetHeaderInfo(2 * i + 1, string.Format(CultureInfo.CurrentCulture,
-				AttributeResources.StatisticsPanelSnapshotClientStatsTrial, connectionCount - i), null);
+				AttributeResources.StatisticsPanelSnapshotClientStatsTrial, snapshots.Count - i), null);
 
 			for (int j = 0; j < gridCollections.Length; j++)
 				AddDarkColoredCell(gridCollections[j], useNullBitmap: true);
@@ -408,7 +430,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			gridControl.AddRow(gridCollections[i]);
 
 			if (StatisticsPropertySet.SStatisticEntities[i].Length > 0)
-				AddStatistic(gridControl, connection, StatisticsPropertySet.SStatisticEntities[i], connectionCount);
+				AddStatistic(gridControl, snapshots, StatisticsPropertySet.SStatisticEntities[i], connectionCount);
 		}
 
 

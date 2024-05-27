@@ -1,0 +1,180 @@
+First we'll overview what we already know, and then we'll head into the meat of this, which is
+about Delegates, Lambdas, Action T, and Func T and finally their use in Tasks and Async functionality.
+
+Delegates
+---------
+
+	A delegate definition is equivalent to a singular interface defined method (function) signature.
+
+		eg.
+		public delegate int ExampleFuncHandler(int arg1, int arg2);
+
+		(Note we use the "Handler" suffix in the function naming convention.)
+
+
+
+	Now we can add a delegate property which can be assigned instances of that interface method / delegate definition.
+
+		eg.
+		public ExampleFuncHandler ExampleFuncDelegate;
+
+		(Note that here we use "Delegate" as the suffix.)
+
+
+	When a delegate is defined in a class in this way it is callable from an instance of that class. This is known as a contract.
+
+
+Events
+------
+
+	Now an event is really a delegate with signature:
+
+		public delegate void OutboundHandler(object sender, SomeEventArgs args);
+
+	And it's property would be defined as:
+
+		public OutboundHandler OutboundDelegate;
+
+	But to make it disdtinguishable in IDE as an event we use:
+
+		public event OutboundHandler OutboundEvent;
+
+		(Note that here assignment is += / -=)
+
+
+	Now instead of using ..Handler and ..Event we can use the single definition:
+
+		public event EventHandler<SomeEventArgs> OutboundEvent;
+
+	So our implementation of OutBoundEvent will be:
+
+		void OnOutboundEvent(object sender, SomeEventArgs args)
+		{
+			statements..;..;
+		}
+
+	And we can assign using:
+
+		OutboundEvent += OnOutboundEvent;
+
+
+
+Using an Anonymous function
+---------------------------
+
+	c# supports anonymous functions in pretty much the same way a Javascript using a Lambda expression.
+	So we could for OnOutboundEvent...
+
+		OutboundEvent += (sender, args) => { statements..;..; }
+
+
+
+Extending Lamda's
+-----------------
+
+	Going back to defining a delegate signature, suppose...
+
+		public delegate double CalculateInputsHandler(int value1, double value2);
+		public delegate void CalculationResultHandler(double result);
+
+		and event property for output:
+
+		public CalculationResultHandler CalculationResultEvent;
+			
+
+	Then we could raise this and output with the following method definition and implementation:
+
+		public void ExecuteCalculation(int value1, double value2, CalculationInputsHandler calculationFunc)
+		{
+			CalculationResultEvent(calculationFunc(value1, value2));
+		}
+
+
+	Now externally we can call this functionality on an instance "instance" of the above like so:
+
+		private double MyCalcFunc(int value1, double value2)
+		{
+			return value1 * value2;
+		}
+
+		instance.ExecuteCalculation(23, 456.44, MyCalcFunc);
+
+
+	And now by using an anonymous function in place of defining and passing MyCalcFunc we can...
+
+		instance.ExecuteCalculation((23, 456.44, (val1, val2) => { return val1 * val2; });
+
+
+		or, because we have a single statement lambda, we may drop the braces...
+
+		instance.ExecuteCalculation((23, 456.44, (val1, val2) => val1 * val2);
+
+
+Action<T>
+---------
+
+	c# defines a shorthand single line "template" for delegates and events of the form:
+
+		delegate void CalculationResultHandler(double result1, ...);
+		public CalculationResultHandler CalculationResultEvent;
+
+
+	This is an Action<T, ...>
+
+
+	So for our delegate signature definition and event property...
+
+		public delegate void CalculationResultHandler(double result);
+		public CalculationResultHandler CalculationResultEvent;
+
+
+	We can write:
+
+		public Action<double> CalculationResultAction;
+
+
+	and to raise the Action<T>...
+
+		public void ExecuteCalculation(int value1, double value2, CalculationInputsHandler calculationFunc)
+		{
+			CalculationResultAction(calculationFunc(value1, value2));
+		}
+
+
+
+Func<TInput1, ..., TResult>
+---------------------------
+
+	As with Action<T> c# defines a shorthand "template" for delegates of the form:
+
+		delegate double CalculateInputsHandler(int value1, double value2);
+
+
+	This is an Func<TInput, ..., TResult>
+
+
+	So for our delegate signature definition we can instead write:
+
+		public Func<int, double, double> CalculateInputsFunc;
+
+
+	and to use the CalculateInputsFunc and raise the Action<double> we can write:
+
+		public void ExecuteCalculation(int value1, double value2, CalculateInputsFunc calculationFunc)
+		{
+			CalculationResultAction(calculationFunc(value1, value2));
+		}
+
+
+
+	And further we in fact no longer have to define this delegate with a return type at all.
+	We can drop the CalculateInputsFunc definition altogether and raise Action<> using...
+
+		public void ExecuteCalculation(int value1, double value2, Func<int, double, double> calculationFunc)
+		{
+			CalculationResultAction(calculationFunc(value1, value2));
+		}
+
+
+	So in summary an Func<TInput1, ..., TResult> encapsulates a TResult delegate signature (..Handler) and negates the
+	need for a Func delegate definition, because it can all be done inline.

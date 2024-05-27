@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using BlackbirdSql.Core.Controls.Events;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.Core.Controls.Interfaces;
@@ -7,12 +7,12 @@ namespace BlackbirdSql.Core.Controls.Interfaces;
 public interface IBSettingsPage
 {
 	delegate void EditControlFocusEventHandler(object sender, EditControlFocusEventArgs e);
-	delegate void AutomationPropertyValueChangedEventHandler(object sender, AutomationPropertyValueChangedEventArgs e);
+	delegate void AutomatorPropertyValueChangedEventHandler(object sender, AutomatorPropertyValueChangedEventArgs e);
 
 
 	event EditControlFocusEventHandler EditControlGotFocusEvent;
 	event EditControlFocusEventHandler EditControlLostFocusEvent;
-	event AutomationPropertyValueChangedEventHandler AutomationPropertyValueChangedEvent;
+	event AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
 
 
 	PropertyGrid Grid { get; }

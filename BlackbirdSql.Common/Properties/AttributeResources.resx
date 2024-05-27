@@ -175,7 +175,7 @@
     <value>Display name</value>
   </data>
   <data name="PropertyWindowPortDescription" xml:space="preserve">
-    <value>The Tcpip port utilized by the Firebird server</value>
+    <value>The Tcpip port utilized by the Database server</value>
   </data>
   <data name="PropertyWindowPortDisplayName" xml:space="preserve">
     <value>Server Port</value>
@@ -317,10 +317,10 @@
     <value>Server Statistics</value>
   </data>
   <data name="StatisticsPanelCategorySnapshotTimestamp" xml:space="preserve">
-    <value>Snapshot Timestamp</value>
+    <value>Time Statistics (Snapshot Timestamp)</value>
   </data>
   <data name="StatisticsPanelCategoryTimeStats" xml:space="preserve">
-    <value>Time Statistics</value>
+    <value>Snapshot Timestamp</value>
   </data>
   <data name="StatisticsPanelPacketSize" xml:space="preserve">
     <value>Network packet size</value>
@@ -352,17 +352,23 @@
   <data name="StatisticsPanelStatDelRowCount" xml:space="preserve">
     <value>Rows affected by DELETE statements</value>
   </data>
+  <data name="StatisticsPanelStatDelRowEntities" xml:space="preserve">
+    <value>Tables affected by DELETE statements</value>
+  </data>
   <data name="StatisticsPanelStatExecutionEndTimeEpoch" xml:space="preserve">
-    <value>Execution end time</value>
+    <value>Execution end time (UTC)</value>
   </data>
   <data name="StatisticsPanelStatExecutionStartTimeEpoch" xml:space="preserve">
-    <value>Execution start time</value>
+    <value>Execution start time (UTC)</value>
   </data>
   <data name="StatisticsPanelStatExecutionTimeTicks" xml:space="preserve">
     <value>Execution time</value>
   </data>
   <data name="StatisticsPanelStatExpungeCount" xml:space="preserve">
-    <value>Number of server expunge requests</value>
+    <value>Expunged records</value>
+  </data>
+  <data name="StatisticsPanelStatExpungeEntities" xml:space="preserve">
+    <value>Tabled affected by expunged records</value>
   </data>
   <data name="StatisticsPanelStatIduRowCount" xml:space="preserve">
     <value>Rows affected by INS, DEL, or UPD statements</value>
@@ -370,8 +376,8 @@
   <data name="StatisticsPanelStatInsRowCount" xml:space="preserve">
     <value>Rows affected by INSERT statements</value>
   </data>
-  <data name="StatisticsPanelStatMarks" xml:space="preserve">
-    <value>Number of server marks</value>
+  <data name="StatisticsPanelStatInsRowEntities" xml:space="preserve">
+    <value>Tables affected by INSERT statements</value>
   </data>
   <data name="StatisticsPanelStatMaxMemory" xml:space="preserve">
     <value>Maximum client memory allocated</value>
@@ -386,31 +392,46 @@
     <value>Database page size</value>
   </data>
   <data name="StatisticsPanelStatPurgeCount" xml:space="preserve">
-    <value>Number of server purge requests</value>
+    <value>Purged records</value>
+  </data>
+  <data name="StatisticsPanelStatPurgeEntities" xml:space="preserve">
+    <value>Tables affected by purged records</value>
   </data>
   <data name="StatisticsPanelStatReadCount" xml:space="preserve">
-    <value>Number of server read requests</value>
+    <value>Server page reads</value>
   </data>
   <data name="StatisticsPanelStatReadIdxCount" xml:space="preserve">
-    <value>Server index read requests</value>
+    <value>Number of index read requests</value>
+  </data>
+  <data name="StatisticsPanelStatReadIdxEntities" xml:space="preserve">
+    <value>Index tables used for read requests</value>
   </data>
   <data name="StatisticsPanelStatReadSeqCount" xml:space="preserve">
-    <value>Server sequential read requests</value>
+    <value>Number of sequential read requests</value>
+  </data>
+  <data name="StatisticsPanelStatReadSeqEntities" xml:space="preserve">
+    <value>Tables used in sequential read requests</value>
   </data>
   <data name="StatisticsPanelStatSelectRowCount" xml:space="preserve">
     <value>Rows returned by SELECT statements</value>
   </data>
-  <data name="StatisticsPanelStatServerRoundtrips" xml:space="preserve">
-    <value>Number of server fetches</value>
+  <data name="StatisticsPanelStatServerCacheReadCount" xml:space="preserve">
+    <value>Server cache reads</value>
+  </data>
+  <data name="StatisticsPanelStatServerCacheWriteCount" xml:space="preserve">
+    <value>Server cache writes</value>
   </data>
   <data name="StatisticsPanelStatTransactions" xml:space="preserve">
-    <value>Number of transactions </value>
+    <value>Active transactions </value>
   </data>
   <data name="StatisticsPanelStatUpdRowCount" xml:space="preserve">
     <value>Rows affected by UPDATE statements</value>
   </data>
+  <data name="StatisticsPanelStatUpdRowEntities" xml:space="preserve">
+    <value>Tables affected by UPDATE statements</value>
+  </data>
   <data name="StatisticsPanelStatWriteCount" xml:space="preserve">
-    <value>Number of server write requests</value>
+    <value>Server page writes</value>
   </data>
   <data name="ToolOptionExecutionTimeDescription" xml:space="preserve">
     <value>Select type of time display to include on the status bar.</value>

@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Interfaces;
@@ -17,12 +18,14 @@ using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
@@ -32,9 +35,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Threading;
+
 
 
 namespace BlackbirdSql.Common.Controls;
+
 
 public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEditorWindowPane, IBEditorWindowPane, IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
@@ -154,10 +160,11 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		}
 	}
 
-	public bool IsExecutionPlanTabVisible => GetSqlExecutionPlanTab().IsVisible;
+	// public bool IsExecutionPlanTabVisible => GetSqlExecutionPlanTab().IsVisible;
 
-	public bool IsExecutionPlanButtonChecked => IsTabButtonChecked(GetSqlExecutionPlanTab());
+	// public bool IsExecutionPlanButtonChecked => IsTabButtonChecked(GetSqlExecutionPlanTab());
 
+	/*
 	public bool IsExecutionPlanButtonVisible
 	{
 		get
@@ -169,6 +176,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			GetSqlExecutionPlanTab().TabButtonVisible = value;
 		}
 	}
+	*/
 
 	public bool IsTextPlanTabVisible => GetSqlTextPlanTab().IsVisible;
 
@@ -309,6 +317,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		}
 	}
 
+	/*
 	public ExecutionPlanPanel ExecutionPlanPanel
 	{
 		get
@@ -327,7 +336,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			return executionPlanPanel;
 		}
 	}
-
+	*/
 
 	public VSTextEditorPanel TextPlanPanel
 	{
@@ -352,15 +361,16 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 	protected override void Initialize()
 	{
+		TabbedEditorUiCtl.SuspendLayout();
+		TabbedEditorUiCtl.SplitViewContainer.SuspendLayout();
+
 		try
 		{
-			TabbedEditorUiCtl.SuspendLayout();
-			TabbedEditorUiCtl.SplitViewContainer.SuspendLayout();
 			base.Initialize();
 			_ViewFilter = CreateViewFilter();
 			SplitViewContainer splitViewContainer = TabbedEditorUiCtl.SplitViewContainer;
 			splitViewContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_TextView, EnSplitterBarButtonDisplayStyle.Text, ControlsResources.SqlEditorTabbedEditorPane_Sql_Button_Text, ControlsResources.TSQL);
-			splitViewContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.Text, ControlsResources.SqlEditorTabbedEditorPane_Results_Button_Text, ControlsResources.Results);
+			splitViewContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.Text, ControlsResources.SqlEditorTabbedEditorPane_ResultsGrid_Button_Text, ControlsResources.Results);
 			splitViewContainer.SplittersVisible = false;
 			splitViewContainer.IsSplitterVisible = false;
 			splitViewContainer.SwapButtons();
@@ -380,12 +390,14 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		{
 			TabbedEditorUiCtl.SplitViewContainer.ResumeLayout(performLayout: false);
 			TabbedEditorUiCtl.ResumeLayout(performLayout: false);
-			TabbedEditorUiCtl.PerformLayout();
 		}
+
+		TabbedEditorUiCtl.PerformLayout();
 	}
 
 	private void TabActivatedHandler(object sender, EventArgs args)
 	{
+		// Tracer.Trace(GetType(), "TabActivatedHandler", "SenderType: {0}, View: {1}.", sender.GetType().Name, (sender as AbstractEditorTab).GetView());
 		((sender as AbstractEditorTab).GetView() as ResultWindowPane)?.SetFocus();
 	}
 
@@ -429,11 +441,12 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			return new SqlEditorResultsTab(this, logicalView, editorLogicalView, editorTabType);
 		}
 
+		/*
 		if (logicalView == new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid))
 		{
 			return new SqlEditorResultsTab(this, logicalView, editorLogicalView, editorTabType);
 		}
-
+		*/
 
 		return result;
 	}
@@ -445,20 +458,20 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
 		QueryManager qryMgr = auxDocData.QryMgr;
 
-		bool isActual = qryMgr.LiveSettings.WithExecutionPlan && !qryMgr.LiveSettings.WithEstimatedExecutionPlan;
+		bool hasActualPlan = qryMgr.LiveSettings.ExecutionType == EnSqlExecutionType.QueryWithPlan;
 
-		string btnPlanText = isActual
-			? ControlsResources.SqlEditorTabbedEditorPane_ActualPlan_Button_Text
-			: ControlsResources.SqlEditorTabbedEditorPane_Plan_Button_Text;
-		string btnTextPlanText = isActual
+		// string btnPlanText = hasActualPlan
+		//	? ControlsResources.SqlEditorTabbedEditorPane_ActualPlan_Button_Text
+		//	: ControlsResources.SqlEditorTabbedEditorPane_Plan_Button_Text;
+		string btnTextPlanText = hasActualPlan
 			? ControlsResources.SqlEditorTabbedEditorPane_ActualTextPlan_Button_Text
 			: ControlsResources.SqlEditorTabbedEditorPane_TextPlan_Button_Text;
 
 
 		if (TabbedEditorUiCtl.Tabs.Count > 0)
 		{
-			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
-				EnSplitterBarButtonDisplayStyle.Text, btnPlanText, ControlsResources.ExecutionPlan);
+			// splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
+			// 	EnSplitterBarButtonDisplayStyle.Text, btnPlanText, ControlsResources.ExecutionPlan);
 			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid),
 				EnSplitterBarButtonDisplayStyle.Text, btnTextPlanText, ControlsResources.TextPlan);
 
@@ -482,9 +495,10 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 		resultsTab.Hide();
 
+		TabbedEditorUiCtl.SuspendLayout();
+
 		try
 		{
-			TabbedEditorUiCtl.SuspendLayout();
 
 			AbstractEditorTab editorTab = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
@@ -498,12 +512,13 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			LoadDesignerPane(editorTab2, asPrimary: false, showSplitter: false);
 			editorTab2.Hide();
 
+			/*
 			AbstractEditorTab editorTab3 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUiCtl.Tabs.Add(editorTab3);
 			LoadDesignerPane(editorTab3, asPrimary: false, showSplitter: false);
 			editorTab3.Hide();
-
+			*/
 			AbstractEditorTab editorTab4 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUiCtl.Tabs.Add(editorTab4);
@@ -520,19 +535,21 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 				EnSplitterBarButtonDisplayStyle.Text, ControlsResources.SqlEditorTabbedEditorPane_Message_Button_Text,
 				ControlsResources.Messages);
 			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid),
-				EnSplitterBarButtonDisplayStyle.Text, ControlsResources.SqlEditorTabbedEditorPane_Results_Button_Text,
+				EnSplitterBarButtonDisplayStyle.Text, ControlsResources.SqlEditorTabbedEditorPane_ResultsText_Button_Text,
 				ControlsResources.Messages);
+
 			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlStatisticsTabLogicalViewGuid),
-				EnSplitterBarButtonDisplayStyle.Text, ControlsResources.SqlEditorTabbedEditorPane_Statistics_Button_Text,
+				EnSplitterBarButtonDisplayStyle.Text,
+				ControlsResources.SqlEditorTabbedEditorPane_Statistics_Button_Text,
 				ControlsResources.Statistics);
 
-			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
-				EnSplitterBarButtonDisplayStyle.Text, btnPlanText, ControlsResources.ExecutionPlan);
+			// splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
+			//	EnSplitterBarButtonDisplayStyle.Text, btnPlanText, ControlsResources.ExecutionPlan);
 			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid),
 				EnSplitterBarButtonDisplayStyle.Text, btnTextPlanText, ControlsResources.TextPlan);
 
 			TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid), visible: false);
-			TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid), visible: false);
+			// TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid), visible: false);
 			TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid), visible: false);
 
 			IVsTextView codeEditorTextView = GetCodeEditorTextView();
@@ -571,6 +588,132 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		{
 			TabbedEditorUiCtl.ResumeLayout();
 		}
+	}
+
+
+
+	public override bool UpdateTabs(QESQLQueryDataEventArgs args)
+	{
+		if (!base.UpdateTabs(args))
+			return false;
+
+		if (args.ExecutionType == EnSqlExecutionType.PlanOnly && args.ErrorCount == 0 && args.MessageCount == 0)
+			return true;
+
+		int snapshotCount = args.WithClientStats && _ResultsControl != null && _ResultsControl.ClientStatisticsCollection != null
+			? _ResultsControl.ClientStatisticsCollection.Count : 0;
+
+		if (snapshotCount == 0 && (args.TotalRowsSelected == 0 || args.OutputMode == EnSqlOutputMode.ToFile)
+			&& args.ErrorCount == 0 && args.MessageCount == 0)
+		{
+			return false;
+		}
+
+		return UpdateTabsImpl(args);
+
+		/*
+		_ = Task.Factory.StartNew(() => UpdateTabsAsync(args),
+				default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
+				TaskScheduler.Default);
+
+		return true;
+		*/
+	}
+
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+	private async Task<bool> UpdateTabsAsync(QESQLQueryDataEventArgs args)
+	{
+		await TaskScheduler.Default;
+
+
+		return UpdateTabsImpl(args);
+	}
+
+	private bool UpdateTabsImpl(QESQLQueryDataEventArgs args)
+	{
+		int messageCount = args.ErrorCount + args.MessageCount;
+		int snapshotCount = args.WithClientStats && _ResultsControl != null && _ResultsControl.ClientStatisticsCollection != null
+			? _ResultsControl.ClientStatisticsCollection.Count : 0;
+
+		SplitViewContainer splitViewContainer = TabbedEditorUiCtl.SplitViewContainer;
+
+		bool statsUpdated = snapshotCount == 0;
+		bool resultsUpdated = args.TotalRowsSelected == 0 || args.OutputMode == EnSqlOutputMode.ToFile;
+		bool messagesUpdated = messageCount == 0;
+		int i;
+
+		string resultsButtonText = args.OutputMode == EnSqlOutputMode.ToGrid
+			? ControlsResources.SqlEditorTabbedEditorPane_ResultsGridCount_Button_Text.FmtRes(args.TotalRowsSelected)
+			: ControlsResources.SqlEditorTabbedEditorPane_ResultsTextCount_Button_Text.FmtRes(args.TotalRowsSelected);
+
+
+		Guid clsidMessagesTab = new Guid(LibraryData.SqlMessageTabLogicalViewGuid);
+		Guid clsidStatisticsTab = new Guid(LibraryData.SqlStatisticsTabLogicalViewGuid);
+		Guid clsidResultsTab = args.OutputMode == EnSqlOutputMode.ToGrid
+			? VSConstants.LOGVIEWID_Designer : new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid);
+
+
+		string exceptionMessage = null;
+
+
+		for (i = 0; i < 50 && (!statsUpdated || !resultsUpdated || !messagesUpdated); i++)
+		{
+			TabbedEditorUiCtl.SuspendLayout();
+
+			try
+			{
+				if (!messagesUpdated)
+				{
+					splitViewContainer.CustomizeSplitterBarButton(clsidMessagesTab,
+						EnSplitterBarButtonDisplayStyle.Text,
+						ControlsResources.SqlEditorTabbedEditorPane_MessageCount_Button_Text.FmtRes(messageCount),
+						ControlsResources.Messages);
+					messagesUpdated = true;
+				}
+
+				if (!statsUpdated)
+				{
+					splitViewContainer.CustomizeSplitterBarButton(clsidStatisticsTab,
+						EnSplitterBarButtonDisplayStyle.Text,
+						ControlsResources.SqlEditorTabbedEditorPane_StatisticsSnapshotCount_Button_Text.FmtRes(snapshotCount),
+						ControlsResources.Statistics);
+					statsUpdated = true;
+				}
+
+				if (!resultsUpdated)
+				{
+					splitViewContainer.CustomizeSplitterBarButton(clsidResultsTab, EnSplitterBarButtonDisplayStyle.Text,
+						resultsButtonText, args.OutputMode == EnSqlOutputMode.ToGrid ? ControlsResources.Results : ControlsResources.Messages);
+					resultsUpdated = true;
+				}
+
+
+				continue;
+			}
+			catch (Exception ex)
+			{
+				exceptionMessage = ex.Message;
+			}
+			finally
+			{
+				TabbedEditorUiCtl.ResumeLayout();
+			}
+
+			Thread.Sleep(10);
+		}
+
+
+		if (exceptionMessage != null)
+		{
+			/*
+
+#if DEBUG
+			Tracer.Warning(GetType(), "UpdateTabsImpl()", $"Attempted SplitterBarButton update {i} times. Messages tab button update {(messagesUpdated ? "" : "un")}successful. Results tab button update {(resultsUpdated ? "" : "un")}successful. Stats tab button update {(statsUpdated ? "" : "un")}successful.\n\t\tException message: {exceptionMessage}.");
+#endif
+			*/
+		}
+
+		return resultsUpdated && statsUpdated && messagesUpdated;
 	}
 
 	protected override int HandleCloseEditorOrDesigner()
@@ -827,11 +970,13 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		return GetSqlEditorTab<SqlEditorResultsTab>(guidSqlStatisticsTabLogicalView);
 	}
 
+	/*
 	public SqlEditorResultsTab GetSqlExecutionPlanTab()
 	{
 		Guid guidSqlExecutionPlanTabLogicalView = new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid);
 		return GetSqlEditorTab<SqlEditorResultsTab>(guidSqlExecutionPlanTabLogicalView);
 	}
+	*/
 
 	public SqlEditorMessageTab GetSqlTextPlanTab()
 	{
@@ -862,48 +1007,21 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			ResultWindowPane messagePanel = GetSqlEditorMessageTab().GetView() as ResultWindowPane;
 			ResultWindowPane textResultsPanel = GetSqlEditorTextResultsTab().GetView() as ResultWindowPane;
 			ResultWindowPane statisticsPanel = GetSqlEditorStatisticsTab().GetView() as ResultWindowPane;
-			ResultWindowPane executionPlanPanel = GetSqlExecutionPlanTab().GetView() as ResultWindowPane;
+			// ResultWindowPane executionPlanPanel = GetSqlExecutionPlanTab().GetView() as ResultWindowPane;
 			ResultWindowPane textPlanPanel = GetSqlTextPlanTab().GetView() as ResultWindowPane;
 			_ResultsControl = new DisplaySQLResultsControl(resultsGridPanel, messagePanel, textResultsPanel,
-				statisticsPanel, executionPlanPanel, textPlanPanel, spatialPane, this);
+				statisticsPanel, /* executionPlanPanel,*/ textPlanPanel, spatialPane, this);
 			_ResultsControl.SetSite(ApcManager.OleServiceProvider);
 		}
 
 		return _ResultsControl;
 	}
 
-	public void ExecuteQuery(bool withTts)
+	public void ExecuteQuery(EnSqlExecutionType executionType)
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteQuery", "calling ExecuteOrParseQuery");
 
-		// ------------------------------------------------------------------------------ //
-		// ******************** Execution Point (1) - ExecuteQuery() ******************** //
-		// ------------------------------------------------------------------------------ //
 
-		ExecuteOrParseQuery(true, withTts);
-	}
-
-	public void ParseQuery()
-	{
-		ExecuteOrParseQuery(false, false);
-	}
-
-	public string GetCodeText()
-	{
-		SqlTextSpan sqlTextSpan = GetSelectedCodeEditorTextSpan2();
-		if (sqlTextSpan.Text == null || sqlTextSpan.Text.Length == 0)
-		{
-			sqlTextSpan = GetAllCodeEditorTextSpan2();
-		}
-
-		if (sqlTextSpan == null || string.IsNullOrEmpty(sqlTextSpan.Text))
-			return string.Empty;
-
-		return sqlTextSpan.Text;
-	}
-
-	private void ExecuteOrParseQuery(bool isExecute, bool withTts)
-	{
 		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 		{
 			SqlTextSpan sqlTextSpan = GetSelectedCodeEditorTextSpan2();
@@ -924,16 +1042,12 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 				try
 				{
-
 					// ----------------------------------------------------------------------------------- //
-					// ******************** Execution Point (2) ExecuteOrParseQuery() ******************** //
+					// ******************** Execution Point (1) - ExecuteQuery() ******************** //
 					// ----------------------------------------------------------------------------------- //
-					if (isExecute)
-						qryMgr.Run(sqlTextSpan, withTts);
-					else
-						qryMgr.Parse(sqlTextSpan);
+					qryMgr.Execute(sqlTextSpan, executionType);
 				}
-				catch
+				finally
 				{
 					DisposableWaitCursor = null;
 				}
@@ -941,6 +1055,22 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			}
 		}
 	}
+
+
+	public string GetCodeText()
+	{
+		SqlTextSpan sqlTextSpan = GetSelectedCodeEditorTextSpan2();
+		if (sqlTextSpan.Text == null || sqlTextSpan.Text.Length == 0)
+		{
+			sqlTextSpan = GetAllCodeEditorTextSpan2();
+		}
+
+		if (sqlTextSpan == null || string.IsNullOrEmpty(sqlTextSpan.Text))
+			return string.Empty;
+
+		return sqlTextSpan.Text;
+	}
+
 
 	protected override void Dispose(bool disposing)
 	{
@@ -1006,11 +1136,13 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		}
 	}
 
+	/*
 	public void ActivateExecutionPlanTab()
 	{
 		AbstractEditorTab sqlExecutionPlanTab = GetSqlExecutionPlanTab();
 		ActivateTab(sqlExecutionPlanTab);
 	}
+	*/
 
 	public void ActivateTextPlanTab()
 	{
@@ -1041,7 +1173,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		GetSqlEditorMessageTab();
 		AbstractEditorTab sqlEditorTextResultsTab = GetSqlEditorTextResultsTab();
 		AbstractEditorTab sqlEditorStatisticsTab = GetSqlEditorStatisticsTab();
-		AbstractEditorTab sqlExecutionPlanTab = GetSqlExecutionPlanTab();
+		// AbstractEditorTab sqlExecutionPlanTab = GetSqlExecutionPlanTab();
 		AbstractEditorTab sqlTextPlanTab = GetSqlTextPlanTab();
 
 		TabbedEditorUiCtl.SplitViewContainer.SplittersVisible = true;
@@ -1063,20 +1195,21 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			return;
 		}
 
-		sqlEditorStatisticsTab.TabButtonVisible = auxDocData.ClientStatisticsEnabled;
-		sqlExecutionPlanTab.TabButtonVisible = false; // Parser not completed
-		sqlTextPlanTab.TabButtonVisible = auxDocData.ActualExecutionPlanEnabled || auxDocData.EstimatedExecutionPlanEnabled;
+		sqlEditorStatisticsTab.TabButtonVisible = auxDocData.ClientStatisticsEnabled && auxDocData.ExecutionType != EnSqlExecutionType.PlanOnly;
+		// sqlExecutionPlanTab.TabButtonVisible = false; // Parser not completed
+		sqlTextPlanTab.TabButtonVisible = auxDocData.HasExecutionPlan;
 
-		if (sqlExecutionMode == EnSqlOutputMode.ToFile || sqlExecutionMode == EnSqlOutputMode.ToText || auxDocData.EstimatedExecutionPlanEnabled)
+		if (sqlExecutionMode == EnSqlOutputMode.ToFile || sqlExecutionMode == EnSqlOutputMode.ToText
+			|| auxDocData.ExecutionType == EnSqlExecutionType.PlanOnly)
 		{
-			if (!auxDocData.EstimatedExecutionPlanEnabled)
+			if (auxDocData.ExecutionType == EnSqlExecutionType.PlanOnly)
 				ActivateTextResultsTab();
 
 			if (sqlEditorResultsTab != null)
 				sqlEditorResultsTab.TabButtonVisible = false;
 
 			if (sqlEditorTextResultsTab != null)
-				sqlEditorTextResultsTab.TabButtonVisible = !auxDocData.EstimatedExecutionPlanEnabled;
+				sqlEditorTextResultsTab.TabButtonVisible = auxDocData.ExecutionType != EnSqlExecutionType.PlanOnly;
 
 			if (auxDocData.LiveSettings.EditorResultsTextSeparateTabs)
 			{
@@ -1101,7 +1234,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			}
 		}
 
-		if (auxDocData.EstimatedExecutionPlanEnabled)
+		if (auxDocData.ExecutionType == EnSqlExecutionType.PlanOnly)
 		{
 			// ActivateExecutionPlanTab();
 			ActivateTextPlanTab();
@@ -1114,11 +1247,11 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 	private void SetupUI()
 	{
+		AuxilliaryDocData auxDocData;
+
 		try
 		{
 			TabbedEditorUiCtl.SuspendLayout();
-
-			AuxilliaryDocData auxDocData;
 
 			try
 			{
@@ -1237,7 +1370,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		vsHierarchy?.SetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ShowOnlyItemCaption, true);
 		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
 
-		// There are no Firebird projects so this will never execute
+		// There are no Database projects for the Firebird port so this will never execute
 		if (auxDocData != null && auxDocData.Strategy != null
 			&& (auxDocData.Strategy.Mode == EnEditorMode.CustomOnline
 			|| auxDocData.Strategy.Mode == EnEditorMode.CustomProject))
@@ -1251,7 +1384,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 			if (auxDocData.Strategy.Mode == EnEditorMode.CustomProject)
 			{
-				// Never happen - projects not suppoerted in Firebird
+				// Never happen - projects not supported in Firebird port.
 				text = DocumentMoniker + text2 + text;
 			}
 			else if (auxDocData.Strategy.Mode == EnEditorMode.CustomOnline)

@@ -4,14 +4,13 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using BlackbirdSql.Common.Controls.Tabs;
 using BlackbirdSql.Common.Ctl;
-using Microsoft.VisualStudio.Utilities;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Shell.Interop;
-using BlackbirdSql.Common.Controls.Tabs;
 
 
 
@@ -137,41 +136,50 @@ public class SplitViewContainer : Control, IServiceProvider
 		{
 			bool showSplitter = SplitterBar.ShowSplitter;
 			SplitterBar.ShowSplitter = value;
+
 			if (showSplitter == SplitterBar.ShowSplitter)
-			{
 				return;
-			}
+
 			_SplitContainer.Layout -= SplitContainer_Layout;
+
 			_SplitContainer.SuspendLayout();
 			SplitterBar.SuspendLayout();
 			_panelTop.SuspendLayout();
 			_panelBottom.SuspendLayout();
-			if (ShouldSwapButtons())
+
+			try
 			{
+				if (ShouldSwapButtons())
+				{
+					if (SplitterBar.ShowSplitter)
+					{
+						SwapButtonsNoSuspendResume();
+					}
+					else
+					{
+						Guid guid = (Guid)SplitterBar.PrimaryPaneFirstButton.Tag;
+						UpdateActiveTab(guid);
+						TabActivationRequestEvent?.Invoke(this, new TabActivationEventArgs(guid, true));
+					}
+				}
 				if (SplitterBar.ShowSplitter)
 				{
-					SwapButtonsNoSuspendResume();
+					ScaleView(PercentSplit);
 				}
 				else
 				{
-					Guid guid = (Guid)SplitterBar.PrimaryPaneFirstButton.Tag;
-					UpdateActiveTab(guid);
-					TabActivationRequestEvent?.Invoke(this, new TabActivationEventArgs(guid, true));
+					ExpandPanel();
 				}
+				LoadPathItems();
 			}
-			if (SplitterBar.ShowSplitter)
+			finally
 			{
-				ScaleView(PercentSplit);
+				_panelBottom.ResumeLayout();
+				_panelTop.ResumeLayout();
+				SplitterBar.ResumeLayout();
+				_SplitContainer.ResumeLayout();
 			}
-			else
-			{
-				ExpandPanel();
-			}
-			LoadPathItems();
-			_panelBottom.ResumeLayout();
-			_panelTop.ResumeLayout();
-			SplitterBar.ResumeLayout();
-			_SplitContainer.ResumeLayout();
+
 			_SplitContainer.Layout += SplitContainer_Layout;
 		}
 	}
@@ -232,12 +240,21 @@ public class SplitViewContainer : Control, IServiceProvider
 			{
 				value.Size = _panelTop.Size;
 				value.Dock = _panelTop.Dock;
+
 				_SplitContainer.SuspendLayout();
-				int num = _SplitContainer.Controls.IndexOf(_panelTop);
-				_SplitContainer.Controls.RemoveAt(num);
-				_SplitContainer.Controls.Add(value);
-				_SplitContainer.Controls.SetChildIndex(value, num);
-				_SplitContainer.ResumeLayout();
+
+				try
+				{
+					int num = _SplitContainer.Controls.IndexOf(_panelTop);
+					_SplitContainer.Controls.RemoveAt(num);
+					_SplitContainer.Controls.Add(value);
+					_SplitContainer.Controls.SetChildIndex(value, num);
+				}
+				finally
+				{
+					_SplitContainer.ResumeLayout();
+				}
+
 				_SplitContainer.Update();
 				_panelTop = value;
 			}
@@ -256,15 +273,23 @@ public class SplitViewContainer : Control, IServiceProvider
 			{
 				_SplitContainer.SuspendLayout();
 				value.SuspendLayout();
-				value.Size = _panelBottom.Size;
-				value.Dock = _panelBottom.Dock;
-				int num = _SplitContainer.Controls.IndexOf(_panelBottom);
-				_SplitContainer.Controls.RemoveAt(num);
-				value.Controls.Add(SplitterBar);
-				_SplitContainer.Controls.Add(value);
-				_SplitContainer.Controls.SetChildIndex(value, num);
-				value.ResumeLayout();
-				_SplitContainer.ResumeLayout();
+
+				try
+				{
+					value.Size = _panelBottom.Size;
+					value.Dock = _panelBottom.Dock;
+					int num = _SplitContainer.Controls.IndexOf(_panelBottom);
+					_SplitContainer.Controls.RemoveAt(num);
+					value.Controls.Add(SplitterBar);
+					_SplitContainer.Controls.Add(value);
+					_SplitContainer.Controls.SetChildIndex(value, num);
+				}
+				finally
+				{
+					value.ResumeLayout();
+					_SplitContainer.ResumeLayout();
+				}
+
 				_SplitContainer.Update();
 				_panelBottom = value;
 			}
@@ -337,21 +362,28 @@ public class SplitViewContainer : Control, IServiceProvider
 		PanelBottom.SuspendLayout();
 		SplitterBar.SuspendLayout();
 		Splitter.SuspendLayout();
-		UpdateSplitter();
-		if (SplitterBar.ShowSplitter)
+
+		try
 		{
-			ScaleView(PercentSplit);
+			UpdateSplitter();
+			if (SplitterBar.ShowSplitter)
+			{
+				ScaleView(PercentSplit);
+			}
+			else
+			{
+				ExpandPanel();
+			}
+			LoadPathItems();
 		}
-		else
+		finally
 		{
-			ExpandPanel();
+			Splitter.ResumeLayout();
+			SplitterBar.ResumeLayout();
+			PanelBottom.ResumeLayout();
+			PanelTop.ResumeLayout();
+			_SplitContainer.ResumeLayout();
 		}
-		LoadPathItems();
-		Splitter.ResumeLayout();
-		SplitterBar.ResumeLayout();
-		PanelTop.ResumeLayout();
-		PanelBottom.ResumeLayout();
-		_SplitContainer.ResumeLayout();
 	}
 
 	public void CustomizeSplitterBarButton(Guid buttonTagGuid, EnSplitterBarButtonDisplayStyle displayStyle, string buttonText, Image buttonImage, string toolTipText = null)
@@ -423,6 +455,8 @@ public class SplitViewContainer : Control, IServiceProvider
 				SwapPanels();
 		}
 
+		// Tracer.Trace(GetType(), "DesignerXamlButton_Click()", "tag: {0}.", toolStripButton.Tag);
+
 		if (!IsSplitterVisible)
 			TabActivationRequestEvent?.Invoke(sender, new TabActivationEventArgs((Guid)toolStripButton.Tag, true));
 		else
@@ -484,50 +518,76 @@ public class SplitViewContainer : Control, IServiceProvider
 	private void InitializeComponent()
 	{
 		SuspendLayout();
-		_panelTop = new Panel
+
+		try
 		{
-			Dock = DockStyle.Top,
-			Name = "PanelTop"
-		};
-		_SplitContainer = new Panel();
-		_SplitContainer.SuspendLayout();
-		_SplitContainer.Dock = DockStyle.Fill;
-		_SplitContainer.Name = "SplitContainer";
-		_splitViewStrip = new SplitViewSplitterStrip(this);
-		_splitViewStrip.MouseDown += new MouseEventHandler(SplitterBar_MouseDown);
-		_splitViewStrip.MouseUp += new MouseEventHandler(SplitterBar_MouseUp);
-		_splitViewStrip.MouseMove += new MouseEventHandler(SplitterBar_MouseMove);
-		_splitViewStrip.MouseDoubleClick += new MouseEventHandler(SplitterBar_MouseDoubleClick);
-		_pathStrip = new ToolStrip
+			_panelTop = new Panel
+			{
+				Dock = DockStyle.Top,
+				Name = "PanelTop"
+			};
+			_SplitContainer = new Panel();
+
+			_SplitContainer.SuspendLayout();
+
+			try
+			{
+
+
+				_SplitContainer.Dock = DockStyle.Fill;
+				_SplitContainer.Name = "SplitContainer";
+				_splitViewStrip = new SplitViewSplitterStrip(this);
+				_splitViewStrip.MouseDown += new MouseEventHandler(SplitterBar_MouseDown);
+				_splitViewStrip.MouseUp += new MouseEventHandler(SplitterBar_MouseUp);
+				_splitViewStrip.MouseMove += new MouseEventHandler(SplitterBar_MouseMove);
+				_splitViewStrip.MouseDoubleClick += new MouseEventHandler(SplitterBar_MouseDoubleClick);
+				_pathStrip = new ToolStrip
+				{
+					Text = "PathControl",
+					CanOverflow = false,
+					Dock = DockStyle.Bottom,
+					GripStyle = ToolStripGripStyle.Hidden,
+					AutoSize = false,
+					Height = _splitViewStrip.Height,
+					BackColor = SystemColors.Control
+				};
+				_panelBottom = new Panel();
+
+				_panelBottom.SuspendLayout();
+
+				try
+				{
+					_panelBottom.Dock = DockStyle.Fill;
+					_panelBottom.Controls.Add(_splitViewStrip);
+					_panelBottom.Name = "PanelBottom";
+					_splitter = new SplitterEx(this)
+					{
+						Dock = DockStyle.Top,
+						MinExtra = _splitViewStrip.Height,
+						Size = new Size(1, 1)
+					};
+					BackColor = SystemColors.Window;
+					_SplitContainer.Controls.Add(_panelBottom);
+					_SplitContainer.Controls.Add(_splitter);
+					_SplitContainer.Controls.Add(_panelTop);
+					Controls.Add(_SplitContainer);
+					Controls.Add(_pathStrip);
+				}
+				finally
+				{
+					_panelBottom.ResumeLayout(false);
+				}
+			}
+			finally
+			{
+				_SplitContainer.ResumeLayout(false);
+			}
+		}
+		finally
 		{
-			Text = "PathControl",
-			CanOverflow = false,
-			Dock = DockStyle.Bottom,
-			GripStyle = ToolStripGripStyle.Hidden,
-			AutoSize = false,
-			Height = _splitViewStrip.Height,
-			BackColor = SystemColors.Control
-		};
-		_panelBottom = new Panel();
-		_panelBottom.SuspendLayout();
-		_panelBottom.Dock = DockStyle.Fill;
-		_panelBottom.Controls.Add(_splitViewStrip);
-		_panelBottom.Name = "PanelBottom";
-		_splitter = new SplitterEx(this)
-		{
-			Dock = DockStyle.Top,
-			MinExtra = _splitViewStrip.Height,
-			Size = new Size(1, 1)
-		};
-		BackColor = SystemColors.Window;
-		_SplitContainer.Controls.Add(_panelBottom);
-		_SplitContainer.Controls.Add(_splitter);
-		_SplitContainer.Controls.Add(_panelTop);
-		Controls.Add(_SplitContainer);
-		Controls.Add(_pathStrip);
-		_panelBottom.ResumeLayout(false);
-		_SplitContainer.ResumeLayout(false);
-		ResumeLayout(false);
+			ResumeLayout(false);
+		}
+
 		PerformLayout();
 	}
 
@@ -586,37 +646,44 @@ public class SplitViewContainer : Control, IServiceProvider
 	private void SizePanel(int distance, bool pathBarPresent)
 	{
 		_SplitContainer.SuspendLayout();
-		if (Orientation == Orientation.Horizontal)
+
+		try
 		{
-			distance = Math.Max(0, distance);
-			int num = Height;
-			if (pathBarPresent && _pathStrip.Visible)
+			if (Orientation == Orientation.Horizontal)
 			{
-				num -= _pathStrip.Height;
+				distance = Math.Max(0, distance);
+				int num = Height;
+				if (pathBarPresent && _pathStrip.Visible)
+				{
+					num -= _pathStrip.Height;
+				}
+				if (Splitter.Visible)
+				{
+					num = num - Splitter.MinExtra - Splitter.Height;
+				}
+				distance = Math.Min(distance, num);
+				PanelTop.Height = distance;
 			}
-			if (Splitter.Visible)
+			else
 			{
-				num = num - Splitter.MinExtra - Splitter.Height;
+				distance = Math.Max(0, distance);
+				int val = _SplitContainer.Width;
+				if (Splitter.Visible)
+				{
+					val = _SplitContainer.Width - Splitter.MinExtra - Splitter.Width;
+				}
+				distance = Math.Min(distance, val);
+				PanelTop.Width = distance;
 			}
-			distance = Math.Min(distance, num);
-			PanelTop.Height = distance;
+			if (Splitter.SplitPosition != distance)
+			{
+				Splitter.InvalidateSplitPosition();
+			}
 		}
-		else
+		finally
 		{
-			distance = Math.Max(0, distance);
-			int val = _SplitContainer.Width;
-			if (Splitter.Visible)
-			{
-				val = _SplitContainer.Width - Splitter.MinExtra - Splitter.Width;
-			}
-			distance = Math.Min(distance, val);
-			PanelTop.Width = distance;
+			_SplitContainer.ResumeLayout();
 		}
-		if (Splitter.SplitPosition != distance)
-		{
-			Splitter.InvalidateSplitPosition();
-		}
-		_SplitContainer.ResumeLayout();
 	}
 
 	private void SizePath(object sender, EventArgs e)
@@ -800,7 +867,7 @@ public class SplitViewContainer : Control, IServiceProvider
 	protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
 	{
 		bool isSplitterVisible = IsSplitterVisible;
-		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
+		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 		{
 			_currentlySettingBounds = Width != width || Height != height;
 			try

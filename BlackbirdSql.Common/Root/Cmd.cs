@@ -136,7 +136,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 			if (dialogResult == DialogResult.No)
 				return true;
 
-			add.QryMgr.Cancel(bSync: true);
+			add.QryMgr.Cancel(synchronous: true);
 		}
 		else if (add.QryMgr.ConnectionStrategy.HasTransactions)
 		{
@@ -156,7 +156,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 					}
 					catch (Exception ex)
 					{
-						MessageCtl.ShowEx("", ex.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						MessageCtl.ShowEx(ex, ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					}
 
 					break;

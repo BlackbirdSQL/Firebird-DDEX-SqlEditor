@@ -3,11 +3,9 @@
 
 using System;
 using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.EditorExtension.Model.Config;
 using BlackbirdSql.EditorExtension.Properties;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.EditorExtension.Ctl.Config;

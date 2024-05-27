@@ -6,8 +6,7 @@ using System.Globalization;
 using System.IO;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Model;
+
 
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
@@ -15,49 +14,6 @@ namespace BlackbirdSql.Common.Model.QueryExecution;
 
 public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDisposable
 {
-	protected int _MaxCharsPerColumn = ModelConstants.C_DefaultTextMaxCharsPerColumnStd;
-
-	protected bool _DiscardResults = true;
-
-	protected int _CurrentErrorCount;
-
-	protected int _CurrentMessageCount;
-
-	protected const int C_NumberOfFirstMessagesToFlush = 500;
-
-	protected const int C_NewMessagesFlushFreqLess1000 = 50;
-
-	protected const int C_NewMessagesFlushFreqMore1000 = 100;
-
-	protected IBSqlQueryExecutionHandler _ResultsControl;
-
-	private MoreRowsAvailableEventHandler _MoreRowsFromDSForDiscardHandler;
-
-	private QESQLBatchNewResultSetEventArgs _ResultSetArgsForDiscard;
-
-	public int MaxCharsPerColumn
-	{
-		get
-		{
-			return _MaxCharsPerColumn;
-		}
-		set
-		{
-			_MaxCharsPerColumn = value;
-		}
-	}
-
-	public bool DiscardResults
-	{
-		get
-		{
-			return _DiscardResults;
-		}
-		set
-		{
-			_DiscardResults = value;
-		}
-	}
 
 	protected AbstractQESQLBatchConsumer(IBSqlQueryExecutionHandler resultsControl)
 	{
@@ -83,6 +39,59 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 			}
 		}
 	}
+
+
+
+
+
+	protected int _MaxCharsPerColumn = SysConstants.C_DefaultTextMaxCharsPerColumnStd;
+
+	protected bool _DiscardResults = true;
+
+	protected int _CurrentErrorCount;
+
+	protected int _CurrentMessageCount;
+
+	protected const int C_NumberOfFirstMessagesToFlush = 500;
+
+	protected const int C_NewMessagesFlushFreqLess1000 = 50;
+
+	protected const int C_NewMessagesFlushFreqMore1000 = 100;
+
+	protected IBSqlQueryExecutionHandler _ResultsControl;
+
+	private MoreRowsAvailableEventHandler _MoreRowsFromDSForDiscardHandler;
+
+	private QESQLBatchNewResultSetEventArgs _ResultSetArgsForDiscard;
+
+	public int CurrentErrorCount => _CurrentErrorCount;
+
+	public int CurrentMessageCount 
+	{
+		get { return _CurrentMessageCount; }
+		set { _CurrentMessageCount = value; }
+	}
+
+	public int TotalInfoMessageCount => _CurrentMessageCount + _CurrentErrorCount;
+
+	public int MaxCharsPerColumn
+	{
+		get { return _MaxCharsPerColumn; }
+		set { _MaxCharsPerColumn = value; }
+	}
+
+	public bool DiscardResults
+	{
+		get
+		{
+			return _DiscardResults;
+		}
+		set
+		{
+			_DiscardResults = value;
+		}
+	}
+
 
 	public static string GetTempXMLFileName()
 	{
@@ -140,14 +149,18 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnMessage", "", null);
 		if (!DiscardResults)
 		{
+			// string msg = (TotalInfoMessageCount > 0 ? "\r\n" : "") + args.Message;
+			string msg = args.Message;
+
 			_CurrentMessageCount++;
-			if (args.DetailedMessage.Length == 0)
+
+			if (string.IsNullOrWhiteSpace(args.DetailedMessage))
 			{
-				_ResultsControl.AddStringToMessages(args.Message, ShouldFlushMessages(_CurrentMessageCount));
+				_ResultsControl.AddStringToInfoMessages(msg, ShouldFlushMessages(_CurrentMessageCount));
 				return;
 			}
-			_ResultsControl.AddStringToMessages(args.Message, flush: false);
-			_ResultsControl.AddStringToMessages(args.DetailedMessage, ShouldFlushMessages(_CurrentMessageCount));
+
+			_ResultsControl.AddStringToInfoMessages(msg + "\r\n\t" + args.DetailedMessage, ShouldFlushMessages(_CurrentMessageCount));
 		}
 	}
 
@@ -156,8 +169,13 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnErrorMessage", "", null);
 		if (!DiscardResults)
 		{
+			string msg = TotalInfoMessageCount > 0 ? "\r\n" : "";
+
+			msg += string.IsNullOrWhiteSpace(args.DescriptionMessage) ? args.DetailedMessage : args.DetailedMessage + "\r\n\t" + args.DescriptionMessage;
+
 			_CurrentErrorCount++;
-			_ResultsControl.AddStringToErrors(string.IsNullOrEmpty(args.DescriptionMessage) ? args.DetailedMessage : args.DetailedMessage + "\r\n" + args.DescriptionMessage, args.Line, args.TextSpan, ShouldFlushMessages(_CurrentErrorCount));
+
+			_ResultsControl.AddStringToErrors(msg, args.Line, args.TextSpan, ShouldFlushMessages(_CurrentErrorCount));
 		}
 	}
 

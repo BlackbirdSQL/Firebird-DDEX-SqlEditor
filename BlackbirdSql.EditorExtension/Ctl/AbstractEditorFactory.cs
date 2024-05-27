@@ -5,11 +5,8 @@ using System;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls;
-using BlackbirdSql.Common.Controls.Tabs;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
@@ -19,8 +16,6 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-
-using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 

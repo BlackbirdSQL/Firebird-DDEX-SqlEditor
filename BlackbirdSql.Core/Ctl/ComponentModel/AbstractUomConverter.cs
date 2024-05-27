@@ -5,12 +5,9 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using BlackbirdSql.Core.Controls.Events;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
@@ -268,8 +265,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 
 		if (e.SelectionItem.PropertyDescriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr)
 		{
-			if ((bool)Reflect.GetFieldValue(attr, "isReadOnly",
-				BindingFlags.NonPublic | BindingFlags.Instance))
+			if ((bool)Reflect.GetFieldValue(attr, "isReadOnly"))
 			{
 				return;
 			}

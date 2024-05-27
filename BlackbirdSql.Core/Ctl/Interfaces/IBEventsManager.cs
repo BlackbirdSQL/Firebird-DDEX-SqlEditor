@@ -2,6 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Shell.Interop;
 
 

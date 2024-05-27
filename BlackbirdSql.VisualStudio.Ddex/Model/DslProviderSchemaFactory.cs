@@ -26,23 +26,22 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
-using FirebirdSql.Data.FirebirdClient;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
+
 
 internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 {
 	#region Static Members
 
-	private static readonly string ResourceName = "FirebirdSql.Data.Schema.FbMetaData.xml";
+	private static readonly string ResourceName = DbNative.SchemaMetaDataXml;
 
 	#endregion
 
@@ -58,13 +57,13 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 	#region Methods
 
 	// Schema factory to handle custom collections
-	DataTable IBProviderSchemaFactory.GetSchema(FbConnection connection, string collectionName, string[] restrictions)
+	DataTable IBProviderSchemaFactory.GetSchema(DbConnection connection, string collectionName, string[] restrictions)
 	{
-		return DslProviderSchemaFactory.GetSchema(connection, collectionName, restrictions);
+		return GetSchema(connection, collectionName, restrictions);
 	}
 
 	// Schema factory to handle custom collections
-	public static DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
+	public static DataTable GetSchema(DbConnection connection, string collectionName, string[] restrictions)
 	{
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", "collectionName: {0}", collectionName);
 
@@ -132,10 +131,11 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
 		var ds = new DataSet();
 
-		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
+		Assembly assembly = DbNative.ClientFactoryAssembly;
+
 		if (assembly == null)
 		{
-			DllNotFoundException ex = new(typeof(FirebirdClientFactory).Name + " class assembly not found");
+			DllNotFoundException ex = new(DbNative.ClientFactoryName + " class assembly not found");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -215,13 +215,13 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 
 	// Schema factory to handle custom collections asynchronously
-	Task<DataTable> IBProviderSchemaFactory.GetSchemaAsync(FbConnection connection, string collectionName,
+	Task<DataTable> IBProviderSchemaFactory.GetSchemaAsync(DbConnection connection, string collectionName,
 		string[] restrictions, CancellationToken cancellationToken)
 	{
 		return GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 	}
 
-	public static Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	public static Task<DataTable> GetSchemaAsync(DbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
 
@@ -300,10 +300,11 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
 		var ds = new DataSet();
 
-		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
+		Assembly assembly = DbNative.ClientFactoryAssembly;
+
 		if (assembly == null)
 		{
-			DllNotFoundException ex = new(Resources.ExceptionClassAssemblyNotFound.FmtRes(typeof(FirebirdClientFactory).Name));
+			DllNotFoundException ex = new(Resources.ExceptionClassAssemblyNotFound.FmtRes(DbNative.ClientFactoryName));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -404,7 +405,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 	#region Private Methods
 
-	private static DataTable PrepareCollection(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions)
+	private static DataTable PrepareCollection(DbConnection connection, string collectionName, string schemaCollection, string[] restrictions)
 	{
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollection", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
@@ -479,7 +480,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 
 
-	private static Task<DataTable> PrepareCollectionAsync(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancellationToken = default)
+	private static Task<DataTable> PrepareCollectionAsync(DbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancellationToken = default)
 	{
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollectionAsync", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
@@ -552,13 +553,13 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		return dslSchema.GetSchemaAsync(connection, schemaCollection, restrictions, cancellationToken);
 	}
 
-	private static DataTable SqlCommandSchema(FbConnection connection, string collectionName, string[] restrictions)
+	private static DataTable SqlCommandSchema(DbConnection connection, string collectionName, string[] restrictions)
 	{
 		NotImplementedException exbb = new();
 		Diag.Dug(exbb);
 		throw exbb;
 	}
-	private static Task<DataTable> SqlCommandSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	private static Task<DataTable> SqlCommandSchemaAsync(DbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
 		NotImplementedException exbb = new();
 		Diag.Dug(exbb);

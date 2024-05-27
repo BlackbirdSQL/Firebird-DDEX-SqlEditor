@@ -4,15 +4,12 @@
 #endregion
 
 using System;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Core;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.QueryExecution;
-
+using BlackbirdSql.Core.Ctl.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Utilities;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Common.Controls.Interfaces;
 
 
 namespace BlackbirdSql.Common.Ctl.Commands;
@@ -30,18 +27,14 @@ public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-		if (auxDocData == null)
+		if (AuxDocData == null)
 		{
 			Exception ex = new("AuxilliaryDocData NOT FOUND");
 			Diag.Dug(ex);
 			return VSConstants.S_OK;
 		}
 
-		QueryManager qryMgr = auxDocData.QryMgr;
-
-		if (qryMgr == null)
+		if (QryMgr == null)
 		{
 			ArgumentNullException ex = new("QryMgr is null");
 			Diag.Dug(ex);
@@ -50,7 +43,7 @@ public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (!string.IsNullOrWhiteSpace(qryMgr.ConnectionStrategy.LastDatasetKey))
+		if (!string.IsNullOrWhiteSpace(StoredQryMgr.ConnectionStrategy.LastDatasetKey))
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
@@ -60,18 +53,14 @@ public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 	{
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
-			AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-			if (auxDocData == null)
+			if (AuxDocData == null)
 			{
 				Exception ex = new("AuxilliaryDocData NOT FOUND");
 				Diag.Dug(ex);
 				return VSConstants.S_OK;
 			}
 
-			QueryManager qryMgr = auxDocData.QryMgr;
-
-			if (qryMgr == null)
+			if (QryMgr == null)
 			{
 				ArgumentNullException ex = new("QryMgr is null");
 				Diag.Dug(ex);
@@ -80,7 +69,7 @@ public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 
 			IBDesignerExplorerServices service = ApcManager.EnsureService<IBDesignerExplorerServices>();
 
-			service.NewSqlQuery(qryMgr.ConnectionStrategy.LastDatasetKey);
+			service.NewSqlQuery(StoredQryMgr.ConnectionStrategy.LastDatasetKey);
 		}
 
 		return VSConstants.S_OK;

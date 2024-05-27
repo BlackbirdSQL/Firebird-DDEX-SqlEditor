@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.ResultsPanels;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 

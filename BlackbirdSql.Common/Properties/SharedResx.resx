@@ -291,9 +291,6 @@
   <data name="ShowConnectionProperty" xml:space="preserve">
     <value>Show Connection Properties</value>
   </data>
-  <data name="SqlDataSource" xml:space="preserve">
-    <value>Microsoft SQL Server (SqlClient)</value>
-  </data>
   <data name="SqlResultsEditorFactory_Caption" xml:space="preserve">
     <value>SSDT Results Window</value>
   </data>

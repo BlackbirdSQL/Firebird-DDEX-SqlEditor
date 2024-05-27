@@ -18,19 +18,19 @@ namespace BlackbirdSql.Common.Model.Events
 {
 	public class QESQLBatchErrorMessageEventArgs : EventArgs
 	{
-		private readonly string _detailedMessage = "";
+		private readonly string _DetailedMessage = "";
 
-		private readonly string _description = "";
+		private readonly string _DescriptionMessage = "";
 
-		private readonly int _line = -1;
+		private readonly int _Line = -1;
 
 		private readonly IBTextSpan _TextSpan;
 
-		public string DetailedMessage => _detailedMessage;
+		public string DetailedMessage => _DetailedMessage;
 
-		public string DescriptionMessage => _description;
+		public string DescriptionMessage => _DescriptionMessage;
 
-		public int Line => _line;
+		public int Line => _Line;
 
 		public IBTextSpan TextSpan => _TextSpan;
 
@@ -40,15 +40,15 @@ namespace BlackbirdSql.Common.Model.Events
 
 		public QESQLBatchErrorMessageEventArgs(string detailedMessage, string description)
 		{
-			_detailedMessage = detailedMessage;
-			_description = description;
+			_DetailedMessage = detailedMessage;
+			_DescriptionMessage = description;
 		}
 
 		public QESQLBatchErrorMessageEventArgs(string detailedMessage, string description, int line, IBTextSpan textSpan)
 		{
-			_detailedMessage = detailedMessage;
-			_description = description;
-			_line = line;
+			_DetailedMessage = detailedMessage;
+			_DescriptionMessage = description;
+			_Line = line;
 			_TextSpan = textSpan;
 		}
 	}

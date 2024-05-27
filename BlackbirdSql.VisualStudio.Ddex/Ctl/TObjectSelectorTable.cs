@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using BlackbirdSql.Core.Ctl.CommandProviders;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -97,9 +96,13 @@ public class TObjectSelectorTable : AdoDotNetObjectSelector
 	{
 		// Tracer.Trace(GetType(), "GetSchema()", "typeName: {0}", typeName);
 
-		if (CommandProperties.CommandNodeSystemType != EnNodeSystemType.Undefined
-			&& parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"
-			&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
+		if (parameters == null || parameters.Length == 0 || Cmd.IsNullValue(parameters[0]) || (string)parameters[0] != "Tables")
+		{
+			CommandProperties.CommandNodeSystemType = EnNodeSystemType.Undefined;
+			return null;
+		}
+
+		if (restrictions == null || restrictions.Length < 4 || (restrictions.Length > 3 && Cmd.IsNullValue(restrictions[3])))
 		{
 			if (restrictions == null || restrictions.Length < 4)
 			{
@@ -110,6 +113,7 @@ public class TObjectSelectorTable : AdoDotNetObjectSelector
 
 				restrictions = objs;
 			}
+
 			switch (CommandProperties.CommandNodeSystemType)
 			{
 				case EnNodeSystemType.User:

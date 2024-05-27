@@ -6,7 +6,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
@@ -466,7 +465,7 @@ public class TViewSupport : DataViewSupport,
 
 			if (ViewHierarchy.PersistentProperties != null)
 			{
-				CsbAgent csa = new(ViewHierarchy.ExplorerConnection.DecryptedConnectionString(), true);
+				Csb csa = new(ViewHierarchy.ExplorerConnection.DecryptedConnectionString(), true);
 
 				ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = csa.DatasetMoniker;
 			}
@@ -603,8 +602,8 @@ public class TViewSupport : DataViewSupport,
 				// Not guaranteed but if all properties are the same it's 99% likely
 				// this is a user refresh. For the 1% the linkage tables will be redundantly rebuilt.
 				if (parser.Loaded && !LinkageParser.IsLockedLoadedParser(parser)
-					&& CsbAgent.AreEquivalent(site.DecryptedConnectionString(),
-						parser.ConnectionString, CsbAgent.DescriberKeys))
+					&& Csb.AreEquivalent(site.DecryptedConnectionString(),
+						parser.ConnectionString, Csb.DescriberKeys))
 				{
 					// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for Dispose.");
 

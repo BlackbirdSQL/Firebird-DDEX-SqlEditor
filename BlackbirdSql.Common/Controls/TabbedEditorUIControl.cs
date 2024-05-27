@@ -2,7 +2,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.SqlEditorTabbedEditorUI
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Controls.Widgets;
@@ -12,7 +11,6 @@ using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Controls;
 
-[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
 
 public class TabbedEditorUIControl : AbstractTabbedEditorUIControl
@@ -44,11 +42,19 @@ public class TabbedEditorUIControl : AbstractTabbedEditorUIControl
 		{
 			panel.SuspendLayout();
 			this.SuspendLayout();
-			statusStrip.Dock = DockStyle.Bottom;
-			statusStrip.TabStop = false;
-			panel.Controls.Add(statusStrip);
-			this.ResumeLayout(performLayout: false);
-			panel.ResumeLayout(performLayout: false);
+
+			try
+			{
+				statusStrip.Dock = DockStyle.Bottom;
+				statusStrip.TabStop = false;
+				panel.Controls.Add(statusStrip);
+			}
+			finally
+			{
+				this.ResumeLayout(performLayout: false);
+				panel.ResumeLayout(performLayout: false);
+			}
+
 			statusStrip.Hide();
 			this.PerformLayout();
 		}

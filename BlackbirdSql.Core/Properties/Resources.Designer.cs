@@ -466,6 +466,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to create batch execution object: {0}..
+        /// </summary>
+        public static string ExceptionCreateBatchExecutionObject {
+            get {
+                return ResourceManager.GetString("ExceptionCreateBatchExecutionObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Singleton instance already exists. Attempt to create duplicate {0} instances..
         /// </summary>
         public static string ExceptionDuplicateSingletonInstances {

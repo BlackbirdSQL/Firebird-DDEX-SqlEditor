@@ -13,7 +13,7 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -31,25 +31,42 @@ public abstract class AbstractTabbedEditorUIControl : Control, IServiceProvider
 		: base()
 	{
 		SuspendLayout();
-		TabbedEditorPane = tabbedEditorPane;
-		_Provider = tabbedEditorPane;
-		InitializeComponent();
-		_Panel.SuspendLayout();
-		BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW);
-		_Panel.BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW);
-		AddCustomControlsToPanel(_Panel);
-		_SplitContainer.PanelTop.SizeChanged += Panel_SizeChanged;
-		_SplitContainer.PanelBottom.SizeChanged += Panel_SizeChanged;
-		_SplitContainer.PanelSwappedEvent += SplitContainer_PanelSwapped;
-		_SplitContainer.IsSplitterVisibleChangedEvent += SplitContainer_IsSplitterVisibleChanged;
-		_SplitContainer.TabActivationRequestEvent += SplitContainer_TabActivationRequest;
-		_SplitContainer.UseCustomTabActivation = true;
-		_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.ImageAndText,
-			ControlsResources.TabbedEditor_SplitContainerButton1Text, ControlsResources.design);
-		_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_TextView, EnSplitterBarButtonDisplayStyle.ImageAndText,
-			LibraryData.LanguageName, ControlsResources.sql);
-		ResumeLayout(performLayout: false);
-		_Panel.ResumeLayout(performLayout: false);
+
+		try
+		{
+			TabbedEditorPane = tabbedEditorPane;
+			_Provider = tabbedEditorPane;
+			InitializeComponent();
+
+
+			_Panel.SuspendLayout();
+
+			try
+			{
+				BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW);
+				_Panel.BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW);
+				AddCustomControlsToPanel(_Panel);
+				_SplitContainer.PanelTop.SizeChanged += Panel_SizeChanged;
+				_SplitContainer.PanelBottom.SizeChanged += Panel_SizeChanged;
+				_SplitContainer.PanelSwappedEvent += SplitContainer_PanelSwapped;
+				_SplitContainer.IsSplitterVisibleChangedEvent += SplitContainer_IsSplitterVisibleChanged;
+				_SplitContainer.TabActivationRequestEvent += SplitContainer_TabActivationRequest;
+				_SplitContainer.UseCustomTabActivation = true;
+				_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.ImageAndText,
+					ControlsResources.TabbedEditor_SplitContainerButton1Text, ControlsResources.design);
+				_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_TextView, EnSplitterBarButtonDisplayStyle.ImageAndText,
+					ControlsResources.SqlEditorTabbedEditorPane_Sql_Button_Text, ControlsResources.sql);
+			}
+			finally
+			{
+				_Panel.ResumeLayout(performLayout: false);
+			}
+		}
+		finally
+		{
+			ResumeLayout(performLayout: false);
+		}
+
 		PerformLayout();
 	}
 
@@ -236,15 +253,24 @@ public abstract class AbstractTabbedEditorUIControl : Control, IServiceProvider
 			_ToolbarHost = new ToolbarHost();
 			_ToolbarHost.SuspendLayout();
 			_Panel.SuspendLayout();
-			_ToolbarHost.AccessibleName = ControlsResources.ToolBarHostAccessibleName;
 			SuspendLayout();
-			_ToolbarHost.Dock = DockStyle.Top;
-			_ToolbarHost.Name = "TabbedEditorUIToolbarHost";
-			_ToolbarHost.TabStop = false;
-			_Panel.Controls.Add(_ToolbarHost);
-			_Panel.ResumeLayout(performLayout: false);
-			_ToolbarHost.ResumeLayout(performLayout: false);
-			ResumeLayout(performLayout: false);
+
+			_ToolbarHost.AccessibleName = ControlsResources.ToolBarHostAccessibleName;
+
+			try
+			{
+				_ToolbarHost.Dock = DockStyle.Top;
+				_ToolbarHost.Name = "TabbedEditorUIToolbarHost";
+				_ToolbarHost.TabStop = false;
+				_Panel.Controls.Add(_ToolbarHost);
+			}
+			finally
+			{
+				ResumeLayout(performLayout: false);
+				_Panel.ResumeLayout(performLayout: false);
+				_ToolbarHost.ResumeLayout(performLayout: false);
+			}
+
 			PerformLayout();
 
 			if (tabbedEditorPane != null && Guid.Empty != clsidCmdSet &&
@@ -302,6 +328,7 @@ public abstract class AbstractTabbedEditorUIControl : Control, IServiceProvider
 		AbstractEditorTab editorTab = FindActiveTab(isTopTab);
 		if (editorTab != newTab)
 		{
+			// Tracer.Trace(GetType(), "ShowTab()", "logview: {0}.", newTab.LogicalView);
 			newTab?.Show();
 			editorTab?.Hide();
 		}
@@ -618,21 +645,30 @@ public abstract class AbstractTabbedEditorUIControl : Control, IServiceProvider
 	private void InitializeComponent()
 	{
 		this._Panel = new System.Windows.Forms.Panel();
+
 		this._Panel.SuspendLayout();
 		this._SplitContainer = new BlackbirdSql.Common.Controls.Widgets.SplitViewContainer();
 		this._SplitContainer.SuspendLayout();
 		base.SuspendLayout();
-		this._SplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-		this._SplitContainer.Name = "_SplitContainer";
-		this._SplitContainer.TabStop = false;
-		this._Panel.Dock = System.Windows.Forms.DockStyle.Fill;
-		this._Panel.Controls.Add(this._SplitContainer);
-		this._Panel.Name = "_Panel";
-		base.Controls.Add(this._Panel);
-		base.Name = "AbstractTabbedEditorUIControl";
-		this._SplitContainer.ResumeLayout(false);
-		this._Panel.ResumeLayout(false);
-		base.ResumeLayout(false);
+
+		try
+		{
+			this._SplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._SplitContainer.Name = "_SplitContainer";
+			this._SplitContainer.TabStop = false;
+			this._Panel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._Panel.Controls.Add(this._SplitContainer);
+			this._Panel.Name = "_Panel";
+			base.Controls.Add(this._Panel);
+			base.Name = "AbstractTabbedEditorUIControl";
+		}
+		finally
+		{
+			base.ResumeLayout(false);
+			this._SplitContainer.ResumeLayout(false);
+			this._Panel.ResumeLayout(false);
+		}
+
 		base.PerformLayout();
 	}
 }

@@ -4,15 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
+using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
-using FirebirdSql.Data.FirebirdClient;
-using FirebirdSql.Data.Services;
+using BlackbirdSql.LanguageExtension.Ctl.Config;
+using BlackbirdSql.Sys;
 using Microsoft.SqlServer.Management.SqlParser.Binder;
 using Microsoft.SqlServer.Management.SqlParser.Common;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
@@ -34,7 +34,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 	{
 		IsInitialized = false;
 		CacheKey = cacheKey;
-		DatabaseEngineType = FbServerType.Default;
+		DatabaseEngineType = EnServerType.Default;
 		ConnectionInfo = (ConnectionPropertyAgent)uici.Copy();
 
 		base.BuildEvent.Reset();
@@ -151,13 +151,13 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	private ConnectionPropertyAgent ConnectionInfo { get; set; }
 
-	private FbConnection DriftDetectionConnection { get; set; }
+	private DbConnection DriftDetectionConnection { get; set; }
 
-	private FbConnection ServerConnection { get; set; }
+	private IDbConnection ServerConnection { get; set; }
 
 	private Version ServerVersion { get; set; }
 
-	private FbServerType DatabaseEngineType { get; set; }
+	private EnServerType DatabaseEngineType { get; set; }
 
 	private bool IsInitialized { get; set; }
 
@@ -167,7 +167,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	public override string DatabaseName => null;
 
-	public bool IsCloudConnection => DatabaseEngineType == FbServerType.Default;
+	public bool IsCloudConnection => DatabaseEngineType == EnServerType.Default;
 
 	protected override bool AssertInDestructor => false;
 
@@ -191,7 +191,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		try
 		{
 			/*
-			CsbAgent csb = [];
+			Csb csb = [];
 			FbConnection connection = null;
 
 			try
@@ -234,9 +234,9 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		lock (_LockLocal)
 		{
 			DisposeMetadataConnection();
-			CsbAgent metadataConnectionStringBuilder = GetMetadataConnectionStringBuilder();
+			Csb metadataConnectionStringBuilder = GetMetadataConnectionStringBuilder();
 
-			ServerConnection = new (metadataConnectionStringBuilder.ConnectionString);
+			ServerConnection = DbNative.CreateDbConnection(metadataConnectionStringBuilder.ConnectionString);
 
 			// if (IsCloudConnection)
 			//	ServerConnection.DatabaseName = metadataConnectionStringBuilder.InitialCatalog;
@@ -245,8 +245,8 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 			ServerConnection.Open();
 
 			// ConnectionHelperUtils.SetLockAndCommandTimeout(ServerConnection.SqlConnectionObject);
-			ServerVersion = FbServerProperties.ParseServerVersion(ServerConnection.ServerVersion);
-			DatabaseEngineType = metadataConnectionStringBuilder.ServerType;
+			ServerVersion = ServerConnection.GetVersion();
+			DatabaseEngineType = metadataConnectionStringBuilder.IsServerConnection ? EnServerType.Default : EnServerType.Embedded;
 		}
 	}
 
@@ -256,7 +256,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		{
 			DisposeDriftDetectionConnection();
 			string metadataConnectionString = GetMetadataConnectionString();
-			DriftDetectionConnection = new (metadataConnectionString);
+			DriftDetectionConnection = (DbConnection)DbNative.CreateDbConnection(metadataConnectionString);
 			DriftDetectionConnection.Open();
 			// ConnectionHelperUtils.SetLockAndCommandTimeout(DriftDetectionConnection);
 		}
@@ -281,7 +281,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				Monitor.Exit(_LockLocal);
 			}
 		}
-		return new ParseOptions("GO", isQuotedIdentifierSet: true, compatibilityLevel, transactSqlVersion);
+		return new ParseOptions(PersistentSettings.EditorContextBatchSeparator, isQuotedIdentifierSet: true, compatibilityLevel, transactSqlVersion);
 	}
 
 	internal void AsyncCheckForDatabaseChanges()
@@ -436,13 +436,13 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		return GetMetadataConnectionStringBuilder().ToString();
 	}
 
-	private CsbAgent GetMetadataConnectionStringBuilder()
+	private Csb GetMetadataConnectionStringBuilder()
 	{
 		ConnectionPropertyAgent uIConnectionInfo = null;
 
 		uIConnectionInfo = ConnectionInfo;
 
-		CsbAgent sqlConnectionStringBuilder = [];
+		Csb sqlConnectionStringBuilder = [];
 		SqlConnectionStrategy.PopulateConnectionStringBuilder(sqlConnectionStringBuilder, uIConnectionInfo);
 
 		return sqlConnectionStringBuilder;

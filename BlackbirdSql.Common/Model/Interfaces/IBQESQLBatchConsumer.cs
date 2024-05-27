@@ -14,6 +14,9 @@ namespace BlackbirdSql.Common.Model.Interfaces
 {
 	public interface IBQESQLBatchConsumer : IDisposable
 	{
+		int CurrentErrorCount { get; }
+		int CurrentMessageCount { get; set; }
+		int TotalInfoMessageCount { get; }
 		int MaxCharsPerColumn { get; set; }
 
 		bool DiscardResults { get; set; }

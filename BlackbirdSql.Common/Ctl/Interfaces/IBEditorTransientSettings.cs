@@ -5,10 +5,12 @@ using System.Data;
 using System.Drawing;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Model.Enums;
-using FirebirdSql.Data.Isql;
+using BlackbirdSql.Sys;
+
+
 
 namespace BlackbirdSql.Common.Ctl.Interfaces;
+
 
 // =========================================================================================================
 //									IBEditorTransientSettings Interface
@@ -48,7 +50,8 @@ public interface IBEditorTransientSettings
 
 
 	// Editor ExecutionSettingsModel
-	bool EditorExecutionAutoDdlTts { get; set; }
+	bool EditorExecutionAsynchronous { get; set; }
+	bool EditorExecutionTtsDefault { get; set; }
 	int EditorExecutionSetRowCount { get; set; }
 	EnBlobSubType EditorExecutionSetBlobDisplay { get; set; }
 	bool EditorExecutionDefaultOleScripting { get; set; }
@@ -105,23 +108,19 @@ public interface IBEditorTransientSettings
 
 
 
-	bool WithExecutionPlan { get; set; }
+	EnSqlExecutionType ExecutionType { get; set; }
+	bool WithActualPlan { get; set; }
 	bool WithClientStats { get; set; }
 	bool WithProfiling { get; set; }
-	bool ParseOnly { get; set; }
 	bool WithNoExec { get; set; }
-	bool WithExecutionPlanText { get; set; }
 	bool WithStatisticsTime { get; set; }
 	bool WithStatisticsIO { get; set; }
 	bool WithStatisticsProfile { get; set; }
-	bool WithTransactionTracking{ get; set; }
-	bool WithEstimatedExecutionPlan { get; set; }
+	bool TtsEnabled { get; set; }
 	bool WithOleSqlScripting { get; set; }
 	public bool SuppressProviderMessageHeaders { get; set; }
 
 
 	#endregion Property Accessors
-
-	FbScript CommandBuilder(params string[] statements);
 
 }

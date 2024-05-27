@@ -9,11 +9,11 @@ using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.EditorExtension;
+using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
@@ -21,7 +21,6 @@ using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Shell;
@@ -199,7 +198,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// Gets a service interface from this service provider.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override TInterface GetService<TService, TInterface>()
+	public override TInterface GetService<TService, TInterface>() where TInterface : class
 	{
 		TInterface instance = null;
 		Type type = typeof(TService);
@@ -248,13 +247,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// <summary>
 	/// Asynchronous initialization of the package
 	/// </summary>
-	/// <remarks>
-	/// Auto load is time critical with this package.
-	/// For example when an edmx is brought into context we can't have registering of the
-	/// <see cref="DbProviderFactory"/> (<see cref="FirebirdClientFactory"/>) lost in a tertiary thread.
-	/// We're going to try SwitchToMainThreadAsync here.
-	/// If it still loads erratically we'll have to consider goin synchronous and commentting this whole class out.
-	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
@@ -396,20 +388,20 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Adds FirebirdClient to assembly factory register.
+	/// Adds Database Client invariant to assembly factory register.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private static void RegisterInvariant()
 	{
-		DbProviderFactoriesEx.RegisterAssemblyDirect(SystemData.Invariant,
+		DbProviderFactoriesEx.RegisterAssemblyDirect(DatabaseEngineSvc.Invariant_,
 			Resources.Provider_ShortDisplayName, Resources.Provider_DisplayName,
-			typeof(FirebirdClientFactory).AssemblyQualifiedName);
+			DatabaseEngineSvc.AssemblyQualifiedName_);
 
 		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 		{
-			if (args.Name == typeof(FirebirdClientFactory).Assembly.FullName)
+			if (args.Name == DatabaseEngineSvc.ClientFactoryAssembly_.FullName)
 			{
-				return typeof(FirebirdClientFactory).Assembly;
+				return DatabaseEngineSvc.ClientFactoryAssembly_;
 			}
 
 			return null;

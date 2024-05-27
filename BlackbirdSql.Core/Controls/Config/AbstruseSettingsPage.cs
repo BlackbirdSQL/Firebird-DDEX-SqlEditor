@@ -7,13 +7,10 @@ using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
-using BlackbirdSql.Core.Controls.Events;
 using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Properties;
-
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Shell;
 
 using Control = System.Windows.Forms.Control;
@@ -83,7 +80,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				if (gridView == null)
 					return null;
 
-				return Reflect.GetField(gridView, "edit", BindingFlags.NonPublic | BindingFlags.Instance)
+				return Reflect.GetField(gridView, "edit")
 					as TextBox;
 			}
 		}
@@ -105,8 +102,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				if (_Window == null)
 					return null;
 
-				return (Control)Reflect.GetFieldValue(_Window, "gridView",
-					BindingFlags.NonPublic | BindingFlags.Instance);
+				return (Control)Reflect.GetFieldValue(_Window, "gridView");
 			}
 		}
 	}
@@ -129,8 +125,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				Control gridview = GridView;
 				if (gridview != null)
 				{
-					return (string)Reflect.GetFieldValue(gridview, "originalTextValue",
-						BindingFlags.NonPublic | BindingFlags.Instance);
+					return (string)Reflect.GetFieldValue(gridview, "originalTextValue");
 				}
 				return null;
 			}
@@ -142,8 +137,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				Control gridview = GridView;
 				if (gridview != null)
 				{
-					Reflect.SetFieldValue(gridview, "originalTextValue",
-						BindingFlags.NonPublic | BindingFlags.Instance, value);
+					Reflect.SetFieldValue(gridview, "originalTextValue", value);
 				}
 			}
 		}
@@ -167,8 +161,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				if (gridView == null)
 					return -1;
 
-				return (int)Reflect.GetFieldValue(gridView, "selectedRow",
-					BindingFlags.NonPublic | BindingFlags.Instance);
+				return (int)Reflect.GetFieldValue(gridView, "selectedRow");
 			}
 		}
 	}
@@ -246,7 +239,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 	public event IBSettingsPage.EditControlFocusEventHandler EditControlGotFocusEvent;
 	public event IBSettingsPage.EditControlFocusEventHandler EditControlLostFocusEvent;
-	public event IBSettingsPage.AutomationPropertyValueChangedEventHandler AutomationPropertyValueChangedEvent;
+	public event IBSettingsPage.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
 
 	#endregion Property Accessors
 
@@ -451,8 +444,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 			if (Reflect.InvokeMethod(gridView, "SetScrollOffset", BindingFlags.Public | BindingFlags.Instance, [0]) != null)
 			{
-				Reflect.InvokeMethod(gridView, "SelectRow", BindingFlags.NonPublic | BindingFlags.Instance,
-					[SortedByCategories ? 1 : 0]);
+				Reflect.InvokeMethod(gridView, "SelectRow", BindingFlags.Default, [SortedByCategories ? 1 : 0]);
 			}
 		}
 		catch (Exception ex)
@@ -639,8 +631,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			}
 
 
-			Reflect.InvokeMethod(gridView, "OnBtnClick", BindingFlags.NonPublic | BindingFlags.Instance,
-				[this, new EventArgs()]);
+			Reflect.InvokeMethod(gridView, "OnBtnClick", BindingFlags.Default, [this, new EventArgs()]);
 
 			// Sample for using async calls.
 			// _ = Task.Run(() => InvokeMethodAsync("OnBtnClick",
@@ -670,14 +661,14 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 		DisableEvents();
 
-		AutomationPropertyValueChangedEventArgs evt = null;
+		AutomatorPropertyValueChangedEventArgs evt = null;
 
 		try
 		{
 			GridItem gridEntry = e.ChangedItem;
 			evt = new(e.ChangedItem, e.OldValue);
 
-			AutomationPropertyValueChangedEvent?.Invoke(sender, evt);
+			AutomatorPropertyValueChangedEvent?.Invoke(sender, evt);
 		}
 		catch (Exception ex)
 		{
@@ -715,7 +706,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			{
 				_ValidFocusCell = true;
 			}
-			else if (e.NewSelection.PropertyDescriptor.Converter is IBAutomationConverter)
+			else if (e.NewSelection.PropertyDescriptor.Converter is IBAutomatorConverter)
 			{
 				_ValidMouseEventCell = true;
 			}

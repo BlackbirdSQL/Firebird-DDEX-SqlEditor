@@ -3,7 +3,6 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -12,9 +11,9 @@ using System.Threading.Tasks;
 using BlackbirdSql.Controller.Ctl.Config;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Sys;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -151,7 +150,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Checks if a project has FirebirdSql.Data.FirebirdClient configured in the app.config and configures it if it doesn't
+	/// Checks if a project has the invariant dll configured in the app.config and
+	/// configures it if it doesn't
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
@@ -190,7 +190,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 			try
 			{
-				modified = XmlParser.ConfigureDbProvider(path, SystemData.ProviderFactoryType);
+				modified = XmlParser.ConfigureDbProvider(path, DbNative.ClientFactoryType);
 			}
 			catch (Exception ex)
 			{
@@ -230,7 +230,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Checks if a project has EntityFramework.Firebird configured in the app.config and configures it if it doesn't
+	/// Checks if a project has the db engine EntityFramework (EntityFramework.Firebird
+	/// for the Firebird port) configured in the app.config and configures it if it
+	/// doesn't.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
@@ -270,7 +272,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			try
 			{
 				// If Entity framework must be configured then so must the client
-				modified = XmlParser.ConfigureEntityFramework(path, !globals.IsConfiguredDbProviderStatus, SystemData.ProviderFactoryType);
+				modified = XmlParser.ConfigureEntityFramework(path, !globals.IsConfiguredDbProviderStatus, DbNative.ClientFactoryType);
 			}
 			catch (Exception ex)
 			{
@@ -614,7 +616,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 						if (!isConfiguredEFStatus)
 						{
-							if (projectObject.References.Find(SystemData.EFProvider) != null)
+							if (projectObject.References.Find(DbNative.EFProvider) != null)
 							{
 								isConfiguredEFStatus = true;
 								isConfiguredDbProviderStatus = true;
@@ -633,7 +635,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 						if (!isConfiguredDbProviderStatus)
 						{
-							if (projectObject.References.Find(SystemData.Invariant) != null)
+							if (projectObject.References.Find(DbNative.Invariant) != null)
 							{
 								isConfiguredDbProviderStatus = true;
 
@@ -973,10 +975,10 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		// This is a once off procedure for solutions and their projects. (ie. Once validated always validated)
 		// We're going to check each project that gets loaded (or has a reference added) if it
-		// references EntityFramework.Firebird.dll else FirebirdSql.Data.FirebirdClient.dll.
+		// references the database EntityFramework dll else the invariant dll.
 		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
-		// We also check (once and only once) within a project for any Firebird edmxs with legacy settings and update
-		// those, because they cannot work with newer versions of EntityFramework.Firebird.
+		// We also check (once and only once) within a project for any edmxs with legacy settings and update
+		// those, because they cannot work with newer versions of EntityFramework.
 		// (This validation can be disabled in Visual Studio's options.)
 
 		if (!GlobalsAgent.SolutionGlobals.IsValidatedStatus)
@@ -1195,7 +1197,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (!GlobalsAgent.ValidateConfig || reference.Type != prjReferenceType.prjReferenceTypeAssembly
 			|| !UnsafeCmd.IsProjectKind(reference.ContainingProject.Kind)
 			|| (reference.Name.ToLower() != SystemData.EFProvider.ToLower()
-			&& reference.Name.ToLower() != SystemData.Invariant.ToLower()))
+			&& reference.Name.ToLower() != DbNative.Invariant.ToLower()))
 		{
 			return;
 		}
@@ -1232,7 +1234,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		IBGlobalsAgent globals = null;
 
 		if (reference.Name.ToLower() == SystemData.EFProvider.ToLower()
-			|| reference.Name.ToLower() == SystemData.Invariant.ToLower())
+			|| reference.Name.ToLower() == DbNative.Invariant.ToLower())
 		{
 			globals = new GlobalsAgent(GetProjectPath(reference.ContainingProject));
 		}
@@ -1258,7 +1260,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 				}
 			}
 		}
-		else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !globals.IsConfiguredDbProviderStatus)
+		else if (reference.Name.ToLower() == DbNative.Invariant.ToLower() && !globals.IsConfiguredDbProviderStatus)
 		{
 			// Tracer.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 

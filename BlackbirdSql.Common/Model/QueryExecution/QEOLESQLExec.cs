@@ -3,34 +3,28 @@
 using System;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Exceptions;
-using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Parsers;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Model;
-using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio;
+using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 
 
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
-[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 
-
-public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, IBVariableResolver
+public class QEOLESQLExec: AbstractQESQLExec, IBCommandExecuter, IBVariableResolver
 {
 
 	public QEOLESQLExec(ResolveSqlCmdVariable sqlCmdVariableResolver, QueryManager qryMgr)
@@ -77,32 +71,6 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 		}
 	}
 
-	public class BatchSourceString : IBBatchSource
-	{
-		private string str;
-
-		private BatchSourceString()
-		{
-		}
-
-		public BatchSourceString(string str)
-		{
-			this.str = str;
-		}
-
-		public EnParserAction GetMoreData(ref string str)
-		{
-			str = this.str;
-			this.str = null;
-			return VSConstants.S_OK;
-		}
-
-		EnParserAction IBBatchSource.GetMoreData(ref string str)
-		{
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			return GetMoreData(ref str);
-		}
-	}
 
 	private ManagedBatchParser _SqlCmdParser;
 
@@ -141,19 +109,27 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 
 	public event QeSqlCmdNewConnectionOpenedEventHandler SqlCmdNewConnectionOpenedEvent;
 
-	protected override void ExecuteScript(IBTextSpan textSpan)
+	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
+	public event QESQLQueryDataEventHandler DataLoadedEvent;
+
+	protected override void ExecuteScript()
 	{
-		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteScript", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecLiveSettings.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), "ExecuteScript()", "_ExecutionType: {0}.", _ExecutionType);
+
 		_ErrorAction = EnErrorAction.Ignore;
 		_ExecBatchNumOfTimes = 1;
 		_CurrentConn = _Conn;
 
 		if (_SqlCmdParser == null)
-			_SqlCmdParser = new ManagedBatchParser();
+		{
+			_SqlCmdParser = new ManagedBatchParser(QryMgr, _BatchConsumer, _ExecutionType, ExecLiveSettings.EditorResultsOutputMode, _TextSpan.Text);
+		}
 		else
-			_SqlCmdParser.Cleanup();
+		{
+			_SqlCmdParser.Cleanup(QryMgr, _BatchConsumer, _ExecutionType, ExecLiveSettings.EditorResultsOutputMode, _TextSpan.Text);
+		}
 
-		string batchDelimiter = ModelConstants.C_DefaultBatchSeparator;
+		string batchDelimiter = SysConstants.C_DefaultBatchSeparator;
 
 		if (ExecLiveSettings.EditorContextBatchSeparator != null && ExecLiveSettings.EditorContextBatchSeparator.Length > 0)
 		{
@@ -167,14 +143,13 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 		else
 			_SqlCmdParser.SetParseMode(EnParseMode.RecognizeOnlyBatchDelimiter);
 
-		_SqlCmdParser.SetBatchSource(new BatchSourceString(_TextSpan.Text));
 		_SqlCmdParser.SetCommandExecuter(this);
 		_SqlCmdParser.SetVariableResolver(this);
 
 		try
 		{
 			// ------------------------------------------------------------------------------- //
-			// ******************** Execution Point (7) - ExecuteScript() ******************** //
+			// ******************** Execution Point (5) - ExecuteScript() ******************** //
 			// ------------------------------------------------------------------------------- //
 			_SqlCmdParser.Parse();
 		}
@@ -186,7 +161,9 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 			{
 				_ExecResult = EnScriptExecutionResult.Failure;
 				string info = parserState.Info;
-				if (parserState.StatusValue == ParserState.EnStatus.Error && parserState.ErrorTypeValue == ParserState.EnErrorType.SyntaxError && info != null && info.Length > 0)
+				if (parserState.StatusValue == ParserState.EnStatus.Error
+					&& parserState.ErrorTypeValue == ParserState.EnErrorType.SyntaxError &&
+					info != null && info.Length > 0)
 				{
 					OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrScriptingIncorrectSyntax, info), EnQESQLScriptProcessingMessageType.FatalError);
 				}
@@ -203,13 +180,12 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 		}
 	}
 
-	protected override EnScriptExecutionResult ExecuteBatchRepeatStatement(QESQLBatch batch)
+	protected override EnScriptExecutionResult ExecuteBatchRepetition(QESQLBatch batch)
 	{
-		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteBatchRepeatStatement", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecLiveSettings.WithEstimatedExecutionPlan);
-		if (batch.SqlScript == null || batch.SqlScript != null && batch.SqlScript.Length == 0)
-		{
+		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteBatchRepetition", " _ExecOptions.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
+
+		if (batch.SqlStatement == null)
 			return EnScriptExecutionResult.Success;
-		}
 
 		EnScriptExecutionResult scriptExecutionResult = EnScriptExecutionResult.Failure;
 		try
@@ -225,13 +201,10 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 				scriptExecutionResult = EnScriptExecutionResult.Failure;
 				try
 				{
-					if (ExecLiveSettings.WithEstimatedExecutionPlan)
-						_SpecialActions |= EnQESQLBatchSpecialAction.ExpectEstimatedYukonXmlExecutionPlan;
-
 					// ---------------------------------------------------------------------------------------------- //
-					// ******************** Execution Point (11) - ExecuteBatchRepeatStatement() ******************** //
+					// ******************** Execution Point (9) - ExecuteBatchRepetition() ******************** //
 					// ---------------------------------------------------------------------------------------------- //
-					scriptExecutionResult = batch.ProcessStatement(_CurrentConn, _SpecialActions);
+					scriptExecutionResult = batch.Process(_CurrentConn, _SpecialActions);
 				}
 				catch (Exception e)
 				{
@@ -278,6 +251,14 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 			return EnScriptExecutionResult.Failure;
 		}
 	}
+
+
+	// Call statistics output
+	public void OnBatchDataLoaded(object sender, QESQLQueryDataEventArgs eventArgs)
+	{
+		DataLoadedEvent?.Invoke(this, eventArgs);
+	}
+
 
 	protected override void OnExecutionCompleted(EnScriptExecutionResult execResult)
 	{
@@ -357,12 +338,6 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 		_AsyncLockLocal = null;
 	}
 
-	public EnParserAction GetMoreData(ref string str)
-	{
-		// Tracer.Trace(GetType(), "QEOLESQLExec.GetMoreData", "", null);
-		str = _TextSpan.Text;
-		return 0;
-	}
 
 	public EnParserAction ResolveVariable(string varName, ref string varValue)
 	{
@@ -393,31 +368,29 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 		return 0;
 	}
 
-	public EnParserAction ProcessParsedBatchStatement(string statementString, int numberOfTimes)
-	{
-		// Tracer.Trace(GetType(), "QEOLESQLExec.ProcessParsedBatchStatement", "str = {0}, numberOfTimes = {1}", str ?? "null", numberOfTimes);
-		int lineNumber = _LineNumOfLastBatchEnd + 1;
-		// _LineNumOfLastBatchEnd = _SqlCmdParser.GetLastCommandLineNumber() - 1;
 
+
+	public EnParserAction ProcessParsedBatchStatement(IBsNativeDbStatementWrapper sqlStatement, int numberOfTimes)
+	{
+		int lineNumber = _LineNumOfLastBatchEnd + 1;
 		if (_LineNumOfLastBatchEnd < -1)
 			_LineNumOfLastBatchEnd = -1;
-
-
 		if (lineNumber == -1)
 			lineNumber = 0;
+		_ = lineNumber;
 
-		IBTextSpan textSpan = new SqlTextSpan(_TextSpan.AnchorLine, _TextSpan.AnchorCol,
-			_TextSpan.EndLine, _TextSpan.EndCol, -1, lineNumber, statementString,
-			((SqlTextSpan)_TextSpan).VsTextView);
 
-		if (statementString != null)
+		if (sqlStatement != null)
 		{
 			_ExecBatchNumOfTimes = numberOfTimes;
 
 			// --------------------------------------------------------------------------------------------- //
-			// ******************** Execution Point (9) - ProcessParsedBatchStatement() ******************** //
+			// ******************** Execution Point (7) - ProcessParsedBatchStatement() ******************** //
 			// --------------------------------------------------------------------------------------------- //
-			ProcessBatchRepeatStatement(statementString, textSpan, out bool continueProcessing);
+			ProcessBatchStatementRepetition(sqlStatement, out bool continueProcessing);
+
+			if (_ExecResult == EnScriptExecutionResult.Cancel)
+				_BatchConsumer.CurrentMessageCount++;
 
 			if (continueProcessing)
 				return EnParserAction.Continue;
@@ -425,6 +398,9 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 
 		return EnParserAction.Abort;
 	}
+
+
+
 
 	public EnParserAction Exit(string batch, string exitBatch)
 	{
@@ -439,7 +415,7 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 		return (EnParserAction)1;
 	}
 
-	public EnParserAction IncludeFileName(string fileName, ref IBBatchSource pIBatchSource)
+	public EnParserAction IncludeFileName(string fileName, ref IBsNativeDbBatchParser pIBatchSource)
 	{
 		string text = ReadFileContent(fileName);
 		if (text == null)
@@ -448,7 +424,7 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 			return (EnParserAction)1;
 		}
 
-		pIBatchSource = (IBBatchSource)(object)new BatchSourceString(text);
+		pIBatchSource = NativeDbBatchParserProxy.CreateInstance(_ExecutionType, QryMgr, text);
 		return 0;
 	}
 
@@ -463,7 +439,7 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 		return 0;
 	}
 
-	public EnParserAction Ed(string batch, ref IBBatchSource batchSource)
+	public EnParserAction Ed(string batch, ref IBsNativeDbBatchParser batchSource)
 	{
 		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "Ed"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
@@ -742,7 +718,7 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 		{
 			if (ci.DataSource == null || ci.DataSource.Length == 0 && _Conn != null)
 			{
-				ci.DataSource = ((FbConnection)_Conn).DataSource;
+				ci.DataSource = ((DbConnection)_Conn).GetDataSource();
 			}
 
 			if (ci.UserID != null && ci.UserID.Length != 0)
@@ -773,7 +749,7 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 			*/
 
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
-			IDbConnection dbConnection = new FbConnection(connectionString);
+			IDbConnection dbConnection = DbNative.CreateDbConnection(connectionString);
 			dbConnection.Open();
 			SqlCmdNewConnectionOpenedEvent?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));
 
@@ -1007,20 +983,13 @@ public class QEOLESQLExec: AbstractQESQLExec, IBBatchSource, IBCommandExecuter, 
 
 
 
-
-	EnParserAction IBBatchSource.GetMoreData(ref string str)
-	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		return GetMoreData(ref str);
-	}
-
-	EnParserAction IBCommandExecuter.Ed(string batch, ref IBBatchSource pIBatchSource)
+	EnParserAction IBCommandExecuter.Ed(string batch, ref IBsNativeDbBatchParser pIBatchSource)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		return Ed(batch, ref pIBatchSource);
 	}
 
-	EnParserAction IBCommandExecuter.IncludeFileName(string fileName, ref IBBatchSource ppIBatchSource)
+	EnParserAction IBCommandExecuter.IncludeFileName(string fileName, ref IBsNativeDbBatchParser ppIBatchSource)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		return IncludeFileName(fileName, ref ppIBatchSource);

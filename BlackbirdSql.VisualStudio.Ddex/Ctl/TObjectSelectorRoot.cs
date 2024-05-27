@@ -5,20 +5,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Reflection;
+using System.Data.Common;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
-using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 // =========================================================================================================
 //										TObjectSelectorRoot Class
@@ -34,7 +32,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	#region Fields - TObjectSelectorRoot
 	// ---------------------------------------------------------------------------------
 
-	private CsbAgent _Csa = null;
+	private Csb _Csa = null;
 
 
 
@@ -127,11 +125,13 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			if (lockedProviderObject == null)
 				throw new NotImplementedException("Site.GetLockedProviderObject()");
 
+			DbConnection connection = DbNative.CastToAssemblyConnection(lockedProviderObject);
+
 
 			// VS glitch. Null if ado has picked up a project data model firebird assembly.
-			if (lockedProviderObject is not FbConnection connection)
+			if (connection == null)
 			{
-				connection = new(Site.DecryptedConnectionString());
+				connection = (DbConnection)DbNative.CreateDbConnection(Site.DecryptedConnectionString());
 				connection.Open();
 			}
 
@@ -148,13 +148,13 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			reader = new AdoDotNetTableReader(schema);
 		}
-		catch (FbException exf)
+		catch (DbException exf)
 		{
-			Tracer.Warning(GetType(), "SelectObjects", "Firebird error: {0}.", exf.Message);
+			Tracer.Warning(GetType(), "SelectObjects", "{0} error: {1}.", DbNative.DbEngineName, exf.Message);
 
 			LinkageParser parser = LinkageParser.GetInstance((IDbConnection)lockedProviderObject);
 			if (parser != null)
-				LinkageParser.DisposeInstance((IDbConnection)lockedProviderObject, parser.Loaded);
+				AbstractLinkageParser.DisposeInstance((IDbConnection)lockedProviderObject, parser.Loaded);
 
 			lockedProviderObject = null;
 			Site.UnlockProviderObject();
@@ -207,7 +207,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	/// <param name="parameters"></param>
 	/// <returns>Thr root node ready DataSourceInformation schema.</returns>
 	// ---------------------------------------------------------------------------------
-	private DataTable CreateSchema(FbConnection connection, string typeName, object[] parameters)
+	private DataTable CreateSchema(DbConnection connection, string typeName, object[] parameters)
 	{
 		// Tracer.Trace(GetType(), "CreateSchema()", "typename: {0}", typeName);
 
@@ -217,8 +217,8 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			typeName = "Root";
 
 		Describer[] describers = typeName == "Database"
-			? [.. CsbAgent.Describers.DescriberKeys]
-			: [CsbAgent.Describers[CoreConstants.C_KeyExDatasetKey], CsbAgent.Describers[CoreConstants.C_KeyExConnectionKey]];
+			? [.. Csb.Describers.DescriberKeys]
+			: [Csb.Describers[SysConstants.C_KeyExDatasetKey], Csb.Describers[SysConstants.C_KeyExConnectionKey]];
 
 
 		foreach (Describer describer in describers)
@@ -273,7 +273,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	/// <param name="name"></param>
 	/// <returns></returns>
 	// ---------------------------------------------------------------------------------
-	private object RetrieveValue(FbConnection connection, string name, bool retrying = false)
+	private object RetrieveValue(DbConnection connection, string name, bool retrying = false)
 	{
 		object retval;
 		string strval;
@@ -295,31 +295,31 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		{
 			switch (name)
 			{
-				case CoreConstants.C_KeyExDatasetKey:
+				case SysConstants.C_KeyExDatasetKey:
 					retval = _Csa.DatasetKey;
 					break;
-				case CoreConstants.C_KeyExConnectionKey:
+				case SysConstants.C_KeyExConnectionKey:
 					retval = _Csa.ConnectionKey;
 					break;
-				case CoreConstants.C_KeyExConnectionSource:
+				case SysConstants.C_KeyExConnectionSource:
 					retval = EnConnectionSource.ServerExplorer;
 					break;
-				case CoreConstants.C_KeyDataSource:
+				case SysConstants.C_KeyDataSource:
 					retval = connection.DataSource;
 					break;
-				case CoreConstants.C_KeyExDataset:
+				case SysConstants.C_KeyExDataset:
 					retval = _Csa.Dataset;
 					break;
-				case CoreConstants.C_KeyDatabase:
+				case SysConstants.C_KeyDatabase:
 					retval = connection.Database;
 					break;
-				case CoreConstants.C_KeyExDatasetId:
+				case SysConstants.C_KeyExDatasetId:
 					strval = _Csa.DatasetId;
 					if (string.IsNullOrWhiteSpace(strval))
 						strval = _Csa.Dataset;
 					retval = strval;
 					break;
-				case CoreConstants.C_KeyExDisplayName:
+				case SysConstants.C_KeyExDisplayName:
 					strval = _Csa.DatasetId;
 					if (string.IsNullOrWhiteSpace(strval))
 						strval = _Csa.Dataset;
@@ -327,30 +327,30 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 						strval = _Csa.ConnectionName + " | " + strval;
 					retval = strval;
 					break;
-				case ModelConstants.C_KeyExClientVersion:
-					retval = $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
+				case SysConstants.C_KeyExClientVersion:
+					retval = $"FirebirdSql {DbNative.ClientVersion}";
 					break;
-				case ModelConstants.C_KeyExMemoryUsage:
+				case SysConstants.C_KeyExMemoryUsage:
 					errval = -1;
-					retval = ModelConstants.C_DefaultExMemoryUsage;
+					retval = SysConstants.C_DefaultExMemoryUsage;
 					if ((connection.State & ConnectionState.Open) > 0)
 					{
-						FbDatabaseInfo info = new(connection);
+						NativeDatabaseInfoProxy info = new(connection);
 						(strval, _) = ((long)info.GetCurrentMemory()).FmtByteSize();
 						retval = strval;
 					}
 					break;
-				case ModelConstants.C_KeyExActiveUsers:
+				case SysConstants.C_KeyExActiveUsers:
 					errval = -1;
-					retval = ModelConstants.C_DefaultExActiveUsers;
+					retval = SysConstants.C_DefaultExActiveUsers;
 					if ((connection.State & ConnectionState.Open) != 0)
 					{
-						FbDatabaseInfo info = new(connection);
+						NativeDatabaseInfoProxy info = new(connection);
 						retval = info.GetActiveUsers().Count;
 					}
 					break;
 				default:
-					Describer describer = CsbAgent.Describers[name];
+					Describer describer = Csb.Describers[name];
 					if (!_Csa.ContainsKey(describer.Name))
 						retval = describer.DefaultValue ?? DBNull.Value;
 					else if (describer.DataType == typeof(int))

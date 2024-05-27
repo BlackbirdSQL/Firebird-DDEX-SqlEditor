@@ -20,7 +20,7 @@ public enum EnDataConnectionDlgContext
 	MainSqlFileConnectionUIControl = 35651586,
 	MainOracleConnectionUIControl = 35651587,
 	MainAccessConnectionUIControl = 35651588,
-	MainOleDBConnectionUIControl = 35651589,
+	MainOleDbConnectionUIControl = 35651589,
 	MainOdbcConnectionUIControl = 35651590,
 	MainGenericConnectionUIControl = 36700159,
 	MainAdvancedButton = 37748736,

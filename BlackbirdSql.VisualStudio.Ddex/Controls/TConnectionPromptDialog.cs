@@ -5,12 +5,8 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -44,13 +40,13 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		{
 			try
 			{
-				foreach (Describer describer in CsbAgent.DescriberKeys)
+				foreach (Describer describer in Csb.DescriberKeys)
 				{
 					if (!describer.IsPublicMandatory)
 						continue;
-					if (!ConnectionUIProperties.ContainsKey(describer.DerivedConnectionParameter))
+					if (!ConnectionUIProperties.ContainsKey(describer.ConnectionStringKey))
 					{
-						Diag.StackException("ConnectionUIProperties public mandatory property missing: " + describer.DerivedConnectionParameter);
+						Diag.StackException("ConnectionUIProperties public mandatory property missing: " + describer.ConnectionStringKey);
 						return false;
 					}
 				}

@@ -8,15 +8,14 @@ using System.ComponentModel;
 using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Model;
+
+
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
+
 
 public sealed class ResultSetAndGridContainer : IDisposable
 {
@@ -30,7 +29,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	private readonly bool _PrintColumnHeaders = true;
 
-	private readonly int _NumberOfCharsToShow = ModelConstants.C_DefaultGridMaxCharsPerColumnStd;
+	private readonly int _NumberOfCharsToShow = SysConstants.C_DefaultGridMaxCharsPerColumnStd;
 
 	private bool m_bGridHasRows;
 

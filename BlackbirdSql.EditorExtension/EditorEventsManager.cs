@@ -9,8 +9,8 @@ using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.EditorExtension.Ctl.Events;
+using BlackbirdSql.Sys;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -20,7 +20,6 @@ using Microsoft.VisualStudio.Threading;
 
 using Cmd = BlackbirdSql.Common.Cmd;
 using IOleUndoManager = Microsoft.VisualStudio.OLE.Interop.IOleUndoManager;
-using Native = BlackbirdSql.Core.Native;
 
 
 
@@ -501,7 +500,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_UndoManager, out pvarValue));
 		CurrentUndoManager = pvarValue as IOleUndoManager;
 
-		Guid rguidCmdUI = Core.VS.UICONTEXT_PublishingPreviewCommitOff;
+		Guid rguidCmdUI = VS.UICONTEXT_PublishingPreviewCommitOff;
 		___(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _PublishingPreviewCommitOffCookie));
 
 		// rguidCmdUI = new(ServiceData.PreviewCommitOffGuid);

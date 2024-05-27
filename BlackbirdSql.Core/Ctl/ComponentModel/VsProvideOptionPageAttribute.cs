@@ -1,9 +1,9 @@
 // Microsoft.VisualStudio.Shell.15.0, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Shell.ProvideOptionPageAttribute
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading;
 using BlackbirdSql.Core.Properties;
@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
-[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
 
 

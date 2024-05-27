@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.IO;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Enums;
@@ -184,33 +183,33 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 		{
 			_TextViewCtl.ClsidLanguageService = _ClsidLanguageService;
 			TextResultsViewContol textView = _TextViewCtl;
-			Guid fontAndColorCategoryStandardTextEditor = Core.VS.CLSID_FontAndColorsTextEditorCategory;
+			Guid fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsTextEditorCategory;
 			textView.ColorCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 			TextResultsViewContol textView2 = _TextViewCtl;
-			fontAndColorCategoryStandardTextEditor = Core.VS.CLSID_FontAndColorsTextEditorCategory;
+			fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsTextEditorCategory;
 			textView2.FontCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 		}
 		else
 		{
 			TextResultsViewContol textView3 = _TextViewCtl;
-			Guid fontAndColorCategoryStandardTextEditor = Core.VS.CLSID_FontAndColorsSqlResultsTextCategory;
+			Guid fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsSqlResultsTextCategory;
 			textView3.ColorCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 			TextResultsViewContol textView4 = _TextViewCtl;
-			fontAndColorCategoryStandardTextEditor = Core.VS.CLSID_FontAndColorsSqlResultsTextCategory;
+			fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsSqlResultsTextCategory;
 			textView4.FontCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 		}
 
 		_TextViewCtl.CreateAndInitTextBuffer(sp, null);
 		_TextWriter = new ShellBufferWriter(_TextViewCtl.TextBuffer);
 		CreateAndInitVSTextEditor();
-		if (_ServiceProvider.GetService(Core.VS.CLSID_TextManager) is not IVsTextManager vsTextManager)
+		if (_ServiceProvider.GetService(VS.CLSID_TextManager) is not IVsTextManager vsTextManager)
 		{
 			return;
 		}
 
 		try
 		{
-			_ = ___(vsTextManager.GetRegisteredMarkerTypeID(ref Core.VS.CLSID_TSqlEditorMessageErrorMarker, out ShellTextBuffer.markerTypeError));
+			_ = ___(vsTextManager.GetRegisteredMarkerTypeID(ref VS.CLSID_TSqlEditorMessageErrorMarker, out ShellTextBuffer.markerTypeError));
 		}
 		catch
 		{

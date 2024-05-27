@@ -29,7 +29,6 @@ public enum EnCommandSet
 	CtlrIdExecuteToolbar = 0x5205, // 20997
 
 	GrpIdResultsToController = 0x5300,
-	GrpIdExecuteController = 0x5301,
 
 	GrpIdEditorWindowContext = 0x5400,
 	GrpIdResultsWindowContextSelect = 0x5401,
@@ -45,7 +44,6 @@ public enum EnCommandSet
 	CmdIdConnect = 0x0300, // 768
 	CmdIdDisconnect = 0x0301, // 769
 	CmdIdCloneQuery = 0x0302, // 770
-	CmdIdExecuteTtsQuery = 0x0303, // 771
 	CmdIdExecuteQuery = 0x0304, // 772
 	CmdIdCancelQuery = 0x0305, // 773
 	CmdIdShowEstimatedPlan = 0x0306, // 774
@@ -71,7 +69,7 @@ public enum EnCommandSet
 	CmdIdCopyWithHeaders = 0x0322, // 802
 	CmdIdCycleToNextTab = 0x0323, // 803
 	CmdIdCycleToPrevious = 0x0324, // 804
-	CmdIdParseQuery = 0x0326, // 806
+	CmdIdExecuteQueryBatch = 0x0326, // 806
 	CmdIdDisconnectAllQueries = 0x0327, // 807
 	CmdIdChangeConnection = 0x0328, // 808
 
@@ -83,5 +81,6 @@ public enum EnCommandSet
 	CmdIdTraceRct = 0x0339, // 825
 	CmdIdValidateSolution = 0x033A, // 826
 	CmdIdTransactionCommit = 0x033B, // 827
-	CmdIdTransactionRollback = 0x033C // 829
+	CmdIdTransactionRollback = 0x033C, // 829
+	CmdIdToggleTTS = 0x033D // 830
 }

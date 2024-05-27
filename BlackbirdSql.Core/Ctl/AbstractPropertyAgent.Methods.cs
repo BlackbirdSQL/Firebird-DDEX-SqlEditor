@@ -13,11 +13,11 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.Core;
@@ -600,7 +600,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 	public virtual bool IsParameter(string propertyName)
 	{
-		if (propertyName.ToLower() == CoreConstants.C_KeyPassword.ToLower() || propertyName.ToLower() == CoreConstants.C_KeyExInMemoryPassword.ToLower())
+		if (propertyName.ToLower() == SysConstants.C_KeyPassword.ToLower() || propertyName.ToLower() == SysConstants.C_KeyExInMemoryPassword.ToLower())
 		{
 			return true;
 		}
@@ -700,7 +700,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			{
 				// It could be a connection dataset which includes DatasetKey, DatasetId etc. so don't
 				// report an exception if it is.
-				// if (CsbAgent.Describers[pair.Key] == null)
+				// if (Csb.Describers[pair.Key] == null)
 				// {
 					NotSupportedException ex = new($"Connection parameter '{pair.Key}' has no descriptor property configured.");
 					Diag.Dug(ex);
@@ -736,25 +736,25 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 	public virtual void PopulateConnectionStringBuilder(DbConnectionStringBuilder dbcsb, bool secure)
 	{
-		CsbAgent csa = (CsbAgent)dbcsb;
+		Csb csa = (Csb)dbcsb;
 
 		csa.Clear();
 				
 		foreach (KeyValuePair<string, object> pair in _AssignedConnectionProperties)
 		{
-			if ((secure && (pair.Key.ToLower() == CoreConstants.C_KeyPassword.ToLower() || pair.Key.ToLower() == CoreConstants.C_KeyExInMemoryPassword.ToLower()))
+			if ((secure && (pair.Key.ToLower() == SysConstants.C_KeyPassword.ToLower() || pair.Key.ToLower() == SysConstants.C_KeyExInMemoryPassword.ToLower()))
 				|| !IsParameter(pair.Key))
 			{
 				continue;
 			}
 
-			if (pair.Key == CoreConstants.C_KeyExInMemoryPassword)
+			if (pair.Key == SysConstants.C_KeyExInMemoryPassword)
 			{
-				csa[CoreConstants.C_KeyPassword] = GetProperty("Password");
+				csa[SysConstants.C_KeyPassword] = GetProperty("Password");
 				continue;
 			}
 
-			if (pair.Value == null || pair.Value == DBNull.Value)
+			if (Cmd.IsNullValue(pair.Value))
 				continue;
 
 			if (pair.Value.GetType() == typeof(byte[]))
@@ -913,7 +913,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (csb.ContainsKey("Password"))
 		{
 			_ParametersChanged = true;
-			csb[CoreConstants.C_KeyFbPassword] = "*****";
+			csb[SysConstants.C_KeyPassword] = "*****";
 		}
 
 		return csb.ConnectionString;
@@ -1000,7 +1000,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		object assignedValue = isSet ? _AssignedConnectionProperties[name] : null;
 		object currValue = isSet 
 			? assignedValue
-			: ((newValue == null || newValue == DBNull.Value)
+			: (Cmd.IsNullValue(newValue)
 				? newValue
 				: Describers[name].DefaultValue);
 
@@ -1139,7 +1139,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 		string newValue;
 
-		if (newObjValue == null || newObjValue == DBNull.Value)
+		if (Cmd.IsNullValue(newObjValue))
 		{
 			newValue = (string)newObjValue;
 		}
@@ -1154,7 +1154,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		object assignedValue = isSet ? _AssignedConnectionProperties[name] : null;
 		object obj = isSet
 			? assignedValue
-			: ((newValue == null || (object)newValue == DBNull.Value)
+			: (Cmd.IsNullValue(newValue)
 				? newValue
 				: Describers[name].DefaultValue);
 
@@ -1202,7 +1202,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		object assignedValue = isSet ? _AssignedConnectionProperties[name] : null;
 		object obj = isSet
 			? assignedValue
-			: ((newValue == null || (object)newValue == DBNull.Value)
+			: (Cmd.IsNullValue(newValue)
 				? newValue
 				: Describers[name].DefaultValue);
 

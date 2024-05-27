@@ -187,7 +187,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Program Location:.
+        ///   Looks up a localized string similar to Code Location:.
         /// </summary>
         internal static string CodeLocation {
             get {
@@ -357,6 +357,15 @@ namespace BlackbirdSql.Core.Properties {
         internal static string NoButton {
             get {
                 return ResourceManager.GetString("NoButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} {1} Info.
+        /// </summary>
+        internal static string NodeExceptionInfo {
+            get {
+                return ResourceManager.GetString("NodeExceptionInfo", resourceCulture);
             }
         }
         
@@ -691,15 +700,6 @@ namespace BlackbirdSql.Core.Properties {
         internal static string SqlServerName {
             get {
                 return ResourceManager.GetString("SqlServerName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Microsoft SQL Server.
-        /// </summary>
-        internal static string SqlServerSource {
-            get {
-                return ResourceManager.GetString("SqlServerSource", resourceCulture);
             }
         }
         

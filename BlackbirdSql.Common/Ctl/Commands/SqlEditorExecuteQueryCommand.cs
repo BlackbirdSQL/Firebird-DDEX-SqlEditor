@@ -5,7 +5,7 @@
 
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -28,26 +28,30 @@ public class SqlEditorExecuteQueryCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		if (ShouldRunCommand())
-		{
+
+		if (!ExecutionLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-		}
 
 		return VSConstants.S_OK;
 	}
+
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (ShouldRunCommand())
-			EditorWindow.ExecuteQuery(false);
+		if (ExecutionLocked)
+			return VSConstants.S_OK;
+
+		EnSqlExecutionType executionType = StoredAuxDocData.HasActualPlan
+			? EnSqlExecutionType.QueryWithPlan : EnSqlExecutionType.QueryOnly;
+
+		// Tracer.Trace(GetType(), "HandleExec()", "ExecutionType: {0}.", executionType);
+
+		// ----------------------------------------------------------------------------------- //
+		// ******************** Execution Point (0) - SqlEditorExecuteQueryCommand ******************** //
+		// ----------------------------------------------------------------------------------- //
+		EditorWindow.ExecuteQuery(executionType);
 
 		return VSConstants.S_OK;
 	}
 
-	protected bool ShouldRunCommand()
-	{
-		QueryManager qryMgr = QryMgr;
-
-		return (qryMgr != null && !qryMgr.IsExecuting);
-	}
 }

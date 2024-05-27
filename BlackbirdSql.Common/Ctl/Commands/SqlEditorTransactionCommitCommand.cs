@@ -5,9 +5,6 @@
 
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.QueryExecution;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -32,10 +29,9 @@ public class SqlEditorTransactionCommitCommand : AbstractSqlEditorCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		QueryManager qryMgr = QryMgr;
 
-		if (qryMgr != null && qryMgr.IsConnected && !qryMgr.IsExecuting
-			&& qryMgr.ConnectionStrategy != null && qryMgr.ConnectionStrategy.HasTransactions)
+		if (!ExecutionLocked && StoredQryMgr != null && StoredQryMgr.IsConnected
+			&& StoredQryMgr.ConnectionStrategy != null && StoredQryMgr.ConnectionStrategy.HasTransactions)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -45,9 +41,7 @@ public class SqlEditorTransactionCommitCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-		auxDocData.CommitTransactions();
+		AuxDocData?.CommitTransactions();
 
 		return VSConstants.S_OK;
 	}

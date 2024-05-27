@@ -3,22 +3,22 @@
 
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
-using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
+
 namespace BlackbirdSql.Core.Model;
+
 
 // =========================================================================================================
 //										LinkageParser Class
@@ -159,10 +159,10 @@ public class LinkageParser : AbstractLinkageParser
 		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
 			return null;
 
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+		if (!DbNative.IsSupportedConnection(vsDataConnectionSupport.ProviderObject))
 			return null;
 
-		return EnsureInstance(connection);
+		return EnsureInstance((IDbConnection)vsDataConnectionSupport.ProviderObject);
 	}
 
 
@@ -203,10 +203,10 @@ public class LinkageParser : AbstractLinkageParser
 		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
 			return null;
 
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+		if (!DbNative.IsSupportedConnection(vsDataConnectionSupport.ProviderObject))
 			return null;
 
-		return EnsureLoaded(connection);
+		return EnsureLoaded((IDbConnection)vsDataConnectionSupport.ProviderObject);
 	}
 
 
@@ -252,10 +252,10 @@ public class LinkageParser : AbstractLinkageParser
 		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
 			return null;
 
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+		if (!DbNative.IsSupportedConnection(vsDataConnectionSupport.ProviderObject))
 			return null;
 
-		return GetInstance(connection);
+		return GetInstance((IDbConnection)vsDataConnectionSupport.ProviderObject);
 	}
 
 
@@ -495,8 +495,10 @@ public class LinkageParser : AbstractLinkageParser
 		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
 			return null;
 
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+		if (!DbNative.IsSupportedConnection(vsDataConnectionSupport.ProviderObject))
 			return null;
+
+		DbConnection connection = (DbConnection)vsDataConnectionSupport.ProviderObject;
 
 		if (connection.State != ConnectionState.Open)
 			return null;
@@ -637,10 +639,10 @@ public class LinkageParser : AbstractLinkageParser
 		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
 			return null;
 
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+		if (!DbNative.IsSupportedConnection(vsDataConnectionSupport.ProviderObject))
 			return null;
 
-		return AsyncRequestLoading(connection, delay, multiplier);
+		return AsyncRequestLoading((IDbConnection)vsDataConnectionSupport.ProviderObject, delay, multiplier);
 	}
 
 
@@ -916,8 +918,8 @@ public class LinkageParser : AbstractLinkageParser
 			return false;
 		}
 
-		string lockedConnectionUrl = CsbAgent.CreateConnectionUrl(_LockedLoadedConnectionString);
-		string disposingConnectionUrl = CsbAgent.CreateConnectionUrl(parser.ConnectionString);
+		string lockedConnectionUrl = Csb.CreateConnectionUrl(_LockedLoadedConnectionString);
+		string disposingConnectionUrl = Csb.CreateConnectionUrl(parser.ConnectionString);
 
 		// Tracer.Trace(typeof(RctManager), "IsLockedLoadedParser()", "\nlockedConnectionUrl: {0}, disposingConnectionUrl: {1}.", lockedConnectionUrl, disposingConnectionUrl);
 
@@ -955,7 +957,7 @@ public class LinkageParser : AbstractLinkageParser
 			return;
 
 
-		if (CsbAgent.AreEquivalent(parser.TransientString, updatedString, CsbAgent.ConnectionKeys))
+		if (Csb.AreEquivalent(parser.TransientString, updatedString, Csb.ConnectionKeys))
 		{
 			return;
 		}

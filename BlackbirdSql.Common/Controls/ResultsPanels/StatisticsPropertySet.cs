@@ -46,10 +46,10 @@ public class StatisticsPropertySet
 	/// </summary>
 	public static readonly string[] SCategoryNames =
 	[
-		AttributeResources.StatisticsPanelCategorySnapshotTimestamp,
+		/* AttributeResources.StatisticsPanelCategorySnapshotTimestamp, */
+		AttributeResources.StatisticsPanelCategoryTimeStats,
 		AttributeResources.StatisticsPanelCategoryQueryProfileStats,
 		AttributeResources.StatisticsPanelCategoryNetworkStats,
-		AttributeResources.StatisticsPanelCategoryTimeStats,
 		AttributeResources.StatisticsPanelCategoryServerStats
 	];
 
@@ -60,7 +60,7 @@ public class StatisticsPropertySet
 	public static readonly GetCategoryValueDelegate[] SCategoryValueDelegates =
 	[
 		new GetCategoryValueDelegate(GetTimeOfExecution),
-		null,
+		/* null, */
 		null,
 		null,
 		null,
@@ -72,44 +72,51 @@ public class StatisticsPropertySet
 	/// These were originally output explicity for each cell.
 	/// By creating a multi-dim array, adding or changing a statistic requires:
 	/// 1. Including it here in SStatisticEntities.
-	/// 2. Adding the property accessor to StatisticsConnection.
-	/// 3. Including it in the StatisticsConnection.Load() method, and
-	/// 4. Including it in StatisticsControl.RetrieveStatisticsIfNeeded()
+	/// 2. Adding the property accessor to ConnectionSnapshotCollection.
+	/// 3. Including it in the ConnectionSnapshotCollection.Load() method, and
+	/// 4. Including it in StatisticsSnapshotCollection.RetrieveStatisticsIfNeeded()
 	/// </summary>
 	public static readonly StatisticEntity[][] SStatisticEntities =
 	[
 		// ClientExecutionTime
-		new StatisticEntity[0],
-
-		// QueryProfileStatistics
-		[
-			new StatisticEntity("IduRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("InsRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("UpdRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("DelRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("SelectRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("Transactions", EnStatisticSpecialAction.SIFormat)
-		],
-
-		// NetworkStatistics
-		[
-			new StatisticEntity("ServerRoundtrips", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("BufferCount", EnStatisticSpecialAction.SIFormat, false),
-			new StatisticEntity("ReadCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("WriteCount", EnStatisticSpecialAction.SIFormat),
-			// new StatisticEntity("ReadIdxCount", EnStatisticSpecialAction.SIFormat),
-			// new StatisticEntity("ReadSeqCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("PurgeCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("ExpungeCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("Marks", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("PacketSize", EnStatisticSpecialAction.ByteFormat, false)
-		],
+		/* new StatisticEntity[0], */
 
 		// TimeStatistics
 		[
 			new StatisticEntity("ExecutionStartTimeEpoch", EnStatisticSpecialAction.DateTimeFormat, false),
 			new StatisticEntity("ExecutionEndTimeEpoch", EnStatisticSpecialAction.DateTimeFormat, false),
 			new StatisticEntity("ExecutionTimeTicks", EnStatisticSpecialAction.ElapsedTimeFormat),
+		],
+
+		// QueryProfileStatistics
+		[
+			new StatisticEntity("SelectRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("IduRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("InsRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("UpdRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("DelRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ReadIdxCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ReadSeqCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ExpungeCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("PurgeCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("Transactions", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("InsRowEntities", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("UpdRowEntities", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("DelRowEntities", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ReadIdxEntities", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ReadSeqEntities", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ExpungeEntities", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("PurgeEntities", EnStatisticSpecialAction.SIFormat)
+		],
+
+		// NetworkStatistics
+		[
+			new StatisticEntity("ServerCacheReadCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ServerCacheWriteCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("BufferCount", EnStatisticSpecialAction.SIFormat, false),
+			new StatisticEntity("ReadCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("WriteCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("PacketSize", EnStatisticSpecialAction.ByteFormat, false)
 		],
 
 		// ServerStatistics

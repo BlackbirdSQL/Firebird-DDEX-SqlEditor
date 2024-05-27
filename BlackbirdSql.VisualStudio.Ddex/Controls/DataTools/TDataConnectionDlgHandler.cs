@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Events;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -25,8 +25,12 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.Win32;
 
+using Cmd = BlackbirdSql.Sys.Cmd;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
+
 
 // =========================================================================================================
 //										TDataConnectionDlgHandler Class
@@ -1246,7 +1250,7 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 			else
 			{
 				IVsDataConnectionUIProperties vsDataConnectionUIProperties = (IVsDataConnectionUIProperties)Reflect.GetFieldValue(dataConnectionProperties,
-					"_connectionUIProperties", BindingFlags.Instance | BindingFlags.NonPublic);
+					"_connectionUIProperties");
 
 				if (vsDataConnectionUIProperties is TConnectionUIProperties uiConnectionProperties)
 					uiConnectionProperties.SetConnectionSource(EnConnectionSource.Session);
@@ -1362,7 +1366,7 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 			}
 			set
 			{
-				if (value != null && value != DBNull.Value)
+				if (!Cmd.IsNullValue(value))
 				{
 					_DataConnectionUiProperties[propertyName] = value;
 					return;

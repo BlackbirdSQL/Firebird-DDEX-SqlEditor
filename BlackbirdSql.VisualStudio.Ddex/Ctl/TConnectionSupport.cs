@@ -4,10 +4,6 @@
 using System;
 using System.ComponentModel.Design;
 using System.Data;
-using System.Reflection;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;

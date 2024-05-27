@@ -1,7 +1,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.Configuration
 using System.Collections.Generic;
-using BlackbirdSql.Core;
 using BlackbirdSql.LanguageExtension.Properties;
 using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -37,7 +36,7 @@ internal static class LsbConfiguration
 
 	public const string Name = PackageData.LanguageLongName;
 
-	public const string Extension = SystemData.Extension;
+	public const string Extension = PackageData.Extension;
 
 	private static CommentInfo myCommentInfo;
 

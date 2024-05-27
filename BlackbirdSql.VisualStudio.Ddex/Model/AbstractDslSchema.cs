@@ -25,15 +25,12 @@ using System.Data.Common;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-using FirebirdSql.Data.FirebirdClient;
-using FirebirdSql.Data.Services;
-
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
+
 
 internal abstract class AbstractDslSchema
 {
@@ -50,15 +47,15 @@ internal abstract class AbstractDslSchema
 
 	#region Methods
 
-	public DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
+	public DataTable GetSchema(DbConnection connection, string collectionName, string[] restrictions)
 	{
 		// Tracer.Trace(GetType(), "GetSchema", "collectionName: {0}", collectionName);
 
-		var dataTable = new DataTable(collectionName);
-		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
+		DataTable dataTable = new DataTable(collectionName);
+		DbCommand command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
 		try
 		{
-			using (var adapter = new FbDataAdapter(command))
+			using (DbDataAdapter adapter = DbNative.CreateDbDataAdapter(command))
 			{
 				// Exceptions will be handled in SelectObjects();
 				adapter.Fill(dataTable);
@@ -74,53 +71,21 @@ internal abstract class AbstractDslSchema
 		return dataTable;
 	}
 
-	/*
-	public DataTable GetRawSchema(FbConnection connection, string collectionName)
-	{
-		// Tracer.Trace(GetType(), "GetRawSchema", "collectionName: {0}", collectionName);
-
-		var dataTable = new DataTable(collectionName);
-		var command = BuildRawCommand(connection);
-		try
-		{
-			using (var adapter = new FbDataAdapter(command))
-			{
-				try
-				{
-					adapter.Fill(dataTable);
-				}
-				catch (Exception ex)
-				{
-					Diag.Dug(ex);
-					throw;
-				}
-			}
-		}
-		finally
-		{
-			command.Dispose();
-		}
-
-		TrimStringFields(dataTable);
-		ProcessResult(dataTable);
-		return dataTable;
-	}
-	*/
 
 
-	public async Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	public async Task<DataTable> GetSchemaAsync(DbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
 		// Tracer.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
 
-		var dataTable = new DataTable(collectionName);
-		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
+		DataTable dataTable = new (collectionName);
+		DbCommand command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
 
 		if (cancellationToken.IsCancellationRequested)
 			return dataTable;
 
 		try
 		{
-			using (var adapter = new FbDataAdapter(command))
+			using (DbDataAdapter adapter = DbNative.CreateDbDataAdapter(command))
 			{
 				try
 				{
@@ -159,7 +124,7 @@ internal abstract class AbstractDslSchema
 
 	#region Protected Methods
 
-	protected FbCommand BuildCommand(FbConnection connection, string collectionName, string[] restrictions)
+	protected DbCommand BuildCommand(DbConnection connection, string collectionName, string[] restrictions)
 	{
 		// Tracer.Trace(GetType(), "BuildCommand", "collectionName: {0}", collectionName);
 
@@ -182,50 +147,35 @@ internal abstract class AbstractDslSchema
 				break;
 		}
 
-		var filter = string.Format("CollectionName='{0}'", schemaCollection);
-		var builder = GetCommandText(restrictions);
-		var restriction = connection.GetSchema(DbMetaDataCollectionNames.Restrictions).Select(filter);
+		string filter = string.Format("CollectionName='{0}'", schemaCollection);
+		StringBuilder builder = GetCommandText(restrictions);
+		DataRow[] restrictionRows = connection.GetSchema(DbMetaDataCollectionNames.Restrictions).Select(filter);
 		// var transaction = connection.InnerConnection.ActiveTransaction;
 
-		var command = new FbCommand(builder.ToString(), connection /*, transaction*/);
+		DbCommand command = connection.CreateDatabaseCommand(builder.ToString() /*, transaction*/);
 
 		if (restrictions != null && restrictions.Length > 0)
 		{
-			var index = 0;
+			int index = 0;
+			int newIndex;
+			string rname;
 
-			for (var i = 0; i < restrictions.Length; i++)
+			for (int i = 0; i < restrictions.Length; i++)
 			{
-				var rname = restriction[i]["RestrictionName"].ToString();
 				if (restrictions[i] != null)
 				{
-					// Catalog, Schema and TableType are no real restrictions
-					if (!rname.EndsWith("Catalog") && !rname.EndsWith("Schema") && rname != "TableType")
-					{
-						var pname = string.Format("@p{0}", index++);
+					rname = restrictionRows[i]["RestrictionName"].ToString();
+					newIndex = command.AddParameter(rname, index, restrictions[i]);
 
-						command.Parameters.Add(pname, FbDbType.VarChar, 255).Value = restrictions[i];
-					}
+					if (newIndex != -1)
+						index = newIndex;
 				}
 			}
 		}
 
-		return command;
-	}
-
-
-	/*
-	protected FbCommand BuildRawCommand(FbConnection connection)
-	{
-		// Tracer.Trace(GetType(), "BuildRawCommand");
-
-		SetMajorVersionNumber(connection);
-
-		var builder = GetCommandText(null);
-		var command = new FbCommand(builder.ToString(), connection /*, transaction * /);
 
 		return command;
 	}
-	*/
 
 
 
@@ -245,9 +195,9 @@ internal abstract class AbstractDslSchema
 	/// Determines the major version number from the Serverversion on the inner connection.
 	/// </summary>
 	/// <param name="connection">an open connection, which is used to determine the version number of the connected database server</param>
-	private void SetMajorVersionNumber(FbConnection connection)
+	private void SetMajorVersionNumber(IDbConnection connection)
 	{
-		var serverVersion = FbServerProperties.ParseServerVersion(connection.ServerVersion);
+		var serverVersion = connection.GetVersion();
 		MajorVersionNumber = serverVersion.Major;
 	}
 	#endregion

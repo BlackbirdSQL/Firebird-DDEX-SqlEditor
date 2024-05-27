@@ -5,7 +5,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Model.Events;
-using BlackbirdSql.Core;
 
 
 
@@ -170,11 +169,13 @@ public sealed class MultiControlPanel : Panel
 		}
 
 		int count = hostPanel.Controls.Count;
+
 		if (count > 0)
 		{
+			hostPanel.SuspendLayout();
+
 			try
 			{
-				hostPanel.SuspendLayout();
 				if (count <= 1)
 				{
 					hostPanel.Controls.Add(AllocateNewSplitter(hostPanel.Controls[0], hostedControlsMinSize));
@@ -234,9 +235,11 @@ public sealed class MultiControlPanel : Panel
 	protected override void OnSizeChanged(EventArgs e)
 	{
 		int hostedControlsCount = HostedControlsCount;
+
+		hostPanel.SuspendLayout();
+
 		try
 		{
-			hostPanel.SuspendLayout();
 			int height = ClientRectangle.Height;
 			if (hostedControlsCount <= 1)
 			{
@@ -254,8 +257,9 @@ public sealed class MultiControlPanel : Panel
 		finally
 		{
 			hostPanel.ResumeLayout();
-			base.OnSizeChanged(e);
 		}
+
+		base.OnSizeChanged(e);
 	}
 
 	private QESplitter AllocateNewSplitter(Control boundControl, int minSize)
@@ -378,7 +382,9 @@ public sealed class MultiControlPanel : Panel
 	private void OnSplitterMoved(object sender, QESplitterMovedEventArgs e)
 	{
 		int num = e.SplitPosition - e.BoundControl.Bounds.Top - e.BoundControl.Height;
+
 		hostPanel.SuspendLayout();
+
 		try
 		{
 			int height = hostPanel.Height;

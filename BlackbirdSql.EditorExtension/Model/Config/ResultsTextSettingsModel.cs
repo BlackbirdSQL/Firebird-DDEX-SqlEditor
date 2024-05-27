@@ -4,16 +4,17 @@
 using System.ComponentModel;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
-using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
+
 
 
 namespace BlackbirdSql.EditorExtension.Model.Config;
+
 
 // =========================================================================================================
 //										ResultsTextSettingsModel Class
@@ -142,8 +143,8 @@ public class ResultsTextSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayResultsTextMaxStd")]
 	[GlobalizedDescription("OptionDescriptionResultsTextMaxStd")]
-	[DefaultValue(ModelConstants.C_DefaultTextMaxCharsPerColumnStd)]
-	public EnGlobalizedBytes MaxCharsPerColumnStd { get; set; } = (EnGlobalizedBytes)ModelConstants.C_DefaultTextMaxCharsPerColumnStd;
+	[DefaultValue(SysConstants.C_DefaultTextMaxCharsPerColumnStd)]
+	public EnGlobalizedBytes MaxCharsPerColumnStd { get; set; } = (EnGlobalizedBytes)SysConstants.C_DefaultTextMaxCharsPerColumnStd;
 
 
 	[GlobalizedCategory("OptionCategoryTextTabs")]
@@ -151,7 +152,7 @@ public class ResultsTextSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDescription("OptionDescriptionResultsTextSeparateTabs")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]
 	[DefaultValue(false)]
-	[Automation, RefreshProperties(RefreshProperties.All)]
+	[Automator, RefreshProperties(RefreshProperties.All)]
 	public bool SeparateTabs { get; set; } = false;
 
 
@@ -161,7 +162,7 @@ public class ResultsTextSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDescription("OptionDescriptionResultsTextSwitchToResults")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(false)]
-	[Automation("SeparateTabs"), ReadOnly(true)]
+	[Automator("SeparateTabs"), ReadOnly(true)]
 	public bool SwitchToResults { get; set; } = false;
 
 
@@ -170,7 +171,7 @@ public class ResultsTextSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDisplayName("OptionDisplayResultsTextOutputFormat")]
 	[GlobalizedDescription("OptionDescriptionResultsTextOutputFormat")]
 	[DefaultValue(EnGlobalizedOutputFormat.ColAligned)]
-	[Automation, RefreshProperties(RefreshProperties.All)]
+	[Automator, RefreshProperties(RefreshProperties.All)]
 	public EnGlobalizedOutputFormat OutputFormat { get; set; } = EnGlobalizedOutputFormat.ColAligned;
 
 	[GlobalizedCategory("OptionCategoryTextFormat")]
@@ -178,7 +179,7 @@ public class ResultsTextSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDescription("OptionDescriptionResultsTextDelimiter")]
 	[TypeConverter(typeof(UomConverter)), LiteralRange("Separator", 1, 1)]
 	[DefaultValue(",")]
-	[Automation("OutputFormat", (int)EnGlobalizedOutputFormat.Custom), ReadOnly(true)]
+	[Automator("OutputFormat", (int)EnGlobalizedOutputFormat.Custom), ReadOnly(true)]
 	public string Delimiter { get; set; } = ",";
 
 

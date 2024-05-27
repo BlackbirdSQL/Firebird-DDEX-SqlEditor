@@ -160,7 +160,7 @@
     <value>For help, click: {0}</value>
   </data>
   <data name="CodeLocation" xml:space="preserve">
-    <value>Program Location:</value>
+    <value>Code Location:</value>
   </data>
   <data name="ConnectToServer" xml:space="preserve">
     <value>Connect to Server</value>
@@ -218,6 +218,9 @@ Extend the allotted linkage time by {0} seconds?</value>
   </data>
   <data name="NoButton" xml:space="preserve">
     <value>&amp;No</value>
+  </data>
+  <data name="NodeExceptionInfo" xml:space="preserve">
+    <value>{0} {1} Info</value>
   </data>
   <data name="NoHelpMenuText" xml:space="preserve">
     <value>No Help Available For: "{0}"</value>
@@ -348,9 +351,6 @@ Continue?</value>
   </data>
   <data name="SqlServerName" xml:space="preserve">
     <value>Server Name: {0}</value>
-  </data>
-  <data name="SqlServerSource" xml:space="preserve">
-    <value>Microsoft SQL Server</value>
   </data>
   <data name="SqlSeverity" xml:space="preserve">
     <value>Severity: {0}</value>

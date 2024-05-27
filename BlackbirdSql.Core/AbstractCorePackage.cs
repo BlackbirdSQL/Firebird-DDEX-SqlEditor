@@ -1,11 +1,15 @@
-﻿using System;
+﻿
+using System;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
+using BlackbirdSql.Data;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -50,7 +54,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 		try
 		{
-			UriParser.Register(new FbsqlStyleUriParser(SystemData.UriParserOptions), SystemData.Protocol, 0);
+			UriParser.Register(new SqlStyleUriParser(SystemData.UriParserOptions), DbNative.Protocol, 0);
 		}
 		catch (Exception ex)
 		{
@@ -77,6 +81,21 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 		}
 	}
 
+
+	static AbstractCorePackage()
+	{
+		RegisterDataServices();
+	}
+
+	private static void RegisterDataServices()
+	{
+		DbNative.CsbType = typeof(Csb);
+		DbNative.DatabaseEngineSvc ??= DatabaseEngineService.CreateInstance();
+		DbNative.DatabaseInfoSvc = DatabaseInfoService.CreateInstance();
+		DbNative.DbCommandSvc = DbCommandService.CreateInstance();
+		DbNative.DbConnectionSvc = DbConnectionService.CreateInstance();
+		DbNative.DbExceptionSvc = DbExceptionService.CreateInstance();
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -127,6 +146,8 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	#region Property accessors - AbstractCorePackage
 	// =========================================================================================================
 
+
+	public static IBsNativeDatabaseEngine DatabaseEngineSvc => DbNative.DatabaseEngineSvc ??= DatabaseEngineService.CreateInstance();
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -251,7 +272,55 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	/// creates an instance of the service.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public virtual Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token) => Task.FromResult<object>(null);
+	public virtual async Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token)
+	{
+		if (serviceType == null)
+		{
+			ArgumentNullException ex = new("serviceType");
+			Diag.Dug(ex);
+			throw ex;
+		}
+		else if (serviceType == typeof(SBsNativeDatabaseEngine))
+		{
+			object service = DbNative.DatabaseEngineSvc;
+			return service;
+		}
+		else if (serviceType == typeof(SBsNativeDatabaseInfo))
+		{
+			object service = DbNative.DatabaseInfoSvc;
+			return service;
+		}
+		else if (serviceType == typeof(SBsNativeDbCommand))
+		{
+			object service = DbNative.DbCommandSvc;
+			return service;
+		}
+		else if (serviceType == typeof(SBsNativeDbConnection))
+		{
+			object service = DbNative.DbConnectionSvc;
+			return service;
+		}
+		else if (serviceType == typeof(SBsNativeDbException))
+		{
+			object service = DbNative.DbExceptionSvc;
+			return service;
+		}
+		/*
+		else if (serviceType == typeof(IBDesignerOnlineServices))
+		{
+			object service = new DesignerOnlineServices()
+				?? throw Diag.ExceptionService(serviceType);
+
+			return service;
+		}
+		*/
+		else if (serviceType.IsInstanceOfType(this))
+		{
+			return this;
+		}
+
+		return await Task.FromResult<object>(null); 
+	}
 
 
 
@@ -279,10 +348,13 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 		// ServiceContainer.AddService(typeof(ICustomService), ServiceCreatorCallbackMethod, promote: true);
 
 		Progress(progress, "Finalizing Core initialization... Done.");
-		
+
 	}
 
+
 	public abstract TInterface GetService<TService, TInterface>() where TInterface : class;
+
+
 	public abstract Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
 
 
@@ -303,7 +375,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 		await base.InitializeAsync(cancellationToken, progress);
 
 		Progress(progress, "Initializing Core... Done.");
-		
+
 	}
 
 

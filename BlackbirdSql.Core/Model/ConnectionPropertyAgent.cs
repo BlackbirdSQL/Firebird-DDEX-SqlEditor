@@ -2,8 +2,8 @@
 // Microsoft.SqlServer.Management.Smo.RegSvrEnum.UIConnectionInfo
 
 using System.Xml;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Sys;
 
 
 
@@ -12,7 +12,7 @@ namespace BlackbirdSql.Core.Model;
 // Type defines operator == or operator != but does not override Object.Equals(object o)
 #pragma warning disable CS0660
 // Type defines operator == or operator != but does not override Object.GetHashCode()
-#pragma warning disable CS0661 
+#pragma warning disable CS0661
 public class ConnectionPropertyAgent(IBPropertyAgent lhs, bool generateNewId)
 	: AbstractModelPropertyAgent(lhs, generateNewId)
 {

@@ -5,20 +5,16 @@
 
 using System;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell.Interop;
+
 
 
 namespace BlackbirdSql.Common.Ctl.Commands;
+
 
 public class SqlEditorQuerySettingsCommand(IBSqlEditorWindowPane editorWindow)
 
@@ -27,28 +23,22 @@ public class SqlEditorQuerySettingsCommand(IBSqlEditorWindowPane editorWindow)
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryManager qryMgr = QryMgr;
 
-		if (qryMgr != null && !qryMgr.IsExecuting)
-		{
+		if (!ExecutionLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-		}
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-		if (auxDocData == null)
+		if (AuxDocData == null)
 			return VSConstants.S_OK;
 
-		// EnSqlOutputMode mode = auxDocData.QryMgr.LiveSettings.EditorResultsOutputMode;
 
 		IBEditorPackage editorPackage = (IBEditorPackage)ApcManager.PackageInstance;
 
-		editorPackage.ShowExecutionSettingsDialogFrame(auxDocData, FormStartPosition.CenterParent);
+		editorPackage.ShowExecutionSettingsDialogFrame(StoredAuxDocData, FormStartPosition.CenterParent);
 
 		return VSConstants.S_OK;
 	}

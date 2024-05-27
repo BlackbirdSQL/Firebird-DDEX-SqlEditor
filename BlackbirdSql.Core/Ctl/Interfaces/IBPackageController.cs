@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using EnvDTE;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;

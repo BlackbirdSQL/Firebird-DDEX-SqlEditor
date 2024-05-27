@@ -1,17 +1,11 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.ShowPlanPanel
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Commands;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 
 // using Microsoft.AnalysisServices.Graphing;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.Common.Controls.ResultsPanels;
 

@@ -19,9 +19,7 @@ namespace BlackbirdSql.Common;
 public static class LibraryData
 {
 	public const string LanguageName = "FB-SQL";
-
 	public const string C_ShowPlanNamespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan";
-	public const string C_YukonXmlExecutionPlanColumn = "Firebird_SQL_Server_XML_Showplan";
 
 	// ---------------------------------------------------------------------------------------------------------
 	#region Package Guids - LibraryData
@@ -52,11 +50,11 @@ public static class LibraryData
 
 
 	// Tabs
-	public const string SqlMessageTabLogicalViewGuid = "32B79718-1118-4BF1-B9DF-4B975328790F";
-	public const string SqlExecutionPlanTabLogicalViewGuid = "E313023B-F451-4A3C-9C34-BB16C5CCDB72";
+	public const string SqlMessageTabLogicalViewGuid = "DCB777D2-E346-42A7-9619-E1D60DD1C098";
+	// public const string SqlExecutionPlanTabLogicalViewGuid = "10308C26-2E83-4DF5-BA5E-17935360B543";
 	public const string SqlTextPlanTabLogicalViewGuid = "200E716C-607B-4729-8D8C-C857A6F0FDF3";
-	public const string SqlStatisticsTabLogicalViewGuid = "791399A1-6E21-4A73-9AAA-293B6563C77B";
-	public const string SqlTextResultsTabLogicalViewGuid = "04BE2EC0-64F0-4D16-9BD1-5D3C95EC7070";
+	public const string SqlStatisticsTabLogicalViewGuid = "C7601C1A-F370-4560-83B3-07DE8331EA8F";
+	public const string SqlTextResultsTabLogicalViewGuid = "2C5E6F49-4D0D-44E2-B6C1-DAF685928BD9";
 
 
 };

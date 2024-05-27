@@ -6,6 +6,7 @@
 using System;
 using System.Data;
 using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Sys;
 // using Microsoft.SqlServer.Management.UI.Grid;
 
 // using Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution;
@@ -23,7 +24,7 @@ namespace BlackbirdSql.Common.Model.Interfaces
 
 		event StorageNotifyDelegate StorageNotify;
 
-		void InitStorage(IDataReader reader);
+		void InitStorage(IBsNativeDbStatementWrapper sqlStatement, IDataReader reader);
 
 		void StartStoringData();
 

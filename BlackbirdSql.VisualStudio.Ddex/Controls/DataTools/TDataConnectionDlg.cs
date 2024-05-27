@@ -1013,9 +1013,9 @@ public partial class TDataConnectionDlg : Form, IBDataConnectionDlg
 			{
 				context = EnDataConnectionDlgContext.MainAccessConnectionUIControl;
 			}
-			if (ConnectionUIControl is OleDBConnectionUIControl)
+			if (ConnectionUIControl is OleDbConnectionUIControl)
 			{
-				context = EnDataConnectionDlgContext.MainOleDBConnectionUIControl;
+				context = EnDataConnectionDlgContext.MainOleDbConnectionUIControl;
 			}
 			if (ConnectionUIControl is OdbcConnectionUIControl)
 			{

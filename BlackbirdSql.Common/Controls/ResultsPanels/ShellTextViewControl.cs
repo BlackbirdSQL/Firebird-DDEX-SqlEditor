@@ -7,7 +7,6 @@ using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Ctl.IO;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -46,9 +45,9 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 	protected TextViewCommandFilter _CommandFilter;
 
 
-	protected string m_strFontCategoryGuid = Core.VS.FontAndColorsTextToolWindows;
+	protected string m_strFontCategoryGuid = VS.FontAndColorsTextToolWindows;
 
-	protected string colorCategoryGuid = Core.VS.FontAndColorsTextToolWindows;
+	protected string colorCategoryGuid = VS.FontAndColorsTextToolWindows;
 
 	public IVsTextView TextView => m_textView;
 
@@ -359,7 +358,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 			if (pguidLangService == Guid.Empty)
 				throw new InvalidOperationException("IVsTextBuffer:GetLanguageServiceID");
 
-			if (pguidLangService == Core.VS.CLSID_LanguageServiceDefault && ClsidLanguageServiceDefault != Guid.Empty)
+			if (pguidLangService == VS.CLSID_LanguageServiceDefault && ClsidLanguageServiceDefault != Guid.Empty)
 			{
 				ApplyLS(ClsidLanguageServiceDefault);
 			}

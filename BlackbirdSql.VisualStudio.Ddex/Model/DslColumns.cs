@@ -24,12 +24,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Text;
-
-using FirebirdSql.Data.FirebirdClient;
-
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Sys;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -494,15 +492,15 @@ END",
 				scale = Convert.ToInt32(row["NUMERIC_SCALE"], CultureInfo.InvariantCulture);
 			}
 
-			var dbType = (FbDbType)TypeHelper.GetDbDataTypeFromBlrType(blrType, subType, scale);
-			row["FIELD_DATA_TYPE"] = TypeHelper.GetDataTypeName((EnDbDataType)dbType).ToLowerInvariant();
+			var dbType = DbNative.GetDbDataTypeFromBlrType(blrType, subType, scale);
+			row["FIELD_DATA_TYPE"] = DbNative.GetDataTypeName(dbType).ToLowerInvariant();
 
-			if (dbType == FbDbType.Binary || dbType == FbDbType.Text)
+			if (dbType == EnDbDataType.Binary || dbType == EnDbDataType.Text)
 			{
 				row["FIELD_SIZE"] = Int32.MaxValue;
 			}
 
-			if (dbType == FbDbType.Char || dbType == FbDbType.VarChar)
+			if (dbType == EnDbDataType.Char || dbType == EnDbDataType.VarChar)
 			{
 				if (!row.IsNull("CHARACTER_MAX_LENGTH"))
 				{
@@ -519,7 +517,7 @@ END",
 				row["NUMERIC_PRECISION"] = 0;
 			}
 
-			if ((dbType == FbDbType.Decimal || dbType == FbDbType.Numeric) &&
+			if ((dbType == EnDbDataType.Decimal || dbType == EnDbDataType.Numeric) &&
 				(row["NUMERIC_PRECISION"] == DBNull.Value || Convert.ToInt32(row["NUMERIC_PRECISION"]) == 0))
 			{
 				row["NUMERIC_PRECISION"] = row["FIELD_SIZE"];

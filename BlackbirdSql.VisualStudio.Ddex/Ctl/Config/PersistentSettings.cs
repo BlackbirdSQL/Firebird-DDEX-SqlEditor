@@ -2,11 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 

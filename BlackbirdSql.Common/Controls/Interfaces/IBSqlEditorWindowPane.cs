@@ -2,9 +2,12 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces.ISqlEditorWindowPane
 
 using System;
+using System.Threading.Tasks;
 using BlackbirdSql.Common.Controls.ResultsPanels;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
@@ -47,11 +50,11 @@ public interface IBSqlEditorWindowPane : IBWindowPane
 
 	bool IsCodeButtonChecked { get; }
 
-	bool IsExecutionPlanTabVisible { get; }
+	// bool IsExecutionPlanTabVisible { get; }
 
-	bool IsExecutionPlanButtonVisible { get; }
+	// bool IsExecutionPlanButtonVisible { get; }
 
-	bool IsExecutionPlanButtonChecked { get; }
+	// bool IsExecutionPlanButtonChecked { get; }
 
 	bool IsTextPlanTabVisible { get; }
 
@@ -74,9 +77,8 @@ public interface IBSqlEditorWindowPane : IBWindowPane
 	GridResultsPanel GridResultsPanel { get; }
 
 
-	void ExecuteQuery(bool withTts);
+	void ExecuteQuery(EnSqlExecutionType executionType);
 
-	void ParseQuery();
 
 	void SetCodeEditorSelection(int startIndex, int length);
 
@@ -86,7 +88,7 @@ public interface IBSqlEditorWindowPane : IBWindowPane
 
 	void ActivateCodeTab();
 
-	void ActivateExecutionPlanTab();
+	// void ActivateExecutionPlanTab();
 
 	void ActivateTextPlanTab();
 
@@ -112,4 +114,6 @@ public interface IBSqlEditorWindowPane : IBWindowPane
 	void CustomizeTabsForResultsSetting(bool isParseOnly);
 
 	DisplaySQLResultsControl EnsureDisplayResultsControl();
+
+	bool UpdateTabs(QESQLQueryDataEventArgs args);
 }

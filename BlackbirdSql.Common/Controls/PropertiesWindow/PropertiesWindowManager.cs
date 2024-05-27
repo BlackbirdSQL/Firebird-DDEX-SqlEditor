@@ -4,7 +4,6 @@
 using System;
 using System.Collections;
 using System.Threading;
-using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Controls.ResultsPanels;
 using BlackbirdSql.Common.Ctl.Interfaces;
@@ -49,8 +48,8 @@ public class PropertiesWindowManager : IDisposable
 		QryMgr.StatusChangedEvent += OnConnectionChanged;
 		TabbedEditorUiCtl.TabActivatedEvent += OnTabActivated;
 		DisplaySQLResultsControl displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
-		displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent += OnExecutionPlanPanelAdded;
-		displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent += OnExecutionPlanPanelRemoved;
+		// displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent += OnExecutionPlanPanelAdded;
+		// displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent += OnExecutionPlanPanelRemoved;
 	}
 
 	private void UnRegisterEventHandlers()
@@ -61,8 +60,8 @@ public class PropertiesWindowManager : IDisposable
 		QryMgr.StatusChangedEvent -= OnConnectionChanged;
 		TabbedEditorUiCtl.TabActivatedEvent -= OnTabActivated;
 		DisplaySQLResultsControl displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
-		displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent -= OnExecutionPlanPanelAdded;
-		displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent -= OnExecutionPlanPanelRemoved;
+		// displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent -= OnExecutionPlanPanelAdded;
+		// displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent -= OnExecutionPlanPanelRemoved;
 	}
 
 	private void OnTabActivated(object sender, EventArgs args)
@@ -88,10 +87,9 @@ public class PropertiesWindowManager : IDisposable
 		}
 	}
 
-
+	/*
 	private void OnExecutionPlanPanelAdded(object sender, ResultControlEventArgs args)
 	{
-		/*
 		if (args.ResultsControl is ExecutionPlanPanel executionPlanPanel)
 		{
 			for (int i = 0; i < executionPlanPanel.ExecutionPlanCtl.GraphPanelCount; i++)
@@ -99,12 +97,10 @@ public class PropertiesWindowManager : IDisposable
 				executionPlanPanel.ExecutionPlanCtl.GetGraphPanel(i).SelectionChangedEvent += OnGraphSelectionChanged;
 			}
 		}
-		*/
 	}
 
 	private void OnExecutionPlanPanelRemoved(object sender, ResultControlEventArgs args)
 	{
-		/*
 		if (args.ResultsControl is ExecutionPlanPanel executionPlanPanel)
 		{
 			for (int i = 0; i < executionPlanPanel.ExecutionPlanCtl.GraphPanelCount; i++)
@@ -112,8 +108,8 @@ public class PropertiesWindowManager : IDisposable
 				executionPlanPanel.ExecutionPlanCtl.GetGraphPanel(i).SelectionChangedEvent -= OnGraphSelectionChanged;
 			}
 		}
-		*/
 	}
+	*/
 
 
 

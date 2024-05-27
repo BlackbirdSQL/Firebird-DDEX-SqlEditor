@@ -5,9 +5,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -109,8 +107,8 @@ public class Moniker
 
 		if (@dbObj != null && @nodeObj != null)
 		{
-			_DataSource = (string)@dbObj.Properties[CoreConstants.C_KeyDataSource];
-			_Database = (string)@dbObj.Properties[CoreConstants.C_KeyDatabase];
+			_DataSource = (string)@dbObj.Properties[SysConstants.C_KeyDataSource];
+			_Database = (string)@dbObj.Properties[SysConstants.C_KeyDatabase];
 
 			_ObjectType = objType;
 			_ObjectName = objectName;
@@ -153,8 +151,8 @@ public class Moniker
 
 		if (@dbObj != null && @nodeObj != null && @dbObj.Properties != null)
 		{
-			_DataSource = (string)@dbObj.Properties[CoreConstants.C_KeyDataSource];
-			_Database = (string)@dbObj.Properties[CoreConstants.C_KeyDatabase];
+			_DataSource = (string)@dbObj.Properties[SysConstants.C_KeyDataSource];
+			_Database = (string)@dbObj.Properties[SysConstants.C_KeyDatabase];
 
 			_ObjectType = objType;
 
@@ -223,14 +221,14 @@ public class Moniker
 
 
 
-	private string _Database = CoreConstants.C_DefaultDatabase;
-	private string _DataSource = CoreConstants.C_DefaultDataSource;
-	private string _ExplorerTreeName = ModelConstants.C_DefaultExExplorerTreeName;
-	private bool _IsUnique = ModelConstants.C_DefaultExIsUnique;
+	private string _Database = null;
+	private string _DataSource = null;
+	private string _ExplorerTreeName = SysConstants.C_DefaultExExplorerTreeName;
+	private bool _IsUnique = SysConstants.C_DefaultExIsUnique;
 	private string _DocumentMoniker = null;
-	private string _ObjectName = ModelConstants.C_DefaultExObjectName;
-	private EnModelObjectType _ObjectType = ModelConstants.C_DefaultExObjectType;
-	private EnModelTargetType _TargetType = ModelConstants.C_DefaultExTargetType;
+	private string _ObjectName = SysConstants.C_DefaultExObjectName;
+	private EnModelObjectType _ObjectType = SysConstants.C_DefaultExObjectType;
+	private EnModelTargetType _TargetType = SysConstants.C_DefaultExTargetType;
 	private long _UniqueId;
 
 
@@ -249,7 +247,7 @@ public class Moniker
 	/// <summary>
 	/// The name of the database path on the server.
 	/// </summary>
-	private string Database => _Database;
+	private string Database => _Database ??= (string)Csb.Describers[SysConstants.C_KeyDatabase].DefaultValue;
 
 
 		/// <summary>
@@ -262,7 +260,7 @@ public class Moniker
 	/// <summary>
 	/// The name of the database host.
 	/// </summary>
-	private string DataSource => _DataSource;
+	private string DataSource => _DataSource ??= (string)Csb.Describers[SysConstants.C_KeyDataSource].DefaultValue;
 
 
 	/// <summary>
@@ -388,7 +386,7 @@ public class Moniker
 
 		UriBuilder urlb = new()
 		{
-			Scheme = SystemData.Protocol,
+			Scheme = DbNative.Protocol,
 			Host = DataSource.ToLowerInvariant(),
 		};
 
@@ -455,7 +453,7 @@ public class Moniker
 
 		if (includeExtension && ObjectType != EnModelObjectType.Unknown && Identifier != null)
 		{
-			extension = SystemData.Extension;
+			extension = DbNative.Extension;
 			fullname += extension;
 		}
 
@@ -599,7 +597,7 @@ public class Moniker
 					direction = Convert.ToInt32(child.Object.Properties["PARAMETER_DIRECTION"]);
 
 					flddef = child.Object.Properties["PARAMETER_NAME"] + " "
-							+ TypeHelper.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+							+ DbNative.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
 							child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
 							child.Object.Properties["NUMERIC_SCALE"]);
 
@@ -645,7 +643,7 @@ public class Moniker
 					direction = (short)child.Object.Properties["ORDINAL_POSITION"] == 0 ? 1 : 0;
 
 					flddef = (direction == 0 ? child.Object.Properties["ARGUMENT_NAME"] + " " : "")
-							+ TypeHelper.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+							+ DbNative.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
 							child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
 							child.Object.Properties["NUMERIC_SCALE"]);
 
@@ -738,7 +736,7 @@ public class Moniker
 		string str = StringUtils.Serialize64(Database.ToLowerInvariant());
 		// string str = JsonConvert.SerializeObject(Database.ToLowerInvariant());
 
-		string moniker = SystemData.DatasetKeyFmt.FmtRes(DataSource, str);
+		string moniker = SysConstants.C_DatasetKeyFmt.FmtRes(DataSource, str);
 
 		moniker = moniker.Replace("\\", "."); // "{backslash}");
 		moniker = moniker.Replace("/", "."); // "{slash}");
@@ -750,7 +748,7 @@ public class Moniker
 		moniker = moniker.Replace(">", "{closebracket}");
 		moniker = moniker.Replace("|", "{bar}");
 
-		moniker = $"{ObjectName}[{moniker}.{ObjectType}]{SystemData.Extension}";
+		moniker = $"{ObjectName}[{moniker}.{ObjectType}]{DbNative.Extension}";
 
 		string path = ConstructFullTemporaryDirectory(appDataPath);
 

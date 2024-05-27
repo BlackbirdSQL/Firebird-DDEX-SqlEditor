@@ -6,17 +6,15 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Security.Permissions;
-using BlackbirdSql.Core.Controls.Events;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
+using BlackbirdSql.Sys;
 
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
 [HostProtection(SecurityAction.LinkDemand, SharedState = true)]
-public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConverter, IDisposable
+public abstract class AbstractBoolConverter : BooleanConverter, IBAutomatorConverter, IDisposable
 {
 	private IBSettingsModel _Model = null;
 	private string _PropertyName;
@@ -41,7 +39,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 		if (_Model != null)
 		{
 			if (_IsAutomator)
-				_Model.AutomationPropertyValueChangedEvent -= OnAutomationPropertyValueChanged;
+				_Model.AutomatorPropertyValueChangedEvent -= OnAutomatorPropertyValueChanged;
 			_Model = null;
 		}
 	}
@@ -113,7 +111,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 
 				readOnly = pair.Value ? bNewValue : !bNewValue;
 
-				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly", BindingFlags.NonPublic | BindingFlags.Instance);
+				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly");
 
 				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != readOnly)
 				{
@@ -155,17 +153,17 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 		_PropertyName = context.PropertyDescriptor.Name;
 
 
-		if (context.PropertyDescriptor.Attributes[typeof(AutomationAttribute)] is not AutomationAttribute attr
+		if (context.PropertyDescriptor.Attributes[typeof(AutomatorAttribute)] is not AutomatorAttribute attr
 			|| attr.Automator != null)
 		{
 			return true;
 		}
 
 		if (prevModel != null)
-			prevModel.AutomationPropertyValueChangedEvent -= OnAutomationPropertyValueChanged;
+			prevModel.AutomatorPropertyValueChangedEvent -= OnAutomatorPropertyValueChanged;
 
 		_IsAutomator = true;
-		_Model.AutomationPropertyValueChangedEvent += OnAutomationPropertyValueChanged;
+		_Model.AutomatorPropertyValueChangedEvent += OnAutomatorPropertyValueChanged;
 
 		// Tracer.Trace($"Registering automator {_PropertyName}.");
 
@@ -175,8 +173,8 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{
-				// Tracer.Trace($"Registering automation dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
-				_Dependents.Add(property.PropertyName, property.InvertAutomation);
+				// Tracer.Trace($"Registering automator dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
+				_Dependents.Add(property.PropertyName, property.InvertAutomator);
 			}
 		}
 
@@ -195,7 +193,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 		return ResMgr.GetString(LiteralFalseResource, culture);
 	}
 
-	public void OnAutomationPropertyValueChanged(object sender, AutomationPropertyValueChangedEventArgs e)
+	public void OnAutomatorPropertyValueChanged(object sender, AutomatorPropertyValueChangedEventArgs e)
 	{
 		if (e.ChangedItem.PropertyDescriptor.Name != _PropertyName)
 			return;

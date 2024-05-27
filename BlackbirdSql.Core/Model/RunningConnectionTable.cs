@@ -1,15 +1,13 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using BlackbirdSql.Core.Ctl.Extensions;
 
-using CoreConstants = BlackbirdSql.Core.Ctl.CoreConstants;
 
 
 namespace BlackbirdSql.Core.Model;
+
 
 // =========================================================================================================
 //										RunningConnectionTable Class
@@ -193,10 +191,10 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 			object datasetKey;
 
 			return Databases.Select()
-					.Where(x => (datasetKey = x[CoreConstants.C_KeyExDatasetKey]) != DBNull.Value
+					.Where(x => (datasetKey = x[SysConstants.C_KeyExDatasetKey]) != DBNull.Value
 						&& !string.IsNullOrWhiteSpace((string)datasetKey))
-					.OrderBy(x => (string)x[CoreConstants.C_KeyExDatasetKey])
-					.Select(x => (string)x[CoreConstants.C_KeyExDatasetKey]);
+					.OrderBy(x => (string)x[SysConstants.C_KeyExDatasetKey])
+					.Select(x => (string)x[SysConstants.C_KeyExDatasetKey]);
 		}
 	}
 
@@ -232,7 +230,7 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 		if (_Instance == null)
 			return;
 
-		DataRow[] rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[CoreConstants.C_KeyExDatasetKey])).ToArray();
+		DataRow[] rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[SysConstants.C_KeyExDatasetKey])).ToArray();
 
 		if (rows.Length == 0)
 		{
@@ -277,14 +275,14 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 			(hybridKey.StartsWith("data source=", StringComparison.InvariantCultureIgnoreCase)
 			|| hybridKey.ToLowerInvariant().Contains(";data source=")))
 		{
-			CsbAgent csa = new(hybridKey, false);
+			Csb csa = new(hybridKey, false);
 			hybridKey = csa.SafeDatasetMoniker;
 			isConnectionUrl = true;
 		}
 
 		if (isConnectionUrl)
 		{
-			DataRow[] rows = Databases.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExConnectionUrl])).ToArray();
+			DataRow[] rows = Databases.Select().Where(x => hybridKey.Equals(x[SysConstants.C_KeyExConnectionUrl])).ToArray();
 
 			value = rows.Length > 0 ? rows[0] : null;
 
