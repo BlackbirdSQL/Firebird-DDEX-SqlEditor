@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using BlackbirdSql.Core;
-using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
+using BlackbirdSql.VisualStudio.Ddex.Interfaces;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -34,7 +34,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 		Key key = null;
 		Key key2 = null;
 		Key key3;
-		PackageData.RegistryValue registryValue;
+		ExtensionData.RegistryValue registryValue;
 
 		try
 		{
@@ -119,13 +119,13 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			// Add in the supported sevices
 			key2 = key.CreateSubkey("SupportedObjects");
 			
-			foreach (KeyValuePair<string, int> implementation in PackageData.Implementations)
+			foreach (KeyValuePair<string, int> implementation in ExtensionData.Implementations)
 			{
 				key3 = key2.CreateSubkey(implementation.Key);
 
 				for (int i = 0; i < implementation.Value; i++)
 				{
-					registryValue = PackageData.ImplementationValues[implementation.Key + (i==0?"":i.ToString())];
+					registryValue = ExtensionData.ImplementationValues[implementation.Key + (i==0?"":i.ToString())];
 
 					// Tracer.Trace(implementation.Key + ": " + (registryValue.Name == null ? "null" : registryValue.Name) + ":" + registryValue.Value);
 					key3.SetValue(registryValue.Name, registryValue.Value);

@@ -20,7 +20,6 @@ using System.Data;
 using System.Globalization;
 using System.Text;
 
-
 namespace FirebirdSql.Data.Schema;
 
 internal class FbTables : FbSchema
@@ -97,7 +96,6 @@ internal class FbTables : FbSchema
 
 		sql.Append(" ORDER BY IS_SYSTEM_TABLE, OWNER_NAME, TABLE_NAME");
 
-		// Diag.Trace(sql.ToString());
 		return sql;
 	}
 

@@ -20,18 +20,25 @@ public static class SystemData
 	#region Extension wide constants & statics - SystemData
 	// ---------------------------------------------------------------------------------------------------------
 
-	public const string UIContextName = "BlackbirdSql UIContext Autoload";
+	public const string C_UIContextName = "BlackbirdSql UIContext Autoload";
+
+	// Glyphs for Rct connection sources.
+	public const char C_EdmGlyph = '\u26ee'; // Gear with handles
+	public const char C_ProjectDatasetGlyph = '\u26ed'; // Gear without hub
+	public const char C_UtilityDatasetGlyph = '\u29c9'; // 2 joined squares
+	// '\u2732'; // Open center asterisk
+	// '\u2733'; // 8 spoked asterisk
+	// '\u25cb'; // White circle
+
+	public const char C_UnixFieldSeparator = '/';
+	public const char C_WinFieldSeparator = '\\';
+	public const char C_CompositeSeparator = '.';
 
 
-	public const char UnixFieldSeparator = '/';
-	public const char WinFieldSeparator = '\\';
-	public const char CompositeSeparator = '.';
+	public const string C_ServiceFolder = "ServerxExplorer";
+	public const string C_TempSqlFolder = "SqlTemporaryFiles";
 
-
-	public const string ServiceFolder = "ServerxExplorer";
-	public const string TempSqlFolder = "SqlTemporaryFiles";
-
-	public const GenericUriParserOptions UriParserOptions =
+	public const GenericUriParserOptions C_UriParserOptions =
 		GenericUriParserOptions.AllowEmptyAuthority | GenericUriParserOptions.NoPort
 		| GenericUriParserOptions.NoQuery | GenericUriParserOptions.NoFragment
 		| GenericUriParserOptions.DontCompressPath
@@ -55,11 +62,6 @@ public static class SystemData
 	public const string PackageGuid = "0EB9BA1B-3114-397D-822F-2D306DB02058";
 
 	/// <summary>
-	/// The AsyncPackage guid for IBAsyncPackage.
-	/// </summary>
-	public const string AsyncPackageGuid = "7787981E-E42A-412F-A42B-9AD07A7DE169";
-
-	/// <summary>
 	/// The UIContext for autoload.
 	/// </summary>
 	public const string UIContextGuid = "8838E01E-D709-486D-A933-46D30A864D51";
@@ -80,9 +82,6 @@ public static class SystemData
 	public const string DataSourceGuid = "2979569E-416D-4DD8-B06B-EBCB70DE7A4E";
 
 
-	public const string PackageControllerGuid = "CF77D510-C1DB-44EA-85F5-8201089D6FAF";
-	public const string ProviderSchemaFactoryGuid = "9FDE2679-7080-4C88-A734-71AEC4CB099A";
-	
 	public const string DesignerExplorerServicesGuid = "4D30B519-9FB6-4FFD-A0CE-92863B1C37EA";
 	public const string DesignerOnlineServicesGuid = "27F3F968-74EB-46B7-A1FF-6CCA57C0D894";
 	

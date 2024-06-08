@@ -5,13 +5,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using Babel;
-using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
 using BlackbirdSql.LanguageExtension.Model;
-using BlackbirdSql.LanguageExtension.Model.Interfaces;
 using BlackbirdSql.LanguageExtension.Services;
 using Microsoft.SqlServer.Management.SqlParser.Binder;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
@@ -21,7 +18,10 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-using Cmd = BlackbirdSql.Common.Cmd;
+using Cmd = BlackbirdSql.Shared.Cmd;
+using BlackbirdSql.LanguageExtension.Interfaces;
+using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Shared.Events;
 
 
 

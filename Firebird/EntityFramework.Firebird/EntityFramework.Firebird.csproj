@@ -9,15 +9,15 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 	<PropertyGroup>
+		<Version>$(EF6ProviderVersion)</Version>
 		<AssemblyTitle>NETProvider - Entity Framework Provider</AssemblyTitle>
-		<Copyright>(c) 2014-2021</Copyright>
+		<Copyright>(c) 2014-$(CopyrightEndYear)</Copyright>
 	</PropertyGroup>
 	<PropertyGroup>
 		<PackageId>EntityFramework.Firebird</PackageId>
 		<Title>Firebird Entity Framework Provider</Title>
 		<PackageDescription>The Entity Framework provider for Firebird enables you to develop .NET applications that connect to the Firebird database using Entity Framework.</PackageDescription>
 		<PackageTags>firebird;firebirsql;firebirdclient;entityframewor;adonet;database</PackageTags>
-		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DefineConstants>EF6;TRACE</DefineConstants>
@@ -35,26 +35,24 @@
 	<ItemGroup>
 		<None Update="App.config.install.xdt" Pack="true" PackagePath="content" />
 		<None Update="Web.config.install.xdt" Pack="true" PackagePath="content" />
-		<None Include="..\license.txt" Pack="true" PackagePath="" />
-		<None Include="..\firebird-logo.png" Pack="true" PackagePath="" />
-		<None Include="..\..\Resources\blackbird-logo.png" Pack="true" PackagePath="" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="EntityFramework" Version="6.4.4" />
+		<None Include="$(SolutionDir)\Docs\license.txt" Pack="true" PackagePath="" Link="Properties\license.txt" />
+		<None Include="$(SolutionDir)\Docs\CHANGELOG.md" Pack="true" PackagePath="" Link="Properties\CHANGELOG.md" />
+		<None Include="$(SolutionDir)\Docs\README.md" Pack="true" PackagePath="" Link="Properties\README.md" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="$(SolutionDir)\Resources\blackbird-128x128.png" Pack="true" PackagePath="" Link="Resources\blackbird-128x128.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="EntityFramework" Version="$(EF6ReferencePackageVersion)" />
+		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.2.0" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 		<Reference Include="System.Configuration" />
 		<Reference Include="Microsoft.CSharp" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
+	<ItemGroup Condition="'$(Configuration)'!='Debug'">
+		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="$(ProviderReferencePackageVersion)" />
 	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj">
-		  <Private>True</Private>
-		  <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
-		</ProjectReference>
-	</ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command=":: Use the native builds for Release&#xD;&#xA;if &quot;$(Configuration)&quot; == &quot;Release&quot; (&#xD;&#xA;copy /v /y /b $(SolutionDir)Firebird\NetProvider\FirebirdSql.Data.FirebirdClient\9.1.1\lib\\$(TargetFramework)\FirebirdSql.Data.FirebirdClient.dll $(ProjectDir)$(OutDir)&#xD;&#xA;copy /v /y /b $(SolutionDir)Firebird\NetProvider\EntityFramework.Firebird\9.1.1\lib\\$(TargetFramework)\EntityFramework.Firebird.dll $(ProjectDir)$(OutDir)&#xD;&#xA;)" />
-	</Target>
 </Project>

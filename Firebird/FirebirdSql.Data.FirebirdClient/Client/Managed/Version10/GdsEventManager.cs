@@ -90,7 +90,6 @@ internal class GdsEventManager
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
 				remoteEvent.EventError(ex);
 				break;
 			}

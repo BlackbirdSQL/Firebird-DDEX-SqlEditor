@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Extensions;
 
 /// <summary>
 /// Defines a mutable key/value pair that can be set or retrieved.

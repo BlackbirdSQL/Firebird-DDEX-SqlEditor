@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Properties;
+using BlackbirdSql.Sys;
 
 namespace BlackbirdSql.Core.Controls.ComponentModel;
 

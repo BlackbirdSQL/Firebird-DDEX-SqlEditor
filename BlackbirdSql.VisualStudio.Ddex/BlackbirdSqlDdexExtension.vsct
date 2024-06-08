@@ -50,14 +50,14 @@
 			<Combo guid="CommandSetGuid" id="CmbIdSqlDatabases" priority="0x0100" type="DropDownCombo" defaultWidth="280" idCommandList="CmbIdSqlDatabasesGetList">
 				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar"/>
 				<CommandFlag>IconAndText</CommandFlag>
-				<CommandFlag>CommandWellOnly</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<MenuText>Database Selection: </MenuText>
 					<ButtonText></ButtonText>
 					<ToolTipText>Select Database</ToolTipText>
-					<CanonicalName>Databases</CanonicalName>
-					<LocCanonicalName>Databases</LocCanonicalName>
-					<CommandName>Databases</CommandName>
+					<CanonicalName>SqlDatabases</CanonicalName>
+					<LocCanonicalName>SqlDatabases</LocCanonicalName>
+					<CommandName>SqlDatabases</CommandName>
 				</Strings>
 			</Combo>
 		</Combos>

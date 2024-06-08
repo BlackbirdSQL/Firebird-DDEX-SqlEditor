@@ -18,7 +18,6 @@
 using System;
 using System.Threading;
 using System.Transactions;
-
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.FirebirdClient;
@@ -94,9 +93,7 @@ internal sealed class FbEnlistmentNotification : IEnlistmentNotification
 
 	public void InDoubt(Enlistment enlistment)
 	{
-		NotSupportedException exbb = new("In Doubt transactions are not supported");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("In Doubt transactions are not supported");
 	}
 
 	public void Prepare(PreparingEnlistment preparingEnlistment)

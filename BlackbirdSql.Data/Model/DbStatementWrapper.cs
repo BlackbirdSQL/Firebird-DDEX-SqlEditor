@@ -3,21 +3,19 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using BlackbirdSql.Data.Ctl;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
-using Microsoft.VisualStudio.Threading;
 
 
 
 namespace BlackbirdSql.Data.Model;
 
-[SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "User gets to choose")]
 
 
 public class DbStatementWrapper : IBsNativeDbStatementWrapper
@@ -26,10 +24,11 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 	{
 	}
 
-	public DbStatementWrapper(IBsNativeDbBatchParser owner, object statement)
+	public DbStatementWrapper(IBsNativeDbBatchParser owner, object statement, int index)
 	{
 		_Owner = owner;
 		_Statement = (FbStatement)statement;
+		_Index = index;
 	}
 
 	public void DisposeCommand()
@@ -52,7 +51,8 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 
 	private readonly IBsNativeDbBatchParser _Owner;
-	// TBC
+	private readonly int _Index;
+	// TBC: CanCommit is not updated atm.
 	private readonly bool _CanCommit = false;
 	private long _RowsSelected = 0;
 	private bool _RenewConnection = false;
@@ -76,22 +76,20 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 	public long ExecutionTimeout => _Owner.ExecutionTimeout;
 
-	private bool IsAsync => _Owner.IsAsync;
 	public bool IsSpecialAction => CurrentAction == EnSqlStatementAction.SpecialActions
 		|| CurrentAction == EnSqlStatementAction.SpecialWithEstimatedPlan
 		|| CurrentAction == EnSqlStatementAction.SpecialWithActualPlan;
 
-	
-	DataTable PlanTable => _Owner.PlanTable;
 
-	private DbDataReader QueryDataReader => _QueryDataReader;
+
+	public int Index => _Index;
 
 	public long RowsSelected => _RowsSelected;
 
 	public long TotalRowsSelected => _Owner.TotalRowsSelected;
 
 	public DbDataReader CurrentActionReader => CurrentAction == EnSqlStatementAction.ProcessQuery
-		? QueryDataReader : _Owner.PlanReader;
+		? _QueryDataReader : _Owner.PlanReader;
 
 	public IDbTransaction Transaction => _Owner.Transaction;
 
@@ -107,13 +105,15 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 
 
+	/*
 	public void Cancel()
 	{
 		_Owner.Cancel();
 	}
+	*/
 
 
-	public int AsyncExecute(bool autoCommit)
+	public async Task<int> ExecuteAsync(bool autoCommit, CancellationToken cancelToken)
 	{
 
 		if (CurrentAction != EnSqlStatementAction.ProcessQuery)
@@ -122,28 +122,13 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 		if (ExecutionType == EnSqlExecutionType.PlanOnly)
 		{
-			GeneratePlan();
+			await GeneratePlanAsync(cancelToken);
 			return -1;
 		}
 
 		// Start up the payload launcher with tracking.
 		// Fire and remember
 
-		CancellationToken cancellationToken = _Owner.AsyncTokenSource.Token;
-
-		if (!IsAsync)
-			return ExecuteAsync(autoCommit, cancellationToken).AwaiterResult();
-
-
-		return Task.Factory.StartNew(async delegate { return await ExecuteAsync(autoCommit, cancellationToken); },
-			cancellationToken, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
-			TaskScheduler.Default).AwaiterResult();
-
-	}
-
-
-	private async Task<int> ExecuteAsync(bool autoCommit, CancellationToken cancellationToken)
-	{ 
 		int rowsSelected = 0;
 		SqlStatementType statementType = (SqlStatementType)StatementType;
 
@@ -252,10 +237,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 				case SqlStatementType.Update:
 				case SqlStatementType.Whenever:
 					
-					if (!IsAsync)
-						_ = ExecuteCommandAsync(autoCommit, cancellationToken);
-					else
-						await ExecuteCommandAsync(autoCommit, cancellationToken);
+					await ExecuteCommandAsync(autoCommit, cancelToken);
 
 					AfterStatementExecution(null, statement.Text, statementType, rowsSelected);
 					break;
@@ -265,23 +247,20 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 					ProvideCommand().CommandText = statement.Text;
 
-					if (!IsAsync)
-						_QueryDataReader = _Command.ExecuteReader(CommandBehavior.Default);
-					else
-						_QueryDataReader = await _Command.ExecuteReaderAsync(CommandBehavior.Default, cancellationToken);
+					_QueryDataReader = await _Command.ExecuteReaderAsync(CommandBehavior.Default, cancelToken);
 
 					AfterStatementExecution(_QueryDataReader, statement.Text, statementType, -1);
 					break;
 
 				case SqlStatementType.Commit:
 
-					CommitTransaction(true);
+					await CommitTransactionAsync(true, cancelToken);
 					AfterStatementExecution(null, statement.Text, statementType, -1);
 					break;
 
 				case SqlStatementType.Rollback:
 
-					RollbackTransaction();
+					await RollbackTransactionAsync(cancelToken);
 					AfterStatementExecution(null, statement.Text, statementType, -1);
 					break;
 
@@ -350,7 +329,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		}
 		catch
 		{
-			RollbackTransaction();
+			await RollbackTransactionAsync(cancelToken);
 			// CloseConnection();
 
 			throw;
@@ -372,13 +351,13 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 			}
 		}
 
-		if (ExecutionType == EnSqlExecutionType.QueryWithPlan && !cancellationToken.IsCancellationRequested)
-			GeneratePlan();
+		if (ExecutionType == EnSqlExecutionType.QueryWithPlan && !cancelToken.IsCancellationRequested)
+			await GeneratePlanAsync(cancelToken);
 
 
 		// DisposeCommand();
-		if (!cancellationToken.IsCancellationRequested)
-			CommitTransaction(false);
+		if (!cancelToken.IsCancellationRequested)
+			await CommitTransactionAsync(false, cancelToken);
 		// CloseConnection();
 
 		return rowsSelected;
@@ -387,57 +366,12 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 
 
-	public bool AsyncNextResult()
-	{
-
-		if (!IsAsync)
-			return CurrentActionReader.NextResult();
-
-		// Start up the payload launcher with tracking.
-		// Fire and remember
-
-		CancellationToken cancellationToken = _Owner.AsyncTokenSource.Token;
-
-
-		return Task.Factory.StartNew(async delegate { return await NextResultAsync(cancellationToken); },
-			cancellationToken, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
-			TaskScheduler.Default).AwaiterResult();
-
-	}
-
-
-	private async Task<bool> NextResultAsync(CancellationToken cancellationToken)
-	{
-		return await CurrentActionReader.NextResultAsync(cancellationToken);
-	}
-
-
-	public bool AsyncRead()
-	{
-		if (!IsAsync)
-			return CurrentActionReader.Read();
-
-		// Start up the payload launcher with tracking.
-		// Fire and wait
-
-		CancellationToken cancellationToken = _Owner.AsyncTokenSource.Token;
-
-		return Task.Factory.StartNew(async delegate { return await ReadAsync(cancellationToken); },
-			cancellationToken, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
-			TaskScheduler.Default).AwaiterResult();
-
-	}
-
-
-	private async Task<bool> ReadAsync(CancellationToken cancellationToken)
-	{
-		return await CurrentActionReader.ReadAsync(cancellationToken);
-	}
 
 
 
 
-	public void GeneratePlan()
+
+	public async Task<bool> GeneratePlanAsync(CancellationToken cancelToken)
 	{
 		FbStatement statement = _Statement;
 		FbCommand command = _Command;
@@ -445,18 +379,18 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		if (command == null)
 		{
 			if (ExecutionType != EnSqlExecutionType.PlanOnly)
-				return;
+				return false;
 
 			try
 			{
 				command = ProvideCommand();
 				command.CommandText = statement.Text;
-				command.Prepare();
+				await command.PrepareAsync(cancelToken);
 			}
 			catch (Exception ex)
 			{
 				Diag.Dug(ex);
-				return;
+				return false;
 			}
 		}
 
@@ -464,12 +398,12 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 		try
 		{
-			str = command.GetCommandExplainedPlan();
+			str = await command.GetCommandExplainedPlanAsync();
 		}
 		catch { }
 
 		if (string.IsNullOrWhiteSpace(str))
-			return;
+			return false;
 
 		DataTable table = _Owner.PlanTable;
 
@@ -479,37 +413,39 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		row[0] = str;
 		table.Rows.Add(row);
 
+		return true;
 	}
 
 
 
-	private async Task<int> ExecuteCommandAsync(bool autoCommit, CancellationToken cancellationToken)
+	private async Task<int> ExecuteCommandAsync(bool autoCommit, CancellationToken cancelToken)
 	{
 		int rowsAffected;
 
-		if (!IsAsync)
-			rowsAffected = _Command.ExecuteNonQuery();
-		else
-			rowsAffected = await _Command.ExecuteNonQueryAsync(cancellationToken);
+		rowsAffected = await _Command.ExecuteNonQueryAsync(cancelToken);
 
-		if (!cancellationToken.IsCancellationRequested && autoCommit && (bool)Reflect.GetPropertyValue(_Command, "IsDDLCommand"))
+		if (!cancelToken.IsCancellationRequested && autoCommit && (bool)Reflect.GetPropertyValue(_Command, "IsDDLCommand"))
 		{
-			CommitTransaction(false);
+			await CommitTransactionAsync(autoCommit, cancelToken);
 		}
 
 		return rowsAffected;
 	}
 
-	private void CommitTransaction(bool force)
+	private async Task<bool> CommitTransactionAsync(bool force, CancellationToken cancelToken)
 	{
 		if (_CanCommit)
-			_Owner.CommitTransaction();
+			return await _Owner.CommitTransactionAsync(cancelToken);
+
+		return false;
 	}
 
-	private void RollbackTransaction()
+	private async Task<bool> RollbackTransactionAsync(CancellationToken cancelToken)
 	{
 		if (_CanCommit)
-			_Owner.RollbackTransaction();
+			return await _Owner.RollbackTransactionAsync(cancelToken);
+
+		return false;
 	}
 
 	private FbCommand ProvideCommand()
@@ -535,7 +471,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		// [DEFAULT CHARACTER SET charset]
 		// [<secondary_file>];
 		var pageSize = 0;
-		var parser = new DbNativeStringParser(createDatabaseStatement)
+		var parser = new StringParser(createDatabaseStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
@@ -605,7 +541,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		// [PASSWORD 'password']
 		// [CACHE int]
 		// [ROLE 'rolename']
-		var parser = new DbNativeStringParser(connectDbStatement)
+		var parser = new StringParser(connectDbStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
@@ -658,7 +594,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 	private void SetAutoDdl(string setAutoDdlStatement, ref bool autoCommit)
 	{
 		// SET AUTODDL [ON | OFF]
-		var parser = new DbNativeStringParser(setAutoDdlStatement)
+		var parser = new StringParser(setAutoDdlStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
@@ -698,7 +634,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 	private void SetNames(string setNamesStatement)
 	{
 		// SET NAMES charset
-		var parser = new DbNativeStringParser(setNamesStatement)
+		var parser = new StringParser(setNamesStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
@@ -724,7 +660,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 	private void SetSqlDialect(string setSqlDialectStatement)
 	{
 		// SET SQL DIALECT dialect
-		var parser = new DbNativeStringParser(setSqlDialectStatement)
+		var parser = new StringParser(setSqlDialectStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
@@ -759,11 +695,6 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		return (FbConnection)_Owner.Connection;
 	}
 
-
-	private bool CloseConnection()
-	{
-		return _Owner.CloseConnection();
-	}
 
 
 	public void UpdateRowsSelected(long rowsSelected)

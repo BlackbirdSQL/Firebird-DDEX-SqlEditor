@@ -27,7 +27,6 @@ using FirebirdSql.Data.Common;
 using System.Text;
 using System.Collections;
 
-
 namespace FirebirdSql.Data.FirebirdClient;
 
 [ListBindable(false)]
@@ -240,9 +239,7 @@ public sealed class FbParameterCollection : DbParameterCollection
 	{
 		if (!_parameters.Remove(value))
 		{
-			ArgumentException exbb = new("The parameter does not exist in the collection.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new ArgumentException("The parameter does not exist in the collection.");
 		}
 
 		ReleaseParameter(value);
@@ -259,9 +256,7 @@ public sealed class FbParameterCollection : DbParameterCollection
 	{
 		if (index < 0 || index > Count)
 		{
-			IndexOutOfRangeException exbb = new("The specified index does not exist.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new IndexOutOfRangeException("The specified index does not exist.");
 		}
 
 		var parameter = this[index];
@@ -354,9 +349,7 @@ public sealed class FbParameterCollection : DbParameterCollection
 	{
 		if (!(value is FbParameter))
 		{
-			InvalidCastException exbb = new($"The parameter passed was not a {nameof(FbParameter)}.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidCastException($"The parameter passed was not a {nameof(FbParameter)}.");
 		}
 	}
 
@@ -368,9 +361,7 @@ public sealed class FbParameterCollection : DbParameterCollection
 		}
 		if (value.Parent != null)
 		{
-			ArgumentException exbb = new($"The {nameof(FbParameter)} specified in the value parameter is already added to this or another {nameof(FbParameterCollection)}.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new ArgumentException($"The {nameof(FbParameter)} specified in the value parameter is already added to this or another {nameof(FbParameterCollection)}.");
 		}
 		if (value.ParameterName == null || value.ParameterName.Length == 0)
 		{
@@ -380,9 +371,7 @@ public sealed class FbParameterCollection : DbParameterCollection
 		{
 			if (Contains(value.ParameterName))
 			{
-				ArgumentException exbb = new($"{nameof(FbParameterCollection)} already contains {nameof(FbParameter)} with {nameof(FbParameter.ParameterName)} '{value.ParameterName}'.");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new ArgumentException($"{nameof(FbParameterCollection)} already contains {nameof(FbParameter)} with {nameof(FbParameter.ParameterName)} '{value.ParameterName}'.");
 			}
 		}
 	}

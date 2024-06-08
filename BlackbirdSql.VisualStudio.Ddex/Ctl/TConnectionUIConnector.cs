@@ -2,13 +2,13 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 // =========================================================================================================
 //									TConnectionUIConnector Class
@@ -27,7 +27,7 @@ public class TConnectionUIConnector : DataConnectionUIConnector
 
 	public TConnectionUIConnector() :base()
 	{
-		// Tracer.Trace(typeof(TConnectionUIConnector), "TConnectionUIConnector()");
+		// Tracer.Trace(typeof(TConnectionUIConnector), ".ctor");
 	}
 
 

@@ -12,18 +12,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Model.Enums;
-using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.Core.Extensions;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Extensions;
+using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
-using static BlackbirdSql.SysConstants;
+using static BlackbirdSql.Sys.SysConstants;
 
 
 
@@ -57,7 +60,7 @@ namespace BlackbirdSql.Core.Model;
 /// in the Rct.
 /// </remarks>
 // =========================================================================================================
-public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, int>, IBRunningConnectionTable
+public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, int>, IBsRunningConnectionTable
 {
 
 
@@ -91,7 +94,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (disposing)
 		{
 			_Instance = null;
-			_Stamp++;
+			Invalidate();
 
 			bool launchersActive = false;
 
@@ -143,7 +146,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				_DataSources = null;
 				_Databases = null;
 				_InternalConnectionsTable = null;
-				_RegisteredServerNames = null;
 				Clear();
 			}
 
@@ -171,18 +173,18 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 
 	private int _EventsCardinal = 0;
+	private int _ExternalEventsCardinal = 0;
 	private bool _HasLocal = false;
-	protected static IBRunningConnectionTable _Instance;
+	protected static IBsRunningConnectionTable _Instance;
 	protected int _LoadDataCardinal = 0;
 	private readonly object _LockObject = new();
 	private int _LoadingSyncCardinal = 0;
 	private int _LoadingAsyncCardinal = 0;
-	protected static string _Scheme = DbNative.Scheme;
+	protected static string _Scheme = NativeDb.Scheme;
 
 	protected DataTable _Databases = null, _DataSources = null;
 	protected DataTable _InternalConnectionsTable = null;
 	private IList<object> _Probjects = null;
-	private IList<string> _RegisteredServerNames = new List<string>();
 
 	/// <summary>
 	/// Must be incremented on every possible update and registration.
@@ -261,7 +263,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		(_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.IsCancellationRequested);
 
 
-	private IList<object> Probjects => _Probjects ??= new List<object>();
+	private IList<object> Probjects => _Probjects ??= [];
 
 
 	#endregion Property accessors
@@ -403,7 +405,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					if (explorerConnection.Connection.State == DataConnectionState.Open
 						|| (explorerConnection.ConnectionNode != null && explorerConnection.ConnectionNode.IsExpanded))
 					{
-						LinkageParser.AsyncRequestLoading(explorerConnection.Connection);
+						explorerConnection.AsyncRequestLinkageLoading();
 					}
 				}
 
@@ -682,17 +684,79 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Generates a unique DatasetKey or DatasetId from the proposedConnectionName
-	/// or proposedDatasetId. At most one should be specified, the other null. If both
-	/// are null the DataSource and readonly Dataset property will be used.
-	/// <seealso cref="AbstractRunningConnectionTable.GenerateUniqueDatasetKey"/>.
+	/// Generates a unique DatasetKey (ConnectionName) or DatasetId (DatabaseName)
+	/// from the proposedConnectionName or proposedDatasetId, usually supplied by a
+	/// connection dialog's underlying site or csa, or from a connection rename.
+	/// At most one should be specified. If both are specified there will be a
+	/// redundancy check of the connection name otherwise the connection name takes
+	/// precedence.
+	/// If both are null the proposed derivedDatasetId will be derived from the dataSource.
 	/// </summary>
+	/// <param name="connectionSource">
+	/// The ConnectionSource making the request.
+	/// </param>
+	/// <param name="proposedConnectionName">
+	/// The proposed DatasetKey (ConnectionName) property else null.
+	/// </param>
+	/// <param name="proposedDatasetId">
+	/// The proposed DatasetId (DatabaseName) property else null.
+	/// </param>
+	/// <param name="dataSource">
+	/// The DataSource (server name) property to be used in constructing the DatasetKey.
+	/// </param>
+	/// <param name="dataset">
+	/// The readonly Dataset property to be used in constructing a DatasetId if the
+	/// proposed DatasetId is null.
+	/// </param>
+	/// <param name="connectionUrl">
+	/// The readonly SafeDatasetMoniker property of the underlying csa of the caller.
+	/// </param>
+	/// <param name="storedConnectionUrl">
+	/// If a stored connection is being modified, the connectionUrl of the stored
+	/// connection, else null. If connectionUrl matches connectionUrl they will
+	/// be considered equal and it will be ignored.
+	/// </param>
+	/// <param name="outStoredConnectionSource">
+	/// Out | The ConnectionSource of connectionUrl if the connection exists in the rct
+	/// else EnConnectionSource.None.
+	/// </param>
+	/// <param name="outChangedTargetDatasetKey">
+	/// Out | If a connection is being modified (storedConnectionUrl is not null) and
+	/// connectionUrl points to an existing connection, then the target has changed and
+	/// outChangedTargetDatasetKey refers to the changed target's DatasetKey, else null.
+	/// </param>
+	/// <param name="outUniqueDatasetKey">
+	/// Out | The final unique DatasetKey.
+	/// </param>
+	/// <param name="outUniqueConnectionName">
+	/// Out | The unique resulting proposed ConnectionName. If null is returned then whatever was
+	/// provided in proposedConnectionName is correct and remains as is. If string.Empty is
+	/// returned then whatever was provided in proposedConnectionName is good but changes the
+	/// existing name. If a value is returned then proposedConnectionName was
+	/// ambiguous and outUniqueConnectionName must be used in it's place.
+	/// outUniqueConnectionName and outUniqueDatasetId are mutually exclusive.
+	/// </param>
+	/// <param name="outUniqueDatasetId">
+	/// Out | The unique resulting proposed DatsetId. If null is returned then whatever was
+	/// provided in proposedDatasetId is correct and remains as is. If string.Empty is
+	/// returned then whatever was provided in proposedDatasetId is good but changes the
+	/// existing name. If a value is returned then proposedDatasetId was ambiguous and
+	/// outUniqueDatasetId must be used in it's place. outUniqueConnectionName and
+	/// outUniqueDatasetId are mutually exclusive.
+	/// </param>
+	/// <returns>
+	/// A boolean indicating whether or not the provided arguments would cause a new
+	/// connection to be registered in the rct. This only applies to registration in
+	/// the rct and does not determine whether or not a new connection would be created
+	/// in the SE. The caller must determine that.
+	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public abstract bool GenerateUniqueDatasetKey(string proposedConnectionName,
-		string proposedDatasetId, string dataSource, string dataset, string connectionUrl,
-		string originalConnectionUrl, out EnConnectionSource oStoredConnectionSource,
-		out string oChangedTargetDatasetKey, out string oUniqueDatasetKey,
-		out string oUniqueConnectionName, out string oUniqueDatasetId);
+	public abstract bool GenerateUniqueDatasetKey(EnConnectionSource connectionSource,
+		string proposedConnectionName, string proposedDatasetId, string dataSource,
+		string dataset, string connectionUrl, string storedConnectionUrl,
+		out EnConnectionSource outStoredConnectionSource,
+		out string outChangedTargetDatasetKey, out string outUniqueDatasetKey,
+		out string outUniqueConnectionName, out string outUniqueDatasetId);
 
 
 
@@ -740,6 +804,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	public long Invalidate()
 	{
+		// Tracer.Trace(GetType(), "Invalidate()");
+
 		return ++_Stamp;
 	}
 
@@ -996,7 +1062,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 				// Remove and recreate the corrupted SE connecton.
 				manager.RemoveConnection(pair.Value);
-				LinkageParser.DisposeInstance(pair.Value.Connection, true);
+				pair.Value.Connection.DisposeLinkageParser();
 
 				manager.AddConnection(pair.Key, clsidProvider, encryptedConnectionString, true);
 
@@ -1057,8 +1123,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		datasetId = csa.DatasetId;
 
-		if (string.IsNullOrWhiteSpace(datasetId))
-			datasetId = csa.Dataset;
+		// If the connection name matches the datasetKey constructed from the datasetId, remove it.
+		if (!string.IsNullOrEmpty(datasetId) && !csa.ContainsKey(C_KeyExConnectionName) && connectionName == DatasetKeyFormat.FmtRes(csa.DataSource, datasetId))
+			connectionName = null;
+
+		if (!string.IsNullOrEmpty(connectionName) && !string.IsNullOrEmpty(datasetId))
+			datasetId = null;
 
 		BeginLoadData(true);
 
@@ -1074,11 +1144,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			if (row == null)
 				return;
 
-			// string str = "AddSERow: ";
-			// foreach (DataColumn col in _InternalConnectionsTable.Columns)
-			// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-			// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnectionsImpl()", str);
+			/*
+			string str = "AddedSERow: ";
+			foreach (DataColumn col in _InternalConnectionsTable.Columns)
+				str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
 
+			// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnectionsImpl()", str);
+			*/
 
 			if (_Instance == null)
 				return;
@@ -1269,7 +1341,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		DataRow row;
 
-		string xmlPath = DbNative.ExternalUtilityConfigurationPath;
+		string xmlPath = NativeDb.ExternalUtilityConfigurationPath;
 
 		if (string.IsNullOrEmpty(xmlPath) || !File.Exists(xmlPath))
 			return;
@@ -1753,7 +1825,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			Dictionary<string, Csb> sortdict = [];
 
 
-			XmlNodeList xmlNodes = xmlParent.SelectNodes($"confBlackbirdNs:add[@providerName='{DbNative.Invariant}']", xmlNs);
+			XmlNodeList xmlNodes = xmlParent.SelectNodes($"confBlackbirdNs:add[@providerName='{NativeDb.Invariant}']", xmlNs);
 
 
 			if (xmlNodes.Count > 0)
@@ -1802,7 +1874,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				};
 
 				if (!csb.ContainsKey("provider")
-					|| !((string)csb["provider"]).Equals(DbNative.Invariant, StringComparison.InvariantCultureIgnoreCase))
+					|| !((string)csb["provider"]).Equals(NativeDb.Invariant, StringComparison.InvariantCultureIgnoreCase))
 				{
 					continue;
 				}
@@ -1824,8 +1896,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				}
 
 				// Clear out any UIHierarchyMarshaler or DataSources ToolWindow ConnectionString identifiers.
-				csa.Remove("edmx");
-				csa.Remove("edmu");
+				csa.Remove(C_KeyExEdmx);
+				csa.Remove(C_KeyExEdmu);
 
 				// Add in now to store. Will be retrieved and removed when we actually load.
 				csa.DatasetId = datasetId;
@@ -2025,9 +2097,16 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "RegisterUniqueConnectionDatsetKey()");
 
-		if (string.IsNullOrWhiteSpace(proposedDatasetId))
+		if (string.IsNullOrWhiteSpace(proposedConnectionName) && string.IsNullOrWhiteSpace(proposedDatasetId))
 		{
-			ArgumentNullException ex = new ArgumentNullException("proposedDatasetId may not be null.");
+			ArgumentNullException ex = new ArgumentNullException("proposedConnectionName and proposedDatasetId may not both be null.");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && !string.IsNullOrWhiteSpace(proposedDatasetId))
+		{
+			ArgumentNullException ex = new ArgumentNullException("proposedConnectionName and proposedDatasetId may not both contain values.");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -2064,32 +2143,33 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				int pos;
 
 				if ((pos = proposedDatasetId.IndexOf(RctManager.EdmGlyph)) != -1)
-					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
+					proposedDatasetId = proposedDatasetId.Remove(pos, 2);
 				else if ((pos = proposedDatasetId.IndexOf(RctManager.ProjectDatasetGlyph)) != -1)
-					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
+					proposedDatasetId = proposedDatasetId.Remove(pos, 2);
 				else if ((pos = proposedDatasetId.IndexOf(RctManager.UtilityDatasetGlyph)) != -1)
-					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
+					proposedDatasetId = proposedDatasetId.Remove(pos, 2);
 			}
 
-			GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId, csa.DataSource, csa.Dataset,
+			GenerateUniqueDatasetKey(source, proposedConnectionName, proposedDatasetId, csa.DataSource, csa.Dataset,
 				connectionUrl, null, out _, out _, out string uniqueDatasetKey, out string uniqueConnectionName,
 				out string uniqueDatasetId);
 
 			csa.DatasetKey = uniqueDatasetKey;
 
-			if (uniqueConnectionName == string.Empty)
-				csa.Remove(C_KeyExConnectionName);
-			else if (uniqueConnectionName != null)
+			if (uniqueConnectionName == null && proposedConnectionName == null)
+				csa.Remove(SysConstants.C_KeyExConnectionName);
+			else if (!string.IsNullOrEmpty(uniqueConnectionName))
 				csa.ConnectionName = uniqueConnectionName;
-			else if (proposedConnectionName != null)
+			else
 				csa.ConnectionName = proposedConnectionName;
 
-			if (uniqueDatasetId == string.Empty)
-				csa.Remove(C_KeyExDatasetId);
-			else if (uniqueDatasetId != null)
+			if (uniqueDatasetId == null && proposedDatasetId == null)
+				csa.Remove(SysConstants.C_KeyExDatasetId);
+			else if (!string.IsNullOrEmpty(uniqueDatasetId))
 				csa.DatasetId = uniqueDatasetId;
-			else if (proposedDatasetId != null)
+			else
 				csa.DatasetId = proposedDatasetId;
+
 
 			int id = _InternalConnectionsTable.Rows.Count;
 
@@ -2100,6 +2180,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			// Sanity check
 			csa.ConnectionSource = (EnConnectionSource)(int)source;
+
 			if (source == EnConnectionSource.ServerExplorer && string.IsNullOrWhiteSpace(csa.ConnectionKey))
 			{
 				csa.ConnectionKey = csa.DatasetKey;
@@ -2361,6 +2442,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		object originalRowValue;
 		string displayName;
 
+
 		try
 		{
 			row[C_KeyExDisplayName] = DBNull.Value;
@@ -2596,6 +2678,18 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Increments the <see cref="ExternalEventsDisabled"/> counter when execution updates the
+	/// SE to prevent recursion.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public void DisableExternalEvents()
+	{
+		lock (_LockObject)
+			_ExternalEventsCardinal++;
+	}
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Increments the <see cref="EventsDisabled"/> counter when execution updates the
 	/// SE to prevent recursion.
 	/// </summary>
@@ -2628,6 +2722,25 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Decrements the <see cref="ExternalEventsDisabled"/> counter that was previously
+	/// incremented by <see cref="DisableExternalEvents"/>.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public void EnableExternalEvents()
+	{
+		if (_ExternalEventsCardinal == 0)
+		{
+			Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
+		}
+		else
+		{
+			lock (_LockObject)
+				_ExternalEventsCardinal--;
+		}
+	}
+
 
 	/// <summary>
 	/// Node renames occur here and a sanity check that the edmx wizard has not corrupted
@@ -2638,39 +2751,33 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (e.Node == null || e.Node.ExplorerConnection == null)
 			return;
 
+		if (_Instance != null || _ExternalEventsCardinal != 0)
+			return;
 
 		if (e.Node.ExplorerConnection.Connection != null
 			&& e.Node.ExplorerConnection.Connection.State != DataConnectionState.Open)
 		{
-			LinkageParser parser = LinkageParser.GetInstance(e.Node.ExplorerConnection.Connection);
-
-			if (parser != null)
-			{
-				// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()", "Disposing of parser");
-				LinkageParser.DisposeInstance(e.Node.ExplorerConnection.Connection, parser.Loaded);
-			}
-
-			// else
-			//	Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()", "Parser not found. Could not dispose");
-
+			e.Node.ExplorerConnection.Connection.DisposeLinkageParser();
 			return;
 		}
 
 
 		// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()");
 
-		if (_Instance != null && _EventsCardinal != 0)
+		if (_Instance != null || _EventsCardinal != 0)
 			return;
 
 		DisableEvents();
+		DisableExternalEvents();
 
 		// We're only interested in node value changes.
 		if (e.Node.IsExpanding || e.Node.IsRefreshing || e.Node.ExplorerConnection.ConnectionNode == null
-			|| e.Node.ExplorerConnection.DisplayName == null 
+			|| e.Node.ExplorerConnection.DisplayName == null
 			|| e.Node.ExplorerConnection.EncryptedConnectionString == null
 			|| e.Node != e.Node.ExplorerConnection.ConnectionNode)
 		{
 			EnableEvents();
+			EnableExternalEvents();
 			return;
 		}
 
@@ -2680,6 +2787,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (_Instance == null)
 		{
 			EnableEvents();
+			EnableExternalEvents();
 			UnadviseEvents(e.Node.ExplorerConnection);
 			return;
 		}
@@ -2688,7 +2796,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// If the ConnectionString contains any UIHierarchyMarshaler or DataSources ToolWindow identifiers we skip the
 		// DatasetKey check because the Connection is earmarked for repair.
-		if (!csa.ContainsKey("edmx") && !csa.ContainsKey("edmu") && csa.ContainsKey(C_KeyExDatasetKey))
+		if (!csa.ContainsKey(C_KeyExEdmx) && !csa.ContainsKey(C_KeyExEdmu) && csa.ContainsKey(C_KeyExDatasetKey))
 		{
 			// Check if node.Object exists before accessing it otherwise the root node will be initialized
 			// with a call to TObjectSelectorRoot.SelectObjects.
@@ -2699,6 +2807,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			if (!string.IsNullOrEmpty(datasetKey) && datasetKey == e.Node.ExplorerConnection.DisplayName)
 			{
 				EnableEvents();
+				EnableExternalEvents();
 				return;
 			}
 		}
@@ -2712,9 +2821,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			Diag.Dug(ex);
 			EnableEvents();
+			EnableExternalEvents();
 			throw;
 		}
+
 		EnableEvents();
+		EnableExternalEvents();
 	}
 
 

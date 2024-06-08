@@ -2,7 +2,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.Methods
 using System.Collections.Generic;
 using Babel;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio.Package;
 
 

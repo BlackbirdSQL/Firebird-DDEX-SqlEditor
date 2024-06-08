@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.EditorExtension;
+using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -21,7 +21,7 @@ namespace BlackbirdSql.Controller;
 /// support for SolutionOption, IVsSolution, IVsRunningDocumentTable events through the PackageController.
 /// </summary>
 /// <remarks>
-/// This is a multi-Extension class implementation of <see cref="IBAsyncPackage"/>.
+/// This is a multi-Extension class implementation of <see cref="IBsAsyncPackage"/>.
 /// The current package hieararchy is BlackbirdSqlDdexExtension > <see cref="ControllerPackage"/> >
 /// <see cref="EditorExtension.EditorExtensionPackage"/> > <see cref="AbstractCorePackage"/>.
 /// </remarks>
@@ -96,20 +96,20 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Accessor to the events manager at this level of the <see cref="IBAsyncPackage"/>
+	/// Accessor to the events manager at this level of the <see cref="IBsAsyncPackage"/>
 	/// class hierarchy.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public new IBEventsManager EventsManager => _EventsManager;
+	public new IBsEventsManager EventsManager => _EventsManager;
 
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Accessor to the <see cref="IBPackageController"/> singleton instance
+	/// Accessor to the <see cref="IBsPackageController"/> singleton instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override IBPackageController ApcInstance => _ApcInstance;
+	public override IBsPackageController ApcInstance => _ApcInstance;
 
 
 	#endregion Property accessors
@@ -150,7 +150,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 		Progress(progress, "Loading ApcManager service...");
 		
-		ServiceContainer.AddService(typeof(IBPackageController), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBsPackageController), ServicesCreatorCallbackAsync, promote: true);
 
 		Progress(progress, "Loading ApcManager service... Done.");
 		
@@ -226,7 +226,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 			throw ex;
 		}
 
-		else if (serviceType == typeof(IBPackageController))
+		else if (serviceType == typeof(IBsPackageController))
 		{
 			try
 			{
@@ -259,7 +259,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	// ---------------------------------------------------------------------------------
 	public override async Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType)
 	{
-		if (serviceType == typeof(IBPackageController))
+		if (serviceType == typeof(IBsPackageController))
 		{
 			return await CreateServiceInstanceAsync(serviceType, token);
 		}
@@ -278,7 +278,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	// =========================================================================================================
 
 
-	protected override IBPackageController CreateController()
+	protected override IBsPackageController CreateController()
 	{
 		return PackageController.CreateInstance(this);
 	}

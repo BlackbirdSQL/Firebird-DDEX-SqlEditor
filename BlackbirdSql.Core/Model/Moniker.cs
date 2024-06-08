@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -165,10 +166,10 @@ public class Moniker
 				_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
 				for (int i = 1; i < identifier.Length; i++)
 				{
-					_ObjectName += SystemData.CompositeSeparator
+					_ObjectName += SystemData.C_CompositeSeparator
 						+ (identifier[i] != null ? identifier[i].ToString() : "");
 				}
-				_ObjectName = _ObjectName.Trim(SystemData.CompositeSeparator);
+				_ObjectName = _ObjectName.Trim(SystemData.C_CompositeSeparator);
 			}
 		}
 	}
@@ -188,7 +189,7 @@ public class Moniker
 			_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
 			for (int i = 1; i < identifier.Length; i++)
 			{
-				_ObjectName += SystemData.CompositeSeparator
+				_ObjectName += SystemData.C_CompositeSeparator
 					+ (identifier[i] != null ? identifier[i].ToString() : "");
 			}
 		}
@@ -207,8 +208,7 @@ public class Moniker
 	#region Constants - Moniker
 	// =========================================================================================================
 
-	private const string C_StdSchemeDelimiterFmt = "{0}://";
-
+	
 	#endregion Constants
 
 
@@ -298,7 +298,7 @@ public class Moniker
 
 
 
-	public string[] Identifier => ObjectName.Split(SystemData.CompositeSeparator);
+	public string[] Identifier => ObjectName.Split(SystemData.C_CompositeSeparator);
 
 
 	/// <summary>
@@ -386,7 +386,7 @@ public class Moniker
 
 		UriBuilder urlb = new()
 		{
-			Scheme = DbNative.Protocol,
+			Scheme = NativeDb.Protocol,
 			Host = DataSource.ToLowerInvariant(),
 		};
 
@@ -398,7 +398,7 @@ public class Moniker
 
 		// Tracer.Trace(GetType(), "BuildStorageDatabaseUrl()", "Serialized dbpath: {0}", str);
 
-		urlb.Path = str + SystemData.UnixFieldSeparator;
+		urlb.Path = str + SystemData.C_UnixFieldSeparator;
 
 		string result;
 
@@ -433,7 +433,7 @@ public class Moniker
 
 			stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}_{1}{2}",
 				ObjectType.ToString(), TargetType.ToString(),
-				Identifier != null && Identifier.Length > 0 ? SystemData.UnixFieldSeparator.ToString() : "");
+				Identifier != null && Identifier.Length > 0 ? SystemData.C_UnixFieldSeparator.ToString() : "");
 
 			if (Identifier != null && Identifier.Length > 0)
 			{
@@ -453,7 +453,7 @@ public class Moniker
 
 		if (includeExtension && ObjectType != EnModelObjectType.Unknown && Identifier != null)
 		{
-			extension = DbNative.Extension;
+			extension = NativeDb.Extension;
 			fullname += extension;
 		}
 
@@ -519,8 +519,8 @@ public class Moniker
 	{
 		string path = appDataPath;
 
-		path = Path.Combine(path, SystemData.ServiceFolder);
-		path = Path.Combine(path, SystemData.TempSqlFolder);
+		path = Path.Combine(path, SystemData.C_ServiceFolder);
+		path = Path.Combine(path, SystemData.C_TempSqlFolder);
 
 		// Tracer.Trace(typeof(Moniker), "ConstructFullTemporaryDirectory()", "TemporaryDirectory: {0}", path);
 
@@ -597,7 +597,7 @@ public class Moniker
 					direction = Convert.ToInt32(child.Object.Properties["PARAMETER_DIRECTION"]);
 
 					flddef = child.Object.Properties["PARAMETER_NAME"] + " "
-							+ DbNative.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+							+ NativeDb.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
 							child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
 							child.Object.Properties["NUMERIC_SCALE"]);
 
@@ -643,7 +643,7 @@ public class Moniker
 					direction = (short)child.Object.Properties["ORDINAL_POSITION"] == 0 ? 1 : 0;
 
 					flddef = (direction == 0 ? child.Object.Properties["ARGUMENT_NAME"] + " " : "")
-							+ DbNative.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+							+ NativeDb.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
 							child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
 							child.Object.Properties["NUMERIC_SCALE"]);
 
@@ -736,7 +736,7 @@ public class Moniker
 		string str = StringUtils.Serialize64(Database.ToLowerInvariant());
 		// string str = JsonConvert.SerializeObject(Database.ToLowerInvariant());
 
-		string moniker = SysConstants.C_DatasetKeyFmt.FmtRes(DataSource, str);
+		string moniker = SysConstants.DatasetKeyFormat.FmtRes(DataSource, str);
 
 		moniker = moniker.Replace("\\", "."); // "{backslash}");
 		moniker = moniker.Replace("/", "."); // "{slash}");
@@ -748,7 +748,7 @@ public class Moniker
 		moniker = moniker.Replace(">", "{closebracket}");
 		moniker = moniker.Replace("|", "{bar}");
 
-		moniker = $"{ObjectName}[{moniker}.{ObjectType}]{DbNative.Extension}";
+		moniker = $"{ObjectName}[{moniker}.{ObjectType}]{NativeDb.Extension}";
 
 		string path = ConstructFullTemporaryDirectory(appDataPath);
 

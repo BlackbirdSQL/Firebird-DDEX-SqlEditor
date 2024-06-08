@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 
-namespace BlackbirdSql.Core;
+namespace BlackbirdSql;
 
 // =========================================================================================================
 //											ExtensionMembers Class
@@ -21,7 +22,7 @@ namespace BlackbirdSql.Core;
 /// Central class for package external class extension methods. 
 /// </summary>
 // =========================================================================================================
-static class ExtensionMembers
+public static partial class ExtensionMembers
 {
 
 	// ---------------------------------------------------------------------------------

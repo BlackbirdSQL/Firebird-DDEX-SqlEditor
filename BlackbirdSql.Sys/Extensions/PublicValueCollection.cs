@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Extensions;
 
 
 //
 // Summary:
-//     Represents the collection of values in a BlackbirdSql.Core.Extensions.PublicDictionary.
+//     Represents the collection of values in a BlackbirdSql.Sys.Extensions.PublicDictionary.
 //     This class cannot be inherited.
 [Serializable]
 [DebuggerDisplay("Count = {Count}")]
@@ -17,7 +17,7 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 {
 	//
 	// Summary:
-	//     Enumerates the elements of a BlackbirdSql.Core.Extensions.PublicValueCollection.
+	//     Enumerates the elements of a BlackbirdSql.Sys.Extensions.PublicValueCollection.
 	[Serializable]
 	public struct Enumerator : IEnumerator<TValue>, IDisposable, IEnumerator
 	{
@@ -34,7 +34,7 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 		//     Gets the element at the current position of the enumerator.
 		//
 		// Returns:
-		//     The element in the BlackbirdSql.Core.Extensions.PublicValueCollection at
+		//     The element in the BlackbirdSql.Sys.Extensions.PublicValueCollection at
 		//     the current position of the enumerator.
 #pragma warning disable IDE0251 // Make member 'readonly'
 		public TValue Current => _Current;
@@ -81,7 +81,7 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 
 		//
 		// Summary:
-		//     Releases all resources used by the BlackbirdSql.Core.Extensions.PublicValueCollection.Enumerator.
+		//     Releases all resources used by the BlackbirdSql.Sys.Extensions.PublicValueCollection.Enumerator.
 #pragma warning disable IDE0251 // Make member 'readonly'
 		public void Dispose()
 #pragma warning restore IDE0251 // Make member 'readonly'
@@ -90,7 +90,7 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 
 		//
 		// Summary:
-		//     Advances the enumerator to the next element of the BlackbirdSql.Core.Extensions.PublicValueCollection.
+		//     Advances the enumerator to the next element of the BlackbirdSql.Sys.Extensions.PublicValueCollection.
 		//
 		// Returns:
 		//     true if the enumerator was successfully advanced to the next element; false if
@@ -137,10 +137,10 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 
 	//
 	// Summary:
-	//     Gets the number of elements contained in the BlackbirdSql.Core.Extensions.PublicValueCollection.
+	//     Gets the number of elements contained in the BlackbirdSql.Sys.Extensions.PublicValueCollection.
 	//
 	// Returns:
-	//     The number of elements contained in the BlackbirdSql.Core.Extensions.PublicValueCollection.
+	//     The number of elements contained in the BlackbirdSql.Sys.Extensions.PublicValueCollection.
 	public int Count
 	{
 		get
@@ -164,7 +164,7 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 	//
 	// Returns:
 	//     true if access to the System.Collections.ICollection is synchronized (thread
-	//     safe); otherwise, false. In the default implementation of BlackbirdSql.Core.Extensions.PublicValueCollection,
+	//     safe); otherwise, false. In the default implementation of BlackbirdSql.Sys.Extensions.PublicValueCollection,
 	//     this property always returns false.
 	bool ICollection.IsSynchronized
 	{
@@ -180,7 +180,7 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 	//
 	// Returns:
 	//     An object that can be used to synchronize access to the System.Collections.ICollection.
-	//     In the default implementation of BlackbirdSql.Core.Extensions.PublicValueCollection,
+	//     In the default implementation of BlackbirdSql.Sys.Extensions.PublicValueCollection,
 	//     this property always returns the current instance.
 	object ICollection.SyncRoot
 	{
@@ -192,13 +192,13 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 
 	//
 	// Summary:
-	//     Initializes a new instance of the BlackbirdSql.Core.Extensions.PublicValueCollection
-	//     class that reflects the values in the specified BlackbirdSql.Core.Extensions.PublicDictionary.
+	//     Initializes a new instance of the BlackbirdSql.Sys.Extensions.PublicValueCollection
+	//     class that reflects the values in the specified BlackbirdSql.Sys.Extensions.PublicDictionary.
 	//
 	// Parameters:
 	//   _Dictionary:
-	//     The BlackbirdSql.Core.Extensions.PublicDictionary whose values are reflected in the
-	//     new BlackbirdSql.Core.Extensions.PublicValueCollection.
+	//     The BlackbirdSql.Sys.Extensions.PublicDictionary whose values are reflected in the
+	//     new BlackbirdSql.Sys.Extensions.PublicValueCollection.
 	//
 	// Exceptions:
 	//   T:System.ArgumentNullException:
@@ -217,11 +217,11 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 
 	//
 	// Summary:
-	//     Returns an enumerator that iterates through the BlackbirdSql.Core.Extensions.PublicValueCollection.
+	//     Returns an enumerator that iterates through the BlackbirdSql.Sys.Extensions.PublicValueCollection.
 	//
 	// Returns:
-	//     A BlackbirdSql.Core.Extensions.PublicValueCollection.Enumerator for the
-	//     BlackbirdSql.Core.Extensions.PublicValueCollection.
+	//     A BlackbirdSql.Sys.Extensions.PublicValueCollection.Enumerator for the
+	//     BlackbirdSql.Sys.Extensions.PublicValueCollection.
 	public Enumerator GetEnumerator()
 	{
 		return new Enumerator(_Dictionary);
@@ -229,13 +229,13 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 
 	//
 	// Summary:
-	//     Copies the BlackbirdSql.Core.Extensions.PublicValueCollection elements to
+	//     Copies the BlackbirdSql.Sys.Extensions.PublicValueCollection elements to
 	//     an existing one-dimensional System.Array, starting at the specified array _Index.
 	//
 	// Parameters:
 	//   array:
 	//     The one-dimensional System.Array that is the destination of the elements copied
-	//     from BlackbirdSql.Core.Extensions.PublicValueCollection. The System.Array
+	//     from BlackbirdSql.Sys.Extensions.PublicValueCollection. The System.Array
 	//     must have zero-based indexing.
 	//
 	//   _Index:
@@ -249,7 +249,7 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 	//     _Index is less than zero.
 	//
 	//   T:System.ArgumentException:
-	//     The number of elements in the source BlackbirdSql.Core.Extensions.PublicValueCollection
+	//     The number of elements in the source BlackbirdSql.Sys.Extensions.PublicValueCollection
 	//     is greater than the available space from _Index to the end of the destination
 	//     array.
 	public void CopyTo(TValue[] array, int _Index)

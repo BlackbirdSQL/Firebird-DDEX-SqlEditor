@@ -10,13 +10,12 @@ using System.Globalization;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Sys;
-using BlackbirdSql.VisualStudio.Ddex.Controls.Enums;
-using BlackbirdSql.VisualStudio.Ddex.Controls.Events;
+using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
+using BlackbirdSql.VisualStudio.Ddex.Enums;
+using BlackbirdSql.VisualStudio.Ddex.Events;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.Data.ConnectionUI;
 using Microsoft.VisualStudio.Data.Core;
@@ -1332,7 +1331,7 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 						= vsDataConnection.GetService(typeof(IVsDataConnectionSupport)) as IVsDataConnectionSupport
 						?? throw Diag.ExceptionService(typeof(IVsDataConnectionSupport));
 
-					vsDataConnectionSupport.Open(doPromptCheck: false);
+					vsDataConnectionSupport.Open(false);
 				}
 			}
 		}

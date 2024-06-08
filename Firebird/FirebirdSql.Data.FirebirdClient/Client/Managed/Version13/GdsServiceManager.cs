@@ -19,7 +19,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed.Version13;
@@ -74,7 +73,6 @@ internal class GdsServiceManager : Version12.GdsServiceManager
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			Database.SafelyDetach();
 			throw IscException.ForIOException(ex);
 		}
@@ -121,7 +119,6 @@ internal class GdsServiceManager : Version12.GdsServiceManager
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			await Database.SafelyDetachAsync(cancellationToken).ConfigureAwait(false);
 			throw IscException.ForIOException(ex);
 		}

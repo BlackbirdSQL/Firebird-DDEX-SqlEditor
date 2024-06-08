@@ -121,7 +121,7 @@
     <value>DTE is null</value>
   </data>
   <data name="ExceptionIBPackageControllerIsNull" xml:space="preserve">
-    <value>IBPackageController is null</value>
+    <value>IBsPackageController is null</value>
   </data>
   <data name="ExceptionIVsRunningDocumentTableIsNull" xml:space="preserve">
     <value>IVsRunningDocumentTable is null</value>

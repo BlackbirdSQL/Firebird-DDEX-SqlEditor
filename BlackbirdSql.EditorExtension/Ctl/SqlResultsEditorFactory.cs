@@ -2,20 +2,17 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlResultsEditorFactory
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using BlackbirdSql.Common;
-using BlackbirdSql.Common.Controls;
-using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Shared.Controls;
+using BlackbirdSql.Shared.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
+
+using LibraryData = BlackbirdSql.Shared.LibraryData;
 
 
 
@@ -23,8 +20,7 @@ namespace BlackbirdSql.EditorExtension.Ctl;
 
 [Guid(LibraryData.SqlResultsEditorFactoryGuid)]
 [ProvideMenuResource("Menus.ctmenu", 1)]
-[Name("BlackbirdSql Results")]
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Uses Diag.ThrowIfNotOnUIThread()")]
+// [Name("BlackbirdSql Results")]
 
 
 public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
@@ -45,7 +41,7 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 		caption = "";
 		cmdUIGuid = Guid.Empty;
 		result = 1;
-		Cursor current = Cursor.Current;
+		Cursor current = null;
 		try
 		{
 			// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "nCreateFlags = {0}, strMoniker = {1}, strPhysicalView = {2}, itemid = {3}", createFlags, moniker, physicalView, itemId);
@@ -66,8 +62,10 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 				return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 			}
 
-			result = 0;
+			current = Cursor.Current;
 			Cursor.Current = Cursors.WaitCursor;
+
+			result = 0;
 			ResultWindowPane resultWindowPane = CreateResultsWindowPane();
 			caption = SharedResx.SqlResultsEditorFactory_Caption;
 			intPtrDocView = Marshal.GetIUnknownForObject(resultWindowPane);
@@ -99,7 +97,8 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 		}
 		finally
 		{
-			Cursor.Current = current;
+			if (current != null)
+				Cursor.Current = current;
 		}
 	}
 

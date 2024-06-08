@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Diagnostics;
-using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird;
 
@@ -62,7 +61,6 @@ internal static class MetadataHelpers
 	/// <returns></returns>
 	internal static IList<EdmProperty> GetProperties(TypeUsage typeUsage)
 	{
-		// Diag.Trace();
 		return MetadataHelpers.GetProperties(typeUsage.EdmType);
 	}
 
@@ -74,7 +72,6 @@ internal static class MetadataHelpers
 	/// <returns></returns>
 	internal static IList<EdmProperty> GetProperties(EdmType edmType)
 	{
-		// Diag.Trace();
 		switch (edmType.BuiltInTypeKind)
 		{
 			case BuiltInTypeKind.ComplexType:
@@ -95,7 +92,6 @@ internal static class MetadataHelpers
 	/// <returns></returns>
 	internal static bool IsCollectionType(TypeUsage typeUsage)
 	{
-		// Diag.Trace();
 		return MetadataHelpers.IsCollectionType(typeUsage.EdmType);
 	}
 
@@ -186,7 +182,6 @@ internal static class MetadataHelpers
 	/// <returns></returns>
 	internal static T TryGetValueForMetadataProperty<T>(MetadataItem item, string propertyName)
 	{
-		// Diag.Trace();
 		if (!item.MetadataProperties.TryGetValue(propertyName, true, out var property))
 		{
 			return default;
@@ -197,7 +192,6 @@ internal static class MetadataHelpers
 
 	internal static bool IsPrimitiveType(TypeUsage type, PrimitiveTypeKind primitiveType)
 	{
-		// Diag.Trace();
 		if (TryGetPrimitiveTypeKind(type, out var typeKind))
 		{
 			return (typeKind == primitiveType);
@@ -311,7 +305,6 @@ internal static class MetadataHelpers
 	/// <returns></returns>
 	internal static bool TryGetTypeFacetDescriptionByName(EdmType edmType, string facetName, out FacetDescription facetDescription)
 	{
-		// Diag.Trace();
 		facetDescription = null;
 		if (MetadataHelpers.IsPrimitiveType(edmType))
 		{
@@ -330,7 +323,6 @@ internal static class MetadataHelpers
 
 	internal static bool IsNullable(TypeUsage type)
 	{
-		// Diag.Trace();
 		if (type.Facets.TryGetValue(NullableFacetName, false, out var nullableFacet))
 		{
 			return (bool)nullableFacet.Value;
@@ -340,7 +332,6 @@ internal static class MetadataHelpers
 
 	internal static bool TryGetMaxLength(TypeUsage type, out int? maxLength)
 	{
-		// Diag.Trace();
 		if (!IsPrimitiveType(type, PrimitiveTypeKind.String) &&
 			!IsPrimitiveType(type, PrimitiveTypeKind.Binary))
 		{
@@ -354,7 +345,6 @@ internal static class MetadataHelpers
 
 	internal static bool TryGetIntFacetValue(TypeUsage type, string facetName, out int? intValue)
 	{
-		// Diag.Trace();
 		intValue = 0;
 
 		if (type.Facets.TryGetValue(facetName, false, out var intFacet) && intFacet.Value != null)
@@ -371,7 +361,6 @@ internal static class MetadataHelpers
 
 	internal static bool TryGetIsFixedLength(TypeUsage type, out bool isFixedLength)
 	{
-		// Diag.Trace();
 		if (!IsPrimitiveType(type, PrimitiveTypeKind.String) &&
 			!IsPrimitiveType(type, PrimitiveTypeKind.Binary))
 		{
@@ -385,7 +374,6 @@ internal static class MetadataHelpers
 
 	internal static bool TryGetBooleanFacetValue(TypeUsage type, string facetName, out bool boolValue)
 	{
-		// Diag.Trace();
 		boolValue = false;
 		if (type.Facets.TryGetValue(facetName, false, out var boolFacet) && boolFacet.Value != null)
 		{
@@ -398,7 +386,6 @@ internal static class MetadataHelpers
 
 	internal static bool TryGetIsUnicode(TypeUsage type, out bool isUnicode)
 	{
-		// Diag.Trace();
 		if (!IsPrimitiveType(type, PrimitiveTypeKind.String))
 		{
 			isUnicode = false;
@@ -447,7 +434,6 @@ internal static class MetadataHelpers
 
 	internal static string GetTableName(EntitySetBase entitySetBase)
 	{
-		// Diag.Trace();
 		var tableName = MetadataHelpers.TryGetValueForMetadataProperty<string>(entitySetBase, "Table");
 		return !string.IsNullOrEmpty(tableName)
 			? tableName
@@ -456,7 +442,6 @@ internal static class MetadataHelpers
 
 	private static bool IsStoreGeneratedPattern(EdmMember member, StoreGeneratedPattern pattern)
 	{
-		// Diag.Trace();
 		return (member.TypeUsage.Facets.TryGetValue(StoreGeneratedPatternFacetName, false, out var item) && ((StoreGeneratedPattern)item.Value) == pattern);
 	}
 	internal static bool IsStoreGeneratedComputed(EdmMember member)

@@ -249,6 +249,9 @@ Extend the allotted linkage time by {0} seconds?</value>
   <data name="RctManager_CaptionConnectionChangeNameConflict" xml:space="preserve">
     <value>Connection change ConnectionName conflict</value>
   </data>
+  <data name="RctManager_CaptionConnectionNameChange" xml:space="preserve">
+    <value>ConnectionName change</value>
+  </data>
   <data name="RctManager_CaptionConnectionNameConflict" xml:space="preserve">
     <value>ConnectionName conflict</value>
   </data>
@@ -333,6 +336,9 @@ Continue?</value>
 The Proposed Connection Name '{0}' is already allocated and '{1}' will be used instead.
 
 Continue?</value>
+  </data>
+  <data name="RctManager_TextSEConnectionNameChange" xml:space="preserve">
+    <value>The existing Server Explorer Connection's name will be modified. Continue?</value>
   </data>
   <data name="RetryButton" xml:space="preserve">
     <value>&amp;Retry</value>

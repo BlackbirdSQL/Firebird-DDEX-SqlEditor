@@ -91,7 +91,6 @@ public class FbStreamingRestore : FbService
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -132,7 +131,6 @@ public class FbStreamingRestore : FbService
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}

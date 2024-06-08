@@ -8,15 +8,15 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
-using System.Windows;
 using System.Windows.Media.Imaging;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys;
-using Microsoft.Data.ConnectionUI;
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Interfaces;
 
-using static BlackbirdSql.SysConstants;
+using static BlackbirdSql.Sys.SysConstants;
 
 
 
@@ -454,7 +454,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	{
 
 		bool opened = false;
-		Version version = new(DbNative.ClientVersion);
+		Version version = new(NativeDb.ClientVersion);
 
 		if (version != null)
 			ClientVersion = version;

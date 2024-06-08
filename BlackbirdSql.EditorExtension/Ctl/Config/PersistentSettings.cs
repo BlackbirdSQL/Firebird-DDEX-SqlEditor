@@ -2,10 +2,11 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.EditorExtension.Model.Config;
 using BlackbirdSql.EditorExtension.Properties;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Interfaces;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Shared.Enums;
 
 
 namespace BlackbirdSql.EditorExtension.Ctl.Config;

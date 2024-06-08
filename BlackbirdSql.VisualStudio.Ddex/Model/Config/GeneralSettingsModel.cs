@@ -3,13 +3,13 @@
 
 using System.ComponentModel;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedCategoryAttribute;
 using GlobalizedDisplayNameAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
+using BlackbirdSql.Core.Interfaces;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
@@ -129,11 +129,11 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 
 
 	[GlobalizedCategory("OptionCategoryEntityFramework")]
-	[GlobalizedDisplayName("OptionDisplayGeneralValidateConnectionOnFormAccept")]
-	[GlobalizedDescription("OptionDescriptionGeneralValidateConnectionOnFormAccept")]
+	[GlobalizedDisplayName("OptionDisplayGeneralValidateSessionConnectionOnFormAccept")]
+	[GlobalizedDescription("OptionDescriptionGeneralValidateSessionConnectionOnFormAccept")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(true)]
-	public bool ValidateConnectionOnFormAccept { get; set; } = true;
+	public bool ValidateSessionConnectionOnFormAccept { get; set; } = true;
 
 	// To be defaulted to false once Npgsql is fixed.
 	[GlobalizedCategory("OptionCategoryEntityFramework")]

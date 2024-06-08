@@ -2,6 +2,18 @@
 
 ## Change log
 
+### v12.0.2.0 Converted query execution to use the TaskScheduler.
+__New/ Enhancements__</br>
+-- Query execution now uses the TaskScheduler instead of creating threads. All database access is now performed asynchronously. This also improves query excution cancellation using a common CancellationToken which is carried through to the disk storage readers and native database engine functions.</br>
+__Fixes__</br>
+-- Resolved issue where closed connection nodes called the running connection table for updates when a connection was about to be modified. This caused proposed DatasetId's to be converted to proposed ConnectionNames and also initiated an unecessary trigger linkage that was then aborted. 
+
+### v12.0.0.1 Improved "Query is Executing" animation and addressed `Execution Plan` TTS bug.
+__New/ Enhancements__</br>
+-- Implemented a flowing progress bar for the "Query is Executing" animation.</br>
+__Fixes__</br>
+-- Addressed issue where a conflict occurs on an active transaction and an `Estimated Execution Plan`" has been requested. 
+
 ### v12.0.0.0 Multi-statement (batch) SQL and iSql support.
 __New/ Enhancements__</br>
 -- Implemented multi-statement SQL support. Note: For block sql statements the statement terminator will need to be changed to 'GO' or similar if it contains a semi-colon and should be reset back to the default semi-colon to continue processing subsequent statements that are terminated using the default.</br>

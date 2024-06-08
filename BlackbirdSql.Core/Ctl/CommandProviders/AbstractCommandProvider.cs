@@ -4,10 +4,10 @@
 using System;
 using System.ComponentModel.Design;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;

@@ -21,7 +21,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed.Version10;
@@ -101,7 +100,6 @@ internal sealed class GdsArray : ArrayBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -124,7 +122,6 @@ internal sealed class GdsArray : ArrayBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -152,7 +149,6 @@ internal sealed class GdsArray : ArrayBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -179,7 +175,6 @@ internal sealed class GdsArray : ArrayBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -448,7 +443,6 @@ internal sealed class GdsArray : ArrayBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -513,7 +507,6 @@ internal sealed class GdsArray : ArrayBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}

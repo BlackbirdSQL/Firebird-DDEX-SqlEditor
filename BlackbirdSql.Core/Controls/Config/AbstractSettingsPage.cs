@@ -5,7 +5,6 @@ using System;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Config;
 using Microsoft.VisualStudio.Shell.Interop;
 

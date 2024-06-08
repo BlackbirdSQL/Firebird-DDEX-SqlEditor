@@ -19,7 +19,6 @@ using System;
 using System.Diagnostics;
 using System.Numerics;
 
-
 namespace FirebirdSql.Data.Common;
 
 internal static class Int128Helper
@@ -39,9 +38,7 @@ internal static class Int128Helper
 		var result = value.ToByteArray();
 		if (result.Length > 16)
 		{
-			ArgumentOutOfRangeException exbb = new("Value too big for Int128.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new ArgumentOutOfRangeException("Value too big for Int128.");
 		}
 		if (result.Length < 16)
 		{

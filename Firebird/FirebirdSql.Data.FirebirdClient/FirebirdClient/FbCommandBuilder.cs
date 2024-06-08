@@ -22,8 +22,6 @@ using System.Data.Common;
 using System.Globalization;
 using System.Text;
 
-
-
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.FirebirdClient;
@@ -36,9 +34,7 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 	{
 		if (command.CommandType != CommandType.StoredProcedure)
 		{
-			InvalidOperationException exbb = new("DeriveParameters only supports CommandType.StoredProcedure.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("DeriveParameters only supports CommandType.StoredProcedure.");
 		}
 
 		var spName = command.CommandText.Trim();
@@ -213,9 +209,7 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 	{
 		if (unquotedIdentifier == null)
 		{
-			ArgumentNullException exbb = new("Unquoted identifier parameter cannot be null");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new ArgumentNullException("Unquoted identifier parameter cannot be null");
 		}
 
 		return string.Format("{0}{1}{2}", QuotePrefix, unquotedIdentifier, QuoteSuffix);
@@ -225,9 +219,7 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 	{
 		if (quotedIdentifier == null)
 		{
-			ArgumentNullException exbb = new("Quoted identifier parameter cannot be null");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new ArgumentNullException("Quoted identifier parameter cannot be null");
 		}
 
 		var unquotedIdentifier = quotedIdentifier.Trim();
@@ -250,7 +242,6 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 
 	protected override void ApplyParameterInfo(DbParameter p, DataRow row, StatementType statementType, bool whereClause)
 	{
-		// Diag.Trace();
 		var parameter = (FbParameter)p;
 
 		parameter.Size = int.Parse(row["ColumnSize"].ToString());
@@ -284,9 +275,7 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 	{
 		if (!(adapter is FbDataAdapter))
 		{
-			ArgumentException exbb = new($"Argument needs to be a {nameof(FbDataAdapter)}.", nameof(adapter));
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new ArgumentException($"Argument needs to be a {nameof(FbDataAdapter)}.", nameof(adapter));
 		}
 
 		_rowUpdatingHandler = new EventHandler<FbRowUpdatingEventArgs>(RowUpdatingHandler);

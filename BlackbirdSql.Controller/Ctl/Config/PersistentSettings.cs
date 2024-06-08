@@ -1,7 +1,7 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Events;
 
 namespace BlackbirdSql.Controller.Ctl.Config;
 
@@ -14,7 +14,7 @@ namespace BlackbirdSql.Controller.Ctl.Config;
 /// descendent tree from the top-level extension lib down to the Core.
 /// PersistentSettings can be either consumers or providers of options, or both.
 /// There is no point using services as this configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
+/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Shared > Core.
 /// </summary>
 // =========================================================================================================
 public abstract class PersistentSettings : EditorExtension.Ctl.Config.PersistentSettings

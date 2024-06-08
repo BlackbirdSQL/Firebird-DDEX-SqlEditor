@@ -5,11 +5,10 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Data;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -26,7 +25,7 @@ namespace BlackbirdSql.Core;
 /// BlackbirdSql <see cref="AsyncPackage"/> base class
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
+public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 {
 
 	// -----------------------------------------------------------------------------------------------------
@@ -54,7 +53,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 		try
 		{
-			UriParser.Register(new SqlStyleUriParser(SystemData.UriParserOptions), DbNative.Protocol, 0);
+			UriParser.Register(new SqlStyleUriParser(SystemData.C_UriParserOptions), NativeDb.Protocol, 0);
 		}
 		catch (Exception ex)
 		{
@@ -76,7 +75,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 		get
 		{
 			if (_Instance == null)
-				DemandLoadPackage(SystemData.AsyncPackageGuid, out _);
+				DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
 			return (AbstractCorePackage)_Instance;
 		}
 	}
@@ -89,12 +88,13 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 	private static void RegisterDataServices()
 	{
-		DbNative.CsbType = typeof(Csb);
-		DbNative.DatabaseEngineSvc ??= DatabaseEngineService.CreateInstance();
-		DbNative.DatabaseInfoSvc = DatabaseInfoService.CreateInstance();
-		DbNative.DbCommandSvc = DbCommandService.CreateInstance();
-		DbNative.DbConnectionSvc = DbConnectionService.CreateInstance();
-		DbNative.DbExceptionSvc = DbExceptionService.CreateInstance();
+		NativeDb.CsbType = typeof(Csb);
+		NativeDb.DatabaseEngineSvc ??= DatabaseEngineService.CreateInstance();
+		NativeDb.ProviderSchemaFactorySvc = ProviderSchemaFactoryService.CreateInstance();
+		NativeDb.DatabaseInfoSvc = DatabaseInfoService.CreateInstance();
+		NativeDb.DbCommandSvc = DbCommandService.CreateInstance();
+		NativeDb.DbConnectionSvc = DbConnectionService.CreateInstance();
+		NativeDb.DbExceptionSvc = DbExceptionService.CreateInstance();
 	}
 
 
@@ -128,13 +128,13 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	protected static Package _Instance = null;
 	protected int _InitializationSeed = 0;
 
-	protected IBPackageController _ApcInstance = null;
+	protected IBsPackageController _ApcInstance = null;
 	private IDisposable _DisposableWaitCursor;
 	protected IVsSolution _VsSolution = null;
 	protected bool _Initialized = false;
 
-	protected IBAsyncPackage.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
-	protected IBAsyncPackage.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
+	protected IBsAsyncPackage.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
+	protected IBsAsyncPackage.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
 
 	#endregion Fields and Constants
 
@@ -147,15 +147,15 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	// =========================================================================================================
 
 
-	public static IBsNativeDatabaseEngine DatabaseEngineSvc => DbNative.DatabaseEngineSvc ??= DatabaseEngineService.CreateInstance();
+	public static IBsNativeDatabaseEngine DatabaseEngineSvc => NativeDb.DatabaseEngineSvc ??= DatabaseEngineService.CreateInstance();
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Accessor to the <see cref="IBPackageController"/> singleton instance
+	/// Accessor to the <see cref="IBsPackageController"/> singleton instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public virtual IBPackageController ApcInstance => _ApcInstance
-		??= (IBPackageController)GetGlobalService(typeof(IBPackageController));
+	public virtual IBsPackageController ApcInstance => _ApcInstance
+		??= (IBsPackageController)GetGlobalService(typeof(IBsPackageController));
 
 
 	public IDisposable DisposableWaitCursor
@@ -197,10 +197,8 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	}
 
 
-	public abstract IBEventsManager EventsManager { get; }
+	public abstract IBsEventsManager EventsManager { get; }
 
-
-	public abstract Type SchemaFactoryType { get; }
 
 
 	public Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider
@@ -237,7 +235,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	/// <summary>
 	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
 	/// </summary>
-	event IBAsyncPackage.LoadSolutionOptionsDelegate IBAsyncPackage.OnLoadSolutionOptionsEvent
+	event IBsAsyncPackage.LoadSolutionOptionsDelegate IBsAsyncPackage.OnLoadSolutionOptionsEvent
 	{
 		add { _OnLoadSolutionOptionsEvent += value; }
 		remove { _OnLoadSolutionOptionsEvent -= value; }
@@ -246,7 +244,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	/// <summary>
 	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
 	/// </summary>
-	event IBAsyncPackage.SaveSolutionOptionsDelegate IBAsyncPackage.OnSaveSolutionOptionsEvent
+	event IBsAsyncPackage.SaveSolutionOptionsDelegate IBsAsyncPackage.OnSaveSolutionOptionsEvent
 	{
 		add { _OnSaveSolutionOptionsEvent += value; }
 		remove { _OnSaveSolutionOptionsEvent -= value; }
@@ -282,27 +280,27 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 		}
 		else if (serviceType == typeof(SBsNativeDatabaseEngine))
 		{
-			object service = DbNative.DatabaseEngineSvc;
+			object service = NativeDb.DatabaseEngineSvc;
 			return service;
 		}
 		else if (serviceType == typeof(SBsNativeDatabaseInfo))
 		{
-			object service = DbNative.DatabaseInfoSvc;
+			object service = NativeDb.DatabaseInfoSvc;
 			return service;
 		}
 		else if (serviceType == typeof(SBsNativeDbCommand))
 		{
-			object service = DbNative.DbCommandSvc;
+			object service = NativeDb.DbCommandSvc;
 			return service;
 		}
 		else if (serviceType == typeof(SBsNativeDbConnection))
 		{
-			object service = DbNative.DbConnectionSvc;
+			object service = NativeDb.DbConnectionSvc;
 			return service;
 		}
 		else if (serviceType == typeof(SBsNativeDbException))
 		{
-			object service = DbNative.DbExceptionSvc;
+			object service = NativeDb.DbExceptionSvc;
 			return service;
 		}
 		/*
@@ -382,7 +380,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Implementation of the <see cref="IBAsyncPackage"/> ServicesCreatorCallback
+	/// Implementation of the <see cref="IBsAsyncPackage"/> ServicesCreatorCallback
 	/// method.
 	/// Initializes and configures a service of the specified type that is used by this
 	/// Package.
@@ -398,7 +396,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Implementation of the <see cref="IBAsyncPackage"/> ServicesCreatorCallbackAsync
+	/// Implementation of the <see cref="IBsAsyncPackage"/> ServicesCreatorCallbackAsync
 	/// method.
 	/// Initializes and configures a service of the specified type that is used by this
 	/// Package.
@@ -439,11 +437,10 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 
 
-	protected abstract IBPackageController CreateController();
+	protected abstract IBsPackageController CreateController();
 
 
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 	protected static void DemandLoadPackage(string packageGuidString, out IVsPackage package, bool checkIfInstalled = false)
 	{
 		package = null;
@@ -478,7 +475,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Starts up extension user options push notifications. Only the final class in
-	/// the <see cref="IBAsyncPackage"/> class hierarchy should implement the method.
+	/// the <see cref="IBsAsyncPackage"/> class hierarchy should implement the method.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected abstract void PropagateSettings();

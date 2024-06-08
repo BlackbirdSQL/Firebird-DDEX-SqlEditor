@@ -23,7 +23,6 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-using BlackbirdSql.Common;
 using FirebirdSql.Data.FirebirdClient;
 
 namespace EntityFramework.Firebird.SqlGen;
@@ -59,226 +58,162 @@ internal class ExpressionTranslator : DbExpressionVisitor
 
 	public override void Visit(DbApplyExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"ApplyExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"ApplyExpression\") is not supported.");
 	}
 
 	public override void Visit(DbArithmeticExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"ArithmeticExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"ArithmeticExpression\") is not supported.");
 	}
 
 	public override void Visit(DbCaseExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"CaseExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"CaseExpression\") is not supported.");
 	}
 
 	public override void Visit(DbCastExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"CastExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"CastExpression\") is not supported.");
 	}
 
 	public override void Visit(DbCrossJoinExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"CrossJoinExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"CrossJoinExpression\") is not supported.");
 	}
 
 	public override void Visit(DbDerefExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"DerefExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"DerefExpression\") is not supported.");
 	}
 
 	public override void Visit(DbDistinctExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"DistinctExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"DistinctExpression\") is not supported.");
 	}
 
 	public override void Visit(DbElementExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"ElementExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"ElementExpression\") is not supported.");
 	}
 
 	public override void Visit(DbEntityRefExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"EntityRefExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"EntityRefExpression\") is not supported.");
 	}
 
 	public override void Visit(DbExceptExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"ExceptExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"ExceptExpression\") is not supported.");
 	}
 
 	public override void Visit(DbExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"Expression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"Expression\") is not supported.");
 	}
 
 	public override void Visit(DbFilterExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"FilterExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"FilterExpression\") is not supported.");
 	}
 
 	public override void Visit(DbFunctionExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"FunctionExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"FunctionExpression\") is not supported.");
 	}
 
 	public override void Visit(DbGroupByExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"GroupByExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"GroupByExpression\") is not supported.");
 	}
 
 	public override void Visit(DbIntersectExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"IntersectExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"IntersectExpression\") is not supported.");
 	}
 
 	public override void Visit(DbIsEmptyExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"IsEmptyExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"IsEmptyExpression\") is not supported.");
 	}
 
 	public override void Visit(DbIsOfExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"IsOfExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"IsOfExpression\") is not supported.");
 	}
 
 	public override void Visit(DbJoinExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"JoinExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"JoinExpression\") is not supported.");
 	}
 
 	public override void Visit(DbLikeExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"LikeExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"LikeExpression\") is not supported.");
 	}
 
 	public override void Visit(DbLimitExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"LimitExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"LimitExpression\") is not supported.");
 	}
 
 	public override void Visit(DbOfTypeExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"OfTypeExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"OfTypeExpression\") is not supported.");
 	}
 
 	public override void Visit(DbParameterReferenceExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"ParameterReferenceExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"ParameterReferenceExpression\") is not supported.");
 	}
 
 	public override void Visit(DbProjectExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"ProjectExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"ProjectExpression\") is not supported.");
 	}
 
 	public override void Visit(DbQuantifierExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"QuantifierExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"QuantifierExpression\") is not supported.");
 	}
 
 	public override void Visit(DbRefExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"RefExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"RefExpression\") is not supported.");
 	}
 
 	public override void Visit(DbRefKeyExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"RefKeyExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"RefKeyExpression\") is not supported.");
 	}
 
 	public override void Visit(DbRelationshipNavigationExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"RelationshipNavigationExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"RelationshipNavigationExpression\") is not supported.");
 	}
 
 	public override void Visit(DbSkipExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"SkipExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"SkipExpression\") is not supported.");
 	}
 
 	public override void Visit(DbSortExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"SortExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"SortExpression\") is not supported.");
 	}
 
 	public override void Visit(DbTreatExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"TreatExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"TreatExpression\") is not supported.");
 	}
 
 	public override void Visit(DbUnionAllExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"UnionAllExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"UnionAllExpression\") is not supported.");
 	}
 
 	public override void Visit(DbVariableReferenceExpression expression)
 	{
-		NotSupportedException exbb = new("Visit(\"VariableReferenceExpression\") is not supported.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Visit(\"VariableReferenceExpression\") is not supported.");
 	}
 
 	#endregion

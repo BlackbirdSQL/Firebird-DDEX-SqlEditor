@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using BlackbirdSql.LanguageExtension.Model.Interfaces;
+using BlackbirdSql.LanguageExtension.Interfaces;
 using BlackbirdSql.LanguageExtension.Properties;
 using BlackbirdSql.LanguageExtension.Services;
 using Microsoft.SqlServer.Management.SqlParser.Intellisense;
@@ -26,7 +26,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 	private static readonly char[] _SLikelyDelimiters = [' ', '\t', '.', '\r'];
 
 	public LsbDeclarations()
-		: this(new List<Declaration>(), null)
+		: this([], null)
 	{
 	}
 

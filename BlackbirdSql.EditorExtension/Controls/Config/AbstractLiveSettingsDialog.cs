@@ -2,10 +2,10 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ToolsOptions.CurrentWndOptions
 using System.ComponentModel;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Ctl.Config;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Controls.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension.Properties;
+using BlackbirdSql.Shared;
+using BlackbirdSql.Shared.Ctl.Config;
 
 
 

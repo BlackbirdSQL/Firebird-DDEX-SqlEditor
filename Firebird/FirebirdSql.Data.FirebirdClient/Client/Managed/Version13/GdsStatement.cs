@@ -20,7 +20,6 @@ using System.Collections;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed.Version13;
@@ -82,7 +81,6 @@ internal class GdsStatement : Version12.GdsStatement
 			}
 			catch (IOException ex)
 			{
-				Diag.Dug(ex);
 				throw IscException.ForIOException(ex);
 			}
 		}
@@ -128,7 +126,6 @@ internal class GdsStatement : Version12.GdsStatement
 			}
 			catch (IOException ex)
 			{
-				Diag.Dug(ex);
 				throw IscException.ForIOException(ex);
 			}
 		}
@@ -159,7 +156,6 @@ internal class GdsStatement : Version12.GdsStatement
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 		return row;
@@ -189,7 +185,6 @@ internal class GdsStatement : Version12.GdsStatement
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 		return row;

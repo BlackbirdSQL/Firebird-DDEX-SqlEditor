@@ -6,9 +6,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
@@ -17,7 +18,9 @@ using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 /// <summary>
 /// Replacement for <see cref="AdoDotNetConnectionProperties"/> implementation of the
@@ -131,7 +134,16 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 			if (_ConnectionSource != EnConnectionSource.Undefined)
 				return _ConnectionSource;
 
-			_ConnectionSource = RctManager.GetConnectionSource();
+			try
+			{
+				_ConnectionSource = RctManager.GetConnectionSource();
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
 
 			return _ConnectionSource;
 		}
@@ -144,7 +156,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 		{
 			if (_ConnectionStringBuilder == null)
 			{
-				throw new InvalidOperationException();
+				Diag.ThrowException(new InvalidOperationException("ConnectionStringBuilder is null."));
 			}
 
 			return _ConnectionStringBuilder;
@@ -165,7 +177,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	public virtual void Reset()
 	{
 		lock (_LockObject)
-			ConnectionStringBuilder.Clear();
+			ConnectionStringBuilder?.Clear();
 
 		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
 	}
@@ -179,41 +191,49 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	public virtual void Parse(string connectionString)
 	{
-		lock (_LockObject)
+		try
 		{
-			ConnectionStringBuilder.ConnectionString = connectionString;
-
-			if (ConnectionSource == EnConnectionSource.Application
-				|| ConnectionSource == EnConnectionSource.EntityDataModel)
+			lock (_LockObject)
 			{
-				foreach (Describer describer in Csb.AdvancedKeys)
+				ConnectionStringBuilder.ConnectionString = connectionString;
+
+				if (ConnectionSource == EnConnectionSource.Application
+					|| ConnectionSource == EnConnectionSource.EntityDataModel)
 				{
-					if (!describer.IsConnectionParameter)
-						ConnectionStringBuilder.Remove(describer.Key);
+					foreach (Describer describer in Csb.AdvancedKeys)
+					{
+						if (!describer.IsConnectionParameter)
+							ConnectionStringBuilder.Remove(describer.Key);
+					}
+
+					// Connection dialogs spawned from a UIHierarchyMarshaler can misbehave and
+					// corrupt our connection nodes, which we repair. So the
+					// IVsDataConnectionProperties implementation of this class is identified
+					// with an "edmx" property.
+					// The descendant IVsDataConnectionUIProperties implementation will be
+					// identified with an "edmu" property.
+					if (ConnectionSource == EnConnectionSource.EntityDataModel)
+					{
+						ConnectionStringBuilder[SysConstants.C_KeyExEdmx] = true;
+						ConnectionStringBuilder.Remove(SysConstants.C_KeyExEdmu);
+					}
 				}
 
-				// Connection dialogs spawned from a UIHierarchyMarshaler can misbehave and
-				// corrupt our connection nodes, which we repair. So the
-				// IVsDataConnectionProperties implementation of this class is identified
-				// with an "edmx" property.
-				// The descendant IVsDataConnectionUIProperties implementation will be
-				// identified with an "edmu" property.
-				if (ConnectionSource == EnConnectionSource.EntityDataModel)
-				{
-					ConnectionStringBuilder["edmx"] = true;
-					ConnectionStringBuilder.Remove("edmu");
-				}
+				// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}, connectionString: {1}", ConnectionSource, ConnectionStringBuilder.ConnectionString);
 			}
 
-			// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}, connectionString: {1}", ConnectionSource, ConnectionStringBuilder.ConnectionString);
+			OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
 		}
-
-		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 	}
 
 	public virtual string[] GetSynonyms(string key)
 	{
-		return new string[0];
+		return [];
 	}
 
 	public virtual bool IsSensitive(string key)
@@ -283,7 +303,15 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	public virtual bool TryGetValue(string key, out object value)
 	{
-		return ConnectionStringBuilder.TryGetValue(key, out value);
+		try
+		{
+			return ConnectionStringBuilder.TryGetValue(key, out value);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 	}
 
 
@@ -320,7 +348,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 		PropertyDescriptorCollection properties =
 			TypeDescriptor.GetProperties(ConnectionStringBuilder, [PasswordPropertyTextAttribute.Yes]);
 
-		IList<KeyValuePair<string, object>> list = new List<KeyValuePair<string, object>>();
+		IList<KeyValuePair<string, object>> list = [];
 
 		foreach (PropertyDescriptor item in properties)
 		{
@@ -355,7 +383,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 		PropertyDescriptorCollection properties = TypeDescriptor
 			.GetProperties(ConnectionStringBuilder, [PasswordPropertyTextAttribute.Yes]);
 
-		IList<KeyValuePair<string, object>> list = new List<KeyValuePair<string, object>>();
+		IList<KeyValuePair<string, object>> list = [];
 
 		foreach (PropertyDescriptor item in properties)
 		{
@@ -487,7 +515,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	void ICollection<KeyValuePair<string, object>>.Clear()
 	{
-		throw new NotSupportedException();
+		Diag.ThrowException(new NotSupportedException());
 	}
 
 	IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()

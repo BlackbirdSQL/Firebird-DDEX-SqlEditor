@@ -31,7 +31,6 @@ using EntityFramework.Firebird.SqlGen;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
 using FirebirdSql.Data.Services;
-using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird;
 
@@ -42,7 +41,6 @@ public class FbProviderServices : DbProviderServices
 
 	public FbProviderServices()
 	{
-		// Diag.Trace();
 		AddDependencyResolver(new SingletonDependencyResolver<IDbConnectionFactory>(new FbConnectionFactory()));
 		AddDependencyResolver(new SingletonDependencyResolver<Func<MigrationSqlGenerator>>(() => new FbMigrationSqlGenerator(), ProviderInvariantName));
 		DbInterception.Add(new FbMigrationsTransactionsInterceptor());
@@ -50,7 +48,6 @@ public class FbProviderServices : DbProviderServices
 
 	protected override DbCommandDefinition CreateDbCommandDefinition(DbProviderManifest manifest, DbCommandTree commandTree)
 	{
-		// Diag.Trace();
 		var prototype = CreateCommand(manifest, commandTree);
 		var result = CreateCommandDefinition(prototype);
 		return result;
@@ -58,7 +55,6 @@ public class FbProviderServices : DbProviderServices
 
 	private DbCommand CreateCommand(DbProviderManifest manifest, DbCommandTree commandTree)
 	{
-		// Diag.Trace();
 		if (manifest == null)
 			throw new ArgumentNullException("manifest");
 
@@ -106,9 +102,7 @@ public class FbProviderServices : DbProviderServices
 				!(commandTree is DbUpdateCommandTree) &&
 				!(commandTree is DbDeleteCommandTree))
 			{
-				InvalidOperationException exbb = new("SqlGenParametersNotPermitted");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new InvalidOperationException("SqlGenParametersNotPermitted");
 			}
 
 			foreach (var parameter in parameters)
@@ -138,27 +132,21 @@ public class FbProviderServices : DbProviderServices
 		}
 		catch (Exception ex)
 		{
-			InvalidOperationException exbb = new("Could not retrieve storage version.", ex);
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Could not retrieve storage version.", ex);
 		}
 	}
 
 	protected override DbProviderManifest GetDbProviderManifest(string versionHint)
 	{
-		// Diag.Trace();
 		if (string.IsNullOrEmpty(versionHint))
 		{
-			ArgumentException exbb = new("Could not determine store version; a valid store connection or a version hint is required.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new ArgumentException("Could not determine store version; a valid store connection or a version hint is required.");
 		}
 		return new FbProviderManifest(versionHint);
 	}
 
 	internal static FbParameter CreateSqlParameter(string name, TypeUsage type, ParameterMode mode, object value)
 	{
-		// Diag.Trace();
 		var result = new FbParameter(name, value);
 
 		var direction = MetadataHelpers.ParameterModeToParameterDirection(mode);
@@ -195,7 +183,6 @@ public class FbProviderServices : DbProviderServices
 
 	private static FbDbType GetSqlDbType(TypeUsage type, bool isOutParam, out int? size)
 	{
-		// Diag.Trace();
 		// only supported for primitive type
 		var primitiveTypeKind = MetadataHelpers.GetPrimitiveTypeKind(type);
 
@@ -250,7 +237,6 @@ public class FbProviderServices : DbProviderServices
 
 	private static int? GetParameterSize(TypeUsage type, bool isOutParam)
 	{
-		// Diag.Trace();
 		if (MetadataHelpers.TryGetMaxLength(type, out var maxLength))
 		{
 			// if the MaxLength facet has a specific value use it
@@ -271,7 +257,6 @@ public class FbProviderServices : DbProviderServices
 
 	private static FbDbType GetStringDbType(TypeUsage type)
 	{
-		// Diag.Trace();
 		Debug.Assert(type.EdmType.BuiltInTypeKind == BuiltInTypeKind.PrimitiveType && PrimitiveTypeKind.String == ((PrimitiveType)type.EdmType).PrimitiveTypeKind, "only valid for string type");
 
 		FbDbType dbType;
@@ -312,7 +297,6 @@ public class FbProviderServices : DbProviderServices
 
 	private static FbDbType GetBinaryDbType(TypeUsage type)
 	{
-		// Diag.Trace();
 		Debug.Assert(type.EdmType.BuiltInTypeKind == BuiltInTypeKind.PrimitiveType &&
 			PrimitiveTypeKind.Binary == ((PrimitiveType)type.EdmType).PrimitiveTypeKind, "only valid for binary type");
 
@@ -328,7 +312,6 @@ public class FbProviderServices : DbProviderServices
 
 	private static Type[] PrepareTypeCoercions(DbCommandTree commandTree)
 	{
-		// Diag.Trace();
 		if (commandTree is DbQueryCommandTree queryTree)
 		{
 			if (queryTree.Query is DbProjectExpression projectExpression)
@@ -377,7 +360,6 @@ public class FbProviderServices : DbProviderServices
 
 	private static Type MakeTypeCoercion(Type type, TypeUsage typeUsage)
 	{
-		// Diag.Trace();
 		if (type.IsValueType && MetadataHelpers.IsNullable(typeUsage))
 			return typeof(Nullable<>).MakeGenericType(type);
 		return type;
@@ -388,7 +370,6 @@ public class FbProviderServices : DbProviderServices
 			StoreItemCollection storeItemCollection)
 #pragma warning restore 3001
 	{
-		// Diag.Trace();
 		FbConnection.CreateDatabase(connection.ConnectionString, pageSize: 16384);
 		var script = DbCreateDatabaseScript(GetDbProviderManifestToken(connection), storeItemCollection);
 		var fbScript = new FbScript(script);
@@ -409,7 +390,6 @@ public class FbProviderServices : DbProviderServices
 			StoreItemCollection storeItemCollection)
 #pragma warning restore 3001
 	{
-		// Diag.Trace();
 		return SsdlToFb.Transform(storeItemCollection, providerManifestToken);
 	}
 
@@ -418,7 +398,6 @@ public class FbProviderServices : DbProviderServices
 			StoreItemCollection storeItemCollection)
 #pragma warning restore 3001
 	{
-		// Diag.Trace();
 		if (connection.State == ConnectionState.Open
 			   || connection.State == ConnectionState.Executing
 			   || connection.State == ConnectionState.Fetching)
@@ -452,7 +431,6 @@ public class FbProviderServices : DbProviderServices
 			StoreItemCollection storeItemCollection)
 #pragma warning restore 3001
 	{
-		// Diag.Trace();
 		FbConnection.DropDatabase(connection.ConnectionString);
 	}
 }

@@ -45,7 +45,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 	{
 		SetSite(site);
 
-		_Package = (Package)site;
+		// _Package = (Package)site;
 		_DisplayInfoProvider = new MetadataDisplayInfoProvider();
 		_NoOpAuthoringScope = new LsbNoOpAuthoringScope(_DisplayInfoProvider);
 	}
@@ -65,12 +65,12 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 	{
 		private static Guid _ClsidSqlLanguageServiceCommands = new(VS.SqlEditorCommandsGuid);
 
-		private readonly AbstractLanguageService _SqlLanguageService;
+		// private readonly AbstractLanguageService _SqlLanguageService;
 
 		public CustomViewFilter(AbstractLanguageService service, CodeWindowManager mgr, IVsTextView view)
 			: base(mgr, view)
 		{
-			_SqlLanguageService = service;
+			// _SqlLanguageService = service;
 		}
 
 		protected override int QueryCommandStatus(ref Guid guidCmdGroup, uint nCmdId)
@@ -203,7 +203,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 	// =========================================================================================================
 
 
-	private readonly Package _Package;
+	// private readonly Package _Package;
 	private LsbLanguagePreferences _Prefs = null;
 	private readonly MetadataDisplayInfoProvider _DisplayInfoProvider;
 	private readonly LsbNoOpAuthoringScope _NoOpAuthoringScope;

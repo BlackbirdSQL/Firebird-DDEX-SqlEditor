@@ -5,9 +5,10 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 

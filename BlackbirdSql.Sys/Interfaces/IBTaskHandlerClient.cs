@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TaskStatusCenter;
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 // =========================================================================================================
 //										IBTaskHandlerClient Interface

@@ -3,8 +3,8 @@
 
 using System;
 using BlackbirdSql.LanguageExtension.Properties;
-using BlackbirdSql.Sys;
-
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 
@@ -20,7 +20,7 @@ namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 /// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
-public abstract class PersistentSettings : Common.Ctl.Config.PersistentSettings
+public abstract class PersistentSettings : Shared.Ctl.Config.PersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
@@ -114,7 +114,6 @@ public abstract class PersistentSettings : Common.Ctl.Config.PersistentSettings
 		{
 			if (e.Group == null || e.Group == "Advanced")
 			{
-				// TODO: Temp removal while testing.
 				e.AddRange(AdvancedPreferencesModel.Instance);
 				result = true;
 			}

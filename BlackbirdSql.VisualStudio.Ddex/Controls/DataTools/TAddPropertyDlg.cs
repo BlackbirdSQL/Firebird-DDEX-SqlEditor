@@ -4,8 +4,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using BlackbirdSql.VisualStudio.Ddex.Controls.Enums;
-using BlackbirdSql.VisualStudio.Ddex.Controls.Events;
+using BlackbirdSql.VisualStudio.Ddex.Enums;
+using BlackbirdSql.VisualStudio.Ddex.Events;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;

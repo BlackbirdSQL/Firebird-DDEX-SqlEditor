@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
 	  <Nullable>disable</Nullable>
@@ -11,7 +11,14 @@
 	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	  <SignAssembly>True</SignAssembly>
 	  <AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Controller.snk</AssemblyOriginatorKeyFile>
-	  <ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+    <NoWarn>1701;1702</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,14 +39,17 @@
 	  </EmbeddedResource>
   </ItemGroup>
 
+
   <ItemGroup>
-    <Content Include="blackbirdsql.ico" />
+    <ProjectReference Include="..\BlackbirdSql.EditorExtension\BlackbirdSql.EditorExtension.csproj">
+      <Private>False</Private>
+      <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
   </ItemGroup>
 
 
   <ItemGroup>
-    <ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
-    <ProjectReference Include="..\BlackbirdSql.EditorExtension\BlackbirdSql.EditorExtension.csproj" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

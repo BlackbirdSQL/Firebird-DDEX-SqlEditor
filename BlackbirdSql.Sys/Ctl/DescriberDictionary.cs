@@ -2,22 +2,82 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
+using BlackbirdSql.Sys.Extensions;
+using BlackbirdSql.Sys.Interfaces;
 
 
-namespace BlackbirdSql.Sys;
 
+namespace BlackbirdSql.Sys.Ctl;
+
+
+// =========================================================================================================
+//
+//											DescriberDictionary Class
+//
+/// <summary>
+/// Extended dictionary class for managing <see cref="DbConnectionStringBuilder"/> property descriptors and
+/// additional information accessible in a <see cref="Describer"/>.
+/// </summary>
+// =========================================================================================================
 public class DescriberDictionary : PublicDictionary<string, Describer>
 {
 
 	private IDictionary<string, Describer> _Synonyms;
 
 
+	/// <summary>
+	/// Returns an enumerable of all connection describers of parameters that appear in the 'Advanced'
+	/// dialog of a connection dialog.
+	/// See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public IEnumerable<Describer> AdvancedKeys => new EnumerableAdvanced(this);
+
+	/// <summary>
+	/// Returns an enumerable of all connection describers that are valid connection parameters
+	/// for the underlying native database engine.
+	/// See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public IEnumerable<Describer> ConnectionKeys => new EnumerableConnection(this);
+
+	/// <summary>
+	/// Returns an enumerable of all connection key describers in the <see cref="DescriberDictionary"/>.
+	/// A <see cref="Describer"/> is a detailed class equivalent of a descriptor. The database engine's
+	/// <see cref="DescriberDictionary"/> is defined in the native database
+	/// <see cref="IBsNativeDatabaseEngine"/> service.
+	/// </summary>
 	public IEnumerable<Describer> DescriberKeys => new EnumerableDescribers(this);
+
+	/// <summary>
+	/// Returns a <see cref="Describer"/> enumerable of all equivalency connection parameters as defined in the User
+	/// Options. Equivalency parameters are connection parameters that could produce differing
+	/// result sets. See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public IEnumerable<Describer> EquivalencyKeys => new EnumerableEquivalencyDescribers(this);
+
+	/// <summary>
+	/// MandatoryKeys include the minimum set of connection parameters required to establish
+	/// a connection including unsafe (non-public) parameters. eg. Passwords.
+	/// See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public IEnumerable<Describer> MandatoryKeys => new EnumerableMandatory(this);
+
+	/// <summary>
+	/// PublicMandatoryKeys is a subset of <see cref="MandatoryKeys"/> that includes the minimum set
+	/// of connection parameters required to establish a connection excluding unsafe (non-public)
+	/// parameters. eg. Passwords.
+	/// See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public IEnumerable<Describer> PublicMandatoryKeys => new EnumerablePublicMandatory(this);
+
+	/// <summary>
+	/// The weak equivalency keys enumerable is a subset of <see cref="EquivalencyKeys"/> and does
+	/// not include the Application Name equivalency key if it has been included as an equivalency
+	/// key in User options.
+	/// This enumerable is used by the running connection table (Rct) and LinkageParser to identify
+	/// equivalent connections that are differentiated by the application name parameter only, and
+	/// are therefore functionally equivalent.
+	/// </summary>
 	public IEnumerable<Describer> WeakEquivalencyKeys => new EnumerableWeakEquivalencyDescribers(this);
 
 
@@ -267,7 +327,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 	public IList<string> GetSynonyms(string name)
 	{
-		IList<string> list = new List<string>();
+		IList<string> list = [];
 
 		Describer describer = this[name];
 
@@ -433,7 +493,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 		public IEnumerator<Describer> GetEnumerator()
 		{
-			return (IEnumerator<Describer>)new EnumeratorAdvanced(_Owner.Values);
+			return new EnumeratorAdvanced(_Owner.Values);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -453,7 +513,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 		public IEnumerator<Describer> GetEnumerator()
 		{
-			return (IEnumerator<Describer>)new EnumeratorEquivalency(_Owner.Values);
+			return new EnumeratorEquivalency(_Owner.Values);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -470,7 +530,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 		public IEnumerator<Describer> GetEnumerator()
 		{
-			return (IEnumerator<Describer>)new EnumeratorWeakEquivalency(_Owner.Values);
+			return new EnumeratorWeakEquivalency(_Owner.Values);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -490,7 +550,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 		public IEnumerator<Describer> GetEnumerator()
 		{
-			return (IEnumerator<Describer>)new EnumeratorMandatory(_Owner.Values);
+			return new EnumeratorMandatory(_Owner.Values);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -510,7 +570,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 		public IEnumerator<Describer> GetEnumerator()
 		{
-			return (IEnumerator<Describer>)new EnumeratorPublicMandatory(_Owner.Values);
+			return new EnumeratorPublicMandatory(_Owner.Values);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -530,7 +590,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 		public IEnumerator<Describer> GetEnumerator()
 		{
-			return (IEnumerator<Describer>)new EnumeratorConnection(_Owner.Values);
+			return new EnumeratorConnection(_Owner.Values);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -548,7 +608,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 		public IEnumerator<Describer> GetEnumerator()
 		{
-			return (IEnumerator<Describer>)new EnumeratorDescribers(_Owner.Values);
+			return new EnumeratorDescribers(_Owner.Values);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

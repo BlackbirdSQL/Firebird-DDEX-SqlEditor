@@ -19,6 +19,7 @@
 
 using System;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Types;
 
@@ -32,73 +33,73 @@ internal static class DbTypeHelper
 	{
 		switch (type)
 		{
-			case DbIscCodes.blr_varying:
-			case DbIscCodes.blr_varying2:
-				return DbIscCodes.SQL_VARYING;
+			case IscCodes.blr_varying:
+			case IscCodes.blr_varying2:
+				return IscCodes.SQL_VARYING;
 
-			case DbIscCodes.blr_text:
-			case DbIscCodes.blr_text2:
-			case DbIscCodes.blr_cstring:
-			case DbIscCodes.blr_cstring2:
-				return DbIscCodes.SQL_TEXT;
+			case IscCodes.blr_text:
+			case IscCodes.blr_text2:
+			case IscCodes.blr_cstring:
+			case IscCodes.blr_cstring2:
+				return IscCodes.SQL_TEXT;
 
-			case DbIscCodes.blr_short:
-				return DbIscCodes.SQL_SHORT;
+			case IscCodes.blr_short:
+				return IscCodes.SQL_SHORT;
 
-			case DbIscCodes.blr_long:
-				return DbIscCodes.SQL_LONG;
+			case IscCodes.blr_long:
+				return IscCodes.SQL_LONG;
 
-			case DbIscCodes.blr_quad:
-				return DbIscCodes.SQL_QUAD;
+			case IscCodes.blr_quad:
+				return IscCodes.SQL_QUAD;
 
-			case DbIscCodes.blr_int64:
-			case DbIscCodes.blr_blob_id:
-				return DbIscCodes.SQL_INT64;
+			case IscCodes.blr_int64:
+			case IscCodes.blr_blob_id:
+				return IscCodes.SQL_INT64;
 
-			case DbIscCodes.blr_double:
-				return DbIscCodes.SQL_DOUBLE;
+			case IscCodes.blr_double:
+				return IscCodes.SQL_DOUBLE;
 
-			case DbIscCodes.blr_d_float:
-				return DbIscCodes.SQL_D_FLOAT;
+			case IscCodes.blr_d_float:
+				return IscCodes.SQL_D_FLOAT;
 
-			case DbIscCodes.blr_float:
-				return DbIscCodes.SQL_FLOAT;
+			case IscCodes.blr_float:
+				return IscCodes.SQL_FLOAT;
 
-			case DbIscCodes.blr_sql_date:
-				return DbIscCodes.SQL_TYPE_DATE;
+			case IscCodes.blr_sql_date:
+				return IscCodes.SQL_TYPE_DATE;
 
-			case DbIscCodes.blr_sql_time:
-				return DbIscCodes.SQL_TYPE_TIME;
+			case IscCodes.blr_sql_time:
+				return IscCodes.SQL_TYPE_TIME;
 
-			case DbIscCodes.blr_timestamp:
-				return DbIscCodes.SQL_TIMESTAMP;
+			case IscCodes.blr_timestamp:
+				return IscCodes.SQL_TIMESTAMP;
 
-			case DbIscCodes.blr_blob:
-				return DbIscCodes.SQL_BLOB;
+			case IscCodes.blr_blob:
+				return IscCodes.SQL_BLOB;
 
-			case DbIscCodes.blr_bool:
-				return DbIscCodes.SQL_BOOLEAN;
+			case IscCodes.blr_bool:
+				return IscCodes.SQL_BOOLEAN;
 
-			case DbIscCodes.blr_ex_timestamp_tz:
-				return DbIscCodes.SQL_TIMESTAMP_TZ_EX;
+			case IscCodes.blr_ex_timestamp_tz:
+				return IscCodes.SQL_TIMESTAMP_TZ_EX;
 
-			case DbIscCodes.blr_timestamp_tz:
-				return DbIscCodes.SQL_TIMESTAMP_TZ;
+			case IscCodes.blr_timestamp_tz:
+				return IscCodes.SQL_TIMESTAMP_TZ;
 
-			case DbIscCodes.blr_sql_time_tz:
-				return DbIscCodes.SQL_TIME_TZ;
+			case IscCodes.blr_sql_time_tz:
+				return IscCodes.SQL_TIME_TZ;
 
-			case DbIscCodes.blr_ex_time_tz:
-				return DbIscCodes.SQL_TIME_TZ_EX;
+			case IscCodes.blr_ex_time_tz:
+				return IscCodes.SQL_TIME_TZ_EX;
 
-			case DbIscCodes.blr_dec64:
-				return DbIscCodes.SQL_DEC16;
+			case IscCodes.blr_dec64:
+				return IscCodes.SQL_DEC16;
 
-			case DbIscCodes.blr_dec128:
-				return DbIscCodes.SQL_DEC34;
+			case IscCodes.blr_dec128:
+				return IscCodes.SQL_DEC34;
 
-			case DbIscCodes.blr_int128:
-				return DbIscCodes.SQL_INT128;
+			case IscCodes.blr_int128:
+				return IscCodes.SQL_INT128;
 
 			default:
 				throw InvalidDataType(type);
@@ -355,20 +356,20 @@ internal static class DbTypeHelper
 	public static EnDbDataType GetDbDataTypeFromSqlType(int type, int subType, int scale, int? length = null, Charset charset = null)
 	{
 		// Special case for Guid handling
-		if ((type == DbIscCodes.SQL_TEXT || type == DbIscCodes.SQL_VARYING) && length == 16 && (charset?.IsOctetsCharset ?? false))
+		if ((type == IscCodes.SQL_TEXT || type == IscCodes.SQL_VARYING) && length == 16 && (charset?.IsOctetsCharset ?? false))
 		{
 			return EnDbDataType.Guid;
 		}
 
 		switch (type)
 		{
-			case DbIscCodes.SQL_TEXT:
+			case IscCodes.SQL_TEXT:
 				return EnDbDataType.Char;
 
-			case DbIscCodes.SQL_VARYING:
+			case IscCodes.SQL_VARYING:
 				return EnDbDataType.VarChar;
 
-			case DbIscCodes.SQL_SHORT:
+			case IscCodes.SQL_SHORT:
 				if (subType == 2)
 				{
 					return EnDbDataType.Decimal;
@@ -386,7 +387,7 @@ internal static class DbTypeHelper
 					return EnDbDataType.SmallInt;
 				}
 
-			case DbIscCodes.SQL_LONG:
+			case IscCodes.SQL_LONG:
 				if (subType == 2)
 				{
 					return EnDbDataType.Decimal;
@@ -404,8 +405,8 @@ internal static class DbTypeHelper
 					return EnDbDataType.Integer;
 				}
 
-			case DbIscCodes.SQL_QUAD:
-			case DbIscCodes.SQL_INT64:
+			case IscCodes.SQL_QUAD:
+			case IscCodes.SQL_INT64:
 				if (subType == 2)
 				{
 					return EnDbDataType.Decimal;
@@ -423,11 +424,11 @@ internal static class DbTypeHelper
 					return EnDbDataType.BigInt;
 				}
 
-			case DbIscCodes.SQL_FLOAT:
+			case IscCodes.SQL_FLOAT:
 				return EnDbDataType.Float;
 
-			case DbIscCodes.SQL_DOUBLE:
-			case DbIscCodes.SQL_D_FLOAT:
+			case IscCodes.SQL_DOUBLE:
+			case IscCodes.SQL_D_FLOAT:
 				if (subType == 2)
 				{
 					return EnDbDataType.Decimal;
@@ -445,7 +446,7 @@ internal static class DbTypeHelper
 					return EnDbDataType.Double;
 				}
 
-			case DbIscCodes.SQL_BLOB:
+			case IscCodes.SQL_BLOB:
 				if (subType == 1)
 				{
 					return EnDbDataType.Text;
@@ -455,43 +456,43 @@ internal static class DbTypeHelper
 					return EnDbDataType.Binary;
 				}
 
-			case DbIscCodes.SQL_TIMESTAMP:
+			case IscCodes.SQL_TIMESTAMP:
 				return EnDbDataType.TimeStamp;
 
-			case DbIscCodes.SQL_TYPE_TIME:
+			case IscCodes.SQL_TYPE_TIME:
 				return EnDbDataType.Time;
 
-			case DbIscCodes.SQL_TYPE_DATE:
+			case IscCodes.SQL_TYPE_DATE:
 				return EnDbDataType.Date;
 
-			case DbIscCodes.SQL_ARRAY:
+			case IscCodes.SQL_ARRAY:
 				return EnDbDataType.Array;
 
-			case DbIscCodes.SQL_NULL:
+			case IscCodes.SQL_NULL:
 				return EnDbDataType.Null;
 
-			case DbIscCodes.SQL_BOOLEAN:
+			case IscCodes.SQL_BOOLEAN:
 				return EnDbDataType.Boolean;
 
-			case DbIscCodes.SQL_TIMESTAMP_TZ:
+			case IscCodes.SQL_TIMESTAMP_TZ:
 				return EnDbDataType.TimeStampTZ;
 
-			case DbIscCodes.SQL_TIMESTAMP_TZ_EX:
+			case IscCodes.SQL_TIMESTAMP_TZ_EX:
 				return EnDbDataType.TimeStampTZEx;
 
-			case DbIscCodes.SQL_TIME_TZ:
+			case IscCodes.SQL_TIME_TZ:
 				return EnDbDataType.TimeTZ;
 
-			case DbIscCodes.SQL_TIME_TZ_EX:
+			case IscCodes.SQL_TIME_TZ_EX:
 				return EnDbDataType.TimeTZEx;
 
-			case DbIscCodes.SQL_DEC16:
+			case IscCodes.SQL_DEC16:
 				return EnDbDataType.Dec16;
 
-			case DbIscCodes.SQL_DEC34:
+			case IscCodes.SQL_DEC34:
 				return EnDbDataType.Dec34;
 
-			case DbIscCodes.SQL_INT128:
+			case IscCodes.SQL_INT128:
 				if (subType == 2)
 				{
 					return EnDbDataType.Decimal;

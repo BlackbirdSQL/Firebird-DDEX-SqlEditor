@@ -5,14 +5,13 @@
 using System;
 using System.Data;
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 public interface IBQueryManager : IDisposable
 {
 	IDbConnection Connection { get; }
 
 	long ExecutionTimeout { get; }
-	bool IsAsync { get; }
 	bool IsWithActualPlan { get; }
 	bool IsWithClientStats { get; }
 	DateTime? QueryExecutionStartTime { get; set; }
@@ -28,4 +27,6 @@ public interface IBQueryManager : IDisposable
 	void CommitTransaction();
 
 	void RollbackTransaction();
+
+	void DisposeTransaction(bool force);
 }

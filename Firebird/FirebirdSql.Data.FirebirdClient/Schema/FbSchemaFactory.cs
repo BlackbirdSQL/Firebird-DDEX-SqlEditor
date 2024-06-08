@@ -23,7 +23,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -70,23 +69,17 @@ internal sealed class FbSchemaFactory
 
 		if (collection.Length != 1)
 		{
-			NotSupportedException exbb = new("Unsupported collection name.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new NotSupportedException("Unsupported collection name.");
 		}
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
-			InvalidOperationException exbb = new("The number of specified restrictions is not valid.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("The number of specified restrictions is not valid.");
 		}
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			InvalidOperationException exbb = new("Incorrect restriction definition.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Incorrect restriction definition.");
 		}
 
 		switch (collection[0]["PopulationMechanism"].ToString())
@@ -95,11 +88,9 @@ internal sealed class FbSchemaFactory
 				return PrepareCollection(connection, collectionName, restrictions);
 
 			case "DataTable":
-				// Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 				return ds.Tables[collection[0]["PopulationString"].ToString()].Copy();
 
 			case "SQLCommand":
-				// Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 				return SqlCommandSchema(connection, collectionName, restrictions);
 
 			default:
@@ -130,23 +121,17 @@ internal sealed class FbSchemaFactory
 
 		if (collection.Length != 1)
 		{
-			NotSupportedException exbb = new("Unsupported collection name.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new NotSupportedException("Unsupported collection name.");
 		}
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
-			InvalidOperationException exbb = new("The number of specified restrictions is not valid.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("The number of specified restrictions is not valid.");
 		}
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			InvalidOperationException exbb = new("Incorrect restriction definition.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Incorrect restriction definition.");
 		}
 
 		switch (collection[0]["PopulationMechanism"].ToString())
@@ -155,11 +140,9 @@ internal sealed class FbSchemaFactory
 				return PrepareCollectionAsync(connection, collectionName, restrictions, cancellationToken);
 
 			case "DataTable":
-				// Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 				return Task.FromResult(ds.Tables[collection[0]["PopulationString"].ToString()].Copy());
 
 			case "SQLCommand":
-				// Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 				return SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 
 			default:
@@ -173,7 +156,6 @@ internal sealed class FbSchemaFactory
 
 	private static DataTable PrepareCollection(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		// Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 		FbSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"CHARACTERSETS" => new FbCharacterSets(),
@@ -204,18 +186,12 @@ internal sealed class FbSchemaFactory
 			"VIEWCOLUMNS" => new FbViewColumns(),
 			"VIEWS" => new FbViews(),
 			"VIEWPRIVILEGES" => new FbViewPrivileges(),
-			_ => ((Func<FbSchema>)(() =>
-				{
-					NotSupportedException exbb = new("The specified metadata collection is not supported.");
-					Diag.Dug(exbb);
-					throw exbb;
-				}))(),
+			_ => throw new NotSupportedException("The specified metadata collection is not supported."),
 		};
 		return returnSchema.GetSchema(connection, collectionName, restrictions);
 	}
 	private static Task<DataTable> PrepareCollectionAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 		FbSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"CHARACTERSETS" => new FbCharacterSets(),
@@ -246,12 +222,7 @@ internal sealed class FbSchemaFactory
 			"VIEWCOLUMNS" => new FbViewColumns(),
 			"VIEWS" => new FbViews(),
 			"VIEWPRIVILEGES" => new FbViewPrivileges(),
-			_ => ((Func<FbSchema>)(() =>
-				{
-					NotSupportedException exbb = new("The specified metadata collection is not supported.");
-					Diag.Dug(exbb);
-					throw exbb;
-				}))(),
+			_ => throw new NotSupportedException("The specified metadata collection is not supported."),
 		};
 		return returnSchema.GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 	}

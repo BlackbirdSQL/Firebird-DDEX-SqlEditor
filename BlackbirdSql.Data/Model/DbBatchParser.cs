@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
-using BlackbirdSql.Sys;
+using System.Threading.Tasks;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Interfaces;
+using BlackbirdSql.Sys.Model;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
+using Microsoft.VisualStudio.Threading;
 
 
 
@@ -23,7 +27,6 @@ public class DbBatchParser : IBsNativeDbBatchParser
 		_ExecutionType = executionType;
 		_QryMgr = qryMgr;
 		_Script = script;
-		_IsAsync = qryMgr.IsAsync;
 	}
 
 
@@ -54,13 +57,11 @@ public class DbBatchParser : IBsNativeDbBatchParser
 
 	private readonly IBQueryManager _QryMgr = null;
 
-	private bool _Cancelled = false;
-	private readonly bool _IsAsync = false;
-	private int _Count;
+	// private bool _Cancelled = false;
+	private int _StatementCount;
 	private int _Current = -1;
 	private int _CurrentActionIndex = 0;
 	private long _TotalRowsSelected = 0;
-	private CancellationTokenSource _AsyncTokenSource = null;
 	private readonly string _Script;
 	private FbScript _ScriptParser;
 	private readonly EnSqlExecutionType _ExecutionType;
@@ -78,6 +79,8 @@ public class DbBatchParser : IBsNativeDbBatchParser
 
 
 
+	
+	public int Current => _Current;
 
 	private static readonly EnSqlStatementAction[][] _ActionArray = [
 		[EnSqlStatementAction.ProcessQuery, EnSqlStatementAction.SpecialActions, EnSqlStatementAction.Completed],
@@ -86,7 +89,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 
 
 
-	public CancellationTokenSource AsyncTokenSource => _AsyncTokenSource ??= new();
+	// public CancellationTokenSource AsyncTokenSource => _AsyncTokenSource ??= new();
 	private DbDataReader ActualPlanReader => _ActualPlanReader ??= new DataTableReader(ActualPlanTable);
 	private DbDataReader EstimatedPlanReader => _EstimatedPlanReader ??= new DataTableReader(EstimatedPlanTable);
 
@@ -103,9 +106,6 @@ public class DbBatchParser : IBsNativeDbBatchParser
 			return _ActualPlanTable;
 		}
 	}
-
-	public bool IsAsync => _IsAsync;
-	public bool Cancelled => _Cancelled;
 
 
 	IDbConnection IBsNativeDbBatchParser.Connection
@@ -155,6 +155,8 @@ public class DbBatchParser : IBsNativeDbBatchParser
 
 	private List<IBsNativeDbStatementWrapper> Statements => _Statements ??= [];
 
+	public int StatementCount => _StatementCount;
+
 	public long TotalRowsSelected => _TotalRowsSelected;
 
 	public IDbTransaction Transaction
@@ -179,7 +181,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 
 		if (_LocalTransaction != null)
 		{
-			if (HasTransactions(_LocalTransaction))
+			if (_LocalTransaction.HasTransactions())
 				_LocalTransaction.Commit();
 
 			_LocalTransaction.Dispose();
@@ -189,11 +191,13 @@ public class DbBatchParser : IBsNativeDbBatchParser
 
 	}
 
+	/*
 	public void Cancel()
 	{
 		AsyncTokenSource.Cancel();
 		_Cancelled = true;
 	}
+	*/
 
 	public bool CloseConnection()
 	{
@@ -205,16 +209,33 @@ public class DbBatchParser : IBsNativeDbBatchParser
 		return true;
 	}
 
-	public void CommitTransaction()
+	public async Task<bool> CommitTransactionAsync(CancellationToken cancelToken)
 	{
 		if (_LocalConnection == null)
 		{
-			_QryMgr?.CommitTransaction();
-			return;
+			FbTransaction transaction = (FbTransaction)_QryMgr.Transaction;
+
+			if (transaction != null && transaction.HasTransactions())
+			{
+				await transaction.CommitAsync(cancelToken);
+				_QryMgr.DisposeTransaction(true);
+
+				return true;
+			}
+
+			return false;
 		}
 
-		if (_LocalTransaction != null && HasTransactions(_LocalTransaction))
-			_LocalTransaction.Commit();
+		if (_LocalTransaction != null && _LocalTransaction.HasTransactions())
+		{
+			await _LocalTransaction.CommitAsync(cancelToken);
+			_LocalTransaction.Dispose();
+			_LocalTransaction = null;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public bool HasTransactions(IDbTransaction @this)
@@ -247,9 +268,33 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	}
 
 
-	public void RollbackTransaction()
+	public async Task<bool> RollbackTransactionAsync(CancellationToken cancelToken)
 	{
-		_QryMgr?.RollbackTransaction();
+		if (_LocalConnection == null)
+		{
+			FbTransaction transaction = (FbTransaction)_QryMgr.Transaction;
+
+			if (transaction != null && transaction.HasTransactions())
+			{
+				await transaction.RollbackAsync(cancelToken);
+				_QryMgr.DisposeTransaction(true);
+
+				return true;
+			}
+
+			return false;
+		}
+
+		if (_LocalTransaction != null && _LocalTransaction.HasTransactions())
+		{
+			await _LocalTransaction.CommitAsync(cancelToken);
+			_LocalTransaction.Dispose();
+			_LocalTransaction = null;
+
+			return true;
+		}
+
+		return false;
 	}
 
 
@@ -257,9 +302,9 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	{
 		_ScriptParser = new(_Script);
 
-		_Count = _ScriptParser.Parse();
+		_StatementCount = _ScriptParser.Parse();
 
-		return _Count;
+		return _StatementCount;
 	}
 
 
@@ -302,21 +347,21 @@ public class DbBatchParser : IBsNativeDbBatchParser
 			}
 
 			_Current++;
-			statement = NativeDbStatementWrapperProxy.CreateInstance(this, null);
+			statement = NativeDbStatementWrapperProxy.CreateInstance(this, null, 0);
 
 			return EnParserAction.Continue;
 		}
 
 
 
-		if (_Current == _Count - 1)
+		if (_Current == _StatementCount - 1)
 		{
 			statement = null;
 			return EnParserAction.Completed;
 		}
 
 		_Current++;
-		statement = NativeDbStatementWrapperProxy.CreateInstance(this, _ScriptParser.Results[_Current]);
+		statement = NativeDbStatementWrapperProxy.CreateInstance(this, _ScriptParser.Results[_Current], _Current);
 
 		Statements.Add(statement);
 

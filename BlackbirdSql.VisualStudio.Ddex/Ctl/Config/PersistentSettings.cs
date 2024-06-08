@@ -2,7 +2,8 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
@@ -31,7 +32,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 
 
 
-	public static bool ValidateConnectionOnFormAccept => (bool)GetSetting("DdexGeneralValidateConnectionOnFormAccept", true);
+	public static bool ValidateSessionConnectionOnFormAccept => (bool)GetSetting("DdexGeneralValidateSessionConnectionOnFormAccept", true);
 
 
 	#endregion Property Accessors

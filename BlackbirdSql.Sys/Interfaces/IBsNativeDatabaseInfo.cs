@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Sys.Model;
 
-
-
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.NativeDatabaseInfoServiceGuid)]
 

@@ -15,24 +15,12 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
-using System;
 using System.Data.Common;
-
-
 
 namespace FirebirdSql.Data.FirebirdClient;
 
-public class FirebirdClientFactory : DbProviderFactory, IServiceProvider
+public class FirebirdClientFactory : DbProviderFactory
 {
-	object IServiceProvider.GetService(Type serviceType)
-	{
-		NotSupportedException ex = new NotSupportedException("Service: " + serviceType.FullName);
-
-		Diag.Dug(ex);
-
-		throw ex;
-	}
-
 	#region Static Properties
 
 	public static readonly FirebirdClientFactory Instance = new FirebirdClientFactory();
@@ -60,37 +48,31 @@ public class FirebirdClientFactory : DbProviderFactory, IServiceProvider
 
 	public override DbCommand CreateCommand()
 	{
-		// Diag.Trace();
 		return new FbCommand();
 	}
 
 	public override DbCommandBuilder CreateCommandBuilder()
 	{
-		// Diag.Trace();
 		return new FbCommandBuilder();
 	}
 
 	public override DbConnection CreateConnection()
 	{
-		// Diag.Trace();
 		return new FbConnection();
 	}
 
 	public override DbConnectionStringBuilder CreateConnectionStringBuilder()
 	{
-		// Diag.Trace();
 		return new FbConnectionStringBuilder();
 	}
 
 	public override DbDataAdapter CreateDataAdapter()
 	{
-		// Diag.Trace();
 		return new FbDataAdapter();
 	}
 
 	public override DbParameter CreateParameter()
 	{
-		// Diag.Trace();
 		return new FbParameter();
 	}
 

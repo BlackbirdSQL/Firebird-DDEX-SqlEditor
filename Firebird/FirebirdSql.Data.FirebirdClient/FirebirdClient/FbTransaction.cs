@@ -20,7 +20,6 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Logging;
 
@@ -105,7 +104,6 @@ public sealed class FbTransaction : DbTransaction
 					}
 					catch (IscException ex)
 					{
-						Diag.Dug(ex);
 						throw FbException.Create(ex);
 					}
 				}
@@ -132,7 +130,6 @@ public sealed class FbTransaction : DbTransaction
 					}
 					catch (IscException ex)
 					{
-						Diag.Dug(ex);
 						throw FbException.Create(ex);
 					}
 				}
@@ -161,7 +158,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -183,7 +179,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -202,7 +197,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -224,7 +218,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -255,7 +248,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -285,7 +277,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -316,7 +307,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -346,7 +336,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -377,7 +366,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -407,7 +395,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -425,7 +412,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -442,7 +428,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -460,7 +445,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -477,7 +461,6 @@ public sealed class FbTransaction : DbTransaction
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 
@@ -591,9 +574,7 @@ public sealed class FbTransaction : DbTransaction
 	{
 		if (_isCompleted)
 		{
-			InvalidOperationException exbb = new("This transaction has completed and it is no longer usable.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("This transaction has completed and it is no longer usable.");
 		}
 	}
 
@@ -644,9 +625,7 @@ public sealed class FbTransaction : DbTransaction
 			}
 			else
 			{
-				ArgumentException exbb = new("Must specify either LockRead or LockWrite.");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new ArgumentException("Must specify either LockRead or LockWrite.");
 			}
 			tpb.Append(lockType, table.Key);
 
@@ -709,9 +688,7 @@ public sealed class FbTransaction : DbTransaction
 	{
 		if (string.IsNullOrWhiteSpace(savePointName))
 		{
-			ArgumentException exbb = new("No transaction name was specified.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new ArgumentException("No transaction name was specified.");
 		}
 	}
 

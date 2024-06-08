@@ -25,15 +25,15 @@ public class SettingsProvider
 	public const string EquivalencySettingsPageName = "Equivalency";
 
 	[ComVisible(true)]
-	[Guid(PackageData.GeneralSettingsGuid)]
+	[Guid(ExtensionData.GeneralSettingsGuid)]
 	public class GeneralSettingsPage : AbstractPersistentSettingsPage<GeneralSettingsPage, GeneralSettingsModel> { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.DebugSettingsGuid)]
+	[Guid(ExtensionData.DebugSettingsGuid)]
 	public class DebugSettingsPage : AbstractPersistentSettingsPage<DebugSettingsPage, DebugSettingsModel> { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.EquivalencySettingsGuid)]
+	[Guid(ExtensionData.EquivalencySettingsGuid)]
 	public class EquivalencySettingsPage : AbstractPersistentSettingsPage<EquivalencySettingsPage, EquivalencySettingsModel> { }
 
 }

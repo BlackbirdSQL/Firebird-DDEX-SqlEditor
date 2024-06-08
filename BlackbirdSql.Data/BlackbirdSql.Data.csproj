@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Nullable>disable</Nullable>
 		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
@@ -10,38 +10,61 @@
 		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Data.snk</AssemblyOriginatorKeyFile>
 		<PlatformTarget>x64</PlatformTarget>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-		<NoWarn>1701;1702;CS0618</NoWarn>
+		<NoWarn>1701;1702</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-		<NoWarn>1701;1702;CS0618</NoWarn>
+		<NoWarn>1701;1702</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="blackbirdsql.ico" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Include="DbConnectionService.cs" />
-	  <Compile Include="DbCommandService.cs" />
-	  <Compile Include="DatabaseInfoService.cs" />
-	  <Compile Include="Ctl\DbNativeStringParser.cs" />
-	  <Compile Include="DatabaseEngineService.cs" />
-	  <Compile Include="DbConstants.cs" />
+	  <Compile Include="Ctl\LinkageParserTaskHandler.cs" />
+	  <Compile Include="Properties\ControlsResources.Designer.cs">
+	    <DependentUpon>ControlsResources.resx</DependentUpon>
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	  </Compile>
+	  <Compile Include="Root\DbConnectionService.cs" />
+	  <Compile Include="Root\DbCommandService.cs" />
+	  <Compile Include="Root\DatabaseInfoService.cs" />
+	  <Compile Include="Ctl\StringParser.cs" />
+	  <Compile Include="Root\DatabaseEngineService.cs" />
+	  <Compile Include="Root\DataConstants.cs" />
+	  <Compile Include="Root\ExtensionMembers.cs" />
 	  <Compile Include="GlobalSuppressions.cs" />
 	  <Compile Include="LibraryData.cs" />
-	  <Compile Include="DbExceptionService.cs" />
+	  <Compile Include="Root\DbExceptionService.cs" />
+	  <Compile Include="Model\AbstractLinkageParser.cs" />
+	  <Compile Include="Model\AbstruseLinkageParser.cs" />
 	  <Compile Include="Model\BinaryEncoding.cs" />
 	  <Compile Include="Model\Charset.cs" />
 	  <Compile Include="Model\DbBatchParser.cs" />
 	  <Compile Include="Model\DbConnectionWrapper.cs" />
-	  <Compile Include="Model\DbIscCodes.cs" />
+	  <Compile Include="Model\IscCodes.cs" />
 	  <Compile Include="Model\DbStatementWrapper.cs" />
 	  <Compile Include="Model\DbTypeHelper.cs" />
+	  <Compile Include="Model\LinkageParser.cs" />
+	  <Compile Include="Model\Schema\AbstractDslSchema.cs" />
+	  <Compile Include="Model\Schema\DslColumns.cs" />
+	  <Compile Include="Model\Schema\DslForeignKeyColumns.cs" />
+	  <Compile Include="Model\Schema\DslForeignKeys.cs" />
+	  <Compile Include="Model\Schema\DslFunctionArguments.cs" />
+	  <Compile Include="Model\Schema\DslFunctions.cs" />
+	  <Compile Include="Model\Schema\DslIndexColumns.cs" />
+	  <Compile Include="Model\Schema\DslIndexes.cs" />
+	  <Compile Include="Model\Schema\DslObjectTypes.cs" />
+	  <Compile Include="Model\Schema\DslProcedureParameters.cs" />
+	  <Compile Include="Model\Schema\DslProcedures.cs" />
+	  <Compile Include="Root\ProviderSchemaFactoryService.cs" />
+	  <Compile Include="Model\Schema\DslRawGenerators.cs" />
+	  <Compile Include="Model\Schema\DslRawTriggerDependencies.cs" />
+	  <Compile Include="Model\Schema\DslRawTriggers.cs" />
+	  <Compile Include="Model\Schema\DslTables.cs" />
+	  <Compile Include="Model\Schema\DslTriggerColumns.cs" />
+	  <Compile Include="Model\Schema\DslViewColumns.cs" />
 	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	  <Compile Include="Properties\Resources.Designer.cs">
 	    <DesignTime>True</DesignTime>
@@ -51,10 +74,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="blackbirdsql.ico" />
-	</ItemGroup>
-
-	<ItemGroup>
+	  <EmbeddedResource Include="Properties\ControlsResources.resx">
+	    <SubType>Designer</SubType>
+	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
+	    <Generator>ResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\Resources.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -62,12 +86,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.1.0" />
-	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
+	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\BlackbirdDsl\BlackbirdDsl.vcxproj" />
 	  <ProjectReference Include="..\BlackbirdSql.Sys\BlackbirdSql.Sys.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="System.Windows.Forms" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Resources\" />
 	</ItemGroup>
 
 

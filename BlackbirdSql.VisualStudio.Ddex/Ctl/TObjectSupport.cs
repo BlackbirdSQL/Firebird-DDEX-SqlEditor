@@ -6,7 +6,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;

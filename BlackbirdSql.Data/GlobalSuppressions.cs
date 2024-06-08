@@ -9,3 +9,5 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0066:Convert switch statement to expression", Justification = "Do not like")]
 [assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Rejects underscored static fields")]
 [assembly: SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
+[assembly: SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits")]
+

@@ -3,21 +3,26 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Windows.Forms;
-using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Extensions;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 
+using Cmd = BlackbirdSql.Sys.Cmd;
 
 
-namespace BlackbirdSql.Core;
+
+namespace BlackbirdSql;
 
 
 // =========================================================================================================
@@ -95,9 +100,6 @@ public sealed class RctManager : IDisposable
 	private RunningConnectionTable _Rct;
 	private static string _UnadvisedConnectionString = null;
 	private static bool _AdvisingExplorerEvents = false;
-	private static readonly char _EdmGlyph = '\u26ee';
-	private static readonly char _ProjectDatasetGlyph = '\u2699';
-	private static readonly char _UtilityDatasetGlyph = '\u058e';
 
 
 	#endregion Fields and Constants
@@ -148,7 +150,7 @@ public sealed class RctManager : IDisposable
 	/// The glyph used to identify connections derived from Project EDM connections.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static char EdmGlyph => _EdmGlyph;
+	public static char EdmGlyph => SystemData.C_EdmGlyph;
 
 
 	// ---------------------------------------------------------------------------------
@@ -175,7 +177,7 @@ public sealed class RctManager : IDisposable
 	/// The glyph used to identify connections derived from Project connections
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static char ProjectDatasetGlyph => _ProjectDatasetGlyph;
+	public static char ProjectDatasetGlyph => SystemData.C_ProjectDatasetGlyph;
 
 
 
@@ -246,7 +248,7 @@ public sealed class RctManager : IDisposable
 	/// connections.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static char UtilityDatasetGlyph => _UtilityDatasetGlyph;
+	public static char UtilityDatasetGlyph => SystemData.C_UtilityDatasetGlyph;
 
 
 	#endregion Property accessors
@@ -453,6 +455,9 @@ public sealed class RctManager : IDisposable
 	}
 
 
+	public static void DisableExternalEvents() => Rct?.DisableExternalEvents();
+
+	public static void EnableExternalEvents() => Rct?.EnableExternalEvents();
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -649,8 +654,8 @@ public sealed class RctManager : IDisposable
 
 		if (csa.ContainsKey(SysConstants.C_KeyExConnectionName)
 			&& !string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SysConstants.C_DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
-			|| SysConstants.C_DatasetKeyAlternateFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
+			&& (SysConstants.DatasetKeyFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
+			|| SysConstants.DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
 		{
 			csa.Remove(SysConstants.C_KeyExConnectionName);
 		}
@@ -707,8 +712,8 @@ public sealed class RctManager : IDisposable
 			datasetId = csa.Dataset;
 
 		if (!string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SysConstants.C_DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
-			|| SysConstants.C_DatasetKeyAlternateFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
+			&& (SysConstants.DatasetKeyFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
+			|| SysConstants.DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
 		{
 			csa.ConnectionName = SysConstants.C_DefaultExConnectionName;
 		}
@@ -887,7 +892,9 @@ public sealed class RctManager : IDisposable
 	private static bool ModifyServerExplorerConnection(IVsDataExplorerConnection explorerConnection,
 		ref Csb csa, bool modifyExplorerConnection)
 	{
-		// Tracer.Trace(typeof(RctManager), "ModifyServerExplorerConnection()", "csa.ConnectionString: {0}, modifyExplorerConnection: {1}.", csa.ConnectionString, modifyExplorerConnection);
+		// Tracer.Trace(typeof(RctManager), "ModifyServerExplorerConnection()",
+		//	"csa.ConnectionString: {0}, se.DecryptedConnectionString: {1}, modifyExplorerConnection: {2}.",
+		//	csa.ConnectionString, explorerConnection.Connection.DecryptedConnectionString(), modifyExplorerConnection);
 
 		Rct?.DisableEvents();
 
@@ -1237,13 +1244,13 @@ public sealed class RctManager : IDisposable
 		// A node changed event is raised which we pick up here, and we perform a
 		// reverse repair.
 
-		if (csa.ContainsKey("edmx") || csa.ContainsKey("edmu"))
+		if (csa.ContainsKey(SysConstants.C_KeyExEdmx) || csa.ContainsKey(SysConstants.C_KeyExEdmu))
 		{
-			if (csa.ContainsKey("edmu"))
+			if (csa.ContainsKey(SysConstants.C_KeyExEdmu))
 			{
 				// Clear out any UIHierarchyMarshaler or DataSources ToolWindow ConnectionString identifiers.
-				csa.Remove("edmu");
-				csa.Remove("edmx");
+				csa.Remove(SysConstants.C_KeyExEdmu);
+				csa.Remove(SysConstants.C_KeyExEdmx);
 
 				// Tracer.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "\nEDMU repairString: {0}.", csa.ConnectionString);
 
@@ -1279,7 +1286,7 @@ public sealed class RctManager : IDisposable
 		string caption;
 
 		// Sanity check.
-		if (proposedConnectionName.StartsWith(DbNative.Scheme))
+		if (proposedConnectionName.StartsWith(NativeDb.Scheme))
 		{
 			if (csa.ContainsKey(SysConstants.C_DefaultExDatasetKey))
 			{
@@ -1288,7 +1295,7 @@ public sealed class RctManager : IDisposable
 				Rct.EnableEvents();
 
 				caption = ControlsResources.RctManager_CaptionInvalidConnectionName;
-				msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(DbNative.Scheme, proposedConnectionName);
+				msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(NativeDb.Scheme, proposedConnectionName);
 				MessageCtl.ShowEx(msg, caption, MessageBoxButtons.OK);
 
 				return;
@@ -1305,7 +1312,7 @@ public sealed class RctManager : IDisposable
 
 
 		// Check whether the connection name will change.
-		Rct.GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId, dataSource, dataset,
+		Rct.GenerateUniqueDatasetKey(EnConnectionSource.ServerExplorer, proposedConnectionName, proposedDatasetId, dataSource, dataset,
 			connectionUrl, connectionUrl, out _, out _, out string uniqueDatasetKey,
 			out string uniqueConnectionName, out string uniqueDatasetId);
 
@@ -1331,20 +1338,19 @@ public sealed class RctManager : IDisposable
 		// At this point we're good to go.
 		csa.DatasetKey = uniqueDatasetKey;
 
-		if (uniqueConnectionName == string.Empty)
+		if (uniqueConnectionName == null && proposedConnectionName == null)
 			csa.Remove(SysConstants.C_KeyExConnectionName);
-		else if (uniqueConnectionName != null)
+		else if (!string.IsNullOrEmpty(uniqueConnectionName))
 			csa.ConnectionName = uniqueConnectionName;
 		else
 			csa.ConnectionName = proposedConnectionName;
 
-		if (uniqueDatasetId == string.Empty)
+		if (uniqueDatasetId == null && proposedDatasetId == null)
 			csa.Remove(SysConstants.C_KeyExDatasetId);
-		else if (uniqueDatasetId != null)
+		else if (!string.IsNullOrEmpty(uniqueDatasetId))
 			csa.DatasetId = uniqueDatasetId;
 		else
 			csa.DatasetId = proposedDatasetId;
-
 
 
 		UpdateOrRegisterConnection(csa.ConnectionString, EnConnectionSource.ServerExplorer, false, true);
@@ -1381,13 +1387,13 @@ public sealed class RctManager : IDisposable
 	/// <param name="serverExplorerInsertMode">
 	/// Boolean indicating wehther or not a connection is being added or modified.
 	/// </param>
-	/// <param name="originalConnectionString">
+	/// <param name="storedConnectionString">
 	/// The original ConnectionString before any editing of the Site took place else
 	/// null on a new connection.
 	/// </param>
 	// ---------------------------------------------------------------------------------
 	public static (bool, bool, bool) ValidateSiteProperties(IVsDataConnectionProperties site, EnConnectionSource connectionSource,
-		bool serverExplorerInsertMode, string originalConnectionString)
+		bool serverExplorerInsertMode, string storedConnectionString)
 	{
 		bool rSuccess = true;
 		bool rAddInternally = false;
@@ -1396,22 +1402,24 @@ public sealed class RctManager : IDisposable
 		if (Rct == null)
 			return (rSuccess, rAddInternally, rModifyInternally);
 
-		string originalConnectionUrl = null;
+		string storedConnectionUrl = null;
 
-		if (originalConnectionString != null)
-			originalConnectionUrl = Csb.CreateConnectionUrl(originalConnectionString);
+		if (storedConnectionString != null)
+			storedConnectionUrl = Csb.CreateConnectionUrl(storedConnectionString);
 
 
 		string proposedConnectionName = site.ContainsKey(SysConstants.C_KeyExConnectionName)
 			? (string)site[SysConstants.C_KeyExConnectionName] : null;
+		if (Cmd.IsNullValueOrEmpty(proposedConnectionName))
+			proposedConnectionName = null;
 
 		string msg = null;
 		string caption = null;
 
-		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && proposedConnectionName.StartsWith(DbNative.Scheme))
+		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && proposedConnectionName.StartsWith(NativeDb.Scheme))
 		{
 			caption = ControlsResources.RctManager_CaptionInvalidConnectionName;
-			msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(DbNative.Scheme, proposedConnectionName);
+			msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(NativeDb.Scheme, proposedConnectionName);
 
 			MessageCtl.ShowEx(msg, caption, MessageBoxButtons.OK);
 
@@ -1421,20 +1429,29 @@ public sealed class RctManager : IDisposable
 
 		string proposedDatasetId = site.ContainsKey(SysConstants.C_KeyExDatasetId)
 			? (string)site[SysConstants.C_KeyExDatasetId] : null;
+		if (Cmd.IsNullValueOrEmpty(proposedDatasetId))
+			proposedDatasetId = null;
 
 		string dataSource = (string)site[SysConstants.C_KeyDataSource];
-		string dataset = (string)site[SysConstants.C_KeyExDataset];
+		string database = (string)site[SysConstants.C_KeyDatabase];
+		string dataset = (string.IsNullOrWhiteSpace(database) ? "" : Path.GetFileNameWithoutExtension(database));
 
 		string connectionUrl = (site as IBDataConnectionProperties).Csa.DatasetMoniker;
 
+		// Tracer.Trace(typeof(RctManager), "ValidateSiteProperties()", "proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}.",
+		//	proposedConnectionName, proposedDatasetId, dataSource, dataset);
+
 		// Validate the proposed names.
-		bool createNew = Rct.GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId,
-			dataSource, dataset, connectionUrl, originalConnectionUrl, out EnConnectionSource storedConnectionSource,
+		bool createNew = Rct.GenerateUniqueDatasetKey(connectionSource, proposedConnectionName, proposedDatasetId,
+			dataSource, dataset, connectionUrl, storedConnectionUrl, out EnConnectionSource storedConnectionSource,
 			out string changedTargetDatasetKey, out string uniqueDatasetKey, out string uniqueConnectionName,
 			out string uniqueDatasetId);
 
 		// Tracer.Trace(typeof(RctManager), "ValidateSiteProperties()", "GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}, createnew: {4}, storedConnectionSource: {5}, changedTargetDatasetKey: {6}, uniqueDatasetKey : {7}, uniqueConnectionName: {8}, uniqueDatasetId: {9}.",
-		//	proposedConnectionName, proposedDatasetId, dataSource, dataset, createNew, storedConnectionSource, changedTargetDatasetKey ?? "Null", uniqueDatasetKey ?? "Null", uniqueConnectionName ?? "Null", uniqueDatasetId ?? "Null");
+		//	proposedConnectionName, proposedDatasetId, dataSource, dataset, createNew, storedConnectionSource,
+		//	changedTargetDatasetKey ?? "Null", uniqueDatasetKey ?? "Null",
+		//	uniqueConnectionName == null ? "Null" : (uniqueConnectionName == string.Empty ? "string.Empty" : uniqueConnectionName),
+		//	uniqueDatasetId == null ? "Null" : (uniqueDatasetId == string.Empty ? "string.Empty" : uniqueDatasetId));
 
 		// If we're in the EDM and the stored connection source is not ServerExplorer we have to create it in the SE to get past the EDM bug.
 		// Also, if we're in the SE and the stored connection source is not ServerExplorer we have to create it in the SE.
@@ -1510,7 +1527,7 @@ public sealed class RctManager : IDisposable
 				msg = ControlsResources.RctManager_TextDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
 			}
 		}
-		// Handle all case where there is no conflict.
+		// Handle all cases where there is no conflict.
 		// The settings provided will create a new SE connection.
 		else if (createNew && !serverExplorerInsertMode &&
 			(connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.EntityDataModel))
@@ -1531,8 +1548,18 @@ public sealed class RctManager : IDisposable
 			caption = ControlsResources.RctManager_CaptionConnectionChanged;
 			msg = ControlsResources.RctManager_TextConnectionChanged.FmtRes(changedTargetDatasetKey);
 		}
+		// If it's an SE connection and it's not the SE modifying warn if the connection name is being modified.
+		else if (connectionSource != EnConnectionSource.ServerExplorer
+			&& storedConnectionSource == EnConnectionSource.ServerExplorer &&
+			(uniqueConnectionName == string.Empty || uniqueDatasetId == string.Empty))
+		{
+			// The target connection name will change.
+			caption = ControlsResources.RctManager_CaptionConnectionNameChange;
+			msg = ControlsResources.RctManager_TextSEConnectionNameChange;
+		}
 
-		if (msg != null && MessageCtl.ShowEx(msg, caption, MessageBoxButtons.YesNo) == DialogResult.No)
+
+		if (msg != null && MessageCtl.ShowEx(msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
 			return (false, false, false);
 
 
@@ -1540,6 +1567,7 @@ public sealed class RctManager : IDisposable
 		#endregion ---------------- User Prompt Section -----------------
 
 
+		if (uniqueConnectionName == null )
 
 		// At this point we're good to go.
 
@@ -1550,17 +1578,19 @@ public sealed class RctManager : IDisposable
 			site[SysConstants.C_KeyExDatasetKey] = uniqueDatasetKey;
 		}
 
-		if (uniqueConnectionName == string.Empty)
+		if (uniqueConnectionName == null && proposedConnectionName == null)
 			site.Remove(SysConstants.C_KeyExConnectionName);
-		else if (uniqueConnectionName != null)
-		{
+		else if (!string.IsNullOrEmpty(uniqueConnectionName))
 			site[SysConstants.C_KeyExConnectionName] = uniqueConnectionName;
-		}
+		else
+			site[SysConstants.C_KeyExConnectionName] = proposedConnectionName;
 
-		if (uniqueDatasetId == string.Empty)
+		if (uniqueDatasetId == null && proposedDatasetId == null)
 			site.Remove(SysConstants.C_KeyExDatasetId);
-		else if (uniqueDatasetId != null)
+		else if (!string.IsNullOrEmpty(uniqueDatasetId))
 			site[SysConstants.C_KeyExDatasetId] = uniqueDatasetId;
+		else
+			site[SysConstants.C_KeyExDatasetId] = proposedDatasetId;
 
 
 		// Establish the connection owner.
@@ -1593,8 +1623,8 @@ public sealed class RctManager : IDisposable
 		if (!serverExplorerInsertMode && createNew)
 			rAddInternally = true;
 
-		rModifyInternally = changedTargetDatasetKey != null || !rAddInternally
-			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel;
+		rModifyInternally = changedTargetDatasetKey != null || (!rAddInternally
+			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel);
 
 		// Tag the site as being updated by the edmx wizard if it's not being done internally, which will
 		// use IVsDataConnectionUIProperties.Parse().
@@ -1656,8 +1686,7 @@ public sealed class RctManager : IDisposable
 
 		IVsDataConnection site = explorerConnection.Connection;
 
-		if (site != null)
-			LinkageParser.DisposeInstance(site, true);
+		site?.DisposeLinkageParser();
 	}
 
 

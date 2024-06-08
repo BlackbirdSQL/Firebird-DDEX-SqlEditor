@@ -4,7 +4,7 @@
 using System;
 
 // namespace Microsoft.Data.Tools.Diagnostics
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Enums;
 
 
 [Serializable]

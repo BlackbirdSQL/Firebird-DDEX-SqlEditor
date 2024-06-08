@@ -19,8 +19,6 @@ using System;
 using System.Diagnostics;
 using System.Numerics;
 
-using static FirebirdSql.Data.Common.BitHelpers;
-
 namespace FirebirdSql.Data.Common;
 
 // based on Jaybird's implementation
@@ -310,7 +308,7 @@ class DenselyPackedDecimalCodec
 			var firstByteIndex = lsbIndex - digitBitsFromEnd / BitPerByte;
 
 			var dpdGroupBits = 0x3FF & (
-					UnsignedRightShift((decBytes[firstByteIndex] & 0xFF), firstByteBitOffset)
+					(decBytes[firstByteIndex] & 0xFF) >>> firstByteBitOffset
 							| decBytes[firstByteIndex - 1] << BitPerByte - firstByteBitOffset);
 
 			if (dpdGroupBits != 0)
@@ -344,7 +342,7 @@ class DenselyPackedDecimalCodec
 			decBytes[firstByteIndex] =
 					(byte)(decBytes[firstByteIndex] | (currentGroup << firstByteBitOffset));
 			decBytes[firstByteIndex - 1] =
-					(byte)(decBytes[firstByteIndex - 1] | UnsignedRightShift(currentGroup, BitPerByte - firstByteBitOffset));
+					(byte)(decBytes[firstByteIndex - 1] | (currentGroup >>> BitPerByte - firstByteBitOffset));
 		}
 		var mostSignificantDigit = (int)remainingValue;
 		Debug.Assert(0 <= mostSignificantDigit && mostSignificantDigit <= 9, $"{nameof(mostSignificantDigit)} out of range, was {mostSignificantDigit}.");
@@ -365,15 +363,11 @@ class DenselyPackedDecimalCodec
 	{
 		if (lsbIndex < 0 || lsbIndex >= decBytesLength)
 		{
-			IndexOutOfRangeException exbb = new($"{nameof(lsbIndex)} must be within array {nameof(decBytesLength)} with length of {decBytesLength}, was {lsbIndex}.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new IndexOutOfRangeException($"{nameof(lsbIndex)} must be within array {nameof(decBytesLength)} with length of {decBytesLength}, was {lsbIndex}.");
 		}
 		if ((lsbIndex + 1) * BitPerByte < BitsPerGroup * _digitGroups)
 		{
-			ArgumentException exbb = new($"Need at least {(BitsPerGroup * _digitGroups + 7) / BitPerByte} bytes for value, have {lsbIndex + 1} (lsbIndex = {lsbIndex})");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new ArgumentException($"Need at least {(BitsPerGroup * _digitGroups + 7) / BitPerByte} bytes for value, have {lsbIndex + 1} (lsbIndex = {lsbIndex})");
 		}
 	}
 

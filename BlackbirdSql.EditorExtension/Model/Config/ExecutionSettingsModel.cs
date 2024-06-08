@@ -4,10 +4,10 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
+using BlackbirdSql.Sys;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
@@ -103,13 +103,6 @@ public class ExecutionSettingsModel(IBTransientSettings transientSettings)
 		Timeout_None = 0
 	}
 
-
-	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayExecutionAsynchronous")]
-	[GlobalizedDescription("OptionDescriptionExecutionAsynchronous")]
-	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[DefaultValue(false)]
-	public bool Asynchronous { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayExecutionTtsDefault")]

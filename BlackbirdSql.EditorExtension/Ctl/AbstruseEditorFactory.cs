@@ -2,7 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.BaseEditorFactory
 
 using System;
-using BlackbirdSql.Common.Controls.Tabs;
+using BlackbirdSql.Shared.Controls.Tabs;
 using BlackbirdSql.Core;
 using BlackbirdSql.EditorExtension.Ctl.Config;
 using Microsoft.VisualStudio;

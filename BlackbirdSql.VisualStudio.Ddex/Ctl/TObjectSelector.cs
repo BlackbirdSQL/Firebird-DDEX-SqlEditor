@@ -8,14 +8,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using BlackbirdSql.Core.Ctl.CommandProviders;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys;
-using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.Shell.Interop;
 
 
 
@@ -120,13 +116,14 @@ public class TObjectSelector : TObjectSelectorTable
 
 		try
 		{
-			DbConnection connection = DbNative.CastToAssemblyConnection(lockedProviderObject);
+			DbConnection connection = NativeDb.CastToAssemblyConnection(lockedProviderObject);
 
 			// VS glitch. Null if ado has picked up a project data model firebird assembly.
 			if (connection == null)
 			{
 				// Tracer.Trace(GetType(), "SelectObjects()", "Glitch!!!!");
-				connection = (DbConnection)DbNative.CreateDbConnection(Site.DecryptedConnectionString());
+
+				connection = (DbConnection)NativeDb.CreateDbConnection(Site.DecryptedConnectionString());
 				connection.Open();
 			}
 			else
@@ -143,11 +140,11 @@ public class TObjectSelector : TObjectSelectorTable
 		}
 		catch (DbException exf)
 		{
-			Tracer.Warning(GetType(), "SelectObjects", "{0} error: {1}.", DbNative.DbEngineName, exf.Message);
+			// It's most likely the connection has timed out. Do a hard reset on all linkages.
 
-			LinkageParser parser = LinkageParser.GetInstance((IDbConnection)lockedProviderObject);
-			if (parser != null)
-				LinkageParser.DisposeInstance((IDbConnection)lockedProviderObject, parser.Loaded);
+			Tracer.Warning(GetType(), "SelectObjects", "{0} error: {1}.", NativeDb.DbEngineName, exf.Message);
+
+			NativeDb.DatabaseEngineSvc.DisposeLinkageParsers_();
 
 			Site.Close();
 
@@ -155,13 +152,15 @@ public class TObjectSelector : TObjectSelectorTable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Dug(ex, $"CollectionName: {parameters[0]}");
 			throw;
 		}
 		finally
 		{
 			Site.UnlockProviderObject();
 		}
+
+		// Tracer.Trace(GetType(), "SelectObjects()", "Completed typeName: {0}", typeName);
 
 		return reader;
 	}
@@ -190,7 +189,8 @@ public class TObjectSelector : TObjectSelectorTable
 			}
 		}
 
-		DataTable schema = DslProviderSchemaFactory.GetSchema(connection, parameters[0].ToString(), restrictionArray);
+		string collectionName = parameters[0].ToString();
+		DataTable schema = connection.GetSchemaEx(collectionName, restrictionArray);
 
 
 		if (parameters.Length == 2 && parameters[1] is DictionaryEntry entry)

@@ -11,33 +11,22 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.EditorExtension.snk</AssemblyOriginatorKeyFile>
-		<ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-		<NoWarn>1701;1702;CS0618</NoWarn>
+		<NoWarn>1701;1702</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-		<NoWarn>1701;1702;CS0618</NoWarn>
+		<NoWarn>1701;1702</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Reference Include="PresentationFramework" />
-		<Reference Include="System" />
-		<Reference Include="System.ComponentModel.DataAnnotations" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Include="Controls\Config\AbstractLiveSettingsDialog.cs">
-			<SubType>Form</SubType>
-		</Compile>
+		<Compile Include="Controls\Config\AbstractLiveSettingsDialog.cs" />
 		<Compile Include="Controls\Config\AbstractLiveSettingsDialog.Designer.cs">
 			<DependentUpon>AbstractLiveSettingsDialog.cs</DependentUpon>
 		</Compile>
-		<Compile Include="Controls\Config\LiveSettingsDialog.cs">
-			<SubType>Form</SubType>
-		</Compile>
+		<Compile Include="Controls\Config\LiveSettingsDialog.cs" />
 		<Compile Include="Model\Config\ContextSettingsModel.cs" />
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
 		<Compile Include="Controls\ComponentModel\AdvancedFolderNameEditor.cs" />
@@ -102,14 +91,21 @@
 		<Compile Include="Ctl\AbstruseEditorFactory.cs" />
 		<Compile Include="Ctl\EditorFactoryWithEncoding.cs" />
 		<Compile Include="Ctl\EditorFactoryWithoutEncoding.cs" />
-		<Compile Include="Ctl\SqlEditorToolbarCommandHandler.cs" />
+		<Compile Include="Ctl\ToolbarCommandHandler.cs" />
 		<Compile Include="Ctl\SqlResultsEditorFactory.cs" />
-		<Compile Include="Ctl\Events\MonitorSelectionEventArgs.cs" />
+		<Compile Include="Events\MonitorSelectionEventArgs.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
-		<ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
 		<ProjectReference Include="..\BlackbirdSql.LanguageExtension\BlackbirdSql.LanguageExtension.csproj" />
+		<ProjectReference Include="..\BlackbirdSql.Shared\BlackbirdSql.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="System.ComponentModel.DataAnnotations" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Resources\" />
 	</ItemGroup>
 </Project>

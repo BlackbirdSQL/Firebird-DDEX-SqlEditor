@@ -3,7 +3,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Events;
 
 public class EditControlFocusEventArgs(GridItem selectionItem) : EventArgs
 {

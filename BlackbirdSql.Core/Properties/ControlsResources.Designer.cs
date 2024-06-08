@@ -451,6 +451,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ConnectionName change.
+        /// </summary>
+        internal static string RctManager_CaptionConnectionNameChange {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionConnectionNameChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ConnectionName conflict.
         /// </summary>
         internal static string RctManager_CaptionConnectionNameConflict {
@@ -646,6 +655,15 @@ namespace BlackbirdSql.Core.Properties {
         internal static string RctManager_TextNewSEConnectionNameConflict {
             get {
                 return ResourceManager.GetString("RctManager_TextNewSEConnectionNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The existing Server Explorer Connection&apos;s name will be modified. Continue?.
+        /// </summary>
+        internal static string RctManager_TextSEConnectionNameChange {
+            get {
+                return ResourceManager.GetString("RctManager_TextSEConnectionNameChange", resourceCulture);
             }
         }
         

@@ -25,7 +25,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using FirebirdSql.Data.Common;
-using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird.SqlGen;
 
@@ -112,7 +111,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	private static Dictionary<string, FunctionHandler> InitializeBuiltInFunctionHandlers()
 	{
-		// Diag.Trace();
 		var functionHandlers = new Dictionary<string, FunctionHandler>(0, StringComparer.Ordinal);
 		return functionHandlers;
 	}
@@ -123,7 +121,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	private static Dictionary<string, FunctionHandler> InitializeCanonicalFunctionHandlers()
 	{
-		// Diag.Trace();
 		var functionHandlers = new Dictionary<string, FunctionHandler>(StringComparer.Ordinal);
 
 		#region Other Canonical Functions
@@ -212,7 +209,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	private static Dictionary<string, string> InitializeFunctionNameToOperatorDictionary()
 	{
-		// Diag.Trace();
 		return new Dictionary<string, string>(StringComparer.Ordinal)
 			{
 				{ nameof(string.Concat), "||" },
@@ -243,7 +239,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns>The string representing the SQL to be executed.</returns>
 	internal static string GenerateSql(DbCommandTree tree, out List<DbParameter> parameters, out CommandType commandType)
 	{
-		// Diag.Trace();
 		commandType = CommandType.Text;
 
 		//Handle Query
@@ -301,7 +296,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns>The string representing the SQL to be executed.</returns>
 	private string GenerateSql(DbQueryCommandTree tree)
 	{
-		// Diag.Trace();
 		_selectStatementStack = new Stack<SqlSelectStatement>();
 		_isParentAJoinStack = new Stack<bool>();
 
@@ -346,7 +340,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// </summary>
 	private string GenerateFunctionSql(DbFunctionCommandTree tree, out CommandType commandType)
 	{
-		// Diag.Trace();
 		var function = tree.EdmFunction;
 
 		// We expect function to always have these properties
@@ -400,7 +393,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns>A string representing the SQL to be executed.</returns>
 	string WriteSql(ISqlFragment sqlStatement)
 	{
-		// Diag.Trace();
 		var builder = new StringBuilder(1024);
 		using (var writer = new SqlWriter(builder))
 		{
@@ -412,7 +404,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 
 	internal SqlWriter WriteSql(SqlWriter writer, ISqlFragment sqlStatement)
 	{
-		// Diag.Trace();
 		sqlStatement.WriteSql(writer, this);
 		return writer;
 	}
@@ -815,7 +806,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	internal static string GetTargetSql(EntitySetBase entitySetBase)
 	{
-		// Diag.Trace();
 		// construct escaped SQL referencing entity set
 		var builder = new StringBuilder();
 		var definingQuery = MetadataHelpers.TryGetValueForMetadataProperty<string>(entitySetBase, "DefiningQuery");
@@ -2103,7 +2093,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	void ProcessJoinInputResult(ISqlFragment fromExtentFragment, SqlSelectStatement result,
 		DbExpressionBinding input, int fromSymbolStart)
 	{
-		// Diag.Trace();
 		Symbol fromSymbol = null;
 		var varName = GetShortenedName(input.VariableName);
 
@@ -2334,9 +2323,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 		var isNiladicFunction = MetadataHelpers.TryGetValueForMetadataProperty<bool>(e.Function, "NiladicFunctionAttribute");
 		if (isNiladicFunction && e.Arguments.Count > 0)
 		{
-			InvalidOperationException exbb = new("Niladic functions cannot have parameters");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Niladic functions cannot have parameters");
 		}
 
 		if (!isNiladicFunction)
@@ -2565,9 +2552,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 
 	private static ISqlFragment HandleCanonicalFunctionBitwiseNot(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		NotSupportedException exbb = new("BitwiseNot is not supported by Firebird.");
-		Diag.Dug(exbb);
-		throw exbb;
+		return sqlgen.HandleFunctionDefaultGivenName(e, "BIN_NOT");
 	}
 
 	private static ISqlFragment HandleCanonicalFunctionBitwiseOr(SqlGenerator sqlgen, DbFunctionExpression e)
@@ -2584,23 +2569,17 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	#region Date and Time Canonical Functions
 	private static ISqlFragment HandleCanonicalFunctionCurrentUtcDateTime(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		NotSupportedException exbb = new("CurrentUtcDateTime is not supported by Firebird.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("CurrentUtcDateTime is not supported by Firebird.");
 	}
 
 	private static ISqlFragment HandleCanonicalFunctionCurrentDateTimeOffset(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		NotSupportedException exbb = new("CurrentDateTimeOffset is not supported by Firebird.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("CurrentDateTimeOffset is not supported by Firebird.");
 	}
 
 	private static ISqlFragment HandleCanonicalFunctionGetTotalOffsetMinutes(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		NotSupportedException exbb = new("GetTotalOffsetMinutes is not supported by Firebird.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("GetTotalOffsetMinutes is not supported by Firebird.");
 	}
 
 	private static ISqlFragment HandleCanonicalFunctionCurrentDateTime(SqlGenerator sqlgen, DbFunctionExpression e)
@@ -2726,9 +2705,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 
 	private static ISqlFragment HandleCanonicalFunctionCreateDateTimeOffset(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		NotSupportedException exbb = new("CreateDateTimeOffset is not supported by Firebird.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("CreateDateTimeOffset is not supported by Firebird.");
 	}
 
 	/// <summary>
@@ -2837,7 +2814,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	void AddColumns(SqlSelectStatement selectStatement, Symbol symbol,
 		List<Symbol> columnList, Dictionary<string, Symbol> columnDictionary, ref string separator)
 	{
-		// Diag.Trace();
 		if (symbol is JoinSymbol joinSymbol)
 		{
 			if (!joinSymbol.IsNestedJoin)
@@ -2968,7 +2944,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	List<Symbol> AddDefaultColumns(SqlSelectStatement selectStatement)
 	{
-		// Diag.Trace();
 		// This is the list of columns added in this select statement
 		// This forms the "type" of the Select statement, if it has to
 		// be expanded in another SELECT *
@@ -3101,7 +3076,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	SqlSelectStatement CreateNewSelectStatement(SqlSelectStatement oldStatement,
 		string inputVarName, TypeUsage inputVarType, out Symbol fromSymbol)
 	{
-		// Diag.Trace();
 		return CreateNewSelectStatement(oldStatement, inputVarName, inputVarType, true, out fromSymbol);
 	}
 
@@ -3130,7 +3104,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	SqlSelectStatement CreateNewSelectStatement(SqlSelectStatement oldStatement,
 		string inputVarName, TypeUsage inputVarType, bool finalizeOldStatement, out Symbol fromSymbol)
 	{
-		// Diag.Trace();
 		fromSymbol = null;
 
 		// Finalize the old statement
@@ -3514,7 +3487,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	SqlSelectStatement VisitExpressionEnsureSqlStatement(DbExpression e, bool addDefaultColumns)
 	{
-		// Diag.Trace();
 		Debug.Assert(MetadataHelpers.IsCollectionType(e.ResultType));
 
 		SqlSelectStatement result;
@@ -3645,7 +3617,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	private static bool IsBuiltInFunction(EdmFunction function)
 	{
-		// Diag.Trace();
 		return MetadataHelpers.TryGetValueForMetadataProperty<bool>(function, "BuiltInAttribute");
 	}
 
@@ -3704,7 +3675,6 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	static bool NeedsInnerQuery(IList<DbAggregate> aggregates)
 	{
-		// Diag.Trace();
 		foreach (var aggregate in aggregates)
 		{
 			Debug.Assert(aggregate.Arguments.Count == 1);

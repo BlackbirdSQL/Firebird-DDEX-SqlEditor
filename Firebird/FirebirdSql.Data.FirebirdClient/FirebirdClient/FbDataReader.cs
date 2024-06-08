@@ -26,7 +26,6 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Types;
 
@@ -282,8 +281,6 @@ public sealed class FbDataReader : DbDataReader
 
 	public override DataTable GetSchemaTable()
 	{
-		// Diag.Trace();
-
 		CheckState();
 
 		if (_schemaTable != null)
@@ -410,7 +407,6 @@ public sealed class FbDataReader : DbDataReader
 	public override async Task<DataTable> GetSchemaTableAsync(CancellationToken cancellationToken = default)
 #endif
 	{
-		// Diag.Trace();
 		CheckState();
 
 		if (_schemaTable != null)
@@ -723,7 +719,6 @@ public sealed class FbDataReader : DbDataReader
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -829,7 +824,6 @@ public sealed class FbDataReader : DbDataReader
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -1028,11 +1022,7 @@ public sealed class FbDataReader : DbDataReader
 	private void CheckState()
 	{
 		if (IsClosed)
-		{
-			InvalidOperationException exbb = new("Invalid attempt of read when the reader is closed.");
-			Diag.Dug(exbb);
-			throw exbb;
-		}
+			throw new InvalidOperationException("Invalid attempt of read when the reader is closed.");
 	}
 
 	private void CheckIndex(int i)
@@ -1177,7 +1167,6 @@ public sealed class FbDataReader : DbDataReader
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}

@@ -4,15 +4,14 @@
 		<DebugType>portable</DebugType>
 	</PropertyGroup>
 	<PropertyGroup>
-		<VersionPrefix>12.0.0.0</VersionPrefix>
-		<VersionSuffix>release</VersionSuffix>
 		<TargetFrameworks>net48</TargetFrameworks>
+		<TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
 		<Company>BlackbirdSql</Company>
 		<Product>NETProvider</Product>
 		<Authors>BlackbirdSql</Authors>
+		<CopyrightEndYear>2024</CopyrightEndYear>
 		<PackageProjectUrl>https://www.blackbirdsql.org/</PackageProjectUrl>
 		<PackageIconUrl>https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/tree/master/Resources/blackbird-128x128.png</PackageIconUrl>
-		<PackageIcon>Resources\blackbird-128x128.png</PackageIcon>
 		<RepositoryUrl>https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -20,7 +19,35 @@
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageLicenseFile>license.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>blackbird-128x128.png</PackageIcon>
+		<ApplicationIcon>$(SolutionDir)\Resources\blackbirdsql.ico</ApplicationIcon>
 	</PropertyGroup>
+	<PropertyGroup>
+		<Version>12.0.0.1</Version>
+		<VersionPrefix>12.0.0.1</VersionPrefix>
+		<VersionSuffix>release</VersionSuffix>
+	</PropertyGroup>
+	<!-- Provider -->
+	<PropertyGroup>
+		<ProviderVersion>10.2.0</ProviderVersion>
+		<ProviderVersionPrefix>10.2.0</ProviderVersionPrefix>
+		<ProviderVersionSuffix>release</ProviderVersionSuffix>
+		<ProviderReferencePackageVersion>[10.0.0,10.2.0]</ProviderReferencePackageVersion>
+	</PropertyGroup>
+	<!-- EF6 -->
+	<PropertyGroup>
+		<EF6ProviderVersion>10.0.1</EF6ProviderVersion>
+		<EF6ProviderPackageVersion>[10.0.0,10.0.1]</EF6ProviderPackageVersion>
+		<EF6ReferencePackageVersion>6.4.4</EF6ReferencePackageVersion>
+	</PropertyGroup>
+	<!-- EFCore -->
+	<PropertyGroup>
+		<EFCoreProviderVersion>11.0.0</EFCoreProviderVersion>
+		<EFCoreReferenceProviderVersion>10.1.0</EFCoreReferenceProviderVersion>
+		<EFCoreReferencePackageVersion>8.0.4</EFCoreReferencePackageVersion>
+	</PropertyGroup>
+
 	<!-- SourceLink
 	<PropertyGroup Condition="'$(SkipSourceLink)'!='true'">
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>

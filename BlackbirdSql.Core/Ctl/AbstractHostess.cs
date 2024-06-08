@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BlackbirdSql.Sys;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -17,7 +18,6 @@ using IServiceProvider = System.IServiceProvider;
 
 namespace BlackbirdSql.Core.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
 
 
 /// <summary>

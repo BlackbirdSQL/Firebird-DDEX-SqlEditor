@@ -9,11 +9,13 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Model;
 using Microsoft.VisualStudio.Data.Services;
 
-using static BlackbirdSql.SysConstants;
+using static BlackbirdSql.Sys.SysConstants;
 
 
 
@@ -381,9 +383,6 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	// =====================================================================================================
 
 
-	// TBC
-
-
 	#endregion Overloaded Property accessors
 
 
@@ -620,7 +619,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 		UriBuilder urlb = new()
 		{
-			Scheme = DbNative.Protocol,
+			Scheme = NativeDb.Protocol,
 			Host = datasource.ToLowerInvariant(),
 			UserName = csa.UserID.ToLowerInvariant(),
 			Port = csa.Port,
@@ -632,7 +631,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		// Serialize the db path.
 		StringBuilder stringBuilder = new(StringUtils.Serialize64(csa.Database.ToLowerInvariant()));
 
-		stringBuilder.Append(SystemData.UnixFieldSeparator);
+		stringBuilder.Append(SystemData.C_UnixFieldSeparator);
 
 
 		// Append equivalency properties composite as defined in the Describers Colleciton.
@@ -641,9 +640,9 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		bool hasEquivalencies = false;
 		string key;
 
-		for (i = 0; i < DbNative.EquivalencyKeys.Length; i++)
+		for (i = 0; i < NativeDb.EquivalencyKeys.Length; i++)
 		{
-			key = DbNative.EquivalencyKeys[i];
+			key = NativeDb.EquivalencyKeys[i];
 
 			if (key == C_KeyDataSource || key == C_KeyPort || key == C_KeyDatabase || key == C_KeyUserID)
 				continue;
@@ -661,9 +660,9 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			string stringValue;
 			StringBuilder sb = new();
 
-			for (i = 0; i < DbNative.EquivalencyKeys.Length; i++)
+			for (i = 0; i < NativeDb.EquivalencyKeys.Length; i++)
 			{
-				key = DbNative.EquivalencyKeys[i];
+				key = NativeDb.EquivalencyKeys[i];
 
 				if (key == "DataSource" || key == "Port" || key == "Database" || key == "UserID")
 					continue;
@@ -679,7 +678,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 				sb.Append(stringValue);
 
-				if (i < (DbNative.EquivalencyKeys.Length - 1))
+				if (i < (NativeDb.EquivalencyKeys.Length - 1))
 				{
 					sb.Append('\n');
 				}
@@ -690,7 +689,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		}
 
 
-		stringBuilder.Append(SystemData.UnixFieldSeparator);
+		stringBuilder.Append(SystemData.C_UnixFieldSeparator);
 
 		urlb.Path = stringBuilder.ToString();
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Babel;
 using BlackbirdSql.Core;
-using BlackbirdSql.LanguageExtension.Model.Interfaces;
+using BlackbirdSql.LanguageExtension.Interfaces;
 using BlackbirdSql.LanguageExtension.Services;
 using Microsoft.SqlServer.Management.SqlParser;
 using Microsoft.SqlServer.Management.SqlParser.Binder;

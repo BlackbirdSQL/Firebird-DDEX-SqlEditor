@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird.SqlGen;
 
@@ -89,7 +88,6 @@ internal sealed class SqlBuilder : ISqlFragment
 	/// <param name="sqlGenerator"></param>
 	public void WriteSql(SqlWriter writer, SqlGenerator sqlGenerator)
 	{
-		// Diag.Trace();
 		if (null != _sqlFragments)
 		{
 			foreach (var o in _sqlFragments)

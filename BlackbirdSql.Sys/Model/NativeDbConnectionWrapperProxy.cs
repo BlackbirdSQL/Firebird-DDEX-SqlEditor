@@ -6,10 +6,10 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Interfaces;
 
-
-
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Model;
 
 
 public sealed class NativeDbConnectionWrapperProxy : IBsNativeDbConnectionWrapper
@@ -32,7 +32,7 @@ public sealed class NativeDbConnectionWrapperProxy : IBsNativeDbConnectionWrappe
 
 	public NativeDbConnectionWrapperProxy(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null)
 	{
-		_NativeObject = DbNative.CreateDbConnectionWrapper(connection, sqlConnectionCreatedObserver);
+		_NativeObject = NativeDb.CreateDbConnectionWrapper(connection, sqlConnectionCreatedObserver);
 	}
 
 

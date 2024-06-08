@@ -18,8 +18,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Schema;
-
 using FirebirdSql.Data.Client.Managed;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
@@ -35,12 +33,7 @@ internal static class ClientFactory
 		{
 			FbServerType.Default => CreateManagedDatabase(options),
 			FbServerType.Embedded => CreateNativeDatabase(options),
-			_ => ((Func<DatabaseBase>)(() =>
-			{
-				Exception exbb = IncorrectServerTypeException();
-				Diag.Dug(exbb);
-				throw exbb;
-			}))(),
+			_ => throw IncorrectServerTypeException(),
 		};
 	}
 	public static ValueTask<DatabaseBase> CreateDatabaseAsync(ConnectionString options, CancellationToken cancellationToken = default)
@@ -49,12 +42,7 @@ internal static class ClientFactory
 		{
 			FbServerType.Default => CreateManagedDatabaseAsync(options, cancellationToken),
 			FbServerType.Embedded => CreateNativeDatabaseAsync(options),
-			_ => ((Func<ValueTask<DatabaseBase>>)(() =>
-			{
-				Exception exbb = IncorrectServerTypeException();
-				Diag.Dug(exbb);
-				throw exbb;
-			}))(),
+			_ => throw IncorrectServerTypeException(),
 		};
 	}
 
@@ -64,12 +52,7 @@ internal static class ClientFactory
 		{
 			FbServerType.Default => CreateManagedServiceManager(options),
 			FbServerType.Embedded => CreateNativeServiceManager(options),
-			_ => ((Func<ServiceManagerBase>)(() =>
-			{
-				Exception exbb = IncorrectServerTypeException();
-				Diag.Dug(exbb);
-				throw exbb;
-			}))(),
+			_ => throw IncorrectServerTypeException(),
 		};
 	}
 	public static ValueTask<ServiceManagerBase> CreateServiceManagerAsync(ConnectionString options, CancellationToken cancellationToken = default)
@@ -78,12 +61,7 @@ internal static class ClientFactory
 		{
 			FbServerType.Default => CreateManagedServiceManagerAsync(options, cancellationToken),
 			FbServerType.Embedded => CreateNativeServiceManagerAsync(options),
-			_ => ((Func<ValueTask<ServiceManagerBase>>)(() =>
-			{
-				Exception exbb = IncorrectServerTypeException();
-				Diag.Dug(exbb);
-				throw exbb;
-			}))(),
+			_ => throw IncorrectServerTypeException(),
 		};
 	}
 
@@ -110,12 +88,7 @@ internal static class ClientFactory
 			IscCodes.PROTOCOL_VERSION12 => new Managed.Version12.GdsDatabase(connection),
 			IscCodes.PROTOCOL_VERSION11 => new Managed.Version11.GdsDatabase(connection),
 			IscCodes.PROTOCOL_VERSION10 => new Managed.Version10.GdsDatabase(connection),
-			_ => ((Func<DatabaseBase>)(() =>
-			{
-				Exception exbb = UnsupportedProtocolException();
-				Diag.Dug(exbb);
-				throw exbb;
-			}))(),
+			_ => throw UnsupportedProtocolException(),
 		};
 	}
 	private static async ValueTask<DatabaseBase> CreateManagedDatabaseAsync(ConnectionString options, CancellationToken cancellationToken = default)
@@ -141,12 +114,7 @@ internal static class ClientFactory
 			IscCodes.PROTOCOL_VERSION12 => new Managed.Version12.GdsDatabase(connection),
 			IscCodes.PROTOCOL_VERSION11 => new Managed.Version11.GdsDatabase(connection),
 			IscCodes.PROTOCOL_VERSION10 => new Managed.Version10.GdsDatabase(connection),
-			_ => ((Func<DatabaseBase>)(() =>
-			{
-				Exception exbb = UnsupportedProtocolException();
-				Diag.Dug(exbb);
-				throw exbb;
-			}))(),
+			_ => throw UnsupportedProtocolException(),
 		};
 	}
 
@@ -186,12 +154,7 @@ internal static class ClientFactory
 			IscCodes.PROTOCOL_VERSION12 => new Managed.Version12.GdsServiceManager(connection),
 			IscCodes.PROTOCOL_VERSION11 => new Managed.Version11.GdsServiceManager(connection),
 			IscCodes.PROTOCOL_VERSION10 => new Managed.Version10.GdsServiceManager(connection),
-			_ => ((Func<ServiceManagerBase>)(() =>
-			{
-				Exception exbb = UnsupportedProtocolException();
-				Diag.Dug(exbb);
-				throw exbb;
-			}))(),
+			_ => throw UnsupportedProtocolException(),
 		};
 	}
 	private static async ValueTask<ServiceManagerBase> CreateManagedServiceManagerAsync(ConnectionString options, CancellationToken cancellationToken = default)
@@ -217,12 +180,7 @@ internal static class ClientFactory
 			IscCodes.PROTOCOL_VERSION12 => new Managed.Version12.GdsServiceManager(connection),
 			IscCodes.PROTOCOL_VERSION11 => new Managed.Version11.GdsServiceManager(connection),
 			IscCodes.PROTOCOL_VERSION10 => new Managed.Version10.GdsServiceManager(connection),
-			_ => ((Func<ServiceManagerBase>)(() =>
-			{
-				Exception exbb = UnsupportedProtocolException();
-				Diag.Dug(exbb);
-				throw exbb;
-			}))(),
+			_ => throw UnsupportedProtocolException(),
 		};
 	}
 
@@ -257,12 +215,7 @@ internal static class ClientFactory
 			FbWireCrypt.Disabled => WireCryptOption.Disabled,
 			FbWireCrypt.Enabled => WireCryptOption.Enabled,
 			FbWireCrypt.Required => WireCryptOption.Required,
-			_ => ((Func<WireCryptOption>)(() =>
-				{
-					ArgumentOutOfRangeException exbb = new(nameof(wireCrypt), $"{nameof(wireCrypt)}={wireCrypt}");
-					Diag.Dug(exbb);
-					throw exbb;
-				}))(),
+			_ => throw new ArgumentOutOfRangeException(nameof(wireCrypt), $"{nameof(wireCrypt)}={wireCrypt}"),
 		};
 	}
 }

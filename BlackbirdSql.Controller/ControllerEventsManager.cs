@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 using BlackbirdSql.Controller.Ctl.Config;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Core.Extensions;
+using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -49,7 +49,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// <summary>
 	/// .ctor
 	/// </summary>
-	private ControllerEventsManager(IBPackageController controller) : base(controller)
+	private ControllerEventsManager(IBsPackageController controller) : base(controller)
 	{
 	}
 
@@ -58,7 +58,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// Access to the static at the instance local level. This allows the base class to access and update
 	/// the localized static instance.
 	/// </summary>
-	protected override IBEventsManager InternalInstance
+	protected override IBsEventsManager InternalInstance
 	{
 		get { return _Instance; }
 		set { _Instance = value; }
@@ -70,7 +70,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// We do not auto-create to avoid instantiation confusion.
 	/// Use CreateInstance() to instantiate.
 	/// </summary>
-	public static IBEventsManager Instance => _Instance ??
+	public static IBsEventsManager Instance => _Instance ??
 		throw Diag.ExceptionInstance(typeof(ControllerEventsManager));
 
 
@@ -79,7 +79,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// Instantiation must always occur here and not by the Instance accessor to avoid
 	/// confusion.
 	/// </summary>
-	public static ControllerEventsManager CreateInstance(IBPackageController controller) =>
+	public static ControllerEventsManager CreateInstance(IBsPackageController controller) =>
 		new(controller);
 
 
@@ -110,7 +110,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// =========================================================================================================
 
 
-	private static IBEventsManager _Instance;
+	private static IBsEventsManager _Instance;
 
 	// private int _RefCnt = 0;
 
@@ -190,7 +190,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 			try
 			{
-				modified = XmlParser.ConfigureDbProvider(path, DbNative.ClientFactoryType);
+				modified = XmlParser.ConfigureDbProvider(path, NativeDb.ClientFactoryType);
 			}
 			catch (Exception ex)
 			{
@@ -272,7 +272,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			try
 			{
 				// If Entity framework must be configured then so must the client
-				modified = XmlParser.ConfigureEntityFramework(path, !globals.IsConfiguredDbProviderStatus, DbNative.ClientFactoryType);
+				modified = XmlParser.ConfigureEntityFramework(path, !globals.IsConfiguredDbProviderStatus, NativeDb.ClientFactoryType);
 			}
 			catch (Exception ex)
 			{
@@ -616,7 +616,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 						if (!isConfiguredEFStatus)
 						{
-							if (projectObject.References.Find(DbNative.EFProvider) != null)
+							if (projectObject.References.Find(NativeDb.EFProvider) != null)
 							{
 								isConfiguredEFStatus = true;
 								isConfiguredDbProviderStatus = true;
@@ -635,7 +635,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 						if (!isConfiguredDbProviderStatus)
 						{
-							if (projectObject.References.Find(DbNative.Invariant) != null)
+							if (projectObject.References.Find(NativeDb.Invariant) != null)
 							{
 								isConfiguredDbProviderStatus = true;
 
@@ -1197,7 +1197,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (!GlobalsAgent.ValidateConfig || reference.Type != prjReferenceType.prjReferenceTypeAssembly
 			|| !UnsafeCmd.IsProjectKind(reference.ContainingProject.Kind)
 			|| (reference.Name.ToLower() != SystemData.EFProvider.ToLower()
-			&& reference.Name.ToLower() != DbNative.Invariant.ToLower()))
+			&& reference.Name.ToLower() != NativeDb.Invariant.ToLower()))
 		{
 			return;
 		}
@@ -1234,7 +1234,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		IBGlobalsAgent globals = null;
 
 		if (reference.Name.ToLower() == SystemData.EFProvider.ToLower()
-			|| reference.Name.ToLower() == DbNative.Invariant.ToLower())
+			|| reference.Name.ToLower() == NativeDb.Invariant.ToLower())
 		{
 			globals = new GlobalsAgent(GetProjectPath(reference.ContainingProject));
 		}
@@ -1260,7 +1260,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 				}
 			}
 		}
-		else if (reference.Name.ToLower() == DbNative.Invariant.ToLower() && !globals.IsConfiguredDbProviderStatus)
+		else if (reference.Name.ToLower() == NativeDb.Invariant.ToLower() && !globals.IsConfiguredDbProviderStatus)
 		{
 			// Tracer.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
@@ -1492,8 +1492,6 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 
 
-	[SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
-			Justification = "Code logic ensures a deadlock cannot occur")]
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -1505,6 +1503,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// clear
 	/// </returns>
 	// ---------------------------------------------------------------------------------
+	[SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
 	public bool ClearValidationQueue()
 	{
 		if (_ValidationTask == null || _ValidationTask.IsCompleted

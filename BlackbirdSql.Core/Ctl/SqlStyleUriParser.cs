@@ -10,14 +10,14 @@ public class SqlStyleUriParser(GenericUriParserOptions options) : GenericUriPars
 	protected override string GetComponents(Uri uri, UriComponents components, UriFormat format)
 	{
 		string originalString = uri.OriginalString;
-		string passiveProtocol = "passive" + DbNative.Protocol;
+		string passiveProtocol = "passive" + NativeDb.Protocol;
 
-		string uriString = ReplaceProtocols(originalString, DbNative.Protocol, passiveProtocol);
+		string uriString = ReplaceProtocols(originalString, NativeDb.Protocol, passiveProtocol);
 
 		Uri passiveUri = new(uriString);
 		uriString = base.GetComponents(passiveUri, components, format);
 
-		uriString = ReplaceProtocols(uriString, passiveProtocol, DbNative.Protocol);
+		uriString = ReplaceProtocols(uriString, passiveProtocol, NativeDb.Protocol);
 
 		// Tracer.Trace(GetType(), "GetComponents()", "\nOriginal: {0}\nResult: {1}", originalString, uriString);
 
@@ -53,12 +53,12 @@ public class SqlStyleUriParser(GenericUriParserOptions options) : GenericUriPars
 
 	protected override bool IsBaseOf(Uri baseUri, Uri relativeUri)
 	{
-		string passiveProtocol = "passive" + DbNative.Protocol;
-		string uriString = ReplaceProtocols(baseUri.OriginalString, DbNative.Protocol, passiveProtocol);
+		string passiveProtocol = "passive" + NativeDb.Protocol;
+		string uriString = ReplaceProtocols(baseUri.OriginalString, NativeDb.Protocol, passiveProtocol);
 
 		Uri passiveBaseUri = new(uriString);
 
-		uriString = ReplaceProtocols(relativeUri.OriginalString, DbNative.Protocol, passiveProtocol);
+		uriString = ReplaceProtocols(relativeUri.OriginalString, NativeDb.Protocol, passiveProtocol);
 
 		Uri passiveRelativeUri = new(uriString);
 
@@ -69,8 +69,8 @@ public class SqlStyleUriParser(GenericUriParserOptions options) : GenericUriPars
 
 	protected override bool IsWellFormedOriginalString(Uri uri)
 	{
-		string passiveProtocol = "passive" + DbNative.Protocol;
-		string uriString = ReplaceProtocols(uri.OriginalString, DbNative.Protocol, passiveProtocol);
+		string passiveProtocol = "passive" + NativeDb.Protocol;
+		string uriString = ReplaceProtocols(uri.OriginalString, NativeDb.Protocol, passiveProtocol);
 
 		Uri passiveUri = new(uriString);
 
@@ -88,17 +88,17 @@ public class SqlStyleUriParser(GenericUriParserOptions options) : GenericUriPars
 
 	protected override string Resolve(Uri baseUri, Uri relativeUri, out UriFormatException parsingError)
 	{
-		string passiveProtocol = "passive" + DbNative.Protocol;
-		string uriString = ReplaceProtocols(baseUri.OriginalString, DbNative.Protocol, passiveProtocol);
+		string passiveProtocol = "passive" + NativeDb.Protocol;
+		string uriString = ReplaceProtocols(baseUri.OriginalString, NativeDb.Protocol, passiveProtocol);
 
 		Uri passiveBaseUri = new(uriString);
 
 
-		uriString = ReplaceProtocols(relativeUri.OriginalString, DbNative.Protocol, passiveProtocol);
+		uriString = ReplaceProtocols(relativeUri.OriginalString, NativeDb.Protocol, passiveProtocol);
 		Uri passiveRelativeUri = new(uriString);
 
 		uriString = base.Resolve(passiveBaseUri, passiveRelativeUri, out parsingError);
-		uriString = ReplaceProtocols(uriString, passiveProtocol, DbNative.Protocol);
+		uriString = ReplaceProtocols(uriString, passiveProtocol, NativeDb.Protocol);
 
 		return uriString;
 	}

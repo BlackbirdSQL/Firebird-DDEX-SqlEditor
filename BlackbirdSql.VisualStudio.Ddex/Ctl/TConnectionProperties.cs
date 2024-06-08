@@ -5,13 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 // =========================================================================================================
 //										TConnectionProperties Class
@@ -33,7 +36,7 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 	/// </summary>
 	public TConnectionProperties() : base()
 	{
-		// Tracer.Trace(GetType(), "TConnectionProperties.TConnectionProperties()");
+		// Tracer.Trace(typeof(TConnectionProperties), ".ctor");
 	}
 
 
@@ -63,24 +66,32 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 
 
 	/// <summary>
-	/// Determines if the connection properties object is sufficiently complete (inclusive of password)
-	/// to establish a database connection
+	/// Determines if the connection properties object is sufficiently complete,
+	/// inclusive of password for connections other than Properties settings
+	/// connection strings, in order to establish a database connection.
 	/// </summary>
 	public override bool IsComplete
 	{
 		get
 		{
-			IEnumerable<Describer> describers = (ConnectionSource == EnConnectionSource.Application)
-				? Csb.PublicMandatoryKeys : Csb.MandatoryKeys;
-
-			foreach (Describer describer in describers)
+			try
 			{
-				if (!base.TryGetValue(describer.Key, out object value) || string.IsNullOrEmpty((string)value))
+				IEnumerable<Describer> describers = (ConnectionSource == EnConnectionSource.Application)
+					? Csb.PublicMandatoryKeys : Csb.MandatoryKeys;
+
+				foreach (Describer describer in describers)
 				{
-					return false;
+					if (!base.TryGetValue(describer.Key, out object value) || string.IsNullOrEmpty((string)value))
+					{
+						return false;
+					}
 				}
 			}
-
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
 
 			return true;
 		}
@@ -98,12 +109,12 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 
 	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb, Attribute[] attributes)
 	{
-		throw new NotImplementedException("TConnectionProperties.GetCsbProperties(DbConnectionStringBuilder, Attribute[])");
+		return (PropertyDescriptorCollection)Diag.ThrowException(new NotImplementedException("TConnectionProperties.GetCsbProperties(DbConnectionStringBuilder, Attribute[])"));
 	}
 
 	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb)
 	{
-		throw new NotImplementedException("TConnectionProperties.GetCsbProperties(DbConnectionStringBuilder)");
+		return (PropertyDescriptorCollection)Diag.ThrowException(new NotImplementedException("TConnectionProperties.GetCsbProperties(DbConnectionStringBuilder)"));
 	}
 
 

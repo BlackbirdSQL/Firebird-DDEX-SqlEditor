@@ -538,241 +538,6 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &gt;  Cancelled. {0}% completed. {1} took {2}ms..
-        /// </summary>
-        public static string LinkageParserCancelled {
-            get {
-                return ResourceManager.GetString("LinkageParserCancelled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &gt;  Cancelled {0} sequence linkage..
-        /// </summary>
-        public static string LinkageParserCancelledCatalog {
-            get {
-                return ResourceManager.GetString("LinkageParserCancelledCatalog", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Switched {0} sequence linkage to UI thread..
-        /// </summary>
-        public static string LinkageParserCatalogSwitchedToUiThread {
-            get {
-                return ResourceManager.GetString("LinkageParserCatalogSwitchedToUiThread", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}% completed. {1}
-        ///Linkage completed in {2}ms..
-        /// </summary>
-        public static string LinkageParserCompleted {
-            get {
-                return ResourceManager.GetString("LinkageParserCompleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Completed {0} sequence linkage in {1}ms..
-        /// </summary>
-        public static string LinkageParserCompletedCatalog {
-            get {
-                return ResourceManager.GetString("LinkageParserCompletedCatalog", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &gt;  Pausing async sequence linkage..
-        /// </summary>
-        public static string LinkageParserPausingAsync {
-            get {
-                return ResourceManager.GetString("LinkageParserPausingAsync", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}% completed. {1}.
-        /// </summary>
-        public static string LinkageParserPercentCompletedStage {
-            get {
-                return ResourceManager.GetString("LinkageParserPercentCompletedStage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}% completed. {1} took {2}ms..
-        /// </summary>
-        public static string LinkageParserPercentCompletedStageElapsed {
-            get {
-                return ResourceManager.GetString("LinkageParserPercentCompletedStageElapsed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &gt;  Resuming async sequence linkage..
-        /// </summary>
-        public static string LinkageParserResumingAsync {
-            get {
-                return ResourceManager.GetString("LinkageParserResumingAsync", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Resuming {0} sequence linkage..
-        /// </summary>
-        public static string LinkageParserResumingCatalog {
-            get {
-                return ResourceManager.GetString("LinkageParserResumingCatalog", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parsed and linked {0} Triggers..
-        /// </summary>
-        public static string LinkageParserStageCompleted {
-            get {
-                return ResourceManager.GetString("LinkageParserStageCompleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selecting Generators....
-        /// </summary>
-        public static string LinkageParserStageGeneratorsBegin {
-            get {
-                return ResourceManager.GetString("LinkageParserStageGeneratorsBegin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT Generators.
-        /// </summary>
-        public static string LinkageParserStageGeneratorsEnd {
-            get {
-                return ResourceManager.GetString("LinkageParserStageGeneratorsEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Populating Linkage Table....
-        /// </summary>
-        public static string LinkageParserStageLinkingBegin {
-            get {
-                return ResourceManager.GetString("LinkageParserStageLinkingBegin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Populate Linkage Table.
-        /// </summary>
-        public static string LinkageParserStageLinkingEnd {
-            get {
-                return ResourceManager.GetString("LinkageParserStageLinkingEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Populating Sequence Table....
-        /// </summary>
-        public static string LinkageParserStageSequencesBegin {
-            get {
-                return ResourceManager.GetString("LinkageParserStageSequencesBegin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Populate Sequence Table.
-        /// </summary>
-        public static string LinkageParserStageSequencesEnd {
-            get {
-                return ResourceManager.GetString("LinkageParserStageSequencesEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT TriggerDependencies.
-        /// </summary>
-        public static string LinkageParserStageTriggerDependenciesEnd {
-            get {
-                return ResourceManager.GetString("LinkageParserStageTriggerDependenciesEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selecting TriggerDependencies....
-        /// </summary>
-        public static string LinkageParserStageTriggerDependenciesStart {
-            get {
-                return ResourceManager.GetString("LinkageParserStageTriggerDependenciesStart", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selecting Triggers....
-        /// </summary>
-        public static string LinkageParserStageTriggersBegin {
-            get {
-                return ResourceManager.GetString("LinkageParserStageTriggersBegin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT Triggers.
-        /// </summary>
-        public static string LinkageParserStageTriggersEnd {
-            get {
-                return ResourceManager.GetString("LinkageParserStageTriggersEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Started.
-        /// </summary>
-        public static string LinkageParserStarted {
-            get {
-                return ResourceManager.GetString("LinkageParserStarted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &gt;  Switched sequence linkage to UI thread..
-        /// </summary>
-        public static string LinkageParserSwitchedToUiThread {
-            get {
-                return ResourceManager.GetString("LinkageParserSwitchedToUiThread", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}  sequence linkage.
-        /// </summary>
-        public static string LinkageParserTaskHandlerTitle {
-            get {
-                return ResourceManager.GetString("LinkageParserTaskHandlerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Updating sequence linkage..
-        /// </summary>
-        public static string LinkageParserUpdating {
-            get {
-                return ResourceManager.GetString("LinkageParserUpdating", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Updating {0} sequence linkage..
-        /// </summary>
-        public static string LinkageParserUpdatingCatalog {
-            get {
-                return ResourceManager.GetString("LinkageParserUpdatingCatalog", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The properties are not extensible..
         /// </summary>
         public static string Properties_NotExtensible {
@@ -800,7 +565,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}[{1}] {2}.
+        ///   Looks up a localized string similar to {0} [{1}] {2}.
         /// </summary>
         public static string RunningConnectionTableEdmDataset {
             get {
@@ -809,7 +574,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}[{1}] {2}.
+        ///   Looks up a localized string similar to {0} [{1}] {2}.
         /// </summary>
         public static string RunningConnectionTableProjectDatasetId {
             get {
@@ -818,7 +583,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}{1}.
+        ///   Looks up a localized string similar to {0} {1}.
         /// </summary>
         public static string RunningConnectionTableUtilityDatasetId {
             get {

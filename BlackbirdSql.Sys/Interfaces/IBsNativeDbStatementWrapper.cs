@@ -6,10 +6,11 @@ using System.Data;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Events;
 
-
-
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.NativeDbStatementServiceGuid)]
 
@@ -26,6 +27,7 @@ public interface IBsNativeDbStatementWrapper : IDisposable
 
 	EnSqlExecutionType ExecutionType { get; }
 
+	int Index { get; }
 	long RowsSelected { get; }
 
 	long TotalRowsSelected { get; }
@@ -42,17 +44,13 @@ public interface IBsNativeDbStatementWrapper : IDisposable
 	event EventHandler<StatementExecutionEventArgs> AfterExecutionEvent;
 
 
-	void Cancel();
+	// void Cancel();
 
 	void DisposeCommand();
 
-	int AsyncExecute(bool autoCommit);
+	Task<int> ExecuteAsync(bool autoCommit, CancellationToken cancelToken);
 
-	bool AsyncNextResult();
-
-	bool AsyncRead();
-
-	void GeneratePlan();
+	Task<bool> GeneratePlanAsync(CancellationToken cancelToken);
 
 	void UpdateRowsSelected(long rowsSelected);
 }

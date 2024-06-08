@@ -10,7 +10,7 @@ using System.Threading;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.NativeDbConnectionServiceGuid)]
 

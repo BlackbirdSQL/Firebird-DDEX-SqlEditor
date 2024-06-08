@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Sys.Events;
 
-
-
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.NativeDbConnectionWrapperServiceGuid)]
 

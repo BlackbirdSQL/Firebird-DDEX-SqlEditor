@@ -8,7 +8,7 @@ using System.Security;
 using System.Threading;
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Extensions;
 
 
 /// <summary>
@@ -106,7 +106,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	//     Gets a collection containing the _Values in the System.Collections.Generic.Dictionary`2.
 	//
 	// Returns:
-	//     A BlackbirdSql.Core.Extensions.PublicValueCollection<TKey, TValue> containing the _Values
+	//     A BlackbirdSql.Sys.Extensions.PublicValueCollection<TKey, TValue> containing the _Values
 	//     in the System.Collections.Generic.Dictionary`2.
 	public PublicValueCollection<TKey, TValue> Values => _Values ??= new(this);
 
@@ -399,14 +399,14 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 
 	//
 	// Summary:
-	//     Initializes a new instance of the BlackbirdSql.Core.Extensions.PublicDictionary class
+	//     Initializes a new instance of the BlackbirdSql.Sys.Extensions.PublicDictionary class
 	//     that contains elements copied from the specified System.Collections.Generic.IDictionary`2
 	//     and uses the specified System.Collections.Generic.IEqualityComparer`1.
 	//
 	// Parameters:
 	//   dictionary:
 	//     The System.Collections.Generic.IDictionary`2 whose elements are copied to the
-	//     new BlackbirdSql.Core.Extensions.PublicDictionary.
+	//     new BlackbirdSql.Sys.Extensions.PublicDictionary.
 	//
 	//   _Comparer:
 	//     The System.Collections.Generic.IEqualityComparer`1 implementation to use when

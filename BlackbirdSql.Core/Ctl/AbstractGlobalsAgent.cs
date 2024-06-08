@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Xml;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Sys;
 
 

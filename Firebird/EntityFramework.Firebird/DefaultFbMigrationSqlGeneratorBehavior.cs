@@ -16,7 +16,6 @@
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
 using System.Collections.Generic;
-using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird;
 
@@ -24,7 +23,6 @@ public class DefaultFbMigrationSqlGeneratorBehavior : IFbMigrationSqlGeneratorBe
 {
 	public virtual IEnumerable<string> CreateIdentityForColumn(string columnName, string tableName)
 	{
-		// Diag.Trace();
 		var identitySequenceName = CreateIdentitySequenceName(columnName, tableName);
 		using (var writer = FbMigrationSqlGenerator.SqlWriter())
 		{
@@ -81,7 +79,6 @@ public class DefaultFbMigrationSqlGeneratorBehavior : IFbMigrationSqlGeneratorBe
 
 	public virtual IEnumerable<string> DropIdentityForColumn(string columnName, string tableName)
 	{
-		// Diag.Trace();
 		var triggerName = CreateTriggerName(columnName, tableName);
 		using (var writer = FbMigrationSqlGenerator.SqlWriter())
 		{
@@ -109,13 +106,11 @@ public class DefaultFbMigrationSqlGeneratorBehavior : IFbMigrationSqlGeneratorBe
 
 	protected virtual string CreateTriggerName(string columnName, string tableName)
 	{
-		// Diag.Trace();
 		return string.Format("ID_{0}_{1}", tableName, columnName);
 	}
 
 	protected virtual string CreateIdentitySequenceName(string columnName, string tableName)
 	{
-		// Diag.Trace();
 		return "GEN_IDENTITY";
 	}
 }

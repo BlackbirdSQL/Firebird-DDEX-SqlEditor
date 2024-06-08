@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Sys;
-
+using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 

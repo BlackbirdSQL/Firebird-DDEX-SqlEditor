@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Extensions;
 
 
 // =========================================================================================================
@@ -569,7 +569,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	protected override void OnCurrentChanged(EventArgs e)
 	{
 		// if (!InvalidatedChanging)
-		// 	Invalidated = false;
+		// 	IsInvalidated = false;
 
 		base.OnCurrentChanged(e);
 

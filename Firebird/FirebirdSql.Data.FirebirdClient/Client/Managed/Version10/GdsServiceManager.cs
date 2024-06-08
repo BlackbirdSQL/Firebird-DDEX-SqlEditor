@@ -19,7 +19,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed.Version10;
@@ -73,7 +72,6 @@ internal class GdsServiceManager : ServiceManagerBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			_database.Detach();
 			throw IscException.ForIOException(ex);
 		}
@@ -88,7 +86,6 @@ internal class GdsServiceManager : ServiceManagerBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			await _database.DetachAsync(cancellationToken).ConfigureAwait(false);
 			throw IscException.ForIOException(ex);
 		}
@@ -132,7 +129,6 @@ internal class GdsServiceManager : ServiceManagerBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 		finally
@@ -143,7 +139,6 @@ internal class GdsServiceManager : ServiceManagerBase
 			}
 			catch (IOException ex)
 			{
-				Diag.Dug(ex);
 				throw IscException.ForIOException(ex);
 			}
 			finally
@@ -166,7 +161,6 @@ internal class GdsServiceManager : ServiceManagerBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 		finally
@@ -177,7 +171,6 @@ internal class GdsServiceManager : ServiceManagerBase
 			}
 			catch (IOException ex)
 			{
-				Diag.Dug(ex);
 				throw IscException.ForIOException(ex);
 			}
 			finally
@@ -209,7 +202,6 @@ internal class GdsServiceManager : ServiceManagerBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -234,7 +226,6 @@ internal class GdsServiceManager : ServiceManagerBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -265,7 +256,6 @@ internal class GdsServiceManager : ServiceManagerBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -295,7 +285,6 @@ internal class GdsServiceManager : ServiceManagerBase
 		}
 		catch (IOException ex)
 		{
-			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}

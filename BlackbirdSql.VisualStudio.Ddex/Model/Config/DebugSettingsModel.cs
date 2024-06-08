@@ -4,7 +4,6 @@
 using System.ComponentModel;
 using System.Drawing.Design;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Controls.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
@@ -12,6 +11,7 @@ using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 using GlobalizedCategoryAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedCategoryAttribute;
 using GlobalizedDisplayNameAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
+using BlackbirdSql.Core.Interfaces;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;

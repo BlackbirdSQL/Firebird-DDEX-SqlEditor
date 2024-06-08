@@ -8,9 +8,7 @@ using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using System.Windows.Media;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 

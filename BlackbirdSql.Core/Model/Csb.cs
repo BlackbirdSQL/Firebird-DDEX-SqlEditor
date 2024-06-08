@@ -5,11 +5,13 @@ using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services;
 
-using static BlackbirdSql.SysConstants;
+using static BlackbirdSql.Sys.SysConstants;
 
 
 
@@ -161,12 +163,59 @@ public class Csb : AbstractCsb, ICloneable
 	// ---------------------------------------------------------------------------------
 	public static new DescriberDictionary Describers => AbstractCsb.Describers;
 
+
+	/// <summary>
+	/// Returns an enumerable of all connection describers of parameters that appear in the 'Advanced'
+	/// dialog of a connection dialog.
+	/// See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public static IEnumerable<Describer> AdvancedKeys => Describers.AdvancedKeys;
+
+	/// <summary>
+	/// Returns an enumerable of all connection describers that are valid connection parameters
+	/// for the underlying native database engine.
+	/// See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public static IEnumerable<Describer> ConnectionKeys => Describers.ConnectionKeys;
+
+	/// <summary>
+	/// Returns an enumerable of all connection key describers in the <see cref="DescriberDictionary"/>.
+	/// A <see cref="Describer"/> is a detailed class equivalent of a descriptor. The database engine's
+	/// <see cref="DescriberDictionary"/> is defined in the native database
+	/// <see cref="IBsNativeDatabaseEngine"/> service.
+	/// </summary>
 	public static IEnumerable<Describer> DescriberKeys => Describers.DescriberKeys;
+
+	/// <summary>
+	/// Returns a <see cref="Describer"/> enumerable of all equivalency connection parameters as defined in the User
+	/// Options. Equivalency parameters are connection parameters that could produce differing
+	/// result sets. See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public static IEnumerable<Describer> EquivalencyKeys => Describers.EquivalencyKeys;
+
+	/// <summary>
+	/// MandatoryKeys include the minimum set of connection parameters required to establish
+	/// a connection including unsafe (non-public) parameters. eg. Passwords.
+	/// See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public static IEnumerable<Describer> MandatoryKeys => Describers.MandatoryKeys;
+
+	/// <summary>
+	/// PublicMandatoryKeys is a subset of <see cref="MandatoryKeys"/> that includes the minimum set
+	/// of connection parameters required to establish a connection excluding unsafe (non-public)
+	/// parameters. eg. Passwords.
+	/// See the <seealso cref="DescriberKeys"/> enumerable for further information.
+	/// </summary>
 	public static IEnumerable<Describer> PublicMandatoryKeys => Describers.PublicMandatoryKeys;
+
+	/// <summary>
+	/// The weak equivalency keys enumerable is a subset of <see cref="EquivalencyKeys"/> and does
+	/// not include the Application Name equivalency key if it has been included as an equivalency
+	/// key in User options.
+	/// This enumerable is used by the running connection table (Rct) and LinkageParser to identify
+	/// equivalent connections that are differentiated by the application name parameter only, and
+	/// are therefore functionally equivalent.
+	/// </summary>
 	public static IEnumerable<Describer> WeakEquivalencyKeys => Describers.WeakEquivalencyKeys;
 
 	/// <summary>
@@ -226,7 +275,7 @@ public class Csb : AbstractCsb, ICloneable
 		}
 		else if (!string.IsNullOrWhiteSpace(datasetId))
 		{
-			string derivedConnectionName = C_DatasetKeyFmt.FmtRes(DataSource, datasetId);
+			string derivedConnectionName = DatasetKeyFormat.FmtRes(DataSource, datasetId);
 
 			if (!derivedConnectionName.Equals(datasetKey))
 				Remove(C_KeyExDatasetKey);
@@ -279,7 +328,6 @@ public class Csb : AbstractCsb, ICloneable
 	}
 
 
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Performs a stored equivalency and validity check against connections. Many
@@ -293,7 +341,7 @@ public class Csb : AbstractCsb, ICloneable
 	/// <param name="obj"></param>
 	/// <returns></returns>
 	// ---------------------------------------------------------------------------------
-	public bool Invalidated(IDbConnection connection)
+	public bool IsInvalidated(IDbConnection connection)
 	{
 		if (connection == null) return true;
 
@@ -308,8 +356,22 @@ public class Csb : AbstractCsb, ICloneable
 		// perform equivalency checks between the connection strings.
 		// This will be fast low-overhead call and suitable for operations like QueryStatus()
 		// event handling.
-		return _Stamp != RctManager.Stamp || _EquivalencyConnectionString != connection.ConnectionString
-			|| !SafeDatasetMoniker.Equals(_EquivalencyMoniker, StringComparison.InvariantCulture);
+
+		// If stamp hasn't changed, nothing's changed.
+
+		if (_Stamp == RctManager.Stamp)
+			return false;
+
+		// If the connection string has changed.
+
+		if (_EquivalencyConnectionString != connection.ConnectionString)
+			return true;
+
+		// Finally check if the DatasetKey has changed. We have to do this so that controls displaying it can update
+		// themselves if it's changed.
+
+		return !DatasetKey.Equals(RctManager.GetDatasetKey(_EquivalencyMoniker));
+
 	}
 
 
@@ -370,7 +432,7 @@ public class Csb : AbstractCsb, ICloneable
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Registers the state of the <see cref="RunningConnectionTable"/> and connection
-	/// data for future validity checks by <see cref="Invalidated(IDbConnection)"/>.
+	/// data for future validity checks by <see cref="IsInvalidated(IDbConnection)"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public void RegisterValidationState(string dbConnectionString)
@@ -405,7 +467,7 @@ public class Csb : AbstractCsb, ICloneable
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Updates the csa with the state of the <see cref="RunningConnectionTable"/> for
-	/// future validity checks by <see cref="Invalidated(IDbConnection)"/>.
+	/// future validity checks by <see cref="IsInvalidated(IDbConnection)"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public void UpdateValidationRctState()
@@ -468,8 +530,8 @@ public class Csb : AbstractCsb, ICloneable
 		// Now that the datasetId is established, we can determined its default derived value
 		// and the default derived value of the datasetKey.
 		string derivedDatasetId = string.IsNullOrEmpty(datasetId) ? dataset : datasetId;
-		string derivedConnectionName = C_DatasetKeyFmt.FmtRes(DataSource, derivedDatasetId);
-		string derivedAlternateConnectionName = C_DatasetKeyAlternateFmt.FmtRes(DataSource, derivedDatasetId);
+		string derivedConnectionName = DatasetKeyFormat.FmtRes(DataSource, derivedDatasetId);
+		string derivedAlternateConnectionName = DatasetKeyAlternateFormat.FmtRes(DataSource, derivedDatasetId);
 
 
 		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived

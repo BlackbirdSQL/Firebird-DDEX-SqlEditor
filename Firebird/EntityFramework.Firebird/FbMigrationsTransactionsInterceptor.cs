@@ -22,7 +22,6 @@ using System.Data.Entity.Infrastructure.Interception;
 using System.Diagnostics;
 using System.Linq;
 using FirebirdSql.Data.FirebirdClient;
-using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird;
 
@@ -32,7 +31,6 @@ class FbMigrationsTransactionsInterceptor : IDbConnectionInterceptor
 {
 	public void BeginningTransaction(DbConnection connection, BeginTransactionInterceptionContext interceptionContext)
 	{
-		// Diag.Trace();
 		if (connection is FbConnection
 			&& interceptionContext.IsolationLevel == IsolationLevel.Serializable
 			&& IsInMigrations())
@@ -43,7 +41,6 @@ class FbMigrationsTransactionsInterceptor : IDbConnectionInterceptor
 
 	public static bool IsInMigrations()
 	{
-		// Diag.Trace();
 		var stackTrace = new StackTrace(false);
 		return stackTrace.GetFrames().Any(f => f.GetMethod().ReflectedType?.Namespace.Equals("System.Data.Entity.Migrations", StringComparison.Ordinal) ?? false);
 	}

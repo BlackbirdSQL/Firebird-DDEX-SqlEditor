@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using BlackbirdSql.Sys.Ctl;
 
+namespace BlackbirdSql.Sys.Interfaces;
 
-namespace BlackbirdSql.Sys;
-
-public interface IBEnumerableDescribers<T> : IEnumerable<Describer> where T: EnumeratorDescribers
+public interface IBEnumerableDescribers<T> : IEnumerable<Describer> where T : EnumeratorDescribers
 {
 	// IEnumerable<Describer> DescriberEnumerator { get; }
 }

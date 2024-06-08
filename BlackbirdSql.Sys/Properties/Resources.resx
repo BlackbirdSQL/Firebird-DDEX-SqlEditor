@@ -117,7 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DatasetKeyAlternateFormat" xml:space="preserve">
+    <value>Database["{0} ({1})"]</value>
+  </data>
+  <data name="DatasetKeyFormat" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
   <data name="ExceptionDuplicateSingletonInstances" xml:space="preserve">
     <value>Singleton instance already exists. Attempt to create duplicate {0} instances.</value>
+  </data>
+  <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
+    <value>Events already enabled.</value>
   </data>
 </root>

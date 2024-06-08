@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 
 public interface IBTrace // : IBExportable

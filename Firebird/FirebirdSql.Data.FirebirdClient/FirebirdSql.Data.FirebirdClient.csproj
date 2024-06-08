@@ -10,16 +10,15 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<PropertyGroup>
+		<Version>$(ProviderVersion)</Version>
 		<AssemblyTitle>NETProvider - ADO.NET Data Provider</AssemblyTitle>
-		<Copyright>(c) 2002-2021</Copyright>
+		<Copyright>(c) 2002-$(CopyrightEndYear)</Copyright>
 	</PropertyGroup>
 	<PropertyGroup>
 		<PackageId>FirebirdSql.Data.FirebirdClient</PackageId>
 		<Title>Firebird ADO.NET Data provider</Title>
 		<PackageDescription>Firebird ADO.NET data provider</PackageDescription>
 		<PackageTags>firebird;firebirsql;firebirdclient;adonet;database</PackageTags>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DefineConstants>TRACE</DefineConstants>
@@ -28,35 +27,47 @@
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Include="..\..\BlackbirdSql.Core\Root\Diag.cs" Link="Diag.cs" />
-	</ItemGroup>
-	<ItemGroup>
 		<EmbeddedResource Include="Schema\FbMetaData.xml" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Include="..\README.md" Pack="true" PackagePath="" />
-		<None Include="..\license.txt" Pack="true" PackagePath="" />
-		<None Include="..\firebird-logo.png" Pack="true" PackagePath="" />
-		<None Include="..\..\Resources\blackbird-logo.png" Pack="true" PackagePath="" />
+		<None Include="$(SolutionDir)\Docs\license.txt" Pack="true" PackagePath="" Link="Properties\license.txt" />
+		<None Include="$(SolutionDir)\Docs\CHANGELOG.md" Pack="true" PackagePath="" Link="Properties\CHANGELOG.md" />
+		<None Include="$(SolutionDir)\Docs\README.md" Pack="true" PackagePath="" Link="Properties\README.md" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="$(SolutionDir)\Resources\blackbird-128x128.png" Pack="true" PackagePath="" Link="Resources\blackbird-128x128.png" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 		<Reference Include="System.Transactions" />
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
 	</ItemGroup>
+	<!--
+	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net5.0'">
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
 	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
+	</ItemGroup>
+	-->
 	<ItemGroup>
-	  <PackageReference Include="ConfigureAwaitChecker.Analyzer" Version="5.0.0.1">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="IndexRange" Version="1.0.2" />
-	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
+		<PackageReference Include="ConfigureAwaitChecker.Analyzer" Version="5.0.0.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="FirebirdClient\FbBatchCommand.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Resources\" />
 	</ItemGroup>
 	<Import Project="..\FirebirdSql.Data.External\FirebirdSql.Data.External.projitems" Label="Shared" />
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command=":: Use the native builds for Release&#xD;&#xA;if &quot;$(Configuration)&quot; == &quot;Release&quot; (&#xD;&#xA;copy /v /y /b $(SolutionDir)Firebird\NetProvider\FirebirdSql.Data.FirebirdClient\9.1.1\lib\$(TargetFramework)\FirebirdSql.Data.FirebirdClient.dll $(ProjectDir)$(OutDir)&#xD;&#xA;)" />
-	</Target>
 </Project>

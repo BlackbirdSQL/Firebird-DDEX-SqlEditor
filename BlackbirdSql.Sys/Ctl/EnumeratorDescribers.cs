@@ -1,9 +1,9 @@
 ﻿
 using System.Collections;
 using System.Collections.Generic;
+using BlackbirdSql.Sys.Extensions;
 
-
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Ctl;
 
 public class EnumeratorDescribers : IEnumerator, IEnumerator<Describer>
 {

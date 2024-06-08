@@ -433,7 +433,7 @@ public abstract class AbstractRdtManager : IDisposable
 	{
 		if (!string.IsNullOrEmpty(fullFilePath))
 		{
-			IList<string> dirtyFiles = new List<string> { fullFilePath };
+			IList<string> dirtyFiles = [fullFilePath];
 			SaveDirtyFiles(dirtyFiles);
 		}
 	}
@@ -452,7 +452,7 @@ public abstract class AbstractRdtManager : IDisposable
 			{
 				uint rdtCookie = GetRdtCookieImpl(mkDocument);
 				___(RdtSvc.NotifyOnBeforeSave(rdtCookie));
-				if (vsPersistDocData.SaveDocData(VSSAVEFLAGS.VSSAVE_Save, out var _, out var pfSaveCanceled) != 0 || pfSaveCanceled != 0)
+				if (vsPersistDocData.SaveDocData(VSSAVEFLAGS.VSSAVE_Save, out var _, out var pfSaveCancelled) != 0 || pfSaveCancelled != 0)
 				{
 					InvalidOperationException ex = new(string.Format(CultureInfo.CurrentCulture, Resources.Exception_FailedToSaveFile, mkDocument));
 					Diag.Dug(ex);

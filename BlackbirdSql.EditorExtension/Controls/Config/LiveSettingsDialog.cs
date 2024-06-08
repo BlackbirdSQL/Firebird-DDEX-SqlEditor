@@ -2,8 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ToolsOptions.CurrentWndOptions
 
 using System.Windows.Forms;
-using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension.Ctl.Config;
 using BlackbirdSql.EditorExtension.Properties;
 
@@ -14,6 +13,7 @@ public sealed class LiveSettingsDialog : AbstractLiveSettingsDialog
 
 	public LiveSettingsDialog(IBTransientSettings settings)
 	{
+		InitializeComponent();
 		InitializeDialog(settings);
 	}
 

@@ -22,7 +22,6 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Types;
 
@@ -765,12 +764,7 @@ sealed class XdrReaderWriter : IXdrReader, IXdrWriter
 		{
 			16 => TypeEncoder.EncodeDec16(value),
 			34 => TypeEncoder.EncodeDec34(value),
-			_ => ((Func<byte[]>)(() =>
-			{
-				ArgumentOutOfRangeException exbb = new();
-					Diag.Dug(exbb);
-					throw exbb;
-			}))(),
+			_ => throw new ArgumentOutOfRangeException(),
 		});
 	}
 	public ValueTask WriteAsync(FbDecFloat value, int size, CancellationToken cancellationToken = default)
@@ -779,12 +773,7 @@ sealed class XdrReaderWriter : IXdrReader, IXdrWriter
 		{
 			16 => TypeEncoder.EncodeDec16(value),
 			34 => TypeEncoder.EncodeDec34(value),
-			_ => ((Func<byte[]>)(() =>
-				{
-					ArgumentOutOfRangeException exbb = new();
-					Diag.Dug(exbb);
-					throw exbb;
-				}))(),
+			_ => throw new ArgumentOutOfRangeException(),
 		}, cancellationToken);
 	}
 

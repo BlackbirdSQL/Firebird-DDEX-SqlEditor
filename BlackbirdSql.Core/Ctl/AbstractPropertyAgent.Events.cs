@@ -3,11 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 
 
 namespace BlackbirdSql.Core;
@@ -130,8 +127,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	{
 		if (!ReceiveWeakEvent(managerType, sender, e))
 		{
-			UiTracer.TraceSource.AssertTraceEvent(condition: false, TraceEventType.Error,
-				EnUiTraceId.UiInfra, "Weak event was not handled");
+			Diag.Dug(new ArgumentException("Weak event was not handled"));
 			return false;
 		}
 

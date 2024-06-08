@@ -246,7 +246,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         ///Glyph prefix legend:
         /// ⛭ Project Settings (App.Config) connections.
         /// ⛮ Entity Data Model (edmx) connections.
-        /// ֎ FlameRobin connections.
+        /// ⧉ FlameRobin connections.
         ///Server Explorer connections and connections modified during a Session have no glyph.
         ///.
         /// </summary>

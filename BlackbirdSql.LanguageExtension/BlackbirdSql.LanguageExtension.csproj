@@ -11,15 +11,16 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.LanguageExtension.snk</AssemblyOriginatorKeyFile>
-		<ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-	  <NoWarn>1701;1702;CS0618,CS0169,CS0649</NoWarn>
+	  <NoWarn>1701;1702;CS0618</NoWarn>
+	  <WarningsAsErrors>$(WarningsAsErrors);NU1605;CS0169;CS0649</WarningsAsErrors>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-	  <NoWarn>1701;1702;CS0618,CS0169,CS0649</NoWarn>
+	  <NoWarn>1701;1702;CS0618</NoWarn>
+	  <WarningsAsErrors>$(WarningsAsErrors);NU1605;CS0169;CS0649</WarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -40,8 +41,8 @@
 	  <Compile Include="Ctl\LsbDeclarations.cs" />
 	  <Compile Include="Model\AbstractMetadataProvider.cs" />
 	  <Compile Include="Model\AbstractMetadataProviderProvider.cs" />
-	  <Compile Include="Model\Interfaces\IBBinderQueue.cs" />
-	  <Compile Include="Model\Interfaces\IBMetadataProviderProvider.cs" />
+	  <Compile Include="Interfaces\IBBinderQueue.cs" />
+	  <Compile Include="Interfaces\IBMetadataProviderProvider.cs" />
 	  <Compile Include="Services\LsbLanguageService.cs" />
 	  <Compile Include="Model\LsbMetadataFactory.cs" />
 	  <Compile Include="Model\LsbMetadataProvider.cs" />
@@ -86,12 +87,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="System.Runtime.Caching" />
+	  <ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
+	  <ProjectReference Include="..\BlackbirdSql.Shared\BlackbirdSql.Shared.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
-	  <ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
+	  <Folder Include="Resources\" />
 	</ItemGroup>
 
 </Project>

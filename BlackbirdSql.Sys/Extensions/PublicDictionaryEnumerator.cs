@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Extensions;
 
 
 public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePair<TKey, TValue>>, IDisposable, IEnumerator, IDictionaryEnumerator
@@ -26,7 +26,7 @@ public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePai
 	//     Gets the element at the _Current position of the enumerator.
 	//
 	// Returns:
-	//     The element in the BlackbirdSql.Core.Extensions.PublicDictionary at the _Current position
+	//     The element in the BlackbirdSql.Sys.Extensions.PublicDictionary at the _Current position
 	//     of the enumerator.
 #pragma warning disable IDE0251 // Make member 'readonly'
 	public KeyValuePair<TKey, TValue> Current => _Current;
@@ -153,7 +153,7 @@ public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePai
 
 	//
 	// Summary:
-	//     Advances the enumerator to the next element of the BlackbirdSql.Core.Extensions.PublicDictionary.
+	//     Advances the enumerator to the next element of the BlackbirdSql.Sys.Extensions.PublicDictionary.
 	//
 	// Returns:
 	//     true if the enumerator was successfully advanced to the next element; false if
@@ -183,7 +183,7 @@ public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePai
 
 	//
 	// Summary:
-	//     Releases all resources used by the BlackbirdSql.Core.Extensions.PublicDictionary.Enumerator.
+	//     Releases all resources used by the BlackbirdSql.Sys.Extensions.PublicDictionary.Enumerator.
 #pragma warning disable IDE0251 // Make member 'readonly'
 	public void Dispose()
 #pragma warning restore IDE0251 // Make member 'readonly'

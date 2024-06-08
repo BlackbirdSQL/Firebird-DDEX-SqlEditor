@@ -4,22 +4,20 @@ using System.Data;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
+using BlackbirdSql.Sys.Enums;
 
-
-
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.NativeDbBatchParserServiceGuid)]
 
 
 public interface IBsNativeDbBatchParser : IDisposable
 {
-	CancellationTokenSource AsyncTokenSource { get; }
-	bool Cancelled { get; }
-
 	IDbConnection Connection { get; }
 
-	bool IsAsync { get; }
+	int Current {  get; }
+
 	bool IsLocalConnection { get; }
 
 	public DbDataReader PlanReader { get; }
@@ -33,6 +31,7 @@ public interface IBsNativeDbBatchParser : IDisposable
 
 	EnSqlExecutionType ExecutionType { get; }
 
+	int StatementCount { get; }
 
 	long TotalRowsSelected { get; }
 
@@ -45,16 +44,16 @@ public interface IBsNativeDbBatchParser : IDisposable
 
 	void BeginTransaction();
 
-	void Cancel();
+	// void Cancel();
 
 	bool CloseConnection();
 
-	void CommitTransaction();
+	Task<bool> CommitTransactionAsync(CancellationToken cancelToken);
 
 	IDbConnection RenewConnection(string connectionString);
 
 
-	void RollbackTransaction();
+	Task<bool> RollbackTransactionAsync(CancellationToken cancelToken);
 
 	int Parse();
 

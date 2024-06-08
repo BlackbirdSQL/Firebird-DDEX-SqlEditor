@@ -1,0 +1,674 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Nullable>disable</Nullable>
+		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
+		<RootNamespace>BlackbirdSql.Shared</RootNamespace>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<EnableDefaultPageItems>false</EnableDefaultPageItems>
+		<EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+		<PlatformTarget>x64</PlatformTarget>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Shared.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+		<NoWarn>1701;1702;CS0618</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+		<NoWarn>1701;1702;CS0618</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="Ctl\AbstractDesignerServices.cs" />
+		<Compile Include="Enums\EnCasingStyle.cs" />
+		<Compile Include="Ctl\Config\TransientSettings.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorNewQueryCommand.cs" />
+		<Compile Include="Ctl\Config\PersistentSettings.cs" />
+		<Compile Include="Ctl\DesignerExplorerServices.cs" />
+		<Compile Include="Enums\EnDeadlockPriority.cs" />
+		<Compile Include="Enums\EnLanguageService.cs" />
+		<Compile Include="Events\BeforeOpenDocumentEventArgs.cs" />
+		<Compile Include="Interfaces\IBEditorTransientSettings.cs" />
+		<Compile Include="Controls\Dialogs\FileEncodingDialog.Designer.cs">
+			<DependentUpon>FileEncodingDialog.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Ctl\Commands\SqlEditorTransactionCommitCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorTransactionRollbackCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorToggleTTSCommand.cs" />
+		<Compile Include="Properties\SqlResources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>SqlResources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Interfaces\IBWindowPane.cs" />
+		<Compile Include="Controls\ResultsPanels\StatisticsPropertySet.cs" />
+		<Compile Include="Root\VS.cs" />
+		<None Include="Controls\Graphing\ActualPlanDataReaderNodeBuilder.cs" />
+		<None Include="Controls\Graphing\CursorPlanTypeOperation.cs" />
+		<None Include="Controls\Graphing\CustomZoomDlg.cs" />
+		<None Include="Controls\Graphing\AbstractDataReaderNodeBuilder.cs" />
+		<None Include="Controls\Graphing\DefinedValuesListTypeDefinedValue.cs" />
+		<None Include="Controls\Graphing\DefinedValuesListTypeDefinedValueValueVector.cs" />
+		<None Include="Controls\Graphing\EdgeDisplay.cs" />
+		<None Include="Controls\Graphing\Enums\EnCursorPlanTypeCursorConcurrency.cs" />
+		<None Include="Controls\Graphing\Enums\EnCursorPlanTypeOperationOperationType.cs" />
+		<None Include="Controls\Graphing\Enums\EnCursorType.cs" />
+		<None Include="Controls\Graphing\Enums\EnAffectingConvertWarningTypeConvertIssue.cs" />
+		<None Include="Controls\Graphing\Enums\EnExecutionModeType.cs" />
+		<None Include="Controls\Graphing\Enums\EnItemChoiceType.cs" />
+		<None Include="Controls\Graphing\Enums\EnLogicalOpType.cs" />
+		<None Include="Controls\Graphing\Enums\EnMemoryGrantWarningType.cs" />
+		<None Include="Controls\Graphing\Enums\EnOrderType.cs" />
+		<None Include="Controls\Graphing\Enums\EnParallelismTypeActivationType.cs" />
+		<None Include="Controls\Graphing\Enums\EnPartitionType.cs" />
+		<None Include="Controls\Graphing\Enums\EnPhysicalOpType.cs" />
+		<None Include="Controls\Graphing\Enums\EnReceivePlanTypeOperationOperationType.cs" />
+		<None Include="Controls\Graphing\Enums\EnSubqueryOperationType.cs" />
+		<None Include="Controls\Graphing\Enums\EnTraceFlagScopeType.cs" />
+		<None Include="Controls\Graphing\Enums\EnWaitWarningTypeWaitType.cs" />
+		<None Include="Controls\Graphing\EstimatedPlanDataReaderNodeBuilder.cs" />
+		<None Include="Controls\Graphing\ExpandableArrayWrapper.cs" />
+		<None Include="Controls\Graphing\FloatTypeConverter.cs" />
+		<None Include="Controls\Graphing\Gram\AdaptiveJoinType.cs" />
+		<None Include="Controls\Graphing\Gram\AggregateType.cs" />
+		<None Include="Controls\Graphing\Gram\AssignType.cs" />
+		<None Include="Controls\Graphing\Gram\BatchHashTableBuildType.cs" />
+		<None Include="Controls\Graphing\Gram\BitmapType.cs" />
+		<None Include="Controls\Graphing\Gram\CLRFunctionType.cs" />
+		<None Include="Controls\Graphing\Gram\CollapseType.cs" />
+		<None Include="Controls\Graphing\Gram\CompareType.cs" />
+		<None Include="Controls\Graphing\Gram\ComputeScalarType.cs" />
+		<None Include="Controls\Graphing\Gram\ConcatType.cs" />
+		<None Include="Controls\Graphing\Gram\ConditionalType.cs" />
+		<None Include="Controls\Graphing\Gram\ConstantScanType.cs" />
+		<None Include="Controls\Graphing\Gram\ConstType.cs" />
+		<None Include="Controls\Graphing\Gram\ConvertType.cs" />
+		<None Include="Controls\Graphing\Enums\EnCloneAccessScopeType.cs" />
+		<None Include="Controls\Graphing\Enums\EnArithmeticOperationType.cs" />
+		<None Include="Controls\Graphing\Gram\ArithmeticType.cs" />
+		<None Include="Controls\Graphing\Gram\ColumnGroupType.cs" />
+		<None Include="Controls\Graphing\Gram\ColumnReferenceType.cs" />
+		<None Include="Controls\Graphing\Enums\EnColumnGroupTypeUsage.cs" />
+		<None Include="Controls\Graphing\Gram\ColumnType.cs" />
+		<None Include="Controls\Graphing\Enums\EnCompareOpType.cs" />
+		<None Include="Controls\Graphing\Enums\EnSetPredicateType.cs" />
+		<None Include="Controls\Graphing\Enums\EnStmtInfoTypeStatementOptmEarlyAbortReason.cs" />
+		<None Include="Controls\Graphing\Enums\EnExecutionPlanType.cs" />
+		<None Include="Controls\Graphing\Gram\AbstractStmtInfoType.cs" />
+		<None Include="Controls\Graphing\DiffImageUITypeEditor.cs" />
+		<None Include="Controls\Graphing\Edge.cs" />
+		<None Include="Controls\Graphing\Enums\EnIndexKindType.cs" />
+		<None Include="Controls\Graphing\Enums\EnStorageType.cs" />
+		<None Include="Controls\Graphing\Enums\EnLogicalOperationType.cs" />
+		<None Include="Controls\Graphing\Enums\EnMemoryGrantFeedbackInfoType.cs" />
+		<None Include="Controls\Graphing\Enums\EnItemsChoiceType.cs" />
+		<None Include="Controls\Graphing\ExecutionPlanGraph.cs" />
+		<None Include="Controls\Graphing\ExecutionPlanXML.cs" />
+		<None Include="Controls\Graphing\ExpandableObjectWrapper.cs" />
+		<None Include="Controls\Graphing\Gram\CreateIndexType.cs" />
+		<None Include="Controls\Graphing\Gram\CursorPlanType.cs" />
+		<None Include="Controls\Graphing\Gram\DMLOpType.cs" />
+		<None Include="Controls\Graphing\Gram\ExternalDistributedComputationType.cs" />
+		<None Include="Controls\Graphing\Gram\AffectingConvertWarningType.cs" />
+		<None Include="Controls\Graphing\Gram\ColumnReferenceListType.cs" />
+		<None Include="Controls\Graphing\Gram\ExchangeSpillDetailsType.cs" />
+		<None Include="Controls\Graphing\Gram\ExternalSelectType.cs" />
+		<None Include="Controls\Graphing\Gram\FilterType.cs" />
+		<None Include="Controls\Graphing\Gram\ForeignKeyReferenceCheckType.cs" />
+		<None Include="Controls\Graphing\Gram\ForeignKeyReferencesCheckType.cs" />
+		<None Include="Controls\Graphing\Gram\FunctionType.cs" />
+		<None Include="Controls\Graphing\FunctionTypeItem.cs" />
+		<None Include="Controls\Graphing\Gram\GbAggType.cs" />
+		<None Include="Controls\Graphing\Gram\GbApplyType.cs" />
+		<None Include="Controls\Graphing\Gram\GenericType.cs" />
+		<None Include="Controls\Graphing\Gram\GetType.cs" />
+		<None Include="Controls\Graphing\Gram\GroupingSetReferenceType.cs" />
+		<None Include="Controls\Graphing\Gram\HashSpillDetailsType.cs" />
+		<None Include="Controls\Graphing\Gram\HashType.cs" />
+		<None Include="Controls\Graphing\Gram\IndexScanType.cs" />
+		<None Include="Controls\Graphing\Gram\JoinType.cs" />
+		<None Include="Controls\Graphing\Gram\LocalCubeType.cs" />
+		<None Include="Controls\Graphing\Gram\MemoryFractionsType.cs" />
+		<None Include="Controls\Graphing\Gram\MergeType.cs" />
+		<None Include="Controls\Graphing\Gram\MoveType.cs" />
+		<None Include="Controls\Graphing\Gram\NestedLoopsType.cs" />
+		<None Include="Controls\Graphing\Gram\OutputColumnsType.cs" />
+		<None Include="Controls\Graphing\Gram\ParallelismType.cs" />
+		<None Include="Controls\Graphing\Gram\ParameterSensitivePredicateType.cs" />
+		<None Include="Controls\Graphing\Gram\ProjectType.cs" />
+		<None Include="Controls\Graphing\Gram\PutType.cs" />
+		<None Include="Controls\Graphing\Gram\RelOpBaseType.cs" />
+		<None Include="Controls\Graphing\Gram\RemoteFetchType.cs" />
+		<None Include="Controls\Graphing\Gram\RemoteModifyType.cs" />
+		<None Include="Controls\Graphing\Gram\RemoteQueryType.cs" />
+		<None Include="Controls\Graphing\Gram\RemoteRangeType.cs" />
+		<None Include="Controls\Graphing\Gram\RemoteType.cs" />
+		<None Include="Controls\Graphing\Gram\RollupInfoType.cs" />
+		<None Include="Controls\Graphing\Gram\RollupLevelType.cs" />
+		<None Include="Controls\Graphing\Gram\RowsetType.cs" />
+		<None Include="Controls\Graphing\Gram\RunTimePartitionSummaryType.cs" />
+		<None Include="Controls\Graphing\Gram\ScalarExpressionListType.cs" />
+		<None Include="Controls\Graphing\Gram\ScalarInsertType.cs" />
+		<None Include="Controls\Graphing\Gram\ScanRangeType.cs" />
+		<None Include="Controls\Graphing\Gram\SeekPredicateNewType.cs" />
+		<None Include="Controls\Graphing\Gram\SeekPredicatePartType.cs" />
+		<None Include="Controls\Graphing\Gram\SeekPredicatesType.cs" />
+		<None Include="Controls\Graphing\Gram\SeekPredicateType.cs" />
+		<None Include="Controls\Graphing\Gram\SegmentType.cs" />
+		<None Include="Controls\Graphing\Gram\SequenceType.cs" />
+		<None Include="Controls\Graphing\Gram\SimpleIteratorOneChildType.cs" />
+		<None Include="Controls\Graphing\Gram\SimpleUpdateType.cs" />
+		<None Include="Controls\Graphing\Gram\SingleColumnReferenceType.cs" />
+		<None Include="Controls\Graphing\Gram\SortType.cs" />
+		<None Include="Controls\Graphing\Gram\SplitType.cs" />
+		<None Include="Controls\Graphing\Gram\SpoolType.cs" />
+		<None Include="Controls\Graphing\Gram\StarJoinInfoType.cs" />
+		<None Include="Controls\Graphing\Enums\EnStarJoinInfoTypeOperationType.cs" />
+		<None Include="Controls\Graphing\Gram\StmtCondTypeCondition.cs" />
+		<None Include="Controls\Graphing\Gram\StmtCondTypeElse.cs" />
+		<None Include="Controls\Graphing\Gram\StmtCondTypeThen.cs" />
+		<None Include="Controls\Graphing\Gram\StreamAggregateType.cs" />
+		<None Include="Controls\Graphing\Gram\SwitchType.cs" />
+		<None Include="Controls\Graphing\Gram\TableScanType.cs" />
+		<None Include="Controls\Graphing\Gram\TableValuedFunctionType.cs" />
+		<None Include="Controls\Graphing\Gram\TopSortType.cs" />
+		<None Include="Controls\Graphing\Gram\TopType.cs" />
+		<None Include="Controls\Graphing\Gram\TraceFlagType.cs" />
+		<None Include="Controls\Graphing\Gram\UDXType.cs" />
+		<None Include="Controls\Graphing\Gram\UpdateType.cs" />
+		<None Include="Controls\Graphing\Gram\WindowAggregateType.cs" />
+		<None Include="Controls\Graphing\Gram\WindowType.cs" />
+		<None Include="Controls\Graphing\Gram\XcsScanType.cs" />
+		<None Include="Controls\Graphing\LivePlanDataReaderNodeBuilder.cs" />
+		<None Include="Controls\Graphing\MemGrantRunTimeCounters.cs" />
+		<None Include="Controls\Graphing\MemoryGrantWarningInfo.cs" />
+		<None Include="Controls\Graphing\Gram\SortSpillDetailsType.cs" />
+		<None Include="Controls\Graphing\Gram\SpillOccurredType.cs" />
+		<None Include="Controls\Graphing\Gram\SpillToTempDbType.cs" />
+		<None Include="Controls\Graphing\Gram\WaitWarningType.cs" />
+		<None Include="Controls\Graphing\Gram\GuessedSelectivityType.cs" />
+		<None Include="Controls\Graphing\Gram\IdentType.cs" />
+		<None Include="Controls\Graphing\Gram\InternalInfoType.cs" />
+		<None Include="Controls\Graphing\Gram\IntrinsicType.cs" />
+		<None Include="Controls\Graphing\Gram\LogicalType.cs" />
+		<None Include="Controls\Graphing\Interfaces\IXmlBatchParser.cs" />
+		<None Include="Controls\Graphing\LongStringUITypeEditor.cs" />
+		<None Include="Controls\Graphing\Gram\MemoryGrantType.cs" />
+		<None Include="Controls\Graphing\Gram\MissingIndexGroupType.cs" />
+		<None Include="Controls\Graphing\Gram\MissingIndexType.cs" />
+		<None Include="Controls\Graphing\Gram\MultAssignType.cs" />
+		<None Include="Controls\Graphing\MergeColumns.cs" />
+		<None Include="Controls\Graphing\Node.cs" />
+		<None Include="Controls\Graphing\NodeBuilderConstants.cs" />
+		<None Include="Controls\Graphing\NodeBuilderContext.cs" />
+		<None Include="Controls\Graphing\NodeBuilderFactory.cs" />
+		<None Include="Controls\Graphing\NodeCollection.cs" />
+		<None Include="Controls\Graphing\AbstractObjectParser.cs" />
+		<None Include="Controls\Graphing\Gram\ObjectType.cs" />
+		<None Include="Controls\Graphing\ObjectWrapperTypeConverter.cs" />
+		<None Include="Controls\Graphing\Operation.cs" />
+		<None Include="Controls\Graphing\Gram\OptimizationReplayType.cs" />
+		<None Include="Controls\Graphing\Gram\OptimizerHardwareDependentPropertiesType.cs" />
+		<None Include="Controls\Graphing\OperationTable.cs" />
+		<None Include="Controls\Graphing\OrderByTypeOrderByColumn.cs" />
+		<None Include="Controls\Graphing\ParallelismTypeActivation.cs" />
+		<None Include="Controls\Graphing\ParallelismTypeBrickRouting.cs" />
+		<None Include="Controls\Graphing\Parsers\ConditionParser.cs" />
+		<None Include="Controls\Graphing\Parsers\CursorOperationParser.cs" />
+		<None Include="Controls\Graphing\Parsers\CursorStatementParser.cs" />
+		<None Include="Controls\Graphing\Parsers\FilterTypeParser.cs" />
+		<None Include="Controls\Graphing\Parsers\FunctionTypeParser.cs" />
+		<None Include="Controls\Graphing\Parsers\IndexOpTypeParser.cs" />
+		<None Include="Controls\Graphing\Parsers\MergeTypeParser.cs" />
+		<None Include="Controls\Graphing\Parsers\RelOpBaseTypeParser.cs" />
+		<None Include="Controls\Graphing\Parsers\RelOpTypeParser.cs" />
+		<None Include="Controls\Graphing\Parsers\StatementParser.cs" />
+		<None Include="Controls\Graphing\Parsers\XmlPlanHierarchyParser.cs" />
+		<None Include="Controls\Graphing\PropertyFactory.cs" />
+		<None Include="Controls\Graphing\PropertyViewDlg.cs" />
+		<None Include="Controls\Graphing\Gram\QueryExecTimeType.cs" />
+		<None Include="Controls\Graphing\Gram\QueryPlanType.cs" />
+		<None Include="Controls\Graphing\ReceivePlanTypeOperation.cs" />
+		<None Include="Controls\Graphing\Gram\RelOpType.cs" />
+		<None Include="Controls\Graphing\Gram\ScalarExpressionType.cs" />
+		<None Include="Controls\Graphing\Gram\ScalarSequenceType.cs" />
+		<None Include="Controls\Graphing\Gram\ScalarType.cs" />
+		<None Include="Controls\Graphing\Gram\SetOptionsType.cs" />
+		<None Include="Controls\Graphing\Gram\SetPredicateElementType.cs" />
+		<None Include="Controls\Graphing\Gram\StatsInfoType.cs" />
+		<None Include="Controls\Graphing\Gram\StmtBlockType.cs" />
+		<None Include="Controls\Graphing\Gram\StmtCondType.cs" />
+		<None Include="Controls\Graphing\Gram\StmtCursorType.cs" />
+		<None Include="Controls\Graphing\Gram\StmtReceiveType.cs" />
+		<None Include="Controls\Graphing\Gram\StmtSimpleType.cs" />
+		<None Include="Controls\Graphing\Gram\StmtUseDbType.cs" />
+		<None Include="Controls\Graphing\Interfaces\INodeBuilder.cs" />
+		<None Include="Controls\Graphing\Gram\SubqueryType.cs" />
+		<None Include="Controls\Graphing\Gram\ThreadReservationType.cs" />
+		<None Include="Controls\Graphing\Gram\ThreadStatType.cs" />
+		<None Include="Controls\Graphing\Gram\TraceFlagListType.cs" />
+		<None Include="Controls\Graphing\Gram\UDAggregateType.cs" />
+		<None Include="Controls\Graphing\Gram\UDFType.cs" />
+		<None Include="Controls\Graphing\Gram\UDTMethodType.cs" />
+		<None Include="Controls\Graphing\Gram\UnmatchedIndexesType.cs" />
+		<None Include="Controls\Graphing\Gram\WaitStatType.cs" />
+		<None Include="Controls\Graphing\Gram\WarningsType.cs" />
+		<None Include="Controls\Graphing\RunTimeCounters.cs" />
+		<None Include="Controls\Graphing\RunTimeInformationTypeRunTimeCountersPerThread.cs" />
+		<None Include="Controls\Graphing\RunTimePartitionSummaryTypePartitionsAccessed.cs" />
+		<None Include="Controls\Graphing\RunTimePartitionSummaryTypePartitionsAccessedPartitionRange.cs" />
+		<None Include="Controls\Graphing\XmlPlanNodeBuilder.cs" />
+		<None Include="Controls\Graphing\Parsers\AbstractXmlPlanParser.cs" />
+		<None Include="Controls\Graphing\Parsers\XmlPlanParserFactory.cs" />
+		<Compile Include="Events\QESQLQueryDataEventArgs.cs" />
+		<Compile Include="Events\QESQLQueryDataEventHandler.cs" />
+		<Compile Include="Events\QESQLStatementCompletedEventArgs.cs" />
+		<Compile Include="Events\QESQLBatchSpecialActionEventHandler.cs" />
+		<Compile Include="Events\QESQLStatementCompletedEventHandler.cs" />
+		<Compile Include="Properties\AttributeResources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>AttributeResources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Interfaces\IBObjectWithSite.cs" />
+		<None Include="Controls\Graphing\Interfaces\IRenderable.cs" />
+		<None Include="Controls\Graphing\DescriptionControl.cs" />
+		<None Include="Controls\ResultsPanels\ExecutionPlanControl.cs" />
+		<None Include="Controls\ResultsPanels\ExecutionPlanPanel.cs" />
+		<None Include="Controls\Graphing\GraphControl.cs" />
+		<None Include="Controls\Graphing\GraphPanel.cs" />
+		<None Include="Controls\Graphing\NodeDisplay.cs" />
+		<None Include="Controls\Graphing\Widgets\MultilineToolTip.cs" />
+		<Compile Include="Events\QESQLBatchSpecialActionEventArgs.cs" />
+		<Compile Include="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Root\Cmd.cs" />
+		<None Include="Controls\Graphing\ComponentModel\DisplayNameDescriptionAttribute.cs" />
+		<None Include="Controls\Graphing\ComponentModel\PropertyValue.cs" />
+		<None Include="Controls\Graphing\ComponentModel\ShowInToolTipAttribute.cs" />
+		<Compile Include="Ctl\Config\VsFontColorPreferences.cs" />
+		<Compile Include="Ctl\ComponentModel\VsProvideEditorFactoryAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\VsProvideFileExtensionMappingAttribute.cs" />
+		<Compile Include="Controls\Tabs\AbstractEditorTab.cs" />
+		<Compile Include="Controls\Tabs\AbstractSqlEditorTab.cs" />
+		<Compile Include="Controls\AbstractTabbedEditorWindowPane.cs" />
+		<Compile Include="Controls\Widgets\AnimatedStatusStripItem.cs" />
+		<Compile Include="Controls\Widgets\BarBackgroundRenderer.cs" />
+		<Compile Include="Properties\ControlsResources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ControlsResources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Controls\ControlUtils.cs" />
+		<Compile Include="Controls\Widgets\EditorStatusStripRenderer.cs" />
+		<Compile Include="Enums\EnButtonCellState.cs" />
+		<Compile Include="Enums\EnGridButtonArea.cs" />
+		<Compile Include="Enums\EnGridButtonType.cs" />
+		<Compile Include="Enums\EnGridCheckBoxState.cs" />
+		<Compile Include="Enums\EnGridColumnHeaderType.cs" />
+		<Compile Include="Enums\EnGridColumnWidthType.cs" />
+		<Compile Include="Enums\EnGridLineType.cs" />
+		<Compile Include="Enums\EnGridSaveFormats.cs" />
+		<Compile Include="Enums\EnGridSelectionType.cs" />
+		<Compile Include="Enums\EnHitTestResult.cs" />
+		<Compile Include="Enums\EnTextBitmapLayout.cs" />
+		<Compile Include="Events\BitmapCellAccessibilityInfoNeededEventArgs.cs" />
+		<Compile Include="Events\ColumnReorderRequestedEventArgs.cs" />
+		<Compile Include="Events\ColumnReorderRequestedEventHandler.cs" />
+		<Compile Include="Events\ColumnsReorderedEventArgs.cs" />
+		<Compile Include="Events\ColumnsReorderedEventHandler.cs" />
+		<Compile Include="Events\ColumnWidthChangedEventArgs.cs" />
+		<Compile Include="Events\ColumnWidthChangedEventHandler.cs" />
+		<Compile Include="Events\ContentsChangedEventHandler.cs" />
+		<Compile Include="Events\CustomizeCellGDIObjectsEventArgs.cs" />
+		<Compile Include="Events\CustomizeCellGDIObjectsEventHandler.cs" />
+		<Compile Include="Events\EmbeddedControlContentsChangedEventArgs.cs" />
+		<Compile Include="Events\EmbeddedControlContentsChangedEventHandler.cs" />
+		<Compile Include="Events\FillControlWithDataEventArgs.cs" />
+		<Compile Include="Events\FillControlWithDataEventHandler.cs" />
+		<Compile Include="Events\GridSpecialEventArgs.cs" />
+		<Compile Include="Events\GridSpecialEventHandler.cs" />
+		<Compile Include="Events\HeaderButtonClickedEventArgs.cs" />
+		<Compile Include="Events\HeaderButtonClickedEventHandler.cs" />
+		<Compile Include="Events\KeyPressedOnCellEventArgs.cs" />
+		<Compile Include="Events\KeyPressedOnCellEventHandler.cs" />
+		<Compile Include="Events\LangServiceEventArgs.cs" />
+		<Compile Include="Events\MouseButtonClickedEventArgs.cs" />
+		<Compile Include="Events\MouseButtonClickedEventHandler.cs" />
+		<Compile Include="Events\MouseButtonClickingEventArgs.cs" />
+		<Compile Include="Events\MouseButtonClickingEventHandler.cs" />
+		<Compile Include="Events\MouseButtonDoubleClickedEventArgs.cs" />
+		<Compile Include="Events\MouseButtonDoubleClickedEventHandler.cs" />
+		<Compile Include="Events\NewLangSvcEventHandler.cs" />
+		<Compile Include="Events\ResultControlEventArgs.cs" />
+		<Compile Include="Events\SelectionChangedEventArgs.cs" />
+		<Compile Include="Events\SelectionChangedEventHandler.cs" />
+		<Compile Include="Events\SetCellDataFromControlEventArgs.cs" />
+		<Compile Include="Events\SetCellDataFromControlEventHandler.cs" />
+		<Compile Include="Events\StandardKeyProcessingEventArgs.cs" />
+		<Compile Include="Events\StandardKeyProcessingEventHandler.cs" />
+		<Compile Include="Ctl\IO\FileStreamReader.cs" />
+		<Compile Include="Ctl\IO\FileStreamWrapper.cs" />
+		<Compile Include="Ctl\IO\FileStreamWriter.cs" />
+		<Compile Include="Interfaces\IBFileStreamReader.cs" />
+		<Compile Include="Interfaces\IBFileStreamWrapper.cs" />
+		<Compile Include="Events\StorageNotifyDelegate.cs" />
+		<Compile Include="Events\TooltipDataNeededEventArgs.cs" />
+		<Compile Include="Events\TooltipDataNeededEventHandler.cs" />
+		<Compile Include="Controls\Dialogs\FileEncodingDialog.cs" />
+		<Compile Include="Controls\Grid\BlockOfCells.cs" />
+		<Compile Include="Controls\Grid\ButtonInfo.cs" />
+		<Compile Include="Controls\Grid\CaptureTracker.cs" />
+		<Compile Include="Controls\Grid\ColumnInfo.cs" />
+		<Compile Include="Controls\Grid\DlgGridControl.cs" />
+		<Compile Include="Controls\Grid\GridMemDataStorage.cs" />
+		<Compile Include="Controls\Grid\DlgStorage.cs" />
+		<Compile Include="Controls\Grid\DrawManager.cs" />
+		<Compile Include="Controls\Grid\EmbeddedComboBox.cs" />
+		<Compile Include="Controls\Grid\EmbeddedSpinBox.cs" />
+		<Compile Include="Controls\Grid\EmbeddedTextBox.cs" />
+		<Compile Include="Controls\Grid\GridBitmapColumn.cs" />
+		<Compile Include="Controls\Grid\GridButton.cs" />
+		<Compile Include="Controls\Grid\GridButtonColumn.cs" />
+		<Compile Include="Controls\Grid\GridCell.cs" />
+		<Compile Include="Controls\Grid\GridCellCollection.cs" />
+		<Compile Include="Controls\Grid\GridCheckBox.cs" />
+		<Compile Include="Controls\Grid\GridCheckBoxColumn.cs" />
+		<Compile Include="Controls\Grid\AbstractGridColumn.cs" />
+		<Compile Include="Controls\Grid\GridColumnCollection.cs" />
+		<Compile Include="Controls\Grid\GridColumnInfo.cs" />
+		<Compile Include="Controls\Grid\GridColumnInfoCollection.cs" />
+		<Compile Include="Controls\Grid\GridColumnMapper.cs" />
+		<Compile Include="Controls\Grid\GridConstants.cs" />
+		<Compile Include="Controls\Grid\GridControl.cs" />
+		<Compile Include="Controls\Grid\GridDragImageList.cs" />
+		<Compile Include="Controls\Grid\GridDragImageListOperation.cs" />
+		<Compile Include="Controls\Grid\GridHeader.cs" />
+		<Compile Include="Controls\Grid\GridHyperlinkColumn.cs" />
+		<Compile Include="Controls\Grid\GridPrintDocument.cs" />
+		<Compile Include="Controls\Grid\GridTextColumn.cs" />
+		<Compile Include="Controls\Grid\HitTestInfo.cs" />
+		<Compile Include="Model\IO\AbstractMemDataStorage.cs" />
+		<Compile Include="Model\IO\MemStorageView.cs" />
+		<Compile Include="Controls\Grid\ScrollManager.cs" />
+		<Compile Include="Controls\Grid\SelectionManager.cs" />
+		<Compile Include="Model\IO\QEDiskStorageView.cs" />
+		<Compile Include="Model\IO\SortView.cs" />
+		<Compile Include="Model\IO\StorageDataReader.cs" />
+		<Compile Include="Model\IO\StorageDataEntity.cs" />
+		<Compile Include="Model\IO\AbstractStorageView.cs" />
+		<Compile Include="Interfaces\IBColumnInfo.cs" />
+		<Compile Include="Interfaces\IBDataStorage.cs" />
+		<Compile Include="Interfaces\IBDlgGridControl.cs" />
+		<Compile Include="Interfaces\IBGridMemDataStorage.cs" />
+		<Compile Include="Interfaces\IBDlgStorage.cs" />
+		<Compile Include="Interfaces\IBGridControl.cs" />
+		<Compile Include="Interfaces\IBGridEmbeddedControl.cs" />
+		<Compile Include="Interfaces\IBGridEmbeddedControlManagement.cs" />
+		<Compile Include="Interfaces\IBGridEmbeddedControlManagement2.cs" />
+		<Compile Include="Interfaces\IBGridEmbeddedSpinControl.cs" />
+		<Compile Include="Interfaces\IBGridStorage.cs" />
+		<Compile Include="Interfaces\IBMemDataStorage.cs" />
+		<Compile Include="Interfaces\IBPropertyWindowQueryManagerInitialize.cs" />
+		<Compile Include="Interfaces\IBSortView.cs" />
+		<Compile Include="Interfaces\IBStatusBarContributer.cs" />
+		<Compile Include="Interfaces\IBStorageView.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
+		<Compile Include="Controls\PropertiesWindow\DisconnectedPropertiesWindow.cs" />
+		<Compile Include="Controls\PropertiesWindow\PropertiesWindowManager.cs" />
+		<Compile Include="Controls\PropertiesWindow\ConnectedPropertiesWindow.cs" />
+		<Compile Include="Controls\Widgets\QEStatusBarManager.cs" />
+		<Compile Include="Controls\Widgets\MultiControlPanel.cs" />
+		<Compile Include="Controls\Widgets\QESplitter.cs" />
+		<Compile Include="Controls\ResultsPanels\AbstractGridResultsPanel.cs" />
+		<Compile Include="Controls\ResultsPanels\AbstractResultsPanel.cs" />
+		<Compile Include="Controls\ResultsPanels\DisplaySQLResultsControl.cs" />
+		<Compile Include="Ctl\IO\FileStreamResultsWriter.cs" />
+		<Compile Include="Controls\ResultsPanels\GridResultsGrid.cs" />
+		<Compile Include="Controls\ResultsPanels\GridResultsPanel.cs" />
+		<Compile Include="Ctl\IO\AbstractResultsWriter.cs" />
+		<Compile Include="Controls\ResultsPanels\SaveFormatInfo.cs" />
+		<Compile Include="Controls\ResultsPanels\SaveFormats.cs" />
+		<Compile Include="Ctl\IO\ShellBufferWriter.cs" />
+		<Compile Include="Ctl\IO\ShellTextBuffer.cs" />
+		<Compile Include="Controls\ResultsPanels\ShellTextViewControl.cs" />
+		<Compile Include="Controls\ResultsPanels\StatisticsSnapshotCollection.cs" />
+		<Compile Include="Controls\ResultsPanels\StatisticsDlgGridControl.cs" />
+		<Compile Include="Controls\ResultsPanels\StatisticsGridsCollection.cs" />
+		<Compile Include="Controls\ResultsPanels\StatisticsPanel.cs" />
+		<Compile Include="Controls\ResultsPanels\StatisticsSnapshot.cs" />
+		<Compile Include="Controls\ResultsPanels\TextResultsViewContol.cs" />
+		<Compile Include="Controls\ResultsPanels\VSTextEditorPanel.cs" />
+		<Compile Include="Controls\ResultWindowPane.cs" />
+		<Compile Include="Controls\AbstractTextEditorControl.cs" />
+		<Compile Include="Controls\Widgets\Splitter.cs" />
+		<Compile Include="Controls\Widgets\SplitViewContainer.cs" />
+		<Compile Include="Controls\Widgets\SplitViewSplitterStrip.cs" />
+		<Compile Include="Controls\Tabs\SqlEditorCodeTab.cs" />
+		<Compile Include="Controls\Tabs\SqlEditorMessageTab.cs" />
+		<Compile Include="Controls\PropertiesWindow\AbstractPropertiesWindow.cs" />
+		<Compile Include="Controls\Tabs\SqlEditorResultsTab.cs" />
+		<Compile Include="Controls\TabbedEditorWindowPane.cs" />
+		<Compile Include="Controls\TabbedEditorUIControl.cs" />
+		<Compile Include="Controls\AbstractTabbedEditorUIControl.cs" />
+		<Compile Include="Controls\TextEditor.cs" />
+		<Compile Include="Ctl\Commands\TextViewCommandFilter.cs" />
+		<Compile Include="Controls\ToolbarHost.cs" />
+		<Compile Include="Controls\Widgets\ToolStripStatusLabelWithMaxLimit.cs" />
+		<Compile Include="Ctl\IO\AbstractTextBuffer.cs" />
+		<Compile Include="Ctl\AbstractViewFilter.cs" />
+		<Compile Include="Ctl\IO\ArrayList64.cs" />
+		<Compile Include="Ctl\BitArrayCollection.cs" />
+		<Compile Include="Ctl\BlockOfCellsCollection.cs" />
+		<Compile Include="Ctl\Commands\AbstractSqlEditorCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorCancelQueryCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorChangeConnectionCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorCloneQueryWindowCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorConnectCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorDisconnectAllQueriesCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorDisconnectCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorExecuteQueryCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorQuerySettingsCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorResultsAsFileCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorResultsAsGridCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorResultsAsTextCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorShowEstimatedPlanCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorDatabaseCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorDatabaseListCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorToggleClientStatisticsCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorToggleExecutionPlanCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorToggleIntellisenseCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorToggleResultsPaneCommand.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorToggleSqlCmdModeCommand.cs" />
+		<Compile Include="Ctl\ConnectionPointCookie.cs" />
+		<Compile Include="Ctl\DbCommandWrapper.cs" />
+		<Compile Include="Ctl\FindTargetAdapter.cs" />
+		<Compile Include="Ctl\GuidId.cs" />
+		<Compile Include="Ctl\Marker.cs" />
+		<Compile Include="Ctl\Commands\MenuCommandsService.cs" />
+		<Compile Include="Ctl\Commands\MenuCommandTextChanges.cs" />
+		<Compile Include="Ctl\IO\SortingArray.cs" />
+		<Compile Include="Ctl\Commands\SqlEditorViewFilter.cs" />
+		<Compile Include="Ctl\SqlTextSpan.cs" />
+		<Compile Include="Ctl\ToolbarCommandHandlerManager.cs" />
+		<Compile Include="Ctl\TextEditorProxy.cs" />
+		<Compile Include="Ctl\VsColorUtilities.cs" />
+		<Compile Include="Ctl\VsTextMarker.cs" />
+		<Compile Include="Ctl\WaitCursorHelper.cs" />
+		<Compile Include="Enums\EnExecutionTimeMethod.cs" />
+		<Compile Include="Enums\EnEditorMode.cs" />
+		<Compile Include="Enums\EnEditorTabType.cs" />
+		<Compile Include="Enums\EnSplitterBarButtonDisplayStyle.cs" />
+		<Compile Include="Enums\EnStatusBarPosition.cs" />
+		<Compile Include="Enums\EnTabViewMode.cs" />
+		<Compile Include="Exceptions\ParserException.cs" />
+		<Compile Include="Events\ColorChangedEventArgs.cs" />
+		<Compile Include="Events\ColorChangedEventHandler.cs" />
+		<Compile Include="Events\FontChangedEventArgs.cs" />
+		<Compile Include="Events\FontChangedEventHandler.cs" />
+		<Compile Include="Events\HandleChangeEventHandler.cs" />
+		<Compile Include="Events\SpecialEditorCommandEventArgs.cs" />
+		<Compile Include="Events\SpecialEditorCommandEventHandler.cs" />
+		<Compile Include="Events\TabActivationEventArgs.cs" />
+		<Compile Include="Events\ToolboxEventArgs.cs" />
+		<Compile Include="Events\VerifyConnectionDelegate.cs" />
+		<Compile Include="Properties\ExceptionsResources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ExceptionsResources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="GlobalSuppressions.cs" />
+		<Compile Include="Interfaces\IBEditorPackage.cs" />
+		<Compile Include="Interfaces\IBMenuCommandTextChanges.cs" />
+		<Compile Include="Interfaces\IBSortingArray.cs" />
+		<Compile Include="Interfaces\IBSqlEditorErrorTaskFactory.cs" />
+		<Compile Include="Interfaces\IBSqlEditorExtendedCommandHandler.cs" />
+		<Compile Include="Interfaces\IBSqlEditorWindowPane.cs" />
+		<Compile Include="Interfaces\IBTabbedEditorService.cs" />
+		<Compile Include="Interfaces\IBToolbarCommandHandler.cs" />
+		<Compile Include="Interfaces\IBTextEditor.cs" />
+		<Compile Include="Interfaces\IBTextEditorEvents.cs" />
+		<Compile Include="Interfaces\IBTextSpan.cs" />
+		<Compile Include="Interfaces\IBVsFindTarget3.cs" />
+		<Compile Include="Model\AbstractFontAndColorProvider.cs" />
+		<Compile Include="Model\AuxilliaryDocData.cs" />
+		<Compile Include="Model\AbstractConnectionStrategy.cs" />
+		<Compile Include="Model\DefaultSqlEditorStrategy.cs" />
+		<Compile Include="Model\IO\AbstractDiskDataStorage.cs" />
+		<Compile Include="Model\IO\DiskStorageView.cs" />
+		<Compile Include="Model\DslConnectionInfo.cs" />
+		<Compile Include="Enums\EnErrorAction.cs" />
+		<Compile Include="Enums\EnOutputDestination.cs" />
+		<Compile Include="Enums\EnPaneSelection.cs" />
+		<Compile Include="Enums\EnParseMode.cs" />
+		<Compile Include="Enums\EnQEOLESQLOutputCategory.cs" />
+		<Compile Include="Enums\EnSqlSpecialActions.cs" />
+		<Compile Include="Enums\EnQESQLScriptProcessingMessageType.cs" />
+		<Compile Include="Enums\EnXmlStatus.cs" />
+		<Compile Include="Events\AdjustSelectionForButtonClickEventArgs.cs" />
+		<Compile Include="Events\AdjustSelectionForButtonClickEventHandler.cs" />
+		<Compile Include="Events\MoreRowsAvailableEventArgs.cs" />
+		<Compile Include="Events\MoreRowsAvailableEventHandler.cs" />
+		<Compile Include="Events\QEOLESQLErrorMessageEventArgs.cs" />
+		<Compile Include="Events\QEOLESQLErrorMessageEventHandler.cs" />
+		<Compile Include="Events\QESplitterMovedEventArgs.cs" />
+		<Compile Include="Events\QESplitterMovedEventHandler.cs" />
+		<Compile Include="Events\QESQLBatchErrorMessageEventArgs.cs" />
+		<Compile Include="Events\QESQLBatchErrorMessageEventHandler.cs" />
+		<Compile Include="Events\QESQLBatchExecutedEventArgs.cs" />
+		<Compile Include="Events\QESQLBatchExecutedEventHandler.cs" />
+		<Compile Include="Events\QESQLBatchMessageEventArgs.cs" />
+		<Compile Include="Events\QESQLBatchMessageEventHandler.cs" />
+		<Compile Include="Events\QESQLBatchNewResultSetEventArgs.cs" />
+		<Compile Include="Events\QESQLBatchNewResultSetEventHandler.cs" />
+		<Compile Include="Events\QeSqlCmdMessageFromAppEventArgs.cs" />
+		<Compile Include="Events\QeSqlCmdMessageFromAppEventHandler.cs" />
+		<Compile Include="Events\QeSqlCmdNewConnectionOpenedEventArgs.cs" />
+		<Compile Include="Events\QeSqlCmdNewConnectionOpenedEventHandler.cs" />
+		<Compile Include="Events\QESQLStartingBatchEventArgs.cs" />
+		<Compile Include="Events\QESQLStartingBatchEventHandler.cs" />
+		<Compile Include="Events\ScriptExecutionCompletedEventArgs.cs" />
+		<Compile Include="Events\ScriptExecutionCompletedEventHandler.cs" />
+		<Compile Include="Model\FontAndColorProviderExecutionPlan.cs" />
+		<Compile Include="Model\FontAndColorProviderGridResults.cs" />
+		<Compile Include="Model\FontAndColorProviderTextResults.cs" />
+		<Compile Include="Interfaces\IBBatchExecutionHandler.cs" />
+		<Compile Include="Interfaces\IBCommandExecuter.cs" />
+		<Compile Include="Interfaces\IBDiskDataStorage.cs" />
+		<Compile Include="Interfaces\IBFileStreamWriter.cs" />
+		<Compile Include="Interfaces\IBGridControl2.cs" />
+		<Compile Include="Interfaces\IBQESQLBatchConsumer.cs" />
+		<Compile Include="Interfaces\IBQEStorage.cs" />
+		<Compile Include="Interfaces\IBQEStorageView.cs" />
+		<Compile Include="Interfaces\IBQueryExecutionHandler.cs" />
+		<Compile Include="Interfaces\IBSqlEditorStrategy.cs" />
+		<Compile Include="Interfaces\IBSqlQueryExecutionHandler.cs" />
+		<Compile Include="Model\Parsers\ManagedBatchParser.cs" />
+		<Compile Include="Model\ParserState.cs" />
+		<Compile Include="Ctl\Commands\OLECMDTEXT.cs" />
+		<Compile Include="Model\IO\QEDiskDataStorage.cs" />
+		<Compile Include="Ctl\QueryExecution\QEOLESQLExec.cs" />
+		<Compile Include="Model\IO\QEReaderDataStorage.cs" />
+		<Compile Include="Properties\QEResources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>QEResources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Model\QueryExecution\QEResultSet.cs" />
+		<Compile Include="Ctl\QueryExecution\QESQLBatch.cs" />
+		<Compile Include="Model\QueryExecution\AbstractQESQLBatchConsumer.cs" />
+		<Compile Include="Exceptions\BatchConsumerException.cs" />
+		<Compile Include="Ctl\QueryExecution\AbstractQESQLExec.cs" />
+		<Compile Include="Model\IO\QEStorageViewOnReader.cs" />
+		<Compile Include="Ctl\QueryExecution\QueryManager.cs" />
+		<Compile Include="Ctl\QueryExecution\ResultSetAndGridContainer.cs" />
+		<Compile Include="Ctl\QueryExecution\ResultSetAndGridContainerCollection.cs" />
+		<Compile Include="Model\QueryExecution\ResultsToGridBatchConsumer.cs" />
+		<Compile Include="Model\QueryExecution\ResultsToTextOrFileBatchConsumer.cs" />
+		<Compile Include="Model\SqlConnectionStrategy.cs" />
+		<Compile Include="Root\Native.cs" />
+		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
+		<Compile Include="Properties\SharedResx.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>SharedResx.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Root\SafeNative.cs" />
+		<Compile Include="LibraryData.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="Controls\Graphing\CustomZoomDlg.resx" />
+		<EmbeddedResource Include="Controls\Graphing\PropertyViewDlg.resx" />
+		<EmbeddedResource Include="Properties\AttributeResources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\ControlsResources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Controls\Dialogs\FileEncodingDialog.resx">
+			<DependentUpon>FileEncodingDialog.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\ExceptionsResources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>ExceptionsResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\SqlResources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>SqlResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\QEResources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>QEResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\SharedResx.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>SharedResx.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Accessibility" />
+	  <Reference Include="PresentationCore" />
+	  <Reference Include="PresentationFramework" />
+	</ItemGroup>
+
+</Project>

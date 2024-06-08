@@ -9,8 +9,7 @@ using System.Globalization;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 

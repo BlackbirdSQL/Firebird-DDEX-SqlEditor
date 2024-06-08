@@ -24,7 +24,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Client;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Schema;
@@ -259,7 +258,6 @@ internal class FbConnectionInternal
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -283,7 +281,6 @@ internal class FbConnectionInternal
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -345,7 +342,6 @@ internal class FbConnectionInternal
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			DisposeTransaction();
 			throw FbException.Create(ex);
 		}
@@ -368,7 +364,6 @@ internal class FbConnectionInternal
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			await DisposeTransactionAsync(cancellationToken).ConfigureAwait(false);
 			throw FbException.Create(ex);
 		}
@@ -392,7 +387,6 @@ internal class FbConnectionInternal
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			DisposeTransaction();
 			throw FbException.Create(ex);
 		}
@@ -415,7 +409,6 @@ internal class FbConnectionInternal
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			await DisposeTransactionAsync(cancellationToken).ConfigureAwait(false);
 			throw FbException.Create(ex);
 		}
@@ -473,15 +466,11 @@ internal class FbConnectionInternal
 
 			if (HasActiveTransaction)
 			{
-				ArgumentException exbb = new("Unable to enlist in transaction, a local transaction already exists");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new ArgumentException("Unable to enlist in transaction, a local transaction already exists");
 			}
 			if (_enlistmentNotification != null)
 			{
-				ArgumentException exbb = new("Already enlisted in a transaction");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new ArgumentException("Already enlisted in a transaction");
 			}
 
 			_enlistmentNotification = new FbEnlistmentNotification(this, transaction);
@@ -624,11 +613,7 @@ internal class FbConnectionInternal
 	private void EnsureNoActiveTransaction()
 	{
 		if (HasActiveTransaction)
-		{
-			InvalidOperationException exbb = new("A transaction is currently active. Parallel transactions are not supported.");
-			Diag.Dug(exbb);
-			throw exbb;
-		}
+			throw new InvalidOperationException("A transaction is currently active. Parallel transactions are not supported.");
 	}
 
 	private static DatabaseParameterBufferBase BuildDpb(DatabaseBase db, ConnectionString options)

@@ -772,15 +772,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to ensure a Session connection is valid before accepting Connection Dialog information..
-        /// </summary>
-        public static string OptionDescriptionGeneralValidateConnectionOnFormAccept {
-            get {
-                return ResourceManager.GetString("OptionDescriptionGeneralValidateConnectionOnFormAccept", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to update legacy edmx models to use EntityFramework 6..
         /// </summary>
         public static string OptionDescriptionGeneralValidateEdmx {
@@ -795,6 +786,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionGeneralValidateProviderFactories {
             get {
                 return ResourceManager.GetString("OptionDescriptionGeneralValidateProviderFactories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to ensure a Session connection is valid before accepting Connection Dialog information..
+        /// </summary>
+        public static string OptionDescriptionGeneralValidateSessionConnectionOnFormAccept {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralValidateSessionConnectionOnFormAccept", resourceCulture);
             }
         }
         
@@ -1213,15 +1213,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Validate session connections.
-        /// </summary>
-        public static string OptionDisplayGeneralValidateConnectionOnFormAccept {
-            get {
-                return ResourceManager.GetString("OptionDisplayGeneralValidateConnectionOnFormAccept", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to   Update legacy edmx models.
         /// </summary>
         public static string OptionDisplayGeneralValidateEdmx {
@@ -1236,6 +1227,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayGeneralValidateProviderFactories {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralValidateProviderFactories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Validate session connections.
+        /// </summary>
+        public static string OptionDisplayGeneralValidateSessionConnectionOnFormAccept {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralValidateSessionConnectionOnFormAccept", resourceCulture);
             }
         }
         

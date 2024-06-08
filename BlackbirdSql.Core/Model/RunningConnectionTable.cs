@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Interfaces;
 
 
 
@@ -59,7 +61,12 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 	/// Instantiation must always occur here and not by the Instance accessor to avoid
 	/// confusion.
 	/// </summary>
-	public static RunningConnectionTable CreateInstance() => new RunningConnectionTable();
+	public static RunningConnectionTable CreateInstance()
+	{ 
+		IBsRunningConnectionTable instance = new RunningConnectionTable();
+
+		return (RunningConnectionTable)instance;
+	}
 
 
 	#endregion Constructors / Destructors

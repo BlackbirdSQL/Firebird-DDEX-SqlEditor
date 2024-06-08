@@ -6,11 +6,12 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework;
@@ -151,7 +152,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	private bool _HandleVerification = true;
 
 
-	private string _StrippedConnectionString = null;
+	private string _SessionStrippedConnectionString = null;
 	private string _UnstrippedConnectionString = null;
 
 
@@ -600,11 +601,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				string datasetId = (string)Site[SysConstants.C_KeyExDatasetId];
 
 				if ((pos = datasetId.IndexOf(RctManager.EdmGlyph)) != -1)
-					datasetId = datasetId.Remove(pos, 1);
+					datasetId = datasetId.Remove(pos, 2);
 				else if ((pos = datasetId.IndexOf(RctManager.ProjectDatasetGlyph)) != -1)
-					datasetId = datasetId.Remove(pos, 1);
+					datasetId = datasetId.Remove(pos, 2);
 				else if ((pos = datasetId.IndexOf(RctManager.UtilityDatasetGlyph)) != -1)
-					datasetId = datasetId.Remove(pos, 1);
+					datasetId = datasetId.Remove(pos, 2);
 
 				if (pos != -1)
 				{
@@ -613,10 +614,10 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 					Site[SysConstants.C_KeyExDatasetId] = datasetId;
 					Site[SysConstants.C_KeyExDatasetKey] =
-						SysConstants.C_DatasetKeyFmt.FmtRes((string)Site[SysConstants.C_KeyDataSource], datasetId);
+						SysConstants.DatasetKeyFormat.FmtRes((string)Site[SysConstants.C_KeyDataSource], datasetId);
 
 					if (siteInitialization && ConnectionSource == EnConnectionSource.Session)
-						_StrippedConnectionString = Site.ToString();
+						_SessionStrippedConnectionString = Site.ToString();
 				}
 			}
 		}
@@ -853,18 +854,18 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			// state and return.
 			// We don't want the glyph stripped on accept when nothing has changed.
 
-			if (_StrippedConnectionString != null)
+			if (_SessionStrippedConnectionString != null)
 			{
-				Csb csa1 = new(_StrippedConnectionString, false);
+				Csb csa1 = new(_SessionStrippedConnectionString, false);
 				Csb csa2 = new(Site.ToString(), false);
 
 				if (AbstractCsb.AreEquivalent(csa1, csa2, Csb.DescriberKeys, true))
 				{
 					// They are equivalent. Validate here.
 
-					if (PersistentSettings.ValidateConnectionOnFormAccept)
+					if (PersistentSettings.ValidateSessionConnectionOnFormAccept)
 					{
-						IDbConnection connection = DbNative.CreateDbConnection(site.ToString());
+						IDbConnection connection = NativeDb.CreateDbConnection(site.ToString());
 
 						connection.Open();
 					}
@@ -901,6 +902,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					return;
 				}
 
+				// Tracer.Trace(GetType(), "OnAccept()", "ValidateSiteProperties(): success: {0}, addInternally: {1}, modifyInternally: {2}\nrestoreConnectionString: {3}.",
+				// 	success, addInternally, modifyInternally, restoreConnectionString);
+
 
 				// This only applies if the ConnectionSource is SqlEditor.
 
@@ -911,9 +915,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				// This validation test will be duplicated if ConnectionSource != EnConnectionSource.Session but this is the only
 				// opportunity to control a failed connect.
 				if (ConnectionSource != EnConnectionSource.Session || addInternally || modifyInternally
-					|| PersistentSettings.ValidateConnectionOnFormAccept)
+					|| PersistentSettings.ValidateSessionConnectionOnFormAccept)
 				{
-					IDbConnection connection = DbNative.CreateDbConnection(site.ToString());
+					IDbConnection connection = NativeDb.CreateDbConnection(site.ToString());
 
 					connection.Open();
 				}
@@ -940,7 +944,13 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			EnableCursorEvents();
 		}
 
-		// Tracer.Trace(GetType(), "OnAccept()", "Exiting Site.ToString(): {0}.", Site.ToString());
+		// The connection may not be open and when opened will fire the Rct OnExplorerConnectionNodeChanged()
+		// event. Disable it.
+
+		if (ConnectionSource == EnConnectionSource.ServerExplorer)
+			RctManager.DisableExternalEvents();
+
+		// Tracer.Trace(GetType(), "OnAccept()", "Completed. Site.ToString(): {0}.", Site.ToString());
 	}
 
 
@@ -1045,6 +1055,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			lblCurrentDisplayName.Text = !Cmd.IsNullValue(@object)
 				? (string)@object : ControlsResources.TConnectionUIControl_NewDatabaseConnection;
 
+
 			if (Site != null)
 			{
 				foreach (Describer describer in Csb.AdvancedKeys)
@@ -1071,6 +1082,17 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				{
 					RemoveGlyph(false);
 				}
+			}
+
+			// If it's an Edm connection dialog the _OriginalConnectionString should be updated
+			// so that the user can be warned if they then change the properties and cause a target
+			// change. For ServerExplorer and Session connection dialogs _OriginalConnectionString
+			// will already be set.
+			if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			{
+				@object = DataSources.DependentRow[SysConstants.C_KeyExConnectionString];
+				_OriginalConnectionString = !Cmd.IsNullValue(@object)
+					? (string)@object : null;
 			}
 
 		}
@@ -1310,7 +1332,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		//	Site != null ? Site.Count : -1);
 
 		_OriginalConnectionString = null;
-		_StrippedConnectionString = null;
+		_SessionStrippedConnectionString = null;
 		_UnstrippedConnectionString = null;
 		_InsertMode = true;
 		_SiteChanged = true;
@@ -1364,8 +1386,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 						RemoveGlyph(true);
 					}
 
-					if (ConnectionSource == EnConnectionSource.Session && _StrippedConnectionString == null)
-						_StrippedConnectionString = Site.ToString();
+					if (ConnectionSource == EnConnectionSource.Session && _SessionStrippedConnectionString == null)
+						_SessionStrippedConnectionString = Site.ToString();
 
 
 					if (!Site.ContainsKey(SysConstants.C_KeyExConnectionSource)
@@ -1407,11 +1429,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// </summary>
 	private void OnVerifySettings(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnVerifySettings()", "Container: {0}, Parent: {1}, ParentForm: {2}, Enabled: {3}, Visible: {4}.",
-		//	Container, Parent, ParentForm, Enabled, Visible);
+		// Tracer.Trace(GetType(), "OnVerifySettings()", "ConnectionSource: {0}.", ConnectionSource);
 
 		// Validate the new parse request connection string and then apply.
 
+		// Reenable the Rct OnExplorerConnectionNodeChanged() event.
+
+		if (ConnectionSource == EnConnectionSource.ServerExplorer)
+			RctManager.EnableExternalEvents();
 
 		if (RctManager.ShutdownState)
 			return;
@@ -1441,7 +1466,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			&& !_HandleNewInternally && !_HandleModifyInternally && !_InsertMode)
 		{
 			// Lock the parser if properties that have been changed don't affect the parser.
-			LinkageParser.LockLoadedParser(Site.ToString());
+			NativeDb.DatabaseEngineSvc.LockLoadedParser_(Site.ToString());
 		}
 
 		try

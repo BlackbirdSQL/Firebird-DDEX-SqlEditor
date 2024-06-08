@@ -2,8 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Windows;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
@@ -25,14 +24,14 @@ namespace BlackbirdSql.Core;
 /// The events manager can handle an ide event by hooking onto Controller.On[event]. 
 /// </remarks>
 // =========================================================================================================
-public abstract class AbstractEventsManager : IBEventsManager
+public abstract class AbstractEventsManager : IBsEventsManager
 {
 
 	// -------------------------------------------------------
 	#region Constructors / Destructors - AbstractEventsManager
 	// -------------------------------------------------------
 
-	protected AbstractEventsManager(IBPackageController controller)
+	protected AbstractEventsManager(IBsPackageController controller)
 	{
 		if (InternalInstance != null)
 		{
@@ -69,7 +68,7 @@ public abstract class AbstractEventsManager : IBEventsManager
 	#region Fields - BlackbirdSqlDdexExtension
 	// =========================================================================================================
 
-	private readonly IBPackageController _Controller;
+	private readonly IBsPackageController _Controller;
 
 	protected string _TaskHandlerTaskName = "Task";
 	protected TaskProgressData _ProgressData = default;
@@ -90,10 +89,10 @@ public abstract class AbstractEventsManager : IBEventsManager
 	/// Access to the static at the instance local level. This allows the base class to access and update
 	/// the localized static instance.
 	/// </summary>
-	protected abstract IBEventsManager InternalInstance { get; set; }
+	protected abstract IBsEventsManager InternalInstance { get; set; }
 
-	public IBPackageController Controller => _Controller;
-	public IBAsyncPackage PackageInstance => _Controller.PackageInstance;
+	public IBsPackageController Controller => _Controller;
+	public IBsAsyncPackage PackageInstance => _Controller.PackageInstance;
 	public IVsMonitorSelection SelectionMonitor => _Controller.SelectionMonitor;
 
 

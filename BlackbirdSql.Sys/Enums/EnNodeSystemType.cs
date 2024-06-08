@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Data.Services;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Enums;
 
 
 // ---------------------------------------------------------------------------------

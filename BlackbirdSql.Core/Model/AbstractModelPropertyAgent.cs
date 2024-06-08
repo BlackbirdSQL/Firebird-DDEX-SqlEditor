@@ -6,11 +6,11 @@ using System.Net;
 using System.Text;
 using System.Windows.Media.Imaging;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Sys;
-
-
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Core.Model;
 
@@ -159,7 +159,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	{
 		get
 		{
-			_DataConnection ??= (DbConnection)DbNative.CreateDbConnection(ConnectionStringBuilder.ConnectionString);
+			_DataConnection ??= (DbConnection)NativeDb.CreateDbConnection(ConnectionStringBuilder.ConnectionString);
 
 			return _DataConnection;
 		}
@@ -556,7 +556,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 	public override DbCommand CreateCommand(string cmd = null)
 	{
-		return DbNative.CreateDbCommand(cmd);
+		return NativeDb.CreateDbCommand(cmd);
 	}
 
 

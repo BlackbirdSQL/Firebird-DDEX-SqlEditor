@@ -5,7 +5,7 @@
 
 using System;
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Enums;
 
 
 [Serializable]

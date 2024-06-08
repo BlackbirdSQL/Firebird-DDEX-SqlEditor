@@ -79,7 +79,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 		get
 		{
 			if (_Instance == null)
-				DemandLoadPackage(SystemData.AsyncPackageGuid, out _);
+				DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
 			return (LanguageExtensionPackage)_Instance;
 		}
 	}
@@ -439,11 +439,11 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 		registryKey2 ??= registryKey.CreateSubKey(settingsKey);
 
-		IList<string> savedProperties = new List<string>();
+		IList<string> savedProperties = [];
 
 		using (registryKey2)
 		{
-			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(languagePreferences, new Attribute[0]))
+			foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(languagePreferences, []))
 			{
 				TypeConverter converter = property.Converter;
 				if (converter.CanConvertTo(typeof(string)) && converter.CanConvertFrom(typeof(string)))

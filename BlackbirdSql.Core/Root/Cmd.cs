@@ -3,11 +3,10 @@ using System;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.IO;
-using System.Security;
 using System.Text;
+using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys;
-using Microsoft.VisualStudio;
+using BlackbirdSql.Sys.Ctl;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -25,7 +24,7 @@ namespace BlackbirdSql.Core;
 /// Central location for implementation of utility static methods. 
 /// </summary>
 // =========================================================================================================
-public abstract class Cmd : BlackbirdSql.Sys.Cmd
+public abstract class Cmd : Sys.Cmd
 {
 
 
@@ -69,25 +68,6 @@ public abstract class Cmd : BlackbirdSql.Sys.Cmd
 
 
 
-	// CanonicalizeFileNameOrDirectoryImpl
-	private static string CanonicalizeFileNameOrDirectoryImpl(string path, bool pathIsDir)
-	{
-		if (path.StartsWith("FBSQL::", StringComparison.OrdinalIgnoreCase) || path.StartsWith("FBSQLCLR::", StringComparison.OrdinalIgnoreCase))
-		{
-			return path;
-		}
-
-		path = Path.GetFullPath(path);
-		path = path.ToUpperInvariant();
-		if (pathIsDir)
-		{
-			return EnsureNoBackslash(path);
-		}
-
-		return path;
-	}
-
-
 
 	// GetDetailedException
 	public static string GetDetailedException(Exception e)
@@ -97,7 +77,7 @@ public abstract class Cmd : BlackbirdSql.Sys.Cmd
 		{
 			if (e is DbException ex)
 			{
-				stringBuilder.AppendLine(HashLog.Format(CultureInfo.CurrentCulture, Properties.Resources.ClassNumber, ex.GetProcedure(), ex.GetErrorCode()));
+				stringBuilder.AppendLine(HashLog.Format(CultureInfo.CurrentCulture, Resources.ClassNumber, ex.GetProcedure(), ex.GetErrorCode()));
 			}
 
 			stringBuilder.AppendLine(e.Message);

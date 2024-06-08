@@ -1,8 +1,7 @@
-﻿
-using Microsoft.VisualStudio.Data.Services;
+﻿using Microsoft.VisualStudio.Data.Services;
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Enums;
 
 public enum EnModelObjectType
 {

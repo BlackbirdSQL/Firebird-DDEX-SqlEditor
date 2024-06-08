@@ -6,9 +6,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -125,19 +127,19 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			if (lockedProviderObject == null)
 				throw new NotImplementedException("Site.GetLockedProviderObject()");
 
-			DbConnection connection = DbNative.CastToAssemblyConnection(lockedProviderObject);
+			DbConnection connection = NativeDb.CastToAssemblyConnection(lockedProviderObject);
 
 
 			// VS glitch. Null if ado has picked up a project data model firebird assembly.
 			if (connection == null)
 			{
-				connection = (DbConnection)DbNative.CreateDbConnection(Site.DecryptedConnectionString());
+				connection = (DbConnection)NativeDb.CreateDbConnection(Site.DecryptedConnectionString());
 				connection.Open();
 			}
 
 			// Tracer.Trace(GetType(), "SelectObjects()", "Site type: {0}", Site.GetType().FullName);
 
-			if (_Csa == null || _Csa.Invalidated((IDbConnection)lockedProviderObject))
+			if (_Csa == null || _Csa.IsInvalidated((IDbConnection)lockedProviderObject))
 			{
 				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject,
 					RctManager.GetConnectionSource());
@@ -150,13 +152,11 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		}
 		catch (DbException exf)
 		{
-			Tracer.Warning(GetType(), "SelectObjects", "{0} error: {1}.", DbNative.DbEngineName, exf.Message);
+			Tracer.Warning(GetType(), "SelectObjects", "{0} error: {1}.", NativeDb.DbEngineName, exf.Message);
 
-			LinkageParser parser = LinkageParser.GetInstance((IDbConnection)lockedProviderObject);
-			if (parser != null)
-				AbstractLinkageParser.DisposeInstance((IDbConnection)lockedProviderObject, parser.Loaded);
-
+			((IDbConnection)lockedProviderObject).DisposeLinkageParser();
 			lockedProviderObject = null;
+
 			Site.UnlockProviderObject();
 			Site.Close();
 
@@ -176,7 +176,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 				// Tracer.Trace(GetType(), "SelectObjects()", "Finally.");
 
 				if (!RctManager.IsEdmConnectionSource)
-					LinkageParser.AsyncEnsureLoading((IDbConnection)lockedProviderObject);
+					((IDbConnection)lockedProviderObject).AsyncEnsureLinkageLoading();
 
 				Site.UnlockProviderObject();
 			}
@@ -328,7 +328,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 					retval = strval;
 					break;
 				case SysConstants.C_KeyExClientVersion:
-					retval = $"FirebirdSql {DbNative.ClientVersion}";
+					retval = $"FirebirdSql {NativeDb.ClientVersion}";
 					break;
 				case SysConstants.C_KeyExMemoryUsage:
 					errval = -1;

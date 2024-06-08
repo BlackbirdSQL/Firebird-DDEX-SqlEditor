@@ -3,10 +3,13 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Interfaces;
 
-
-
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Model;
 
 
 public class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
@@ -15,14 +18,14 @@ public class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
 	{
 	}
 
-	private NativeDbStatementWrapperProxy(IBsNativeDbBatchParser owner, object statement)
+	private NativeDbStatementWrapperProxy(IBsNativeDbBatchParser owner, object statement, int index)
 	{
-		_NativeObject = DbNative.CreateDbStatementWrapper(owner, statement);
+		_NativeObject = NativeDb.CreateDbStatementWrapper(owner, statement, index);
 	}
 
-	public static IBsNativeDbStatementWrapper CreateInstance(IBsNativeDbBatchParser owner, object statement)
+	public static IBsNativeDbStatementWrapper CreateInstance(IBsNativeDbBatchParser owner, object statement, int index)
 	{
-		return new NativeDbStatementWrapperProxy(owner, statement);
+		return new NativeDbStatementWrapperProxy(owner, statement, index);
 	}
 
 	public void DisposeCommand()
@@ -55,6 +58,8 @@ public class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
 	public bool IsSpecialAction => _NativeObject.IsSpecialAction;
 
 
+	public int Index => _NativeObject.Index;
+
 	public long RowsSelected => _NativeObject.RowsSelected;
 
 	public long TotalRowsSelected => _NativeObject.TotalRowsSelected;
@@ -79,32 +84,16 @@ public class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
 
 
 
-	public void Cancel()
+	public async Task<int> ExecuteAsync(bool autoCommit, CancellationToken cancelToken)
 	{
-		_NativeObject.Cancel();
+		return await _NativeObject.ExecuteAsync(autoCommit, cancelToken);
 	}
 
 
-	public int AsyncExecute(bool autoCommit)
+
+	public async Task<bool> GeneratePlanAsync(CancellationToken cancelToken)
 	{
-		return _NativeObject.AsyncExecute(autoCommit);
-	}
-
-
-	public bool AsyncNextResult()
-	{
-		return _NativeObject.AsyncNextResult();
-	}
-
-	public bool AsyncRead()
-	{
-		return _NativeObject.AsyncRead();
-	}
-
-
-	public void GeneratePlan()
-	{
-		_NativeObject.GeneratePlan();
+		return await _NativeObject.GeneratePlanAsync(cancelToken);
 	}
 
 

@@ -12,14 +12,18 @@ using System.IO;
 using System.Reflection;
 
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Settings;
 
 
+
 namespace BlackbirdSql.Core.Ctl.Config;
+
+[SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+
 
 //
 // Summary:

@@ -17,7 +17,6 @@
 
 using System;
 
-
 namespace FirebirdSql.Data.Logging;
 
 public static class FbLogManager
@@ -32,11 +31,7 @@ public static class FbLogManager
 		set
 		{
 			if (_providerRetrieved)
-			{
-				InvalidOperationException exbb = new("The logging provider must be set before any action is taken");
-				Diag.Dug(exbb);
-				throw exbb;
-			}
+				throw new InvalidOperationException("The logging provider must be set before any action is taken");
 
 			_provider = value ?? throw new ArgumentNullException(nameof(value));
 		}

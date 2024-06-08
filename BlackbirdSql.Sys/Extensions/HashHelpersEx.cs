@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Threading;
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Extensions;
 
 
 // [FriendAccessAllowed]1

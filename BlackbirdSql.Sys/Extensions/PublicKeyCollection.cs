@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Extensions;
 
 
 //

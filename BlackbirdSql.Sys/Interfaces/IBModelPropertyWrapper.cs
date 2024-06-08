@@ -7,7 +7,7 @@ using System.Reflection;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 
 public interface IBModelPropertyWrapper

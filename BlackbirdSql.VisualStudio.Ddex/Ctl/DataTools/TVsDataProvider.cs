@@ -6,9 +6,8 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
+using BlackbirdSql.VisualStudio.Ddex.Interfaces;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -1053,7 +1052,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 			throw ex;
 		}
 
-		foreach (KeyValuePair<string, int> implementation in PackageData.Implementations)
+		foreach (KeyValuePair<string, int> implementation in ExtensionData.Implementations)
 		{
 			if (implementation.Value == 0)
 				continue;
@@ -1472,7 +1471,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 		{
 			array = new string[subKeyCount-1];
 			for (int i = 1; i < subKeyCount; i++)
-				array[i-1] = PackageData.ImplementationValues[$"{typeName}{(i==0?"":i)}"].Name ?? string.Empty;
+				array[i-1] = ExtensionData.ImplementationValues[$"{typeName}{(i==0?"":i)}"].Name ?? string.Empty;
 		}
 		if (array == null || array.Length == 0)
 		{

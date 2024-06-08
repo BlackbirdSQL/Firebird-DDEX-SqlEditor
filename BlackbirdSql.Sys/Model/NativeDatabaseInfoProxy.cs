@@ -3,7 +3,7 @@ using System.Data.Common;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Model;
 
 
 public class NativeDatabaseInfoProxy
@@ -14,11 +14,11 @@ public class NativeDatabaseInfoProxy
 
 	public NativeDatabaseInfoProxy(DbConnection connection)
 	{
-		_NativeObject = DbNative.DbConnectionSvc.CreateDatabaseInfoObject(connection);
+		_NativeObject = NativeDb.DbConnectionSvc.CreateDatabaseInfoObject(connection);
 	}
 
 	public NativeDatabaseInfoProxy(IDbConnection connection)
 	{
-		_NativeObject = DbNative.DbConnectionSvc.CreateDatabaseInfoObject((DbConnection)connection); 
+		_NativeObject = NativeDb.DbConnectionSvc.CreateDatabaseInfoObject((DbConnection)connection);
 	}
 }

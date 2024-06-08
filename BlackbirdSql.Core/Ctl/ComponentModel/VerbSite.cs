@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Reflection;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Events;
 using Microsoft.VisualStudio.Utilities;
 
 

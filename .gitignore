@@ -363,7 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /Private/
 /Private/*
-/Firebird/
-/Firebird/*
 /Originals/
 /Originals/*

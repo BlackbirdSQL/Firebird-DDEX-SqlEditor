@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.Common;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;

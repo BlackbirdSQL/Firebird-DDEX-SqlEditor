@@ -24,10 +24,6 @@ using System.Threading.Tasks;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Logging;
 
-
-
-
-
 namespace FirebirdSql.Data.FirebirdClient;
 
 [DefaultEvent("InfoMessage")]
@@ -64,7 +60,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public static void CreateDatabase(string connectionString, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false)
 	{
-		// Diag.Trace();
 		var options = new ConnectionString(connectionString);
 		options.Validate();
 
@@ -82,13 +77,11 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
 	public static async Task CreateDatabaseAsync(string connectionString, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		var options = new ConnectionString(connectionString);
 		options.Validate();
 
@@ -106,7 +99,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -130,7 +122,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -153,7 +144,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -229,9 +219,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 		{
 			if (_state == ConnectionState.Closed)
 			{
-				InvalidOperationException exbb = new("The connection is closed.");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new InvalidOperationException("The connection is closed.");
 			}
 
 			if (_innerConnection != null)
@@ -323,8 +311,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 				_disposed = true;
 				Close();
 				_innerConnection = null;
-				_options = null;
-				_connectionString = null;
 			}
 		}
 		base.Dispose(disposing);
@@ -337,8 +323,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 			_disposed = true;
 			await CloseAsync().ConfigureAwait(false);
 			_innerConnection = null;
-			_options = null;
-			_connectionString = null;
 		}
 		await base.DisposeAsync().ConfigureAwait(false);
 	}
@@ -378,14 +362,12 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public FbTransaction BeginTransaction(IsolationLevel level, string transactionName)
 	{
-		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.BeginTransaction(level, transactionName);
 	}
 	public Task<FbTransaction> BeginTransactionAsync(IsolationLevel level, string transactionName, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.BeginTransactionAsync(level, transactionName, cancellationToken);
@@ -396,14 +378,12 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public FbTransaction BeginTransaction(FbTransactionOptions options, string transactionName)
 	{
-		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.BeginTransaction(options, transactionName);
 	}
 	public Task<FbTransaction> BeginTransactionAsync(FbTransactionOptions options, string transactionName, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.BeginTransactionAsync(options, transactionName, cancellationToken);
@@ -420,7 +400,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public override void EnlistTransaction(System.Transactions.Transaction transaction)
 	{
-		// Diag.Trace();
 		CheckClosed();
 
 		if (transaction == null)
@@ -460,25 +439,9 @@ public sealed class FbConnection : DbConnection, ICloneable
 	}
 	public override DataTable GetSchema(string collectionName, string[] restrictions)
 	{
-
 		CheckClosed();
 
-		DataTable table = _innerConnection.GetSchema(collectionName, restrictions);
-
-		string str = collectionName + " count: " + table.Rows.Count + " restrictions: ";
-		if (restrictions != null)
-		{
-			foreach (var restriction in restrictions)
-			{
-				if (restriction == null)
-					str += "null, ";
-				else
-					str += restriction + ", ";
-			}
-		}
-		// Diag.Trace(str);
-
-		return table;
+		return _innerConnection.GetSchema(collectionName, restrictions);
 	}
 #if NET48 || NETSTANDARD2_0 || NETSTANDARD2_1
 	public Task<DataTable> GetSchemaAsync(string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
@@ -486,7 +449,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 	public override Task<DataTable> GetSchemaAsync(string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 #endif
 	{
-		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
@@ -509,9 +471,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 #if NET6_0_OR_GREATER
 	public new DbBatch CreateBatch()
 	{
-		NotSupportedException exbb = new("DbBatch is currently not supported. Use FbBatchCommand instead.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("DbBatch is currently not supported. Use FbBatchCommand instead.");
 	}
 
 	protected override DbBatch CreateDbBatch()
@@ -527,14 +487,11 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public override void ChangeDatabase(string databaseName)
 	{
-		// Diag.Trace();
 		CheckClosed();
 
 		if (string.IsNullOrEmpty(databaseName))
 		{
-			InvalidOperationException exbb = new("Database name is not valid.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Database name is not valid.");
 		}
 
 		var oldConnectionString = _connectionString;
@@ -554,7 +511,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			ConnectionString = oldConnectionString;
 			throw FbException.Create(ex);
 		}
@@ -565,14 +521,11 @@ public sealed class FbConnection : DbConnection, ICloneable
 	public override async Task ChangeDatabaseAsync(string databaseName, CancellationToken cancellationToken = default)
 #endif
 	{
-		// Diag.Trace();
 		CheckClosed();
 
 		if (string.IsNullOrEmpty(databaseName))
 		{
-			InvalidOperationException exbb = new("Database name is not valid.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Database name is not valid.");
 		}
 
 		var oldConnectionString = _connectionString;
@@ -592,7 +545,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			ConnectionString = oldConnectionString;
 			throw FbException.Create(ex);
 		}
@@ -600,20 +552,15 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public override void Open()
 	{
-		// Diag.Trace();
 		LogMessages.ConnectionOpening(Log, this);
 
 		if (string.IsNullOrEmpty(_connectionString))
 		{
-			InvalidOperationException exbb = new("Connection String is not initialized.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Connection String is not initialized.");
 		}
 		if (!IsClosed && _state != ConnectionState.Connecting)
 		{
-			InvalidOperationException exbb = new("Connection already Open.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Connection already Open.");
 		}
 
 		try
@@ -640,7 +587,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 					}
 					catch (OperationCanceledException ex)
 					{
-						Diag.Dug(ex);
 						//cancellationToken.ThrowIfCancellationRequested();
 						throw new TimeoutException("Timeout while connecting.", ex);
 					}
@@ -689,7 +635,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			OnStateChange(_state, ConnectionState.Closed);
 			throw FbException.Create(ex);
 		}
@@ -700,24 +645,18 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 
 		LogMessages.ConnectionOpened(Log, this);
-		// Diag.Trace();
 	}
 	public override async Task OpenAsync(CancellationToken cancellationToken)
 	{
-		// Diag.Trace();
 		LogMessages.ConnectionOpening(Log, this);
 
 		if (string.IsNullOrEmpty(_connectionString))
 		{
-			InvalidOperationException exbb = new("Connection String is not initialized.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Connection String is not initialized.");
 		}
 		if (!IsClosed && _state != ConnectionState.Connecting)
 		{
-			InvalidOperationException exbb = new("Connection already Open.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Connection already Open.");
 		}
 
 		try
@@ -744,7 +683,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 					}
 					catch (OperationCanceledException ex)
 					{
-						Diag.Dug(ex);
 						cancellationToken.ThrowIfCancellationRequested();
 						throw new TimeoutException("Timeout while connecting.", ex);
 					}
@@ -793,7 +731,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 		catch (IscException ex)
 		{
-			Diag.Dug(ex);
 			OnStateChange(_state, ConnectionState.Closed);
 			throw FbException.Create(ex);
 		}
@@ -804,7 +741,6 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 
 		LogMessages.ConnectionOpened(Log, this);
-		// Diag.Trace();
 	}
 
 	public override void Close()
@@ -934,9 +870,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 	{
 		if (IsClosed)
 		{
-			InvalidOperationException exbb = new("Operation requires an open and available connection.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Operation requires an open and available connection.");
 		}
 	}
 

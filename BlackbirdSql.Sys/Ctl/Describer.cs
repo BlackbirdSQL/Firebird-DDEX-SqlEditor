@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Ctl;
 
 // =========================================================================================================
 //
@@ -13,48 +13,50 @@ namespace BlackbirdSql.Sys;
 //
 // =========================================================================================================
 /// <summary>
-/// A Describer is a detailed description of a property descriptor as
-/// defined in the native database csb, or an alias for properties used outside
-/// of the csb, or a nova external property that is not used to create
-/// an actual connection.
+/// A Describer is a detailed description of a property descriptor as defined in the native database csb,
+/// or an alias for properties used outside of the csb, or a nova external property that is not used to
+/// create an actual connection.
 /// </summary>
-/// <param name="name">
-/// The TitleCased property name as defined in the native database csb or
-/// or a title-cased nova name for external properties.
-/// If ConnectionParameterKey is not null and does not match Name, then
-/// Name is considered a synonym of ConnectionParameterKey.
-/// </param>
-/// <param name="connectionParameterKey">
-/// The connection property/parameter name as defined in the native db csb. If
-/// ConnectionParameterKey is not null and does not match the Descriptor Name,
-/// then the Descriptor Name is considered a synonym of ConnectionParameterKey.
-/// </param>
-/// <param name="propertyType">The property's system type.</param>
-/// <param name="defaultValue">
-/// The property default value. For properties where the default value
-/// must be determined at runtime, for strings use null and for
-/// cardinals use int.MinValue.
-/// </param>
-/// <param name="isConnectionProperty">
-/// True if this describer represents a native database connection property/parameter.
-/// If PropertyName is not null than the describer defined by it's Name
-/// is a pseudonym for PropertyNanme.
-/// </param>
-/// <param name="isAdvanced">
-/// false if the describer is a connection property/parameter and appears in
-/// connection dialog front-ends (ie. a basic cconnection property/parameter) else
-/// true in all other cases.
-/// </param>
-/// <param name="isPublic">
-/// false if the describer is a secure value else true.
-/// </param>
-/// <param name="isMandatory">
-/// Returns true if the describer represents a connection property/parameter and is required.
-/// </param>
 // =========================================================================================================
 public class Describer
 {
 
+	/// <summary>
+	/// Full .ctor.
+	/// </summary>
+	/// <param name="name">
+	/// The TitleCased property name as defined in the native database csb or or a title-cased nova name
+	/// for external properties. If ConnectionParameterKey is not null and does not match Name, then
+	/// Name is considered a synonym of ConnectionParameterKey.
+	/// </param>
+	/// <param name="connectionParameterKey">
+	/// The connection property/parameter name as defined in the native db csb. If
+	/// ConnectionParameterKey is not null and does not match the Descriptor Name,
+	/// then the Descriptor Name is considered a synonym of ConnectionParameterKey.
+	/// </param>
+	/// <param name="propertyType">The property's system type.</param>
+	/// <param name="defaultValue">
+	/// The property default value. For properties where the default value
+	/// must be determined at runtime, for strings use null and for
+	/// cardinals use int.MinValue.
+	/// </param>
+	/// <param name="isConnectionProperty">
+	/// True if this describer represents a native database connection property/parameter.
+	/// If PropertyName is not null than the describer defined by it's Name
+	/// is a pseudonym for PropertyNanme.
+	/// </param>
+	/// <param name="isAdvanced">
+	/// false if the describer is a connection property/parameter and appears in
+	/// connection dialog front-ends (ie. a basic cconnection property/parameter) else
+	/// true in all other cases.
+	/// </param>
+	/// <param name="isPublic">
+	/// false if the describer is a secure value else true.
+	/// </param>
+	/// <param name="isMandatory">
+	/// Returns true if the describer represents a connection property/parameter and is required.
+	/// </param>
+	/// <param name="isInternalStore">Internal storage property. For example an encrypted version of a password.</param>
 	public Describer(string name, string connectionParameterKey, Type propertyType, object defaultValue = null,
 	bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true,
 	bool isMandatory = false, bool isInternalStore = false)
@@ -102,7 +104,7 @@ public class Describer
 	{
 		get
 		{
-			return _Descriptors ??= TypeDescriptor.GetProperties(DbNative.CsbType);
+			return _Descriptors ??= TypeDescriptor.GetProperties(NativeDb.CsbType);
 		}
 	}
 
@@ -126,10 +128,10 @@ public class Describer
 	/// </summary>
 	public Type DataType => PropertyType.IsSubclassOf(typeof(Enum))
 		? typeof(int)
-		: (PropertyType == typeof(byte[])
-			? typeof(string) 
-			: (PropertyType == typeof(Version)
-				? typeof(string) : PropertyType));
+		: PropertyType == typeof(byte[])
+			? typeof(string)
+			: PropertyType == typeof(Version)
+				? typeof(string) : PropertyType;
 
 	/// <summary>
 	/// The property default value. For properties where the default value
@@ -180,7 +182,7 @@ public class Describer
 			if (_IsEquivalency.HasValue)
 				return _IsEquivalency.Value;
 
-			_IsEquivalency = DbNative.EquivalencyKeys.Contains(Name);
+			_IsEquivalency = NativeDb.EquivalencyKeys.Contains(Name);
 
 			return _IsEquivalency.Value;
 		}
@@ -214,7 +216,7 @@ public class Describer
 			if (!IsConnectionParameter)
 				return null;
 
-			Type csbType = DbNative.CsbType;
+			Type csbType = NativeDb.CsbType;
 
 			PropertyInfo pinfo = csbType.GetProperty(Name);
 

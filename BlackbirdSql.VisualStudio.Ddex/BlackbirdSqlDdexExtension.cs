@@ -2,24 +2,21 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.Core.Extensions;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
-using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
-using BlackbirdSql.VisualStudio.Ddex.Model;
+using BlackbirdSql.VisualStudio.Ddex.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
@@ -41,7 +38,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// </summary>
 /// <remarks>
 /// Implements the package exposed by this assembly and registers itself with the shell.
-/// This is a multi-Package daisy-chained class implementation of <see cref="IBAsyncPackage"/>.
+/// This is a multi-Package daisy-chained class implementation of <see cref="IBsAsyncPackage"/>.
 /// The current hierarchy is <see cref="BlackbirdSqlDdexExtension"/> >> <see cref="ControllerPackage"/> >>
 /// <see cref="EditorExtensionPackage"/> >> <see cref="AbstractCorePackage"/>.
 /// </remarks>
@@ -59,7 +56,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 // 'Help About' registration. productName & productDetails resource integers must be prefixed with #.
-[InstalledProductRegistration("#100", "#102", Vsix.Version, IconResourceID = 400)]
+[InstalledProductRegistration("#100", "#102", ExtensionData.VsixVersion, IconResourceID = 400)]
 
 
 // We start loading as soon as the VS shell is available.
@@ -68,7 +65,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // to load our package ourselves.
 
 [ProvideUIContextRule(SystemData.UIContextGuid,
-	name: SystemData.UIContextName,
+	name: SystemData.C_UIContextName,
 	expression: "(ShellInit | SolutionOpening | DesignMode | DataSourceWindowVisible | DataSourceWindowSupported)",
 	termNames: ["ShellInit", "SolutionOpening", "DesignMode", "DataSourceWindowVisible", "DataSourceWindowSupported"],
 	termValues: [VSConstants.UICONTEXT.ShellInitialized_string,
@@ -87,10 +84,10 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 [VsPackageRegistration]
 
 // Register services
-[ProvideService(typeof(IBPackageController), IsAsyncQueryable = true,
-	ServiceName = PackageData.PackageControllerServiceName)]
+[ProvideService(typeof(IBsPackageController), IsAsyncQueryable = true,
+	ServiceName = ExtensionData.PackageControllerServiceName)]
 [ProvideService(typeof(IBProviderObjectFactory), IsAsyncQueryable = true,
-	ServiceName = PackageData.ProviderObjectFactoryServiceName)]
+	ServiceName = ExtensionData.ProviderObjectFactoryServiceName)]
 
 // Implement Visual studio options/settings
 [VsProvideOptionPage(typeof(SettingsProvider.GeneralSettingsPage), SettingsProvider.CategoryName,
@@ -165,20 +162,14 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		get
 		{
 			if (_Instance == null)
-				DemandLoadPackage(SystemData.AsyncPackageGuid, out _);
+				DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
 			return (BlackbirdSqlDdexExtension)_Instance;
 		}
 	}
 
 
 	/// <summary>
-	/// Provides access to our schema factory type by ancestor classes.
-	/// </summary>
-	public override Type SchemaFactoryType => typeof(DslProviderSchemaFactory);
-
-
-	/// <summary>
-	/// Accessor to user options at this level of the <see cref="IBAsyncPackage"/> class hierarchy.
+	/// Accessor to user options at this level of the <see cref="IBsAsyncPackage"/> class hierarchy.
 	/// </summary>
 	private PersistentSettings ExtensionSettings => (PersistentSettings)PersistentSettings.Instance;
 
@@ -225,7 +216,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// Gets a service interface from this service provider asynchronously.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#pragma warning disable VSTHRD103 // Call async methods when in an async method
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
 	public override Task<TInterface> GetServiceAsync<TService, TInterface>()
 	{
 		Type type = typeof(TService);
@@ -238,7 +229,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 		return task as Task<TInterface>;
 	}
-#pragma warning restore VSTHRD103 // Call async methods when in an async method
 
 
 
@@ -260,10 +250,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 		Progress(progress, "Propagating user settings... Done.");
 
-
 		await base.InitializeAsync(cancellationToken, progress);
-
-
 
 		Progress(progress, "Registering DDEX Provider services...");
 
@@ -272,7 +259,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 		// Add provider object and schema factories
 		ServiceContainer.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
-		ServiceContainer.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
 		ServiceContainer.AddService(typeof(IBDataConnectionDlgHandler), ServicesCreatorCallbackAsync, promote: true);
 
 		Progress(progress, "Registering DDEX Provider services... Done.");
@@ -341,10 +327,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		{
 			return new TProviderObjectFactory();
 		}
-		if (serviceType == typeof(IBProviderSchemaFactory))
-		{
-			return new DslProviderSchemaFactory();
-		}
 		if (serviceType == typeof(IBDataConnectionDlgHandler))
 		{
 			return new TDataConnectionDlgHandler();
@@ -368,7 +350,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// ---------------------------------------------------------------------------------
 	public override async Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType)
 	{
-		if (serviceType == typeof(IBProviderObjectFactory) || serviceType == typeof(IBProviderSchemaFactory))
+		if (serviceType == typeof(IBProviderObjectFactory))
 			return await CreateServiceInstanceAsync(serviceType, token);
 
 
@@ -413,7 +395,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Starts up extension user options push notifications. Only the final class in
-	/// the <see cref="IBAsyncPackage"/> class hierarchy should implement the method.
+	/// the <see cref="IBsAsyncPackage"/> class hierarchy should implement the method.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected override void PropagateSettings()

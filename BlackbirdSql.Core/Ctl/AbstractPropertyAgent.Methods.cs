@@ -13,12 +13,12 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys;
-
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
 
 namespace BlackbirdSql.Core;
 
@@ -700,11 +700,11 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			{
 				// It could be a connection dataset which includes DatasetKey, DatasetId etc. so don't
 				// report an exception if it is.
-				// if (Csb.Describers[pair.Key] == null)
-				// {
+				if (Csb.Describers[pair.Key] == null)
+				{
 					NotSupportedException ex = new($"Connection parameter '{pair.Key}' has no descriptor property configured.");
 					Diag.Dug(ex);
-				// }
+				}
 				continue;
 			}
 

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using BlackbirdSql.Core;
+using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Controls;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.Data.ConnectionUI;
@@ -150,8 +151,8 @@ public class TDataProvider(string name, string displayName, string shortDisplayN
 			{
 				{ string.Empty, typeof(TConnectionUIProperties) }
 			};
-				_BlackbirdSqlDataProvider = new (DbNative.Invariant, Resources.DataProvider_Ddex, Resources.DataProvider_Ddex_Short,
-				Resources.DataProvider_Ddex_Description, DbNative.ConnectionType, dictionary, dictionary2, dictionary3);
+				_BlackbirdSqlDataProvider = new (NativeDb.Invariant, Resources.DataProvider_Ddex, Resources.DataProvider_Ddex_Short,
+				Resources.DataProvider_Ddex_Description, NativeDb.ConnectionType, dictionary, dictionary2, dictionary3);
 			}
 			return _BlackbirdSqlDataProvider;
 		}
@@ -161,7 +162,7 @@ public class TDataProvider(string name, string displayName, string shortDisplayN
 
 	public string Name => _Name;
 
-	public Guid NameClsid => _Name == DbNative.Invariant ? new(SystemData.ProviderGuid) : new Guid(_Name);
+	public Guid NameClsid => _Name == NativeDb.Invariant ? new(SystemData.ProviderGuid) : new Guid(_Name);
 
 	public string DisplayName
 	{

@@ -22,6 +22,28 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 // =========================================================================================================
 public class TConnectionSupport : AdoDotNetConnectionSupport
 {
+
+
+	// ----------------------------------------------------
+	#region Constructors / Destructors - TConnectionSupport
+	// ----------------------------------------------------
+
+
+	public TConnectionSupport() : base()
+	{
+		// Tracer.Trace(typeof(TConnectionSupport), ".ctor");
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+
+
+
 	/// <summary>
 	/// Trace replacement for AdoDotNetCommand but doesn't seem to do anything.
 	/// </summary>
@@ -136,23 +158,6 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - TConnectionSupport
-	// =========================================================================================================
-
-
-	public TConnectionSupport() : base()
-	{
-		// Tracer.Trace(GetType(), "TConnectionSupport()");
-	}
-
-
-	#endregion Constructors / Destructors
-
-
-
-
-
-	// =========================================================================================================
 	#region Method Implementations - TConnectionSupport
 	// =========================================================================================================
 
@@ -170,7 +175,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(IServiceContainer container, Type serviceType)
 	{
-		// Tracer.Trace(GetType(), "TConnectionSupport.CreateService()", "Service requested: {0}", serviceType.Name);
+		// Tracer.Trace(GetType(), "CreateService()", "Service requested: {0}", serviceType.Name);
 
 		if (serviceType == typeof(IVsDataCommand))
 			return new TCommand(Site);
@@ -234,7 +239,6 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 
 		try
 		{
-			// Tracer.Trace("Prompt: " + doPromptCheck + " IsOpen: " + State + " ConnectionString: " + ConnectionString);
 			if (State == DataConnectionState.Open)
 				return true;
 

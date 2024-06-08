@@ -21,7 +21,6 @@ using System.Data.Common;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
@@ -52,7 +51,6 @@ internal abstract class FbSchema
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex);
 					throw FbException.Create(ex);
 				}
 			}
@@ -83,7 +81,6 @@ internal abstract class FbSchema
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex);
 					throw FbException.Create(ex);
 				}
 			}

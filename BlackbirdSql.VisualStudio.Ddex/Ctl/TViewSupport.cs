@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
@@ -321,7 +322,7 @@ public class TViewSupport : DataViewSupport,
 		// Tracer.Trace((expanded ? "Expanded" : "Closed") + " icon requested id: " + itemId + ":" + node.Name + ":" + node.FullName);
 
 		string name = null;
-		string[] nodes = node.FullName.Split(SystemData.UnixFieldSeparator);
+		string[] nodes = node.FullName.Split(SystemData.C_UnixFieldSeparator);
 
 		switch (nodes.Length)
 		{
@@ -524,11 +525,7 @@ public class TViewSupport : DataViewSupport,
 
 		if (e.NewState != DataConnectionState.Open)
 		{
-			LinkageParser parser = LinkageParser.GetInstance(ViewHierarchy.ExplorerConnection.Connection);
-
-			if (parser != null)
-				LinkageParser.DisposeInstance(ViewHierarchy.ExplorerConnection.Connection, parser.Loaded);
-
+			ViewHierarchy.ExplorerConnection.Connection.DisposeLinkageParser();
 			return;
 		}
 
@@ -538,7 +535,7 @@ public class TViewSupport : DataViewSupport,
 			return;
 		}
 
-		LinkageParser.UnlockLoadedParser();
+		NativeDb.DatabaseEngineSvc.UnlockLoadedParser_();
 
 		// Attempt linkage startup on a refresh.
 		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Calling IsEdm.");
@@ -551,7 +548,7 @@ public class TViewSupport : DataViewSupport,
 
 		// We'll delay 25 cycles of 20ms each because this is a deadlock when
 		// preregistering the taskhandler and a node requiring completed linkage tables is already expanded.
-		LinkageParser.AsyncEnsureLoading(site, 25, 20);
+		site.AsyncEnsureLinkageLoading(125, 20);
 	}
 
 
@@ -594,25 +591,24 @@ public class TViewSupport : DataViewSupport,
 		// If it doesn't exist we can start linkage.
 		if (e.Node.IsRefreshing)
 		{
-			LinkageParser parser = LinkageParser.GetInstance(site);
+			IBsLinkageParser parser = site.GetLinkageParser();
 
 
 			if (parser != null)
 			{
 				// Not guaranteed but if all properties are the same it's 99% likely
 				// this is a user refresh. For the 1% the linkage tables will be redundantly rebuilt.
-				if (parser.Loaded && !LinkageParser.IsLockedLoadedParser(parser)
-					&& Csb.AreEquivalent(site.DecryptedConnectionString(),
-						parser.ConnectionString, Csb.DescriberKeys))
+				if (parser.Loaded && !parser.IsLockedLoaded && Csb.AreEquivalent(site.DecryptedConnectionString(),
+					parser.ConnectionString, Csb.DescriberKeys))
 				{
 					// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for Dispose.");
 
 					if (RctManager.IsEdmConnectionSource)
 						return;
 
-					// Tracer.Trace(GetType(), "OnNodeChanged()", "Refreshing & Parser Exists: Calling destructive Dispose.");
+					// Tracer.Trace(GetType(), "OnNodeChanged()", "Refreshing & Parser Exists: Calling destructive DisposeLinkageParser().");
 
-					LinkageParser.DisposeInstance(site, false);
+					site.DisposeLinkageParser();
 				}
 
 				// else
@@ -622,23 +618,23 @@ public class TViewSupport : DataViewSupport,
 			else
 			{
 				// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for parser == null.");
-				LinkageParser.UnlockLoadedParser();
+				NativeDb.DatabaseEngineSvc.UnlockLoadedParser_();
 
 				if (RctManager.IsEdmConnectionSource)
 					return;
 
-				LinkageParser.AsyncEnsureLoading(site, 10, 10);
+				site.AsyncEnsureLinkageLoading(10, 10);
 			}
 		}
 		else if (e.Node.IsExpanding)
 		{
-			LinkageParser.UnlockLoadedParser();
+			NativeDb.DatabaseEngineSvc.UnlockLoadedParser_();
 
 			if (RctManager.IsEdmConnectionSource)
 				return;
 
 			if (site.State == DataConnectionState.Open && RctManager.Available)
-				LinkageParser.AsyncEnsureLoading(site);
+				site.AsyncEnsureLinkageLoading();
 		}
 
 	}
@@ -667,7 +663,7 @@ public class TViewSupport : DataViewSupport,
 		if (RctManager.IsEdmConnectionSource)
 			return;
 
-		LinkageParser.AsyncEnsureLoading(e.Node, 10, 10);
+		e.Node.AsyncEnsureLinkageLoading(10, 10);
 	}
 
 

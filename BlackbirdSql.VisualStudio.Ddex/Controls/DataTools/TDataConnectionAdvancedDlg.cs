@@ -5,8 +5,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.ComponentModel.Com2Interop;
-using BlackbirdSql.VisualStudio.Ddex.Controls.Enums;
-using BlackbirdSql.VisualStudio.Ddex.Controls.Events;
+using BlackbirdSql.VisualStudio.Ddex.Enums;
+using BlackbirdSql.VisualStudio.Ddex.Events;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.Data.ConnectionUI;
 

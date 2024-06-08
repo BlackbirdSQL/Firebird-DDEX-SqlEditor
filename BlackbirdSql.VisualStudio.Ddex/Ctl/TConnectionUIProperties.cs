@@ -5,10 +5,9 @@
 using System;
 using System.ComponentModel;
 using System.Data.Common;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -28,11 +27,12 @@ public class TConnectionUIProperties : TConnectionProperties
 
 	public TConnectionUIProperties() : base()
 	{
-		// Tracer.Trace(GetType(), "TConnectionUIProperties()");
+		// Tracer.Trace(typeof(TConnectionUIProperties), ".ctor");
 	}
 
 	// private static int _StaticCardinal = -1;
 	// private int _InstanceCardinal = -1;
+
 
 
 	/// <summary>
@@ -41,9 +41,19 @@ public class TConnectionUIProperties : TConnectionProperties
 	/// </summary>
 	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb, Attribute[] attributes)
 	{
-		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(csb, attributes);
+		PropertyDescriptorCollection descriptors;
+		try
+		{
+			descriptors = TypeDescriptor.GetProperties(csb, attributes);
 
-		Csb.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
+			Csb.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
 
 		return descriptors;
 
@@ -56,9 +66,19 @@ public class TConnectionUIProperties : TConnectionProperties
 	/// </summary>
 	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb)
 	{
-		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(csb);
+		PropertyDescriptorCollection descriptors;
+		try
+		{
+			descriptors = TypeDescriptor.GetProperties(csb);
 
-		Csb.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
+			Csb.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
 
 		return descriptors;
 	}
@@ -74,26 +94,34 @@ public class TConnectionUIProperties : TConnectionProperties
 
 	public override void Parse(string connectionString)
 	{
-		lock (_LockObject)
+		try
 		{
-			ConnectionStringBuilder.ConnectionString = connectionString;
-
-			// Connection dialogs spawned from a UIHierarchyMarshaler can misbehave and
-			// corrupt our connection nodes, which we repair. So the
-			// IVsDataConnectionUIProperties implementation of this class is identified
-			// with an "edmu" property.
-			// The ancestor IVsDataConnectionProperties implementation is identified
-			// with an "edmx" property.
-			if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			lock (_LockObject)
 			{
-				ConnectionStringBuilder.Remove("edmx");
-				ConnectionStringBuilder["edmu"] = true;
+				ConnectionStringBuilder.ConnectionString = connectionString;
+
+				// Connection dialogs spawned from a UIHierarchyMarshaler can misbehave and
+				// corrupt our connection nodes, which we repair. So the
+				// IVsDataConnectionUIProperties implementation of this class is identified
+				// with an "edmu" property.
+				// The ancestor IVsDataConnectionProperties implementation is identified
+				// with an "edmx" property.
+				if (ConnectionSource == EnConnectionSource.EntityDataModel)
+				{
+					ConnectionStringBuilder.Remove(SysConstants.C_KeyExEdmx);
+					ConnectionStringBuilder[SysConstants.C_KeyExEdmu] = true;
+				}
+
+				// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}", ConnectionSource);
 			}
 
-			// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}", ConnectionSource);
+			OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
 		}
-
-		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 	}
 
 

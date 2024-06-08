@@ -4,10 +4,8 @@
 
 using System;
 using BlackbirdSql.Core.Ctl.CommandProviders;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 

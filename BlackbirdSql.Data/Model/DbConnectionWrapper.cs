@@ -7,7 +7,8 @@ using System;
 using System.Data;
 using System.Data.Common;
 using BlackbirdSql.Data.Properties;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 
 

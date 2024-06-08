@@ -7,7 +7,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace BlackbirdSql.Core;
+namespace BlackbirdSql;
 
 [SuppressUnmanagedCodeSecurity]
 public static class UnsafeNative

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using BlackbirdSql.Sys.Extensions;
+using BlackbirdSql.Sys.Interfaces;
 
-
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Events;
 
 /// <summary>
 /// Contains the package settings/options payload used by GlobalsAgent

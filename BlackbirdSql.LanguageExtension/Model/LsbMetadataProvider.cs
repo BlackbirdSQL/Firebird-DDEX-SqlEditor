@@ -25,9 +25,7 @@ public abstract class LsbMetadataProvider : AbstractMetadataProvider
 		private static int DefaultRefreshDbListMillisecond;
 
 		private readonly IDbConnection m_serverConnection;
-
 		private readonly int m_refreshDbListMillisecond;
-
 		private int m_lastRefreshTimestamp;
 
 		private const string RegPath = "Software\\BlackbirdSql\\Firebird-SQL Language Service\\ConnectedMetadataProvider";
@@ -90,9 +88,14 @@ public abstract class LsbMetadataProvider : AbstractMetadataProvider
 			/*
 			TraceHelper.TraceContext.Assert(connection != null, "SmoMetadataProvider Assert", "connection != null");
 			TraceHelper.TraceContext.Assert(refreshDbListMillisecond >= 0, "SmoMetadataProvider Assert", "refreshDbListMillisecond >= 0");
-			m_serverConnection = connection;
-			m_refreshDbListMillisecond = refreshDbListMillisecond;
 			*/
+			m_serverConnection = connection;
+			_ = m_serverConnection;
+
+			m_refreshDbListMillisecond = refreshDbListMillisecond;
+			_ = m_refreshDbListMillisecond;
+			m_lastRefreshTimestamp = refreshDbListMillisecond; // For error suppression for now.
+			_ = m_lastRefreshTimestamp;
 		}
 
 		private void OnBeforeBind(object sender, MetadataProviderEventArgs e)
@@ -167,7 +170,8 @@ public abstract class LsbMetadataProvider : AbstractMetadataProvider
 		// : base(SmoBuiltInFunctionLookup.Instance, SmoCollationLookup.Instance, SmoSystemDataTypeLookup.Instance, SmoMetadataFactory.Instance)
 	{
 		m_smoServer = server;
-		// m_server = new Microsoft.SqlServer.Management.SmoMetadataProvider.Server(m_smoServer, isConnected);
+		m_server = new(); // Microsoft.SqlServer.Management.SmoMetadataProvider.Server(m_smoServer, isConnected);
+
 	}
 
 	public static LsbMetadataProvider CreateConnectedProvider(IDbConnection connection)

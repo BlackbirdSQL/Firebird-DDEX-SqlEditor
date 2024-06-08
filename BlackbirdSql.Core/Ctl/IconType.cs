@@ -1,7 +1,4 @@
-﻿
-using BlackbirdSql.Sys;
-
-
+﻿using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Core.Ctl;
 

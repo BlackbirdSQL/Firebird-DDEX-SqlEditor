@@ -2,7 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
+using BlackbirdSql.VisualStudio.Ddex.Interfaces;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 

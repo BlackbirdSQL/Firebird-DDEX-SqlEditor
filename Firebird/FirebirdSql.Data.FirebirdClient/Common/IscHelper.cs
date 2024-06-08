@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-
 using FirebirdSql.Data.FirebirdClient;
 
 namespace FirebirdSql.Data.Common;
@@ -142,12 +141,7 @@ internal static class IscHelper
 						{
 							IscCodes.isc_info_db_class_classic_access => "CLASSIC SERVER",
 							IscCodes.isc_info_db_class_server_access => "SUPER SERVER",
-							_ => ((Func<int>)(() =>
-								{
-									ArgumentOutOfRangeException exbb = new(nameof(serverClass), $"{nameof(serverClass)}={serverClass}");
-									Diag.Dug(exbb);
-									throw exbb;
-								}))(),
+							_ => throw new ArgumentOutOfRangeException(nameof(serverClass), $"{nameof(serverClass)}={serverClass}"),
 						});
 					}
 					break;
@@ -168,12 +162,7 @@ internal static class IscHelper
 							0 => "NONE",
 							1 => "READ ONLY",
 							2 => "READ WRITE",
-							_ => ((Func<int>)(() =>
-								{
-									ArgumentOutOfRangeException exbb = new(nameof(mode), $"{nameof(mode)}={mode}");
-									Diag.Dug(exbb);
-									throw exbb;
-								}))(),
+							_ => throw new ArgumentOutOfRangeException(nameof(mode), $"{nameof(mode)}={mode}"),
 						});
 					}
 					break;

@@ -26,10 +26,6 @@ using System.Threading.Tasks;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Logging;
 
-
-
-
-
 namespace FirebirdSql.Data.FirebirdClient;
 
 public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller, ICloneable
@@ -100,9 +96,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 		{
 			if (value < 0)
 			{
-				ArgumentException exbb = new("The property value assigned is less than 0.");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new ArgumentException("The property value assigned is less than 0.");
 			}
 
 			_commandTimeout = value;
@@ -118,9 +112,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 		{
 			if (_activeReader != null)
 			{
-				InvalidOperationException exbb = new("There is already an open DataReader associated with this Command which must be closed first.");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new InvalidOperationException("There is already an open DataReader associated with this Command which must be closed first.");
 			}
 
 			if (_transaction != null && _transaction.IsCompleted)
@@ -162,9 +154,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 		{
 			if (_activeReader != null)
 			{
-				InvalidOperationException exbb = new("There is already an open DataReader associated with this Command which must be closed first.");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new InvalidOperationException("There is already an open DataReader associated with this Command which must be closed first.");
 			}
 
 			RollbackImplicitTransaction();
@@ -202,12 +192,20 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 		{
 			if (_activeReader != null)
 			{
-				InvalidOperationException exbb = new("There is already an open DataReader associated with this Command which must be closed first.");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new InvalidOperationException("There is already an open DataReader associated with this Command which must be closed first.");
 			}
 			_fetchSize = value;
 		}
+	}
+
+	/// <summary>
+	/// Gets collection of parameters parsed from the query text during command prepare.
+	/// </summary>
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public IReadOnlyList<string> NamedParameters
+	{
+		get { return _namedParameters; }
 	}
 
 	#endregion
@@ -323,7 +321,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public FbCommand(string cmdText, FbConnection connection, FbTransaction transaction)
 	{
-		Diag.Trace($"Command: {cmdText}");
 		_namedParameters = Array.Empty<string>();
 		_updatedRowSource = UpdateRowSource.Both;
 		_commandType = CommandType.Text;
@@ -348,7 +345,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public static FbCommand CreateWithTypeCoercions(Type[] expectedColumnTypes)
 	{
-		Diag.Trace();
 		var result = new FbCommand();
 		result._expectedColumnTypes = expectedColumnTypes;
 		return result;
@@ -371,7 +367,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 				}
 				catch (IscException ex)
 				{
-					Diag.Dug(ex);
 					throw FbException.Create(ex);
 				}
 				_commandTimeout = null;
@@ -400,7 +395,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				throw FbException.Create(ex);
 			}
 			_commandTimeout = 0;
@@ -424,7 +418,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	object ICloneable.Clone()
 	{
-		Diag.Trace();
 		var command = new FbCommand();
 
 		command.CommandText = CommandText;
@@ -465,7 +458,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public override void Prepare()
 	{
-		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -476,7 +468,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				RollbackImplicitTransaction();
 				throw FbException.Create(ex);
 			}
@@ -493,7 +484,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	public override async Task PrepareAsync(CancellationToken cancellationToken = default)
 #endif
 	{
-		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -504,7 +494,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				await RollbackImplicitTransactionAsync(explicitCancellation.CancellationToken).ConfigureAwait(false);
 				throw FbException.Create(ex);
 			}
@@ -518,7 +507,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public override int ExecuteNonQuery()
 	{
-		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -536,7 +524,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				RollbackImplicitTransaction();
 				throw FbException.Create(ex);
 			}
@@ -557,7 +544,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public override async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
 	{
-		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -575,7 +561,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				await RollbackImplicitTransactionAsync(explicitCancellation.CancellationToken).ConfigureAwait(false);
 				throw FbException.Create(ex);
 			}
@@ -601,7 +586,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public new FbDataReader ExecuteReader(CommandBehavior behavior)
 	{
-		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -612,7 +596,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				RollbackImplicitTransaction();
 				throw FbException.Create(ex);
 			}
@@ -629,7 +612,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	public new Task<FbDataReader> ExecuteReaderAsync(CommandBehavior behavior) => ExecuteReaderAsync(behavior, CancellationToken.None);
 	public new async Task<FbDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
 	{
-		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -640,7 +622,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				await RollbackImplicitTransactionAsync(explicitCancellation.CancellationToken).ConfigureAwait(false);
 				throw FbException.Create(ex);
 			}
@@ -657,7 +638,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public override object ExecuteScalar()
 	{
-		Diag.Trace();
 		DbValue[] values = null;
 		object val = null;
 
@@ -691,7 +671,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				RollbackImplicitTransaction();
 				throw FbException.Create(ex);
 			}
@@ -706,7 +685,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public override async Task<object> ExecuteScalarAsync(CancellationToken cancellationToken)
 	{
-		Diag.Trace();
 		DbValue[] values = null;
 		object val = null;
 
@@ -740,7 +718,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				await RollbackImplicitTransactionAsync(explicitCancellation.CancellationToken).ConfigureAwait(false);
 				throw FbException.Create(ex);
 			}
@@ -756,7 +733,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public string GetCommandPlan()
 	{
-		// Diag.Trace();
 		if (_statement == null)
 		{
 			return null;
@@ -765,7 +741,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public Task<string> GetCommandPlanAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (_statement == null)
 		{
 			return Task.FromResult<string>(null);
@@ -775,7 +750,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public string GetCommandExplainedPlan()
 	{
-		// Diag.Trace();
 		if (_statement == null)
 		{
 			return null;
@@ -784,7 +758,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public Task<string> GetCommandExplainedPlanAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (_statement == null)
 		{
 			return Task.FromResult<string>(null);
@@ -803,12 +776,10 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
 	{
-		// Diag.Trace();
 		return ExecuteReader(behavior);
 	}
 	protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
 	{
-		// Diag.Trace();
 		return await ExecuteReaderAsync(behavior, cancellationToken).ConfigureAwait(false);
 	}
 
@@ -844,29 +815,14 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	internal DbValue[] Fetch()
 	{
-		// Diag.Trace("Command: " + CommandText);
-		if (HasParameters)
-		{
-			string str = "Parameters: ";
-
-			foreach (FbParameter param in Parameters)
-			{
-				str += param.ParameterName + ":" + (param.Value == null ? "null" : param.Value.ToString()) + ",";
-			}
-			// Diag.Trace(str);
-		}
-
 		if (_statement != null)
 		{
 			try
 			{
-				DbValue[] dbValue = _statement.Fetch();
-				// Diag.Trace();
-				return dbValue;
+				return _statement.Fetch();
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				throw FbException.Create(ex);
 			}
 		}
@@ -874,7 +830,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	internal async Task<DbValue[]> FetchAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (_statement != null)
 		{
 			try
@@ -883,7 +838,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				throw FbException.Create(ex);
 			}
 		}
@@ -971,7 +925,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	internal void CommitImplicitTransaction()
 	{
-		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			try
@@ -1006,7 +959,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	internal async Task CommitImplicitTransactionAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			try
@@ -1042,7 +994,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	internal void RollbackImplicitTransaction()
 	{
-		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			var transactionCount = Connection.InnerConnection.Database.TransactionCount;
@@ -1077,7 +1028,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	internal async Task RollbackImplicitTransactionAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			var transactionCount = Connection.InnerConnection.Database.TransactionCount;
@@ -1190,7 +1140,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	void IDescriptorFiller.Fill(Descriptor descriptor, int index) => UpdateParameterValues(descriptor);
 	private void UpdateParameterValues(Descriptor descriptor)
 	{
-		// Diag.Trace();
 		if (!HasParameters)
 			return;
 
@@ -1271,9 +1220,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 						case DbDataType.Guid:
 							if (!(commandParameter.InternalValue is Guid) && !(commandParameter.InternalValue is byte[]))
 							{
-								InvalidOperationException exbb = new("Incorrect Guid value.");
-								Diag.Dug(exbb);
-								throw exbb;
+								throw new InvalidOperationException("Incorrect Guid value.");
 							}
 							parameter.DbValue.SetValue(commandParameter.InternalValue);
 							break;
@@ -1289,7 +1236,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	ValueTask IDescriptorFiller.FillAsync(Descriptor descriptor, int index, CancellationToken cancellationToken) => UpdateParameterValuesAsync(descriptor, cancellationToken);
 	private async ValueTask UpdateParameterValuesAsync(Descriptor descriptor, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (!HasParameters)
 			return;
 
@@ -1370,9 +1316,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 						case DbDataType.Guid:
 							if (!(commandParameter.InternalValue is Guid) && !(commandParameter.InternalValue is byte[]))
 							{
-								InvalidOperationException exbb = new("Incorrect Guid value.");
-								Diag.Dug(exbb);
-								throw exbb;
+								throw new InvalidOperationException("Incorrect Guid value.");
 							}
 							statementParameter.DbValue.SetValue(commandParameter.InternalValue);
 							break;
@@ -1392,7 +1336,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	private void Prepare(bool returnsSet)
 	{
-		// Diag.Trace();
 		var innerConn = _connection.InnerConnection;
 
 		// Check if	we have	a valid	transaction
@@ -1462,7 +1405,6 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	private async Task PrepareAsync(bool returnsSet, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		var innerConn = _connection.InnerConnection;
 
 		// Check if	we have	a valid	transaction
@@ -1533,18 +1475,9 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	private void ExecuteCommand(CommandBehavior behavior, bool returnsSet)
 	{
-		Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
-		try
-		{
-			Prepare(returnsSet);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex, CommandText);
-			throw;
-		}
+		Prepare(returnsSet);
 
 		if ((behavior & CommandBehavior.SequentialAccess) == CommandBehavior.SequentialAccess ||
 			(behavior & CommandBehavior.SingleResult) == CommandBehavior.SingleResult ||
@@ -1561,28 +1494,15 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			// Validate input parameter count
 			if (_namedParameters.Count > 0 && !HasParameters)
 			{
-
-				Exception ex = FbException.Create("Must declare command parameters.");
-				Diag.Dug(ex);
-				throw ex;
+				throw FbException.Create("Must declare command parameters.");
 			}
 
 			// Execute
-			try
-			{
-				_statement.Execute(CommandTimeout * 1000, this);
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex, _statement.GetType().FullName);
-				throw;
-			}
+			_statement.Execute(CommandTimeout * 1000, this);
 		}
-		// Diag.Trace();
 	}
 	private async Task ExecuteCommandAsync(CommandBehavior behavior, bool returnsSet, CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
 		await PrepareAsync(returnsSet, cancellationToken).ConfigureAwait(false);
@@ -1608,12 +1528,10 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			// Execute
 			await _statement.ExecuteAsync(CommandTimeout * 1000, this, cancellationToken).ConfigureAwait(false);
 		}
-		// Diag.Trace();
 	}
 
 	private string BuildStoredProcedureSql(string spName, bool returnsSet)
 	{
-		// Diag.Trace();
 		var sql = spName == null ? string.Empty : spName.Trim();
 
 		if (sql.Length > 0 &&
@@ -1654,14 +1572,12 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 				sql = "execute procedure " + paramsText.ToString();
 			}
 		}
-		// Diag.Trace();
 
 		return sql;
 	}
 
 	private void CheckCommand()
 	{
-		// Diag.Trace();
 		if (_transaction != null && _transaction.IsCompleted)
 		{
 			_transaction = null;
@@ -1671,33 +1587,25 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 		if (_activeReader != null)
 		{
-			InvalidOperationException exbb = new("There is already an open DataReader associated with this Command which must be closed first.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("There is already an open DataReader associated with this Command which must be closed first.");
 		}
 
 		if (_transaction == null &&
 			_connection.InnerConnection.HasActiveTransaction &&
 			!_connection.InnerConnection.IsEnlisted)
 		{
-			InvalidOperationException exbb = new("Execute requires the Command object to have a Transaction object when the Connection object assigned to the command is in a pending local transaction. The Transaction property of the Command has not been initialized.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Execute requires the Command object to have a Transaction object when the Connection object assigned to the command is in a pending local transaction. The Transaction property of the Command has not been initialized.");
 		}
 
 		if (_transaction != null && !_transaction.IsCompleted &&
 			!_connection.Equals(_transaction.Connection))
 		{
-			InvalidOperationException exbb = new("Command Connection is not equal to Transaction Connection.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Command Connection is not equal to Transaction Connection.");
 		}
 
 		if (_commandText == null || _commandText.Length == 0)
 		{
-			InvalidOperationException exbb = new("The command text for this Command has not been set.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("The command text for this Command has not been set.");
 		}
 	}
 

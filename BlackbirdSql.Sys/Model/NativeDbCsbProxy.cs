@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
+using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Enums;
 
-using static BlackbirdSql.SysConstants;
+using static BlackbirdSql.Sys.SysConstants;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Model;
 
 
 // =========================================================================================================
@@ -102,7 +104,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	}
 
 
-	public static DescriberDictionary Describers => _Describers ??= DbNative.Describers;
+	public static DescriberDictionary Describers => _Describers ??= NativeDb.Describers;
 
 
 	[Category("Security")]
@@ -414,7 +416,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	public new void Add(string keyword, object value)
 	{
 		string key = keyword;
-		Describer describer = _Describers[keyword];
+		Describer describer = Describers[keyword];
 
 		if (describer != null)
 			key = describer.Key;
@@ -430,7 +432,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		if (base.ContainsKey(keyword))
 			return true;
 
-		IList<string> synonyms = _Describers.GetSynonyms(keyword);
+		IList<string> synonyms = Describers.GetSynonyms(keyword);
 
 		foreach (string synonym in synonyms)
 		{
@@ -444,7 +446,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 	protected object GetValue(string synonym)
 	{
-		Describer describer = _Describers.GetSynonymDescriber(synonym);
+		Describer describer = Describers.GetSynonymDescriber(synonym);
 
 		if (describer == null)
 			Diag.ThrowException(new ArgumentException(nameof(synonym)), "Describer does not exist");
@@ -514,7 +516,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		if (base.Remove(keyword))
 			return true;
 
-		IList<string> synonyms = _Describers.GetSynonyms(keyword);
+		IList<string> synonyms = Describers.GetSynonyms(keyword);
 
 		foreach (string synonym in synonyms)
 		{
@@ -531,7 +533,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 	protected void SetValue(string synonym, object value)
 	{
-		Describer describer = _Describers.GetSynonymDescriber(synonym);
+		Describer describer = Describers.GetSynonymDescriber(synonym);
 
 		if (describer == null)
 			Diag.ThrowException(new ArgumentException(nameof(synonym)), $"Describer does not exist: {synonym}.");

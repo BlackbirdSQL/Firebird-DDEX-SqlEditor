@@ -1,10 +1,11 @@
 ﻿using System.Data;
 using System.Data.Common;
 using System.Threading;
+using System.Threading.Tasks;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Interfaces;
 
-
-
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Model;
 
 
 public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
@@ -15,7 +16,7 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 
 	private NativeDbBatchParserProxy(EnSqlExecutionType executionType, IBQueryManager qryMgr, string script)
 	{
-		_NativeObject = DbNative.CreateDbBatchParser(executionType, qryMgr, script);
+		_NativeObject = NativeDb.CreateDbBatchParser(executionType, qryMgr, script);
 	}
 
 
@@ -42,13 +43,12 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 	private readonly IBsNativeDbBatchParser _NativeObject = null;
 
 
-	public CancellationTokenSource AsyncTokenSource => _NativeObject.AsyncTokenSource;
 	public IDbConnection Connection => _NativeObject.Connection;
 
 
-	public bool Cancelled => _NativeObject.Cancelled;
+	// public bool Cancelled => _NativeObject.Cancelled;
 
-
+	public int Current => _NativeObject.Current;
 
 	public EnSqlStatementAction CurrentAction => _NativeObject.CurrentAction;
 
@@ -56,7 +56,6 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 
 	public EnSqlExecutionType ExecutionType => _NativeObject.ExecutionType;
 
-	public bool IsAsync => _NativeObject.IsAsync;
 	public bool IsLocalConnection => _NativeObject.IsLocalConnection;
 
 
@@ -64,6 +63,7 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 
 	public DataTable PlanTable => _NativeObject.PlanTable;
 
+	public int StatementCount => _NativeObject.StatementCount;
 
 	public long TotalRowsSelected => _NativeObject.TotalRowsSelected;
 
@@ -76,19 +76,21 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 		_NativeObject.BeginTransaction();
 	}
 
+	/*
 	public void Cancel()
 	{
 		_NativeObject.Cancel();
 	}
+	*/
 
 	public bool CloseConnection()
 	{
 		return _NativeObject.CloseConnection();
 	}
 
-	public void CommitTransaction()
+	public async Task<bool> CommitTransactionAsync(CancellationToken cancelToken)
 	{
-		_NativeObject.CommitTransaction();
+		return await _NativeObject.CommitTransactionAsync(cancelToken);
 	}
 
 
@@ -98,9 +100,9 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 	}
 
 
-	public void RollbackTransaction()
+	public async Task<bool> RollbackTransactionAsync(CancellationToken cancelToken)
 	{
-		_NativeObject.RollbackTransaction();
+		return await _NativeObject.RollbackTransactionAsync(cancelToken);
 	}
 
 

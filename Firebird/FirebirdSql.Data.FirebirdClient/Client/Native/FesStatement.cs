@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Client.Native.Handles;
 using FirebirdSql.Data.Client.Native.Marshalers;
 using FirebirdSql.Data.Common;
@@ -216,16 +215,12 @@ internal sealed class FesStatement : StatementBase
 
 	public override BatchBase CreateBatch()
 	{
-		NotSupportedException exbb = new("Batching isn't, yet, supported on Firebird Embedded.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Batching isn't, yet, supported on Firebird Embedded.");
 	}
 
 	public override BatchParameterBuffer CreateBatchParameterBuffer()
 	{
-		NotSupportedException exbb = new("Batching isn't, yet, supported on Firebird Embedded.");
-		Diag.Dug(exbb);
-		throw exbb;
+		throw new NotSupportedException("Batching isn't, yet, supported on Firebird Embedded.");
 	}
 
 	#endregion
@@ -512,7 +507,6 @@ internal sealed class FesStatement : StatementBase
 
 	public override DbValue[] Fetch()
 	{
-		// Diag.Trace();
 		EnsureNotDeallocated();
 
 		if (StatementType == DbStatementType.StoredProcedure && !_allRowsFetched)

@@ -1,10 +1,8 @@
 ﻿//
 // Plagiarized from Community.VisualStudio.Toolkit extension
 //
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using Microsoft.VisualStudio.Shell;
 

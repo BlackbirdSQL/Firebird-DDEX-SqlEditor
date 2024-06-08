@@ -3,10 +3,6 @@
 
 using System;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.VisualStudio.Ddex.Model;
-
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -71,13 +67,13 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 		}
 
 
-		if (typeName == DslObjectTypes.Root)
+		if (typeName == NativeDb.RootObjectTypeName)
 		{
 			return base.ContractIdentifier(typeName, fullIdentifier);
 		}
 
 
-		int length = DslObjectTypes.GetIdentifierLength(typeName);
+		int length = NativeDb.GetObjectTypeIdentifierLength(typeName);
 		if (length == -1)
 		{
 			NotSupportedException ex = new();
@@ -126,7 +122,7 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 			throw ex;
 		}
 
-		int length = DslObjectTypes.GetIdentifierLength(typeName);
+		int length = NativeDb.GetObjectTypeIdentifierLength(typeName);
 		if (length == -1)
 		{
 			NotSupportedException ex = new();

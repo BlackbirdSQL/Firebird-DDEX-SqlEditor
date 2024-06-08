@@ -21,7 +21,6 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using System.Text;
 using EntityFramework.Firebird.SqlGen;
-using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird;
 
@@ -29,7 +28,6 @@ internal static class SsdlToFb
 {
 	public static string Transform(StoreItemCollection storeItems, string providerManifestToken)
 	{
-		// Diag.Trace();
 		var result = new StringBuilder();
 
 		if (storeItems != null)
@@ -45,7 +43,6 @@ internal static class SsdlToFb
 
 	static IEnumerable<string> Tables(StoreItemCollection storeItems)
 	{
-		// Diag.Trace();
 		foreach (var entitySet in storeItems.GetItems<EntityContainer>()[0].BaseEntitySets.OfType<EntitySet>())
 		{
 			var result = new StringBuilder();
@@ -86,7 +83,6 @@ internal static class SsdlToFb
 
 	static IEnumerable<string> ForeignKeyConstraints(StoreItemCollection storeItems)
 	{
-		// Diag.Trace();
 		foreach (var associationSet in storeItems.GetItems<EntityContainer>()[0].BaseEntitySets.OfType<AssociationSet>())
 		{
 			var result = new StringBuilder();
@@ -116,7 +112,6 @@ internal static class SsdlToFb
 	}
 	static GenerateColumnResult GenerateColumn(EdmProperty property)
 	{
-		// Diag.Trace();
 		var column = new StringBuilder();
 		var columnComments = new Dictionary<string, string>();
 		column.Append(SqlGenerator.QuoteIdentifier(property.Name));

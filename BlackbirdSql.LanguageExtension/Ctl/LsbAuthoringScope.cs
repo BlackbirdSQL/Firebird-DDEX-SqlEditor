@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Babel;
-using BlackbirdSql.LanguageExtension.Model.Interfaces;
+using BlackbirdSql.LanguageExtension.Interfaces;
 using BlackbirdSql.LanguageExtension.Services;
 using Microsoft.SqlServer.Management.SqlParser.Intellisense;
 using Microsoft.SqlServer.Management.SqlParser.MetadataProvider;

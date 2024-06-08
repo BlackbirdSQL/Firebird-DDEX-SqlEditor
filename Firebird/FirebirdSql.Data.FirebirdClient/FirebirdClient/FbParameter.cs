@@ -23,7 +23,6 @@ using System.ComponentModel;
 using FirebirdSql.Data.Common;
 using System.Text;
 
-
 namespace FirebirdSql.Data.FirebirdClient;
 
 [ParenthesizePropertyName(true)]
@@ -160,9 +159,7 @@ public sealed class FbParameter : DbParameter, ICloneable
 			if (FbDbType == FbDbType.Guid && value != null &&
 				value != DBNull.Value && !(value is Guid) && !(value is byte[]))
 			{
-				InvalidOperationException exbb = new("Incorrect Guid value.");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new InvalidOperationException("Incorrect Guid value.");
 			}
 
 			_value = value;

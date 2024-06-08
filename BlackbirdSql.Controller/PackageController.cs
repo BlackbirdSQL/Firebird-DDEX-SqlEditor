@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using BlackbirdSql.Controller.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Sys.Interfaces;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
@@ -38,7 +38,7 @@ public sealed class PackageController : AbstractPackageController
 	/// Private singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private PackageController(IBAsyncPackage ddex)
+	private PackageController(IBsAsyncPackage ddex)
 		: base(ddex)
 	{
 	}
@@ -51,7 +51,7 @@ public sealed class PackageController : AbstractPackageController
 	/// be called in the .ctor of <see cref="AbstractCorePackage"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IBPackageController CreateInstance(IBAsyncPackage ddex) =>
+	public static IBsPackageController CreateInstance(IBsAsyncPackage ddex) =>
 		new PackageController(ddex);
 
 
@@ -61,8 +61,8 @@ public sealed class PackageController : AbstractPackageController
 	/// Gets the singleton PackageController instance..
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static new IBPackageController Instance =>
-		_Instance ?? throw Diag.ExceptionInstance(typeof(IBPackageController));
+	public static new IBsPackageController Instance =>
+		_Instance ?? throw Diag.ExceptionInstance(typeof(IBsPackageController));
 
 
 

@@ -70,7 +70,7 @@ namespace BlackbirdSql.Controller.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IBPackageController is null.
+        ///   Looks up a localized string similar to IBsPackageController is null.
         /// </summary>
         public static string ExceptionIBPackageControllerIsNull {
             get {

@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Sys;
-
-
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Extensions;
+using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Core.Ctl.Config;
 
@@ -333,7 +333,7 @@ public abstract class PersistentSettings : IBPersistentSettings
 			}
 
 			if (equivalencyKeys.Count > 0)
-				DbNative.EquivalencyKeys = [.. equivalencyKeys];
+				NativeDb.EquivalencyKeys = [.. equivalencyKeys];
 
 		}
 	}
@@ -345,6 +345,9 @@ public abstract class PersistentSettings : IBPersistentSettings
 		{
 			Diag.SettingEnableTaskLog = EnableTaskLog;
 			Diag.SettingEnableDiagnostics = EnableDiagnostics;
+
+			NativeDb.OnDemandLinkage = OnDemandLinkage;
+			NativeDb.LinkageTimeout = LinkageTimeout;
 		}
 
 		if ((e.Package == null || e.Package == "Ddex") && (e.Group == null || e.Group == "Debug"))

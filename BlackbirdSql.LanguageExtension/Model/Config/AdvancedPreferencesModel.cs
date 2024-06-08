@@ -4,7 +4,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.LanguageExtension.Ctl.ComponentModel;
 

@@ -4,13 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Media.Imaging;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Sys;
-
+using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Core.Ctl;
 
@@ -42,14 +38,16 @@ public abstract class AbstractIconsCollection : IBIconsCollection
 
 	protected AbstractIconsCollection()
 	{
-		IList<IBIconType> iconResourceList = new List<IBIconType>();
+		IList<IBIconType> iconResourceList = [];
 
 		LoadIconResourceList(iconResourceList);
 
 
-		UiTracer.TraceSource.AssertTraceEvent(
-			iconResourceList != null && iconResourceList.Count > 0, TraceEventType.Error,
-			EnUiTraceId.UiInfra, "Must have a valid list of image names.");
+		if (iconResourceList == null || iconResourceList.Count == 0)
+		{
+			Tracer.Warning(GetType(), ".ctor()", "Must have a valid list of image names.");
+			return;
+		}
 
 		if (iconResourceList == null)
 			return;

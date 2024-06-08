@@ -3,7 +3,7 @@
 //
 
 using System;
-using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Enums;
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel
 {

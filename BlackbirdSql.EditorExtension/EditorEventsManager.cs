@@ -5,12 +5,12 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
-using BlackbirdSql.Common.Controls;
-using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.EditorExtension.Ctl.Events;
-using BlackbirdSql.Sys;
+using BlackbirdSql.EditorExtension.Events;
+using BlackbirdSql.Shared.Controls;
+using BlackbirdSql.Shared.Model;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -18,14 +18,14 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
 
-using Cmd = BlackbirdSql.Common.Cmd;
+using Cmd = BlackbirdSql.Shared.Cmd;
 using IOleUndoManager = Microsoft.VisualStudio.OLE.Interop.IOleUndoManager;
 
 
 
 namespace BlackbirdSql.EditorExtension;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Uses Diag.ThrowIfNotOnUIThread()")]
+// [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Uses Diag.ThrowIfNotOnUIThread()")]
 
 
 // =========================================================================================================
@@ -46,7 +46,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	/// <summary>
 	/// Default .ctor fror singleton instance.
 	/// </summary>
-	private EditorEventsManager(IBPackageController controller) : base(controller)
+	private EditorEventsManager(IBsPackageController controller) : base(controller)
 	{
 	}
 
@@ -56,7 +56,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	/// This allows the base class to access and update the localized
 	/// static instance.
 	/// </summary>
-	protected override IBEventsManager InternalInstance
+	protected override IBsEventsManager InternalInstance
 	{
 		get { return _Instance; }
 		set { _Instance = value; }
@@ -68,7 +68,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	/// We do not auto-create to avoid instantiation confusion.
 	/// Use CreateInstance() to instantiate.
 	/// </summary>
-	public static IBEventsManager Instance => _Instance ??
+	public static IBsEventsManager Instance => _Instance ??
 		throw Diag.ExceptionInstance(typeof(EditorEventsManager));
 
 
@@ -77,7 +77,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	/// Instantiation must always occur here and not by the Instance accessor to avoid
 	/// confusion.
 	/// </summary>
-	public static EditorEventsManager CreateInstance(IBPackageController controller) =>
+	public static EditorEventsManager CreateInstance(IBsPackageController controller) =>
 		new EditorEventsManager(controller);
 
 
@@ -135,7 +135,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	// =========================================================================================================
 
 
-	private static IBEventsManager _Instance;
+	private static IBsEventsManager _Instance;
 
 	private uint _PublishingPreviewCommitOffCookie;
 	// private uint _PreviewCommitOffCookie;
@@ -482,6 +482,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			return;
 		}
 
+
 		InitializeUnsafe();
 
 	}
@@ -489,7 +490,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 	private void InitializeUnsafe()
 	{
-		Diag.ThrowIfNotOnUIThread();
+		// Diag.ThrowIfNotOnUIThread();
 
 		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
 		CurrentDocumentFrame = pvarValue as IVsWindowFrame;

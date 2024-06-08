@@ -26,9 +26,8 @@ using System.Threading.Tasks;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Logging;
 
-
-
 namespace FirebirdSql.Data.FirebirdClient;
+
 public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDisposable
 #if !(NET48 || NETSTANDARD2_0)
 		, IAsyncDisposable
@@ -193,6 +192,16 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 		}
 	}
 
+	/// <summary>
+	/// Gets collection of parameters parsed from the query text during command prepare.
+	/// </summary>
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public IReadOnlyList<string> NamedParameters
+	{
+		get { return _namedParameters; }
+	}
+
 	#endregion
 
 	#region Internal Properties
@@ -246,7 +255,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public FbBatchCommand(string cmdText, FbConnection connection, FbTransaction transaction)
 	{
-		// Diag.Trace();
 		_namedParameters = Array.Empty<string>();
 		//_commandTimeout = null;
 		//_fetchSize = 200;
@@ -283,7 +291,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				throw FbException.Create(ex);
 			}
 			_batchBufferSize = DefaultBatchBufferSize;
@@ -313,7 +320,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				throw FbException.Create(ex);
 			}
 			_batchBufferSize = DefaultBatchBufferSize;
@@ -356,7 +362,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public void Prepare()
 	{
-		// Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -367,7 +372,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				RollbackImplicitTransaction();
 				throw FbException.Create(ex);
 			}
@@ -380,7 +384,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public async Task PrepareAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -391,7 +394,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				await RollbackImplicitTransactionAsync(explicitCancellation.CancellationToken).ConfigureAwait(false);
 				throw FbException.Create(ex);
 			}
@@ -405,7 +407,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public FbBatchNonQueryResult ExecuteNonQuery()
 	{
-		// Diag.Trace();
 		CheckCommand();
 
 		FbBatchNonQueryResult result;
@@ -425,7 +426,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				RollbackImplicitTransaction();
 				throw FbException.Create(ex);
 			}
@@ -440,7 +440,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public async Task<FbBatchNonQueryResult> ExecuteNonQueryAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		CheckCommand();
 
 		FbBatchNonQueryResult result;
@@ -460,7 +459,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
-				Diag.Dug(ex);
 				await RollbackImplicitTransactionAsync(explicitCancellation.CancellationToken).ConfigureAwait(false);
 				throw FbException.Create(ex);
 			}
@@ -532,7 +530,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public string GetCommandPlan()
 	{
-		// Diag.Trace();
 		if (_statement == null)
 		{
 			return null;
@@ -541,7 +538,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public Task<string> GetCommandPlanAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (_statement == null)
 		{
 			return Task.FromResult<string>(null);
@@ -551,7 +547,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public string GetCommandExplainedPlan()
 	{
-		// Diag.Trace();
 		if (_statement == null)
 		{
 			return null;
@@ -560,7 +555,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public Task<string> GetCommandExplainedPlanAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (_statement == null)
 		{
 			return Task.FromResult<string>(null);
@@ -570,12 +564,9 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public int ComputeCurrentBatchSize()
 	{
-		// Diag.Trace();
 		if (_batch == null)
 		{
-			InvalidOperationException exbb = new("Batch must be prepared.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Batch must be prepared.");
 		}
 		if (!HasParameters)
 		{
@@ -585,12 +576,9 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public async Task<int> ComputeCurrentBatchSizeAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (_batch == null)
 		{
-			InvalidOperationException exbb = new("Batch must be prepared.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Batch must be prepared.");
 		}
 		if (!HasParameters)
 		{
@@ -741,7 +729,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	internal void CommitImplicitTransaction()
 	{
-		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			try
@@ -776,7 +763,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	internal async Task CommitImplicitTransactionAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			try
@@ -812,7 +798,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	internal void RollbackImplicitTransaction()
 	{
-		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			var transactionCount = Connection.InnerConnection.Database.TransactionCount;
@@ -847,7 +832,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	internal async Task RollbackImplicitTransactionAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			var transactionCount = Connection.InnerConnection.Database.TransactionCount;
@@ -890,7 +874,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	internal Task CloseAsync(CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (_statement != null)
 		{
 			return _statement.CloseAsync(cancellationToken).AsTask();
@@ -901,7 +884,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	void IFbPreparedCommand.Release() => Release();
 	internal void Release()
 	{
-		// Diag.Trace();
 		RollbackImplicitTransaction();
 
 		//DisposeReader();
@@ -967,7 +949,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	void IDescriptorFiller.Fill(Descriptor descriptor, int index) => UpdateParameterValues(descriptor, index);
 	private void UpdateParameterValues(Descriptor descriptor, int batchIndex)
 	{
-		// Diag.Trace();
 		if (!HasParameters)
 			return;
 
@@ -1048,9 +1029,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 						case DbDataType.Guid:
 							if (!(commandParameter.InternalValue is Guid) && !(commandParameter.InternalValue is byte[]))
 							{
-								InvalidOperationException exbb = new("Incorrect Guid value.");
-								Diag.Dug(exbb);
-								throw exbb;
+								throw new InvalidOperationException("Incorrect Guid value.");
 							}
 							parameter.DbValue.SetValue(commandParameter.InternalValue);
 							break;
@@ -1066,7 +1045,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	ValueTask IDescriptorFiller.FillAsync(Descriptor descriptor, int index, CancellationToken cancellationToken) => UpdateParameterValuesAsync(descriptor, index, cancellationToken);
 	private async ValueTask UpdateParameterValuesAsync(Descriptor descriptor, int batchIndex, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		if (!HasParameters)
 			return;
 
@@ -1148,9 +1126,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 						case DbDataType.Guid:
 							if (!(commandParameter.InternalValue is Guid) && !(commandParameter.InternalValue is byte[]))
 							{
-								InvalidOperationException exbb = new("Incorrect Guid value.");
-								Diag.Dug(exbb);
-								throw exbb;
+								throw new InvalidOperationException("Incorrect Guid value.");
 							}
 							batchParameter.DbValue.SetValue(commandParameter.InternalValue);
 							break;
@@ -1170,7 +1146,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	private void Prepare(bool returnsSet)
 	{
-		// Diag.Trace();
 		var innerConn = _connection.InnerConnection;
 
 		// Check if	we have	a valid	transaction
@@ -1237,7 +1212,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	private async Task PrepareAsync(bool returnsSet, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		var innerConn = _connection.InnerConnection;
 
 		// Check if	we have	a valid	transaction
@@ -1305,7 +1279,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	private FbBatchNonQueryResult ExecuteCommand(bool returnsSet)
 	{
-		// Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
 		Prepare(returnsSet);
@@ -1336,7 +1309,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	private async Task<FbBatchNonQueryResult> ExecuteCommandAsync(bool returnsSet, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
 		await PrepareAsync(returnsSet, cancellationToken).ConfigureAwait(false);
@@ -1368,7 +1340,6 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	private void CheckCommand()
 	{
-		// Diag.Trace();
 		if (_transaction != null && _transaction.IsCompleted)
 		{
 			_transaction = null;
@@ -1385,24 +1356,18 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			_connection.InnerConnection.HasActiveTransaction &&
 			!_connection.InnerConnection.IsEnlisted)
 		{
-			InvalidOperationException exbb = new("Execute requires the Command object to have a Transaction object when the Connection object assigned to the command is in a pending local transaction. The Transaction property of the Command has not been initialized.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Execute requires the Command object to have a Transaction object when the Connection object assigned to the command is in a pending local transaction. The Transaction property of the Command has not been initialized.");
 		}
 
 		if (_transaction != null && !_transaction.IsCompleted &&
 			!_connection.Equals(_transaction.Connection))
 		{
-			InvalidOperationException exbb = new("Command Connection is not equal to Transaction Connection.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("Command Connection is not equal to Transaction Connection.");
 		}
 
 		if (_commandText == null || _commandText.Length == 0)
 		{
-			InvalidOperationException exbb = new("The command text for this Command has not been set.");
-			Diag.Dug(exbb);
-			throw exbb;
+			throw new InvalidOperationException("The command text for this Command has not been set.");
 		}
 	}
 

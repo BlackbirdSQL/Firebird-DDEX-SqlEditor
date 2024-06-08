@@ -7,12 +7,11 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.QueryExecution;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Shared.Ctl.QueryExecution;
+using BlackbirdSql.Shared.Model;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.SqlServer.Management.SqlParser.Binder;
 using Microsoft.SqlServer.Management.SqlParser.Common;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
@@ -33,6 +32,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 	protected LsbMetadataProviderProvider(ConnectionPropertyAgent uici, string cacheKey)
 	{
 		IsInitialized = false;
+		_ = IsInitialized;
 		CacheKey = cacheKey;
 		DatabaseEngineType = EnServerType.Default;
 		ConnectionInfo = (ConnectionPropertyAgent)uici.Copy();
@@ -236,7 +236,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 			DisposeMetadataConnection();
 			Csb metadataConnectionStringBuilder = GetMetadataConnectionStringBuilder();
 
-			ServerConnection = DbNative.CreateDbConnection(metadataConnectionStringBuilder.ConnectionString);
+			ServerConnection = NativeDb.CreateDbConnection(metadataConnectionStringBuilder.ConnectionString);
 
 			// if (IsCloudConnection)
 			//	ServerConnection.DatabaseName = metadataConnectionStringBuilder.InitialCatalog;
@@ -250,13 +250,14 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		}
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 	private void InitializeDriftDetectionConnection()
 	{
 		lock (_LockLocal)
 		{
 			DisposeDriftDetectionConnection();
 			string metadataConnectionString = GetMetadataConnectionString();
-			DriftDetectionConnection = (DbConnection)DbNative.CreateDbConnection(metadataConnectionString);
+			DriftDetectionConnection = (DbConnection)NativeDb.CreateDbConnection(metadataConnectionString);
 			DriftDetectionConnection.Open();
 			// ConnectionHelperUtils.SetLockAndCommandTimeout(DriftDetectionConnection);
 		}
@@ -438,10 +439,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	private Csb GetMetadataConnectionStringBuilder()
 	{
-		ConnectionPropertyAgent uIConnectionInfo = null;
-
-		uIConnectionInfo = ConnectionInfo;
-
+		ConnectionPropertyAgent uIConnectionInfo = ConnectionInfo;
 		Csb sqlConnectionStringBuilder = [];
 		SqlConnectionStrategy.PopulateConnectionStringBuilder(sqlConnectionStringBuilder, uIConnectionInfo);
 

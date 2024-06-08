@@ -15,10 +15,7 @@
 
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Globalization;
 
 namespace FirebirdSql.Data.Services;
 
@@ -31,16 +28,21 @@ public abstract class FbTraceConfiguration
 
 	protected static string WriteString(string s)
 	{
-		return string.Format("'{0}'", s);
+		s = s
+			.Replace("{", "{{")
+			.Replace("}", "}}")
+			.Replace(@"\", @"\\")
+			.Replace("\"", "\\\"");
+		return string.Format("\"{0}\"", s);
 	}
 
 	protected static string WriteNumber(int i)
 	{
-		return i.ToString();
+		return i.ToString(CultureInfo.InvariantCulture);
 	}
 
 	protected static string WriteRegEx(string re)
 	{
-		return WriteString(re.Replace(@"\", @"\\").Replace("'", @"\'"));
+		return WriteString(re);
 	}
 }

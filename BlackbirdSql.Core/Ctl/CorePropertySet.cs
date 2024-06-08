@@ -7,9 +7,8 @@
 
 using System.Collections.Generic;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys;
-
-using static BlackbirdSql.SysConstants;
+using BlackbirdSql.Sys.Ctl;
+using static BlackbirdSql.Sys.SysConstants;
 
 
 

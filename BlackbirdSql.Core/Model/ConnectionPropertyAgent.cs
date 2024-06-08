@@ -2,10 +2,8 @@
 // Microsoft.SqlServer.Management.Smo.RegSvrEnum.UIConnectionInfo
 
 using System.Xml;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Sys;
-
-
+using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Sys.Ctl;
 
 namespace BlackbirdSql.Core.Model;
 

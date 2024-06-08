@@ -18,7 +18,6 @@
 using System;
 using System.IO;
 using System.Text;
-using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird.SqlGen;
 
@@ -69,7 +68,6 @@ internal class SqlWriter : StringWriter
 	/// <param name="value"></param>
 	public override void Write(string value)
 	{
-		// Diag.Trace();
 		if (value == Environment.NewLine)
 		{
 			base.WriteLine();
@@ -91,14 +89,12 @@ internal class SqlWriter : StringWriter
 
 	public override void WriteLine()
 	{
-		// Diag.Trace();
 		base.WriteLine();
 		_atBeginningOfLine = true;
 	}
 
 	public override void WriteLine(string value)
 	{
-		// Diag.Trace();
 		Write(value);
 		WriteLine();
 	}

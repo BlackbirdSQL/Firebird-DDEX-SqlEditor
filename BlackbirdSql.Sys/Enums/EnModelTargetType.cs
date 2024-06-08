@@ -1,4 +1,4 @@
-﻿namespace BlackbirdSql.Sys;
+﻿namespace BlackbirdSql.Sys.Enums;
 
 public enum EnModelTargetType
 {

@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 using FirebirdSql.Data.Client;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
@@ -52,9 +51,7 @@ public abstract class FbService
 		{
 			if (_svc != null && State == FbServiceState.Open)
 			{
-				InvalidOperationException exbb = new("ConnectionString cannot be modified on open instances.");
-				Diag.Dug(exbb);
-				throw exbb;
+				throw new InvalidOperationException("ConnectionString cannot be modified on open instances.");
 			}
 
 			_connectionStringOptions = new ConnectionString(value);

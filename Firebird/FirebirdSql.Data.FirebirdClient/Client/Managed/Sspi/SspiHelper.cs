@@ -20,7 +20,6 @@
 using System;
 using System.Runtime.InteropServices;
 
-
 namespace FirebirdSql.Data.Client.Managed.Sspi;
 
 internal sealed class SspiHelper : IDisposable
@@ -445,11 +444,7 @@ internal sealed class SspiHelper : IDisposable
 	private void EnsureDisposed()
 	{
 		if (_disposed)
-		{
-			ObjectDisposedException exbb = new(nameof(SspiHelper));
-			Diag.Dug(exbb);
-			throw exbb;
-		}
+			throw new ObjectDisposedException(nameof(SspiHelper));
 	}
 
 	#endregion

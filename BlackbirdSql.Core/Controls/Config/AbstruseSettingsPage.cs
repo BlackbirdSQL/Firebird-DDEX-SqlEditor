@@ -7,10 +7,9 @@ using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Events;
 using Microsoft.VisualStudio.Shell;
 
 using Control = System.Windows.Forms.Control;

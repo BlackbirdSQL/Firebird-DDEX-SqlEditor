@@ -9,13 +9,12 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using BlackbirdSql.Sys.Ctl.Diagnostics;
+
+namespace BlackbirdSql.Sys.Ctl;
 
 
-
-namespace BlackbirdSql.Sys;
-
-
-internal static class HashLog
+public static class HashLog
 {
 	private const int C_MinHashBytes = 8;
 
@@ -23,17 +22,17 @@ internal static class HashLog
 
 	// Defaults from Microsoft.Data.Tools.Schema.Common.LogSettings
 	private static readonly bool HashObjectNamesInLogs = false;
-	private static readonly byte[] HashLogSalt = new byte[0];
+	private static readonly byte[] HashLogSalt = [];
 	private static readonly ConcurrentDictionary<string, string> HashedObjectsCache = new ConcurrentDictionary<string, string>();
 	private static readonly SHA256 HashAlgorithm = SHA256.Create();
 	private static readonly Action<string, string> LogObjectHashedHandler = null;
 
-	internal static string Format(IFormatProvider formatProvider, string stringFormat, params object[] args)
+	public static string Format(IFormatProvider formatProvider, string stringFormat, params object[] args)
 	{
 		return string.Format(formatProvider, stringFormat, args);
 	}
 
-	internal static string FormatHashed(IFormatProvider formatProvider, string stringFormat, params object[] args)
+	public static string FormatHashed(IFormatProvider formatProvider, string stringFormat, params object[] args)
 	{
 		if (!HashObjectNamesInLogs || args == null || args.Length == 0)
 		{
@@ -49,7 +48,7 @@ internal static class HashLog
 		return string.Format(formatProvider, stringFormat, array);
 	}
 
-	internal static string Join(string separator, params object[] args)
+	public static string Join(string separator, params object[] args)
 	{
 		if (!HashObjectNamesInLogs)
 		{
@@ -70,7 +69,7 @@ internal static class HashLog
 		return string.Join(separator, array);
 	}
 
-	internal static string Join(string separator, IEnumerable<object> argsList)
+	public static string Join(string separator, IEnumerable<object> argsList)
 	{
 		if (argsList == null)
 		{
@@ -81,7 +80,7 @@ internal static class HashLog
 	}
 
 
-	internal static string FormatObjectName(string objectName)
+	public static string FormatObjectName(string objectName)
 	{
 		if (HashObjectNamesInLogs)
 		{
@@ -91,7 +90,7 @@ internal static class HashLog
 		return objectName;
 	}
 
-	internal static string FormatFileName(string fileName)
+	public static string FormatFileName(string fileName)
 	{
 		if (HashObjectNamesInLogs)
 		{
@@ -156,7 +155,7 @@ internal static class HashLog
 		return text;
 	}
 
-	internal static byte[] GenerateSalt()
+	public static byte[] GenerateSalt()
 	{
 		using RNGCryptoServiceProvider rNGCryptoServiceProvider = new RNGCryptoServiceProvider();
 		byte[] array = new byte[32];

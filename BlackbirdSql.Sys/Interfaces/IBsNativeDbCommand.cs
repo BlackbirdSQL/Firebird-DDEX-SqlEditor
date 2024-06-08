@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.NativeDbCommandServiceGuid)]
 
@@ -22,5 +22,4 @@ namespace BlackbirdSql.Sys;
 public interface IBsNativeDbCommand
 {
 	int AddParameter(DbCommand @this, string name, int index, object value);
-	DbDataAdapter CreateDbDataAdapter_(DbCommand @this);
 }

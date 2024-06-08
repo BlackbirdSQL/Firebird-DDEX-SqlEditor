@@ -5,7 +5,7 @@
 
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql.Sys.Enums;
 
 
 public enum EnBlobSubType

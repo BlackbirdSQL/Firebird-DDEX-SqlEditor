@@ -1,11 +1,11 @@
 ﻿
 using System;
 using System.Data;
-using BlackbirdSql.Core.Model.Enums;
-using BlackbirdSql.Sys;
+using System.Reflection;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Shell;
 
-using static BlackbirdSql.SysConstants;
+using static BlackbirdSql.Sys.SysConstants;
 
 
 
@@ -122,10 +122,11 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// At most one should be specified. If both are specified there will be a
 	/// redundancy check of the connection name otherwise the connection name takes
 	/// precedence.
-	/// If both are null the caller's data will be considered corrupted and rebuilt
-	/// either from the stored connection if it exists else from the DataSource and
-	/// readonly Dataset arguments.
+	/// If both are null the proposed derivedDatasetId will be derived from the dataSource.
 	/// </summary>
+	/// <param name="connectionSource">
+	/// The ConnectionSource making the request.
+	/// </param>
 	/// <param name="proposedConnectionName">
 	/// The proposed DatasetKey (ConnectionName) property else null.
 	/// </param>
@@ -140,37 +141,39 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// proposed DatasetId is null.
 	/// </param>
 	/// <param name="connectionUrl">
-	/// The readonly SafeDatasetMoniker property of the underlying csa.
+	/// The readonly SafeDatasetMoniker property of the underlying csa of the caller.
 	/// </param>
-	/// <param name="originalConnectionUrl">
+	/// <param name="storedConnectionUrl">
 	/// If a stored connection is being modified, the connectionUrl of the stored
-	/// connection, else null. If originalConnectionUrl matches connectionUrl they will
+	/// connection, else null. If connectionUrl matches connectionUrl they will
 	/// be considered equal and it will be ignored.</param>
-	/// <param name="oStoredConnectionSource">
+	/// <param name="outStoredConnectionSource">
 	/// Out | The ConnectionSource of connectionUrl if the connection exists in the rct
 	/// else EnConnectionSource.None.
 	/// </param>
-	/// <param name="oChangedTargetDatasetKey">
-	/// Out | If a connection is being modified (originalConnectionUrl is not null) and
+	/// <param name="outChangedTargetDatasetKey">
+	/// Out | If a connection is being modified (storedConnectionUrl is not null) and
 	/// connectionUrl points to an existing connection, then the target has changed and
-	/// changedTargetDatasetKey refers to the changed target's DatasetKey, else null.
+	/// outChangedTargetDatasetKey refers to the changed target's DatasetKey, else null.
 	/// </param>
-	/// <param name="oUniqueDatasetKey">Out | The final unique DatasetKey.</param>
-	/// <param name="oUniqueConnectionName">
-	/// Out | The unique proposed ConnectionName. If null is returned then whatever was
-	/// provided in proposedConnectionName is correct remains as is. If string.Empty is
-	/// returned then whatever was provided in proposedConnectionName is redundant and
-	/// should be removed. If a value is returned then proposedConnectionName was
-	/// ambiguous and uniqueConnectionName must be used in it's place.
-	/// uniqueConnectionName and uniqueDatasetId are mutually exclusive.
+	/// <param name="outUniqueDatasetKey">
+	/// Out | The final unique DatasetKey.
 	/// </param>
-	/// <param name="oUniqueDatasetId">
-	/// Out | The unique proposed DatsetId. If null is returned then whatever was
+	/// <param name="outUniqueConnectionName">
+	/// Out | The unique resulting proposed ConnectionName. If null is returned then whatever was
+	/// provided in proposedConnectionName is correct and remains as is. If string.Empty is
+	/// returned then whatever was provided in proposedConnectionName is good but changes the
+	/// existing name. If a value is returned then proposedConnectionName was
+	/// ambiguous and outUniqueConnectionName must be used in it's place.
+	/// outUniqueConnectionName and outUniqueDatasetId are mutually exclusive.
+	/// </param>
+	/// <param name="outUniqueDatasetId">
+	/// Out | The unique resulting proposed DatsetId. If null is returned then whatever was
 	/// provided in proposedDatasetId is correct and remains as is. If string.Empty is
-	/// returned then whatever was provided in proposedDatasetId is redundant and should
-	/// be removed. If a value is returned then proposedDatasetId was ambiguous and
-	/// uniqueDatasetId must be used in it's place. uniqueConnectionName and
-	/// uniqueDatasetId are mutually exclusive.
+	/// returned then whatever was provided in proposedDatasetId is good but changes the
+	/// existing name. If a value is returned then proposedDatasetId was ambiguous and
+	/// outUniqueDatasetId must be used in it's place. outUniqueConnectionName and
+	/// outUniqueDatasetId are mutually exclusive.
 	/// </param>
 	/// <returns>
 	/// A boolean indicating whether or not the provided arguments would cause a new
@@ -179,20 +182,21 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// in the SE. The caller must determine that.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public override bool GenerateUniqueDatasetKey(string proposedConnectionName,
-		string proposedDatasetId, string dataSource, string dataset, string connectionUrl,
-		string originalConnectionUrl, out EnConnectionSource oStoredConnectionSource,
-		out string oChangedTargetDatasetKey, out string oUniqueDatasetKey,
-		out string oUniqueConnectionName, out string oUniqueDatasetId)
+	public override bool GenerateUniqueDatasetKey(EnConnectionSource connectionSource,
+		string proposedConnectionName, string proposedDatasetId, string dataSource,
+		string dataset, string connectionUrl, string storedConnectionUrl,
+		out EnConnectionSource outStoredConnectionSource,
+		out string outChangedTargetDatasetKey, out string outUniqueDatasetKey,
+		out string outUniqueConnectionName, out string outUniqueDatasetId)
 	{
-		// These are the 5 values in the tuple to be returned.
 		bool rNewRctConnection = true;
-		oStoredConnectionSource = EnConnectionSource.None;
-		oUniqueDatasetKey = null;
-		oUniqueConnectionName = null;
-		oUniqueDatasetId = null;
-		oChangedTargetDatasetKey = null;
 
+		// These are the 5 values in the tuple to be returned except .
+		outStoredConnectionSource = EnConnectionSource.None;
+		outUniqueConnectionName = null;
+		outUniqueDatasetId = null;
+		outChangedTargetDatasetKey = null;
+		// and outUniqueDatasetKey
 
 		int connectionIndex = -1;
 
@@ -202,8 +206,11 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		if (string.IsNullOrWhiteSpace(proposedDatasetId))
 			proposedDatasetId = null;
 
-		if (originalConnectionUrl != null && originalConnectionUrl == connectionUrl)
-			originalConnectionUrl = null;
+		 if (storedConnectionUrl != null && storedConnectionUrl == connectionUrl)
+			storedConnectionUrl = null;
+
+		string existingConnectionName = null;
+		string existingDatasetId = null;
 
 		// Get the index if the connection already exists.
 		if (TryGetHybridInternalRowValue(connectionUrl, out DataRow row))
@@ -211,170 +218,55 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			rNewRctConnection = false;
 			connectionIndex = Convert.ToInt32(row["Id"]);
 
-			oStoredConnectionSource = (EnConnectionSource)(int)row[C_KeyExConnectionSource];
+			outStoredConnectionSource = (EnConnectionSource)(int)row[C_KeyExConnectionSource];
 
-			if (originalConnectionUrl != null)
-				oChangedTargetDatasetKey = (string)row[C_KeyExDatasetKey];
-		}
+			existingConnectionName = Cmd.IsNullValueOrEmpty(row[C_KeyExConnectionName]) ? null : row[C_KeyExConnectionName].ToString();
+			existingDatasetId = Cmd.IsNullValueOrEmpty(row[C_KeyExDatasetId]) ? null : row[C_KeyExDatasetId].ToString();
 
-
-		bool proposedDatasetIdIsDerived = false;
-		bool proposedConnectionNameIsDerived = false;
-
-
-		// For brevity, if there's a proposed DatasetId and it's the same as the dataSet,
-		// it's not needed.
-		if (proposedDatasetId != null && proposedDatasetId == dataset)
-		{
-			proposedDatasetIdIsDerived = true;
-			proposedDatasetId = null;
-		}
-
-
-		// The derived datasetId will form the basis of the datasetId part of an auto-generated key.
-		string derivedDatasetId = proposedDatasetId ?? dataset;
-
-		// If there's a proposed ConnectionName and it's the same as the derived ConnectionName,
-		// it's also not needed.
-		if (proposedConnectionName != null &&
-			(proposedConnectionName == C_DatasetKeyFmt.FmtRes(dataSource, derivedDatasetId)
-			|| proposedConnectionName == C_DatasetKeyAlternateFmt.FmtRes(dataSource, derivedDatasetId)))
-		{
-			proposedConnectionNameIsDerived = true;
-			proposedConnectionName = null;
-		}
-
-
-		// The derived prefix is the above stripped of any unique suffix. We're going to brute force
-		// this instead of a regex.
-		string derivedDatasetIdPrefix = derivedDatasetId;
-
-		string suffix;
-		// pos has to be past first char and before last char
-		int pos = derivedDatasetId.IndexOf('_');
-
-		if (pos > 0 && pos < derivedDatasetId.Length - 1)
-		{
-			for (int i = 1; i < 1000; i++)
-			{
-				suffix = "_" + i;
-
-				if (derivedDatasetId.EndsWith(suffix))
-				{
-					derivedDatasetIdPrefix = derivedDatasetId.TrimSuffix(suffix);
-					break;
-				}
-			}
-
+			// Notify caller that the proposed settings apply to a different connection.
+			if (storedConnectionUrl != null)
+				outChangedTargetDatasetKey = (string)row[C_KeyExDatasetKey];
 		}
 
 
 		// It's always preferable to propose a datasetId.
 		// If there's a proposed DatasetKey (ConnectionName), it takes precedence, so ensure uniqueness.
-		int index;
 
 		if (proposedConnectionName != null)
 		{
-			// The proposed prefix is the above stripped of any unique suffix. We're going to brute force
-			// this instead of a regex.
-			string proposedConnectionNamePrefix = proposedConnectionName;
+			outUniqueConnectionName = GetUniqueConnectionName(proposedConnectionName, connectionIndex);
 
-			// pos has to be past first char and before last char
-			pos = proposedConnectionName.IndexOf('_');
+			outUniqueDatasetKey = outUniqueConnectionName;
 
-			if (pos > 0 && pos < proposedConnectionName.Length - 1)
+			// The proposedConnectionName is good.
+			if (proposedConnectionName == outUniqueConnectionName)
 			{
-				for (int i = 1; i < 1000; i++)
-				{
-					suffix = "_" + i;
-
-					if (proposedConnectionName.EndsWith(suffix))
-					{
-						proposedConnectionNamePrefix = proposedConnectionName.TrimSuffix(suffix);
-						break;
-					}
-				}
-
-			}
-
-
-			// Establish a unique DatasetKey using i as the suffix.
-			// This loop will execute at least once.
-			for (int i = -1; i <= Count; i++)
-			{
-				// Try the original proposed first.
-				if (i == -1)
-				{
-					if (proposedConnectionName == proposedConnectionNamePrefix)
-						continue;
-
-					oUniqueConnectionName = proposedConnectionName;
-				}
+				// Does it change the existing?
+				if (existingConnectionName != null && existingConnectionName != proposedConnectionName)
+					outUniqueConnectionName = string.Empty;
 				else
-				{
-					oUniqueConnectionName = (i == 0)
-					? proposedConnectionNamePrefix
-					: (proposedConnectionNamePrefix + $"_{i + 1}");
-				}
-
-				if (!TryGetEntry(oUniqueConnectionName, out index))
-					break;
-
-				if (connectionIndex > -1 && connectionIndex == index)
-					break;
+					outUniqueConnectionName = null;
 			}
-
-			oUniqueDatasetKey = oUniqueConnectionName;
-
-			if (proposedConnectionName != null && proposedConnectionName == oUniqueConnectionName)
-				oUniqueConnectionName = null;
 		}
 		else
 		{
-			// Establish a unique DatasetId using i as the suffix.
-			// This loop will execute at least once.
+			// The derived datasetId will form the basis of the datasetId part of an auto-generated key.
+			string derivedDatasetId = proposedDatasetId ?? dataset;
 
-			for (int i = -1; i <= Count; i++)
+			(outUniqueDatasetKey, outUniqueDatasetId) = GetUniqueDatasetId(dataSource, derivedDatasetId, connectionIndex);
+
+			// The proposedDatasetId is good.
+			if (proposedDatasetId != null && proposedDatasetId == outUniqueDatasetId)
 			{
-				// Try the original first.
-				if (i == -1)
-				{
-					if (derivedDatasetId == derivedDatasetIdPrefix)
-						continue;
-
-					oUniqueDatasetId = derivedDatasetId;
-				}
+				// Does it change the existing?
+				if (existingDatasetId != null && existingDatasetId != proposedDatasetId)
+					outUniqueDatasetId = string.Empty;
 				else
-				{
-					oUniqueDatasetId = (i == 0)
-						? derivedDatasetIdPrefix
-						: (derivedDatasetIdPrefix + $"_{i + 1}");
-				}
-
-				oUniqueDatasetKey = C_DatasetKeyFmt.FmtRes(dataSource, oUniqueDatasetId);
-
-				if (!TryGetEntry(oUniqueDatasetKey, out index))
-					break;
-
-				if (connectionIndex > -1 && connectionIndex == index)
-					break;
+					outUniqueDatasetId = null;
 			}
-
-			// Special case to take care of here. If nothing is proposed and oUniqueDatasetId
-			// is directly derived then oUniqueDatasetId is not needed but will have been
-			// generated.
-			if (proposedDatasetId == null && oUniqueDatasetId == dataset)
-				oUniqueDatasetId = null;
-			else if (proposedDatasetId != null && proposedDatasetId == oUniqueDatasetId)
-				oUniqueDatasetId = null;
 		}
 
-		if (oUniqueConnectionName == null && proposedConnectionNameIsDerived)
-			oUniqueConnectionName = string.Empty;
-		if (oUniqueDatasetId == null && proposedDatasetIdIsDerived)
-			oUniqueDatasetId = string.Empty;
 
-		
 		// Tracer.Trace(GetType(), "GenerateUniqueDatasetKey()", "DataSource: {0}, Dataset: {1},
 		//		proposedConnectionName: {2}, proposedDatasetId: {3},  rNewConnection: {4}, rUniqueDatasetKey: {5},
 		//		rUniqueConnectionName: {6}, rUniqueDatasetId: {7}", dataSource ?? "Null", dataset ?? "Null", 
@@ -383,6 +275,139 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		return rNewRctConnection;
 	}
+
+
+	/// <summary>
+	/// Gets a unique connectionName given a proposedConnectionName and the row index
+	/// of the stored connection the name is being applied to. If no stored connection
+	/// exists index is -1.
+	/// </summary>
+	/// <returns>The unique connectionName</returns>
+	private string GetUniqueConnectionName(string proposedConnectionName, int connectionIndex)
+	{
+		// Get the proposed prefix is the proposedConnectionName stripped of any unique suffix.
+		// We're going to brute force this instead of a regex.
+
+		string proposedConnectionNamePrefix = GetUniqueIdentifierPrefix(proposedConnectionName);
+
+		// Establish a unique DatasetKey using i as the suffix.
+		// This loop will execute at least once.
+
+		string uniqueConnectionName = null;
+
+		for (int i = -1; i <= Count; i++)
+		{
+			// Try the original proposed first.
+			if (i == -1)
+			{
+				if (proposedConnectionName == proposedConnectionNamePrefix)
+					continue;
+
+				uniqueConnectionName = proposedConnectionName;
+			}
+			else
+			{
+				uniqueConnectionName = (i == 0)
+					? proposedConnectionNamePrefix
+					: (proposedConnectionNamePrefix + $"_{i + 1}");
+			}
+
+			if (!TryGetEntry(uniqueConnectionName, out int index))
+				break;
+
+			if (connectionIndex > -1 && connectionIndex == index)
+				break;
+		}
+
+		return uniqueConnectionName;
+
+
+	}
+
+
+
+	/// <summary>
+	/// Gets a unique datasetId given the datasource/server of the connection, a
+	/// proposedDatasetId and the row index of the stored connection the name is
+	/// being applied to. If no stored connection exists index is -1.
+	/// </summary>
+	/// <returns>
+	/// A tuple of the resulting unique datasetKey and the unique datasetId used to
+	/// create the unique datasetKey
+	/// </returns>
+	private (string, string) GetUniqueDatasetId(string dataSource, string proposedDatasetId, int connectionIndex)
+	{
+		// Get the proposed prefix is the proposedDatasetId stripped of any unique suffix.
+		// We're going to brute force this instead of a regex.
+
+		string proposedDatasetIdPrefix = GetUniqueIdentifierPrefix(proposedDatasetId);
+
+		// Establish a unique DatasetId using i as the suffix.
+		// This loop will execute at least once.
+
+		string uniqueDatasetId = null;
+		string uniqueDatasetKey = null;
+
+		for (int i = -1; i <= Count; i++)
+		{
+			// Try the original first.
+			if (i == -1)
+			{
+				if (proposedDatasetId == proposedDatasetIdPrefix)
+					continue;
+
+				uniqueDatasetId = proposedDatasetId;
+			}
+			else
+			{
+				uniqueDatasetId = (i == 0)
+					? proposedDatasetIdPrefix
+					: (proposedDatasetIdPrefix + $"_{i + 1}");
+			}
+
+			uniqueDatasetKey = DatasetKeyFormat.FmtRes(dataSource, uniqueDatasetId);
+
+			if (!TryGetEntry(uniqueDatasetKey, out int index))
+				break;
+
+			if (connectionIndex > -1 && connectionIndex == index)
+				break;
+		}
+
+		return (uniqueDatasetKey, uniqueDatasetId);
+
+	}
+
+
+	/// <summary>
+	/// Gets the prefix of an identifier stripped of any unique suffix in the for '_999'.
+	/// We're going to brute force this instead of a regex.
+	/// </summary>
+	private string GetUniqueIdentifierPrefix(string identifier)
+	{
+		string prefix = identifier;
+		string suffix;
+		// pos has to be past first char and before last char
+		int pos = identifier.IndexOf('_');
+
+		if (pos > 0 && pos < identifier.Length - 1)
+		{
+			for (int i = 1; i < 1000; i++)
+			{
+				suffix = "_" + i;
+
+				if (identifier.EndsWith(suffix))
+				{
+					prefix = identifier.TrimSuffix(suffix);
+					break;
+				}
+			}
+
+		}
+
+		return prefix;
+	}
+
 
 
 
@@ -472,11 +497,11 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			}
 			else if (csa.ContainsKey(C_KeyExDatasetId) && !string.IsNullOrWhiteSpace(csa.DatasetId))
 			{
-				csa.DatasetKey = C_DatasetKeyFmt.FmtRes(csa.DataSource, csa.DatasetId);
+				csa.DatasetKey = DatasetKeyFormat.FmtRes(csa.DataSource, csa.DatasetId);
 			}
 			else
 			{
-				csa.DatasetKey = C_DatasetKeyFmt.FmtRes(csa.DataSource, csa.Dataset);
+				csa.DatasetKey = DatasetKeyFormat.FmtRes(csa.DataSource, csa.Dataset);
 			}
 		}
 
