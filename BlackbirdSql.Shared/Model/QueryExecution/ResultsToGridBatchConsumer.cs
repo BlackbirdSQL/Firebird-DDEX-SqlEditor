@@ -18,7 +18,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 
 	private bool _CouldNotAddGrid;
 
-	public ResultsToGridBatchConsumer(IBSqlQueryExecutionHandler resultsControl)
+	public ResultsToGridBatchConsumer(IBQueryExecutionHandler resultsControl)
 		: base(resultsControl)
 	{
 		// Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.ResultsToGridBatchConsumer", "", null);

@@ -24,7 +24,10 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	{
 	}
 
-	public static DbExceptionService CreateInstance() => new();
+	public static IBsNativeDbException EnsureInstance() => _Instance ??= new DbExceptionService();
+
+
+	public static IBsNativeDbException _Instance = null;
 
 
 	// ---------------------------------------------------------------------------------

@@ -5,11 +5,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using Babel;
-using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
+using BlackbirdSql.LanguageExtension.Interfaces;
 using BlackbirdSql.LanguageExtension.Model;
 using BlackbirdSql.LanguageExtension.Services;
+using BlackbirdSql.Shared.Events;
+using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Shared.Model;
 using Microsoft.SqlServer.Management.SqlParser.Binder;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 using Microsoft.VisualStudio;
@@ -17,11 +20,6 @@ using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
-
-using Cmd = BlackbirdSql.Shared.Cmd;
-using BlackbirdSql.LanguageExtension.Interfaces;
-using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Shared.Events;
 
 
 
@@ -120,7 +118,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 				AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 				if (auxDocData != null)
 				{
-					IDbConnection connection = auxDocData.QryMgr.ConnectionStrategy.Connection;
+					IDbConnection connection = auxDocData.QryMgr.Strategy.Connection;
 
 					// TODO: Use datasetKey
 					if (connection != null)
@@ -175,7 +173,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 
 			if (auxDocData != null)
-				result = auxDocData.QryMgr.ConnectionStrategy.ConnectionInfo;
+				result = auxDocData.QryMgr.Strategy.ConnectionInfo;
 
 			return result;
 		}
@@ -196,12 +194,12 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 		if (auxDocData != null && auxDocData.IntellisenseEnabled.AsBool())
 		{
-			metadataProviderProvider = (IBMetadataProviderProvider)auxDocData.Strategy.MetadataProviderProvider;
+			metadataProviderProvider = (IBMetadataProviderProvider)auxDocData.StrategyFactory.MetadataProviderProvider;
 			metadataProviderProvider ??= MetadataProviderProviderInstance;
 
 			if (metadataProviderProvider == null && auxDocData.QryMgr.IsConnected)
 			{
-				ConnectionPropertyAgent connectionInfo = auxDocData.QryMgr.ConnectionStrategy.ConnectionInfo;
+				ConnectionPropertyAgent connectionInfo = auxDocData.QryMgr.Strategy.ConnectionInfo;
 				if (connectionInfo != null && !string.IsNullOrEmpty(GetDatabaseNameFromConnectionInfo(connectionInfo)))
 				{
 					MetadataProviderProviderInstance = LsbMetadataProviderProvider.Cache.Instance.Acquire(auxDocData.QryMgr);
@@ -230,7 +228,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		if (GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
 			&& auxDocData != null && LsbMetadataProviderProvider.CheckForDatabaseChangesAfterQueryExecution)
 		{
-			smoMetadataProviderProvider.AsyncAddDatabaseToDriftDetectionSet(auxDocData.QryMgr.ConnectionStrategy.Connection.Database);
+			smoMetadataProviderProvider.AsyncAddDatabaseToDriftDetectionSet(auxDocData.QryMgr.Strategy.Connection.Database);
 		}
 	}
 
@@ -413,7 +411,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	public static bool IsExplicitFilteringRequired(string textTypedSofar)
 	{
-		if (string.IsNullOrEmpty(textTypedSofar) || textTypedSofar[0] == Cmd.OpenSquareBracket || textTypedSofar[0] == Cmd.DoubleQuote || char.IsLetter(textTypedSofar[0]))
+		if (string.IsNullOrEmpty(textTypedSofar) || textTypedSofar[0] == Shared.Cmd.OpenSquareBracket || textTypedSofar[0] == Shared.Cmd.DoubleQuote || char.IsLetter(textTypedSofar[0]))
 		{
 			return false;
 		}
@@ -482,9 +480,10 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 	public override DocumentTask CreateErrorTaskItem(TextSpan span, MARKERTYPE markerType, string filename)
 	{
 		AuxilliaryDocData auxDocData = ((IBEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
+
 		if (auxDocData != null)
 		{
-			IBSqlEditorErrorTaskFactory errorTaskFactory = auxDocData.Strategy.GetErrorTaskFactory();
+			IBErrorTaskFactory errorTaskFactory = auxDocData.StrategyFactory.GetErrorTaskFactory();
 
 			if (errorTaskFactory != null)
 				return errorTaskFactory.CreateErrorTaskItem(span, markerType, filename, GetTextLines());
@@ -496,9 +495,10 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 	public override DocumentTask CreateErrorTaskItem(TextSpan span, string filename, string message, TaskPriority priority, TaskCategory category, MARKERTYPE markerType, TaskErrorCategory errorCategory)
 	{
 		AuxilliaryDocData auxDocData = ((IBEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
+
 		if (auxDocData != null)
 		{
-			IBSqlEditorErrorTaskFactory errorTaskFactory = auxDocData.Strategy.GetErrorTaskFactory();
+			IBErrorTaskFactory errorTaskFactory = auxDocData.StrategyFactory.GetErrorTaskFactory();
 
 			if (errorTaskFactory != null)
 			{

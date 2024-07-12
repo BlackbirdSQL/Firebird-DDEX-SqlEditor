@@ -9,6 +9,18 @@ namespace BlackbirdSql.Sys.Extensions;
 
 public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePair<TKey, TValue>>, IDisposable, IEnumerator, IDictionaryEnumerator
 {
+
+	internal PublicDictionaryEnumerator(PublicDictionary<TKey, TValue> dictionary, int getEnumeratorRetType)
+	{
+		_Dictionary = dictionary;
+		_Index = 0;
+		_GetEnumeratorRetType = getEnumeratorRetType;
+		_Current = default;
+	}
+
+
+
+
 	private readonly PublicDictionary<TKey, TValue> _Dictionary;
 
 	private int _Index;
@@ -143,13 +155,9 @@ public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePai
 		}
 	}
 
-	internal PublicDictionaryEnumerator(PublicDictionary<TKey, TValue> dictionary, int getEnumeratorRetType)
-	{
-		_Dictionary = dictionary;
-		_Index = 0;
-		_GetEnumeratorRetType = getEnumeratorRetType;
-		_Current = default;
-	}
+
+
+
 
 	//
 	// Summary:

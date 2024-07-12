@@ -3,8 +3,8 @@ using System;
 using System.Data.Common;
 using BlackbirdSql.Sys.Enums;
 
-namespace BlackbirdSql.Sys.Events;
 
+namespace BlackbirdSql.Sys.Events;
 
 public class StatementExecutionEventArgs : EventArgs
 {

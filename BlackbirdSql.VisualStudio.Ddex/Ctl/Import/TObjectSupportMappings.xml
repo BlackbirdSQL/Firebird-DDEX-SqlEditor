@@ -85,7 +85,7 @@
 			</Identifier>
 			<Properties>
 				<Property name="Name" isIdentifierPart="true" />
-				<Property name="Schema" isIdentifierPart="true" />
+				<!-- <Property name="Schema" isIdentifierPart="true" /> -->
 				<Property name="Description" underlyingMember="DESCRIPTION" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
 					<Conversion>
@@ -231,7 +231,7 @@
 				<Part name="Name" underlyingMember="PROCEDURE_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Schema" isIdentifierPart="true" />
+				<!-- <Property name="Schema" isIdentifierPart="true" /> -->
 				<Property name="Name" isIdentifierPart="true" />
 				<Property name="Description" underlyingMember="DESCRIPTION"/>
 				<Property name="Dsl" underlyingMember="SOURCE"/>
@@ -259,7 +259,7 @@
 				<Part name="Name" underlyingMember="FUNCTION_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Schema" isIdentifierPart="true" />
+				<!-- <Property name="Schema" isIdentifierPart="true" /> -->
 				<Property name="Name" isIdentifierPart="true" />
 				<Property name="Description" underlyingMember="DESCRIPTION"/>
 				<Property name="Dsl" underlyingMember="SOURCE"/>

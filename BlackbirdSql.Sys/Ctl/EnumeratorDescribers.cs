@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using BlackbirdSql.Sys.Extensions;
 
+
+
 namespace BlackbirdSql.Sys.Ctl;
+
 
 public class EnumeratorDescribers : IEnumerator, IEnumerator<Describer>
 {
-	private PublicValueCollection<string, Describer> _Owner;
-	private PublicValueCollection<string, Describer>.Enumerator _Enumerator;
 
 	public EnumeratorDescribers(PublicValueCollection<string, Describer> values)
 	{
@@ -23,6 +24,13 @@ public class EnumeratorDescribers : IEnumerator, IEnumerator<Describer>
 		_Enumerator.Dispose();
 		_Enumerator = default;
 	}
+
+
+
+	private PublicValueCollection<string, Describer> _Owner;
+	private PublicValueCollection<string, Describer>.Enumerator _Enumerator;
+
+
 
 	object IEnumerator.Current
 	{

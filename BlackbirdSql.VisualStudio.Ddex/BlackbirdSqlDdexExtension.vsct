@@ -47,7 +47,7 @@
 
 
 		<Combos>
-			<Combo guid="CommandSetGuid" id="CmbIdSqlDatabases" priority="0x0100" type="DropDownCombo" defaultWidth="280" idCommandList="CmbIdSqlDatabasesGetList">
+			<Combo guid="CommandSetGuid" id="CmbIdDatabaseSelect" priority="0x0100" type="DropDownCombo" defaultWidth="280" idCommandList="CmbIdDatabaseList">
 				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar"/>
 				<CommandFlag>IconAndText</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
@@ -55,9 +55,9 @@
 					<MenuText>Database Selection: </MenuText>
 					<ButtonText></ButtonText>
 					<ToolTipText>Select Database</ToolTipText>
-					<CanonicalName>SqlDatabases</CanonicalName>
-					<LocCanonicalName>SqlDatabases</LocCanonicalName>
-					<CommandName>SqlDatabases</CommandName>
+					<CanonicalName>DatabaseSelect</CanonicalName>
+					<LocCanonicalName>DatabaseSelect</LocCanonicalName>
+					<CommandName>DatabaseSelect</CommandName>
 				</Strings>
 			</Combo>
 		</Combos>
@@ -192,9 +192,9 @@
 					<ButtonText>Disconnect</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdChangeConnection" priority="0x0070" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdModifyConnection" priority="0x0070" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
-				<Icon guid="ImagesGuid" id="ImgChangeConnection" />
+				<Icon guid="ImagesGuid" id="ImgModifyConnection" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
@@ -202,9 +202,9 @@
 					<ButtonText>Modify Connection</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0120" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0120" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
-				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
+				<Icon guid="ImagesGuid" id="ImgNewQuery" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
@@ -305,16 +305,16 @@
 
 
 			<!-- GrpIdSeRootContext -->
-			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0120" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0120" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdSeRootContext" />
-				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
+				<Icon guid="ImagesGuid" id="ImgNewQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>New Sql Query</ButtonText>
-					<CommandName>CommandNewSqlQueryUniversal</CommandName>
+					<CommandName>CommandNewQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewDesignerQuery" priority="0x0125" type="Button">
@@ -381,16 +381,16 @@
 					<CommandName>CommandTextOpenAlterScriptUniversal</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0135" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0135" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdSeNodeContext" />
-				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
+				<Icon guid="ImagesGuid" id="ImgNewQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>New Sql Query</ButtonText>
-					<CommandName>CommandNewSqlQueryUniversal</CommandName>
+					<CommandName>CommandNewQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdRetrieveDesignerData" priority="0x0150" type="Button">
@@ -433,16 +433,16 @@
 					<CommandName>CommandTextOpenScriptUniversal</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0135" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0135" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdSeStaticContext" />
-				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
+				<Icon guid="ImagesGuid" id="ImgNewQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>New Sql Query</ButtonText>
-					<CommandName>CommandNewSqlQueryUniversal</CommandName>
+					<CommandName>CommandNewQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdRetrieveDesignerData" priority="0x0150" type="Button">
@@ -506,7 +506,7 @@
 
 		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
 		<Bitmaps>
-			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgExecuteQueryNoResult, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewSqlQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgAccept, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgChangeConnection, ImgCancel, ImgToggleTTS2, ImgToggleTTS, ImgExecuteQueryBatch" />
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgExecuteQueryNoResult, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgAccept, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgModifyConnection, ImgCancel, ImgToggleTTS2, ImgToggleTTS, ImgExecuteQueryBatch" />
 		</Bitmaps>
 	</Commands>
 
@@ -643,8 +643,8 @@
 			<IDSymbol name="ContextIdMessageWindow" value="0x5404" />
 			<IDSymbol name="ContextIdExecutionPlanWindow" value="0x5405" />
 
-			<IDSymbol name="CmbIdSqlDatabases" value="0x5500" />
-			<IDSymbol name="CmbIdSqlDatabasesGetList" value="0x5501" />
+			<IDSymbol name="CmbIdDatabaseSelect" value="0x5500" />
+			<IDSymbol name="CmbIdDatabaseList" value="0x5501" />
 
 			<!-- 768 -->
 			<IDSymbol name="CmdIdConnect" value="0x0300" />
@@ -677,7 +677,7 @@
 			<!-- 783 -->
 			<IDSymbol name="CmdIdToggleResultsPane" value="0x030F" />
 			<!-- 784 -->
-			<IDSymbol name="CmdIdNewSqlQuery" value="0x0310" />
+			<IDSymbol name="CmdIdNewQuery" value="0x0310" />
 			<!-- 785 -->
 			<IDSymbol name="CmdIdSaveResultsAs" value="0x0311" />
 			<!-- 788 -->
@@ -707,7 +707,7 @@
 			<!-- 807 -->
 			<IDSymbol name="CmdIdDisconnectAllQueries" value="0x0327" />
 			<!-- 808 -->
-			<IDSymbol name="CmdIdChangeConnection" value="0x0328" />
+			<IDSymbol name="CmdIdModifyConnection" value="0x0328" />
 
 			<!-- 820 -->
 			<IDSymbol name="CmdIdOpenTextObject" value="0x0334" />
@@ -732,7 +732,7 @@
 			<IDSymbol name="ImgCancelQuery" value="3" />
 			<IDSymbol name="ImgConnect" value="4" />
 			<IDSymbol name="ImgDisconnect" value="5" />
-			<IDSymbol name="ImgNewSqlQuery" value="6" />
+			<IDSymbol name="ImgNewQuery" value="6" />
 			<IDSymbol name="ImgResultsAsGrid" value="7" />
 			<IDSymbol name="ImgResultsAsText" value="8" />
 			<IDSymbol name="ImgDownGlygh" value="9"/>
@@ -749,7 +749,7 @@
 			<IDSymbol name="ImgNewDesignerQuery" value="20" />
 			<IDSymbol name="ImgResultsAsFile" value="21" />
 			<IDSymbol name="ImgEditLabel" value="22" />
-			<IDSymbol name="ImgChangeConnection" value="23" />
+			<IDSymbol name="ImgModifyConnection" value="23" />
 			<IDSymbol name="ImgCancel" value="24" />
 			<IDSymbol name="ImgToggleTTS2" value="25" />
 			<IDSymbol name="ImgToggleTTS" value="26" />

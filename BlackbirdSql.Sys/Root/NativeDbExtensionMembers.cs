@@ -26,6 +26,7 @@ namespace BlackbirdSql;
 // =========================================================================================================
 public static class NativeDbExtensionMembers
 {
+
 	/// <summary>
 	/// Adds a parameter suffixed with an index to DbCommand.Parameters.
 	/// </summary>
@@ -93,44 +94,33 @@ public static class NativeDbExtensionMembers
 		return NativeDb.DbConnectionSvc.GetDataSourceVersion(@this);
 	}
 
-	public static bool DisposeLinkageParser(this IDbConnection @this)
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Disposes of a parser given an IVsDataConnection site.
+	/// </summary>
+	/// <param name="site">
+	/// The IVsDataConnection explorer connection object
+	/// </param>
+	/// <param name="disposing">
+	/// If disposing is set to true, then all parsers with weak equivalency will
+	/// be tagged as intransient, meaning their trigger linkage databases cannot
+	/// be copied to another parser with weak equivalency. 
+	/// </param>
+	/// <returns>True of the parser was found and disposed else false.</returns>
+	// -------------------------------------------------------------------------
+	public static bool DisposeLinkageParser(this IVsDataExplorerConnection @this, bool disposing)
 	{
-		return NativeDb.DatabaseEngineSvc.DisposeLinkageParserInstance_(@this);
-	}
-	public static bool DisposeLinkageParser(this IVsDataConnection @this)
-	{
-		return NativeDb.DatabaseEngineSvc.DisposeLinkageParserInstance_(@this);
+		return NativeDb.DatabaseEngineSvc.DisposeLinkageParserInstance_(@this, disposing);
 	}
 
-	public static void AsyncEnsureLinkageLoading(this IDbConnection @this, int delay = 0, int multiplier = 1)
+	public static void AsyncEnsureLinkageLoading(this IVsDataExplorerConnection @this, int delay = 0, int multiplier = 1)
 	{
 		NativeDb.DatabaseEngineSvc.AsyncEnsureLinkageLoading_(@this, delay, multiplier);
 	}
 
-	public static void AsyncEnsureLinkageLoading(this IVsDataConnection @this, int delay = 0, int multiplier = 1)
-	{
-		NativeDb.DatabaseEngineSvc.AsyncEnsureLinkageLoading_(@this, delay, multiplier);
-	}
 
-	public static void AsyncEnsureLinkageLoading(this IVsDataExplorerNode @this, int delay = 0, int multiplier = 1)
-	{
-		NativeDb.DatabaseEngineSvc.AsyncEnsureLinkageLoading_(@this, delay, multiplier);
-	}
-
-	public static void AsyncRequestLinkageLoading(this IVsDataConnection @this, int delay = 0, int multiplier = 1)
-	{
-		NativeDb.DatabaseEngineSvc.AsyncRequestLinkageLoading_(@this, delay, multiplier);
-	}
-
-	public static void AsyncRequestLinkageLoading(this IVsDataExplorerConnection @this, int delay = 0, int multiplier = 1)
-	{
-		if (@this.Connection != null)
-			NativeDb.DatabaseEngineSvc.AsyncRequestLinkageLoading_(@this.Connection, delay, multiplier);
-	}
-
-
-	public static IBsLinkageParser GetLinkageParser(this IDbConnection @this) => NativeDb.DatabaseEngineSvc.GetLinkageParserInstance_(@this);
-	public static IBsLinkageParser GetLinkageParser(this IVsDataConnection @this) => NativeDb.DatabaseEngineSvc.GetLinkageParserInstance_(@this);
+	public static IBsNativeDbLinkageParser GetLinkageParser(this IVsDataExplorerConnection @this) => NativeDb.DatabaseEngineSvc.GetLinkageParserInstance_(@this);
 
 	public static long GetActiveTransactionsCount(this NativeDatabaseInfoProxy @this)
 	{
@@ -200,7 +190,7 @@ public static class NativeDbExtensionMembers
 	}
 
 
-	public static DataTable GetSchemaEx(this DbConnection @this, string collectionName, string[] restrictions)
+	public static DataTable GetSchemaEx(this IDbConnection @this, string collectionName, string[] restrictions)
 	{
 		return NativeDb.ProviderSchemaFactorySvc.GetSchema(@this, collectionName, restrictions);
 	}
@@ -353,14 +343,7 @@ public static class NativeDbExtensionMembers
 
 	internal static bool HasTransactions(this IDbTransaction @this)
 	{
-		if (@this == null)
-			return false;
-
-		DbConnection connection = (DbConnection)@this.Connection;
-
-		NativeDatabaseInfoProxy dbInfo = new(connection);
-
-		return dbInfo.GetActiveTransactionsCount() > 0;
+		return NativeDb.DatabaseEngineSvc.HasTransactions_(@this);
 	}
 
 

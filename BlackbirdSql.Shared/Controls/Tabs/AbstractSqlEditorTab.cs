@@ -39,14 +39,14 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 
 	protected override IVsWindowFrame CreateWindowFrame()
 	{
-		Diag.ThrowIfNotOnUIThread();
+		if (ApcManager.SolutionClosing)
+			return null;
 
 		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument)) is not IVsUIShellOpenDocument shellOpenDocumentSvc)
 			throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
 
 		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShell)) is not IVsUIShell shellSvc)
 			throw Diag.ExceptionService(typeof(IVsUIShell));
-
 		if (!RdtManager.ServiceAvailable)
 			throw Diag.ExceptionService(typeof(IVsRunningDocumentTable));
 

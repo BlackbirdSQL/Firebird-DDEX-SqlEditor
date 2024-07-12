@@ -10,6 +10,7 @@ using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Extensions;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension;
+using BlackbirdSql.LanguageExtension;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
@@ -39,8 +40,9 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// <remarks>
 /// Implements the package exposed by this assembly and registers itself with the shell.
 /// This is a multi-Package daisy-chained class implementation of <see cref="IBsAsyncPackage"/>.
-/// The current hierarchy is <see cref="BlackbirdSqlDdexExtension"/> >> <see cref="ControllerPackage"/> >>
-/// <see cref="EditorExtensionPackage"/> >> <see cref="AbstractCorePackage"/>.
+/// The current hierarchy is <see cref="BlackbirdSqlDdexExtension"/> >> <see cref="ControllerPackage"/>
+/// >> <see cref="LanguageExtensionPackage"/> >> <see cref="EditorExtensionPackage"/>
+/// >> <see cref="AbstractCorePackage"/>.
 /// </remarks>
 // =========================================================================================================
 
@@ -129,7 +131,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// </summary>
 	static BlackbirdSqlDdexExtension()
 	{
-		RegisterInvariant();
+		RegisterDataServices();
+		RegisterAssemblies();
 	}
 
 
@@ -148,6 +151,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 
 
+
 	// =========================================================================================================
 	#region Property accessors - BlackbirdSqlDdexExtension
 	// =========================================================================================================
@@ -161,8 +165,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	{
 		get
 		{
-			if (_Instance == null)
-				DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
+			// if (_Instance == null)
+			//	DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
 			return (BlackbirdSqlDdexExtension)_Instance;
 		}
 	}
@@ -175,6 +179,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 
 	#endregion Property accessors
+
 
 
 
@@ -373,17 +378,21 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// Adds Database Client invariant to assembly factory register.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static void RegisterInvariant()
+	private static void RegisterAssemblies()
 	{
-		DbProviderFactoriesEx.RegisterAssemblyDirect(DatabaseEngineSvc.Invariant_,
+		DbProviderFactoriesEx.RegisterAssemblyDirect(NativeDb.Invariant,
 			Resources.Provider_ShortDisplayName, Resources.Provider_DisplayName,
-			DatabaseEngineSvc.AssemblyQualifiedName_);
+			NativeDb.AssemblyQualifiedName);
 
 		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 		{
-			if (args.Name == DatabaseEngineSvc.ClientFactoryAssembly_.FullName)
+			if (args.Name == NativeDb.ClientFactoryAssembly.FullName)
 			{
-				return DatabaseEngineSvc.ClientFactoryAssembly_;
+				return NativeDb.ClientFactoryAssembly;
+			}
+			if (args.Name == typeof(BlackbirdSqlDdexExtension).Assembly.FullName)
+			{
+				return typeof(BlackbirdSqlDdexExtension).Assembly;
 			}
 
 			return null;

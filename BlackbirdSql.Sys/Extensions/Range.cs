@@ -10,11 +10,14 @@ namespace System;
 
 public readonly struct Range : IEquatable<Range>
 {
+
 	public Range(Index start, Index end)
 	{
 		Start = start;
 		End = end;
 	}
+
+
 
 
 	public Index Start { get; }

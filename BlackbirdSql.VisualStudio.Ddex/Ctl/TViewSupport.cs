@@ -6,8 +6,8 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
@@ -16,7 +16,9 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 // =========================================================================================================
 //										TViewSupport Class
@@ -27,20 +29,56 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Partly plagiarized off of Microsoft.VisualStudio.Data.Providers.SqlServer.SqlViewSupport.
 /// </summary>
 // =========================================================================================================
-public class TViewSupport : DataViewSupport,
-	IVsDataSupportImportResolver, IVsDataViewIconProvider
+public class TViewSupport : DataViewSupport, IBsDataViewSupport
 {
-	private bool _Loaded = false;
-	private bool _Initialized = false;
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors
+	// ---------------------------------------------------------------------------------
+
+
+	public TViewSupport(string fileName, string path) : base(fileName, path)
+	{
+		// Tracer.Trace(typeof(TViewSupport), ".ctor(string, string)", "fileName: {0}, path: {1}", fileName, path);
+	}
+
+	public TViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
+	{
+		// Tracer.Trace(typeof(TViewSupport), ".ctor(string, Assembly)", "resourceName: {0} assembly: {1}", resourceName, assembly.FullName);
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - TViewSupport
+	// =========================================================================================================
+
+
+	private bool _PropertiesInitialized = false;
 
 	private static string _IconName = null;
 	private static string _IconPrefix = null;
 	private static Icon _Icon = null;
 
+	private IBsDataViewSupport.CloseDelegate _OnCloseEvent;
+
+	#endregion Fields
 
 
 
-	string IconPrefix
+
+
+	// =========================================================================================================
+	#region Property Accessors - TViewSupport
+	// =========================================================================================================
+
+
+	private string IconPrefix
 	{
 		get
 		{
@@ -57,24 +95,19 @@ public class TViewSupport : DataViewSupport,
 		}
 	}
 
-	// ---------------------------------------------------------------------------------
-	#region Constructors / Destructors
-	// ---------------------------------------------------------------------------------
 
-
-	public TViewSupport(string fileName, string path) : base(fileName, path)
+	/// <summary>
+	/// Accessor to the <see cref="IBsDataViewSupport.CloseDelegate"/> event.
+	/// </summary>
+	event IBsDataViewSupport.CloseDelegate IBsDataViewSupport.OnCloseEvent
 	{
-		// Tracer.Trace(GetType(), "TViewSupport.TViewSupport()", "fileName: {0}, path: {1}", fileName, path);
-	}
-
-	public TViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
-	{
-		// Tracer.Trace(GetType(), "TViewSupport.TViewSupport()", "resourceName: {0} assembly: {1}", resourceName, assembly.FullName);
+		add { _OnCloseEvent += value; }
+		remove { _OnCloseEvent -= value; }
 	}
 
 
 
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 
 
@@ -85,28 +118,13 @@ public class TViewSupport : DataViewSupport,
 	// =========================================================================================================
 
 
+	/// <summary>
+	/// This override is important because it fires the <see cref="IVsDataExplorerConnection.NodeRemoving"/>
+	/// event for the ConnectionNode when the ExplorerConnection is deleted.
+	/// </summary>
 	public override void Close()
 	{
-		// Tracer.Trace(GetType(), "Close()");
-
-		if (_Loaded && ViewHierarchy != null && ViewHierarchy.ExplorerConnection != null)
-		{
-			// Tracer.Trace(GetType(), "Close()", "Disassociating from ExplorerConnection.");
-
-			ViewHierarchy.ExplorerConnection.NodeChanged -= OnNodeChanged;
-			ViewHierarchy.ExplorerConnection.NodeExpandedOrRefreshed -= OnNodeExpandedOrRefreshed;
-			ViewHierarchy.ExplorerConnection.NodeInserted -= OnNodeInserted;
-			ViewHierarchy.ExplorerConnection.NodeRemoving -= OnNodeRemoving;
-
-			RctManager.OnExplorerConnectionClose(this, ViewHierarchy.ExplorerConnection);
-
-			IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
-
-
-			if (site != null)
-				site.StateChanged -= OnConnectionStateChanged;
-		}
-
+		_OnCloseEvent?.Invoke(this, new());
 		base.Close();
 	}
 
@@ -185,37 +203,27 @@ public class TViewSupport : DataViewSupport,
 
 	public override void Initialize()
 	{
-		// Tracer.Trace(GetType(), "Initialize()");
-
 		base.Initialize();
 
-		if (ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
-			|| ViewHierarchy.ExplorerConnection.Connection == null)
+		if (ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null || Connection == null)
 		{
+			// Tracer.Trace(GetType(), "Initialize()", "Exiting. ExplorerConnection is null.");
 			return;
 		}
 
-		IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
+		// Tracer.Trace(GetType(), "Initialize()");
+
+		IVsDataConnection site = Connection;
 
 		if (site.State == DataConnectionState.Open)
 			InitializeProperties();
 
-		_Loaded = true;
-
-
-		site.StateChanged += OnConnectionStateChanged;
-
-		ViewHierarchy.ExplorerConnection.NodeChanged += OnNodeChanged;
-		ViewHierarchy.ExplorerConnection.NodeExpandedOrRefreshed += OnNodeExpandedOrRefreshed;
-		ViewHierarchy.ExplorerConnection.NodeInserted += OnNodeInserted;
-		ViewHierarchy.ExplorerConnection.NodeRemoving += OnNodeRemoving;
-
 		// Perform a single pass check to ensure this SE connection has had it's events
-		// advised. This will occur if the SE was adding a new conection and we
+		// advised. This will also occur if the SE was adding a new conection and we
 		// registered it with the Rct before it was registered with Server Explorer.
-		RctManager.RegisterUnadvisedConnection(ViewHierarchy.ExplorerConnection);
-
+		RctManager.NotifyInitializedServerExplorerModel(this, new(ViewHierarchy.ExplorerConnection.ConnectionNode));
 	}
+
 
 	public override Stream OpenSupportStream()
 	{
@@ -234,8 +242,6 @@ public class TViewSupport : DataViewSupport,
 	// =========================================================================================================
 	#region Methods - TViewSupport
 	// =========================================================================================================
-
-
 
 
 	// ---------------------------------------------------------------------------------
@@ -459,27 +465,14 @@ public class TViewSupport : DataViewSupport,
 	{
 		try
 		{
-			if (ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null)
-			{
-				return;
-			}
-
-			if (ViewHierarchy.PersistentProperties != null)
+			if (!_PropertiesInitialized && ViewHierarchy.PersistentProperties != null)
 			{
 				Csb csa = new(ViewHierarchy.ExplorerConnection.DecryptedConnectionString(), true);
 
 				ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = csa.DatasetMoniker;
+
+				_PropertiesInitialized = true;
 			}
-
-
-			if (ViewHierarchy.ExplorerConnection.Connection == null
-				|| ViewHierarchy.ExplorerConnection.Connection.State != DataConnectionState.Open)
-			{
-				return;
-			}
-
-			_Initialized = true;
-
 		}
 		catch (Exception ex)
 		{
@@ -487,7 +480,6 @@ public class TViewSupport : DataViewSupport,
 			throw;
 		}
 	}
-
 
 
 	#endregion Methods
@@ -509,50 +501,6 @@ public class TViewSupport : DataViewSupport,
 
 
 
-	private void OnConnectionStateChanged(object sender, DataConnectionStateChangedEventArgs e)
-	{
-		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Sender: {0}, Old state: {1}, new state:{2}.",
-		//	sender.GetType().Name, e.OldState, e.NewState);
-
-		if (!_Initialized && e.NewState == DataConnectionState.Open)
-			InitializeProperties();
-
-		if (ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
-			|| ViewHierarchy.ExplorerConnection.Connection == null)
-		{
-			return;
-		}
-
-		if (e.NewState != DataConnectionState.Open)
-		{
-			ViewHierarchy.ExplorerConnection.Connection.DisposeLinkageParser();
-			return;
-		}
-
-
-		if (e.OldState == DataConnectionState.Open || !RctManager.Available)
-		{
-			return;
-		}
-
-		NativeDb.DatabaseEngineSvc.UnlockLoadedParser_();
-
-		// Attempt linkage startup on a refresh.
-		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Calling IsEdm.");
-
-		if (RctManager.IsEdmConnectionSource)
-			return;
-
-		IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
-
-
-		// We'll delay 25 cycles of 20ms each because this is a deadlock when
-		// preregistering the taskhandler and a node requiring completed linkage tables is already expanded.
-		site.AsyncEnsureLinkageLoading(125, 20);
-	}
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// SE IconsChanged Event.
@@ -561,123 +509,6 @@ public class TViewSupport : DataViewSupport,
 	protected virtual void OnIconsChanged(DataViewNodeEventArgs e)
 	{
 		IconsChanged?.Invoke(this, e);
-	}
-
-
-	/// <summary>
-	/// Node renames occur here.
-	/// </summary>
-	private void OnNodeChanged(object sender, DataExplorerNodeEventArgs e)
-	{
-		// Tracer.Trace(GetType(), "OnNodeChanged()", "connectionMoniker: {0}, nodeName: {1}, nodeMoniker: {2}.",
-		//	e.Node.ExplorerConnection != null && e.Node.ExplorerConnection.ConnectionNode != null
-		//		? e.Node.ExplorerConnection.ConnectionNode.DocumentMoniker : "Null",
-		//	e.Node.Name, e.Node.DocumentMoniker);
-
-		if (e.Node == null || (!e.Node.IsRefreshing && !e.Node.IsExpanding)
-			|| e.Node.ExplorerConnection == null
-			|| e.Node.ExplorerConnection.Connection == null
-			|| e.Node.ExplorerConnection.ConnectionNode == null
-			|| !e.Node.Equals(e.Node.ExplorerConnection.ConnectionNode))
-		{
-			return;
-		}
-
-		IVsDataConnection site = e.Node.ExplorerConnection.Connection;
-
-		// Couple of caveats when refreshing.
-		// We need to delete the LinkageParser if it exists but only if it's not loading.
-		// If it's loading it will already be busy loading a refreshed instance so do nothing.
-		// If it doesn't exist we can start linkage.
-		if (e.Node.IsRefreshing)
-		{
-			IBsLinkageParser parser = site.GetLinkageParser();
-
-
-			if (parser != null)
-			{
-				// Not guaranteed but if all properties are the same it's 99% likely
-				// this is a user refresh. For the 1% the linkage tables will be redundantly rebuilt.
-				if (parser.Loaded && !parser.IsLockedLoaded && Csb.AreEquivalent(site.DecryptedConnectionString(),
-					parser.ConnectionString, Csb.DescriberKeys))
-				{
-					// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for Dispose.");
-
-					if (RctManager.IsEdmConnectionSource)
-						return;
-
-					// Tracer.Trace(GetType(), "OnNodeChanged()", "Refreshing & Parser Exists: Calling destructive DisposeLinkageParser().");
-
-					site.DisposeLinkageParser();
-				}
-
-				// else
-				//	Tracer.Trace(GetType(), "OnNodeChanged()", "Refreshing & Parser Exists: NOT calling destructive Dispose.");
-
-			}
-			else
-			{
-				// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for parser == null.");
-				NativeDb.DatabaseEngineSvc.UnlockLoadedParser_();
-
-				if (RctManager.IsEdmConnectionSource)
-					return;
-
-				site.AsyncEnsureLinkageLoading(10, 10);
-			}
-		}
-		else if (e.Node.IsExpanding)
-		{
-			NativeDb.DatabaseEngineSvc.UnlockLoadedParser_();
-
-			if (RctManager.IsEdmConnectionSource)
-				return;
-
-			if (site.State == DataConnectionState.Open && RctManager.Available)
-				site.AsyncEnsureLinkageLoading();
-		}
-
-	}
-
-
-
-	private void OnNodeExpandedOrRefreshed(object sender, DataExplorerNodeEventArgs e)
-	{
-		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed", "e.Node.HasBeenExpanded: {0}, e.Node.IsExpanded: {1}, e.Node.IsExpanding: {2}.", e.Node.HasBeenExpanded, e.Node.IsExpanded, e.Node.IsExpanding);
-
-		if (!e.Node.HasBeenExpanded || e.Node.ExplorerConnection == null
-			|| e.Node.ExplorerConnection.Connection == null
-			|| e.Node.ExplorerConnection.ConnectionNode == null
-			|| e.Node.Equals(e.Node.ExplorerConnection.ConnectionNode))
-		{
-			return;
-		}
-
-		IVsDataConnection site = e.Node.ExplorerConnection.Connection;
-
-		if (site.State != DataConnectionState.Open || !RctManager.Available)
-			return;
-
-		// If the refresh is the result of the EDMX wizard making an illegal name
-		// change, exit. We'll handle this in OnNodeChanged().
-		if (RctManager.IsEdmConnectionSource)
-			return;
-
-		e.Node.AsyncEnsureLinkageLoading(10, 10);
-	}
-
-
-
-	private void OnNodeInserted(object sender, DataExplorerNodeEventArgs e)
-	{
-		// Tracer.Trace(GetType(), "OnNodeInserted()");
-	}
-
-
-
-	private void OnNodeRemoving(object sender, DataExplorerNodeEventArgs e)
-	{
-		// Tracer.Trace(GetType(), "OnNodeRemoving()");
 	}
 
 

@@ -106,6 +106,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		_CurrentOffset = 0L;
 		_DataStorageEnabled = false;
 
+		_AsyncWorkerCancelTokenSource?.Dispose();
 		_AsyncWorkerCancelTokenSource = null;
 		_AsyncWorkerTask = null;
 

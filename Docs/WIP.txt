@@ -1,0 +1,17 @@
+ConnectionSource=1;data source=MMEI-LT01;port number=55504;initial catalog=C:\Server\Data\smartitplus_databases\MMEINT_SI_DB.FDB;user id=sysdba;password=masterkey;DatasetKey="MMEI-LT01 (MME International)";ConnectionKey="MMEI-LT01 (MME International)";DatasetId="MME International";edmu=True
+
+
+CommandID command = new CommandID(NativeMethods.guidVSStd97, 261);
+if (!_fields.provider.IsOperationSupported(Source, command, this))
+
+namespace Microsoft.Data.Entity.Design.VisualStudio.ModelWizard.Gui;
+
+internal class WizardPageDbConfig : WizardPageBase
+
+namespace Microsoft.Data.Entity.Design.VisualStudio.ModelWizard;
+
+public class ModelObjectItemWizard : IWizard
+
+namespace Microsoft.WizardFramework;
+
+public class WizardForm : Form

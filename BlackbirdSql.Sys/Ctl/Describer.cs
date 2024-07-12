@@ -5,13 +5,14 @@ using System.Linq;
 using System.Reflection;
 
 
+
 namespace BlackbirdSql.Sys.Ctl;
+
 
 // =========================================================================================================
 //
 //												Describer Class
 //
-// =========================================================================================================
 /// <summary>
 /// A Describer is a detailed description of a property descriptor as defined in the native database csb,
 /// or an alias for properties used outside of the csb, or a nova external property that is not used to
@@ -58,8 +59,8 @@ public class Describer
 	/// </param>
 	/// <param name="isInternalStore">Internal storage property. For example an encrypted version of a password.</param>
 	public Describer(string name, string connectionParameterKey, Type propertyType, object defaultValue = null,
-	bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true,
-	bool isMandatory = false, bool isInternalStore = false)
+		bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true,
+		bool isMandatory = false, bool isInternalStore = false)
 	{
 		Name = name;
 
@@ -86,12 +87,9 @@ public class Describer
 
 
 
-
-
 	private string _ConnectionParameterKey = null;
 	private static PropertyDescriptorCollection _Descriptors = null;
 	private bool? _IsEquivalency;
-
 
 
 

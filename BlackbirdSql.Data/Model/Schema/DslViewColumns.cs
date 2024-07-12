@@ -27,7 +27,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 internal class DslViewColumns : DslColumns
 {
 
-	public DslViewColumns() : base(null)
+	public DslViewColumns() : base()
 	{
 		// Tracer.Trace(GetType(), "DslViewColumns.DslViewColumns");
 

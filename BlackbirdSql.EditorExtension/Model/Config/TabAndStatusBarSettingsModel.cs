@@ -4,17 +4,19 @@
 using System.ComponentModel;
 using System.Drawing;
 using BlackbirdSql.Core.Ctl.ComponentModel;
+using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
-using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Enums;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
+
 
 
 namespace BlackbirdSql.EditorExtension.Model.Config;
+
 
 // =========================================================================================================
 //										TabAndStatusBarSettingsModel Class

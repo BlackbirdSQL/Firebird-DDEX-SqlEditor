@@ -1,16 +1,15 @@
 ﻿
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security;
+using System.Windows;
+using System.Windows.Media;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio;
 
 
 
-namespace BlackbirdSql.Sys;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
+namespace BlackbirdSql;
 
 
 // =========================================================================================================
@@ -23,38 +22,16 @@ namespace BlackbirdSql.Sys;
 public abstract class Cmd
 {
 
-
 	// ---------------------------------------------------------------------------------
-	#region Constants - Cmd
-	// ---------------------------------------------------------------------------------
-
-
-	#endregion Constants
-
-
-
-
-
-	// =========================================================================================================
-	#region Fields - Cmd
-	// =========================================================================================================
-
-
-	#endregion Fields
-
-
-
-
-
-	// =========================================================================================================
 	#region Property Accessors - Cmd
-	// =========================================================================================================
+	// ---------------------------------------------------------------------------------
 
 
 	/// <summary>
 	/// Always true without warning message.
 	/// </summary>
 	public static bool ToBeCompleted => true;
+
 
 	#endregion Property accessors
 
@@ -65,6 +42,13 @@ public abstract class Cmd
 	// =========================================================================================================
 	#region Static Methods - Cmd
 	// =========================================================================================================
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
+	/// </summary>
+	public static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
 
 
 	// CanonicalizeDirectoryName
@@ -171,6 +155,21 @@ public abstract class Cmd
 	}
 
 
+
+	public static System.Windows.Media.Color CombineColors(System.Windows.Media.Color c1, int a1, System.Windows.Media.Color c2, int a2)
+	{
+		return System.Windows.Media.Color.FromArgb((byte)((c1.A * a1 + c2.A * a2) / 100), (byte)((c1.R * a1 + c2.R * a2) / 100), (byte)((c1.G * a1 + c2.G * a2) / 100), (byte)((c1.B * a1 + c2.B * a2) / 100));
+	}
+
+
+
+	public static System.Drawing.Color ConvertColor(System.Windows.Media.Color wpfColor)
+	{
+		return System.Drawing.Color.FromArgb(255, wpfColor.R, wpfColor.G, wpfColor.B);
+	}
+
+
+
 	// EnsureNoBackslash
 	public static string EnsureNoBackslash(string fullPath)
 	{
@@ -183,13 +182,39 @@ public abstract class Cmd
 		return result;
 	}
 
-	/// <summary>
-	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
-	/// </summary>
-	public static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
+	public static UIElement FindVisualParent(Type typeOfParent, UIElement element, Type stopOnType = null)
+	{
+		for (UIElement uIElement = element; uIElement != null; uIElement = VisualTreeHelper.GetParent(uIElement) as UIElement)
+		{
+			if (typeOfParent.IsAssignableFrom(uIElement.GetType()))
+			{
+				return uIElement;
+			}
+			if (stopOnType != null && stopOnType.IsAssignableFrom(uIElement.GetType()))
+			{
+				return null;
+			}
+		}
+		return null;
+	}
 
+	public static T FindVisualParent<T>(UIElement element, Type stopOnType = null) where T : UIElement
+	{
+		for (UIElement uIElement = element; uIElement != null; uIElement = VisualTreeHelper.GetParent(uIElement) as UIElement)
+		{
+			if (uIElement is T result)
+			{
+				return result;
+			}
+			if (stopOnType != null && stopOnType.IsAssignableFrom(uIElement.GetType()))
+			{
+				return null;
+			}
+		}
+		return null;
+	}
 
 
 
@@ -207,6 +232,7 @@ public abstract class Cmd
 
 		return false;
 	}
+
 
 
 	/// <summary>
@@ -290,8 +316,6 @@ public abstract class Cmd
 		return EnNullEquality.NotNulls;
 
 	}
-
-
 
 
 

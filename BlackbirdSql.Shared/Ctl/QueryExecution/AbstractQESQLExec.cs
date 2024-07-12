@@ -1,5 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QESQLExec
+
 using System;
 using System.Data;
 using System.Threading;
@@ -19,76 +20,19 @@ using BlackbirdSql.Sys.Interfaces;
 namespace BlackbirdSql.Shared.Ctl.QueryExecution;
 
 
+// =========================================================================================================
+//										AbstractQESQLExec Class
+//
+/// <summary>
+/// Abstract query executor class.
+/// </summary>
+// =========================================================================================================
 public abstract class AbstractQESQLExec : IDisposable
 {
-	protected enum EnExecState
-	{
-		Initial,
-		Executing,
-		ExecutingBatch,
-		Cancelling,
-		Discarded
-	}
 
-
-
-	public const int C_Int1MB = 1048576;
-	public const int C_Int5MB = 5242880;
-	public const int int2GB = int.MaxValue;
-	// public const string C_PlanConnectionType = "FbConnection"; // "SqlCeConnection"
-
-
-
-
-
-	// A protected 'this' object lock
-	protected object _LockObject = new object();
-
-	protected IBQESQLBatchConsumer _BatchConsumer;
-	protected IDbConnection _Conn;
-	protected EnSqlSpecialActions _SpecialActions;
-	protected int _ExecTimeout;
-	private TransientSettings _ExecLiveSettings;
-	protected IBTextSpan _TextSpan;
-	protected EnSqlExecutionType _ExecutionType;
-	private bool _ExecOptionHasBeenChanged;
-	protected int _CurBatchIndex = -1;
-	protected QESQLBatch _CurBatch;
-	protected string _TextPlan = null;
-	protected EnScriptExecutionResult _ExecResult = EnScriptExecutionResult.Failure;
-	// private Thread _ExecThread;
-	// protected EnExecState _ExecState;
-
-
-	protected EnLauncherPayloadLaunchState _AsyncExecState = EnLauncherPayloadLaunchState.Inactive;
-	private CancellationTokenSource _AsyncExecCancelTokenSource = null;
-	private CancellationToken _AsyncExecCancelToken;
-	private CancellationTokenSource _AsyncLaunchCancelTokenSource = null;
-	private CancellationToken _AsyncLaunchCancelToken;
-
-	private Task<bool> _AsyncExecTask;
-
-
-
-
-	private static readonly TimeSpan S_SleepTimeout = new TimeSpan(0, 0, 0, 0, 50);
-
-
-
-
-
-	protected TransientSettings ExecLiveSettings => _ExecLiveSettings;
-
-	protected QueryManager QryMgr { get; set; }
-
-
-	public event ScriptExecutionCompletedEventHandler ExecutionCompletedEvent;
-	public event QESQLBatchExecutedEventHandler BatchExecutionCompletedEvent;
-	public event QESQLStartingBatchEventHandler StartingBatchExecutionEvent;
-
-	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
-
-
+	// ---------------------------------------------------
+	#region Constructors / Destructors - AbstractQESQLExec
+	// ---------------------------------------------------
 
 
 	public AbstractQESQLExec(QueryManager qryMgr)
@@ -100,7 +44,99 @@ public abstract class AbstractQESQLExec : IDisposable
 		};
 	}
 
-	public void AsyncExecuteQuery(IBTextSpan textSpan, EnSqlExecutionType executionType, IDbConnection conn,
+
+	public void Dispose()
+	{
+		// Tracer.Trace(GetType(), "QESQLExec.Dispose", "", null);
+		Dispose(true);
+	}
+
+
+	protected virtual void Dispose(bool disposing)
+	{
+		// Tracer.Trace(GetType(), "QESQLExec.Dispose", "bDisposing = {0}", bDisposing);
+		if (!disposing)
+			return;
+
+		Cleanup();
+		if (_CurBatch != null)
+		{
+			_CurBatch.Dispose();
+			_CurBatch = null;
+		}
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstractQESQLExec
+	// =========================================================================================================
+
+
+	// A protected 'this' object lock
+	protected readonly object _LockObject = new object();
+
+	private const int _SleepWaitTimeout = 50;
+
+	private CancellationToken _AsyncExecCancelToken;
+	private CancellationTokenSource _AsyncExecCancelTokenSource = null;
+	private EnLauncherPayloadLaunchState _AsyncExecState = EnLauncherPayloadLaunchState.Inactive;
+	private Task<bool> _AsyncExecTask;
+	private CancellationToken _AsyncLaunchCancelToken;
+	private CancellationTokenSource _AsyncLaunchCancelTokenSource = null;
+	protected IBQESQLBatchConsumer _BatchConsumer;
+	protected IDbConnection _Conn;
+	private QESQLBatch _CurBatch;
+	private int _CurBatchIndex = -1;
+	private bool _ExecOptionHasChanged;
+	protected EnSqlExecutionType _ExecutionType;
+	private TransientSettings _ExecLiveSettings;
+	protected EnScriptExecutionResult _ExecResult = EnScriptExecutionResult.Failure;
+	private int _ExecTimeout;
+	protected EnSqlSpecialActions _SpecialActions;
+	protected IBTextSpan _TextSpan;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - AbstractQESQLExec
+	// =========================================================================================================
+
+
+	protected TransientSettings ExecLiveSettings => _ExecLiveSettings;
+
+	protected QueryManager QryMgr { get; set; }
+
+
+
+	public event QESQLBatchExecutionCompletedEventHandler BatchExecutionCompletedEvent;
+	public event QESQLBatchExecutionStartEventHandler BatchExecutionStartEvent;
+	public event ScriptExecutionCompletedEventHandler ExecutionCompletedEvent;
+	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
+
+
+	#endregion Property Accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - AbstractQESQLExec
+	// =========================================================================================================
+
+
+	public void AsyncExecute(IBTextSpan textSpan, EnSqlExecutionType executionType, IDbConnection conn,
 		IBQESQLBatchConsumer batchConsumer, TransientSettings sqlLiveSettings)
 	{
 		if (_AsyncExecState != EnLauncherPayloadLaunchState.Inactive)
@@ -113,7 +149,6 @@ public abstract class AbstractQESQLExec : IDisposable
 		_Conn = conn;
 		_BatchConsumer = batchConsumer;
 		_ExecTimeout = sqlLiveSettings.EditorExecutionTimeout;
-		// Tracer.Trace(GetType(), "AsyncExecuteQuery()", " execOptions.EstimatedPlanOnly: " + execOptions.EstimatedPlanOnly);
 		_ExecLiveSettings = sqlLiveSettings.Clone() as TransientSettings;
 		_TextSpan = textSpan;
 		_ExecutionType = executionType;
@@ -138,35 +173,23 @@ public abstract class AbstractQESQLExec : IDisposable
 			| TaskCreationOptions.AttachedToParent;
 
 		Task<bool> payloadAsync() =>
-			ExecuteQueryAsync(_AsyncExecCancelToken);
+			ExecuteAsync(_AsyncExecCancelToken);
 
-		// Tracer.Trace(GetType(), "AsyncExecuteQuery()", "Launching ExecuteQueryAsync().");
+		// Tracer.Trace(GetType(), "AsyncExecute()", "Launching ExecuteAsync().");
 
 		// Fire and remember
 
 		// ------------------------------------------------------------------------- //
-		// ******************** Execution Point (3) - AbstractQESQLExec.AsyncExecuteQuery() ******************** //
+		// ******************** Execution Point (3) - AbstractQESQLExec.AsyncExecute() ******************** //
 		// ------------------------------------------------------------------------- //
 
 		_AsyncExecTask = Task.Factory.StartNew(payloadAsync, _AsyncLaunchCancelToken, creationOptions, TaskScheduler.Default).Unwrap();
 
-		/*
-		_ExecState = EnExecState.Initial;
 
-		_ExecThread = new(ExecuteQueryThread)
-		{
-			CurrentCulture = CultureInfo.CurrentCulture,
-			CurrentUICulture = CultureInfo.CurrentUICulture,
-			Name = "Batch Execution"
-		};
-
-
-		_ExecThread.Start();
-		*/
-
-		// Tracer.Trace(GetType(), "AsyncExecuteQuery()", "ExecuteQueryAsync() Launched.");
+		// Tracer.Trace(GetType(), "AsyncExecute()", "ExecuteAsync() Launched.");
 
 	}
+
 
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
@@ -183,7 +206,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 		if (_AsyncExecState == EnLauncherPayloadLaunchState.Pending)
 		{
-			_AsyncLaunchCancelTokenSource.Cancel();
+			_AsyncLaunchCancelTokenSource?.Cancel();
 			_AsyncExecTask = null;
 			return;
 		}
@@ -203,7 +226,7 @@ public abstract class AbstractQESQLExec : IDisposable
 				{
 					Tracer.Warning(GetType(), "Cancel()", "Timed out waiting for AsyncExecTask to complete. Forgetting about it. Timeout (ms): {0}.", currentTimeEpoch - startTimeEpoch);
 
-					HookupBatchWithConsumer(_CurBatch, _BatchConsumer, false);
+					HookupBatchConsumer(_CurBatch, _BatchConsumer, false);
 
 					_AsyncExecState = EnLauncherPayloadLaunchState.Discarded;
 					// _AsyncExecCancelToken = default;
@@ -218,7 +241,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 				try
 				{
-					_AsyncExecTask.Wait(S_SleepTimeout);
+					_AsyncExecTask.Wait(_SleepWaitTimeout);
 				}
 				catch { }
 
@@ -228,18 +251,6 @@ public abstract class AbstractQESQLExec : IDisposable
 
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLExec.Cancel: thread stopped gracefully", "", null);
 
-			/*
-			if (_Conn != null)
-			{
-				try
-				{
-					_Conn.Close();
-				}
-				catch
-				{
-				}
-			}
-			*/
 		}, default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 
 		// Tracer.Trace(GetType(), "QESQLExec.Cancel", "CANCELLATION LAUNCHED.");
@@ -248,26 +259,42 @@ public abstract class AbstractQESQLExec : IDisposable
 
 
 
-	public void Dispose()
+	protected virtual void Cleanup()
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.Dispose", "", null);
-		Dispose(bDisposing: true);
+		// Tracer.Trace(GetType(), "QESQLExec.Cleanup", "", null);
+		lock (_LockObject)
+			_AsyncExecState = EnLauncherPayloadLaunchState.Inactive;
+
+		// CleanupBatchCollection(_SetConnectionOptionsBatches);
+		// CleanupBatchCollection(_RestoreConnectionOptionsBatches);
+
+		_CurBatchIndex = -1;
+		if (_CurBatch != null && _BatchConsumer != null)
+		{
+			HookupBatchConsumer(_CurBatch, _BatchConsumer, false);
+		}
+
+		_BatchConsumer = null;
+		_ExecLiveSettings = null;
+
 	}
 
-	private async Task<bool> ExecuteQueryAsync(CancellationToken cancelToken)
+
+
+	private async Task<bool> ExecuteAsync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "ExecuteQueryAsync()");
-
-		if (cancelToken == default || cancelToken.IsCancellationRequested)
-			return false;
-
-		_AsyncExecState = EnLauncherPayloadLaunchState.Launching;
+		// Tracer.Trace(GetType(), "ExecuteAsync()");
 
 		try
 		{
+			if (cancelToken == default || cancelToken.IsCancellationRequested)
+				return false;
+
+			_AsyncExecState = EnLauncherPayloadLaunchState.Launching;
+
 			ProcessExecOptions(_Conn);
 
-			_ExecOptionHasBeenChanged = false;
+			_ExecOptionHasChanged = false;
 			_ExecResult = EnScriptExecutionResult.Failure;
 			_CurBatchIndex = 0;
 			_CurBatch.ExecTimeout = _ExecTimeout;
@@ -275,7 +302,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 			_CurBatch.SetSuppressProviderMessageHeaders(ExecLiveSettings.SuppressProviderMessageHeaders);
 
-			HookupBatchWithConsumer(_CurBatch, _BatchConsumer, true);
+			HookupBatchConsumer(_CurBatch, _BatchConsumer, true);
 
 			lock (_LockObject)
 			{
@@ -291,12 +318,12 @@ public abstract class AbstractQESQLExec : IDisposable
 
 
 			// ------------------------------------------------------------------------------- //
-			// ******************** Execution Point (4) - AbstractQESQLExec.ExecuteQueryAsync() ******************** //
+			// ******************** Execution Point (4) - AbstractQESQLExec.ExecuteAsync() ******************** //
 			// ------------------------------------------------------------------------------- //
 			if (_ExecResult == EnScriptExecutionResult.Success)
 				await ExecuteScriptAsync(cancelToken);
 
-			// Tracer.Trace(GetType(), "ExecuteQueryAsync()", "ExecuteScriptAsync() Completed. _ExecResult: {0}, _AsyncExecState: {1}.", _ExecResult, _AsyncExecState);
+			// Tracer.Trace(GetType(), "ExecuteAsync()", "ExecuteScriptAsync() Completed. _ExecResult: {0}, _AsyncExecState: {1}.", _ExecResult, _AsyncExecState);
 
 
 			bool discarded = false;
@@ -324,20 +351,8 @@ public abstract class AbstractQESQLExec : IDisposable
 				return false;
 			}
 
-			// Tracer.Trace(GetType(), "ExecuteQueryAsync()", "execution was NOT discarded");
-			// EstimatedExecutionPlan = gets the plan without executing the script. MS still seem to execute the script.
-			// We have bypassed that and get the plan at ExecuteReader above.
-			// ActualExecutionPlan = the WithExecutionPlan toggle is latched so we can get the actual because
-			// ExecuteReader has been called.
-			if (_ExecResult == EnScriptExecutionResult.Success
-				&& ExecLiveSettings.ExecutionType != EnSqlExecutionType.PlanOnly
-				&& ExecLiveSettings.WithActualPlan)
-			{
-				PostProcessSqlCeExecutionPlan();
-			}
 
-
-			if (_ExecOptionHasBeenChanged)
+			if (_ExecOptionHasChanged)
 				ProcessExecOptions(_Conn);
 
 			if (_ExecResult == EnScriptExecutionResult.Halted)
@@ -347,6 +362,10 @@ public abstract class AbstractQESQLExec : IDisposable
 		{
 			Diag.Dug(e);
 			_ExecResult = EnScriptExecutionResult.Failure;
+		}
+		finally
+		{
+			QryMgr.GetUpdateTransactionsStatus();
 		}
 
 
@@ -366,74 +385,60 @@ public abstract class AbstractQESQLExec : IDisposable
 			_AsyncExecCancelTokenSource?.Dispose();
 			_AsyncExecCancelTokenSource = null;
 			_AsyncExecState = EnLauncherPayloadLaunchState.Inactive;
+
+			QryMgr.GetUpdateTransactionsStatus();
 		}
 
-		// Tracer.Trace(GetType(), "ExecuteQueryAsync()", "Completed.");
+		// Tracer.Trace(GetType(), "ExecuteAsync()", "Completed.");
 
 		return true;
 	}
 
 
 
-	private void PostProcessSqlCeExecutionPlan()
+	protected abstract Task<EnScriptExecutionResult> ExecuteBatchStatementAsync(QESQLBatch batch, CancellationToken cancelToken);
+
+
+
+	protected abstract Task<bool> ExecuteScriptAsync(CancellationToken cancelToken);
+
+
+
+	private void HookupBatchConsumer(QESQLBatch batch, IBQESQLBatchConsumer batchConsumer, bool hookup)
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.PostProcessSqlCeExecutionPlan", "", null);
-	}
-
-
-
-	/// <summary>
-	/// We handle execution plan settings programmatically through FBCommand so these
-	/// SET commands won't apply even though they exist in SqlResources.
-	/// We just clear the batch collection after setting them for brevity.
-	/// </summary>
-	/// <param name="dbConnection"></param>
-	protected void ProcessExecOptions(IDbConnection dbConnection)
-	{
-		// Tracer.Trace(GetType(), "ProcessExecOptions()");
-
-		_ExecOptionHasBeenChanged = true;
-
-		_SpecialActions = EnSqlSpecialActions.None;
-
-		if (_ExecLiveSettings.ExecutionType == EnSqlExecutionType.PlanOnly)
-			_SpecialActions |= EnSqlSpecialActions.EstimatedPlanOnly;
-		else if (_ExecLiveSettings.ExecutionType == EnSqlExecutionType.QueryWithPlan)
-			_SpecialActions |= EnSqlSpecialActions.ActualPlanIncluded;
-
-		if (_ExecLiveSettings.ExecutionType != EnSqlExecutionType.PlanOnly
-			&& _ExecLiveSettings.TtsEnabled && !QryMgr.ConnectionStrategy.TtsActive)
+		// Tracer.Trace(GetType(), "QESQLExec.HookupBatchWithConsumer", "bHookUp = {0}", bHookUp);
+		if (batch != null && batchConsumer != null)
 		{
-			IDbTransaction transaction = dbConnection.BeginTransaction(_ExecLiveSettings.EditorExecutionIsolationLevel);
-			QryMgr.ConnectionStrategy.Transaction = transaction;
+			if (!hookup)
+			{
+				batch.ErrorMessageEvent -= batchConsumer.OnErrorMessage;
+				batch.MessageEvent -= batchConsumer.OnMessage;
+				batch.NewResultSetEventAsync -= batchConsumer.OnNewResultSetAsync;
+				batch.CancellingEvent -= batchConsumer.OnCancelling;
+				batch.FinishedResultSetEvent -= batchConsumer.OnFinishedProcessingResultSet;
+				batch.SpecialActionEvent -= batchConsumer.OnSpecialAction;
+				batch.StatementCompletedEvent -= batchConsumer.OnStatementCompleted;
+				batch.StatementCompletedEvent -= OnStatementCompleted;
+			}
+			else
+			{
+				batch.ErrorMessageEvent += batchConsumer.OnErrorMessage;
+				batch.MessageEvent += batchConsumer.OnMessage;
+				batch.NewResultSetEventAsync += batchConsumer.OnNewResultSetAsync;
+				batch.CancellingEvent += batchConsumer.OnCancelling;
+				batch.FinishedResultSetEvent += batchConsumer.OnFinishedProcessingResultSet;
+				batch.SpecialActionEvent += batchConsumer.OnSpecialAction;
+				batch.StatementCompletedEvent += OnStatementCompleted;
+				batch.StatementCompletedEvent += batchConsumer.OnStatementCompleted;
+			}
 		}
-
-		/*
-			This is a sample of what used to be here but isql is not available to us.
-
-			CleanupBatchCollection(_SetConnectionOptionsBatches);
-			CleanupBatchCollection(_RestoreConnectionOptionsBatches);
-			...
-			string cmd1, cmd2, cmd3, cmd4;
-
-			if (ExecLiveSettings.EstimatedPlanOnly)
-			{
-				cmd1 = ExecLiveSettings.EditorExecutionSetPlanXml.SqlCmd(true);
-				...
-			}
-			else if (ExecLiveSettings.WithExecutionPlan)
-			{
-				...
-			}
-			...
-		*/
 	}
 
 
 
-	protected async Task<bool> ProcessBatchStatementRepetitionAsync(IBsNativeDbStatementWrapper sqlStatement, CancellationToken cancelToken)
+	protected async Task<bool> ProcessBatchStatementAsync(IBsNativeDbStatementWrapper sqlStatement, CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "ProcessBatchStatementRepetitionAsync()", " ExecLiveSettings.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
+		// Tracer.Trace(GetType(), "ProcessBatchStatementAsync()", " ExecLiveSettings.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
 
 		bool continueProcessing = true;
 
@@ -468,18 +473,18 @@ public abstract class AbstractQESQLExec : IDisposable
 			bool discarded = false;
 			try
 			{
-				OnStartBatchExecution(_CurBatch);
+				OnBatchExecutionStart(_CurBatch);
 
 				// ---------------------------------------------------------------------------------------------- //
-				// ******************** Execution Point (8) - AbstractQESQLExec.ProcessBatchStatementRepetitionAsync() ******************** //
+				// ******************** Execution Point (8) - AbstractQESQLExec.ProcessBatchStatementAsync() ******************** //
 				// ---------------------------------------------------------------------------------------------- //
-				scriptExecutionResult = await ExecuteBatchRepetitionAsync(_CurBatch, cancelToken);
+				scriptExecutionResult = await ExecuteBatchStatementAsync(_CurBatch, cancelToken);
 			}
 			finally
 			{
 				lock (_LockObject)
 				{
-					// Tracer.Trace(GetType(), "ProcessBatchStatementRepetitionAsync()", "execState = {0}", _ExecState);
+					// Tracer.Trace(GetType(), "ProcessBatchStatementAsync()", "execState = {0}", _ExecState);
 					if (cancelToken.IsCancellationRequested || _AsyncExecState == EnLauncherPayloadLaunchState.Discarded)
 					{
 						scriptExecutionResult = EnScriptExecutionResult.Cancel;
@@ -504,7 +509,8 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 
 		if (scriptExecutionResult == EnScriptExecutionResult.Cancel
-			|| scriptExecutionResult == EnScriptExecutionResult.Halted)
+			|| scriptExecutionResult == EnScriptExecutionResult.Halted
+			|| scriptExecutionResult == EnScriptExecutionResult.Failure)
 		{
 			_ExecResult = scriptExecutionResult;
 			continueProcessing = false;
@@ -519,48 +525,39 @@ public abstract class AbstractQESQLExec : IDisposable
 
 
 
-	protected void HookupBatchWithConsumer(QESQLBatch batch, IBQESQLBatchConsumer batchConsumer, bool bHookUp)
+	/// <summary>
+	/// We handle execution plan settings programmatically through FBCommand so these
+	/// SET commands won't apply even though they exist in SqlResources.
+	/// We just clear the batch collection after setting them for brevity.
+	/// </summary>
+	/// <param name="dbConnection"></param>
+	private void ProcessExecOptions(IDbConnection dbConnection)
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.HookupBatchWithConsumer", "bHookUp = {0}", bHookUp);
-		if (batch != null && batchConsumer != null)
-		{
-			if (!bHookUp)
-			{
-				batch.ErrorMessageEvent -= batchConsumer.OnErrorMessage;
-				batch.MessageEvent -= batchConsumer.OnMessage;
-				batch.NewResultSetEventAsync -= batchConsumer.OnNewResultSetAsync;
-				batch.CancellingEvent -= batchConsumer.OnCancelling;
-				batch.FinishedResultSetEvent -= batchConsumer.OnFinishedProcessingResultSet;
-				batch.SpecialActionEvent -= batchConsumer.OnSpecialAction;
-				batch.StatementCompletedEvent -= batchConsumer.OnStatementCompleted;
-				batch.StatementCompletedEvent -= OnStatementCompleted;
-			}
-			else
-			{
-				batch.ErrorMessageEvent += batchConsumer.OnErrorMessage;
-				batch.MessageEvent += batchConsumer.OnMessage;
-				batch.NewResultSetEventAsync += batchConsumer.OnNewResultSetAsync;
-				batch.CancellingEvent += batchConsumer.OnCancelling;
-				batch.FinishedResultSetEvent += batchConsumer.OnFinishedProcessingResultSet;
-				batch.SpecialActionEvent += batchConsumer.OnSpecialAction;
-				batch.StatementCompletedEvent += OnStatementCompleted;
-				batch.StatementCompletedEvent += batchConsumer.OnStatementCompleted;
-			}
-		}
-	}
+		// Tracer.Trace(GetType(), "ProcessExecOptions()");
 
-	protected abstract Task<bool> ExecuteScriptAsync(CancellationToken cancelToken);
+		_ExecOptionHasChanged = true;
 
-	protected abstract Task<EnScriptExecutionResult> ExecuteBatchRepetitionAsync(QESQLBatch batch, CancellationToken cancelToken);
+		_SpecialActions = EnSqlSpecialActions.None;
 
-	protected virtual void OnStartBatchExecution(QESQLBatch batch)
-	{
-		// Tracer.Trace(GetType(), "QESQLExec.OnStartBatchExecution", "m_curBatchIndex = {0}", _CurBatchIndex);
-		StartingBatchExecutionEvent?.Invoke(this, new QESQLStartingBatchEventArgs(-1, batch));
+		if (_ExecLiveSettings.ExecutionType == EnSqlExecutionType.PlanOnly)
+			_SpecialActions |= EnSqlSpecialActions.EstimatedPlanOnly;
+		else if (_ExecLiveSettings.ExecutionType == EnSqlExecutionType.QueryWithPlan)
+			_SpecialActions |= EnSqlSpecialActions.ActualPlanIncluded;
 	}
 
 
-	protected virtual void OnBatchExecutionCompleted(QESQLBatch batch, EnScriptExecutionResult batchResult)
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - AbstractQESQLExec
+	// =========================================================================================================
+
+
+	private void OnBatchExecutionCompleted(QESQLBatch batch, EnScriptExecutionResult batchResult)
 	{
 		// Tracer.Trace(GetType(), "QESQLExec.OnBatchExecutionCompleted", "m_curBatchIndex = {0}, batchResult = {1}, _ExecState = {2}", _CurBatchIndex, batchResult, _ExecState);
 		if (BatchExecutionCompletedEvent != null)
@@ -574,13 +571,12 @@ public abstract class AbstractQESQLExec : IDisposable
 	}
 
 
-	public virtual void OnStatementCompleted(object sender, QESQLStatementCompletedEventArgs args)
+	private void OnBatchExecutionStart(QESQLBatch batch)
 	{
-		// Tracer.Trace(GetType(), "AbstractQESQLExec.OnStatementCompleted", "sender: {0}, args.RecordCount: {1}", sender, args.RecordCount);
-
-		// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
-		StatementCompletedEvent?.Invoke(sender, args);
+		// Tracer.Trace(GetType(), "QESQLExec.OnStartBatchExecution", "m_curBatchIndex = {0}", _CurBatchIndex);
+		BatchExecutionStartEvent?.Invoke(this, new QESQLBatchExecutionStartEventArgs(-1, batch));
 	}
+
 
 
 	protected virtual void OnExecutionCompleted(EnScriptExecutionResult execResult)
@@ -594,7 +590,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 		try
 		{
-			HookupBatchWithConsumer(_CurBatch, _BatchConsumer, bHookUp: false);
+			HookupBatchConsumer(_CurBatch, _BatchConsumer, false);
 		}
 		catch (Exception ex)
 		{
@@ -622,39 +618,36 @@ public abstract class AbstractQESQLExec : IDisposable
 	}
 
 
-	protected virtual void Cleanup()
+
+	public virtual void OnStatementCompleted(object sender, QESQLStatementCompletedEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.Cleanup", "", null);
-		lock (_LockObject)
-			_AsyncExecState = EnLauncherPayloadLaunchState.Inactive;
+		// Tracer.Trace(GetType(), "AbstractQESQLExec.OnStatementCompleted", "sender: {0}, args.RecordCount: {1}", sender, args.RecordCount);
 
-		// CleanupBatchCollection(_SetConnectionOptionsBatches);
-		// CleanupBatchCollection(_RestoreConnectionOptionsBatches);
-
-		_CurBatchIndex = -1;
-		if (_CurBatch != null && _BatchConsumer != null)
-		{
-			HookupBatchWithConsumer(_CurBatch, _BatchConsumer, bHookUp: false);
-		}
-
-		_BatchConsumer = null;
-		_ExecLiveSettings = null;
-
+		// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
+		StatementCompletedEvent?.Invoke(sender, args);
 	}
 
-	protected virtual void Dispose(bool bDisposing)
-	{
-		// Tracer.Trace(GetType(), "QESQLExec.Dispose", "bDisposing = {0}", bDisposing);
-		if (bDisposing)
-		{
-			Cleanup();
-			if (_CurBatch != null)
-			{
-				_CurBatch.Dispose();
-				_CurBatch = null;
-			}
 
-			_LockObject = null;
-		}
+	#endregion Event Handling
+
+
+
+
+
+	// =========================================================================================================
+	#region Sub-Classes - AbstractQESQLExec
+	// =========================================================================================================
+
+
+	protected enum EnExecState
+	{
+		Initial,
+		Executing,
+		ExecutingBatch,
+		Cancelling,
+		Discarded
 	}
+
+
+	#endregion Sub-Classes
 }

@@ -1,5 +1,13 @@
 # Getting Started Guide
 
+### Configuring the App.Config
+* __Using BlackbirdSql's Solution Validation Utility__: On older versions of the `FirebirdSql.Data.FirebirdClient` and `EntityFramework.Firebird` packages your `App.config` will not be updated with the correct settings after adding the packages.</br>
+You can run the `BlackbirdSql Solution Validation` utility from the context menu of any Firebird node in Server Explorer to update your solution projects' App.config files to the correct settings applicable to each project.
+* __HRESULT reference error:__ As of BlackbirdSql release 13.0.0.0 the Firebird and EntityFramework6 assemblies are shipped with the extension. This is to ensure that design time models and wizards are guaranteed to work even if your projects' referenced versions of the EntityFramework versions differ.</br>
+Your projects' referenced versions will still be used at runtime, however you may receive an `HRESULT` error after the upgrade.</br>
+If rebuilding your projects and then restarting the IDE does not resolve the issue it may be necessary to perform a once-off deletion of the `.vs` folder and then a rebuild for the new system to work correctly at design time.
+</br>
+
 ## Deconstructing connection naming, equivalency and SE integration
 
 If you're finding BlackbirdSql's RunningConnectionTable management of connections confusing, this document will go some way towards explaining some of the behaviour.
@@ -35,7 +43,7 @@ If you do not want Application and EntityDataModel connections loaded into the R
 </br>
 
 #### Configured Connections, Session Connections and Ownership
-Configured connections are connections with persistence. These include connections with owner ServerExplorer, ExternalUtility, EntityDataModel and Application.</br>
+Configured connections are connections with persistence. These include connections with owner `ServerExplorer`, `ExternalUtility`, `EntityDataModel` and `Application`.</br>
 Session connections are connections that are owned by SqlEditor or the SE. Whenever a connection is either an SE connection or a connection not in it's persistent state of ownership, ie. that has been modified during a solution session, it converts to a Session connection.</br>
 The distinction between Configured and Session connections is unimportant and has no effect on a connection's behavior, but it does effect it's DatasetKey format.
 </br></br>

@@ -8,9 +8,6 @@ namespace BlackbirdSql.Sys.Model;
 
 public class NativeDatabaseInfoProxy
 {
-	private readonly object _NativeObject = null;
-
-	public object NativeObject => _NativeObject;
 
 	public NativeDatabaseInfoProxy(DbConnection connection)
 	{
@@ -21,4 +18,10 @@ public class NativeDatabaseInfoProxy
 	{
 		_NativeObject = NativeDb.DbConnectionSvc.CreateDatabaseInfoObject((DbConnection)connection);
 	}
+
+
+
+	private readonly object _NativeObject = null;
+
+	public object NativeObject => _NativeObject;
 }

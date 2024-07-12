@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
-using Microsoft.VisualStudio.LanguageServer.Client;
 
 
 
@@ -28,7 +27,10 @@ public class DbConnectionService : SBsNativeDbConnection, IBsNativeDbConnection
 	{
 	}
 
-	public static DbConnectionService CreateInstance() => new();
+	public static IBsNativeDbConnection EnsureInstance() => _Instance ??= new DbConnectionService();
+
+
+	public static IBsNativeDbConnection _Instance = null;
 
 
 	public object CreateDatabaseInfoObject(DbConnection @this)

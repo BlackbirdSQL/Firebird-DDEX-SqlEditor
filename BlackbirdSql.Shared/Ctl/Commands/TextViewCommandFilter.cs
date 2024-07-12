@@ -5,11 +5,10 @@
 
 using System;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Core;
+using BlackbirdSql.Shared.Events;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Shared.Events;
 
 
 

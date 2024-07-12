@@ -81,18 +81,6 @@ public abstract class PropertySet
 	}
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts a key and value to a KeyValuePair<string, string>.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static KeyValuePair<string, string> StringPair(string key, string value)
-	{
-		return new KeyValuePair<string, string>(key, value);
-	}
-
-
-
 	#endregion Static Methods
 
 

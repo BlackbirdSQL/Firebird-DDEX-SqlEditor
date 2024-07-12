@@ -153,9 +153,9 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to New SQL &amp;Query.
         /// </summary>
-        public static string CommandProvider_NewSqlQuery {
+        public static string CommandProvider_NewQuery {
             get {
-                return ResourceManager.GetString("CommandProvider_NewSqlQuery", resourceCulture);
+                return ResourceManager.GetString("CommandProvider_NewQuery", resourceCulture);
             }
         }
         
@@ -565,7 +565,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} [{1}] {2}.
+        ///   Looks up a localized string similar to [{0}] {1}.
         /// </summary>
         public static string RunningConnectionTableEdmDataset {
             get {
@@ -574,7 +574,25 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} [{1}] {2}.
+        ///   Looks up a localized string similar to {0} | {1}.
+        /// </summary>
+        public static string RunningConnectionTableFullDisplayNameFormat {
+            get {
+                return ResourceManager.GetString("RunningConnectionTableFullDisplayNameFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} {1}.
+        /// </summary>
+        public static string RunningConnectionTableGlyphFormat {
+            get {
+                return ResourceManager.GetString("RunningConnectionTableGlyphFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}] {1}.
         /// </summary>
         public static string RunningConnectionTableProjectDatasetId {
             get {
@@ -583,7 +601,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} {1}.
+        ///   Looks up a localized string similar to {0}.
         /// </summary>
         public static string RunningConnectionTableUtilityDatasetId {
             get {

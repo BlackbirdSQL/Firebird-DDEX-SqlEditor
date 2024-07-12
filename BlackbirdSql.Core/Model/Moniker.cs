@@ -76,7 +76,7 @@ public class Moniker
 
 		if (@nodeObj == null)
 		{
-			ArgumentNullException ex = new($"{explorerConnection.DisplayName} Object is null");
+			ArgumentNullException ex = new($"{explorerConnection.DerivedDisplayName()} Object is null");
 			Diag.Dug(ex);
 			return;
 		}
@@ -87,13 +87,13 @@ public class Moniker
 		{
 			case EnModelTargetType.QueryScript:
 			case EnModelTargetType.AlterScript:
-				objType = EnModelObjectType.NewSqlQuery;
+				objType = EnModelObjectType.NewQuery;
 				break;
 			case EnModelTargetType.DesignData:
 				objType = EnModelObjectType.NewDesignerQuery;
 				break;
 			default:
-				objType = EnModelObjectType.NewSqlQuery;
+				objType = EnModelObjectType.NewQuery;
 				break;
 		}
 

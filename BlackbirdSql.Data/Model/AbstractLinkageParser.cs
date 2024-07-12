@@ -4,15 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Data.Properties;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.Data.Services;
 
 
 namespace BlackbirdSql.Data.Model;
@@ -32,6 +31,32 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Protected default .ctor for creating a Transient instance with restrictions.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected AbstractLinkageParser(string connectionString, string[] restrictions) : base()
+	{
+		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
+
+		if (restrictions == null || restrictions.Length < 3 || string.IsNullOrWhiteSpace(restrictions[2]))
+		{
+			Diag.ThrowException(new ArgumentNullException(nameof(restrictions), "Value is null or index 2 is null."));
+		}
+
+
+		_ConnectionString = connectionString;
+		_ConnectionUrl = ApcManager.CreateConnectionUrl(_ConnectionString);
+		_TransientRestrictions = (string[])restrictions.Clone();
+
+		lock(_LockGlobal)
+			_TransientInstance = this;
+
+		CreateLinkTables();
+	}
+
 	/// <summary>
 	/// Protected default .ctor for creating an unregistered clone.
 	/// Callers must make a call to EnsureLoaded() for rhs beforehand.
@@ -42,11 +67,12 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		// Callers must EnsureLoaded().
 
+		_IsIntransient = rhs._IsIntransient;
+		_ConnectionString = rhs._ConnectionString;
 		_ConnectionUrl = rhs._ConnectionUrl;
 		_Sequences = rhs._Sequences.Copy();
 		_Triggers = rhs._Triggers.Copy();
 
-		_TransientString = rhs._TransientString;
 		_LinkStage = EnLinkStage.Completed;
 	}
 
@@ -58,37 +84,30 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	/// <param name="connection"></param>
 	// ---------------------------------------------------------------------------------
-	protected AbstractLinkageParser(IDbConnection connection, AbstractLinkageParser rhs) : base()
+	protected AbstractLinkageParser(IVsDataExplorerConnection root, AbstractLinkageParser rhs) : base()
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
 		bool rhsValid = rhs != null && rhs.Loaded;
 
 		_Instances ??= [];
-		_Instances.Add(connection, this);
+		_Instances.Add(root, this);
 
-		// Use reflection. The connection may not be in our app domain.
 
-		// connection.Disposed += OnConnectionDisposed;
-		Reflect.AddEventHandler(this, "OnConnectionDisposed", connection, "Disposed");
+		_InstanceRoot = root;
 
-		// ((FbConnection)connection).StateChange += OnConnectionStateChange;
-		Reflect.AddEventHandler(this, "OnConnectionStateChange", connection, "StateChange");
-
-		_InstanceConnection = connection;
-		_TransientString = connection.ConnectionString;
 
 		if (!rhsValid)
 		{
-			_DbConnection = new FbConnection(connection.ConnectionString);
-			_ConnectionUrl = ApcManager.CreateConnectionUrl(_DbConnection);
-
-			_DbConnection.Open();
+			_ConnectionString = root.DecryptedConnectionString();
+			_ConnectionUrl = ApcManager.CreateConnectionUrl(_ConnectionString);
 
 			CreateLinkTables();
 		}
 		else
 		{
+			_IsIntransient = rhs._IsIntransient;
+			_ConnectionString = rhs._ConnectionString;
 			_ConnectionUrl = rhs._ConnectionUrl;
 			_Sequences = rhs._Sequences.Copy();
 			_Triggers = rhs._Triggers.Copy();
@@ -113,13 +132,11 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </param>
 	/// <returns>The distinctly unique parser associated with the db connection.</returns>
 	// ---------------------------------------------------------------------------------
-	protected static AbstractLinkageParser GetInstance(IDbConnection connection)
+	protected static AbstractLinkageParser GetInstanceImpl(IVsDataExplorerConnection root)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
 
-		AbstractLinkageParser parser = null;
-
-		if (connection == null)
+		if (root == null)
 		{
 			ArgumentNullException ex = new ArgumentNullException(Resources.ExceptionAttemptToAddNullConnection);
 			Diag.Dug(ex);
@@ -128,13 +145,12 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
 
-		if (_Instances != null && _Instances.TryGetValue(connection, out object parserObject))
+		if (_Instances == null || !_Instances.TryGetValue(root, out IBsNativeDbLinkageParser parser))
 		{
-			parser = (AbstractLinkageParser)parserObject;
-			// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)", "Found existing connection");
+			parser = null;
 		}
 
-		return parser;
+		return (AbstractLinkageParser)parser;
 	}
 
 
@@ -150,77 +166,67 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	}
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Disposes of a parser..
+	/// Disposes of a parser.
 	/// </summary>
-	/// <param name="isValidTransient">
-	/// False if this is a user refresh and a transient parser should not be stored else
-	/// True.
+	/// <param name="disposing">
+	/// If disposing is set to true, then all parsers with weak equivalency will
+	/// be tagged as intransient, meaning their trigger linkage databases cannot
+	/// be copied to another parser with weak equivalency. 
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
-	protected override bool Dispose(bool isValidTransient)
+	// -------------------------------------------------------------------------
+	protected override bool Dispose(bool disposing)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "isValidTransient: {0}.", isValidTransient);
 
-		if (_InstanceConnection == null || _Instances == null)
+		if (_InstanceRoot == null || _Instances == null)
 			return false;
 
 		ApcManager.InvalidateRctManager();
 
-		if (!ApcManager.IdeShutdownState && isValidTransient && _Enabled && !_IsIntransient
-			&&  (Loaded  || (!_Disabling && _LinkStage >= EnLinkStage.TriggerDependenciesLoaded)))
-		{
-			if (!Loaded)
-				EnsureLoaded();
+		Disable();
 
-			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Creating _TransientParser.");
-
-			_TransientParser = (AbstractLinkageParser)Clone();
-		}
-		else
-		{
-			Disable();
-		}
-
-		if (!isValidTransient)
-		{
-			_TransientParser = null;
-			InvalidateEquivalentParsers(_InstanceConnection.ConnectionString);
-		}
+		if (disposing)
+			InvalidateEquivalentParsers(_ConnectionString);
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "DISPOSING OF PARSER. isValidTransient: {0}.", isValidTransient);
 
-		_Instances.Remove(_InstanceConnection);
+		_Instances.Remove(_InstanceRoot);
 
 		if (_Instances.Count == 0)
 			_Instances = null;
 
-		_InstanceConnection = null;
-		_DbConnection = null;
+		_InstanceRoot = null;
+		_ConnectionString = null;
 
 		return true;
 	}
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Disposes of a parser given a DbConnection connection.
+	/// Disposes of a parser given an IVsDataConnection site.
 	/// </summary>
 	/// <param name="site">
 	/// The IVsDataConnection explorer connection object
 	/// </param>
-	/// <param name="isValidTransient">
-	/// False if this is a user refresh and a transient parser should not be stored else
-	/// True.
+	/// <param name="disposing">
+	/// If disposing is set to true, then all parsers with weak equivalency will
+	/// be tagged as intransient, meaning their trigger linkage databases cannot
+	/// be copied to another parser with weak equivalency. 
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
-	public static bool DisposeInstance(IDbConnection connection)
+	// -------------------------------------------------------------------------
+	protected static bool DisposeInstanceImpl(IVsDataExplorerConnection root, bool disposing)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
 
 		lock (_LockGlobal)
 		{
-			if (_Instances == null || !_Instances.TryGetValue(connection, out object obj))
+			if (_Instances == null || !_Instances.TryGetValue(root, out IBsNativeDbLinkageParser obj))
 				return false;
 
 
@@ -228,38 +234,13 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				return false;
 
 			// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)", "isValidTransient: {0}.", isValidTransient);
-			bool isValidTransient = parser.Loaded;
+			// isValidTransient &= parser.Loaded;
 
 
-			parser.Dispose(isValidTransient);
+			parser.Dispose(disposing);
 		}
 
 		return true;
-	}
-
-
-	public static bool DisposeAll()
-	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeAll()");
-
-		bool result = false;
-
-		lock (_LockGlobal)
-		{
-			if (_Instances == null || _Instances.Count == 0)
-				return false;
-
-			foreach (object obj in _Instances)
-			{
-
-				if (obj is not AbstractLinkageParser parser)
-					continue;
-
-				result |= parser.Dispose(false);
-			}
-		}
-
-		return result;
 	}
 
 
@@ -303,15 +284,13 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	private static IBsNativeProviderSchemaFactory _SchemaFactory = null;
 
-	protected static AbstractLinkageParser _TransientParser = null;
-
-	protected bool _IsIntransient = false;
-	protected string _TransientString = null;
-
 	/// <summary>
 	/// The working db connection associated with this LinkageParser
 	/// </summary>
-	protected DbConnection _DbConnection = null;
+	protected string _ConnectionString = null;
+
+	protected static IBsNativeDbLinkageParser _TransientInstance = null;
+	protected string[] _TransientRestrictions = null;
 
 	/// <summary>
 	/// The SE db connection associated with this LinkageParser. This object may be
@@ -321,7 +300,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// Also, because of the possible assembly mismatch, subscribing to it's dispose
 	/// event has to done through Reflection.
 	/// </summary>
-	protected IDbConnection _InstanceConnection = null;
+	protected IVsDataExplorerConnection _InstanceRoot = null;
 
 
 	protected string _ConnectionUrl = null;
@@ -335,6 +314,17 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected bool _Disabling = false;
 
+
+	/// <summary>
+	/// Identfies if a LinkageParser as intransient. Intransient parsers
+	/// cannot be used as weak equivalent parsers for cloning because at
+	/// some point one of the equivalent parsers was disposed and therefore
+	/// all equivalent parsers were invalidated.
+	/// We do this because a disposed parser was likely due to a refresh
+	/// and we do not want the new refreshed parser copying an equivalent.
+	/// </summary>
+	private bool _IsIntransient = false;
+
 	/// <summary>
 	/// The total elapsed time in milliseconds that the parser was actively
 	/// building the linkage tables. 
@@ -345,7 +335,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// Per connection LinkageParser instances xref.
 	/// _Instances must be accessed within _LockGlobal code logic.
 	/// </summary>
-	private static Dictionary<IDbConnection, object> _Instances = null;
+	private static Dictionary<IVsDataExplorerConnection, IBsNativeDbLinkageParser> _Instances = null;
 
 
 	/// <summary>
@@ -381,7 +371,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// <summary>
 	/// The final populated generator table with trigger linkage.
 	/// </summary>
-	private DataTable _Sequences = null;
+	protected DataTable _Sequences = null;
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -409,17 +399,9 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// =========================================================================================================
 
 
-	/// <summary>
-	/// Getter inidicating whether or not the parser's db connection is active and open.
-	/// </summary>
-	protected bool ConnectionActive => _DbConnection != null
-		&& (_DbConnection.State & ConnectionState.Open) != 0
-		&& (_DbConnection.State & (ConnectionState.Closed | ConnectionState.Broken)) == 0;
+	public override string ConnectionString => _ConnectionString;
 
-
-	public override string ConnectionString => _InstanceConnection?.ConnectionString;
-
-	public string TransientString => string.IsNullOrEmpty(ConnectionString) ? _TransientString : ConnectionString;
+	public bool IsTransient => _TransientRestrictions != null;
 
 
 	/// <summary>
@@ -465,7 +447,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// going to keep a permanent instance of IBProviderSchemaFactory, because tracing
 	/// of threads is inconsistent in debug vs normal runs.
 	/// </remarks>
-	private static IBsNativeProviderSchemaFactory SchemaFactory => _SchemaFactory ??= ProviderSchemaFactoryService.CreateInstance();
+	private static IBsNativeProviderSchemaFactory SchemaFactory => _SchemaFactory ??= ProviderSchemaFactoryService.EnsureInstance();
 
 
 
@@ -811,13 +793,13 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// Performs an external full SELECT of the database system generator table.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected async Task<DataTable> GetRawGeneratorSchemaAsync(CancellationToken cancelToken)
+	protected async Task<DataTable> GetRawGeneratorSchemaAsync(IDbConnection connection, CancellationToken cancelToken)
 	{
 		Requesting = true;
 
 		try
 		{
-			_RawGenerators = await SchemaFactory.GetSchemaAsync(_DbConnection, "RawGenerators", null, cancelToken);
+			_RawGenerators = await SchemaFactory.GetSchemaAsync(connection, "RawGenerators", null, cancelToken);
 		}
 		catch (Exception ex)
 		{
@@ -845,13 +827,21 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// the overall fetch time by +-80%.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected async Task<DataTable> GetRawTriggerDependenciesSchemaAsync(CancellationToken cancelToken)
+	protected async Task<DataTable> GetRawTriggerDependenciesSchemaAsync(IDbConnection connection, CancellationToken cancelToken)
 	{
 		Requesting = true;
 
 		try
 		{
-			_RawTriggerDependencies = await SchemaFactory.GetSchemaAsync(_DbConnection, "RawTriggerDependencies", null, cancelToken);
+			string[] restrictions = null;
+
+			if (_TransientRestrictions != null)
+			{
+				restrictions = new string[4];
+				restrictions[2] = _TransientRestrictions[2];
+			}
+
+			_RawTriggerDependencies = await SchemaFactory.GetSchemaAsync(connection, "RawTriggerDependencies", restrictions, cancelToken);
 		}
 		catch (Exception ex)
 		{
@@ -877,13 +867,21 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// Performs an external full SELECT of the database system trigger table.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected async Task<DataTable> GetRawTriggerSchemaAsync(CancellationToken cancelToken)
+	protected async Task<DataTable> GetRawTriggerSchemaAsync(IDbConnection connection, CancellationToken cancelToken)
 	{
 		Requesting = true;
 
 		try
 		{
-			_RawTriggers = await SchemaFactory.GetSchemaAsync(_DbConnection, "RawTriggers", null, cancelToken);
+			string[] restrictions = null;
+
+			if (_TransientRestrictions != null)
+			{
+				restrictions = new string[4];
+				restrictions[2] = _TransientRestrictions[2];
+			}
+
+			_RawTriggers = await SchemaFactory.GetSchemaAsync(connection, "RawTriggers", restrictions, cancelToken);
 		}
 		catch (Exception ex)
 		{
@@ -941,32 +939,17 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 
-	protected static AbstractLinkageParser FindEquivalentParser(IDbConnection connection)
+	protected static AbstractLinkageParser FindEquivalentParser(IVsDataExplorerConnection root, bool mustBeLoaded = false)
 	{
-		if (_TransientParser != null && !_TransientParser._IsIntransient)
-		{
-			if (ApcManager.CreateConnectionUrl(connection) == _TransientParser._ConnectionUrl)
-			{
-				// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Using up _TransientParser.");
-
-				AbstractLinkageParser parser = _TransientParser;
-				_TransientParser = null;
-
-				return parser;
-			}
-		}
-
 		// if (_TransientParser != null)
 		//	Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Clearing unused _TransientParser");
 
-		_TransientParser = null;
-
-		return FindEquivalentParser(connection.ConnectionString);
+		return FindEquivalentParser(root.DecryptedConnectionString(), mustBeLoaded);
 	}
 
 
 
-	protected static AbstractLinkageParser FindEquivalentParser(string connectionString)
+	protected static AbstractLinkageParser FindEquivalentParser(string connectionString, bool mustBeLoaded = false)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
 
@@ -979,15 +962,18 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Searching instances. Count: {0}.", _Instances.Count);
 
 
-		foreach (KeyValuePair<IDbConnection, object> pair in _Instances)
+		foreach (KeyValuePair< IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
 		{
 			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
 
 			if (!parser._Enabled || parser._IsIntransient)
 				continue;
 
-			if (ApcManager.IsWeakConnectionEquivalency(connectionString, pair.Key.ConnectionString))
-				return parser;
+			if (ApcManager.IsWeakConnectionEquivalency(connectionString, parser.ConnectionString))
+			{
+				if (!mustBeLoaded || parser.Loaded)
+					return parser;
+			}
 		}
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found in instances. Count: {0}", _Instances.Count);
@@ -1003,15 +989,6 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		string connectionUrl = null;
 
-		if (_TransientParser != null && !_TransientParser._IsIntransient)
-		{
-			connectionUrl = ApcManager.CreateConnectionUrl(connectionString);
-
-			if (connectionUrl == _TransientParser._ConnectionUrl)
-				return _TransientParser;
-		}
-
-
 		if (_Instances == null)
 			return null;
 
@@ -1020,7 +997,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "Searching instances. connectionUrl: {0}.", connectionUrl);
 
 
-		foreach (KeyValuePair<IDbConnection, object> pair in _Instances)
+		foreach (KeyValuePair< IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
 		{
 			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
 
@@ -1211,10 +1188,16 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
 
-		if (_Instances == null)
+		lock (_LockGlobal)
 		{
-			// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Not found. _Instances is null.");
-			return;
+			if (_TransientInstance != null && ApcManager.IsWeakConnectionEquivalency(connectionString, _TransientInstance.ConnectionString))
+				_TransientInstance = null;
+
+			if (_Instances == null)
+			{
+				// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Not found. _Instances is null.");
+				return;
+			}
 		}
 
 
@@ -1222,7 +1205,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		int i = -1;
 
-		foreach (KeyValuePair<IDbConnection, object> pair in _Instances)
+		foreach (KeyValuePair< IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
 		{
 			i++;
 			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
@@ -1230,7 +1213,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			if (!parser._Enabled)
 				continue;
 
-			if (ApcManager.IsWeakConnectionEquivalency(connectionString, pair.Key.ConnectionString))
+			if (ApcManager.IsWeakConnectionEquivalency(connectionString, parser.ConnectionString))
 				parser._IsIntransient = true;
 		}
 
@@ -1270,17 +1253,6 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// =========================================================================================================
 	#region Event handlers - AbstractLinkageParser
 	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Event handler for handling the Disposed event of a connection, removing the xref
-	/// in the <see cref="_Instances"/> dictionary.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected abstract void OnConnectionDisposed(object sender, EventArgs e);
-
-	protected abstract void OnConnectionStateChange(object sender, StateChangeEventArgs e);
 
 
 	#endregion Event handlers

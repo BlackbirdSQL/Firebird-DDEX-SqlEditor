@@ -2,11 +2,22 @@
 
 ## Change log
 
-### v12.0.2.0 Converted query execution to use the TaskScheduler.
+### v13.0.0.0 Ring-fenced the Firebird assemblies in the IDE Extension context.
 __New/ Enhancements__</br>
--- Query execution now uses the TaskScheduler instead of creating threads. All database access is now performed asynchronously. This also improves query excution cancellation using a common CancellationToken which is carried through to the disk storage readers and native database engine functions.</br>
+-- Accessing the Firebird assemblies at design time will now always use the extension's shipped assemblies. This means design time wizards are guaranteed to work even if a project's referenced versions differ. Your projects' referenced versions will still be used at runtime, however if you're receiving an HRESULT design time error it may be necessary to perform a once-off deletion of the .vs folder and a rebuild for the new system to work correctly at design time.</br>
+-- Optimistic trigger linkage. Schema requests where only a subset of triggers are required no longer wait for the full trigger linkage of a database to complete. The full linkage task will still be launched but a satellite task will be launched to satisfy the request in the interim. Typically this will take place when a table's columns, indexes, foreign keys or associated triggers are requested and the database trigger linkage tables are not yet available.</br>
+-- Query execution now uses the TaskScheduler instead of creating threads. All database access is now performed asynchronously. This also improves query execution cancellation using a common CancellationToken which is carried through to the disk storage readers and native database engine functions.</br>
+-- Any open edmx models are now auto-closed by default if at least one of the models is not on-screen when a project is closed. This is to circumvent a Visual Studio bug that causes the EDM sub-system to fail when switching to hidden models, requiring an IDE session restart. The feature can be disabled in user options.</br>
+-- The tab tooltips for saved .fbsql queries now display the full path to the saved query.</br>
+-- Results tabs now provide additional information. The SQL result tab displays the number of output rows and number of SQL statements. Statistics results tabs display the number of trials. The messages tab displays the number of messages.</br>
+-- Connection display names now always display the glyph in all instances where the connection is either an Entity Data Model connection, Application (Project settings / App.config) connection or a FlameRobin connection.</br>
 __Fixes__</br>
--- Resolved issue where closed connection nodes called the running connection table for updates when a connection was about to be modified. This caused proposed DatasetId's to be converted to proposed ConnectionNames and also initiated an unecessary trigger linkage that was then aborted. 
+-- Resolved bug where the connection source was not being correctly identified. This resulted in some Entity Data Model connections getting past the validation checks that are intended to prevent EDM wizards from corrupting Server Explorer connections.</br>
+-- Resolved several issues where connection naming was not being uniformly replicated across the extension.</br>
+-- Resolved issue where closed connection nodes called the running connection table for updates when a connection was about to be modified. This caused proposed DatasetId's to be converted to proposed ConnectionNames and also initiated an unecessary trigger linkage that was then discarded.</br>
+-- Resolved several instances where database connections were left dangling. Server Explorer may still leave connections dangling where multiple nodes are expanded on a refresh. This is a minor internal Server Explorer bug which causes each consecutive refresh to sporadically increase the active connections by one.</br>
+-- Resolved a bug where selecting another connection for a query caused all queries using that same connection to change.</br>
+-- Removed lazy loading of the SettingsManager from the User Options Model, which is already lazy and which caused VS to hang when a Model was requested early. Sections of the Model were cribbed from VisualStudio.Community which contains this bug.
 
 ### v12.0.0.1 Improved "Query is Executing" animation and addressed `Execution Plan` TTS bug.
 __New/ Enhancements__</br>

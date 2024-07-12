@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Events;
@@ -23,8 +22,6 @@ using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.Win32;
-
-using Cmd = BlackbirdSql.Sys.Cmd;
 
 
 
@@ -596,7 +593,7 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 			Diag.Dug(ex);
 			throw ex;
 		}
-		if (clsidProvider.ToString().ToUpper() != TDataProvider.BlackbirdSqlDataProvider.Name)
+		if (clsidProvider.ToUpper() != TDataProvider.BlackbirdSqlDataProvider.Name)
 		{
 			ArgumentException ex = new($"Invalid provider with guid: {clsidProvider}.");
 			Diag.Dug(ex);
@@ -650,12 +647,18 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 
 
 
-	public virtual System.Windows.Forms.DialogResult ShowDialog(Form form)
+	public virtual DialogResult ShowDialog(Form form)
 	{
 		if (form is TDataConnectionDlg)
 		{
+			if (ApcManager.ServiceProvider == null)
+				return DialogResult.Cancel;
+
 			Container container = new TiConnectionDialogContainer(UiService, ApcManager.ServiceProvider);
 			container.Add(form);
+
+			RctManager.SessionConnectionSourceActive = true;
+
 			try
 			{
 				return TDataConnectionDlg.Show(form as TDataConnectionDlg, UiService.GetDialogOwnerWindow());
@@ -663,6 +666,7 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 			finally
 			{
 				container.Remove(form);
+				RctManager.SessionConnectionSourceActive = false;
 			}
 		}
 
@@ -1220,7 +1224,7 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 			IDataConnectionUIControl dataConnectionUIControl = null; //  _VsDataProvider.TryCreateObject<IDataConnectionUIControl>(dataSourceGuid);
 			if (dataConnectionUIControl == null)
 			{
-				IVsDataConnectionUIControl vsDataConnectionUIControl = new TConnectionUIControl(EnConnectionSource.Session);
+				IVsDataConnectionUIControl vsDataConnectionUIControl = new TConnectionUIControl();
 				// _VsDataProvider.TryCreateObject<IVsDataConnectionUIControl>(dataSourceGuid);
 
 				if (vsDataConnectionUIControl != null)
@@ -1240,8 +1244,8 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 				IVsDataConnectionUIProperties vsDataConnectionUIProperties = _VsDataProvider.TryCreateObject<IVsDataConnectionUIProperties>(source);
 				if (vsDataConnectionUIProperties != null)
 				{
-					if (vsDataConnectionUIProperties is TConnectionUIProperties uiConnectionProperties)
-						uiConnectionProperties.SetConnectionSource(EnConnectionSource.Session);
+					if (vsDataConnectionUIProperties is IBDataConnectionProperties uiConnectionProperties)
+						uiConnectionProperties.ConnectionSource = EnConnectionSource.Session;
 
 					dataConnectionProperties = new TiDataConnectionUIProperties(source, vsDataConnectionUIProperties, _VsDataProvider);
 				}
@@ -1251,8 +1255,8 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 				IVsDataConnectionUIProperties vsDataConnectionUIProperties = (IVsDataConnectionUIProperties)Reflect.GetFieldValue(dataConnectionProperties,
 					"_connectionUIProperties");
 
-				if (vsDataConnectionUIProperties is TConnectionUIProperties uiConnectionProperties)
-					uiConnectionProperties.SetConnectionSource(EnConnectionSource.Session);
+				if (vsDataConnectionUIProperties is IBDataConnectionProperties uiConnectionProperties)
+					uiConnectionProperties.ConnectionSource = EnConnectionSource.Session;
 			}
 
 			return dataConnectionProperties;
@@ -1330,6 +1334,8 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 					IVsDataConnectionSupport vsDataConnectionSupport
 						= vsDataConnection.GetService(typeof(IVsDataConnectionSupport)) as IVsDataConnectionSupport
 						?? throw Diag.ExceptionService(typeof(IVsDataConnectionSupport));
+
+					(vsDataConnectionSupport as IBDataConnectionSupport).ConnectionSource = EnConnectionSource.Session;
 
 					vsDataConnectionSupport.Open(false);
 				}

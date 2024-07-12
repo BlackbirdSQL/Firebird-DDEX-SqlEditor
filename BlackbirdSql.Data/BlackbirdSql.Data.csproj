@@ -13,11 +13,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-		<NoWarn>1701;1702</NoWarn>
+		<NoWarn>1701;1702;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-		<NoWarn>1701;1702</NoWarn>
+		<NoWarn>1701;1702;</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -86,15 +86,23 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\BlackbirdDsl\BlackbirdDsl.vcxproj" />
 	  <ProjectReference Include="..\BlackbirdSql.Sys\BlackbirdSql.Sys.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Reference Include="EntityFramework">
+	    <HintPath>..\..\Firebird\EntityFramework.dll</HintPath>
+	    <Private>True</Private>
+	  </Reference>
+	  <Reference Include="EntityFramework.Firebird">
+	    <HintPath>..\..\Firebird\EntityFramework.Firebird.dll</HintPath>
+	    <Private>True</Private>
+	  </Reference>
+	  <Reference Include="FirebirdSql.Data.FirebirdClient">
+	    <HintPath>..\..\Firebird\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+	    <Private>True</Private>
+	  </Reference>
 	  <Reference Include="System.Windows.Forms" />
 	</ItemGroup>
 

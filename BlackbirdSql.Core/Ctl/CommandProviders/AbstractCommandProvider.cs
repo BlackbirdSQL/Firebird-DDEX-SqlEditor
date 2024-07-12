@@ -114,12 +114,12 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			});
 			command = cmd;
 		}
-		else if (commandId.Equals(CommandProperties.NewSqlQuery))
+		else if (commandId.Equals(CommandProperties.NewQuery))
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
 				// if (!command.Properties.Contains("GotText"))
-				//	Tracer.Trace(GetType(), "CreateCommand()", "NewSqlQuery");
+				//	Tracer.Trace(GetType(), "CreateCommand()", "NewQuery");
 
 				cmd.Visible = cmd.Enabled = true;
 
@@ -133,7 +133,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				}
 			}, delegate
 			{
-				OnNewSqlQuery();
+				OnNewQuery();
 			});
 			command = cmd;
 		}
@@ -319,11 +319,11 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 
 	/*
-	private IVsDataViewSupport GetViewSupport(IVsDataExplorerConnection explorerConnection)
+	private IVsDataViewSupport GetViewSupport(IVsDataExplorerConnection root)
 	{
 		lock (_LockLocal)
 		{
-			return Reflect.GetField(explorerConnection, "viewSupport",
+			return Reflect.GetField(root, "viewSupport",
 				BindingFlags.NonPublic | BindingFlags.Instance) as IVsDataViewSupport;
 		}
 	}
@@ -339,7 +339,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		string text = string.Empty;
 		EnModelObjectType type = node.NodeBaseType();
 
-		if (cmd.CommandID.Equals(CommandProperties.NewSqlQuery))
+		if (cmd.CommandID.Equals(CommandProperties.NewQuery))
 			text = GetResourceString("New", "Sql", "Query");
 		else if (cmd.CommandID.Equals(CommandProperties.OpenTextObject))
 			text = GetResourceString("Open", type.ToString(), "Script");
@@ -371,7 +371,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	}
 
 
-#endregion Methods
+	#endregion Methods
 
 
 
@@ -452,7 +452,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	}
 
 
-	
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// New query intercept system command event handler.
@@ -492,9 +492,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	/// Open new SQL Query command event handler.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected void OnNewSqlQuery()
+	protected void OnNewQuery()
 	{
-		// Tracer.Trace(GetType(), "OnNewSqlQuery()");
+		// Tracer.Trace(GetType(), "OnNewQuery()");
 
 		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.EditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
@@ -505,9 +505,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 			Csb csa = RctManager.CloneRegistered(Site.ExplorerConnection.ConnectionNode);
 
-			// Tracer.Trace(GetType(), "OnNewSqlQuery()", "csa.DatasetKey: {0}.", csa.DatasetKey);
+			// Tracer.Trace(GetType(), "OnNewQuery()", "csa.DatasetKey: {0}.", csa.DatasetKey);
 
-			service.NewSqlQuery(csa.DatasetKey);
+			service.NewQuery(csa.DatasetKey);
 		}
 	}
 

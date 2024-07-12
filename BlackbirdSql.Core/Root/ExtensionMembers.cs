@@ -27,6 +27,26 @@ public static partial class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Returns the derived DisplayName from the DecryptedConnectionString() of an
+	/// <see cref="IVsDataExplorerConnection"/>. Use this in place of the
+	/// ExplorerConnection's DisplayName if you do not want ViewSupport accidentally
+	/// initialized.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string DerivedDisplayName(this IVsDataExplorerConnection @this)
+	{
+		string retval = Csb.GetDisplayName(@this.DecryptedConnectionString());
+
+		if (string.IsNullOrWhiteSpace(retval))
+			retval = @this.ConnectionNode.Name;
+
+		return retval;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Finds the ExplorerConnection ConnectionKey of an IVsDataConnectionProperties Site
 	/// else null if not found.
 	/// </summary>
@@ -67,6 +87,26 @@ public static partial class ExtensionMembers
 		return ApcManager.ExplorerConnectionManager.FindConnectionKey(value.ConnectionString, false);
 	}
 
+	public static IVsDataExplorerConnection ExplorerConnection(this IVsDataConnection @this, bool canBeWeakEquivalent = false)
+	{
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
+
+		(_, IVsDataExplorerConnection explorerConnection) = manager.SearchExplorerConnectionEntry(@this.EncryptedConnectionString, true, canBeWeakEquivalent);
+
+		return explorerConnection;
+	}
+
+
+	public static IVsDataExplorerConnection ExplorerConnection(this IVsDataConnectionProperties @this, bool canBeWeakEquivalent = false)
+	{
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
+
+		(_, IVsDataExplorerConnection explorerConnection) = manager.SearchExplorerConnectionEntry(@this.ToString(), false, canBeWeakEquivalent);
+
+		return explorerConnection;
+	}
+
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -106,23 +146,23 @@ public static partial class ExtensionMembers
 	/// </param>
 	/// <exception cref="COMException" />
 	// ---------------------------------------------------------------------------------
-	public static string GetConnectionKey(this IVsDataExplorerConnection value, bool deepSearch = true)
+	public static string GetConnectionKey(this IVsDataExplorerConnection @this, bool deepSearch = true)
 	{
-		if (value.ConnectionNode == null)
+		if (@this.ConnectionNode == null)
 		{
-			ArgumentException exa = new($"Failed to retrieve ConnectionKey. Connection Node for IVsDataExplorerConnection {value.DisplayName} is null");
+			ArgumentException exa = new($"Failed to retrieve ConnectionKey. Connection Node for IVsDataExplorerConnection {@this.DerivedDisplayName()} is null");
 			Diag.Dug(exa);
 			throw exa;
 		}
 
 		string retval;
-		IVsDataObject @object = (IVsDataObject)Reflect.GetFieldValueBase(value.ConnectionNode, "_object");
+		IVsDataObject @object = (IVsDataObject)Reflect.GetFieldValueBase(@this.ConnectionNode, "_object");
 
 		COMException ex;
 
 		if (!deepSearch && @object == null)
 		{
-			ex = new($"Failed to get ConnectionKey for ExplorerConnection {value.DisplayName}. ConnectionNode._object returned null");
+			ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.DerivedDisplayName()}. ConnectionNode._object returned null");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -133,7 +173,7 @@ public static partial class ExtensionMembers
 
 			if (!deepSearch && leaf == null)
 			{
-				ex = new($"Failed to get ConnectionKey for ExplorerConnection {value.DisplayName}. ConnectionNode.Object._leaf returned null");
+				ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.DerivedDisplayName()}. ConnectionNode.Object._leaf returned null");
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -144,7 +184,7 @@ public static partial class ExtensionMembers
 
 				if (!deepSearch && retval == null)
 				{
-					ex = new($"Failed to get ConnectionKey for ExplorerConnection {value.DisplayName}. ConnectionNode.Object._leaf.Id returned null");
+					ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.DerivedDisplayName()}. ConnectionNode.Object._leaf.Id returned null");
 					Diag.Dug(ex);
 					throw ex;
 				}
@@ -157,11 +197,11 @@ public static partial class ExtensionMembers
 
 		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
-		(retval, _) = manager.SearchExplorerConnectionEntry(value.EncryptedConnectionString, true);
+		(retval, _) = manager.SearchExplorerConnectionEntry(@this.EncryptedConnectionString, true);
 
 		if (retval == null)
 		{
-			ex = new($"Failed to get ConnectionKey for ExplorerConnection {value.DisplayName}. No entry exists in the ExplorerConnectionManager.");
+			ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.DerivedDisplayName()}. No entry exists in the ExplorerConnectionManager.");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -181,44 +221,6 @@ public static partial class ExtensionMembers
 	public static string GetConnectionKey(this IVsDataExplorerNode value)
 	{
 		return value.ExplorerConnection.GetConnectionKey();
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Searches an ExplorerConnection entry from the ConnectionUrl of a provided
-	/// ConnectionString.
-	/// </summary>
-	/// <returns>
-	/// The tuple (label, explorerConnection)
-	/// </returns>
-	// ---------------------------------------------------------------------------------
-	public static (string, IVsDataExplorerConnection) SearchExplorerConnectionEntry(
-		this IVsDataExplorerConnectionManager value, string connectionString, bool encrypted)
-	{
-		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
-		string unencryptedConnectionString = encrypted ? DataProtection.DecryptString(connectionString) : connectionString;
-
-		Guid clsidProvider = new(SystemData.ProviderGuid);
-		string connectionUrl = Csb.CreateConnectionUrl(unencryptedConnectionString);
-
-		Csb csa;
-
-		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
-		{
-			if (!(clsidProvider == pair.Value.Provider))
-				continue;
-
-			csa = new(pair.Value.DecryptedConnectionString(), false);
-
-			if (csa.SafeDatasetMoniker == connectionUrl)
-			{
-				return (pair.Key, pair.Value);
-			}
-		}
-
-		return (null, null);
 	}
 
 

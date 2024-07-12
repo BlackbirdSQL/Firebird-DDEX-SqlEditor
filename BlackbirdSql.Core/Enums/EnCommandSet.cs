@@ -38,8 +38,8 @@ public enum EnCommandSet
 	ContextIdMessageWindow = 0x5404,
 	ContextIdExecutionPlanWindow = 0x5405,
 
-	CmbIdSqlDatabases = 0x5500,
-	CmbIdSqlDatabasesGetList = 0x5501,
+	CmbIdDatabaseSelect = 0x5500,
+	CmbIdDatabaseList = 0x5501,
 
 	CmdIdConnect = 0x0300, // 768
 	CmdIdDisconnect = 0x0301, // 769
@@ -48,7 +48,7 @@ public enum EnCommandSet
 	CmdIdCancelQuery = 0x0305, // 773
 	CmdIdShowEstimatedPlan = 0x0306, // 774
 	CmdIdToggleIntellisense = 0x0307, // 775
-	CmdIdToggleSQLCMDMode = 0x0308, // 776
+	CmdIdToggleSqlCmdMode = 0x0308, // 776
 	CmdIdToggleClientStatistics = 0x0309, // 777
 	CmdIdToggleExecutionPlan = 0x030A, // 778
 	CmdIdResultsAsText = 0x030B, // 779
@@ -56,7 +56,7 @@ public enum EnCommandSet
 	CmdIdResultsAsFile = 0x030D, // 781
 	CmdIdQuerySettings = 0x030E, // 782
 	CmdIdToggleResultsPane = 0x030F, // 783
-	CmdIdNewSqlQuery = 0x0310, // 784
+	CmdIdNewQuery = 0x0310, // 784
 	CmdIdSaveResultsAs = 0x0311, // 785
 	CmdIdExecutionPlanXml = 0x0314, // 788
 	CmdIdExecutionPlanMissingIndex = 0x0315, // 789
@@ -71,7 +71,7 @@ public enum EnCommandSet
 	CmdIdCycleToPrevious = 0x0324, // 804
 	CmdIdExecuteQueryBatch = 0x0326, // 806
 	CmdIdDisconnectAllQueries = 0x0327, // 807
-	CmdIdChangeConnection = 0x0328, // 808
+	CmdIdModifyConnection = 0x0328, // 808
 
 	CmdIdOpenTextObject = 0x0334, // *820
 	CmdIdOpenAlterTextObject = 0x0335, // 821

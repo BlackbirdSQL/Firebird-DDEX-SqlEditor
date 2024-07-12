@@ -9,6 +9,7 @@ using BlackbirdSql.Data.Model;
 using BlackbirdSql.Data.Properties;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Interfaces;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 using static BlackbirdSql.Data.Model.AbstractLinkageParser;
@@ -39,10 +40,10 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 	/// Instance() static to create or retrieve a parser for a connection or Site.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public LinkageParserTaskHandler(IDbConnection connection)
+	public LinkageParserTaskHandler(IVsDataExplorerConnection root)
 	{
 		// Tracer.Trace(GetType(), "LinkageParserTaskHandle.LinkageParserTaskHandle");
-		_DatasetKey = ApcManager.GetRegisterConnectionDatasetKey(connection);
+		_DatasetKey = ApcManager.GetRegisterConnectionDatasetKey(root);
 	}
 
 

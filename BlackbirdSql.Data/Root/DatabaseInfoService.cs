@@ -27,7 +27,15 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 	{
 	}
 
-	public static DatabaseInfoService CreateInstance() => new();
+
+
+	public static IBsNativeDatabaseInfo EnsureInstance() => _Instance ??= new DatabaseInfoService();
+
+
+	public static IBsNativeDatabaseInfo _Instance = null;
+
+
+
 
 	public long GetActiveTransactionsCount(NativeDatabaseInfoProxy @this)
 	{

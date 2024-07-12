@@ -22,9 +22,11 @@ public enum EnModelObjectType
 	StoredProcedureParameter,
 	Function,
 	FunctionParameter,
-	NewSqlQuery,
+	NewQuery,
 	NewDesignerQuery
 }
+
+
 
 public static class EnModelObjectTypeExtensions
 {
@@ -206,8 +208,8 @@ public static class EnModelObjectTypeExtensions
 			"STOREDPROCEDURECOLUMN" => EnModelObjectType.StoredProcedureParameter,
 			"FUNCTIONPARAMETER" => EnModelObjectType.FunctionParameter,
 			"FUNCTIONRETURNVALUE" => EnModelObjectType.FunctionParameter,
-			"NEWQUERY" => EnModelObjectType.NewSqlQuery,
-			"NEWSQLQUERY" => EnModelObjectType.NewSqlQuery,
+			"NEWQUERY" => EnModelObjectType.NewQuery,
+			"NEWSQLQUERY" => EnModelObjectType.NewQuery,
 			"NEWDESIGNERQUERY" => EnModelObjectType.NewDesignerQuery,
 			_ => EnModelObjectType.Unknown
 		};

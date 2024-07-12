@@ -75,7 +75,7 @@ public partial class AdvancedInformationDialog : Form
 		}
 		catch (Exception exError)
 		{
-			MessageBoxForm.ShowError(ControlsResources.CopyToClipboardError, exError);
+			MessageBoxForm.ShowError(ControlsResources.AdvancedMessageBox_CopyToClipboardError, exError);
 		}
 	}
 
@@ -104,7 +104,7 @@ public partial class AdvancedInformationDialog : Form
 
 	private void AdvancedInformationDialog_Load(object sender, EventArgs e)
 	{
-		TreeNode treeNode = new TreeNode(ControlsResources.AdvInfoAllMessages);
+		TreeNode treeNode = new TreeNode(ControlsResources.AdvancedInformationDialog_AllMessages);
 		for (Exception ex = MessageBoxForm.ExMessage; ex != null; ex = ex.InnerException)
 		{
 			try
@@ -113,13 +113,13 @@ public partial class AdvancedInformationDialog : Form
 				bool isDbClientInfo = msg.Contains(NativeDb.DbEngineName);
 				string[] msgList = ex.Message.Split('\n');
 
-				string nodeLabel = ControlsResources.NodeExceptionInfo.FmtRes(isDbClientInfo ? NativeDb.DbEngineName : "BlackbirdSql", msgList[0]);
+				string nodeLabel = ControlsResources.AdvancedInformationDialog_NodeExceptionInfo.FmtRes(isDbClientInfo ? NativeDb.DbEngineName : "BlackbirdSql", msgList[0]);
 
 				TreeNode treeNode3 = new(nodeLabel)
 				{
 					Tag = msg
 				};
-				TreeNode treeNode2 = new(ControlsResources.AdvInfoMessage)
+				TreeNode treeNode2 = new(ControlsResources.AdvancedInformationDialog_Message)
 				{
 					Tag = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.Message)
 				};
@@ -131,7 +131,7 @@ public partial class AdvancedInformationDialog : Form
 					text = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.HelpLink);
 					if (text != null && text.Length > 0)
 					{
-						treeNode2 = new(ControlsResources.AdvInfoHelpLink)
+						treeNode2 = new(ControlsResources.AdvancedInformationDialog_HelpLink)
 						{
 							Tag = text
 						};
@@ -148,7 +148,7 @@ public partial class AdvancedInformationDialog : Form
 					text = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.Data);
 					if (text != null && text.Length > 0)
 					{
-						treeNode2 = new(ControlsResources.AdvInfoData)
+						treeNode2 = new(ControlsResources.AdvancedInformationDialog_AdditionalData)
 						{
 							Tag = text
 						};
@@ -167,7 +167,7 @@ public partial class AdvancedInformationDialog : Form
 						text = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.StackTrace);
 						if (text != null && text.Length > 0)
 						{
-							treeNode2 = new(ControlsResources.CodeLocation[..^1])
+							treeNode2 = new(ControlsResources.AdvancedMessageBox_CodeLocation[..^1])
 							{
 								Tag = text
 							};

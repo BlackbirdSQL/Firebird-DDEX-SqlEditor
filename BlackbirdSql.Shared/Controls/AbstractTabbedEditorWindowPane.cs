@@ -49,6 +49,74 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	}
 
 
+
+	protected override void Dispose(bool disposing)
+	{
+		if (_IsDisposed)
+			return;
+
+		try
+		{
+			if (disposing)
+			{
+				if (ThreadHelper.CheckAccess() && _BroadcastMessageEventsCookie != 0
+					&& Package.GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
+				{
+					___(vsShell.UnadviseBroadcastMessages(_BroadcastMessageEventsCookie));
+				}
+
+				if (_LockHolderCookie != 0)
+				{
+					RdtManager.UnregisterDocumentLockHolder(_LockHolderCookie);
+					_LockHolderCookie = 0u;
+				}
+
+				ApcManager.OnElementValueChangedEvent -= OnElementValueChanged;
+
+				_TabbedEditorUI?.Dispose();
+				_TabbedEditorUI = null;
+
+				_DocData = null;
+				_Package = null;
+				_TextEditor = null;
+				_IsDisposed = true;
+			}
+		}
+		finally
+		{
+			base.Dispose(disposing);
+		}
+	}
+
+
+
+	protected override void Initialize()
+	{
+
+		base.Initialize();
+
+		// TODO: Added to test broadcast messages.
+		if (ThreadHelper.CheckAccess() && _BroadcastMessageEventsCookie == 0
+			&& Package.GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
+		{
+			___(vsShell.AdviseBroadcastMessages(this, out _BroadcastMessageEventsCookie));
+		}
+
+		ApcManager.OnElementValueChangedEvent += OnElementValueChanged;
+
+		if (GetService(typeof(SVsTrackSelectionEx)) is IVsTrackSelectionEx vsTrackSelectionEx)
+		{
+			vsTrackSelectionEx.OnElementValueChange((uint)VSConstants.VSSELELEMID.SEID_PropertyBrowserSID, 1, null);
+			vsTrackSelectionEx.OnElementValueChange((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, 1, null);
+		}
+
+		_ = GetService(typeof(SVsWindowFrame)) is IVsWindowFrame;
+	}
+
+
+
+
+
 	public enum EnDocumentsFlag
 	{
 		DirtyDocuments,
@@ -57,7 +125,9 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		AllDocuments
 	}
 
-	private static ToolbarCommandHandlerManager _ToolbarManager;
+
+
+	private static ToolbarCommandMapper _ToolbarManager;
 
 	private Package _Package;
 	private AbstractTabbedEditorUIControl _TabbedEditorUI;
@@ -74,19 +144,20 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	private IList<uint> _OverrideSaveDocCookieList;
 	private bool _FirstTimeShowEventHandled;
 	private bool _IsHelpInitialized;
+	private uint _BroadcastMessageEventsCookie = 0;
+
+	protected bool _IsDisposed = false;
 
 
 
-	public static ToolbarCommandHandlerManager ToolbarManager =>
-		_ToolbarManager ??= new ToolbarCommandHandlerManager();
+	public static ToolbarCommandMapper ToolbarManager =>
+		_ToolbarManager ??= new ToolbarCommandMapper();
 
-
-	public bool IsDisposed { get; private set; }
 
 
 	public virtual IVsTextLines DocData => _DocData;
 
-	public bool IsToolboxInitialized => ApcManager.Instance.IsToolboxInitialized;
+	public bool IsToolboxInitialized => ApcManager.IsToolboxInitialized;
 
 
 	IBTextEditor IBTabbedEditorService.TextEditor
@@ -109,7 +180,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	AbstractEditorTab IBTabbedEditorService.ActiveTab => _TabbedEditorUI.TopEditorTab;
 
-	IVsWindowFrame IBTabbedEditorService.TabFrame => Frame;
+	public IVsWindowFrame TabFrame => Frame;
 
 	public AbstractTabbedEditorUIControl TabbedEditorControl => _TabbedEditorUI;
 
@@ -122,6 +193,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			IVsCodeWindow vsCodeWindow = null;
 			EnsureTabs();
 			AbstractEditorTab editorTab = null;
+
 			foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
 			{
 				if (tab.EditorTabType == EnEditorTabType.BottomXaml || tab.EditorTabType == EnEditorTabType.TopXaml)
@@ -130,33 +202,19 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 					break;
 				}
 			}
+
 			if (editorTab != null && editorTab.IsVisible)
-			{
 				vsCodeWindow = editorTab.GetView() as IVsCodeWindow;
-			}
+
 			if (vsCodeWindow == this)
-			{
 				vsCodeWindow = null;
-			}
+
 			return vsCodeWindow;
 		}
 	}
 
 
-	protected override void Initialize()
-	{
 
-		base.Initialize();
-
-		ApcManager.Instance.OnElementValueChangedEvent += OnElementValueChanged;
-
-		if (GetService(typeof(SVsTrackSelectionEx)) is IVsTrackSelectionEx vsTrackSelectionEx)
-		{
-			vsTrackSelectionEx.OnElementValueChange((uint)VSConstants.VSSELELEMID.SEID_PropertyBrowserSID, 1, null);
-			vsTrackSelectionEx.OnElementValueChange((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, 1, null);
-		}
-		_ = GetService(typeof(SVsWindowFrame)) is IVsWindowFrame;
-	}
 
 
 	/// <summary>
@@ -171,10 +229,14 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	/// </summary>
 	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
 
+
+
 	protected override void OnCreate()
 	{
 		RdtManager.RegisterDocumentLockHolder(0u, GetPrimaryDocCookie(), this, out _LockHolderCookie);
 	}
+
+
 
 	private static bool IsDirty(object docData)
 	{
@@ -185,51 +247,24 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			___(vsPersistDocData.IsDocDataDirty(out var pfDirty));
 			return pfDirty != 0;
 		}
+
 		return false;
 	}
+
+
 
 	bool IBTabbedEditorService.IsTabVisible(Guid logicalView)
 	{
 		foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
 		{
 			if (tab.LogicalView == logicalView)
-			{
 				return tab.IsOnScreen;
-			}
 		}
+
 		return false;
 	}
 
-	protected override void Dispose(bool disposing)
-	{
-		try
-		{
-			if (disposing)
-			{
-				if (_LockHolderCookie != 0)
-				{
-					RdtManager.UnregisterDocumentLockHolder(_LockHolderCookie);
-					_LockHolderCookie = 0u;
-				}
 
-				ApcManager.Instance.OnElementValueChangedEvent -= OnElementValueChanged;
-
-				if (_TabbedEditorUI != null)
-				{
-					_TabbedEditorUI.Dispose();
-					_TabbedEditorUI = null;
-				}
-				_DocData = null;
-				_Package = null;
-				_TextEditor = null;
-				IsDisposed = true;
-			}
-		}
-		finally
-		{
-			base.Dispose(disposing);
-		}
-	}
 
 	protected override void OnClose()
 	{
@@ -240,10 +275,14 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		base.OnClose();
 	}
 
+
+
 	private void EnsureTabs()
 	{
 		EnsureTabs(activateTextView: false);
 	}
+
+
 
 	protected AbstractEditorTab CreateEditorTabWithButton(AbstractTabbedEditorWindowPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
 	{
@@ -258,19 +297,26 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				_TabbedEditorUI.SplitViewContainer.SplitterBar.EnsureButtonInXamlPane(logicalView);
 				break;
 		}
+
 		return CreateEditorTab(editorPane, logicalView, editorLogicalView, editorTabType);
 	}
+
+
 
 	protected abstract AbstractEditorTab CreateEditorTab(AbstractTabbedEditorWindowPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType);
 
 	protected abstract AbstractTabbedEditorUIControl CreateTabbedEditorUI(Guid toolbarGuid, uint toolbarId);
 
 
+
 	private static IEnumerable<uint> EnumerateOpenedDocuments(IBTabbedEditorService designerService, __VSRDTSAVEOPTIONS rdtSaveOptions)
 	{
 		EnDocumentsFlag enumerateDocumentsFlag = GetDesignerDocumentFlagFromSaveOption(rdtSaveOptions);
+
 		return EnumerateOpenedDocuments(designerService, enumerateDocumentsFlag);
 	}
+
+
 
 	private static IEnumerable<uint> EnumerateOpenedDocuments(IBTabbedEditorService designerService, EnDocumentsFlag requestedDocumentsFlag)
 	{
@@ -304,24 +350,28 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		}
 	}
 
+
+
 	private static EnDocumentsFlag GetDesignerDocumentFlagFromSaveOption(__VSRDTSAVEOPTIONS saveOption)
 	{
 		if ((saveOption & __VSRDTSAVEOPTIONS.RDTSAVEOPT_ForceSave) == 0)
-		{
 			return EnDocumentsFlag.DirtyDocuments;
-		}
 
 		return EnDocumentsFlag.DirtyOrPrimary;
 	}
+
+
 
 	public virtual string GetHelpKeywordForCodeWindowTextView()
 	{
 		return string.Empty;
 	}
 
+
+
 	public virtual bool EnsureTabs(bool activateTextView)
 	{
-		if (_TabbedEditorUI == null || _TabbedEditorUI.Tabs.Count > 0 || _IsLoading || _IsClosing)
+		if (_TabbedEditorUI == null || _TabbedEditorUI.Tabs.Count > 0 || _IsLoading || _IsClosing || ApcManager.SolutionClosing)
 		{
 			return false;
 		}
@@ -358,6 +408,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			EnEditorTabType editorTabType;
 			EnEditorTabType editorTabType2;
 			bool isPrimary;
+
 			if (guid.Equals(VSConstants.LOGVIEWID_TextView))
 			{
 				editorTabType = EnEditorTabType.BottomDesign;
@@ -370,13 +421,17 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				editorTabType2 = EnEditorTabType.BottomXaml;
 				isPrimary = false;
 			}
+
 			AbstractEditorTab editorTab = CreateEditorTabWithButton(this, VSConstants.LOGVIEWID_Designer, VSConstants.LOGVIEWID_Primary, editorTabType);
 			AbstractEditorTab editorTab2 = CreateEditorTabWithButton(this, VSConstants.LOGVIEWID_TextView, VSConstants.LOGVIEWID_Primary, editorTabType2);
 			_TabbedEditorUI.Tabs.Add(editorTab);
 			_TabbedEditorUI.Tabs.Add(editorTab2);
+
 			vsUIShell?.SetWaitCursor();
+
 			LoadXamlPane(editorTab2, isPrimary, showSplitter);
 			LoadDesignerPane(editorTab, !isPrimary, showSplitter);
+
 			if (topIsTextView || isPrimary)
 			{
 				editorTab2.Activate(setFocus: false);
@@ -387,25 +442,25 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				editorTab.Activate(setFocus: false);
 				editorTab2.UpdateActive(isActive: false);
 			}
+
 			TrackTabSwitches(track: true);
+
 			if (IsToolboxInitialized && GetService(typeof(SVsToolbox)) is IVsToolbox vsToolbox)
-			{
 				vsToolbox.SelectItem(null);
-			}
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
-			throw ex;
+			throw;
 		}
 		finally
 		{
 			_IsLoading = false;
+
 			if (_TabbedEditorUI != null)
-			{
 				_TabbedEditorUI.DesignerMessage = null;
-			}
 		}
+
 		return true;
 	}
 
@@ -423,25 +478,18 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		if (asPrimary)
 		{
 			if (_TabbedEditorUI.TopEditorTab == null)
-			{
 				_TabbedEditorUI.TopEditorTab = xamlTab;
-			}
 			else
-			{
 				xamlTab.EnsureFrameCreated();
-			}
 		}
 		else if (showSplitter)
 		{
 			if (_TabbedEditorUI.BottomEditorTab == null)
-			{
 				_TabbedEditorUI.BottomEditorTab = xamlTab;
-			}
 			else
-			{
 				xamlTab.EnsureFrameCreated();
-			}
 		}
+
 		xamlTab.CreateTextEditor();
 	}
 
@@ -450,13 +498,9 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		if (asPrimary)
 		{
 			if (_TabbedEditorUI.TopEditorTab == null)
-			{
 				_TabbedEditorUI.TopEditorTab = designerTab;
-			}
 			else
-			{
 				designerTab.EnsureFrameCreated();
-			}
 		}
 		else if (_TabbedEditorUI.BottomEditorTab == null)
 		{
@@ -468,43 +512,50 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		}
 	}
 
+
+
 	private static Guid GetTabLogicalView(Guid logicalView)
 	{
-		if (logicalView.Equals(VSConstants.LOGVIEWID_Any) || logicalView.Equals(VSConstants.LOGVIEWID_Designer) || logicalView.Equals(VSConstants.LOGVIEWID_Primary))
+		if (logicalView.Equals(VSConstants.LOGVIEWID_Any)
+			|| logicalView.Equals(VSConstants.LOGVIEWID_Designer)
+			|| logicalView.Equals(VSConstants.LOGVIEWID_Primary))
 		{
 			return VSConstants.LOGVIEWID_Designer;
 		}
+
 		if (logicalView.Equals(VSConstants.LOGVIEWID_Debugging))
-		{
 			return VSConstants.LOGVIEWID_TextView;
-		}
+
 		return logicalView;
 	}
+
+
 
 	public virtual void ActivateNextTab()
 	{
 		_TabbedEditorUI.SplitViewContainer.CycleToNextButton();
 	}
 
+
+
 	public virtual void ActivatePreviousTab()
 	{
 		_TabbedEditorUI.SplitViewContainer.CycleToPreviousButton();
 	}
 
+
+
 	protected override object GetService(Type serviceType)
 	{
 		if (serviceType == null)
-		{
-			throw new ArgumentNullException("serviceType");
-		}
+			Diag.ThrowException(new ArgumentNullException("serviceType"));
+
 		if (serviceType == typeof(IOleCommandTarget))
-		{
 			return this;
-		}
+
 		if (serviceType == typeof(IBTabbedEditorService))
-		{
 			return this;
-		}
+
 		return base.GetService(serviceType);
 	}
 
@@ -516,6 +567,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			_ = _TabbedEditorUI.TopEditorTab;
 	}
 
+
+
 	protected void OnQueryScriptExecutionCompleted(object sender, ScriptExecutionCompletedEventArgs args)
 	{
 	}
@@ -525,21 +578,24 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	private void OnTabActivated(object sender, EventArgs e)
 	{
 		_RequestedView = Guid.Empty;
+
 		if (Frame == null)
 			return;
 
 		Guid rguid = Guid.Empty;
+
 		if (sender is AbstractEditorTab editorTab)
 		{
 			if (editorTab.EditorTabType != EnEditorTabType.TopXaml)
-			{
 				_ = editorTab.EditorTabType;
-			}
+
 			rguid = editorTab.CommandUIGuid;
 		}
 
 		Frame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, ref rguid);
 	}
+
+
 
 	private void OnToolboxItemPicked(object sender, ToolboxEventArgs e)
 	{
@@ -547,6 +603,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		{
 			Guid rguidLogicalView = VSConstants.LOGVIEWID_Designer;
 			IVsToolboxUser tab = GetTab(ref rguidLogicalView);
+
 			if (tab != null)
 			{
 				e.HResult = tab.ItemPicked(e.Data);
@@ -554,6 +611,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			}
 		}
 	}
+
+
 
 	protected virtual int SaveFiles(ref uint saveFlags)
 	{
@@ -567,7 +626,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		if (saveFlags != (uint)__FRAMECLOSE.FRAMECLOSE_NoSave)
 		{
 			if ((IVsWindowFrame)GetService(typeof(SVsWindowFrame)) == null)
-				return 0;
+				return VSConstants.S_OK;
 
 			uint saveOpts;
 
@@ -597,25 +656,33 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		return hresult;
 	}
 
+
+
 	public IEnumerable<uint> GetEditableDocuments()
 	{
 		return GetEditableDocumentsForTab();
 	}
 
+
+
 	protected virtual IEnumerable<uint> GetEditableDocumentsForTab()
 	{
 		uint primaryDocCookie = GetPrimaryDocCookie();
+
 		if (primaryDocCookie != 0)
-		{
 			yield return primaryDocCookie;
-		}
 	}
+
+
 
 	private static uint GetFrameDocument(IVsWindowFrame frame)
 	{
 		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocCookie, out var pvar));
+
 		return (uint)(int)pvar;
 	}
+
+
 
 	public uint GetPrimaryDocCookie()
 	{
@@ -629,14 +696,12 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	private void TrackTabSwitches(bool track)
 	{
 		if (track)
-		{
 			_TabbedEditorUI.TabActivatedEvent += OnTabActivated;
-		}
 		else
-		{
 			_TabbedEditorUI.TabActivatedEvent -= OnTabActivated;
-		}
 	}
+
+
 
 	private static bool TryGetDocDataFromCookie(uint cookie, out object docData)
 	{
@@ -652,7 +717,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 		try
 		{
-			if (__(RdtManager.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _, out var _, out var _, out ppunkDocData)))
+			if (__(RdtManager.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _,
+				out var _, out var _, out ppunkDocData)))
 			{
 				docData = Marshal.GetObjectForIUnknown(ppunkDocData);
 				result = true;
@@ -661,17 +727,18 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		finally
 		{
 			if (ppunkDocData != IntPtr.Zero)
-			{
 				Marshal.Release(ppunkDocData);
-			}
 		}
 
 		return result;
 	}
 
+
+
 	private void UpdateCmdUIContext()
 	{
 		_IsInUpdateCmdUIContext = true;
+
 		try
 		{
 			if (_TabbedEditorUI == null)
@@ -690,7 +757,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				return;
 
 			object service = GetService(typeof(SVsWindowFrame));
-			selectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out var pvarValue);
+			selectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out object pvarValue);
 
 			if (pvarValue == service)
 			{
@@ -705,6 +772,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			_IsInUpdateCmdUIContext = false;
 		}
 	}
+
+
 
 	public AbstractEditorTab GetTab(ref Guid rguidLogicalView)
 	{
@@ -722,33 +791,40 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		return null;
 	}
 
+
+
 	private T ActiveTab<T>() where T : class
 	{
 		T val = null;
+
 		if (_TabbedEditorUI != null)
 		{
 			AbstractEditorTab activeTab = _TabbedEditorUI.ActiveTab;
+
 			if (activeTab != null)
 			{
 				val = activeTab as T;
 				val ??= activeTab.GetView() as T;
+
 				if (val == this)
-				{
 					val = null;
-				}
 			}
 		}
+
 		return val;
 	}
 
+
+
 	private int ActivateView(ref Guid rguidLogicalView, EnTabViewMode mode)
 	{
-		Guid g = _RequestedView = GetTabLogicalView(rguidLogicalView);
+		Guid clsid = _RequestedView = GetTabLogicalView(rguidLogicalView);
+
 		if (_TabbedEditorUI.Tabs.Count > 0)
 		{
 			foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
 			{
-				if (tab.LogicalView.Equals(g))
+				if (tab.LogicalView.Equals(clsid))
 				{
 					TrackTabSwitches(track: false);
 					_TabbedEditorUI.ActivateTab(tab, mode);
@@ -757,113 +833,149 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				}
 			}
 		}
-		return 0;
+
+		return VSConstants.S_OK;
 	}
+
+
 
 	void IBTabbedEditorService.Activate(Guid logicalView, EnTabViewMode mode)
 	{
 		ActivateView(ref logicalView, mode);
 	}
 
+
+
 	int IOleCommandTarget.Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		int num = HandleExec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
-		if (num == 0)
-		{
-			return num;
-		}
+		int hresult = HandleExec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+
+		if (hresult == VSConstants.S_OK)
+			return hresult;
+
 		GuidId guidId = new GuidId(pguidCmdGroup, nCmdID);
+
 		if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBToolbarCommandHandler commandHandler))
 		{
 			return commandHandler.HandleExec(this, nCmdexecopt, pvaIn, pvaOut);
 		}
+
 		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdID == 289 && _IsLoading)
 		{
-			num = 0;
+			hresult = VSConstants.S_OK;
 		}
+
 		IOleCommandTarget oleCommandTarget = ActiveTab<IOleCommandTarget>();
+
 		if (oleCommandTarget != null)
 		{
 			Guid pguidCmdGroup2 = pguidCmdGroup;
+
 			return oleCommandTarget.Exec(ref pguidCmdGroup2, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 		}
-		return num;
+
+		return hresult;
 	}
+
+
 
 	int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		int num = HandleQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-		if (num == 0)
-		{
-			return num;
-		}
+		int hresult = HandleQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+
+		if (hresult == VSConstants.S_OK)
+			return hresult;
+
 		for (int i = 0; i < prgCmds.Length; i++)
 		{
 			uint cmdID = prgCmds[i].cmdID;
 			GuidId guidId = new GuidId(pguidCmdGroup, cmdID);
+
 			if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBToolbarCommandHandler commandHandler))
 			{
 				return commandHandler.HandleQueryStatus(this, ref prgCmds[i], pCmdText);
 			}
 		}
+
 		IOleCommandTarget oleCommandTarget = ActiveTab<IOleCommandTarget>();
+
 		if (oleCommandTarget != null)
 		{
 			Guid pguidCmdGroup2 = pguidCmdGroup;
+
 			return oleCommandTarget.QueryStatus(ref pguidCmdGroup2, cCmds, prgCmds, pCmdText);
 		}
-		return num;
+
+		return hresult;
 	}
+
+
 
 	public virtual int HandleExec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdID == 377)
 		{
 			SetupF1Help();
+
 			return (int)OleConstants.OLECMDERR_E_NOTSUPPORTED;
 		}
+
 		return VSConstants.E_NOTIMPL;
 	}
+
+
 
 	public virtual int HandleQueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
 		return VSConstants.E_NOTIMPL;
 	}
 
+
+
 	int IVsMultiViewDocumentView.ActivateLogicalView(ref Guid rguidLogicalView)
 	{
 		if (rguidLogicalView.Equals(VSConstants.LOGVIEWID_Any) || rguidLogicalView.Equals(VSConstants.LOGVIEWID_Primary))
 		{
-			return 0;
+			return VSConstants.S_OK;
 		}
+
 		return ActivateView(ref rguidLogicalView, EnTabViewMode.Default);
 	}
+
+
 
 	int IVsMultiViewDocumentView.GetActiveLogicalView(out Guid pguidLogicalView)
 	{
 		pguidLogicalView = Guid.Empty;
-		return 0;
+
+		return VSConstants.S_OK;
 	}
+
+
 
 	int IVsMultiViewDocumentView.IsLogicalViewActive(ref Guid rguidLogicalView, out int pIsActive)
 	{
 		Guid tabLogicalView = GetTabLogicalView(rguidLogicalView);
 		AbstractEditorTab activeTab = _TabbedEditorUI.ActiveTab;
+
 		if (activeTab != null)
-		{
 			pIsActive = activeTab.LogicalView.Equals(tabLogicalView) ? 1 : 0;
-		}
 		else
-		{
 			pIsActive = _RequestedView.Equals(tabLogicalView) ? 1 : 0;
-		}
-		return 0;
+
+		return VSConstants.S_OK;
 	}
+
+
 
 	protected virtual int HandleCloseEditorOrDesigner()
 	{
-		return 0;
+		// Tracer.Trace(GetType(), "HandleCloseEditorOrDesigner()");
+
+		return VSConstants.S_OK;
 	}
+
+
 
 	int IVsWindowFrameNotify3.OnClose(ref uint frameSaveOptions)
 	{
@@ -909,9 +1021,10 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				}
 				else
 				{
+					_OverrideSaveDocCookieList = saveDocCookieList;
+
 					try
 					{
-						_OverrideSaveDocCookieList = saveDocCookieList;
 						hresult = SaveFiles(ref frameSaveOptions);
 					}
 					finally
@@ -943,13 +1056,17 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	int IVsWindowFrameNotify3.OnDockableChange(int fDockable, int x, int y, int w, int h)
 	{
-		return 0;
+		return VSConstants.S_OK;
 	}
+
+
 
 	int IVsWindowFrameNotify3.OnMove(int x, int y, int w, int h)
 	{
-		return 0;
+		return VSConstants.S_OK;
 	}
+
+
 
 	int IVsWindowFrameNotify3.OnShow(int fShow)
 	{
@@ -976,56 +1093,64 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			case __FRAMESHOW.FRAMESHOW_TabActivated:
 			case __FRAMESHOW.FRAMESHOW_TabDeactivated:
 				OnShow(fShow);
+
 				foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
-				{
 					((IVsWindowFrameNotify3)tab).OnShow(fShow);
-				}
+
 				break;
 		}
-		return 0;
+
+		return VSConstants.S_OK;
 	}
 
 	private void EnsureToolbarAssociatedWithTabs()
 	{
 		if (_TabbedEditorUI == null)
-		{
 			return;
-		}
+
 		IVsToolWindowToolbarHost vsToolbarHost = _TabbedEditorUI.GetVsToolbarHost();
+
 		if (vsToolbarHost == null)
-		{
 			return;
-		}
+
 		foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
 		{
 			tab.CurrentFrame?.SetProperty((int)__VSFPROPID.VSFPROPID_ToolbarHost, vsToolbarHost);
 		}
 	}
 
+
+
 	protected virtual void OnShow(int fShow)
 	{
 	}
 
+
+
 	int IVsWindowFrameNotify3.OnSize(int x, int y, int w, int h)
 	{
-		return 0;
+		return VSConstants.S_OK;
 	}
+
 
 
 	int OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
 	{
 		// Tracer.Trace(GetType(), "OnElementValueChanged()", "ElementId: {0}.", elementid);
 
-		if (_IsLoading || _IsInUpdateCmdUIContext || !_IsAppActivated)
+		if (_IsLoading || _IsInUpdateCmdUIContext || !_IsAppActivated || ApcManager.SolutionClosing)
 		{
-			return 0;
+			return VSConstants.S_OK;
 		}
+
 		if (elementid == 1)
 		{
-			IVsWindowFrame tabFrame = ((IBTabbedEditorService)this).TabFrame;
+			IVsWindowFrame tabFrame = TabFrame;
 			IVsWindowFrame vsWindowFrame = varValueOld as IVsWindowFrame;
 			IVsWindowFrame vsWindowFrame2 = varValueNew as IVsWindowFrame;
+
 			AbstractEditorTab editorTab = _TabbedEditorUI.ActiveTab;
+
 			if (vsWindowFrame2 == tabFrame)
 			{
 				_TabbedEditorUI.BeginInvoke(new MethodInvoker(UpdateCmdUIContext));
@@ -1033,6 +1158,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			else if (vsWindowFrame2 != null)
 			{
 				bool flag = false;
+
 				foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
 				{
 					if (tab.CurrentFrame == vsWindowFrame2 && tab.IsVisible)
@@ -1040,11 +1166,14 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 						flag = true;
 						editorTab = tab;
 					}
-					else if (tab.CurrentFrame == vsWindowFrame && vsWindowFrame != null && (!__(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_RDTDocData, out object pvar)) || pvar == null))
+					else if (tab.CurrentFrame == vsWindowFrame && vsWindowFrame != null
+						&& (!__(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_RDTDocData, out object pvar))
+						|| pvar == null))
 					{
-						return 0;
+						return VSConstants.S_OK;
 					}
 				}
+
 				if (flag)
 				{
 					foreach (AbstractEditorTab tab2 in _TabbedEditorUI.Tabs)
@@ -1062,7 +1191,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				}
 			}
 		}
-		return 0;
+
+		return VSConstants.S_OK;
 	}
 
 
@@ -1071,12 +1201,12 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		if (msg == 28)
 		{
 			_IsAppActivated = (int)wParam != 0;
+
 			if (_IsAppActivated)
-			{
 				UpdateCmdUIContext();
-			}
 		}
-		return 0;
+
+		return VSConstants.S_OK;
 	}
 
 	int IVsCodeWindow.Close()
@@ -1086,86 +1216,112 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		return XamlCodeWindow?.Close() ?? VSConstants.E_NOTIMPL;
 	}
 
+
+
 	int IVsCodeWindow.GetBuffer(out IVsTextLines ppBuffer)
 	{
 		IVsCodeWindow xamlCodeWindow = XamlCodeWindow;
+
 		if (xamlCodeWindow != null)
-		{
 			return xamlCodeWindow.GetBuffer(out ppBuffer);
-		}
+
 		ppBuffer = null;
+
 		return VSConstants.E_NOTIMPL;
 	}
+
+
 
 	int IVsCodeWindow.GetEditorCaption(READONLYSTATUS dwReadOnly, out string pbstrEditorCaption)
 	{
 		IVsCodeWindow xamlCodeWindow = XamlCodeWindow;
+
 		if (xamlCodeWindow != null)
-		{
 			return xamlCodeWindow.GetEditorCaption(dwReadOnly, out pbstrEditorCaption);
-		}
+
 		pbstrEditorCaption = null;
+
 		return VSConstants.E_NOTIMPL;
 	}
+
+
 
 	int IVsCodeWindow.GetLastActiveView(out IVsTextView ppView)
 	{
 		IVsCodeWindow xamlCodeWindow = XamlCodeWindow;
+
 		if (xamlCodeWindow != null)
-		{
 			return xamlCodeWindow.GetLastActiveView(out ppView);
-		}
+
 		ppView = null;
+
 		return VSConstants.E_NOTIMPL;
 	}
+
+
 
 	int IVsCodeWindow.GetPrimaryView(out IVsTextView ppView)
 	{
 		IVsCodeWindow xamlCodeWindow = XamlCodeWindow;
+
 		if (xamlCodeWindow != null)
-		{
 			return xamlCodeWindow.GetPrimaryView(out ppView);
-		}
+
 		ppView = null;
+
 		return VSConstants.E_NOTIMPL;
 	}
+
+
 
 	int IVsCodeWindow.GetSecondaryView(out IVsTextView ppView)
 	{
 		IVsCodeWindow xamlCodeWindow = XamlCodeWindow;
+
 		if (xamlCodeWindow != null)
-		{
 			return xamlCodeWindow.GetSecondaryView(out ppView);
-		}
+
 		ppView = null;
+
 		return VSConstants.E_NOTIMPL;
 	}
+
+
 
 	int IVsCodeWindow.GetViewClassID(out Guid pclsidView)
 	{
 		IVsCodeWindow xamlCodeWindow = XamlCodeWindow;
+
 		if (xamlCodeWindow != null)
-		{
 			return xamlCodeWindow.GetViewClassID(out pclsidView);
-		}
+
 		pclsidView = Guid.Empty;
+
 		return VSConstants.E_NOTIMPL;
 	}
+
+
 
 	int IVsCodeWindow.SetBaseEditorCaption(string[] pszBaseEditorCaption)
 	{
 		return XamlCodeWindow?.SetBaseEditorCaption(pszBaseEditorCaption) ?? VSConstants.E_NOTIMPL;
 	}
 
+
+
 	int IVsCodeWindow.SetBuffer(IVsTextLines pBuffer)
 	{
 		return XamlCodeWindow?.SetBuffer(pBuffer) ?? VSConstants.E_NOTIMPL;
 	}
 
+
+
 	int IVsCodeWindow.SetViewClassID(ref Guid clsidView)
 	{
 		return XamlCodeWindow?.SetViewClassID(ref clsidView) ?? VSConstants.E_NOTIMPL;
 	}
+
+
 
 	int IVsDocOutlineProvider.GetOutline(out IntPtr phwnd, out IOleCommandTarget ppCmdTarget)
 	{
@@ -1180,61 +1336,77 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		return VSConstants.E_NOTIMPL;
 	}
 
+
+
 	int IVsDocOutlineProvider.GetOutlineCaption(VSOUTLINECAPTION nCaptionType, out string pbstrCaption)
 	{
 		IVsDocOutlineProvider vsDocOutlineProvider = ActiveTab<IVsDocOutlineProvider>();
+
 		if (vsDocOutlineProvider != null)
-		{
 			return vsDocOutlineProvider.GetOutlineCaption(nCaptionType, out pbstrCaption);
-		}
 
 		pbstrCaption = null;
 
 		return VSConstants.E_NOTIMPL;
 	}
 
+
+
 	int IVsDocOutlineProvider.OnOutlineStateChange(uint dwMask, uint dwState)
 	{
 		return ActiveTab<IVsDocOutlineProvider>()?.OnOutlineStateChange(dwMask, dwState) ?? 0;
 	}
+
+
 
 	int IVsDocOutlineProvider.ReleaseOutline(IntPtr hwnd, IOleCommandTarget pCmdTarget)
 	{
 		return ActiveTab<IVsDocOutlineProvider>()?.ReleaseOutline(hwnd, pCmdTarget) ?? VSConstants.E_NOTIMPL;
 	}
 
+
+
 	int IVsDocOutlineProvider2.TranslateAccelerator(MSG[] lpMsg)
 	{
 		return ActiveTab<IVsDocOutlineProvider2>()?.TranslateAccelerator(lpMsg) ?? -2147467259;
 	}
 
+
+
 	int IVsToolboxActiveUserHook.InterceptDataObject(Microsoft.VisualStudio.OLE.Interop.IDataObject pIn, out Microsoft.VisualStudio.OLE.Interop.IDataObject ppOut)
 	{
 		IVsToolboxActiveUserHook vsToolboxActiveUserHook = ActiveTab<IVsToolboxActiveUserHook>();
+
 		if (vsToolboxActiveUserHook != null)
-		{
 			return vsToolboxActiveUserHook.InterceptDataObject(pIn, out ppOut);
-		}
 
 		ppOut = null;
 
 		return VSConstants.E_NOTIMPL;
 	}
 
+
+
 	int IVsToolboxActiveUserHook.ToolboxSelectionChanged(Microsoft.VisualStudio.OLE.Interop.IDataObject pSelected)
 	{
 		return ActiveTab<IVsToolboxActiveUserHook>()?.ToolboxSelectionChanged(pSelected) ?? VSConstants.E_NOTIMPL;
 	}
+
+
 
 	int IVsToolboxUser.IsSupported(Microsoft.VisualStudio.OLE.Interop.IDataObject pDO)
 	{
 		return ActiveTab<IVsToolboxUser>()?.IsSupported(pDO) ?? VSConstants.E_NOTIMPL;
 	}
 
+
+
 	int IVsToolboxUser.ItemPicked(Microsoft.VisualStudio.OLE.Interop.IDataObject pDO)
 	{
 		return ActiveTab<IVsToolboxUser>()?.ItemPicked(pDO) ?? VSConstants.E_NOTIMPL;
 	}
+
+
 
 	int IVsToolboxPageChooser.GetPreferredToolboxPage(out Guid pguidPage)
 	{
@@ -1242,6 +1414,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 		return VSConstants.S_FALSE;
 	}
+
+
 
 	/// <summary>
 	/// IVsDesignerInfo.get_DesignerTechnology implementation 
@@ -1274,6 +1448,8 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		return VSConstants.S_OK;
 	}
 
+
+
 	int IVsHasRelatedSaveItems.GetRelatedSaveTreeItems(VSSAVETREEITEM saveItem, uint celt, VSSAVETREEITEM[] rgSaveTreeItems, out uint pcActual)
 	{
 		// Tracer.Trace(GetType(), "GetRelatedSaveTreeItems()", "SaveOptFald: {0}.", saveItem.grfSave);
@@ -1282,18 +1458,19 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		{
 			IEnumerable<uint> enumerable = EnumerateOpenedDocuments(this, (__VSRDTSAVEOPTIONS)saveItem.grfSave);
 			pcActual = 0u;
+
 			foreach (uint item in enumerable)
 			{
 				if (rgSaveTreeItems != null)
-				{
 					rgSaveTreeItems[pcActual].docCookie = item;
-				}
+
 				pcActual++;
 			}
 		}
 		else
 		{
 			pcActual = (uint)_OverrideSaveDocCookieList.Count;
+
 			if (rgSaveTreeItems != null)
 			{
 				for (int i = 0; i < _OverrideSaveDocCookieList.Count; i++)
@@ -1302,8 +1479,11 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				}
 			}
 		}
-		return 0;
+
+		return VSConstants.S_OK;
 	}
+
+
 
 	int IVsDocumentLockHolder.CloseDocumentHolder(uint dwSaveOptions)
 	{
@@ -1312,15 +1492,14 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		if (_LockHolderCookie != 0)
 			RdtManager.UnregisterDocumentLockHolder(_LockHolderCookie);
 
-		return 0;
+		return VSConstants.S_OK;
 	}
-
 
 
 
 	public void SuppressChangeTracking(bool suppress)
 	{
-		___(Frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
+		___(Frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar));
 
 		if (pvar is not IVsCodeWindow codeWindow)
 			throw Diag.ExceptionInstance(typeof(IVsCodeWindow));
@@ -1332,7 +1511,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	int IVsDocumentLockHolder.ShowDocumentHolder()
 	{
-		return 0;
+		return VSConstants.S_OK;
 	}
 
 
@@ -1351,14 +1530,19 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		return ppContext;
 	}
 
+
+
 	private void SetupF1Help()
 	{
 		string helpKeywordForCodeWindowTextView = GetHelpKeywordForCodeWindowTextView();
+
 		if (_IsHelpInitialized || string.IsNullOrEmpty(helpKeywordForCodeWindowTextView))
 		{
 			return;
 		}
+
 		IVsUserContext vsUserContext = CreateF1HelpUserContext();
+
 		if (vsUserContext != null && this != null)
 		{
 			((IVsCodeWindow)this).GetPrimaryView(out IVsTextView ppView);

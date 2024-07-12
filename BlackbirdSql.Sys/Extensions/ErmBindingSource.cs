@@ -18,8 +18,9 @@ namespace BlackbirdSql.Sys.Extensions;
 /// Provides a simple ERM set for Master and Dependent BindingSources. 
 /// </summary>
 /// <remarks>
-/// Important: At a minimum <see cref="PrimaryKey"/>, <see cref="ForeignKey"/>, <see cref="BindingSource.DataSource"/> and <see cref="DependentSource"/> must
-/// be defined before the class object will be placed into a ready state.
+/// Important: At a minimum <see cref="PrimaryKey"/>, <see cref="ForeignKey"/>,
+/// <see cref="BindingSource.DataSource"/> and <see cref="DependentSource"/> must be defined before the
+/// class object will be placed into a ready state.
 /// </remarks>
 // =========================================================================================================
 internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable

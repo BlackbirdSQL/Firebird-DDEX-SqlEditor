@@ -1,6 +1,7 @@
 ﻿// Microsoft.Data.Tools.Components, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.Data.Tools.Components.Diagnostics.SqlTracer
 #define TRACE
+
 using System;
 using System.Data.Common;
 using System.Diagnostics;
@@ -11,6 +12,8 @@ using System.Text;
 using System.Threading;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
+
+
 
 namespace BlackbirdSql.Sys.Ctl.Diagnostics;
 

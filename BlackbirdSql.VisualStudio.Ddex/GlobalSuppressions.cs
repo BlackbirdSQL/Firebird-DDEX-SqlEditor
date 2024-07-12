@@ -8,3 +8,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0066:Convert switch statement to expression")]
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static")]
+[assembly: SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]

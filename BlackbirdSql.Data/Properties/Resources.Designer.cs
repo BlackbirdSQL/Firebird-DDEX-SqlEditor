@@ -88,11 +88,11 @@ namespace BlackbirdSql.Data.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection is null.
+        ///   Looks up a localized string similar to Connection string is null.
         /// </summary>
-        internal static string ExceptionConnectionNull {
+        internal static string ExceptionConnectionStringNull {
             get {
-                return ResourceManager.GetString("ExceptionConnectionNull", resourceCulture);
+                return ResourceManager.GetString("ExceptionConnectionStringNull", resourceCulture);
             }
         }
         

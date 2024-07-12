@@ -21,7 +21,10 @@ public class DbCommandService : SBsNativeDbCommand, IBsNativeDbCommand
 	{
 	}
 
-	public static DbCommandService CreateInstance() => new();
+	public static IBsNativeDbCommand EnsureInstance() => _Instance ??= new DbCommandService();
+
+
+	public static IBsNativeDbCommand _Instance = null;
 
 
 	/// <summary>

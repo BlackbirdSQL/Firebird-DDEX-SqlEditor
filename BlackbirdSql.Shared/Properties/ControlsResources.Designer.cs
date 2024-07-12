@@ -715,15 +715,6 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BlackbirdSQL SqlEditor.
-        /// </summary>
-        internal static string DefaultMessageBoxCaption {
-            get {
-                return ResourceManager.GetString("DefaultMessageBoxCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Use class derived from the grid control to implement custom columns..
         /// </summary>
         internal static string DeriveToImplementCustomColumn {
@@ -924,11 +915,20 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Database not accessible.
+        ///   Looks up a localized string similar to Database not accessible..
         /// </summary>
         internal static string ErrDatabaseNotAccessible {
             get {
                 return ResourceManager.GetString("ErrDatabaseNotAccessible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database not accessible: {0}..
+        /// </summary>
+        internal static string ErrDatabaseNotAccessibleEx {
+            get {
+                return ResourceManager.GetString("ErrDatabaseNotAccessibleEx", resourceCulture);
             }
         }
         
@@ -1140,11 +1140,11 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Incorrect syntax was encountered while parsing {0}..
+        ///   Looks up a localized string similar to An error was encountered while parsing with message: {0}..
         /// </summary>
-        internal static string ErrScriptingIncorrectSyntax {
+        internal static string ErrScriptingParseFailure {
             get {
-                return ResourceManager.GetString("ErrScriptingIncorrectSyntax", resourceCulture);
+                return ResourceManager.GetString("ErrScriptingParseFailure", resourceCulture);
             }
         }
         
@@ -3386,6 +3386,15 @@ namespace BlackbirdSql.Shared.Properties {
         internal static string StatusBarQueryCompletedWithErrors {
             get {
                 return ResourceManager.GetString("StatusBarQueryCompletedWithErrors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Query completed with errors (A rollback is recommended)..
+        /// </summary>
+        internal static string StatusBarQueryCompletedWithErrorsRollback {
+            get {
+                return ResourceManager.GetString("StatusBarQueryCompletedWithErrorsRollback", resourceCulture);
             }
         }
         

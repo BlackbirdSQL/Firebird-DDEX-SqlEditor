@@ -11,9 +11,10 @@ using System.Text;
 
 namespace BlackbirdSql.Shared.Ctl.Commands;
 
-
 [StructLayout(LayoutKind.Sequential)]
 [ComVisible(false)]
+
+
 public sealed class OLECMDTEXT
 {
 	public static string GetText(IntPtr pCmdTextInt)

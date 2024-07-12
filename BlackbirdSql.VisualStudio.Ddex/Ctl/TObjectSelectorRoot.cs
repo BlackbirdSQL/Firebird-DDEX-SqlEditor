@@ -12,7 +12,9 @@ using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
+using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -27,7 +29,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Implementation of <see cref="IVsDataObjectSelector"/> enumerator interface for the root node
 /// </summary>
 // =========================================================================================================
-public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
+public class TObjectSelectorRoot : DataObjectSelector
 {
 
 	// ---------------------------------------------------------------------------------
@@ -49,12 +51,16 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	// =========================================================================================================
 
 
-	/*
 	public TObjectSelectorRoot() : base()
 	{
-		// Tracer.Trace(GetType(), "TObjectSelectorRoot.TObjectSelectorRoot()");
+		// Tracer.Trace(typeof(TObjectSelectorRoot), ".ctor");
 	}
-	*/
+
+
+	public TObjectSelectorRoot(IVsDataConnection connection) : base(connection)
+	{
+		// Tracer.Trace(typeof(TObjectSelectorRoot), ".ctor(IVsDataConnection)");
+	}
 
 	#endregion Constructors / Destructors
 
@@ -113,8 +119,11 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		// Tracer.Trace(GetType(), "SelectObjects()", "TYPE IVsDataConnection: {0}.", Site.GetType().FullName);
 
+		IVsDataExplorerConnection root = null;
 		object lockedProviderObject = null;
 		IVsDataReader reader = null;
+		bool connectionCreated = false;
+		DbConnection connection = null;
 
 		try
 		{
@@ -127,22 +136,24 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			if (lockedProviderObject == null)
 				throw new NotImplementedException("Site.GetLockedProviderObject()");
 
-			DbConnection connection = NativeDb.CastToAssemblyConnection(lockedProviderObject);
+			connection = NativeDb.CastToNativeConnection(lockedProviderObject);
 
 
 			// VS glitch. Null if ado has picked up a project data model firebird assembly.
 			if (connection == null)
 			{
+				connectionCreated = true;
 				connection = (DbConnection)NativeDb.CreateDbConnection(Site.DecryptedConnectionString());
 				connection.Open();
 			}
 
 			// Tracer.Trace(GetType(), "SelectObjects()", "Site type: {0}", Site.GetType().FullName);
 
-			if (_Csa == null || _Csa.IsInvalidated((IDbConnection)lockedProviderObject))
+			if (_Csa == null || _Csa.IsInvalidated)
 			{
+
 				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject,
-					RctManager.GetConnectionSource());
+					RctManager.ConnectionSource);
 			}
 
 			DataTable schema = CreateSchema(connection, typeName, parameters);
@@ -154,10 +165,13 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		{
 			Tracer.Warning(GetType(), "SelectObjects", "{0} error: {1}.", NativeDb.DbEngineName, exf.Message);
 
-			((IDbConnection)lockedProviderObject).DisposeLinkageParser();
-			lockedProviderObject = null;
-
-			Site.UnlockProviderObject();
+			root ??= Site.ExplorerConnection();
+			root.DisposeLinkageParser(false);
+			if (lockedProviderObject != null)
+			{
+				lockedProviderObject = null;
+				Site.UnlockProviderObject();
+			}
 			Site.Close();
 
 			reader = new AdoDotNetTableReader(new DataTable());
@@ -172,13 +186,13 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		{
 			// Only force create the parser 2nd time in.
 			if (lockedProviderObject != null)
-			{
-				// Tracer.Trace(GetType(), "SelectObjects()", "Finally.");
-
-				if (!RctManager.IsEdmConnectionSource)
-					((IDbConnection)lockedProviderObject).AsyncEnsureLinkageLoading();
-
 				Site.UnlockProviderObject();
+
+			if (connectionCreated)
+			{
+				if (connection.State == ConnectionState.Open)
+					connection.Close();
+				connection.Dispose();
 			}
 		}
 
@@ -196,6 +210,39 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	#region Methods - TObjectSelectorRoot
 	// =========================================================================================================
 
+
+	public static void ApplyMappings(DataTable dataTable, IDictionary<string, object> mappings)
+	{
+		if (dataTable == null)
+			throw new ArgumentNullException("dataTable");
+
+		if (mappings == null)
+			return;
+
+
+		foreach (KeyValuePair<string, object> mapping in mappings)
+		{
+			DataColumn dataColumn = dataTable.Columns[mapping.Key];
+
+			if (dataColumn != null)
+				continue;
+
+			if (mapping.Value is string name)
+			{
+				dataColumn = dataTable.Columns[name];
+			}
+			else
+			{
+				int num = (int)mapping.Value;
+
+				if (num >= 0 && num < dataTable.Columns.Count)
+					dataColumn = dataTable.Columns[num];
+			}
+
+			if (dataColumn != null)
+				dataTable.Columns.Add(new DataColumn(mapping.Key, dataColumn.DataType, "[" + dataColumn.ColumnName.Replace("]", "]]") + "]"));
+		}
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -249,14 +296,14 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		*/
 		// Tracer.Trace(GetType(), "CreateSchema()", "{0}", str);
 
-		if (parameters != null && parameters.Length == 1 && parameters[0] is DictionaryEntry entry)
+		// Not used.
+		if (parameters != null && parameters.Length > 1 && parameters[1] is DictionaryEntry entry
+			&& entry.Value is object[] array)
 		{
-			if (entry.Value is object[] array)
-			{
-				IDictionary<string, object> mappings = GetMappings(array);
-				ApplyMappings(schema, mappings);
-			}
+			IDictionary<string, object> mappings = GetMappings(array);
+			ApplyMappings(schema, mappings);
 		}
+		
 
 		// Tracer.Trace(GetType(), "CreateSchema()", "Schema type '{0}' loaded with {1} rows.", typeName, schema.Rows.Count);
 
@@ -287,7 +334,10 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 				connection.Close();
 				connection.Open();
 			}
-			catch { }
+			catch (Exception ex)
+			{
+				Diag.Expected(ex);
+			}
 		}
 
 
@@ -319,16 +369,11 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 						strval = _Csa.Dataset;
 					retval = strval;
 					break;
-				case SysConstants.C_KeyExDisplayName:
-					strval = _Csa.DatasetId;
-					if (string.IsNullOrWhiteSpace(strval))
-						strval = _Csa.Dataset;
-					if (!string.IsNullOrWhiteSpace(_Csa.ConnectionName))
-						strval = _Csa.ConnectionName + " | " + strval;
-					retval = strval;
+				case SysConstants.C_KeyExFullDisplayName:
+					retval = _Csa.FullDisplayName;
 					break;
 				case SysConstants.C_KeyExClientVersion:
-					retval = $"FirebirdSql {NativeDb.ClientVersion}";
+					retval = NativeDb.ClientVersion;
 					break;
 				case SysConstants.C_KeyExMemoryUsage:
 					errval = -1;

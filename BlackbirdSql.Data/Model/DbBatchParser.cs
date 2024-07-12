@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys.Enums;
@@ -9,7 +10,6 @@ using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.Sys.Model;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
-using Microsoft.VisualStudio.Threading;
 
 
 
@@ -45,6 +45,42 @@ public class DbBatchParser : IBsNativeDbBatchParser
 		}
 
 		_ScriptParser = null;
+
+		if (_LocalTransaction != null)
+		{
+			try
+			{
+				if (_LocalTransaction.HasTransactions())
+					_LocalTransaction.Rollback();
+			}
+			catch { }
+
+			try
+			{
+				_LocalTransaction.Dispose();
+			}
+			catch { }
+
+			_LocalTransaction = null;
+		}
+
+		if (_LocalConnection != null)
+		{
+			try
+			{
+				if (_LocalConnection.State == ConnectionState.Open)
+					_LocalConnection.Close();
+			}
+			catch { }
+
+			try
+			{
+				_LocalConnection.Dispose();
+			}
+			catch { }
+
+			_LocalConnection = null;
+		}
 	}
 
 	public virtual void Dispose()
@@ -181,10 +217,18 @@ public class DbBatchParser : IBsNativeDbBatchParser
 
 		if (_LocalTransaction != null)
 		{
-			if (_LocalTransaction.HasTransactions())
-				_LocalTransaction.Commit();
+			try
+			{
+				if (_LocalTransaction.HasTransactions())
+					_LocalTransaction.Commit();
+			}
+			catch { }
 
-			_LocalTransaction.Dispose();
+			try
+			{
+				_LocalTransaction.Dispose();
+			}
+			catch { }
 		}
 
 		_LocalTransaction = _LocalConnection.BeginTransaction(_QryMgr.TtsIsolationLevel);
@@ -215,27 +259,52 @@ public class DbBatchParser : IBsNativeDbBatchParser
 		{
 			FbTransaction transaction = (FbTransaction)_QryMgr.Transaction;
 
-			if (transaction != null && transaction.HasTransactions())
+			try
 			{
-				await transaction.CommitAsync(cancelToken);
-				_QryMgr.DisposeTransaction(true);
+				if (transaction != null && transaction.HasTransactions())
+				{
+					await transaction.CommitAsync(cancelToken);
+					_QryMgr.DisposeTransaction(true);
 
-				return true;
+					return true;
+				}
 			}
+			catch
+			{
+				_QryMgr.DisposeTransaction(true);
+			}
+
 
 			return false;
 		}
 
-		if (_LocalTransaction != null && _LocalTransaction.HasTransactions())
+		if (_LocalTransaction == null)
+			return false;
+
+
+		bool result = false;
+
+		try
 		{
+			if (!_LocalTransaction.HasTransactions())
+				return false;
+
 			await _LocalTransaction.CommitAsync(cancelToken);
-			_LocalTransaction.Dispose();
-			_LocalTransaction = null;
 
-			return true;
+			result = true;
 		}
+		catch { }
 
-		return false;
+		try
+		{
+			_LocalTransaction.Dispose();
+		}
+		catch { }
+
+
+		_LocalTransaction = null;
+
+		return result;
 	}
 
 	public bool HasTransactions(IDbTransaction @this)
@@ -274,27 +343,52 @@ public class DbBatchParser : IBsNativeDbBatchParser
 		{
 			FbTransaction transaction = (FbTransaction)_QryMgr.Transaction;
 
-			if (transaction != null && transaction.HasTransactions())
+			try
 			{
-				await transaction.RollbackAsync(cancelToken);
-				_QryMgr.DisposeTransaction(true);
+				if (transaction != null && transaction.HasTransactions())
+				{
+					await transaction.RollbackAsync(cancelToken);
+					_QryMgr.DisposeTransaction(true);
 
-				return true;
+					return true;
+				}
 			}
+			catch
+			{
+				_QryMgr.DisposeTransaction(true);
+			}
+
 
 			return false;
 		}
 
-		if (_LocalTransaction != null && _LocalTransaction.HasTransactions())
+		if (_LocalTransaction == null)
+			return false;
+
+
+		bool result = false;
+
+		try
 		{
-			await _LocalTransaction.CommitAsync(cancelToken);
-			_LocalTransaction.Dispose();
-			_LocalTransaction = null;
+			if (!_LocalTransaction.HasTransactions())
+				return false;
 
-			return true;
+			await _LocalTransaction.RollbackAsync(cancelToken);
+
+			result = true;
 		}
+		catch { }
 
-		return false;
+		try
+		{
+			_LocalTransaction.Dispose();
+		}
+		catch { }
+
+
+		_LocalTransaction = null;
+
+		return result;
 	}
 
 

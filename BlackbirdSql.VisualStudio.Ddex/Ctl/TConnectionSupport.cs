@@ -4,6 +4,8 @@
 using System;
 using System.ComponentModel.Design;
 using System.Data;
+using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
@@ -20,7 +22,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Implementation of <see cref="IVsDataConnectionSupport"/> interface
 /// </summary>
 // =========================================================================================================
-public class TConnectionSupport : AdoDotNetConnectionSupport
+public class TConnectionSupport : AdoDotNetConnectionSupport, IBDataConnectionSupport
 {
 
 
@@ -42,63 +44,18 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 
 
 
+	// =====================================================================================================
+	#region Fields - TConnectionSupport
+	// =====================================================================================================
 
 
-	/// <summary>
-	/// Trace replacement for AdoDotNetCommand but doesn't seem to do anything.
-	/// </summary>
-	public class TCommand : DataCommand
-	{
-		private TConnectionSupport ConnectionSupport => base.Site.GetService(typeof(IVsDataConnectionSupport)) as TConnectionSupport;
+	private EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
 
 
-		public TCommand() : base()
-		{
-			// Tracer.Trace(GetType(), "TCommand.TCommand");
-		}
 
-		public TCommand(IVsDataConnection connection)
-			: base(connection)
-		{
-			// Tracer.Trace(GetType(), "TCommand.TCommand(IVsDataConnection)");
-		}
+	#endregion Fields
 
-		public override IVsDataParameter CreateParameter()
-		{
-			// Tracer.Trace(GetType(), "CreateParameter()");
-			return ConnectionSupport.CreateParameterCore();
-		}
 
-		public override IVsDataParameter[] DeriveParameters(string command, DataCommandType commandType, int commandTimeout)
-		{
-			// Tracer.Trace(GetType(), "DeriveParameters()", "commandType: {0}, command: {1}", commandType, command);
-			return ConnectionSupport.DeriveParametersCore(command, commandType, commandTimeout);
-		}
-
-		public override string Prepare(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
-		{
-			// Tracer.Trace(GetType(), "Prepare()", "commandType: {0}, command: {1}", commandType, command);
-			return ConnectionSupport.PrepareCore(command, commandType, parameters, commandTimeout);
-		}
-
-		public override IVsDataReader DeriveSchema(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
-		{
-			// Tracer.Trace(GetType(), "DeriveSchema()", "commandType: {0}, command: {1}", commandType, command);
-			return ConnectionSupport.DeriveSchemaCore(command, commandType, parameters, commandTimeout);
-		}
-
-		public override IVsDataReader Execute(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
-		{
-			// Tracer.Trace(GetType(), "Execute()", "commandType: {0}, command: {1}", commandType, command);
-			return ConnectionSupport.ExecuteCore(command, commandType, parameters, commandTimeout);
-		}
-
-		public override int ExecuteWithoutResults(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
-		{
-			// Tracer.Trace(GetType(), "ExecuteWithoutResults()", "commandType: {0}, command: {1}", commandType, command);
-			return ConnectionSupport.ExecuteWithoutResultsCore(command, commandType, parameters, commandTimeout);
-		}
-	}
 
 
 
@@ -107,6 +64,33 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 	// =====================================================================================================
 	#region Property Accessors - TConnectionSupport
 	// =====================================================================================================
+
+	public EnConnectionSource ConnectionSource
+	{
+		get
+		{
+
+			if (_ConnectionSource != EnConnectionSource.Undefined)
+				return _ConnectionSource;
+
+			try
+			{
+				_ConnectionSource = RctManager.ConnectionSource;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+
+			return _ConnectionSource;
+		}
+		set
+		{
+			_ConnectionSource = value;
+		}
+	}
 
 
 	public override string ConnectionString
@@ -225,8 +209,8 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 	/// </summary>
 	/// <param name="doPromptCheck">
 	/// Indicates whether the call to the Open method should return false for specified
-	/// errors that relate to missing connection information.</param>
-	/// <param name="serviceType">A <see cref="Type"/> of the service to create.</param>
+	/// errors that relate to missing connection information.
+	/// </param>
 	/// <returns>
 	/// true if the connection opened successfully and does not require a prompt, false
 	/// if the connection is missing required connection information and a prompt should
@@ -237,30 +221,152 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 	{
 		// Tracer.Trace(GetType(), "Open()", "doPromptCheck: {0}", doPromptCheck);
 
+		if (State == DataConnectionState.Open)
+			return true;
+
+		IVsDataSiteableObject<IVsDataProvider> @this = this;
+		IVsDataConnectionUIProperties connectionUIProperties;
+
 		try
 		{
-			if (State == DataConnectionState.Open)
-				return true;
-
-			IVsDataConnectionUIProperties vsDataConnectionUIProperties =
-				((IVsDataSiteableObject<IVsDataProvider>)this).Site.CreateObject<IVsDataConnectionUIProperties>(Site.Source);
-
-			vsDataConnectionUIProperties.Parse(ConnectionString);
-
-			if (doPromptCheck && !vsDataConnectionUIProperties.IsComplete)
-			{
-				return false;
-			}
+			connectionUIProperties = @this.Site.CreateObject<IVsDataConnectionUIProperties>(Site.Source);
 		}
+#if DEBUG
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
+			throw;
 		}
+#else
+		catch
+		{
+			throw;
+		}
+#endif
 
-		return base.Open(doPromptCheck);
+		try
+		{
+			if (_ConnectionSource != EnConnectionSource.Undefined)
+				(connectionUIProperties as IBDataConnectionProperties).ConnectionSource = _ConnectionSource;
+
+			connectionUIProperties.Parse(ConnectionString);
+		}
+#if DEBUG
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+#else
+		catch
+		{
+			throw;
+		}
+#endif
+
+		if (doPromptCheck && !(connectionUIProperties as TConnectionProperties).IsComplete)
+			return false;
+
+
+		try
+		{
+			NativeDb.OpenConnection(Connection);
+			/*
+			// Fire and wait.
+			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await TaskScheduler.Default;
+				NativeDb.DatabaseEngineSvc.OpenConnection_(Connection);
+				return true;
+			});
+			*/
+		}
+#if DEBUG
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+#else
+		catch
+		{
+			throw;
+		}
+#endif
+
+		return true;
 	}
 
 
 	#endregion Method Implementations
+
+
+
+
+
+	// =========================================================================================================
+	#region Internal Classes - TConnectionSupport
+	// =========================================================================================================
+
+
+	/// <summary>
+	/// Trace replacement for AdoDotNetCommand but doesn't seem to do anything.
+	/// </summary>
+	public class TCommand : DataCommand
+	{
+		private TConnectionSupport ConnectionSupport => base.Site.GetService(typeof(IVsDataConnectionSupport)) as TConnectionSupport;
+
+
+		public TCommand() : base()
+		{
+			// Tracer.Trace(GetType(), "TCommand.TCommand");
+		}
+
+		public TCommand(IVsDataConnection connection)
+			: base(connection)
+		{
+			// Tracer.Trace(GetType(), "TCommand.TCommand(IVsDataConnection)");
+		}
+
+		public override IVsDataParameter CreateParameter()
+		{
+			// Tracer.Trace(GetType(), "CreateParameter()");
+			return ConnectionSupport.CreateParameterCore();
+		}
+
+		public override IVsDataParameter[] DeriveParameters(string command, DataCommandType commandType, int commandTimeout)
+		{
+			// Tracer.Trace(GetType(), "DeriveParameters()", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.DeriveParametersCore(command, commandType, commandTimeout);
+		}
+
+		public override string Prepare(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			// Tracer.Trace(GetType(), "Prepare()", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.PrepareCore(command, commandType, parameters, commandTimeout);
+		}
+
+		public override IVsDataReader DeriveSchema(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			// Tracer.Trace(GetType(), "DeriveSchema()", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.DeriveSchemaCore(command, commandType, parameters, commandTimeout);
+		}
+
+		public override IVsDataReader Execute(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			// Tracer.Trace(GetType(), "Execute()", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.ExecuteCore(command, commandType, parameters, commandTimeout);
+		}
+
+		public override int ExecuteWithoutResults(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			// Tracer.Trace(GetType(), "ExecuteWithoutResults()", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.ExecuteWithoutResultsCore(command, commandType, parameters, commandTimeout);
+		}
+	}
+
+
+	#endregion Internal Classes
+
 
 }

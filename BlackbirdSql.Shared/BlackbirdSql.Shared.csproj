@@ -14,18 +14,18 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-		<NoWarn>1701;1702;CS0618</NoWarn>
+		<NoWarn>1701;1702;CS0618;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-		<NoWarn>1701;1702;CS0618</NoWarn>
+		<NoWarn>1701;1702;CS0618;</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<Compile Include="Ctl\AbstractDesignerServices.cs" />
 		<Compile Include="Enums\EnCasingStyle.cs" />
 		<Compile Include="Ctl\Config\TransientSettings.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorNewQueryCommand.cs" />
+		<Compile Include="Ctl\Commands\CommandNewQuery.cs" />
 		<Compile Include="Ctl\Config\PersistentSettings.cs" />
 		<Compile Include="Ctl\DesignerExplorerServices.cs" />
 		<Compile Include="Enums\EnDeadlockPriority.cs" />
@@ -35,9 +35,9 @@
 		<Compile Include="Controls\Dialogs\FileEncodingDialog.Designer.cs">
 			<DependentUpon>FileEncodingDialog.cs</DependentUpon>
 		</Compile>
-		<Compile Include="Ctl\Commands\SqlEditorTransactionCommitCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorTransactionRollbackCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorToggleTTSCommand.cs" />
+		<Compile Include="Ctl\Commands\CommandTransactionCommit.cs" />
+		<Compile Include="Ctl\Commands\CommandTransactionRollback.cs" />
+		<Compile Include="Ctl\Commands\CommandToggleTTS.cs" />
 		<Compile Include="Properties\SqlResources.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -464,30 +464,30 @@
 		<Compile Include="Controls\ToolbarHost.cs" />
 		<Compile Include="Controls\Widgets\ToolStripStatusLabelWithMaxLimit.cs" />
 		<Compile Include="Ctl\IO\AbstractTextBuffer.cs" />
-		<Compile Include="Ctl\AbstractViewFilter.cs" />
+		<Compile Include="Ctl\Commands\AbstractViewCommandFilter.cs" />
 		<Compile Include="Ctl\IO\ArrayList64.cs" />
 		<Compile Include="Ctl\BitArrayCollection.cs" />
 		<Compile Include="Ctl\BlockOfCellsCollection.cs" />
-		<Compile Include="Ctl\Commands\AbstractSqlEditorCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorCancelQueryCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorChangeConnectionCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorCloneQueryWindowCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorConnectCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorDisconnectAllQueriesCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorDisconnectCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorExecuteQueryCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorQuerySettingsCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorResultsAsFileCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorResultsAsGridCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorResultsAsTextCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorShowEstimatedPlanCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorDatabaseCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorDatabaseListCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorToggleClientStatisticsCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorToggleExecutionPlanCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorToggleIntellisenseCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorToggleResultsPaneCommand.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorToggleSqlCmdModeCommand.cs" />
+		<Compile Include="Ctl\Commands\AbstractCommand.cs" />
+		<Compile Include="Ctl\Commands\CommandCancelQuery.cs" />
+		<Compile Include="Ctl\Commands\CommandModifyConnection.cs" />
+		<Compile Include="Ctl\Commands\CommandCloneQueryWindow.cs" />
+		<Compile Include="Ctl\Commands\CommandConnect.cs" />
+		<Compile Include="Ctl\Commands\CommandDisconnectAllQueries.cs" />
+		<Compile Include="Ctl\Commands\CommandDisconnect.cs" />
+		<Compile Include="Ctl\Commands\CommandExecuteQuery.cs" />
+		<Compile Include="Ctl\Commands\CommandQuerySettings.cs" />
+		<Compile Include="Ctl\Commands\CommandResultsAsFile.cs" />
+		<Compile Include="Ctl\Commands\CommandResultsAsGrid.cs" />
+		<Compile Include="Ctl\Commands\CommandResultsAsText.cs" />
+		<Compile Include="Ctl\Commands\CommandShowEstimatedPlan.cs" />
+		<Compile Include="Ctl\Commands\CommandDatabaseSelect.cs" />
+		<Compile Include="Ctl\Commands\CommandDatabaseList.cs" />
+		<Compile Include="Ctl\Commands\CommandToggleClientStatistics.cs" />
+		<Compile Include="Ctl\Commands\CommandToggleExecutionPlan.cs" />
+		<Compile Include="Ctl\Commands\CommandToggleIntellisense.cs" />
+		<Compile Include="Ctl\Commands\CommandToggleResultsPane.cs" />
+		<Compile Include="Ctl\Commands\CommandToggleSqlCmdMode.cs" />
 		<Compile Include="Ctl\ConnectionPointCookie.cs" />
 		<Compile Include="Ctl\DbCommandWrapper.cs" />
 		<Compile Include="Ctl\FindTargetAdapter.cs" />
@@ -496,9 +496,9 @@
 		<Compile Include="Ctl\Commands\MenuCommandsService.cs" />
 		<Compile Include="Ctl\Commands\MenuCommandTextChanges.cs" />
 		<Compile Include="Ctl\IO\SortingArray.cs" />
-		<Compile Include="Ctl\Commands\SqlEditorViewFilter.cs" />
+		<Compile Include="Ctl\Commands\ViewCommandFilter.cs" />
 		<Compile Include="Ctl\SqlTextSpan.cs" />
-		<Compile Include="Ctl\ToolbarCommandHandlerManager.cs" />
+		<Compile Include="Ctl\ToolbarCommandMapper.cs" />
 		<Compile Include="Ctl\TextEditorProxy.cs" />
 		<Compile Include="Ctl\VsColorUtilities.cs" />
 		<Compile Include="Ctl\VsTextMarker.cs" />
@@ -509,7 +509,6 @@
 		<Compile Include="Enums\EnSplitterBarButtonDisplayStyle.cs" />
 		<Compile Include="Enums\EnStatusBarPosition.cs" />
 		<Compile Include="Enums\EnTabViewMode.cs" />
-		<Compile Include="Exceptions\ParserException.cs" />
 		<Compile Include="Events\ColorChangedEventArgs.cs" />
 		<Compile Include="Events\ColorChangedEventHandler.cs" />
 		<Compile Include="Events\FontChangedEventArgs.cs" />
@@ -529,8 +528,8 @@
 		<Compile Include="Interfaces\IBEditorPackage.cs" />
 		<Compile Include="Interfaces\IBMenuCommandTextChanges.cs" />
 		<Compile Include="Interfaces\IBSortingArray.cs" />
-		<Compile Include="Interfaces\IBSqlEditorErrorTaskFactory.cs" />
-		<Compile Include="Interfaces\IBSqlEditorExtendedCommandHandler.cs" />
+		<Compile Include="Interfaces\IBErrorTaskFactory.cs" />
+		<Compile Include="Interfaces\IBExtendedCommandHandler.cs" />
 		<Compile Include="Interfaces\IBSqlEditorWindowPane.cs" />
 		<Compile Include="Interfaces\IBTabbedEditorService.cs" />
 		<Compile Include="Interfaces\IBToolbarCommandHandler.cs" />
@@ -541,10 +540,9 @@
 		<Compile Include="Model\AbstractFontAndColorProvider.cs" />
 		<Compile Include="Model\AuxilliaryDocData.cs" />
 		<Compile Include="Model\AbstractConnectionStrategy.cs" />
-		<Compile Include="Model\DefaultSqlEditorStrategy.cs" />
+		<Compile Include="Model\ConnectionStrategyFactory.cs" />
 		<Compile Include="Model\IO\AbstractDiskDataStorage.cs" />
 		<Compile Include="Model\IO\DiskStorageView.cs" />
-		<Compile Include="Model\DslConnectionInfo.cs" />
 		<Compile Include="Enums\EnErrorAction.cs" />
 		<Compile Include="Enums\EnOutputDestination.cs" />
 		<Compile Include="Enums\EnPaneSelection.cs" />
@@ -564,7 +562,7 @@
 		<Compile Include="Events\QESQLBatchErrorMessageEventArgs.cs" />
 		<Compile Include="Events\QESQLBatchErrorMessageEventHandler.cs" />
 		<Compile Include="Events\QESQLBatchExecutedEventArgs.cs" />
-		<Compile Include="Events\QESQLBatchExecutedEventHandler.cs" />
+		<Compile Include="Events\QESQLBatchExecutionCompletedEventHandler.cs" />
 		<Compile Include="Events\QESQLBatchMessageEventArgs.cs" />
 		<Compile Include="Events\QESQLBatchMessageEventHandler.cs" />
 		<Compile Include="Events\QESQLBatchNewResultSetEventArgs.cs" />
@@ -573,8 +571,8 @@
 		<Compile Include="Events\QeSqlCmdMessageFromAppEventHandler.cs" />
 		<Compile Include="Events\QeSqlCmdNewConnectionOpenedEventArgs.cs" />
 		<Compile Include="Events\QeSqlCmdNewConnectionOpenedEventHandler.cs" />
-		<Compile Include="Events\QESQLStartingBatchEventArgs.cs" />
-		<Compile Include="Events\QESQLStartingBatchEventHandler.cs" />
+		<Compile Include="Events\QESQLBatchExecutionStartEventArgs.cs" />
+		<Compile Include="Events\QESQLBatchExecutionStartEventHandler.cs" />
 		<Compile Include="Events\ScriptExecutionCompletedEventArgs.cs" />
 		<Compile Include="Events\ScriptExecutionCompletedEventHandler.cs" />
 		<Compile Include="Model\FontAndColorProviderExecutionPlan.cs" />
@@ -588,14 +586,13 @@
 		<Compile Include="Interfaces\IBQESQLBatchConsumer.cs" />
 		<Compile Include="Interfaces\IBQEStorage.cs" />
 		<Compile Include="Interfaces\IBQEStorageView.cs" />
+		<Compile Include="Interfaces\IBExecutionHandler.cs" />
+		<Compile Include="Interfaces\IBConnectionStrategy.cs" />
 		<Compile Include="Interfaces\IBQueryExecutionHandler.cs" />
-		<Compile Include="Interfaces\IBSqlEditorStrategy.cs" />
-		<Compile Include="Interfaces\IBSqlQueryExecutionHandler.cs" />
 		<Compile Include="Model\Parsers\ManagedBatchParser.cs" />
-		<Compile Include="Model\ParserState.cs" />
 		<Compile Include="Ctl\Commands\OLECMDTEXT.cs" />
 		<Compile Include="Model\IO\QEDiskDataStorage.cs" />
-		<Compile Include="Ctl\QueryExecution\QEOLESQLExec.cs" />
+		<Compile Include="Ctl\QueryExecution\QESQLExec.cs" />
 		<Compile Include="Model\IO\QEReaderDataStorage.cs" />
 		<Compile Include="Properties\QEResources.Designer.cs">
 			<DesignTime>True</DesignTime>
@@ -613,7 +610,7 @@
 		<Compile Include="Ctl\QueryExecution\ResultSetAndGridContainerCollection.cs" />
 		<Compile Include="Model\QueryExecution\ResultsToGridBatchConsumer.cs" />
 		<Compile Include="Model\QueryExecution\ResultsToTextOrFileBatchConsumer.cs" />
-		<Compile Include="Model\SqlConnectionStrategy.cs" />
+		<Compile Include="Model\ConnectionStrategy.cs" />
 		<Compile Include="Root\Native.cs" />
 		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 		<Compile Include="Properties\SharedResx.Designer.cs">

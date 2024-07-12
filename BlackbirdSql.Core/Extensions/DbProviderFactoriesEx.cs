@@ -282,7 +282,10 @@ public static class DbProviderFactoriesEx
 				// SQL Server.
 				"91510608-8809-4020-8897-fba057e22d54",
 				// ODBC.
-				"c3d4f4ce-2c48-4381-b4d6-34fa50c51c86"];
+				"c3d4f4ce-2c48-4381-b4d6-34fa50c51c86",
+				// PostgreSql
+				"70ba90f8-3027-4af1-9b15-37abbd48744c"
+			];
 
 
 			// Build a list of unverified providers.

@@ -5,15 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Events;
 using Microsoft.VisualStudio.Data.Services;
-using System.Diagnostics.CodeAnalysis;
+
+
 
 namespace BlackbirdSql.Sys.Interfaces;
 
@@ -33,9 +35,11 @@ public interface IBsNativeDatabaseEngine
 	Assembly ClientFactoryAssembly_ { get; }
 	string ClientVersion_ { get; }
 	Type ClientFactoryType_ { get; }
+	Type ProviderServicesType_ { get; }
+	string ProviderServicesTypeFullName_ { get; }
+	string[] EntityFrameworkVersions_ { get; }
 	Type ConnectionType_ { get; }
 	DescriberDictionary Describers_ { get; }
-	Type ExceptionType_ { get; }
 
 
 	string Invariant_ { get; }
@@ -63,27 +67,16 @@ public interface IBsNativeDatabaseEngine
 	string RootObjectTypeName_ { get; }
 
 
-	void AsyncEnsureLinkageLoading_(IDbConnection connection, int delay = 0, int multiplier = 1);
-	void AsyncEnsureLinkageLoading_(IVsDataConnection site, int delay = 0, int multiplier = 1);
-	void AsyncEnsureLinkageLoading_(IVsDataExplorerNode node, int delay = 0, int multiplier = 1);
-	void AsyncRequestLinkageLoading_(IVsDataConnection site, int delay = 0, int multiplier = 1);
+	void AsyncEnsureLinkageLoading_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1);
 
-	DbConnection CastToAssemblyConnection_(object connection);
-	string ConvertDataTypeToSql_(string type, int length, int precision, int scale);
+	DbConnection CastToNativeConnection_(object connection);
 	string ConvertDataTypeToSql_(object type, object length, object precision, object scale);
 	IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBQueryManager qryMgr, string script);
 	DbCommand CreateDbCommand_(string cmdText = null);
 	IDbConnection CreateDbConnection_(string connectionString);
-	DbConnectionStringBuilder CreateDbConnectionStringBuilder_();
-	DbConnectionStringBuilder CreateDbConnectionStringBuilder_(string connectionString);
 	IBsNativeDbConnectionWrapper CreateDbConnectionWrapper_(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null);
 	IBsNativeDbStatementWrapper CreateDbStatementWrapper_(IBsNativeDbBatchParser owner, object statement, int index);
-	bool DisposeLinkageParserInstance_(IVsDataConnection site);
-	bool DisposeLinkageParserInstance_(IDbConnection connection);
-	bool DisposeLinkageParsers_();
-	IBsLinkageParser EnsureLinkageParserInstance_(IDbConnection connection);
-	IBsLinkageParser EnsureLinkageParserLoaded_(IDbConnection connection);
-
+	bool DisposeLinkageParserInstance_(IVsDataExplorerConnection root, bool disposing);
 	byte GetErrorClass_(object error);
 	int GetErrorLineNumber_(object error);
 	string GetErrorMessage_(object error);
@@ -91,13 +84,13 @@ public interface IBsNativeDatabaseEngine
 	int GetObjectTypeIdentifierLength_(string typeName);
 	IList<object> GetInfoMessageEventArgsErrors_(DbInfoMessageEventArgs e);
 	ICollection<object> GetErrorEnumerator_(IList<object> errors);
-	IBsLinkageParser GetLinkageParserInstance_(IVsDataConnection site);
-	IBsLinkageParser GetLinkageParserInstance_(IDbConnection connection);
+	IBsNativeDbLinkageParser GetLinkageParserInstance_(IVsDataExplorerConnection root);
 	bool HasTransactions_(IDbTransaction @this);
 
 	bool IsSupportedCommandType_(object command);
-	bool IsSupportedConnection_(object connection);
-	void LockLoadedParser_(string updatedString);
+	bool IsSupportedConnection_(IDbConnection connection);
+	bool LockLoadedParser_(string originalString, string updatedString);
+	void OpenConnection_(DbConnection connection);
 	bool TransactionCompleted_(IDbTransaction transacttion);
 	void UnlockLoadedParser_();
 

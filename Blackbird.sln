@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Firebird", "Firebird", "{2AF853FC-ADFF-4432-8BFB-45093A1969F4}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sql", "Sql", "{F13C0BD2-B112-42D0-8B8D-1E26986B0410}"
 	ProjectSection(SolutionItems) = preProject
 		Sql\DslColumns.sql = Sql\DslColumns.sql
@@ -42,8 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F6F05A4E-8
 		Docs\entity-framework-6.md = Docs\entity-framework-6.md
 		Docs\entity-framework-core.md = Docs\entity-framework-core.md
 		Docs\events.md = Docs\events.md
-		Docs\int128.md = Docs\int128.md
 		Docs\GettingStartedGuide.md = Docs\GettingStartedGuide.md
+		Docs\int128.md = Docs\int128.md
 		Docs\license.txt = Docs\license.txt
 		Docs\README.md = Docs\README.md
 		Docs\Regex Saved Replaces.txt = Docs\Regex Saved Replaces.txt
@@ -124,8 +122,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.Shared", "BlackbirdSql.Shared\BlackbirdSql.Shared.csproj", "{35C5EE13-4F88-440E-A16A-F2BE6BCF074E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.Sys", "BlackbirdSql.Sys\BlackbirdSql.Sys.csproj", "{CC782342-698C-465F-8707-7DCDBC5255E3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFramework.Firebird", "Firebird\EntityFramework.Firebird\EntityFramework.Firebird.csproj", "{95093BB8-DE81-47BC-8960-15690DB1CC93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -291,28 +287,9 @@ Global
 		{CC782342-698C-465F-8707-7DCDBC5255E3}.Release|x64.Build.0 = Release|Any CPU
 		{CC782342-698C-465F-8707-7DCDBC5255E3}.Release|x86.ActiveCfg = Release|Any CPU
 		{CC782342-698C-465F-8707-7DCDBC5255E3}.Release|x86.Build.0 = Release|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Debug|arm64.Build.0 = Debug|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Debug|x64.Build.0 = Debug|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Debug|x86.Build.0 = Debug|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Release|Any CPU.Build.0 = Release|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Release|arm64.ActiveCfg = Release|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Release|arm64.Build.0 = Release|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Release|x64.ActiveCfg = Release|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Release|x64.Build.0 = Release|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Release|x86.ActiveCfg = Release|Any CPU
-		{95093BB8-DE81-47BC-8960-15690DB1CC93}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{95093BB8-DE81-47BC-8960-15690DB1CC93} = {2AF853FC-ADFF-4432-8BFB-45093A1969F4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B63757A1-BCDF-4450-9A1A-3C48B3D93CEC}

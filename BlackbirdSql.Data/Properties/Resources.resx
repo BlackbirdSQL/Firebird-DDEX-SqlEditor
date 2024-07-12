@@ -126,8 +126,8 @@
   <data name="ExceptionCollectionNotSupported" xml:space="preserve">
     <value>The metadata collection {0} is not supported.</value>
   </data>
-  <data name="ExceptionConnectionNull" xml:space="preserve">
-    <value>Connection is null</value>
+  <data name="ExceptionConnectionStringNull" xml:space="preserve">
+    <value>Connection string is null</value>
   </data>
   <data name="ExceptionInvalidPrebuiltMetadataCall" xml:space="preserve">
     <value>The metadata collection {0} is pre-built and may not be called from here.</value>

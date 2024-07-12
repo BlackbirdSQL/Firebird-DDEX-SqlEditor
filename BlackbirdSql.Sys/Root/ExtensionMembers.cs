@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -14,6 +15,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -33,8 +36,10 @@ namespace BlackbirdSql;
 // =========================================================================================================
 public static partial class ExtensionMembers
 {
+
 	private static readonly string[] S_ByteSizeSuffixes =
 		["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
 	private static readonly string[] S_SIExponents =
 		[null,
 			"\x00b9",
@@ -109,6 +114,18 @@ public static partial class ExtensionMembers
 	{
 		return @this ? 1 : 0;
 	}
+	public static TResult AwaiterResult<TResult>(this Task<TResult> @this)
+	{
+		return @this.GetAwaiter().GetResult();
+	}
+
+
+
+	public static TResult AwaiterResult<TResult>(this Task<Task<TResult>> @this)
+	{
+		return @this.Unwrap().GetAwaiter().GetResult();
+	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -136,28 +153,13 @@ public static partial class ExtensionMembers
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Formats time span for display in an sql window statusbar.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string FmtSqlStatus(this TimeSpan value)
+	public static IVsDataExplorerConnection ExplorerConnection(this IDbConnection @this, bool canBeWeakEquivalent = false)
 	{
-		return new TimeSpan(value.Days, value.Hours, value.Minutes, value.Seconds, 0).ToString();
-	}
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
+		(_, IVsDataExplorerConnection explorerConnection) = manager.SearchExplorerConnectionEntry(@this.ConnectionString, false, canBeWeakEquivalent);
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Formats time ticks for display in an sql window statusbar.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string FmtSqlStatus(this long ticks)
-	{
-		TimeSpan value = new(ticks);
-
-		return value.FmtSqlStatus();
+		return explorerConnection;
 	}
 
 
@@ -185,20 +187,6 @@ public static partial class ExtensionMembers
 		}
 
 		return empty;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Formats time span ticks for display in sql statistics output.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string FmtSqlStats(this long ticks)
-	{
-		TimeSpan value = new(ticks);
-
-		return value.FmtSqlStats();
 	}
 
 
@@ -359,6 +347,59 @@ public static partial class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Formats a resource string format string given arguments.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string FmtRes(this string value, params object[] args)
+	{
+		return string.Format(CultureInfo.CurrentCulture, value, args);
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Formats time span ticks for display in sql statistics output.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string FmtSqlStats(this long ticks)
+	{
+		TimeSpan value = new(ticks);
+
+		return value.FmtSqlStats();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Formats time span for display in an sql window statusbar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string FmtSqlStatus(this TimeSpan value)
+	{
+		return new TimeSpan(value.Days, value.Hours, value.Minutes, value.Seconds, 0).ToString();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Formats time ticks for display in an sql window statusbar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string FmtSqlStatus(this long ticks)
+	{
+		TimeSpan value = new(ticks);
+
+		return value.FmtSqlStatus();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Concatenates exception message with inner exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -439,26 +480,13 @@ public static partial class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Formats a resource string format string given arguments.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string FmtRes(this string value, params object[] args)
-	{
-		return string.Format(CultureInfo.CurrentCulture, value, args);
-
-	}
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Checks if an exception contains a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	internal static bool HasSqlException(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.HasSqlException(@this);
+		IBsNativeDbException exceptionSvc = ApcManager.GetService<SBsNativeDbException, IBsNativeDbException>();
+		return exceptionSvc.HasSqlException(@this);
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -468,44 +496,10 @@ public static partial class ExtensionMembers
 	// ---------------------------------------------------------------------------------
 	internal static bool IsSqlException(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.IsSqlException(@this);
+		IBsNativeDbException exceptionSvc = ApcManager.GetService<SBsNativeDbException, IBsNativeDbException>();
+		return exceptionSvc.IsSqlException(@this);
 	}
 
-	public static TResult AwaiterResult<TResult>(this Task<TResult> @this)
-	{
-		return @this.GetAwaiter().GetResult();
-	}
-
-	public static TResult AwaiterResult<TResult>(this Task<Task<TResult>> @this)
-	{
-		return @this.Unwrap().GetAwaiter().GetResult();
-	}
-
-
-
-	public static TResult SyncAwait<TResult>(this Task<TResult> @this, int msTimeout, CancellationToken cancellationToken, long maxTimeout = 0)
-	{
-		long startTimeEpoch = DateTime.Now.UnixMilliseconds();
-		long currentTimeEpoch = startTimeEpoch;
-
-		while (!@this.Wait(msTimeout, cancellationToken))
-		{
-			if (cancellationToken.IsCancellationRequested)
-				return default;
-
-			if (maxTimeout != 0L && currentTimeEpoch - startTimeEpoch > maxTimeout)
-			{
-				throw new TimeoutException($"Timed out waiting for ExecuteAsync() to complete. Timeout (ms): {currentTimeEpoch - startTimeEpoch}.");
-			}
-
-			Application.DoEvents();
-
-			if (maxTimeout != 0L)
-				currentTimeEpoch = DateTime.Now.UnixMilliseconds();
-		}
-
-		return @this.Result;
-	}
 
 
 	public static TResult Peek<TResult>(this Task<TResult> @this)
@@ -517,6 +511,58 @@ public static partial class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs a safe search fir an ExplorerConnection entry from the ConnectionUrl
+	/// of a provided ConnectionString.
+	/// </summary>
+	/// <returns>
+	/// The tuple (label, explorerConnection)
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static (string, IVsDataExplorerConnection) SearchExplorerConnectionEntry(
+		this IVsDataExplorerConnectionManager @this, string connectionString, bool encrypted, bool canBeWeakEquivalent = false)
+	{
+		string unencryptedConnectionString = encrypted ? DataProtection.DecryptString(connectionString) : connectionString;
+
+		if (ApcManager.ProviderGuid == null)
+			return (null, null);
+
+		Guid clsidProvider = new(ApcManager.ProviderGuid);
+		string connectionUrl = ApcManager.CreateConnectionUrl(unencryptedConnectionString);
+
+
+		IDictionary<string, IVsDataExplorerConnection> connections = @this.Connections;
+
+
+		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in connections)
+		{
+			if (!(clsidProvider == pair.Value.Provider))
+				continue;
+
+			if (ApcManager.CreateConnectionUrl(pair.Value.DecryptedConnectionString()) == connectionUrl)
+				return (pair.Key, pair.Value);
+		}
+
+		if (!canBeWeakEquivalent)
+			return (null, null);
+
+
+		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in connections)
+		{
+			if (!(clsidProvider == pair.Value.Provider))
+				continue;
+
+			if (ApcManager.IsWeakConnectionEquivalency(unencryptedConnectionString, pair.Value.DecryptedConnectionString()))
+				return (pair.Key, pair.Value);
+		}
+
+		return (null, null);
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets the encrypted ConnectionString of an <see cref="IVsDataConnection"/> using
@@ -526,6 +572,24 @@ public static partial class ExtensionMembers
 	public static void SetConnectionString(this IVsDataConnection value, string connectionString)
 	{
 		value.EncryptedConnectionString = DataProtection.EncryptString(connectionString);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Allows casting of <see cref="ComboBox.SelectedIndex"/> when doing multiple assignments in series.
+	/// eg. string x = cbo.SetSelectedIndexX(index).ToString();
+	/// </summary>
+	/// <param name="comboBox"></param>
+	/// <param name="index"></param>
+	/// <returns>The new value of <see cref="ComboBox.SelectedIndex"/> else -1.</returns>
+	// ---------------------------------------------------------------------------------
+	public static int SetSelectedIndexX(this ComboBox comboBox, int index)
+	{
+		comboBox.SelectedIndex = index;
+
+		return comboBox.SelectedIndex;
 	}
 
 
@@ -563,46 +627,28 @@ public static partial class ExtensionMembers
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Allows casting of <see cref="ComboBox.SelectedIndex"/> when doing multiple assignments in series.
-	/// eg. string x = cbo.SetSelectedIndexX(index).ToString();
-	/// </summary>
-	/// <param name="comboBox"></param>
-	/// <param name="index"></param>
-	/// <returns>The new value of <see cref="ComboBox.SelectedIndex"/> else -1.</returns>
-	// ---------------------------------------------------------------------------------
-	public static int SetSelectedIndexX(this ComboBox comboBox, int index)
+	public static TResult SyncAwait<TResult>(this Task<TResult> @this, int msTimeout, CancellationToken cancellationToken, long maxTimeout = 0)
 	{
-		comboBox.SelectedIndex = index;
+		long startTimeEpoch = DateTime.Now.UnixMilliseconds();
+		long currentTimeEpoch = startTimeEpoch;
 
-		return comboBox.SelectedIndex;
-	}
+		while (!@this.Wait(msTimeout, cancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+				return default;
 
+			if (maxTimeout != 0L && currentTimeEpoch - startTimeEpoch > maxTimeout)
+			{
+				throw new TimeoutException($"Timed out waiting for ExecuteAsync() to complete. Timeout (ms): {currentTimeEpoch - startTimeEpoch}.");
+			}
 
+			Application.DoEvents();
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts a secure string to it's readable string.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string ToReadable(this SecureString secureString)
-	{
-		return new string(secureString.ToCharArray());
-	}
+			if (maxTimeout != 0L)
+				currentTimeEpoch = DateTime.Now.UnixMilliseconds();
+		}
 
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts a string to a SecureString.
-	/// </summary>
-	/// <param name="unsecureString"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	public static SecureString ToSecure(this string unsecureString)
-	{
-		return unsecureString.ToCharArray().ToSecure();
+		return @this.Result;
 	}
 
 
@@ -631,6 +677,61 @@ public static partial class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Converts a secure string to it's readable string.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string ToReadable(this SecureString secureString)
+	{
+		return new string(secureString.ToCharArray());
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Converts an IEnumerable char array to a SecureString.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static SecureString ToSecure(this IEnumerable<char> charArray)
+	{
+		SecureString secureString = new SecureString();
+		foreach (char item in charArray)
+		{
+			secureString.AppendChar(item);
+		}
+
+		secureString.MakeReadOnly();
+		return secureString;
+	}
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Converts a string to a SecureString.
+	/// </summary>
+	/// <param name="unsecureString"></param>
+	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
+	public static SecureString ToSecure(this string unsecureString)
+	{
+		return unsecureString.ToCharArray().ToSecure();
+	}
+
+
+
+	public static string ToUpper(this EnConnectionSource @this)
+	{
+		return @this.ToString().ToUpper();
+	}
+
+	public static string ToUpper(this Guid @this)
+	{
+		return @this.ToString().ToUpper();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Converts a long timestamp to a UTC DateTime.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -652,24 +753,6 @@ public static partial class ExtensionMembers
 		return ((DateTimeOffset)value).ToUnixTimeMilliseconds();
 	}
 
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts an IEnumerable char array to a SecureString.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static SecureString ToSecure(this IEnumerable<char> charArray)
-	{
-		SecureString secureString = new SecureString();
-		foreach (char item in charArray)
-		{
-			secureString.AppendChar(item);
-		}
-
-		secureString.MakeReadOnly();
-		return secureString;
-	}
 
 
 	// ---------------------------------------------------------------------------------

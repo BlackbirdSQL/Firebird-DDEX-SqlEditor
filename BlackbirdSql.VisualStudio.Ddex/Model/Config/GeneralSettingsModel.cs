@@ -3,16 +3,18 @@
 
 using System.ComponentModel;
 using BlackbirdSql.Core.Ctl.ComponentModel;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedCategoryAttribute;
-using GlobalizedDisplayNameAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
-using BlackbirdSql.Core.Interfaces;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
+
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
+
 
 // =========================================================================================================
 //										GeneralSettingsModel Class
@@ -21,13 +23,19 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 /// Option Model for General options
 /// </summary>
 // =========================================================================================================
-public class GeneralSettingsModel(IBTransientSettings transientSettings)
-	: AbstractSettingsModel<GeneralSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - GeneralSettingsModel
+	#region Constructors / Destructors - GeneralSettingsModel
 	// ---------------------------------------------------------------------------------
+
+
+	public GeneralSettingsModel(IBTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_LivePrefix, transientSettings)
+	{
+
+	}
 
 
 	public GeneralSettingsModel() : this(null)
@@ -35,7 +43,8 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	#endregion Constructors / Destructors
+
 
 
 
@@ -66,11 +75,11 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayGeneralAutoCloseEdmxModels")]
-	[GlobalizedDescription("OptionDescriptionGeneralAutoCloseEdmxModels")]
+	[GlobalizedDisplayName("OptionDisplayGeneralAutoCloseOffScreenEdmx")]
+	[GlobalizedDescription("OptionDescriptionGeneralAutoCloseOffScreenEdmx")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[DefaultValue(false)]
-	public bool AutoCloseEdmxModels { get; set; } = false;
+	[DefaultValue(true)]
+	public bool AutoCloseOffScreenEdmx { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayGeneralAutoCloseXsdDatasets")]
@@ -140,8 +149,8 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDisplayName("OptionDisplayGeneralValidateProviderFactories")]
 	[GlobalizedDescription("OptionDescriptionGeneralValidateProviderFactories")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[DefaultValue(true)]
-	public bool ValidateProviderFactories { get; set; } = true;
+	[DefaultValue(false)]
+	public bool ValidateProviderFactories { get; set; } = false;
 
 
 	#endregion Property Accessors

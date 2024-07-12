@@ -1,8 +1,6 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
-using System;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys.Enums;
@@ -10,7 +8,9 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 // =========================================================================================================
 //									TConnectionEquivalencyComparer Class
@@ -29,7 +29,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 	public TConnectionEquivalencyComparer() : base()
 	{
-		// Tracer.Trace(GetType(), "TConnectionEquivalencyComparer.TConnectionEquivalencyComparer");
+		// Tracer.Trace(typeof(TConnectionEquivalencyComparer), ".ctor");
 	}
 
 
@@ -92,34 +92,6 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 	#region Methods - TConnectionEquivalencyComparer
 	// =========================================================================================================
 
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Standardizes the DataSource (Server hostname) [Deprecated]
-	/// </summary>
-	/// <param name="dataSource"></param>
-	/// <returns>The standardized hostname</returns>
-	// ---------------------------------------------------------------------------------
-	protected static string StandardizeDataSource(string dataSource)
-	{
-		// Tracer.Trace(typeof(TConnectionEquivalencyComparer), "StandardizeDataSource()");
-
-		dataSource = dataSource.ToUpperInvariant();
-		string[] array = [".", "localhost"];
-		foreach (string text in array)
-		{
-			if (dataSource.Equals(text, StringComparison.Ordinal))
-			{
-				dataSource = Environment.MachineName.ToUpperInvariant(); // + dataSource[text.Length..];
-				break;
-			}
-		}
-
-		return dataSource;
-	}
 
 
 	#endregion Methods

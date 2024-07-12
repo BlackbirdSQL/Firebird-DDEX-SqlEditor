@@ -37,9 +37,11 @@ namespace BlackbirdSql.Data.Model.Schema;
 /// Refer to <see cref="DslForeignKeyColumns"/> to see an example of a more complex
 /// derived type.
 /// </summary>
-internal class DslColumns(IBsLinkageParser parser) : AbstractDslSchema()
+internal class DslColumns : AbstractDslSchema
 {
-	IBsLinkageParser _LinkageParser = parser;
+	internal DslColumns() : base()
+	{
+	}
 
 
 
@@ -133,7 +135,7 @@ internal class DslColumns(IBsLinkageParser parser) : AbstractDslSchema()
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslColumns.GetCommandText");
+		// Tracer.Trace(GetType(), "GetCommandText");
 
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
@@ -458,9 +460,14 @@ END",
 
 
 
-	protected override void ProcessResult(DataTable schema)
+	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{
 		// Tracer.Trace(GetType(), "DslColumns.ProcessResult");
+		IBsNativeDbLinkageParser parser = null;
+
+		if (connectionString != null)
+			parser = LinkageParser.EnsureLoaded(connectionString, restrictions);
+
 
 		// schema.Columns[6].ColumnName = "NumericPrecision";
 		// schema.Columns[18].ColumnName = "Nullable";
@@ -533,16 +540,16 @@ END",
 
 			trig = null;
 
-			if (_LinkageParser != null && Convert.ToBoolean(row["IS_IDENTITY"]) == true)
+			if (parser != null && Convert.ToBoolean(row["IS_IDENTITY"]) == true)
 			{
 				if (row["TRIGGER_NAME"] != DBNull.Value)
 				{
-					trig = _LinkageParser?.FindTrigger(row["TRIGGER_NAME"]);
+					trig = parser?.FindTrigger(row["TRIGGER_NAME"]);
 				}
 
 				if (trig == null || Convert.ToBoolean(trig["IS_IDENTITY"]) == false)
 				{
-					trig = _LinkageParser?.LocateIdentityTrigger(row["TABLE_NAME"], row["COLUMN_NAME"]);
+					trig = parser?.LocateIdentityTrigger(row["TABLE_NAME"], row["COLUMN_NAME"]);
 				}
 			}
 
@@ -572,7 +579,6 @@ END",
 		schema.Columns.Remove("FIELD_TYPE");
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
 
-		_LinkageParser = null;
 		// Tracer.Trace("Rows returned: " + schema.Rows.Count);
 
 	}

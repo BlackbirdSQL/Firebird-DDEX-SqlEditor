@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
@@ -27,13 +28,13 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// IVsDataConnectionProperties and IVsDataConnectionUIProperties interfaces using Csb
 /// instead of FbConnectionStringBuilder.
 /// </summary>
-public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>,
+public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>, IBDataConnectionProperties,
 	IVsDataConnectionProperties, IDictionary<string, object>,
 	ICollection<KeyValuePair<string, object>>, IEnumerable<KeyValuePair<string, object>>,
 	IEnumerable, IVsDataConnectionUIProperties, ICustomTypeDescriptor, INotifyPropertyChanged
 {
 	private Csb _ConnectionStringBuilder;
-	private EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
+	protected EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
 
 
 	protected readonly object _LockObject = new object();
@@ -90,6 +91,41 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	}
 
 
+	/// <summary>
+	/// For connection properties we don't care about any other Connection Sources
+	/// except Application and EntityDataModel being correct.
+	/// </summary>
+	public virtual EnConnectionSource ConnectionSource
+	{
+		get
+		{
+
+			if (_ConnectionSource != EnConnectionSource.Undefined)
+				return _ConnectionSource;
+
+			try
+			{
+				_ConnectionSource = RctManager.ConnectionSource;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+
+			return _ConnectionSource;
+		}
+		set
+		{
+			_ConnectionSource = value;
+		}
+	}
+
+
+	public Csb Csa => ConnectionStringBuilder;
+
+
 
 	public virtual bool IsExtensible => !ConnectionStringBuilder.IsFixedSize;
 
@@ -112,9 +148,54 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	{
 		get
 		{
-			object[] array = new string[ConnectionStringBuilder.Values.Count];
+			int i = 0;
+			int count = ConnectionStringBuilder.Values.Count;
+
+			object[] array = new string[count];
 			object[] array2 = array;
-			ConnectionStringBuilder.Values.CopyTo(array2, 0);
+			string sobj;
+			Type type;
+
+			try
+			{
+				foreach (object obj in ConnectionStringBuilder.Values)
+				{
+					if (Cmd.IsNullValueOrEmpty(obj))
+					{
+						sobj = null;
+					}
+					else if ((type = obj.GetType()).IsSubclassOf(typeof(Enum)))
+					{
+						type = Enum.GetUnderlyingType(type);
+
+						if (type == typeof(int))
+							sobj = Convert.ToInt32(obj).ToString();
+						else if (type == typeof(long))
+							sobj = Convert.ToInt64(obj).ToString();
+						else
+							sobj = obj.ToString();
+					}
+					else if (obj is byte[] bytesValue)
+					{
+						sobj = Convert.ToBase64String(bytesValue);
+					}
+					else
+					{ 
+						sobj = obj.ToString();
+					}
+
+					array2[i++] = sobj;
+				}
+
+				// CopyTo is useless.
+				// ConnectionStringBuilder.Values.CopyTo(array2, 0);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex, $"ConnectionString: {ConnectionStringBuilder.ConnectionString}.");
+				throw;
+			}
+
 			return array2;
 		}
 	}
@@ -122,32 +203,6 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	bool ICollection<KeyValuePair<string, object>>.IsReadOnly => ConnectionStringBuilder.IsReadOnly;
 
 
-	/// <summary>
-	/// For connection properties we don't care about any other Connection Sources
-	/// except Application and EntityDataModel being correct.
-	/// </summary>
-	protected EnConnectionSource ConnectionSource
-	{
-		get
-		{
-
-			if (_ConnectionSource != EnConnectionSource.Undefined)
-				return _ConnectionSource;
-
-			try
-			{
-				_ConnectionSource = RctManager.GetConnectionSource();
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw;
-			}
-
-
-			return _ConnectionSource;
-		}
-	}
 
 
 	protected Csb ConnectionStringBuilder
@@ -216,6 +271,8 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 					{
 						ConnectionStringBuilder[SysConstants.C_KeyExEdmx] = true;
 						ConnectionStringBuilder.Remove(SysConstants.C_KeyExEdmu);
+
+						NativeDb.ReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
 					}
 				}
 
@@ -230,6 +287,8 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 			throw;
 		}
 	}
+
+
 
 	public virtual string[] GetSynonyms(string key)
 	{

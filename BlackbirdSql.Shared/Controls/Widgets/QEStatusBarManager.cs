@@ -225,8 +225,8 @@ public sealed class QEStatusBarManager : IDisposable
 		((ToolStripStatusLabel)(object)_GeneralPanel).Spring = true;
 		_StatusStrip.RenderMode = ToolStripRenderMode.Professional;
 		_StatusStrip.Renderer = new EditorStatusStripRenderer(_StatusStrip);
-		_ = QryMgr.ConnectionStrategy.ConnectionInfo;
-		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
+		_ = QryMgr.Strategy.ConnectionInfo;
+		IDbConnection connection = QryMgr.Strategy.Connection;
 
 		if (connection != null && connection.State == ConnectionState.Open)
 			TransitionIntoOnlineMode(useNewConnectionOpenedState: false);
@@ -389,7 +389,7 @@ public sealed class QEStatusBarManager : IDisposable
 	private void TransitionIntoOfflineMode()
 	{
 		// Tracer.Trace(GetType(), "QEStatusBarManager.TransitionIntoOfflineMode", "", null);
-		AbstractConnectionStrategy connectionStrategy = QryMgr.ConnectionStrategy;
+		AbstractConnectionStrategy connectionStrategy = QryMgr.Strategy;
 		if (connectionStrategy != null && connectionStrategy.ConnectionInfo != null)
 		{
 			ResetPanelsForOnlineMode();
@@ -405,7 +405,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private void TransitionIntoOnlineMode(bool useNewConnectionOpenedState)
 	{
-		AbstractConnectionStrategy connectionStrategy = QryMgr.ConnectionStrategy;
+		AbstractConnectionStrategy connectionStrategy = QryMgr.Strategy;
 		if (connectionStrategy.ConnectionInfo != null)
 		{
 			ResetPanelsForOnlineMode();
@@ -465,20 +465,14 @@ public sealed class QEStatusBarManager : IDisposable
 					break;
 				case EnQeStatusBarKnownStates.ExecutionFailed:
 					_GeneralPanel.SetOneImage(S_ExecWithErrorBitmap);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBarQueryCompletedWithErrors;
+					((ToolStripItem)(object)_GeneralPanel).Text = QryMgr.HasTransactions
+						? ControlsResources.StatusBarQueryCompletedWithErrorsRollback : ControlsResources.StatusBarQueryCompletedWithErrors;
 					ResetDatasetId();
 					break;
 				case EnQeStatusBarKnownStates.ExecutionOk:
 					_GeneralPanel.SetOneImage(S_ExecSuccessBitmap);
-					if (!QryMgr.QueryExecutionEndTime.HasValue)
-					{
-						((ToolStripItem)(object)_GeneralPanel).Text = string.Format(CultureInfo.CurrentCulture, ControlsResources.StatusBarQueryCompletedSuccessfully, string.Empty);
-					}
-					else
-					{
-						((ToolStripItem)(object)_GeneralPanel).Text = string.Format(CultureInfo.CurrentCulture, ControlsResources.StatusBarQueryCompletedSuccessfully, QryMgr.QueryExecutionEndTime);
-					}
-
+					((ToolStripItem)(object)_GeneralPanel).Text =
+						ControlsResources.StatusBarQueryCompletedSuccessfully.FmtRes(!QryMgr.QueryExecutionEndTime.HasValue ? string.Empty : QryMgr.QueryExecutionEndTime);
 					ResetDatasetId();
 					break;
 				case EnQeStatusBarKnownStates.ExecutionTimedOut:
@@ -556,7 +550,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private void UpdateStatusBar()
 	{
-		_StatusStrip.BackColor = QryMgr.ConnectionStrategy.StatusBarColor;
+		_StatusStrip.BackColor = QryMgr.Strategy.StatusBarColor;
 		if (_StatusStrip.BackColor == SystemColors.Control)
 		{
 			_ = _StatusStrip.BackColor = _StatusStrip.BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX.VSCOLOR_ENVIRONMENT_BACKGROUND);
@@ -637,7 +631,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private void ResetPanelsForOnlineMode()
 	{
-		AbstractConnectionStrategy connectionStrategy = QryMgr.ConnectionStrategy;
+		AbstractConnectionStrategy connectionStrategy = QryMgr.Strategy;
 		string displayUserName = connectionStrategy.DisplayUserName;
 		string datasetId = connectionStrategy.DatasetId;
 		string text = connectionStrategy.DisplayServerName;
@@ -672,7 +666,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private void ResetDatasetId()
 	{
-		string datasetId = QryMgr.ConnectionStrategy.DatasetId;
+		string datasetId = QryMgr.Strategy.DatasetId;
 		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetId ?? string.Empty;
 	}
 

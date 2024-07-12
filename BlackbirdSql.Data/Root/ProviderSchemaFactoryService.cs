@@ -20,6 +20,7 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
@@ -31,6 +32,8 @@ using BlackbirdSql.Data.Model.Schema;
 using BlackbirdSql.Data.Properties;
 using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Threading;
 
 
 
@@ -52,25 +55,36 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		// Tracer.Trace(GetType(), "DslProviderSchemaFactory.DslProviderSchemaFactory");
 	}
 
-	public static ProviderSchemaFactoryService CreateInstance() => new();
+	public static IBsNativeProviderSchemaFactory EnsureInstance() => _Instance ??= new ProviderSchemaFactoryService();
+
 
 	#endregion
 
+
+	#region Fields
+
+	public static ProviderSchemaFactoryService _Instance = null;
+
+	#endregion Fields
+
+
 	#region Methods
 
+
+
+
 	// Schema factory to handle custom collections
-	DataTable IBsNativeProviderSchemaFactory.GetSchema(DbConnection connection, string collectionName, string[] restrictions)
+	DataTable IBsNativeProviderSchemaFactory.GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
 		return GetSchema(connection, collectionName, restrictions);
 	}
 
 	// Schema factory to handle custom collections
-	public static DataTable GetSchema(DbConnection connection, string collectionName, string[] restrictions)
+	public static DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
-		// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", "collectionName: {0}", collectionName);
+		// Tracer.Trace(typeof(ProviderSchemaFactoryService), "GetSchema()", "collectionName: {0}", collectionName);
 
 		string schemaCollection;
-		IBsLinkageParser parser = null;
 
 
 		switch (collectionName)
@@ -105,26 +119,22 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				schemaCollection = "Triggers";
 				break;
 			default:
-				return connection.GetSchema(collectionName, restrictions);
+				return ((FbConnection)connection).GetSchema(collectionName, restrictions);
 		}
-
-
-		if (RequiresTriggers(collectionName))
-			parser = LinkageParser.EnsureLoaded(connection);
 
 
 		switch (collectionName)
 		{
 			case "Generators":
-				return parser.GetSequenceSchema(restrictions);
+				return LinkageParser.EnsureLoaded(connection).GetSequenceSchema(restrictions);
 			case "Triggers":
-				return parser.GetTriggerSchema(restrictions, -1, -1);
+				return LinkageParser.EnsureLoaded(connection).GetTriggerSchema(restrictions, -1, -1);
 			case "StandardTriggers":
-				return parser.GetTriggerSchema(restrictions, 0, 0);
+				return LinkageParser.EnsureLoaded(connection.ConnectionString, restrictions).GetTriggerSchema(restrictions, 0, 0);
 			case "IdentityTriggers":
-				return parser.GetTriggerSchema(restrictions, 0, 1);
+				return LinkageParser.EnsureLoaded(connection.ConnectionString, restrictions).GetTriggerSchema(restrictions, 0, 1);
 			case "SystemTriggers":
-				return parser.GetTriggerSchema(restrictions, 1, -1);
+				return LinkageParser.EnsureLoaded(connection).GetTriggerSchema(restrictions, 1, -1);
 			default:
 				break;
 		}
@@ -217,19 +227,21 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 
 	// Schema factory to handle custom collections asynchronously
-	Task<DataTable> IBsNativeProviderSchemaFactory.GetSchemaAsync(DbConnection connection, string collectionName,
+	async Task<DataTable> IBsNativeProviderSchemaFactory.GetSchemaAsync(IDbConnection connection, string collectionName,
 		string[] restrictions, CancellationToken cancellationToken)
 	{
-		return GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
+		return await GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 	}
 
-	public static Task<DataTable> GetSchemaAsync(DbConnection connection, string collectionName, string[] restrictions,
+
+
+	public static async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions,
 		CancellationToken cancellationToken)
 	{
-		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
+		// Tracer.Trace(typeof(ProviderSchemaFactoryService), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
 
 		string schemaCollection;
-		IBsLinkageParser parser = null;
+
 
 		switch (collectionName)
 		{
@@ -265,36 +277,32 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			default:
 				try
 				{
-					return ((FbConnection)connection).GetSchemaAsync(collectionName, restrictions, cancellationToken);
+					return await ((FbConnection)connection).GetSchemaAsync(collectionName, restrictions, cancellationToken);
 				}
 				catch (Exception)
 				{
 					if (cancellationToken.IsCancellationRequested)
-						return Task.FromResult(new DataTable());
+						return new DataTable();
 					throw;
 				}
 		}
 
 		if (cancellationToken.IsCancellationRequested)
-			return Task.FromResult(new DataTable());
-
-
-		if (RequiresTriggers(collectionName))
-			parser = LinkageParser.EnsureLoaded(connection);
+			return new DataTable();
 
 
 		switch (collectionName)
 		{
 			case "Generators":
-				return Task.FromResult(parser.GetSequenceSchema(restrictions));
+				return LinkageParser.EnsureLoaded(connection).GetSequenceSchema(restrictions);
 			case "Triggers":
-				return Task.FromResult(parser.GetTriggerSchema(restrictions, -1, -1));
+				return LinkageParser.EnsureLoaded(connection).GetTriggerSchema(restrictions, -1, -1);
 			case "StandardTriggers":
-				return Task.FromResult(parser.GetTriggerSchema(restrictions, 0, 0));
+				return LinkageParser.EnsureLoaded(connection.ConnectionString, restrictions).GetTriggerSchema(restrictions, 0, 0);
 			case "IdentityTriggers":
-				return Task.FromResult(parser.GetTriggerSchema(restrictions, 0, 1));
+				return LinkageParser.EnsureLoaded(connection.ConnectionString, restrictions).GetTriggerSchema(restrictions, 0, 1);
 			case "SystemTriggers":
-				return Task.FromResult(parser.GetTriggerSchema(restrictions, 1, -1));
+				return LinkageParser.EnsureLoaded(connection).GetTriggerSchema(restrictions, 1, -1);
 			default:
 				break;
 		}
@@ -315,7 +323,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
 
 		if (cancellationToken.IsCancellationRequested)
-			return Task.FromResult(new DataTable());
+			return new DataTable();
 
 		if (xmlStream == null)
 		{
@@ -346,7 +354,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			return Task.FromResult(new DataTable());
+			return new DataTable();
 		}
 
 		DataRow[] collection;
@@ -362,7 +370,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			return Task.FromResult(new DataTable());
+			return new DataTable();
 		}
 
 		if (collection.Length != 1)
@@ -382,18 +390,18 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		}
 
 
-		Task<DataTable> task;
+		DataTable table;
 
 		switch (collection[0]["PopulationMechanism"].ToString())
 		{
 			case "PrepareCollection":
-				task = PrepareCollectionAsync(connection, collectionName, schemaCollection, restrictions, cancellationToken);
+				table = await PrepareCollectionAsync(connection, collectionName, schemaCollection, restrictions, cancellationToken);
 				break;
 			case "DataTable":
-				task = Task.FromResult(ds.Tables[collection[0]["PopulationString"].ToString()].Copy());
+				table = ds.Tables[collection[0]["PopulationString"].ToString()].Copy();
 				break;
 			case "SQLCommand":
-				task = SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
+				table = await SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 				break;
 			default:
 				NotSupportedException ex = new(Resources.ExceptionUnsupportedPopulationMechanism.FmtRes(collection[0]["PopulationMechanism"].ToString()));
@@ -401,14 +409,14 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				throw ex;
 		}
 
-		return task;
+		return table;
 	}
 
 	#endregion
 
 	#region Private Methods
 
-	private static DataTable PrepareCollection(DbConnection connection, string collectionName, string schemaCollection,
+	private static DataTable PrepareCollection(IDbConnection connection, string collectionName, string schemaCollection,
 		string[] restrictions)
 	{
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollection", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
@@ -420,22 +428,22 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		switch (collectionName.ToUpperInvariant())
 		{
 			case "COLUMNS":
-				dslSchema = new DslColumns(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslColumns();
 				break;
 			case "FOREIGNKEYCOLUMNS":
-				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslForeignKeyColumns();
 				break;
 			case "FOREIGNKEYS":
 				dslSchema = new DslForeignKeys();
 				break;
 			case "FUNCTIONARGUMENTS":
-				dslSchema = new DslFunctionArguments(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslFunctionArguments();
 				break;
 			case "FUNCTIONS":
 				dslSchema = new DslFunctions();
 				break;
 			case "INDEXCOLUMNS":
-				dslSchema = new DslIndexColumns(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslIndexColumns();
 				break;
 			case "INDEXES":
 				dslSchema = new DslIndexes();
@@ -444,7 +452,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				dslSchema = new DslProcedures();
 				break;
 			case "PROCEDUREPARAMETERS":
-				dslSchema = new DslProcedureParameters(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslProcedureParameters();
 				break;
 			case "RAWGENERATORS":
 				dslSchema = new DslRawGenerators();
@@ -459,7 +467,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
-				dslSchema = new DslTriggerColumns(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslTriggerColumns();
 				break;
 			case "VIEWCOLUMNS":
 				dslSchema = new DslViewColumns();
@@ -479,12 +487,12 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				throw ex;
 		}
 
-		return dslSchema.GetSchema((FbConnection)connection, schemaCollection, restrictions);
+		return dslSchema.GetSchema(connection, schemaCollection, restrictions);
 	}
 
 
 
-	private static Task<DataTable> PrepareCollectionAsync(DbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancellationToken)
+	private static async Task<DataTable> PrepareCollectionAsync(IDbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancellationToken)
 	{
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollectionAsync", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
@@ -495,22 +503,22 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		switch (collectionName.ToUpperInvariant())
 		{
 			case "COLUMNS":
-				dslSchema = new DslColumns(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslColumns();
 				break;
 			case "FOREIGNKEYCOLUMNS":
-				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslForeignKeyColumns();
 				break;
 			case "FOREIGNKEYS":
 				dslSchema = new DslForeignKeys();
 				break;
 			case "FUNCTIONARGUMENTS":
-				dslSchema = new DslFunctionArguments(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslFunctionArguments();
 				break;
 			case "FUNCTIONS":
 				dslSchema = new DslFunctions();
 				break;
 			case "INDEXCOLUMNS":
-				dslSchema = new DslIndexColumns(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslIndexColumns();
 				break;
 			case "INDEXES":
 				dslSchema = new DslIndexes();
@@ -519,7 +527,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				dslSchema = new DslProcedures();
 				break;
 			case "PROCEDUREPARAMETERS":
-				dslSchema = new DslProcedureParameters(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslProcedureParameters();
 				break;
 			case "RAWGENERATORS":
 				dslSchema = new DslRawGenerators();
@@ -534,7 +542,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
-				dslSchema = new DslTriggerColumns(LinkageParser.EnsureLoaded(connection));
+				dslSchema = new DslTriggerColumns();
 				break;
 			case "VIEWCOLUMNS":
 				dslSchema = new DslViewColumns();
@@ -554,50 +562,21 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				throw ex;
 		}
 
-		return dslSchema.GetSchemaAsync((FbConnection)connection, schemaCollection, restrictions, cancellationToken);
+		return await dslSchema.GetSchemaAsync(connection, schemaCollection, restrictions, cancellationToken);
 	}
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns true if an SE node's collection requires completed Trigger/Generator
-	/// linkage tables in order to render, else false.
-	/// If true and linkage is incomplete or non-existent, the caller will first
-	/// initiate linkage, if required, and wait for the owning Explorer ConnectionNode's
-	/// linkage tables to be prepared before allowing a node to be rendered.
-	/// </summary>
-	// ----------------------------------------------------------------------------------
-	public static bool RequiresTriggers(string collection)
-	{
-		switch (collection)
-		{
-			case "ForeignKeys":
-			case "Functions":
-			case "Indexes":
-			case "Procedures":
-			case "Tables":
-			case "RawGenerators":
-			case "RawTriggerDependencies":
-			case "RawTriggers":
-			case "Views":
-			case "ViewColumns":
-				return false;
-			default:
-				break;
-		}
-
-		return true;
-	}
-
-	private static DataTable SqlCommandSchema(DbConnection connection, string collectionName, string[] restrictions)
+	private static DataTable SqlCommandSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
 		NotImplementedException exbb = new();
 		Diag.Dug(exbb);
 		throw exbb;
 	}
-	private static Task<DataTable> SqlCommandSchemaAsync(DbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	private static async Task<DataTable> SqlCommandSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
+		await TaskScheduler.Default;
+
 		NotImplementedException exbb = new();
 		Diag.Dug(exbb);
 		throw exbb;

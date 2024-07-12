@@ -19,7 +19,9 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 using Microsoft.VisualStudio.Threading;
 
 
+
 namespace BlackbirdSql;
+
 
 // =========================================================================================================
 //											Diag Class
@@ -43,7 +45,10 @@ namespace BlackbirdSql;
 // =========================================================================================================
 public static class Diag
 {
+
+	// ---------------------------------------------------------------------------------
 	#region Fields
+	// ---------------------------------------------------------------------------------
 
 
 	// A static class lock
@@ -240,9 +245,18 @@ public static class Diag
 				if (pos != -1)
 					sourceFilePath = sourceFilePath[(pos + 1)..];
 
-				str = _Context + ":" + (isException ? ":EXCEPTION: " : " ") + DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   "
-					+ memberName + " :: " + sourceFilePath + " :: " + sourceLineNumber +
-					(message == "" ? "" : Environment.NewLine + "\t" + message) + Environment.NewLine;
+				if (_TaskLogActive > 0)
+				{
+					str = DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   " + message;
+				}
+				else
+				{
+					string prefix = isException ? ":EXCEPTION: " : " ";
+
+					str = _Context + ":" + prefix + DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   "
+						+ memberName + " :: " + sourceFilePath + " :: " + sourceLineNumber +
+						(message == "" ? "" : Environment.NewLine + "\t" + message) + Environment.NewLine;
+				}
 			}
 			catch (Exception ex)
 			{
@@ -282,52 +296,45 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Diagnostics method that can flag a call as an Exception even if the Exception
-	/// parameter is null
+	/// Diagnostics method for Exceptions only
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
-	public static void Dug(bool isException, Exception ex, string message = "",
+	public static void Dug(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1,
+		bool expected = false)
 #else
-	public static void Dug(bool isException, Exception ex, string message = "",
+	public static void Dug(Exception ex, string message = "",
 		string memberName = "[Release: MemberName Unavailable]",
 		string sourceFilePath = "[Release: SourcePath Unavailable]",
 		int sourceLineNumber = -1)
 #endif
 	{
+		message ??= "";
 
-		if (!isException && !EnableDiagnostics && !EnableTrace)
-			return;
+		if (message != "")
+			message += ":";
 
-		Dug(isException, (ex != null ? $"[{ex.GetType()}] " : "") + ex?.Message + (message != "" ? " " + message : "") + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
-			memberName, sourceFilePath, sourceLineNumber);
+		IBsNativeDbException exceptionSvc = ApcManager.GetService<SBsNativeDbException, IBsNativeDbException>();
 
-	}
+		if (exceptionSvc != null && ex is DbException exf && exceptionSvc.HasSqlException(exf))
+		{
+			message += Environment.NewLine + $"{NativeDb.DbEngineName} error code: {exceptionSvc.GetErrorCode(exf)}, Class: {exceptionSvc.GetClass(exf)}, Proc: {exceptionSvc.GetProcedure(exf)}, Line: {exceptionSvc.GetLineNumber(exf)}.";
+		}
+		if (ex.StackTrace != null)
+		{
+			message += Environment.NewLine + "TRACE: " + ex.StackTrace.ToString();
+		}
+		else
+		{
+			message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
+		}
 
+		string prefix = expected ? $"[EXPECTED {ex.GetType()}] " : $"[{ex.GetType()}] ";
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method with formatting
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
-	public static void Dug(string message, Exception ex,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void Dug(string message, Exception ex,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
-	{
-		Dug(true, (ex != null ? $"[{ex.GetType()}] " : "") + String.Format(message, ex) + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
-			memberName, sourceFilePath, sourceLineNumber);
+		Dug(true, prefix + ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
 
 	}
 
@@ -454,6 +461,36 @@ public static class Diag
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for ErrorHandler.ThrowOnFailure
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static int ThrowOnFailure(int hr,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static int ThrowOnFailure(int hr,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		try
+		{
+			return ErrorHandler.ThrowOnFailure(hr);
+		}
+		catch (Exception ex)
+		{
+			Stack();
+			// Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+			throw ex;
+		}
+	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -560,41 +597,25 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Diagnostics method for Exceptions only
+	/// Diagnostics method for outputting expected DEBUG build Exceptions but that will
+	/// be swallowed in release builds.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
-	public static void Dug(Exception ex, string message = "",
+	public static void Expected(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
-	public static void Dug(Exception ex, string message = "",
+	public static void Expected(Exception ex, string message = "",
 		string memberName = "[Release: MemberName Unavailable]",
 		string sourceFilePath = "[Release: SourcePath Unavailable]",
 		int sourceLineNumber = -1)
 #endif
 	{
-		message ??= "";
-
-		if (message != "")
-			message += ":";
-
-		if (NativeDb.DatabaseEngineSvc != null && ex is DbException exf && NativeDb.DbExceptionSvc.HasSqlException(exf))
-		{
-			message += Environment.NewLine + $"{NativeDb.DbEngineName} error code: {NativeDb.DbExceptionSvc.GetErrorCode(exf)}, Class: {NativeDb.DbExceptionSvc.GetClass(exf)}, Proc: {NativeDb.DbExceptionSvc.GetProcedure(exf)}, Line: {NativeDb.DbExceptionSvc.GetLineNumber(exf)}.";
-		}
-		if (ex.StackTrace != null)
-		{
-			message += Environment.NewLine + "TRACE: " + ex.StackTrace.ToString();
-		}
-		else
-		{
-			message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
-		}
-
-		Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
-
+#if DEBUG
+		Dug(ex, message, memberName, sourceFilePath, sourceLineNumber, true);
+#endif
 	}
 
 
@@ -740,9 +761,11 @@ public static class Diag
 		if (message != "")
 			message += ":";
 
-		if (NativeDb.DatabaseEngineSvc != null && ex is DbException exf && NativeDb.DbExceptionSvc.HasSqlException(exf))
+		IBsNativeDbException exceptionSvc = ApcManager.GetService<SBsNativeDbException, IBsNativeDbException>();
+
+		if (exceptionSvc != null && ex is DbException exf && exceptionSvc.HasSqlException(exf))
 		{
-			message += Environment.NewLine + $"{NativeDb.DbEngineName}  error code:  {NativeDb.DbExceptionSvc.GetErrorCode(exf)} , Class:  {NativeDb.DbExceptionSvc.GetClass(exf)}, Proc: {NativeDb.DbExceptionSvc.GetProcedure(exf)}, Line: {NativeDb.DbExceptionSvc.GetLineNumber(exf)}.";
+			message += Environment.NewLine + $"{NativeDb.DbEngineName}  error code:  {exceptionSvc.GetErrorCode(exf)} , Class:  {exceptionSvc.GetClass(exf)}, Proc: {exceptionSvc.GetProcedure(exf)}, Line: {exceptionSvc.GetLineNumber(exf)}.";
 		}
 
 		message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
@@ -889,7 +912,8 @@ public static class Diag
 	}
 
 
-	public static void Trace(Type classType, string method, DataExplorerNodeEventArgs e)
+	
+	public static void Trace(Type classType, string method, DataExplorerNodeEventArgs e, EnConnectionSource connectionSource, bool onMainThread, bool initialized)
 	{
 		if (e.Node != null && e.Node.ExplorerConnection != null
 			&& e.Node.ExplorerConnection.ConnectionNode != null
@@ -901,12 +925,12 @@ public static class Diag
 				IVsDataExplorerConnection explorerConnection = node.ExplorerConnection;
 
 				string str = $"\nExplorerConnection.DisplayName: {explorerConnection.DisplayName}, ExplorerConnection type: {explorerConnection.GetType().FullName}"
-					+ $"\n\tItemId: {node.ItemId}, Node.Name: {node.Name}, NodeType: {node},"
+					+ $"\n\tItemId: {node.ItemId}, Node.Name: {node.Name}, NodeType: {node}, ConnectionState: {explorerConnection.Connection.State}, Connectionsource: {connectionSource}, Initialized: {initialized}, OnMainThread: {onMainThread}, "
 					+ $"\n\t\tHasBeenExpanded: {node.HasBeenExpanded}, "
 					+ $"\n\t\tIsExpandable: {node.IsExpandable}, IsExpanding: {node.IsExpanding}, IsRefreshing: {node.IsRefreshing}, "
 					+ $"\n\t\tIsDiscarded: {node.IsDiscarded}, IsExpanded: {node.IsExpanded}, IsPlaced: {node.IsPlaced}, IsVisible: {node.IsVisible}";
 
-				if (Reflect.GetFieldValue(node, "_object") != null)
+				if (Reflect.GetFieldValueBase(node, "_object") != null)
 				{
 					string datasetKey = (string)(node.Object.Properties != null
 						&& node.Object.Properties.ContainsKey("DatasetKey")
@@ -914,11 +938,12 @@ public static class Diag
 					string connectionKey = (string)(node.Object.Properties != null
 						&& node.Object.Properties.ContainsKey("ConnectionKey")
 						? node.Object.Properties["ConnectionKey"] : "Null");
-					EnConnectionSource connectionSource = (EnConnectionSource)(int)(node.Object.Properties != null
+
+					EnConnectionSource objectConnectionSource = (EnConnectionSource)(int)(node.Object.Properties != null
 						&& node.Object.Properties.ContainsKey("ConnectionSource")
 						? node.Object.Properties["ConnectionSource"] : EnConnectionSource.None);
 
-					str += $"\n\tObject.Name: {node.Object.Name}, Object.DatasetKey: {datasetKey}, Object.ConnectionSource: {connectionSource}, Object.ConnectionKey: {connectionKey}, Object.Type: {node.Object.Type.Name}, Object.IsDeleted: {node.Object.IsDeleted}.";
+					str += $"\n\tObject.Name: {node.Object.Name}, Object.DatasetKey: {datasetKey}, Object.ConnectionSource: {objectConnectionSource}, Object.ConnectionKey: {connectionKey}, Object.Type: {node.Object.Type.Name}, Object.IsDeleted: {node.Object.IsDeleted}.";
 				}
 				else
 				{
@@ -1019,6 +1044,7 @@ public static class Diag
 					}
 
 					_ = OutputPaneWriteLineAsync(text, false);
+
 				}
 
 				// Check again.
@@ -1179,7 +1205,6 @@ public static class Diag
 				noPump.OutputStringNoPump(value + Environment.NewLine);
 			else
 				_OutputPane.OutputStringThreadSafe(value + Environment.NewLine);
-
 		}
 		catch (Exception ex)
 		{
@@ -1282,6 +1307,6 @@ public static class Diag
 		}
 	}
 
-	#endregion Methods
+#endregion Methods
 
 }

@@ -1,27 +1,38 @@
 ﻿using System;
-using System.Data;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys.Enums;
 using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Design;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
+using VSLangProj;
+
 
 
 namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.PackageControllerGuid)]
+
+
 #if ASYNCRDTEVENTS_ENABLED
 public interface IBsPackageController : IVsSolutionEvents3,
 	IVsSelectionEvents, IVsRunningDocTableEvents3, IVsRunningDocTableEvents4, IVsRunningDocTableEvents7, IDisposable
 #else
-public interface IBsPackageController : IVsSolutionEvents3, // IVsSolutionEvents2, IVsSolutionEvents, */
-	IVsSelectionEvents, IVsRunningDocTableEvents3, IVsRunningDocTableEvents4, IDisposable
+public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, IVsRunningDocTableEvents3,
+	IVsRunningDocTableEvents4, IDisposable
 #endif
 {
+	// System Event Delegates
+	delegate void InitializeDelegate(object sender);
+	delegate void AssemblyObsoleteDelegate(object sender, AssemblyObsoleteEventArgs e);
+	delegate void BuildDoneDelegate(vsBuildScope Scope, vsBuildAction Action);
+
 
 	// Rdt Event Delegates
 
@@ -30,6 +41,8 @@ public interface IBsPackageController : IVsSolutionEvents3, // IVsSolutionEvents
 		uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew);
 
 	delegate int AfterDocumentWindowHideDelegate(uint docCookie, IVsWindowFrame pFrame);
+	delegate int AfterLastDocumentUnlockDelegate(IVsHierarchy pHier, uint itemid, string pszMkDocument,
+		int fClosedWithoutSaving);
 	delegate int AfterSaveDelegate(uint docCookie);
 	delegate IVsTask AfterSaveAsyncDelegate(uint cookie, uint flags);
 
@@ -40,7 +53,9 @@ public interface IBsPackageController : IVsSolutionEvents3, // IVsSolutionEvents
 	delegate IVsTask BeforeSaveAsyncDelegate(uint cookie, uint flags, IVsTask saveTask);
 
 	// Solution Event Delegates
+	delegate int AfterLoadProjectDelegate(Project project);
 	delegate int AfterOpenProjectDelegate(Project project, int fAdded);
+	delegate int AfterOpenSolutionDelegate(object pUnkReserved, int fNewSolution);
 	delegate void LoadSolutionOptionsDelegate(Stream stream);
 	delegate void SaveSolutionOptionsDelegate(Stream stream);
 	delegate int AfterCloseSolutionDelegate(object pUnkReserved);
@@ -56,12 +71,34 @@ public interface IBsPackageController : IVsSolutionEvents3, // IVsSolutionEvents
 		ISelectionContainer pSCOld, IVsHierarchy pHierNew, uint itemidNew, IVsMultiItemSelect pMISNew,
 		ISelectionContainer pSCNew);
 
+	// Project Event Delegates
+	delegate void DesignTimeOutputDeletedDelegate(string bstrOutputMoniker);
+	delegate void DesignTimeOutputDirtyDelegate(string bstrOutputMoniker);
+
+	delegate void ProjectInitializedDelegate(Project project);
+
+	delegate void ProjectItemAddedDelegate(ProjectItem projectItem);
+	delegate void ProjectItemRemovedDelegate(ProjectItem projectItem);
+	delegate void ProjectItemRenamedDelegate(ProjectItem projectItem, string oldName);
+
+	delegate void ReferenceAddedDelegate(Reference reference);
+	delegate void ReferenceChangedDelegate(Reference reference);
+	delegate void ReferenceRemovedDelegate(Reference reference);
+
 	// Custom EventDelegates
 	delegate int NewQueryRequestedDelegate(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType);
 
 
+
+	// System Events
+	event InitializeDelegate OnInitializeEvent;
+	event AssemblyObsoleteDelegate OnAssemblyObsoleteEvent;
+	event BuildDoneDelegate OnBuildDoneEvent;
+
 	// Solution events
+	event AfterLoadProjectDelegate OnAfterLoadProjectEvent;
 	event AfterOpenProjectDelegate OnAfterOpenProjectEvent;
+	event AfterOpenSolutionDelegate OnAfterOpenSolutionEvent;
 
 	event LoadSolutionOptionsDelegate OnLoadSolutionOptionsEvent;
 	event SaveSolutionOptionsDelegate OnSaveSolutionOptionsEvent;
@@ -76,6 +113,7 @@ public interface IBsPackageController : IVsSolutionEvents3, // IVsSolutionEvents
 	event AfterAttributeChangeDelegate OnAfterAttributeChangeEvent;
 	event AfterAttributeChangeExDelegate OnAfterAttributeChangeExEvent;
 	event AfterDocumentWindowHideDelegate OnAfterDocumentWindowHideEvent;
+	event AfterLastDocumentUnlockDelegate OnAfterLastDocumentUnlockEvent;
 	event AfterSaveDelegate OnAfterSaveEvent;
 	event AfterSaveAsyncDelegate OnAfterSaveAsyncEvent;
 	event BeforeDocumentWindowShowDelegate OnBeforeDocumentWindowShowEvent;
@@ -88,20 +126,38 @@ public interface IBsPackageController : IVsSolutionEvents3, // IVsSolutionEvents
 	event ElementValueChangedDelegate OnElementValueChangedEvent;
 	event SelectionChangedDelegate OnSelectionChangedEvent;
 
+	// Project Events
+	event ProjectInitializedDelegate OnProjectInitializedEvent;
+
+	event DesignTimeOutputDeletedDelegate OnDesignTimeOutputDeletedEvent;
+	event DesignTimeOutputDirtyDelegate OnDesignTimeOutputDirtyEvent;
+
+	event ProjectItemAddedDelegate OnProjectItemAddedEvent;
+	event ProjectItemRemovedDelegate OnProjectItemRemovedEvent;
+	event ProjectItemRenamedDelegate OnProjectItemRenamedEvent;
+
+	event ReferenceAddedDelegate OnReferenceAddedEvent;
+	event ReferenceChangedDelegate OnReferenceChangedEvent;
+	event ReferenceRemovedDelegate OnReferenceRemovedEvent;
+
+
 	// Custom Events
 	event NewQueryRequestedDelegate OnNewQueryRequestedEvent;
 
-	string UserDataDirectory { get; }
 
 	IBsAsyncPackage PackageInstance { get; }
 
 	DTE Dte { get; }
+	DTE2 Dte2 { get; }
 
-	object SolutionObject { get; }
+	string ProviderGuid { get; }
+
+	bool SolutionClosing { get; }
+	Solution SolutionObject { get; }
+	Projects SolutionProjects { get; }
+
 
 	bool SolutionValidating { get; }
-
-	IVsSolution VsSolution { get; }
 
 	public bool IsToolboxInitialized { get; }
 
@@ -114,45 +170,31 @@ public interface IBsPackageController : IVsSolutionEvents3, // IVsSolutionEvents
 	IVsTaskStatusCenterService StatusCenterService { get; }
 
 
-	void RegisterEventsManager(IBsEventsManager manager);
-
-
 	IAsyncServiceContainer Services { get; }
 
 
 	uint ToolboxCmdUICookie { get; }
-
-	object LockGlobal { get; }
-
-
 
 
 	abstract bool AdviseEvents();
 	Task<bool> AdviseEventsAsync();
 
 
-	void DisableRdtEvents();
+	bool EventRdtEnter(bool increment = true, bool force = false);
 
-	void EnableRdtEvents();
+	void EventRdtExit();
 
-	string CreateConnectionUrl(IDbConnection connection);
 	string CreateConnectionUrl(string connectionString);
-
-	void EnsureMonitorSelection();
 
 	TInterface EnsureService<TService, TInterface>() where TInterface : class;
 
 	TInterface GetService<TService, TInterface>() where TInterface : class;
-
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
 
-	Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync();
-
-	string GetRegisterConnectionDatasetKey(IDbConnection connection);
+	string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root);
 	void InvalidateRctManager();
 	bool IsConnectionEquivalency(string connectionString1, string connectionString2);
 	bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2);
-
 	void ValidateSolution();
 
 

@@ -38,7 +38,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	/// AbstractCorePackage package .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public AbstractCorePackage() : base()
+	protected AbstractCorePackage() : base()
 	{
 		if (_Instance != null)
 		{
@@ -61,8 +61,6 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 		}
 
 		_ApcInstance = CreateController();
-
-		RctManager.CreateInstance();
 	}
 
 
@@ -74,27 +72,22 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	{
 		get
 		{
-			if (_Instance == null)
-				DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
+			// if (_Instance == null)
+			//	DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
 			return (AbstractCorePackage)_Instance;
 		}
 	}
 
 
-	static AbstractCorePackage()
-	{
-		RegisterDataServices();
-	}
-
-	private static void RegisterDataServices()
+	public static void RegisterDataServices()
 	{
 		NativeDb.CsbType = typeof(Csb);
-		NativeDb.DatabaseEngineSvc ??= DatabaseEngineService.CreateInstance();
-		NativeDb.ProviderSchemaFactorySvc = ProviderSchemaFactoryService.CreateInstance();
-		NativeDb.DatabaseInfoSvc = DatabaseInfoService.CreateInstance();
-		NativeDb.DbCommandSvc = DbCommandService.CreateInstance();
-		NativeDb.DbConnectionSvc = DbConnectionService.CreateInstance();
-		NativeDb.DbExceptionSvc = DbExceptionService.CreateInstance();
+		NativeDb.DatabaseEngineSvc ??= DatabaseEngineService.EnsureInstance();
+		NativeDb.ProviderSchemaFactorySvc ??= ProviderSchemaFactoryService.EnsureInstance();
+		NativeDb.DatabaseInfoSvc ??= DatabaseInfoService.EnsureInstance();
+		NativeDb.DbCommandSvc ??= DbCommandService.EnsureInstance();
+		NativeDb.DbConnectionSvc ??= DbConnectionService.EnsureInstance();
+		NativeDb.DbExceptionSvc ??= DbExceptionService.EnsureInstance();
 	}
 
 
@@ -106,7 +99,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	// ---------------------------------------------------------------------------------
 	protected override void Dispose(bool disposing)
 	{
-		RctManager.Instance?.Dispose();
+		RctManager.Delete();
 
 		base.Dispose(disposing);
 	}
@@ -126,7 +119,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	protected const int C_ProgressTotal = 43;
 
 	protected static Package _Instance = null;
-	protected int _InitializationSeed = 0;
+	// private int _InitializationSeed = 0;
 
 	protected IBsPackageController _ApcInstance = null;
 	private IDisposable _DisposableWaitCursor;
@@ -147,7 +140,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	// =========================================================================================================
 
 
-	public static IBsNativeDatabaseEngine DatabaseEngineSvc => NativeDb.DatabaseEngineSvc ??= DatabaseEngineService.CreateInstance();
+	// public static IBsNativeDatabaseEngine DatabaseEngineSvc => NativeDb.DatabaseEngineSvc ??= DatabaseEngineService.EnsureInstance();
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -180,6 +173,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 		{
 			if (_VsSolution == null)
 			{
+
 				if (GetService(typeof(SVsSolution)) is not IVsSolution service)
 					Diag.ExceptionService(typeof(IVsSolution));
 				else
@@ -466,8 +460,8 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 
 	protected void Progress(IProgress<ServiceProgressData> progress, string message)
 	{
-		ServiceProgressData progressData = new("Loading BlackbirdSql", message, _InitializationSeed++, C_ProgressTotal);
-		progress.Report(progressData);
+		// ServiceProgressData progressData = new("Loading BlackbirdSql", message, _InitializationSeed++, C_ProgressTotal);
+		// progress.Report(progressData);
 	}
 
 

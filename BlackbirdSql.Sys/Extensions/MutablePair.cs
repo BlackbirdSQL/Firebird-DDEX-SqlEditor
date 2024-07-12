@@ -3,16 +3,43 @@ using System;
 using System.Collections.Generic;
 
 
+
 namespace BlackbirdSql.Sys.Extensions;
+
+[Serializable]
+
 
 /// <summary>
 /// Defines a mutable key/value pair that can be set or retrieved.
 /// </summary>
 /// <typeparam name="TKey">A mutable <see cref="KeyValuePair{TKey, TValue}.Key"/>.</typeparam>
 /// <typeparam name="TValue">A mutable <see cref="KeyValuePair{TKey, TValue}.Value"/>.</typeparam>
-[Serializable]
 public struct MutablePair<TKey, TValue>
 {
+
+	/// <summary>
+	/// MutablePair .ctor.
+	/// </summary>
+	/// <param name="key">A mutable <see cref="KeyValuePair{TKey, TValue}.Key"/>.</param>
+	/// <param name="value">A mutable <see cref="KeyValuePair{TKey, TValue}.Value"/>.</param>
+	public MutablePair(TKey key, TValue value)
+	{
+		_Pair = new KeyValuePair<TKey, TValue>(key, value);
+	}
+
+	public MutablePair(MutablePair<TKey, TValue> pair)
+	{
+		_Pair = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
+	}
+
+	public MutablePair(KeyValuePair<TKey, TValue> pair)
+	{
+		_Pair = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
+	}
+
+
+
+
 	private KeyValuePair<TKey, TValue> _Pair;
 
 	//
@@ -52,37 +79,7 @@ public struct MutablePair<TKey, TValue>
 		}
 	}
 
-	//
-	// Summary:
-	//     Initializes a new instance of the System.Collections.Generic.KeyValuePair`2 structure
-	//     with the specified key and value.
-	//
-	// Parameters:
-	//   key:
-	//     The object defined in each key/value pair.
-	//
-	//   value:
-	//     The definition associated with key.
 
-	/// <summary>
-	/// MutablePair .ctor.
-	/// </summary>
-	/// <param name="key">A mutable <see cref="KeyValuePair{TKey, TValue}.Key"/>.</param>
-	/// <param name="value">A mutable <see cref="KeyValuePair{TKey, TValue}.Value"/>.</param>
-	public MutablePair(TKey key, TValue value)
-	{
-		_Pair = new KeyValuePair<TKey, TValue>(key, value);
-	}
-
-	public MutablePair(MutablePair<TKey, TValue> pair)
-	{
-		_Pair = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
-	}
-
-	public MutablePair(KeyValuePair<TKey, TValue> pair)
-	{
-		_Pair = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
-	}
 
 
 	public static MutablePair<TKey, TValue> Find(MutablePair<TKey, TValue>[] pairs, TKey key)

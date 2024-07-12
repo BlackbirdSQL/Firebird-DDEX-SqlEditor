@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -102,12 +101,12 @@ namespace BlackbirdSql.EditorExtension;
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.TextView_string)]
 [VsProvideFileExtensionMapping(typeof(EditorFactoryWithEncoding), $"{PackageData.ServiceName} with Encoding", 317, 96)]
 
-[VsProvideEditorFactory(typeof(SqlResultsEditorFactory), 312, false,
+[VsProvideEditorFactory(typeof(ResultsEditorFactory), 312, false,
 	DefaultName = "BlackbirdSql Results", CommonPhysicalViewAttributes = 0)]
-// [ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Debugging_string)]
-[ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Code_string)]
-[ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Designer_string)]
-[ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.TextView_string)]
+// [ProvideEditorLogicalView(typeof(ResultsEditorFactory), VSConstants.LOGVIEWID.Debugging_string)]
+[ProvideEditorLogicalView(typeof(ResultsEditorFactory), VSConstants.LOGVIEWID.Code_string)]
+[ProvideEditorLogicalView(typeof(ResultsEditorFactory), VSConstants.LOGVIEWID.Designer_string)]
+[ProvideEditorLogicalView(typeof(ResultsEditorFactory), VSConstants.LOGVIEWID.TextView_string)]
 
 
 
@@ -128,7 +127,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 	// ---------------------------------------------------------------------------------
 
 
-	public EditorExtensionPackage() : base()
+	protected EditorExtensionPackage() : base()
 	{
 		_EventsManager = EditorEventsManager.CreateInstance(_ApcInstance);
 	}
@@ -141,8 +140,8 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 	{
 		get
 		{
-			if (_Instance == null)
-				DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
+			// if (_Instance == null)
+			//	DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
 			return (EditorExtensionPackage)_Instance;
 		}
 	}
@@ -163,7 +162,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 
 			if (ThreadHelper.CheckAccess() && GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 			{
-				___(vsShell.UnadviseBroadcastMessages(_VsBroadcastMessageEventsCookie));
+				___(vsShell.UnadviseBroadcastMessages(_BroadcastMessageEventsCookie));
 			}
 
 			_EventsManager?.Dispose();
@@ -202,10 +201,10 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 	// private static readonly string _TName = typeof(EditorExtensionPackage).Name;
 
 	private readonly EditorEventsManager _EventsManager;
-	private uint _VsBroadcastMessageEventsCookie;
+	private uint _BroadcastMessageEventsCookie;
 	private EditorFactoryWithoutEncoding _SqlEditorFactory;
 	private EditorFactoryWithEncoding _SqlEditorFactoryWithEncoding;
-	private SqlResultsEditorFactory _SqlResultsEditorFactory;
+	private ResultsEditorFactory _SqlResultsEditorFactory;
 	private uint _MarkerServiceCookie;
 	private uint _FontAndColorServiceCookie;
 
@@ -318,14 +317,14 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 
 		_SqlEditorFactory = new EditorFactoryWithoutEncoding();
 		_SqlEditorFactoryWithEncoding = new EditorFactoryWithEncoding();
-		_SqlResultsEditorFactory = new SqlResultsEditorFactory();
+		_SqlResultsEditorFactory = new ResultsEditorFactory();
 
 		RegisterEditorFactory(_SqlEditorFactory);
 		RegisterEditorFactory(_SqlEditorFactoryWithEncoding);
 		RegisterEditorFactory(_SqlResultsEditorFactory);
 
 
-		___((GetGlobalService(typeof(SVsShell)) as IVsShell).AdviseBroadcastMessages(this, out _VsBroadcastMessageEventsCookie));
+		___((GetGlobalService(typeof(SVsShell)) as IVsShell).AdviseBroadcastMessages(this, out _BroadcastMessageEventsCookie));
 
 		Progress(progress, "Finalizing: Registering Editor Factories... Done.");
 
@@ -474,12 +473,12 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 			// IBSqlEditorStrategyProvider sqlEditorStrategyProvider = null;
 			// ISqlEditorStrategyProvider sqlEditorStrategyProvider = new ServiceProvider(ppSP).GetService(typeof(ISqlEditorStrategyProvider)) as ISqlEditorStrategyProvider;
 
-			// We always use DefaultSqlEditorStrategy and use the csb passed via userdata that was
+			// We always use DefaultConnectionStrategy and use the csb passed via userdata that was
 			// constructed from the SE node
-			IBSqlEditorStrategy sqlEditorStrategy = new DefaultSqlEditorStrategy(auxDocData.UserDataCsb);
 
-			auxDocData.Strategy = sqlEditorStrategy;
-			if (auxDocData.Strategy.IsDw)
+			auxDocData.StrategyFactory = new ConnectionStrategyFactory(auxDocData.UserDataCsb);
+
+			if (auxDocData.StrategyFactory.IsDw)
 				auxDocData.IntellisenseEnabled = false;
 
 			AuxilliaryDocDataTable.Add(docData, auxDocData);
@@ -591,7 +590,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 
 	private static void InitializeTabbedEditorToolbarHandlerManager()
 	{
-		ToolbarCommandHandlerManager toolbarMgr = AbstractTabbedEditorWindowPane.ToolbarManager;
+		ToolbarCommandMapper toolbarMgr = AbstractTabbedEditorWindowPane.ToolbarManager;
 
 		if (toolbarMgr == null)
 			return;
@@ -599,39 +598,39 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 		Guid clsid = CommandProperties.ClsidCommandSet;
 
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorDatabaseCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabases));
+			new ToolbarCommandHandler<CommandDatabaseSelect>(clsid, (uint)EnCommandSet.CmbIdDatabaseSelect));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorDatabaseListCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabasesGetList));
+			new ToolbarCommandHandler<CommandDatabaseList>(clsid, (uint)EnCommandSet.CmbIdDatabaseList));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorExecuteQueryCommand>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
+			new ToolbarCommandHandler<CommandExecuteQuery>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorCancelQueryCommand>(clsid, (uint)EnCommandSet.CmdIdCancelQuery));
+			new ToolbarCommandHandler<CommandCancelQuery>(clsid, (uint)EnCommandSet.CmdIdCancelQuery));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorConnectCommand>(clsid, (uint)EnCommandSet.CmdIdConnect));
+			new ToolbarCommandHandler<CommandConnect>(clsid, (uint)EnCommandSet.CmdIdConnect));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorDisconnectCommand>(clsid, (uint)EnCommandSet.CmdIdDisconnect));
+			new ToolbarCommandHandler<CommandDisconnect>(clsid, (uint)EnCommandSet.CmdIdDisconnect));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorDisconnectAllQueriesCommand>(clsid, (uint)EnCommandSet.CmdIdDisconnectAllQueries));
+			new ToolbarCommandHandler<CommandDisconnectAllQueries>(clsid, (uint)EnCommandSet.CmdIdDisconnectAllQueries));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorChangeConnectionCommand>(clsid, (uint)EnCommandSet.CmdIdChangeConnection));
+			new ToolbarCommandHandler<CommandModifyConnection>(clsid, (uint)EnCommandSet.CmdIdModifyConnection));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorShowEstimatedPlanCommand>(clsid, (uint)EnCommandSet.CmdIdShowEstimatedPlan));
+			new ToolbarCommandHandler<CommandShowEstimatedPlan>(clsid, (uint)EnCommandSet.CmdIdShowEstimatedPlan));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorCloneQueryWindowCommand>(clsid, (uint)EnCommandSet.CmdIdCloneQuery));
+			new ToolbarCommandHandler<CommandCloneQueryWindow>(clsid, (uint)EnCommandSet.CmdIdCloneQuery));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorToggleSqlCmdModeCommand>(clsid, (uint)EnCommandSet.CmdIdToggleSQLCMDMode));
+			new ToolbarCommandHandler<CommandToggleSqlCmdMode>(clsid, (uint)EnCommandSet.CmdIdToggleSqlCmdMode));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorToggleExecutionPlanCommand>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
+			new ToolbarCommandHandler<CommandToggleExecutionPlan>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorToggleClientStatisticsCommand>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
+			new ToolbarCommandHandler<CommandToggleClientStatistics>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorNewQueryCommand>(clsid, (uint)EnCommandSet.CmdIdNewSqlQuery));
+			new ToolbarCommandHandler<CommandNewQuery>(clsid, (uint)EnCommandSet.CmdIdNewQuery));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorTransactionCommitCommand>(clsid, (uint)EnCommandSet.CmdIdTransactionCommit));
+			new ToolbarCommandHandler<CommandTransactionCommit>(clsid, (uint)EnCommandSet.CmdIdTransactionCommit));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorTransactionRollbackCommand>(clsid, (uint)EnCommandSet.CmdIdTransactionRollback));
+			new ToolbarCommandHandler<CommandTransactionRollback>(clsid, (uint)EnCommandSet.CmdIdTransactionRollback));
 		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
-			new ToolbarCommandHandler<SqlEditorToggleTTSCommand>(clsid, (uint)EnCommandSet.CmdIdToggleTTS));
+			new ToolbarCommandHandler<CommandToggleTTS>(clsid, (uint)EnCommandSet.CmdIdToggleTTS));
 
 	}
 
@@ -651,7 +650,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 			return VSConstants.S_OK;
 		}
 
-		service = (IntPtr)0;
+		service = IntPtr.Zero;
 
 		return VSConstants.E_NOINTERFACE;
 	}
@@ -667,8 +666,8 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 
 		Guid clsid = CommandProperties.ClsidCommandSet;
 
-		CommandID id = new CommandID(clsid, (int)EnCommandSet.CmdIdNewSqlQuery);
-		OleMenuCommand cmd = new(OnNewSqlQuery, id);
+		CommandID id = new CommandID(clsid, (int)EnCommandSet.CmdIdNewQuery);
+		OleMenuCommand cmd = new(OnNewQuery, id);
 		cmd.BeforeQueryStatus += OnBeforeQueryStatus;
 		oleMenuCommandSvc.AddCommand(cmd);
 
@@ -711,25 +710,6 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 				_AuxilliaryDocDataTable.Remove(docData);
 				auxDocData?.Dispose();
 			}
-		}
-	}
-
-
-
-	public void SetSqlEditorStrategyForDocument(object docData, IBSqlEditorStrategy strategy)
-	{
-		lock (_LockLocal)
-		{
-			AuxilliaryDocData auxDocData = GetAuxilliaryDocData(docData);
-
-			if (auxDocData == null)
-			{
-				ArgumentException ex = new("No auxillary information for DocData");
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			auxDocData.Strategy = strategy;
 		}
 	}
 
@@ -883,17 +863,17 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 
 
 
-	private void OnNewSqlQuery(object sender, EventArgs e)
+	private void OnNewQuery(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnNewSqlQuery()");
+		// Tracer.Trace(GetType(), "OnNewQuery()");
 
 		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 		{
 			DesignerExplorerServices.OpenNewMiscellaneousSqlFile();
-			IBSqlEditorWindowPane lastFocusedSqlEditor = Instance.LastFocusedSqlEditor;
+			IBSqlEditorWindowPane lastFocusedSqlEditor = EditorExtensionPackage.Instance.LastFocusedSqlEditor;
 			if (lastFocusedSqlEditor != null)
 			{
-				new SqlEditorNewQueryCommand(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
+				new CommandNewQuery(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
 				GetAuxilliaryDocData(lastFocusedSqlEditor.DocData).IsVirtualWindow = true;
 			}
 		}
@@ -914,9 +894,9 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBEdito
 
 			if (qryMgr != null && qryMgr.IsConnected)
 			{
-				qryMgr.ConnectionStrategy.Transaction?.Dispose();
-				qryMgr.ConnectionStrategy.Transaction = null;
-				qryMgr.ConnectionStrategy.Connection?.Close();
+				qryMgr.Strategy.Transaction?.Dispose();
+				qryMgr.Strategy.Transaction = null;
+				qryMgr.Strategy.Connection?.Close();
 			}
 		}
 	}

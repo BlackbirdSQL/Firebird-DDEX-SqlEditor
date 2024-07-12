@@ -30,9 +30,9 @@ namespace BlackbirdSql;
 public class MessageCtl
 {
 
-	// ---------------------------------
+	// ---------------------------------------------------------------------------------
 	#region Constructors - MessageBoxCtl
-	// ---------------------------------
+	// ---------------------------------------------------------------------------------
 
 
 	public MessageCtl()
@@ -206,7 +206,7 @@ public class MessageCtl
 		{
 			if (string.IsNullOrWhiteSpace(_ApplicationTitle))
 			{
-				return ControlsResources.ConnectToServer;
+				return ControlsResources.MessageCtl_ConnectToServer;
 			}
 
 			return _ApplicationTitle;
@@ -347,21 +347,21 @@ public class MessageCtl
 
 	public EnMessageBoxDialogResult CustomDialogResult => _CustomDialogResult;
 
-	public static string OKButtonText => ControlsResources.OKButton;
+	public static string OKButtonText => ControlsResources.MessageCtl_OKButton;
 
-	public static string CancelButtonText => ControlsResources.CancelButton;
+	public static string CancelButtonText => ControlsResources.AdvancedMessageBox_CancelButton;
 
-	public static string YesButtonText => ControlsResources.YesButton;
+	public static string YesButtonText => ControlsResources.MessageCtl_YesButton;
 
-	public static string NoButtonText => ControlsResources.NoButton;
+	public static string NoButtonText => ControlsResources.MessageCtl_NoButton;
 
-	public static string AbortButtonText => ControlsResources.AbortButton;
+	public static string AbortButtonText => ControlsResources.AdvancedMessageBox_AbortButton;
 
-	public static string RetryButtonText => ControlsResources.RetryButton;
+	public static string RetryButtonText => ControlsResources.MessageCtl_RetryButton;
 
-	public static string FailButtonText => ControlsResources.FailButton;
+	public static string FailButtonText => ControlsResources.MessageCtl_FailButton;
 
-	public static string IgnoreButtonText => ControlsResources.IgnoreButton;
+	public static string IgnoreButtonText => ControlsResources.MessageCtl_IgnoreButton;
 
 	public bool Beep
 	{
@@ -488,14 +488,14 @@ public class MessageCtl
 
 		if (_Buttons == EnMessageBoxButtons.Custom && _ButtonCount == 0)
 		{
-			Exception ex = new(ControlsResources.CustomButtonTextError);
+			Exception ex = new(ControlsResources.MessageCtl_CustomButtonTextError);
 			Diag.Dug(ex);
 			throw ex;
 		}
 
 		if (_MessageLevelCount != -1 && _MessageLevelCount < 1)
 		{
-			ArgumentOutOfRangeException ex = new("MessageLevelDefault", _MessageLevelCount, ControlsResources.MessageLevelCountError);
+			ArgumentOutOfRangeException ex = new("MessageLevelDefault", _MessageLevelCount, ControlsResources.MessageCtl_MessageLevelCountError);
 			Diag.Dug(ex);
 			throw ex;
 		}

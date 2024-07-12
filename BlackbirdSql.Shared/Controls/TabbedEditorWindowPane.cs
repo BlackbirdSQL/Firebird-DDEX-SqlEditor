@@ -52,7 +52,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 	private DisplaySQLResultsControl _ResultsControl;
 
-	private SqlEditorViewFilter _ViewFilter;
+	private ViewCommandFilter _ViewFilter;
 
 	private bool _IsFirstTimeToShow = true;
 
@@ -65,7 +65,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 	private FindTargetAdapter VSFindTargetAdapter { get; set; }
 
 
-	public SqlEditorViewFilter ViewFilter => _ViewFilter;
+	public ViewCommandFilter ViewFilter => _ViewFilter;
 
 	public string FileName { get; private set; }
 
@@ -359,6 +359,9 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 	protected override void Initialize()
 	{
+		if (ApcManager.SolutionClosing)
+			return;
+
 		TabbedEditorUiCtl.SuspendLayout();
 		TabbedEditorUiCtl.SplitViewContainer.SuspendLayout();
 
@@ -399,9 +402,9 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		((sender as AbstractEditorTab).GetView() as ResultWindowPane)?.SetFocus();
 	}
 
-	protected virtual SqlEditorViewFilter CreateViewFilter()
+	protected virtual ViewCommandFilter CreateViewFilter()
 	{
-		return new SqlEditorViewFilter(this);
+		return new ViewCommandFilter(this);
 	}
 
 	protected override AbstractTabbedEditorUIControl CreateTabbedEditorUI(Guid toolbarGuid, uint toolbarId /*, string[] buttonTexts = null */)
@@ -451,9 +454,17 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 	public override bool EnsureTabs(bool activateTextView)
 	{
+		if (ApcManager.SolutionClosing)
+			return TabbedEditorUiCtl.Tabs.Count > 0;
+
+
+
+		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+
+		if (auxDocData == null)
+			return false;
 
 		SplitViewContainer splitViewContainer = TabbedEditorUiCtl.SplitViewContainer;
-		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
 		QueryManager qryMgr = auxDocData.QryMgr;
 
 		bool hasActualPlan = qryMgr.LiveSettings.ExecutionType == EnSqlExecutionType.QueryWithPlan;
@@ -470,6 +481,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		{
 			// splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
 			// 	EnSplitterBarButtonDisplayStyle.Text, btnPlanText, ControlsResources.ExecutionPlan);
+
 			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid),
 				EnSplitterBarButtonDisplayStyle.Text, btnTextPlanText, ControlsResources.TextPlan);
 
@@ -478,9 +490,8 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 
 		if (!base.EnsureTabs(activateTextView))
-		{
 			return false;
-		}
+
 
 		SqlEditorResultsTab resultsTab = GetSqlEditorResultsTab();
 
@@ -553,7 +564,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			IVsTextView codeEditorTextView = GetCodeEditorTextView();
 
 			if (codeEditorTextView != null)
-				AbstractViewFilter.AddFilterToView(codeEditorTextView, _ViewFilter);
+				AbstractViewCommandFilter.AddFilterToView(codeEditorTextView, _ViewFilter);
 
 			EnsureDisplayResultsControl();
 
@@ -757,22 +768,22 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 	{
 		if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 		{
-			AbstractSqlEditorCommand sqlEditorCommand = null;
+			AbstractCommand sqlEditorCommand = null;
 
 			EnCommandSet cmd = (EnCommandSet)nCmdID;
 			switch (cmd)
 			{
 				case EnCommandSet.CmdIdResultsAsText:
-					sqlEditorCommand = new SqlEditorResultsAsTextCommand(this);
+					sqlEditorCommand = new CommandResultsAsText(this);
 					break;
 				case EnCommandSet.CmdIdResultsAsGrid:
-					sqlEditorCommand = new SqlEditorResultsAsGridCommand(this);
+					sqlEditorCommand = new CommandResultsAsGrid(this);
 					break;
 				case EnCommandSet.CmdIdResultsAsFile:
-					sqlEditorCommand = new SqlEditorResultsAsFileCommand(this);
+					sqlEditorCommand = new CommandResultsAsFile(this);
 					break;
 				case EnCommandSet.CmdIdToggleResultsPane:
-					sqlEditorCommand = new SqlEditorToggleResultsPaneCommand(this);
+					sqlEditorCommand = new CommandToggleResultsPane(this);
 					break;
 			}
 
@@ -785,9 +796,11 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		// Tracer.Trace(GetType(), "HandleExec()", "pguidCmdGroup: {0}, nCmdId: {1}.", pguidCmdGroup, nCmdID);
 
 		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
-		if (auxDocData != null && auxDocData.Strategy != null)
+
+		if (auxDocData != null && auxDocData.StrategyFactory != null)
 		{
-			IBSqlEditorExtendedCommandHandler extendedCommandHandler = auxDocData.Strategy.ExtendedCommandHandler;
+			IBExtendedCommandHandler extendedCommandHandler = auxDocData.StrategyFactory.ExtendedCommandHandler;
+
 			if (extendedCommandHandler != null && extendedCommandHandler.HandleExec(this, ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut) == 0)
 			{
 				return VSConstants.S_OK;
@@ -804,22 +817,22 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			uint cmdID = prgCmds[i].cmdID;
 			if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 			{
-				AbstractSqlEditorCommand sqlEditorCommand = null;
+				AbstractCommand sqlEditorCommand = null;
 				EnCommandSet cmd = (EnCommandSet)cmdID;
 
 				switch (cmd)
 				{
 					case EnCommandSet.CmdIdResultsAsText:
-						sqlEditorCommand = new SqlEditorResultsAsTextCommand(this);
+						sqlEditorCommand = new CommandResultsAsText(this);
 						break;
 					case EnCommandSet.CmdIdResultsAsGrid:
-						sqlEditorCommand = new SqlEditorResultsAsGridCommand(this);
+						sqlEditorCommand = new CommandResultsAsGrid(this);
 						break;
 					case EnCommandSet.CmdIdResultsAsFile:
-						sqlEditorCommand = new SqlEditorResultsAsFileCommand(this);
+						sqlEditorCommand = new CommandResultsAsFile(this);
 						break;
 					case EnCommandSet.CmdIdToggleResultsPane:
-						sqlEditorCommand = new SqlEditorToggleResultsPaneCommand(this);
+						sqlEditorCommand = new CommandToggleResultsPane(this);
 						break;
 				}
 
@@ -831,9 +844,10 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		}
 
 		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
-		if (auxDocData != null && auxDocData.Strategy != null)
+
+		if (auxDocData != null && auxDocData.StrategyFactory != null)
 		{
-			IBSqlEditorExtendedCommandHandler extendedCommandHandler = auxDocData.Strategy.ExtendedCommandHandler;
+			IBExtendedCommandHandler extendedCommandHandler = auxDocData.StrategyFactory.ExtendedCommandHandler;
 			if (extendedCommandHandler != null && extendedCommandHandler.HandleQueryStatus(this, ref pguidCmdGroup, cCmds, prgCmds, pCmdText) == 0)
 			{
 				return VSConstants.S_OK;
@@ -998,7 +1012,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 	public DisplaySQLResultsControl EnsureDisplayResultsControl()
 	{
-		if (_ResultsControl == null)
+		if (_ResultsControl == null && !ApcManager.SolutionClosing)
 		{
 			ResultWindowPane resultsGridPanel = GetSqlEditorResultsTab().GetView() as ResultWindowPane;
 			ResultWindowPane spatialPane = null;
@@ -1063,10 +1077,14 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 	protected override void Dispose(bool disposing)
 	{
+		if (_IsDisposed)
+			return;
+
 		if (disposing)
 		{
-			_ViewFilter.Dispose();
+			_ViewFilter?.Dispose();
 			_ResultsControl?.Dispose();
+			_ResultsControl = null;
 
 			AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
 			if (auxDocData != null && auxDocData.QryMgr != null)
@@ -1078,7 +1096,6 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			_ProperyWindowManager?.Dispose();
 		}
 
-		_ResultsControl = null;
 		base.Dispose(disposing);
 	}
 
@@ -1248,7 +1265,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 					((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData)
 					?? throw new NullReferenceException("(AuxilliaryDocData)auxDocData");
 
-				if (auxDocData.Strategy == null)
+				if (auxDocData.StrategyFactory == null)
 					throw new NullReferenceException("auxDocData.Strategy");
 			}
 			catch (Exception ex)
@@ -1261,7 +1278,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			uint menuId;
 
 
-			switch (auxDocData.Strategy.Mode)
+			switch (auxDocData.StrategyFactory.Mode)
 			{
 				case EnEditorMode.CustomOnline:
 					menuId = (uint)EnCommandSet.ToolbarIdOnlineWindow;
@@ -1301,10 +1318,10 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		if (args.Change == QueryManager.EnStatusType.Connection || args.Change == QueryManager.EnStatusType.Connected)
-		{
+		// if (args.Change == QueryManager.EnStatusType.Connection || args.Change == QueryManager.EnStatusType.Connected)
+		// {
 			UpdateToolTip();
-		}
+		// }
 
 
 		UpdateWindowCaption();
@@ -1343,48 +1360,53 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
 		if (vsWindowFrame == null)
-		{
 			return;
-		}
 
-		___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out object pvar));
-		___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out object pvar2));
-		if ((int)pvar2 < 0)
-		{
+		___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out object pHierarchy));
+		if (pHierarchy is not IVsHierarchy vsHierarchy)
 			return;
-		}
 
-		uint itemid = Convert.ToUInt32(pvar2, CultureInfo.InvariantCulture);
-		IVsHierarchy vsHierarchy = pvar as IVsHierarchy;
-		vsHierarchy?.SetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ShowOnlyItemCaption, true);
-		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+		___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out object pItemId));
+		if ((int)pItemId < 0)
+			return;
+		uint itemid = Convert.ToUInt32(pItemId, CultureInfo.InvariantCulture);
+
+		// vsHierarchy.SetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ShowOnlyItemCaption, true);
+
+		AuxilliaryDocData auxDocData = null; // ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+
+		string text;
 
 		// There are no Database projects for the Firebird port so this will never execute
-		if (auxDocData != null && auxDocData.Strategy != null
-			&& (auxDocData.Strategy.Mode == EnEditorMode.CustomOnline
-			|| auxDocData.Strategy.Mode == EnEditorMode.CustomProject))
+		if (auxDocData != null && auxDocData.StrategyFactory != null
+			&& (auxDocData.StrategyFactory.Mode == EnEditorMode.CustomOnline
+			|| auxDocData.StrategyFactory.Mode == EnEditorMode.CustomProject))
 		{
-			string text = GetAdditionalTooltipOrWindowCaption(toolTip: true);
+			text = GetAdditionalTooltipOrWindowCaption(toolTip: true);
 			string text2 = Environment.NewLine;
 			if (string.IsNullOrEmpty(text))
 			{
 				text2 = string.Empty;
 			}
 
-			if (auxDocData.Strategy.Mode == EnEditorMode.CustomProject)
+			if (auxDocData.StrategyFactory.Mode == EnEditorMode.CustomProject)
 			{
 				// Never happen - projects not supported in Firebird port.
 				text = DocumentMoniker + text2 + text;
 			}
-			else if (auxDocData.Strategy.Mode == EnEditorMode.CustomOnline)
+			else if (auxDocData.StrategyFactory.Mode == EnEditorMode.CustomOnline)
 			{
-				// Never happen - online not suppoerted ATM
-				___(vsHierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_Name, out var pvar3));
-				text = (string)pvar3 + text2 + text;
+				// Never happen - online not supported ATM
+				___(vsHierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_Name, out object pName));
+				text = (string)pName + text2 + text;
 			}
-
-			vsHierarchy.SetProperty((uint)(int)pvar2, (int)__VSHPROPID4.VSHPROPID_DescriptiveName, text);
 		}
+		else
+		{
+			text = DocumentMoniker;
+		}
+
+		vsHierarchy.SetProperty(itemid, (int)__VSHPROPID4.VSHPROPID_DescriptiveName, text);
 	}
 
 	private string GetAdditionalTooltipOrWindowCaption(bool toolTip)
@@ -1394,10 +1416,12 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		if (auxDocData != null && auxDocData.QryMgr != null)
 		{
 			QueryManager qryMgr = auxDocData.QryMgr;
-			text = qryMgr.ConnectionStrategy.GetEditorCaption(toolTip);
+			text = qryMgr.Strategy.GetEditorCaption(toolTip);
 			// IBSqlEditorUserSettings current = SqlEditorUserSettings.Instance.Current;
+
 			if (!toolTip && (PersistentSettings.EditorStatusTabTextIncludeDatabaseName
-				|| PersistentSettings.EditorStatusTabTextIncludeLoginName || PersistentSettings.EditorStatusTabTextIncludeServerName))
+				|| PersistentSettings.EditorStatusTabTextIncludeLoginName
+				|| PersistentSettings.EditorStatusTabTextIncludeServerName))
 			{
 				if (qryMgr.IsConnected || qryMgr.IsConnecting)
 				{
@@ -1595,7 +1619,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 	{
 		get
 		{
-			return IsDisposed;
+			return _IsDisposed;
 		}
 	}
 }

@@ -7,15 +7,45 @@ using System.Diagnostics;
 
 namespace BlackbirdSql.Sys.Extensions;
 
+[Serializable]
+[DebuggerDisplay("Count = {Count}")]
+
 
 //
 // Summary:
 //     Represents the collection of keys in a System.Collections.Generic.Dictionary`2.
 //     This class cannot be inherited.
-[Serializable]
-[DebuggerDisplay("Count = {Count}")]
 public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnumerable<TKey>, IEnumerable, ICollection, IReadOnlyCollection<TKey>
 {
+
+	//
+	// Summary:
+	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2.KeyCollection
+	//     class that reflects the keys in the specified System.Collections.Generic.Dictionary`2.
+	//
+	// Parameters:
+	//   dictionary:
+	//     The System.Collections.Generic.Dictionary`2 whose keys are reflected in the new
+	//     System.Collections.Generic.Dictionary`2.KeyCollection.
+	//
+	// Exceptions:
+	//   T:System.ArgumentNullException:
+	//     dictionary is null.
+	public PublicKeyCollection(PublicDictionary<TKey, TValue> dictionary)
+	{
+		if (dictionary == null)
+		{
+			ArgumentNullException ex = new("Dictionary");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		_Dictionary = dictionary;
+	}
+
+
+
+
 	//
 	// Summary:
 	//     Enumerates the elements of a System.Collections.Generic.Dictionary`2.KeyCollection.
@@ -188,30 +218,9 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 		}
 	}
 
-	//
-	// Summary:
-	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2.KeyCollection
-	//     class that reflects the keys in the specified System.Collections.Generic.Dictionary`2.
-	//
-	// Parameters:
-	//   dictionary:
-	//     The System.Collections.Generic.Dictionary`2 whose keys are reflected in the new
-	//     System.Collections.Generic.Dictionary`2.KeyCollection.
-	//
-	// Exceptions:
-	//   T:System.ArgumentNullException:
-	//     dictionary is null.
-	public PublicKeyCollection(PublicDictionary<TKey, TValue> dictionary)
-	{
-		if (dictionary == null)
-		{
-			ArgumentNullException ex = new("Dictionary");
-			Diag.Dug(ex);
-			throw ex;
-		}
 
-		_Dictionary = dictionary;
-	}
+
+
 
 	//
 	// Summary:

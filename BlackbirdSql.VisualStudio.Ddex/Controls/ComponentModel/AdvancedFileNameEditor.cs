@@ -3,7 +3,10 @@
 using BlackbirdSql.Core.Controls.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
+
+
 namespace BlackbirdSql.VisualStudio.Ddex.Controls.ComponentModel;
+
 
 /// <summary>
 /// File name lookup dialog editor using ParametersAttribute and the local

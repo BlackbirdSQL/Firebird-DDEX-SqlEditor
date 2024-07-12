@@ -20,10 +20,16 @@ public static class SystemData
 	#region Extension wide constants & statics - SystemData
 	// ---------------------------------------------------------------------------------------------------------
 
+	/// <summary>
+	/// This key is the globals persistent key for the solution stream and .user xml
+	/// UserProperties node attribute.
+	/// </summary>
+	public const string C_PersistentKey = "GlobalBlackbirdPersistent";
+
 	public const string C_UIContextName = "BlackbirdSql UIContext Autoload";
 
 	// Glyphs for Rct connection sources.
-	public const char C_EdmGlyph = '\u26ee'; // Gear with handles
+	public const char C_EdmDatasetGlyph = '\u26ee'; // Gear with handles
 	public const char C_ProjectDatasetGlyph = '\u26ed'; // Gear without hub
 	public const char C_UtilityDatasetGlyph = '\u29c9'; // 2 joined squares
 	// '\u2732'; // Open center asterisk

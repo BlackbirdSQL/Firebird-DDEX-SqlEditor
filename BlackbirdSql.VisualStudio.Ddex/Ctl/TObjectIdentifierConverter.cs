@@ -1,9 +1,8 @@
 // $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
-
 using System;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -30,13 +29,15 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 
 	public TObjectIdentifierConverter() : base()
 	{
-		// Tracer.Trace(GetType(), "TObjectIdentifierConverter.TObjectIdentifierConverter");
+		// Tracer.Trace(typeof(TObjectIdentifierConverter), ".ctor");
+
 	}
 
 
 	public TObjectIdentifierConverter(IVsDataConnection connection) : base(connection)
 	{
-		// Tracer.Trace(GetType(), "TObjectIdentifierConverter.TObjectIdentifierConverter(IVsDataConnection)");
+		// Tracer.Trace(typeof(TObjectIdentifierConverter), ".ctor(IVsDataConnection)");
+
 	}
 
 
@@ -106,7 +107,10 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	protected override string[] SplitIntoParts(string typeName, string identifier)
 	{
 		// Tracer.Trace("typeName: " + typeName + " identifier: " + identifier);
-		return base.SplitIntoParts(typeName, identifier);
+
+		return Regex.Split(identifier, "\\.");
+
+		// return base.SplitIntoParts(typeName, identifier);
 	}
 
 	//

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using BlackbirdSql.Sys.Events;
 
+
 namespace BlackbirdSql.Sys.Interfaces;
 
 public interface IBSettingsModel : IComponent

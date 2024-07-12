@@ -899,7 +899,7 @@ public class SplitViewSplitterStrip : ToolStrip
 			{
 				Items.Add(primaryPaneButton);
 			}
-			Items.AddRange(new ToolStripItem[3] { ChevronButton, HSplitButton, VSplitButton });
+			Items.AddRange([ChevronButton, HSplitButton, VSplitButton]);
 			UpdateMinimumSize();
 		}
 		finally

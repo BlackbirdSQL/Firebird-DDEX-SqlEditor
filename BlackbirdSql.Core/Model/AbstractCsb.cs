@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Model;
@@ -141,12 +142,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	private string _UnsafeDatasetMoniker = null;
 
 
-
-
-
-
-
 	#endregion Fields
+
 
 
 
@@ -154,9 +151,6 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	// =====================================================================================================
 	#region Property accessors - AbstractCsb
 	// =====================================================================================================
-
-
-
 
 
 	/// <summary>
@@ -310,11 +304,57 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	{
 		get
 		{
-			string retval = DatasetId;
+			string retval = ConnectionName;
 			if (string.IsNullOrWhiteSpace(retval))
-				retval = Dataset;
+				retval = DatasetKey;
+			if (string.IsNullOrWhiteSpace(retval) && !string.IsNullOrWhiteSpace(DataSource))
+			{
+				retval = DatasetId;
+				if (string.IsNullOrWhiteSpace(retval))
+					retval = Dataset;
+				retval = DatasetKeyFormat.FmtRes(DataSource, retval);
+			}
+			return retval;
+		}
+	}
+
+
+	[Browsable(false)]
+	public string FullDisplayName
+	{
+		get
+		{
+			// Update the database (datasetId) dropdown field.
+			// If there's a connection name the datasetId will mean
+			// nothing without the connection name and may produce duuplicates,
+			// so prefix it with a qualifier.
+			string retval;
+
 			if (!string.IsNullOrWhiteSpace(ConnectionName))
-				retval = ConnectionName + " | " + retval;
+			{
+				string datasetId = DatasetId;
+				if (string.IsNullOrWhiteSpace(datasetId))
+					datasetId = Dataset;
+
+				retval = RctManager.FullDisplayNameFormat.FmtRes(DisplayName, datasetId);
+			}
+			else
+			{
+				retval = DisplayName;
+			}
+
+			char glyph = '\0';
+
+			if (ConnectionSource == EnConnectionSource.Application)
+				glyph = RctManager.ProjectDatasetGlyph;
+			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
+				glyph = RctManager.EdmDatasetGlyph;
+			else if (ConnectionSource == EnConnectionSource.ExternalUtility)
+				glyph = RctManager.UtilityDatasetGlyph;
+
+			if (glyph != '\0')
+				retval = Resources.RunningConnectionTableGlyphFormat.FmtRes(glyph, retval);
+
 			return retval;
 		}
 	}
@@ -766,7 +806,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		ConnectionKey = connectionNode.GetConnectionKey();
 		if (ConnectionKey == null)
 		{
-			COMException ex = new($"ConnectionKey for explorer connection {node.ExplorerConnection.DisplayName} for node {node.Name} is null");
+			COMException ex = new($"ConnectionKey for explorer connection {node.ExplorerConnection.DerivedDisplayName()} for node {node.Name} is null");
 			Diag.Dug(ex);
 			throw ex;
 		}

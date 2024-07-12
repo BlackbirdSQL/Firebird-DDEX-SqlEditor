@@ -123,7 +123,7 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// <summary>
 	/// If enabled, closes edmx data models that have been left open when a solution closes.
 	/// </summary>
-	public static bool AutoCloseEdmxModels => (bool)GetSetting("DdexGeneralAutoCloseEdmxModels", false);
+	public static bool AutoCloseOffScreenEdmx => (bool)GetSetting("DdexGeneralAutoCloseOffScreenEdmx", true);
 
 	/// <summary>
 	/// If enabled, closes xsd datasets that have been left open when a solution closes.
@@ -171,7 +171,7 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// If enabled performs a recovery of late loading provider factories.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ValidateProviderFactories => (bool)GetSetting("DdexGeneralValidateProviderFactories", true);
+	public static bool ValidateProviderFactories => (bool)GetSetting("DdexGeneralValidateProviderFactories", false);
 
 
 	#endregion Property Accessors

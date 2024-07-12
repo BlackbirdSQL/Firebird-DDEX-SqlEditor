@@ -9,7 +9,9 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.Win32;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Events;
+
 
 public sealed class UserPreferenceChangedHandler : IComponent, IDisposable
 {

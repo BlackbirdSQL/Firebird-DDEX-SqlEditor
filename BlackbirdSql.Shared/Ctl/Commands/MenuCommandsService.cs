@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -15,21 +14,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 
+
 namespace BlackbirdSql.Shared.Ctl.Commands;
+
 
 public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCommandService, Microsoft.VisualStudio.OLE.Interop.IOleCommandTarget
 {
-	private ServiceProvider _CachedServiceProvider;
-
-	DesignerVerbCollection IMenuCommandService.Verbs
-	{
-		get
-		{
-			NotSupportedException ex = new();
-			Diag.Dug(ex);
-			throw ex;
-		}
-	}
 
 	public MenuCommandsService()
 	{
@@ -50,6 +40,23 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 
 		GC.SuppressFinalize(this);
 	}
+
+
+
+
+	private ServiceProvider _CachedServiceProvider;
+
+	DesignerVerbCollection IMenuCommandService.Verbs
+	{
+		get
+		{
+			NotSupportedException ex = new();
+			Diag.Dug(ex);
+			throw ex;
+		}
+	}
+
+
 
 	void IMenuCommandService.AddVerb(DesignerVerb verb)
 	{

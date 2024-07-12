@@ -1,11 +1,11 @@
 ﻿// Microsoft.Data.Tools.Utilities, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.Data.Tools.Diagnostics.LogComplianceLevel
+// namespace Microsoft.Data.Tools.Diagnostics
 
 using System;
 
-// namespace Microsoft.Data.Tools.Diagnostics
-namespace BlackbirdSql.Sys.Enums;
 
+namespace BlackbirdSql.Sys.Enums;
 
 [Serializable]
 public enum EnLogComplianceLevel

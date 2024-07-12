@@ -1,10 +1,17 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Reflection;
+using System.Threading;
+using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Interfaces;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.Shell;
-
+using Microsoft.VisualStudio.Shell.Interop;
 using static BlackbirdSql.Sys.SysConstants;
 
 
@@ -51,12 +58,6 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	}
 
 
-	public override void Dispose()
-	{
-		base.Dispose();
-
-	}
-
 
 	#endregion Constructors / Destructors
 
@@ -68,7 +69,11 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	// =========================================================================================================
 
 
+	private int _EventCardinal = 0;
+
+
 	#endregion Fields and Constants
+
 
 
 
@@ -83,7 +88,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// Returns true if either the sync or async tasks are in a shutdown state.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool ShutdownState
+	protected bool InternalShutdownState
 	{
 		get
 		{
@@ -182,8 +187,8 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// in the SE. The caller must determine that.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public override bool GenerateUniqueDatasetKey(EnConnectionSource connectionSource,
-		string proposedConnectionName, string proposedDatasetId, string dataSource,
+	protected override bool GenerateUniqueDatasetKey(EnConnectionSource connectionSource,
+		ref string proposedConnectionName, ref string proposedDatasetId, string dataSource,
 		string dataset, string connectionUrl, string storedConnectionUrl,
 		out EnConnectionSource outStoredConnectionSource,
 		out string outChangedTargetDatasetKey, out string outUniqueDatasetKey,
@@ -204,9 +209,12 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			proposedConnectionName = null;
 
 		if (string.IsNullOrWhiteSpace(proposedDatasetId))
+		{
 			proposedDatasetId = null;
+		}
 
-		 if (storedConnectionUrl != null && storedConnectionUrl == connectionUrl)
+
+		if (storedConnectionUrl != null && storedConnectionUrl == connectionUrl)
 			storedConnectionUrl = null;
 
 		string existingConnectionName = null;
@@ -223,6 +231,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			existingConnectionName = Cmd.IsNullValueOrEmpty(row[C_KeyExConnectionName]) ? null : row[C_KeyExConnectionName].ToString();
 			existingDatasetId = Cmd.IsNullValueOrEmpty(row[C_KeyExDatasetId]) ? null : row[C_KeyExDatasetId].ToString();
 
+
 			// Notify caller that the proposed settings apply to a different connection.
 			if (storedConnectionUrl != null)
 				outChangedTargetDatasetKey = (string)row[C_KeyExDatasetKey];
@@ -231,6 +240,23 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		// It's always preferable to propose a datasetId.
 		// If there's a proposed DatasetKey (ConnectionName), it takes precedence, so ensure uniqueness.
+		string derivedDatasetId;
+
+		// First up see if we can convert a proposedConnectionName to it's datasetId equivalent.
+		// We can't do this when connections loading and their configurations are fixed.
+		if (proposedConnectionName != null && !InternalLoading)
+		{
+			derivedDatasetId = GetDerivedDatasetIdFromConnectionName(dataSource, proposedConnectionName);
+
+			if (!string.IsNullOrEmpty(derivedDatasetId))
+			{
+				proposedDatasetId = derivedDatasetId;
+				proposedConnectionName = null;
+
+				existingDatasetId ??= GetDerivedDatasetIdFromConnectionName(dataSource, existingConnectionName);
+				existingConnectionName = null;
+			}
+		}
 
 		if (proposedConnectionName != null)
 		{
@@ -251,7 +277,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		else
 		{
 			// The derived datasetId will form the basis of the datasetId part of an auto-generated key.
-			string derivedDatasetId = proposedDatasetId ?? dataset;
+			derivedDatasetId = proposedDatasetId ?? dataset;
 
 			(outUniqueDatasetKey, outUniqueDatasetId) = GetUniqueDatasetId(dataSource, derivedDatasetId, connectionIndex);
 
@@ -259,6 +285,9 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			if (proposedDatasetId != null && proposedDatasetId == outUniqueDatasetId)
 			{
 				// Does it change the existing?
+
+				existingDatasetId ??= GetDerivedDatasetIdFromConnectionName(dataSource, existingConnectionName);
+
 				if (existingDatasetId != null && existingDatasetId != proposedDatasetId)
 					outUniqueDatasetId = string.Empty;
 				else
@@ -274,6 +303,32 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		//		rUniqueDatasetKey ?? "Null", rUniqueConnectionName ?? "Null", rUniqueDatasetId ?? "Null");
 
 		return rNewRctConnection;
+	}
+
+
+	/// <summary>
+	/// Attempts to extract a connectionName's equivalent datasetId. If it doesn't exist
+	/// and connectionName is not null then returns string.Empty to indicate there is an
+	/// existing but it's value is imaginary, otherwise returns null.
+	/// </summary>
+	private string GetDerivedDatasetIdFromConnectionName(string dataSource, string connectionName)
+	{
+		if (connectionName == null)
+			return null;
+
+		string[] split = DatasetKeyFormat.FmtRes(dataSource, "\n").Split('\n');
+
+		if ((split[0] == string.Empty || connectionName.StartsWith(split[0], StringComparison.InvariantCulture))
+			&& (split[1] == string.Empty || connectionName.EndsWith(split[1], StringComparison.InvariantCulture))
+			&& connectionName.Length > split[0].Length + split[1].Length)
+		{
+			int start = split[0].Length;
+			int len = connectionName.Length - split[0].Length - split[1].Length;
+
+			return connectionName.Substring(start, len);
+		}
+
+		return string.Empty;
 	}
 
 
@@ -342,6 +397,9 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		string proposedDatasetIdPrefix = GetUniqueIdentifierPrefix(proposedDatasetId);
 
+		// Tracer.Trace(GetType(), "GetUniqueDatasetId()", "dataSource: {0}, proposedDatasetId: {1}, connectionIndex: {2}, proposedDatasetIdPrefix: {3}.",
+		//	dataSource, proposedDatasetId, connectionIndex, proposedDatasetIdPrefix);
+
 		// Establish a unique DatasetId using i as the suffix.
 		// This loop will execute at least once.
 
@@ -375,7 +433,6 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		}
 
 		return (uniqueDatasetKey, uniqueDatasetId);
-
 	}
 
 
@@ -424,13 +481,13 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// contains the modified or unchanged Csb, or null if no connection exists.
 	/// </returns>
 	/// <remarks>
-	/// UpdateRegisteredConnection will always return an updated csa, if it was updated,
+	/// InternalUpdateRegisteredConnection will always return an updated csa, if it was updated,
 	/// or the original created from the provided connection string. If Item1 of the
 	/// returned tuple is true, callers must ensure they update their internal
 	/// connection objects with the new property values.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public override Csb UpdateRegisteredConnection(string connectionString, EnConnectionSource source, bool forceOwnership)
+	protected Csb InternalUpdateRegisteredConnection(string connectionString, EnConnectionSource source, bool forceOwnership)
 	{
 		if (_InternalConnectionsTable == null)
 			return null;
@@ -447,7 +504,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		string connectionUrl = csa.SafeDatasetMoniker;
 
-		// Tracer.Trace(GetType(), "UpdateRegisteredConnection()", "Update connection string: {0}", connectionString);
+		// Tracer.Trace(GetType(), "InternalUpdateRegisteredConnection()", "Update connection string: {0}", connectionString);
 
 
 		// Nothing to update. New connection.
@@ -581,7 +638,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		// Update the source. If canTakeOwnerShip the updating source can take ownership.
 
-		// Tracer.Trace(GetType(), "UpdateRegisteredConnection()", "Updateable - Updating row.");
+		// Tracer.Trace(GetType(), "InternalUpdateRegisteredConnection()", "Updateable - Updating row.");
 
 		if (!csa.ContainsKey(C_KeyExConnectionSource) || csa.ConnectionSource != (canTakeOwnerShip ? source : rowConnectionSource))
 			csa.ConnectionSource = (canTakeOwnerShip ? source : rowConnectionSource);
@@ -627,7 +684,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			}
 
 			if (rowUpdated)
-				Invalidate();
+				InternalInvalidate();
 
 
 			// bool updated = !Csb.AreEquivalent(csa, csaOriginal, Csb.DescriberKeys);
@@ -641,7 +698,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 			// str += $"\nOriginal csa: {csaOriginal.ConnectionString}.\nNew csa: {csa.ConnectionString}.";
 
-			// Tracer.Trace(GetType(), "UpdateRegisteredConnection()", "\n _LoadDataCardinal: {0}, _databases==null: {1}\n{2}", _LoadDataCardinal, _Databases == null, str);
+			// Tracer.Trace(GetType(), "InternalUpdateRegisteredConnection()", "\n _LoadDataCardinal: {0}, _databases==null: {1}\n{2}", _LoadDataCardinal, _InternalDatabases == null, str);
 		}
 
 	}
@@ -663,7 +720,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// in the Rct.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool VerifyUpdateRights(EnConnectionSource updater,
+	private static bool VerifyUpdateRights(EnConnectionSource updater,
 		EnConnectionSource owner)
 	{
 		if (owner <= EnConnectionSource.None || updater <= owner)
@@ -674,5 +731,73 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 
 	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - AbstruseRunningConnectionTable
+	// =========================================================================================================
+
+
+	// -------------------------------------------------------------------------------------------
+	/// <summary>
+	/// Increments the <see cref="_EventCardinal"/> counter when execution enters an event
+	/// handler to prevent recursion.
+	/// </summary>
+	/// <returns>
+	/// Returns false if an event has already been entered else true if it is safe to enter.
+	/// </returns>
+	// -------------------------------------------------------------------------------------------
+	protected bool EventEnter(bool increment = false, bool force = false)
+	{
+		lock (_LockObject)
+		{
+			if (_EventCardinal != 0 && !force)
+				return false;
+
+			if (increment)
+				_EventCardinal++;
+		}
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------------
+	/// <summary>
+	/// Decrements the <see cref="_EventCardinal"/> counter that was previously incremented
+	/// by <see cref="EventEnter"/>.
+	/// </summary>
+	// ---------------------------------------------------------------------------------------
+	protected void EventExit()
+	{
+		lock (_LockObject)
+		{
+			if (_EventCardinal == 0)
+				Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
+			else
+				_EventCardinal--;
+		}
+	}
+
+
+	#endregion Event Handling
+
+
+
+
+
+	// =========================================================================================================
+	#region IVsHierarchyEvents Event Handling - AbstruseRunningConnectionTable
+	// =========================================================================================================
+
+	// Currently only used for debugging
+
+
+	#endregion IVsHierarchyEvents Event Handling
+
 
 }

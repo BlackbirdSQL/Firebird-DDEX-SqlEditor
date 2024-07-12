@@ -13,9 +13,9 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 public interface IBToolbarCommandHandler
 {
-	GuidId GuidId { get; }
+	GuidId Clsid { get; }
 
-	int HandleQueryStatus(AbstractTabbedEditorWindowPane tabbedEditorPane, ref OLECMD prgCmd, IntPtr pCmdText);
+	int HandleQueryStatus(AbstractTabbedEditorWindowPane windowPane, ref OLECMD prgCmd, IntPtr pCmdText);
 
-	int HandleExec(AbstractTabbedEditorWindowPane tabbedEditorPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
+	int HandleExec(AbstractTabbedEditorWindowPane windowPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 }

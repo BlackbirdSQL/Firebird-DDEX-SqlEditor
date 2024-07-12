@@ -8,6 +8,7 @@ using System.Security;
 using System.Threading;
 
 
+
 namespace BlackbirdSql.Sys.Extensions;
 
 
@@ -19,6 +20,163 @@ namespace BlackbirdSql.Sys.Extensions;
 [ComVisible(false)]
 public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IEnumerable, IDictionary, ICollection, IReadOnlyDictionary<TKey, TValue>, IReadOnlyCollection<KeyValuePair<TKey, TValue>>, ISerializable, IDeserializationCallback
 {
+
+	//
+	// Summary:
+	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
+	//     that is empty, has the default initial capacity, and uses the default equality
+	//     _Comparer for the key type.
+	public PublicDictionary() : this(0, null)
+	{
+	}
+
+	//
+	// Summary:
+	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
+	//     that is empty, has the specified initial capacity, and uses the default equality
+	//     _Comparer for the key type.
+	//
+	// Parameters:
+	//   capacity:
+	//     The initial number of elements that the System.Collections.Generic.Dictionary`2
+	//     can contain.
+	//
+	// Exceptions:
+	//   T:System.ArgumentOutOfRangeException:
+	//     capacity is less than 0.
+	public PublicDictionary(int capacity) : this(capacity, null)
+	{
+	}
+
+	//
+	// Summary:
+	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
+	//     that is empty, has the default initial capacity, and uses the specified System.Collections.Generic.IEqualityComparer`1.
+	//
+	// Parameters:
+	//   _Comparer:
+	//     The System.Collections.Generic.IEqualityComparer`1 implementation to use when
+	//     comparing _Keys, or null to use the default System.Collections.Generic.EqualityComparer`1
+	//     for the type of the key.
+	public PublicDictionary(IEqualityComparer<TKey> comparer) : this(0, comparer)
+	{
+	}
+
+	//
+	// Summary:
+	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
+	//     that is empty, has the specified initial capacity, and uses the specified System.Collections.Generic.IEqualityComparer`1.
+	//
+	// Parameters:
+	//   capacity:
+	//     The initial number of elements that the System.Collections.Generic.Dictionary`2
+	//     can contain.
+	//
+	//   _Comparer:
+	//     The System.Collections.Generic.IEqualityComparer`1 implementation to use when
+	//     comparing _Keys, or null to use the default System.Collections.Generic.EqualityComparer`1
+	//     for the type of the key.
+	//
+	// Exceptions:
+	//   T:System.ArgumentOutOfRangeException:
+	//     capacity is less than 0.
+	public PublicDictionary(int capacity, IEqualityComparer<TKey> comparer)
+	{
+		if (capacity < 0)
+		{
+			ArgumentOutOfRangeException ex = new("capacity");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (capacity > 0)
+		{
+			Initialize(capacity);
+		}
+
+		_Comparer = comparer ?? EqualityComparer<TKey>.Default;
+	}
+
+	//
+	// Summary:
+	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
+	//     that contains elements copied from the specified System.Collections.Generic.IDictionary`2
+	//     and uses the default equality _Comparer for the key type.
+	//
+	// Parameters:
+	//   dictionary:
+	//     The System.Collections.Generic.IDictionary`2 whose elements are copied to the
+	//     new System.Collections.Generic.Dictionary`2.
+	//
+	// Exceptions:
+	//   T:System.ArgumentNullException:
+	//     dictionary is null.
+	//
+	//   T:System.ArgumentException:
+	//     dictionary contains one or more duplicate _Keys.
+	public PublicDictionary(IDictionary<TKey, TValue> dictionary) : this(dictionary, null)
+	{
+	}
+
+	//
+	// Summary:
+	//     Initializes a new instance of the BlackbirdSql.Sys.Extensions.PublicDictionary class
+	//     that contains elements copied from the specified System.Collections.Generic.IDictionary`2
+	//     and uses the specified System.Collections.Generic.IEqualityComparer`1.
+	//
+	// Parameters:
+	//   dictionary:
+	//     The System.Collections.Generic.IDictionary`2 whose elements are copied to the
+	//     new BlackbirdSql.Sys.Extensions.PublicDictionary.
+	//
+	//   _Comparer:
+	//     The System.Collections.Generic.IEqualityComparer`1 implementation to use when
+	//     comparing _Keys, or null to use the default System.Collections.Generic.EqualityComparer`1
+	//     for the type of the key.
+	//
+	// Exceptions:
+	//   T:System.ArgumentNullException:
+	//     dictionary is null.
+	//
+	//   T:System.ArgumentException:
+	//     dictionary contains one or more duplicate _Keys.
+	public PublicDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> _Comparer)
+		: this(dictionary?.Count ?? 0, _Comparer)
+	{
+		if (dictionary == null)
+		{
+			ArgumentNullException ex = new("dictionary");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		foreach (KeyValuePair<TKey, TValue> item in dictionary)
+		{
+			Add(item.Key, item.Value);
+		}
+	}
+
+	//
+	// Summary:
+	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
+	//     with serialized data.
+	//
+	// Parameters:
+	//   info:
+	//     A System.Runtime.Serialization.SerializationInfo object containing the information
+	//     required to serialize the System.Collections.Generic.Dictionary`2.
+	//
+	//   context:
+	//     A System.Runtime.Serialization.StreamingContext structure containing the source
+	//     and destination of the serialized stream associated with the System.Collections.Generic.Dictionary`2.
+	protected PublicDictionary(SerializationInfo info, StreamingContext context)
+	{
+		HashHelpersEx.SerializationInfoTable.Add(this, info);
+	}
+
+
+
+
 	public struct Entry
 	{
 		public int HashCode;
@@ -296,162 +454,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 		}
 	}
 
-	//
-	// Summary:
-	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
-	//     that is empty, has the default initial capacity, and uses the default equality
-	//     _Comparer for the key type.
-	public PublicDictionary()
-	: this(0, null)
-	{
-	}
 
-	//
-	// Summary:
-	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
-	//     that is empty, has the specified initial capacity, and uses the default equality
-	//     _Comparer for the key type.
-	//
-	// Parameters:
-	//   capacity:
-	//     The initial number of elements that the System.Collections.Generic.Dictionary`2
-	//     can contain.
-	//
-	// Exceptions:
-	//   T:System.ArgumentOutOfRangeException:
-	//     capacity is less than 0.
-	public PublicDictionary(int capacity)
-	: this(capacity, null)
-	{
-	}
 
-	//
-	// Summary:
-	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
-	//     that is empty, has the default initial capacity, and uses the specified System.Collections.Generic.IEqualityComparer`1.
-	//
-	// Parameters:
-	//   _Comparer:
-	//     The System.Collections.Generic.IEqualityComparer`1 implementation to use when
-	//     comparing _Keys, or null to use the default System.Collections.Generic.EqualityComparer`1
-	//     for the type of the key.
-	public PublicDictionary(IEqualityComparer<TKey> comparer)
-	: this(0, comparer)
-	{
-	}
-
-	//
-	// Summary:
-	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
-	//     that is empty, has the specified initial capacity, and uses the specified System.Collections.Generic.IEqualityComparer`1.
-	//
-	// Parameters:
-	//   capacity:
-	//     The initial number of elements that the System.Collections.Generic.Dictionary`2
-	//     can contain.
-	//
-	//   _Comparer:
-	//     The System.Collections.Generic.IEqualityComparer`1 implementation to use when
-	//     comparing _Keys, or null to use the default System.Collections.Generic.EqualityComparer`1
-	//     for the type of the key.
-	//
-	// Exceptions:
-	//   T:System.ArgumentOutOfRangeException:
-	//     capacity is less than 0.
-	public PublicDictionary(int capacity, IEqualityComparer<TKey> comparer)
-	{
-		if (capacity < 0)
-		{
-			ArgumentOutOfRangeException ex = new("capacity");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (capacity > 0)
-		{
-			Initialize(capacity);
-		}
-
-		_Comparer = comparer ?? EqualityComparer<TKey>.Default;
-	}
-
-	//
-	// Summary:
-	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
-	//     that contains elements copied from the specified System.Collections.Generic.IDictionary`2
-	//     and uses the default equality _Comparer for the key type.
-	//
-	// Parameters:
-	//   dictionary:
-	//     The System.Collections.Generic.IDictionary`2 whose elements are copied to the
-	//     new System.Collections.Generic.Dictionary`2.
-	//
-	// Exceptions:
-	//   T:System.ArgumentNullException:
-	//     dictionary is null.
-	//
-	//   T:System.ArgumentException:
-	//     dictionary contains one or more duplicate _Keys.
-	public PublicDictionary(IDictionary<TKey, TValue> dictionary)
-	: this(dictionary, null)
-	{
-	}
-
-	//
-	// Summary:
-	//     Initializes a new instance of the BlackbirdSql.Sys.Extensions.PublicDictionary class
-	//     that contains elements copied from the specified System.Collections.Generic.IDictionary`2
-	//     and uses the specified System.Collections.Generic.IEqualityComparer`1.
-	//
-	// Parameters:
-	//   dictionary:
-	//     The System.Collections.Generic.IDictionary`2 whose elements are copied to the
-	//     new BlackbirdSql.Sys.Extensions.PublicDictionary.
-	//
-	//   _Comparer:
-	//     The System.Collections.Generic.IEqualityComparer`1 implementation to use when
-	//     comparing _Keys, or null to use the default System.Collections.Generic.EqualityComparer`1
-	//     for the type of the key.
-	//
-	// Exceptions:
-	//   T:System.ArgumentNullException:
-	//     dictionary is null.
-	//
-	//   T:System.ArgumentException:
-	//     dictionary contains one or more duplicate _Keys.
-	public PublicDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> _Comparer)
-	: this(dictionary?.Count ?? 0, _Comparer)
-	{
-		if (dictionary == null)
-		{
-			ArgumentNullException ex = new("dictionary");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		foreach (KeyValuePair<TKey, TValue> item in dictionary)
-		{
-			Add(item.Key, item.Value);
-		}
-	}
-
-	//
-	// Summary:
-	//     Initializes a new instance of the System.Collections.Generic.Dictionary`2 class
-	//     with serialized data.
-	//
-	// Parameters:
-	//   info:
-	//     A System.Runtime.Serialization.SerializationInfo object containing the information
-	//     required to serialize the System.Collections.Generic.Dictionary`2.
-	//
-	//   context:
-	//     A System.Runtime.Serialization.StreamingContext structure containing the source
-	//     and destination of the serialized stream associated with the System.Collections.Generic.Dictionary`2.
-	protected PublicDictionary(SerializationInfo info, StreamingContext context)
-	{
-		HashHelpersEx.SerializationInfoTable.Add(this, info);
-	}
 
 	//
 	// Summary:

@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Interfaces;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -192,6 +192,9 @@ public sealed class RdtManager : AbstractRdtManager
 		Instance.HandsOnDocumentImpl(cookie, moniker);
 
 
+	public static bool IsDirty(uint cookie) =>
+		Instance.IsDirtyImpl(cookie);
+
 
 	public static bool IsFileInRdt(string mkDocument) =>
 		Instance.IsFileInRdtImpl(mkDocument);
@@ -283,8 +286,8 @@ public sealed class RdtManager : AbstractRdtManager
 	}
 
 
-	public static bool TryGetDocDataFromCookie(uint cookie, out object docData) =>
-		Instance.TryGetDocDataFromCookieImpl(cookie, out docData);
+	public static object GetDocDataFromCookie(uint cookie) =>
+		Instance.GetDocDataFromCookieImpl(cookie);
 
 
 
@@ -300,9 +303,9 @@ public sealed class RdtManager : AbstractRdtManager
 		if (windowFrame == null)
 			return false;
 
-			Diag.ThrowIfNotOnUIThread();
+		Diag.ThrowIfNotOnUIThread();
 
-			___(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
+		___(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar));
 
 		if (pvar == null)
 			return false;
@@ -316,6 +319,9 @@ public sealed class RdtManager : AbstractRdtManager
 	public static IVsWindowFrame GetWindowFrame(string mkDocument) =>
 		Instance.GetWindowFrameImpl(mkDocument);
 
+	public static IVsWindowFrame GetWindowFrame(uint dwCookie) =>
+		Instance.GetWindowFrameImpl(Instance.RdtSvc4.GetDocumentMoniker(dwCookie));
+
 
 
 	public static int UnadviseRunningDocTableEvents(uint dwCookie) =>
@@ -327,7 +333,7 @@ public sealed class RdtManager : AbstractRdtManager
 		Instance.RdtSvc.UnregisterDocumentLockHolder(dwLHCookie);
 
 
-	#endregion Property Accessors
+	#endregion Methods
 
 
 }

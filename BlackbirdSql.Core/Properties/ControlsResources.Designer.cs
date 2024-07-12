@@ -61,240 +61,6 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Abort.
-        /// </summary>
-        internal static string AbortButton {
-            get {
-                return ResourceManager.GetString("AbortButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}....
-        /// </summary>
-        internal static string AddEllipsis {
-            get {
-                return ResourceManager.GetString("AddEllipsis", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ADDITIONAL INFORMATION:.
-        /// </summary>
-        internal static string AdditionalInfo {
-            get {
-                return ResourceManager.GetString("AdditionalInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All messages.
-        /// </summary>
-        internal static string AdvInfoAllMessages {
-            get {
-                return ResourceManager.GetString("AdvInfoAllMessages", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Additional data.
-        /// </summary>
-        internal static string AdvInfoData {
-            get {
-                return ResourceManager.GetString("AdvInfoData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Help link.
-        /// </summary>
-        internal static string AdvInfoHelpLink {
-            get {
-                return ResourceManager.GetString("AdvInfoHelpLink", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Message.
-        /// </summary>
-        internal static string AdvInfoMessage {
-            get {
-                return ResourceManager.GetString("AdvInfoMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BUTTONS:.
-        /// </summary>
-        internal static string Buttons {
-            get {
-                return ResourceManager.GetString("Buttons", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cancel.
-        /// </summary>
-        internal static string CancelButton {
-            get {
-                return ResourceManager.GetString("CancelButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The operation could not be completed..
-        /// </summary>
-        internal static string CantComplete {
-            get {
-                return ResourceManager.GetString("CantComplete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Show method can be called only once on an ExceptionMessageBox object. To display a new message, you must create a new instance of the ExceptionMessageBox class..
-        /// </summary>
-        internal static string CantReuseObject {
-            get {
-                return ResourceManager.GetString("CantReuseObject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Technical details cannot be displayed..
-        /// </summary>
-        internal static string CantShowTechnicalDetailsError {
-            get {
-                return ResourceManager.GetString("CantShowTechnicalDetailsError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to access the following help link: {0}..
-        /// </summary>
-        internal static string CantStartHelpLink {
-            get {
-                return ResourceManager.GetString("CantStartHelpLink", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to For help, click: {0}.
-        /// </summary>
-        internal static string ClipboardOrEmailHelpLink {
-            get {
-                return ResourceManager.GetString("ClipboardOrEmailHelpLink", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Code Location:.
-        /// </summary>
-        internal static string CodeLocation {
-            get {
-                return ResourceManager.GetString("CodeLocation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connect to Server.
-        /// </summary>
-        internal static string ConnectToServer {
-            get {
-                return ResourceManager.GetString("ConnectToServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This message cannot be copied to the clipboard..
-        /// </summary>
-        internal static string CopyToClipboardError {
-            get {
-                return ResourceManager.GetString("CopyToClipboardError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You must specify text for the button when Buttons = NewMessageBoxButtons.Custom..
-        /// </summary>
-        internal static string CustomButtonTextError {
-            get {
-                return ResourceManager.GetString("CustomButtonTextError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to D&amp;o not show this message again.
-        /// </summary>
-        internal static string DefaultCheckboxText {
-            get {
-                return ResourceManager.GetString("DefaultCheckboxText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BlackbirdSql Server Management.
-        /// </summary>
-        internal static string DefaultMessageBoxCaption {
-            get {
-                return ResourceManager.GetString("DefaultMessageBoxCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (Error: {0}).
-        /// </summary>
-        internal static string ErrorNumber {
-            get {
-                return ResourceManager.GetString("ErrorNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ({0}).
-        /// </summary>
-        internal static string ErrorSource {
-            get {
-                return ResourceManager.GetString("ErrorSource", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ({0}, Error: {1}).
-        /// </summary>
-        internal static string ErrorSourceNumber {
-            get {
-                return ResourceManager.GetString("ErrorSourceNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;Fail.
-        /// </summary>
-        internal static string FailButton {
-            get {
-                return ResourceManager.GetString("FailButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Get Help For: &quot;{0}&quot;.
-        /// </summary>
-        internal static string HelpMenuText {
-            get {
-                return ResourceManager.GetString("HelpMenuText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;Ignore.
-        /// </summary>
-        internal static string IgnoreButton {
-            get {
-                return ResourceManager.GetString("IgnoreButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Trigger linkage parser timeout.
         /// </summary>
         internal static string LinkageParser_CaptionLinkageTimeout {
@@ -312,114 +78,6 @@ namespace BlackbirdSql.Core.Properties {
         internal static string LinkageParser_TextLinkageParser {
             get {
                 return ResourceManager.GetString("LinkageParser_TextLinkageParser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Message ID.
-        /// </summary>
-        internal static string MessageID {
-            get {
-                return ResourceManager.GetString("MessageID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to MessageLevelCount must be greater than 0..
-        /// </summary>
-        internal static string MessageLevelCountError {
-            get {
-                return ResourceManager.GetString("MessageLevelCountError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Message Source.
-        /// </summary>
-        internal static string MessageSource {
-            get {
-                return ResourceManager.GetString("MessageSource", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TITLE: .
-        /// </summary>
-        internal static string MessageTitle {
-            get {
-                return ResourceManager.GetString("MessageTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;No.
-        /// </summary>
-        internal static string NoButton {
-            get {
-                return ResourceManager.GetString("NoButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} {1} Info.
-        /// </summary>
-        internal static string NodeExceptionInfo {
-            get {
-                return ResourceManager.GetString("NodeExceptionInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No Help Available For: &quot;{0}&quot;.
-        /// </summary>
-        internal static string NoHelpMenuText {
-            get {
-                return ResourceManager.GetString("NoHelpMenuText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to OK.
-        /// </summary>
-        internal static string OKButton {
-            get {
-                return ResourceManager.GetString("OKButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Item Name.
-        /// </summary>
-        internal static string PrivacyItemName {
-            get {
-                return ResourceManager.GetString("PrivacyItemName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Value.
-        /// </summary>
-        internal static string PrivacyItemValue {
-            get {
-                return ResourceManager.GetString("PrivacyItemValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Product Name.
-        /// </summary>
-        internal static string ProductName {
-            get {
-                return ResourceManager.GetString("ProductName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Product Version.
-        /// </summary>
-        internal static string ProductVersion {
-            get {
-                return ResourceManager.GetString("ProductVersion", resourceCulture);
             }
         }
         
@@ -659,92 +317,44 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new Session connection. Continue?.
+        /// </summary>
+        internal static string RctManager_TextNewSessionConnection {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewSessionConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new Session connection.
+        ///The Proposed Database Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
+        ///
+        ///Continue?.
+        /// </summary>
+        internal static string RctManager_TextNewSessionConnectionDatabaseNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewSessionConnectionDatabaseNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new Session connection.
+        ///The Proposed Connection Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
+        ///
+        ///Continue?.
+        /// </summary>
+        internal static string RctManager_TextNewSessionConnectionNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewSessionConnectionNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The existing Server Explorer Connection&apos;s name will be modified. Continue?.
         /// </summary>
         internal static string RctManager_TextSEConnectionNameChange {
             get {
                 return ResourceManager.GetString("RctManager_TextSEConnectionNameChange", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;Retry.
-        /// </summary>
-        internal static string RetryButton {
-            get {
-                return ResourceManager.GetString("RetryButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error Number: {0}.
-        /// </summary>
-        internal static string SqlError {
-            get {
-                return ResourceManager.GetString("SqlError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Line Number: {0}.
-        /// </summary>
-        internal static string SqlLineNumber {
-            get {
-                return ResourceManager.GetString("SqlLineNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Procedure: {0}.
-        /// </summary>
-        internal static string SqlProcedure {
-            get {
-                return ResourceManager.GetString("SqlProcedure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server Information.
-        /// </summary>
-        internal static string SqlServerInfo {
-            get {
-                return ResourceManager.GetString("SqlServerInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Server Name: {0}.
-        /// </summary>
-        internal static string SqlServerName {
-            get {
-                return ResourceManager.GetString("SqlServerName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Severity: {0}.
-        /// </summary>
-        internal static string SqlSeverity {
-            get {
-                return ResourceManager.GetString("SqlSeverity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to State: {0}.
-        /// </summary>
-        internal static string SqlState {
-            get {
-                return ResourceManager.GetString("SqlState", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;Yes.
-        /// </summary>
-        internal static string YesButton {
-            get {
-                return ResourceManager.GetString("YesButton", resourceCulture);
             }
         }
     }

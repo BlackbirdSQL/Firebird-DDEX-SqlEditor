@@ -4,6 +4,8 @@
 using System;
 using BlackbirdSql.Sys.Enums;
 
+
+
 namespace BlackbirdSql.Sys.Ctl.Diagnostics;
 
 [Serializable]
@@ -11,15 +13,20 @@ namespace BlackbirdSql.Sys.Ctl.Diagnostics;
 
 public class LogObject
 {
-	public string Name { get; private set; }
-
-	public EnLogComplianceLevel LogComplianceLevel { get; private set; }
 
 	public LogObject(string name, EnLogComplianceLevel complianceLevel)
 	{
 		Name = name;
 		LogComplianceLevel = complianceLevel;
 	}
+
+
+
+	public string Name { get; private set; }
+
+	public EnLogComplianceLevel LogComplianceLevel { get; private set; }
+
+
 
 	public static LogObject CreateUntagged(string name)
 	{

@@ -554,6 +554,64 @@ public static class XmlParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Establishes if an edmx is a valid extension database edmx.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsValidEdmx(string xmlPath)
+	{
+
+		try
+		{
+			XmlDocument xmlDoc = new XmlDocument();
+
+			try
+			{
+				xmlDoc.Load(xmlPath);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+			XmlNode xmlRoot = xmlDoc.DocumentElement;
+			XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
+
+
+			if (!xmlNs.HasNamespace("edmxBlackbird"))
+				xmlNs.AddNamespace("edmxBlackbird", xmlRoot.NamespaceURI);
+			if (!xmlNs.HasNamespace("ssdlBlackbird"))
+				xmlNs.AddNamespace("ssdlBlackbird", "http://schemas.microsoft.com/ado/2009/11/edm/ssdl");
+
+
+
+			XmlNode xmlNode = null;
+
+
+			// You have to denote your private namespaces after every forwardslash in the markup tree.
+			try
+			{
+				xmlNode = xmlRoot.SelectSingleNode("edmxBlackbird:Runtime/edmxBlackbird:StorageModels/ssdlBlackbird:Schema[@Provider='" + NativeDb.Invariant + "']", xmlNs);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				return false;
+			}
+
+			return xmlNode != null;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Updates an edmx if it was using the legacy database client.
 	/// </summary>
 	/// <param name="project"></param>

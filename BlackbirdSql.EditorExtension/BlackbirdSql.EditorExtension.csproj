@@ -14,11 +14,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-		<NoWarn>1701;1702</NoWarn>
+		<NoWarn>1701;1702;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-		<NoWarn>1701;1702</NoWarn>
+		<NoWarn>1701;1702;</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -92,7 +92,7 @@
 		<Compile Include="Ctl\EditorFactoryWithEncoding.cs" />
 		<Compile Include="Ctl\EditorFactoryWithoutEncoding.cs" />
 		<Compile Include="Ctl\ToolbarCommandHandler.cs" />
-		<Compile Include="Ctl\SqlResultsEditorFactory.cs" />
+		<Compile Include="Ctl\ResultsEditorFactory.cs" />
 		<Compile Include="Events\MonitorSelectionEventArgs.cs" />
 	</ItemGroup>
 

@@ -1,9 +1,7 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
 using System;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -28,12 +26,12 @@ public class TObjectMemberComparer : DataObjectMemberComparer
 	/* For debug trace */
 	public TObjectMemberComparer() : base()
 	{
-		// Tracer.Trace(GetType(), "TObjectMemberComparer.TObjectMemberComparer");
+		// Tracer.Trace(typeof(TObjectMemberComparer), ".ctor");
 	}
 
 	public TObjectMemberComparer(IVsDataConnection dataConnection) : base(dataConnection)
 	{
-		// Tracer.Trace(GetType(), "TObjectMemberComparer.TObjectMemberComparer(IVsDataConnection)");
+		// Tracer.Trace(typeof(TObjectMemberComparer), ".ctor(IVsDataConnection)");
 	}
 
 	public override int Compare(string typeName, string propertyName, object value1, object value2)

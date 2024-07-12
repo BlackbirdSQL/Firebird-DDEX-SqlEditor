@@ -9,11 +9,14 @@ using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 
+
+
 namespace BlackbirdSql.Sys.Model;
 
 
 public class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
 {
+
 	private NativeDbStatementWrapperProxy()
 	{
 	}
@@ -43,6 +46,8 @@ public class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
 	{
 		Dispose(true);
 	}
+
+
 
 
 	private readonly IBsNativeDbStatementWrapper _NativeObject;

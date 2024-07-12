@@ -33,13 +33,18 @@ internal class DslRawTriggers : AbstractDslSchema
 		// Tracer.Trace(GetType(), "DslRawTriggers.DslRawTriggers");
 	}
 
+
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
 		// Tracer.Trace(GetType(), "DslRawTriggers.GetCommandText");
 
-		var sql = new StringBuilder();
+		StringBuilder sql = new ();
+
+		string transientRestrictions = restrictions != null && !string.IsNullOrEmpty(restrictions[2])
+			? $"WHERE trg.rdb$relation_name = '{restrictions[2]}'" : string.Empty;
 
 		/*
 		 * 
@@ -78,7 +83,7 @@ internal class DslRawTriggers : AbstractDslSchema
 		*/
 
 
-		sql.Append(@"SELECT
+		sql.AppendFormat(@"SELECT
 	-- :TRIGGER_NAME, :TABLE_NAME
 	trg.rdb$trigger_name AS TRIGGER_NAME, trg.rdb$relation_name AS TABLE_NAME,
 	trg.rdb$description AS DESCRIPTION,
@@ -107,7 +112,8 @@ internal class DslRawTriggers : AbstractDslSchema
 	--Initial value of :IS_IDENTITY for parser
 	(CASE WHEN trg.rdb$trigger_sequence = 1 AND trg.rdb$trigger_type = 1 THEN true ELSE false END) AS IS_IDENTITY
 FROM rdb$triggers trg
-ORDER BY trg.rdb$trigger_name");
+{0}
+ORDER BY trg.rdb$trigger_name", transientRestrictions);
 
 		// Tracer.Trace(sql.ToString());
 

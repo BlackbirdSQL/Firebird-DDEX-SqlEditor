@@ -17,7 +17,7 @@ namespace BlackbirdSql.Shared.Model.QueryExecution;
 public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDisposable
 {
 
-	protected AbstractQESQLBatchConsumer(IBSqlQueryExecutionHandler resultsControl)
+	protected AbstractQESQLBatchConsumer(IBQueryExecutionHandler resultsControl)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.QESQLBatchConsumerBase", "", null);
 		_ResultsControl = resultsControl;
@@ -60,7 +60,7 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 
 	protected const int C_NewMessagesFlushFreqMore1000 = 100;
 
-	protected IBSqlQueryExecutionHandler _ResultsControl;
+	protected IBQueryExecutionHandler _ResultsControl;
 
 	private MoreRowsAvailableEventHandler _MoreRowsFromDSForDiscardHandler;
 

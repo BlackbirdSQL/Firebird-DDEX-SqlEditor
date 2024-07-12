@@ -4,17 +4,47 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 
+
 namespace BlackbirdSql.Sys.Extensions;
+
+[Serializable]
+[DebuggerDisplay("Count = {Count}")]
 
 
 //
 // Summary:
 //     Represents the collection of values in a BlackbirdSql.Sys.Extensions.PublicDictionary.
 //     This class cannot be inherited.
-[Serializable]
-[DebuggerDisplay("Count = {Count}")]
 public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, IEnumerable<TValue>, IEnumerable, ICollection, IReadOnlyCollection<TValue>
 {
+
+	//
+	// Summary:
+	//     Initializes a new instance of the BlackbirdSql.Sys.Extensions.PublicValueCollection
+	//     class that reflects the values in the specified BlackbirdSql.Sys.Extensions.PublicDictionary.
+	//
+	// Parameters:
+	//   _Dictionary:
+	//     The BlackbirdSql.Sys.Extensions.PublicDictionary whose values are reflected in the
+	//     new BlackbirdSql.Sys.Extensions.PublicValueCollection.
+	//
+	// Exceptions:
+	//   T:System.ArgumentNullException:
+	//     _Dictionary is null.
+	public PublicValueCollection(PublicDictionary<TKey, TValue> _Dictionary)
+	{
+		if (_Dictionary == null)
+		{
+			ArgumentNullException ex = new("_Dictionary");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		this._Dictionary = _Dictionary;
+	}
+
+
+
 	//
 	// Summary:
 	//     Enumerates the elements of a BlackbirdSql.Sys.Extensions.PublicValueCollection.
@@ -190,30 +220,9 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 		}
 	}
 
-	//
-	// Summary:
-	//     Initializes a new instance of the BlackbirdSql.Sys.Extensions.PublicValueCollection
-	//     class that reflects the values in the specified BlackbirdSql.Sys.Extensions.PublicDictionary.
-	//
-	// Parameters:
-	//   _Dictionary:
-	//     The BlackbirdSql.Sys.Extensions.PublicDictionary whose values are reflected in the
-	//     new BlackbirdSql.Sys.Extensions.PublicValueCollection.
-	//
-	// Exceptions:
-	//   T:System.ArgumentNullException:
-	//     _Dictionary is null.
-	public PublicValueCollection(PublicDictionary<TKey, TValue> _Dictionary)
-	{
-		if (_Dictionary == null)
-		{
-			ArgumentNullException ex = new("_Dictionary");
-			Diag.Dug(ex);
-			throw ex;
-		}
 
-		this._Dictionary = _Dictionary;
-	}
+
+
 
 	//
 	// Summary:

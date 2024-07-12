@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 
+
+
 namespace BlackbirdSql.Sys.Model;
 
 
@@ -31,7 +33,8 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 		if (!isDisposing)
 			return;
 
-		_NativeObject.Dispose();
+		_NativeObject?.Dispose();
+		_NativeObject = null;
 	}
 
 	public virtual void Dispose()
@@ -40,7 +43,9 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 	}
 
 
-	private readonly IBsNativeDbBatchParser _NativeObject = null;
+
+
+	private IBsNativeDbBatchParser _NativeObject = null;
 
 
 	public IDbConnection Connection => _NativeObject.Connection;

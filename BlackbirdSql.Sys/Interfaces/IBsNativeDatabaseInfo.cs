@@ -7,6 +7,8 @@ using System.Data.Common;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Sys.Model;
 
+
+
 namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.NativeDatabaseInfoServiceGuid)]
@@ -14,6 +16,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 
 // =========================================================================================================
 //										IBsNativeDatabaseInfo Interface
+//
 /// <summary>
 /// Interface for native DatabaseInfo extension methods service.
 /// </summary>

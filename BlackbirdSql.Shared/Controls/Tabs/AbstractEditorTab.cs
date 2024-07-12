@@ -350,8 +350,6 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	protected void SetFrameProperties(IVsWindowFrame parentFrame, IVsWindowFrame frame)
 	{
-		Diag.ThrowIfNotOnUIThread();
-
 		if (parentFrame != frame)
 			frame.SetProperty((int)__VSFPROPID2.VSFPROPID_ParentFrame, parentFrame);
 
@@ -359,7 +357,11 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		frame.SetProperty((int)__VSFPROPID3.VSFPROPID_NotifyOnActivate, true);
 
 		Guid rguid = ClsidEditorFactory;
-		frame.SetGuidProperty(-4009, ref rguid);
+		frame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_guidEditorType, ref rguid);
+
+		// TODO: Added to test CmdUI.
+		Guid rCmdUIGuid = VSConstants.GUID_TextEditorFactory;
+		frame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, ref rCmdUIGuid);
 
 		string physicalViewString = GetPhysicalViewString();
 		frame.SetProperty((int)__VSFPROPID.VSFPROPID_pszPhysicalView, physicalViewString);
@@ -483,7 +485,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar);
+			_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar);
 
 			return pvar;
 		}
@@ -509,6 +511,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			Panel panelForCurrentFrame = GetPanelForCurrentFrame();
 			panelForCurrentFrame.Bounds = bounds;
 			Guid rguidRelativeTo = Guid.Empty;
+
 			if (panelForCurrentFrame.Width >= 0 && panelForCurrentFrame.Height >= 0)
 			{
 				Diag.ThrowIfNotOnUIThread();
@@ -603,7 +606,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
-			throw ex;
+			throw;
 		}
 
 	}
@@ -696,7 +699,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 		Diag.ThrowIfNotOnUIThread();
 
-		int hresult = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar);
+		int hresult = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar);
 		AbstractTabbedEditorWindowPane AbstractTabbedEditorPane = pvar as AbstractTabbedEditorWindowPane;
 
 		if (__(hresult) && AbstractTabbedEditorPane == null)
@@ -780,9 +783,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		}
 
 		if (!__(hresult) && _CmdTarget != null)
-		{
 			hresult = _CmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-		}
 
 		return hresult;
 	}
@@ -792,15 +793,15 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		Diag.ThrowIfNotOnUIThread();
 
 		IVsToolboxActiveUserHook textEditor = _TextEditor;
+
 		if (textEditor != null && textEditor.InterceptDataObject(pIn, out ppOut) == 0)
-		{
-			return 0;
-		}
+			return VSConstants.S_OK;
+
 		if (GetView() is IVsToolboxActiveUserHook vsToolboxActiveUserHook)
-		{
 			return vsToolboxActiveUserHook.InterceptDataObject(pIn, out ppOut);
-		}
+
 		ppOut = null;
+
 		return VSConstants.E_NOTIMPL;
 	}
 
@@ -811,13 +812,11 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		IVsToolboxActiveUserHook textEditor = _TextEditor;
 
 		if (textEditor != null && textEditor.ToolboxSelectionChanged(pSelected) == 0)
-		{
-			return 0;
-		}
+			return VSConstants.S_OK;
+
 		if (GetView() is IVsToolboxActiveUserHook vsToolboxActiveUserHook)
-		{
 			return vsToolboxActiveUserHook.ToolboxSelectionChanged(pSelected);
-		}
+
 		return VSConstants.E_NOTIMPL;
 	}
 
@@ -826,14 +825,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		Diag.ThrowIfNotOnUIThread();
 
 		IVsToolboxUser textEditor = TextEditor;
+
 		if (textEditor != null && textEditor.IsSupported(pDO) == 0)
-		{
-			return 0;
-		}
+			return VSConstants.S_OK;
+
 		if (GetView() is IVsToolboxUser vsToolboxUser)
-		{
 			return vsToolboxUser.IsSupported(pDO);
-		}
+
 		return VSConstants.E_NOTIMPL;
 	}
 
@@ -851,14 +849,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		Diag.ThrowIfNotOnUIThread();
 
 		IVsToolboxUser textEditor = TextEditor;
+
 		if (textEditor != null && textEditor.ItemPicked(pDO) == 0)
-		{
 			return 0;
-		}
+
 		if (GetView() is IVsToolboxUser vsToolboxUser)
-		{
 			return vsToolboxUser.ItemPicked(pDO);
-		}
+
 		return VSConstants.E_NOTIMPL;
 	}
 

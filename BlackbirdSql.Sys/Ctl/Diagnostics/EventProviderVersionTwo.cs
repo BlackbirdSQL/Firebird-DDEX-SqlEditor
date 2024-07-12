@@ -4,7 +4,10 @@ using System;
 using System.Diagnostics.Eventing;
 using System.Runtime.InteropServices;
 
+
+
 namespace BlackbirdSql.Sys.Ctl.Diagnostics;
+
 
 public class EventProviderVersionTwo(Guid id) : EventProvider(id)
 {

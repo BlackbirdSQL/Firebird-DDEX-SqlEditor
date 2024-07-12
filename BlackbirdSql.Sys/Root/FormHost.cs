@@ -15,11 +15,10 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Sys;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
-
 
 public static class FormHost
 {
+
 	private class WindowWithFocusRestorer : IDisposable
 	{
 		private readonly IntPtr _hwndFocus;
@@ -72,6 +71,7 @@ public static class FormHost
 		return ShowDialogOrForm(null, dialog);
 	}
 
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread().")]
 	private static DialogResult ShowDialogOrForm(Form form, CommonDialog dialog)
 	{
 		Diag.ThrowIfNotOnUIThread();

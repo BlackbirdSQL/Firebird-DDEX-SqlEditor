@@ -1,8 +1,11 @@
-﻿using BlackbirdSql.Core.Ctl.ComponentModel;
+﻿
+using BlackbirdSql.Sys.Ctl.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
+
 
 public sealed class GlobalizedDisplayNameAttribute(string resourceName)
 	: AbstractGlobalizedDisplayNameAttribute(resourceName)

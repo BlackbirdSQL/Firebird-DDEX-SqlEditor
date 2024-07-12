@@ -9,11 +9,21 @@ using System.Data.Common;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 
+
+
 namespace BlackbirdSql.Sys.Model;
 
 
 public sealed class NativeDbConnectionWrapperProxy : IBsNativeDbConnectionWrapper
 {
+
+	public NativeDbConnectionWrapperProxy(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null)
+	{
+		_NativeObject = NativeDb.CreateDbConnectionWrapper(connection, sqlConnectionCreatedObserver);
+	}
+
+
+
 	private readonly IBsNativeDbConnectionWrapper _NativeObject = null;
 
 	public IBsNativeDbConnectionWrapper NativeObject => _NativeObject;
@@ -29,11 +39,6 @@ public sealed class NativeDbConnectionWrapperProxy : IBsNativeDbConnectionWrappe
 		remove { _NativeObject.InfoMessageEvent -= value; }
 	}
 
-
-	public NativeDbConnectionWrapperProxy(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null)
-	{
-		_NativeObject = NativeDb.CreateDbConnectionWrapper(connection, sqlConnectionCreatedObserver);
-	}
 
 
 	public DbConnection CloneAndOpenConnection() => _NativeObject.CloneAndOpenConnection();

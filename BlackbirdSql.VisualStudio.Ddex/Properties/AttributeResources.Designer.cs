@@ -682,16 +682,16 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, closes edmx data models that have been left open when a solution closes. Enable this option to avoid potential model load errors..
+        ///   Looks up a localized string similar to If enabled, closes edmx data models that are not on screen when a solution closes. Enable this option to avoid potential Visual Studio model load errors..
         /// </summary>
-        public static string OptionDescriptionGeneralAutoCloseEdmxModels {
+        public static string OptionDescriptionGeneralAutoCloseOffScreenEdmx {
             get {
-                return ResourceManager.GetString("OptionDescriptionGeneralAutoCloseEdmxModels", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionGeneralAutoCloseOffScreenEdmx", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If enabled, closes xsd datasets that have been left open when a solution closes. Enable this option to avoid potential dataset load errors..
+        ///   Looks up a localized string similar to If enabled, closes xsd datasets that have been left open when a solution closes..
         /// </summary>
         public static string OptionDescriptionGeneralAutoCloseXsdDatasets {
             get {
@@ -1125,9 +1125,9 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Auto-close edmx models.
         /// </summary>
-        public static string OptionDisplayGeneralAutoCloseEdmxModels {
+        public static string OptionDisplayGeneralAutoCloseOffScreenEdmx {
             get {
-                return ResourceManager.GetString("OptionDisplayGeneralAutoCloseEdmxModels", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayGeneralAutoCloseOffScreenEdmx", resourceCulture);
             }
         }
         

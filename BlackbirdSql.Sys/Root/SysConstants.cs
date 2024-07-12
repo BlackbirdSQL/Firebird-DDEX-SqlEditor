@@ -6,6 +6,8 @@ using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.Sys.Properties;
 
+
+
 namespace BlackbirdSql.Sys;
 
 
@@ -18,6 +20,7 @@ namespace BlackbirdSql.Sys;
 // =========================================================================================================
 public static class SysConstants
 {
+
 	public static string DatasetKeyFormat => Resources.DatasetKeyFormat;
 	public static string DatasetKeyAlternateFormat => Resources.DatasetKeyAlternateFormat;
 
@@ -82,6 +85,7 @@ public static class SysConstants
 	public const string C_KeyExConnectionName = "ConnectionName";
 	public const string C_KeyExConnectionSource = "ConnectionSource";
 	public const string C_KeyExDisplayName = "DisplayName";
+	public const string C_KeyExFullDisplayName = "FullDisplayName";
 
 
 	// External (non-paramameter) property descriptor

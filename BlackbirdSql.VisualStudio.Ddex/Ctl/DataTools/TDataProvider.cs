@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using BlackbirdSql.Core;
-using BlackbirdSql.Sys;
 using BlackbirdSql.VisualStudio.Ddex.Controls;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.Data.ConnectionUI;

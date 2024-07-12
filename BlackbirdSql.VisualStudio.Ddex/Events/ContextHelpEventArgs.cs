@@ -5,12 +5,13 @@ using System.Windows.Forms;
 using BlackbirdSql.VisualStudio.Ddex.Enums;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Events;
+
 
 public class ContextHelpEventArgs(EnDataConnectionDlgContext context, Point mousePos) : HelpEventArgs(mousePos)
 {
 	private readonly EnDataConnectionDlgContext _Context = context;
-
 
 
 	public EnDataConnectionDlgContext Context => _Context;

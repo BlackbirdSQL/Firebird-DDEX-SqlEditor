@@ -14,15 +14,29 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-		<NoWarn>1701;1702</NoWarn>
+		<NoWarn>1701;1702;</NoWarn>
+		<WarningsAsErrors>$(WarningsAsErrors);NU1605</WarningsAsErrors>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-		<NoWarn>1701;1702</NoWarn>
+		<NoWarn>1701;1702;</NoWarn>
+		<WarningsAsErrors>$(WarningsAsErrors);NU1605</WarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<Compile Include="AbstrusePackageController.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedCategoryAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedDescriptionAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedDisplayNameAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
+		<Compile Include="Properties\AttributeResources.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>AttributeResources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Root\UnsafeExtensionMembers.cs" />
 		<Compile Include="Interfaces\IBsRunningConnectionTable.cs" />
 		<Compile Include="Root\ApcManager.cs" />
 		<Compile Include="Root\FormHost.cs" />
@@ -64,7 +78,7 @@
 		<Compile Include="Interfaces\IBsEventsManager.cs" />
 		<Compile Include="Interfaces\IBsAsyncPackage.cs" />
 		<Compile Include="Interfaces\IBsPackageController.cs" />
-		<Compile Include="Interfaces\IBsLinkageParser.cs" />
+		<Compile Include="Interfaces\IBsNativeDbLinkageParser.cs" />
 		<Compile Include="Interfaces\IBsNativeProviderSchemaFactory.cs" />
 		<Compile Include="Interfaces\IBsNativeDbConnectionWrapper.cs" />
 		<Compile Include="Ctl\Diagnostics\LogObject.cs" />
@@ -118,7 +132,6 @@
 		<Compile Include="Model\NativeDbBatchParserProxy.cs" />
 		<Compile Include="Model\NativeDbStatementWrapperProxy.cs" />
 		<Compile Include="Model\NativeDbCsbProxy.cs" />
-		<Compile Include="Interfaces\SBsNativeDbBatchParser.cs" />
 		<Compile Include="Interfaces\IBsNativeDbStatementWrapper.cs" />
 		<Compile Include="Interfaces\IBsNativeDatabaseEngine.cs" />
 		<Compile Include="Interfaces\IBsNativeDatabaseInfo.cs" />
@@ -148,6 +161,7 @@
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
 		<Compile Include="LibraryData.cs" />
+		<Compile Include="Root\UnsafeCmd.cs" />
 		<Compile Include="Root\VS.cs" />
 	</ItemGroup>
 
@@ -163,6 +177,10 @@
 		<EmbeddedResource Include="Controls\PrivacyConfirmationDialog.resx">
 			<DependentUpon>PrivacyConfirmationDialog.cs</DependentUpon>
 		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\AttributeResources.resx">
+		  <Generator>ResXFileCodeGenerator</Generator>
+		  <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
 		<EmbeddedResource Include="Properties\ControlsResources.resx">
 			<SubType>Designer</SubType>
 			<LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
@@ -175,12 +193,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
-	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.5.33428.388" />
+	  <Folder Include="Resources\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Resources\" />
+	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.10.40170" />
+	  <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="17.10.40152" />
+	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.10.40171" />
+	  <PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers" Version="17.7.32">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
 	</ItemGroup>
 
 </Project>

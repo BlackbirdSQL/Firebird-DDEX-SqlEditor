@@ -23,6 +23,27 @@ namespace BlackbirdSql.Sys.Ctl;
 public class DescriberDictionary : PublicDictionary<string, Describer>
 {
 
+	public DescriberDictionary() : base(StringComparer.OrdinalIgnoreCase)
+	{
+	}
+
+	public DescriberDictionary(Describer[] describers, KeyValuePair<string, string>[] synonyms) : base(StringComparer.OrdinalIgnoreCase)
+	{
+		AddRange(describers);
+		AddSynonyms(synonyms);
+	}
+
+
+
+	public DescriberDictionary(IDictionary<string, string> synonyms) : base(StringComparer.OrdinalIgnoreCase)
+	{
+		AddSynonyms(synonyms);
+	}
+
+
+
+
+
 	private IDictionary<string, Describer> _Synonyms;
 
 
@@ -106,22 +127,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 	public IDictionary<string, Describer> Synonyms => _Synonyms;
 
-	public DescriberDictionary() : base(StringComparer.OrdinalIgnoreCase)
-	{
-	}
 
-	public DescriberDictionary(Describer[] describers, KeyValuePair<string, string>[] synonyms) : base(StringComparer.OrdinalIgnoreCase)
-	{
-		AddRange(describers);
-		AddSynonyms(synonyms);
-	}
-
-
-
-	public DescriberDictionary(IDictionary<string, string> synonyms) : base(StringComparer.OrdinalIgnoreCase)
-	{
-		AddSynonyms(synonyms);
-	}
 
 
 

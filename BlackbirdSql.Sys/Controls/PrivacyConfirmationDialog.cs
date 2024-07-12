@@ -99,19 +99,19 @@ public partial class PrivacyConfirmationDialog : Form
 			array[0] = Uri.UnescapeDataString(stringToUnescape);
 			if (string.Compare((string)array[0], "ProdName", ignoreCase: false, CultureInfo.CurrentCulture) == 0)
 			{
-				array[0] = ControlsResources.ProductName;
+				array[0] = ControlsResources.PrivacyConfirmationDialog_ProductName;
 			}
 			else if (string.Compare((string)array[0], "ProdVer", ignoreCase: false, CultureInfo.CurrentCulture) == 0)
 			{
-				array[0] = ControlsResources.ProductVersion;
+				array[0] = ControlsResources.PrivacyConfirmationDialog_ProductVersion;
 			}
 			else if (string.Compare((string)array[0], "EvtSrc", ignoreCase: false, CultureInfo.CurrentCulture) == 0)
 			{
-				array[0] = ControlsResources.MessageSource;
+				array[0] = ControlsResources.PrivacyConfirmationDialog_MessageSource;
 			}
 			else if (string.Compare((string)array[0], "EvtID", ignoreCase: false, CultureInfo.CurrentCulture) == 0)
 			{
-				array[0] = ControlsResources.MessageID;
+				array[0] = ControlsResources.PrivacyConfirmationDialog_MessageId;
 			}
 
 			array[1] = Uri.UnescapeDataString(stringToUnescape2);
@@ -123,8 +123,8 @@ public partial class PrivacyConfirmationDialog : Form
 
 	private void PrivacyConfirmationDialog_Load(object sender, EventArgs e)
 	{
-		m_table.Columns.Add(new DataColumn(ControlsResources.PrivacyItemName, typeof(string)));
-		m_table.Columns.Add(new DataColumn(ControlsResources.PrivacyItemValue, typeof(string)));
+		m_table.Columns.Add(new DataColumn(ControlsResources.PrivacyConfirmationDialog_PrivacyItemName, typeof(string)));
+		m_table.Columns.Add(new DataColumn(ControlsResources.PrivacyConfirmationDialog_PrivacyItemValue, typeof(string)));
 		dataGridView1.DataSource = m_table;
 		dataGridView1.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 		dataGridView1.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;

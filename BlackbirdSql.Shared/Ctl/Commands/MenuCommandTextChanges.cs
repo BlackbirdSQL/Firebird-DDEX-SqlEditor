@@ -9,23 +9,27 @@ using System.Runtime.InteropServices;
 using BlackbirdSql.Shared.Interfaces;
 
 
+
 namespace BlackbirdSql.Shared.Ctl.Commands;
 
 [ComVisible(false)]
-public class MenuCommandTextChanges(EventHandler handler, CommandID command)
-	: MenuCommand(handler, command), IBMenuCommandTextChanges
+
+
+public class MenuCommandTextChanges : MenuCommand, IBMenuCommandTextChanges
 {
-	private string text;
+
+	public MenuCommandTextChanges(EventHandler handler, CommandID command)
+		: base(handler, command)
+	{
+	}
+
+
+	private string _Text;
+
 
 	public string Text
 	{
-		get
-		{
-			return text;
-		}
-		set
-		{
-			text = value;
-		}
+		get { return _Text; }
+		set { _Text = value; }
 	}
 }

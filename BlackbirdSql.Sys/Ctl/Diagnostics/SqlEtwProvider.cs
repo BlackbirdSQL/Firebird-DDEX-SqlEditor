@@ -4,10 +4,95 @@ using System;
 using System.Diagnostics.Eventing;
 using BlackbirdSql.Sys.Enums;
 
+
+
 namespace BlackbirdSql.Sys.Ctl.Diagnostics;
+
 
 public static class SqlEtwProvider
 {
+
+	static SqlEtwProvider()
+	{
+		S_EventProvider = new EventProviderVersionTwo(new Guid(LibraryData.MandatedEventProviderGuid));
+
+		SchemaCompare = new EventDescriptor(4, 1, 0, 4, 0, 3, 513L);
+		SchemaCompareError = new EventDescriptor(69, 1, 0, 2, 0, 3, 513L);
+		SqlEditorExecute = new EventDescriptor(5, 1, 0, 4, 0, 3, 513L);
+		ProjectLoad = new EventDescriptor(6, 1, 0, 4, 0, 3, 513L);
+		ProjectOpen = new EventDescriptor(7, 1, 0, 4, 0, 3, 513L);
+		ProjectWizardImportSchemaFinish = new EventDescriptor(8, 1, 0, 4, 0, 3, 513L);
+		ProjectBuild = new EventDescriptor(9, 1, 0, 1, 0, 3, 513L);
+		ProjectBuildError = new EventDescriptor(70, 1, 0, 2, 0, 3, 513L);
+		ProjectDeploy = new EventDescriptor(10, 1, 0, 1, 0, 3, 513L);
+		DisplayAdapterSchemaObjectChangeDone = new EventDescriptor(14, 1, 0, 4, 0, 4, 1025L);
+		SchemaViewNodePopulationComplete = new EventDescriptor(15, 1, 0, 4, 0, 4, 1025L);
+		ConnectionStringPersistedInRegistry = new EventDescriptor(16, 1, 0, 4, 0, 4, 1025L);
+		DataSchemaModelRecycle = new EventDescriptor(17, 1, 0, 4, 0, 4, 1025L);
+		ImportSchema = new EventDescriptor(25, 1, 0, 4, 0, 5, 9L);
+		ImportSchemaFinish = new EventDescriptor(26, 1, 0, 4, 0, 5, 9L);
+		ImportSchemaFinishError = new EventDescriptor(68, 1, 0, 4, 0, 5, 9L);
+		ImportSchemaGenerateAllScripts = new EventDescriptor(27, 1, 0, 4, 0, 5, 9L);
+		ImportSchemaGenerateSingleScript = new EventDescriptor(28, 1, 0, 4, 0, 5, 9L);
+		ImportSchemaAddAllScriptsToProject = new EventDescriptor(29, 1, 0, 4, 0, 5, 9L);
+		ImportSchemaAddSingleScriptToProject = new EventDescriptor(30, 1, 0, 4, 0, 5, 9L);
+		ImportSchemaGenerateProjectMapForType = new EventDescriptor(31, 1, 0, 4, 0, 5, 9L);
+		ImportSchemaGenerateProjectMapForElement = new EventDescriptor(32, 1, 0, 4, 0, 5, 9L);
+		ImportSchemaAddScriptsToProjectForType = new EventDescriptor(33, 1, 0, 4, 0, 5, 9L);
+		ImportScript = new EventDescriptor(34, 1, 0, 4, 0, 6, 17L);
+		ModelCompare = new EventDescriptor(67, 1, 0, 4, 0, 10, 257L);
+		Commit = new EventDescriptor(87, 1, 0, 4, 0, 0, 1L);
+		LogCritical = new EventDescriptor(71, 1, 0, 1, 0, 11, 2048L);
+		LogError = new EventDescriptor(72, 1, 0, 2, 0, 11, 2048L);
+		LogWarning = new EventDescriptor(73, 1, 0, 3, 0, 11, 2048L);
+		LogInformational = new EventDescriptor(74, 1, 0, 4, 0, 11, 2048L);
+		LogVerbose = new EventDescriptor(75, 1, 0, 5, 0, 11, 2048L);
+		TableDesignerUpdateContextView = new EventDescriptor(79, 1, 16, 4, 0, 0, -9223372036854771711L);
+		TableDesignerAddNewTable = new EventDescriptor(80, 1, 0, 4, 0, 0, 4097L);
+		TableDesignerOpenTable = new EventDescriptor(81, 1, 0, 4, 0, 0, 4097L);
+		TableDesignerSpecifyTableProperties = new EventDescriptor(82, 1, 0, 4, 0, 0, 4097L);
+		TableDesignerAddColumns = new EventDescriptor(83, 1, 0, 1, 0, 0, 4097L);
+		TableDesignerAddObjectFromCtxPane = new EventDescriptor(84, 1, 0, 4, 0, 0, 4097L);
+		TableDesignerRefactorRename = new EventDescriptor(85, 1, 0, 4, 0, 0, 4097L);
+		TableDesignerDeleteColumns = new EventDescriptor(86, 1, 0, 4, 0, 0, 4097L);
+		SchemaCompareDataPopulationJob = new EventDescriptor(88, 1, 0, 4, 0, 0, 16385L);
+		SchemaCompareDataPopulationCancel = new EventDescriptor(89, 1, 0, 4, 0, 0, 16385L);
+		SchemaCompareScriptPopulationJob = new EventDescriptor(90, 1, 0, 4, 0, 0, 16385L);
+		SchemaCompareScriptPopulationCancel = new EventDescriptor(91, 1, 0, 4, 0, 0, 16385L);
+		SchemaCompareGetAndResolveDataSchemaModel = new EventDescriptor(92, 1, 0, 4, 0, 0, 16385L);
+		SchemaCompareModelCompare = new EventDescriptor(93, 1, 0, 4, 0, 0, 16385L);
+		SchemaCompareGenerateVisual = new EventDescriptor(94, 1, 0, 4, 0, 0, 16385L);
+		SchemaCompareUpdateTargetJob = new EventDescriptor(95, 1, 0, 4, 0, 0, 16385L);
+		SchemaCompareUpdateTargetCancel = new EventDescriptor(96, 1, 0, 4, 0, 0, 16385L);
+		ProjectSystemSnapshot = new EventDescriptor(120, 1, 0, 4, 0, 0, 513L);
+		ProjectSystemSnapshotBuildFailed = new EventDescriptor(121, 1, 0, 4, 0, 0, 513L);
+		ProjectSystemPublishing = new EventDescriptor(122, 1, 0, 4, 0, 0, 513L);
+		ProjectSystemPublishCreateDeploymentPlan = new EventDescriptor(123, 1, 0, 4, 0, 0, 513L);
+		ProjectSystemPublishCreatePublishScripts = new EventDescriptor(124, 1, 0, 4, 0, 0, 513L);
+		ProjectSystemPublishShowScript = new EventDescriptor(125, 1, 0, 4, 0, 0, 513L);
+		ProjectSystemPublishExecuteScript = new EventDescriptor(126, 1, 0, 4, 0, 0, 513L);
+		ProjectSystemPublishResults = new EventDescriptor(127, 1, 0, 4, 0, 0, 513L);
+		QueryResultExecuteQuery = new EventDescriptor(128, 1, 16, 4, 0, 0, -9223372036854710271L);
+		QueryResultCreateScript = new EventDescriptor(129, 1, 16, 4, 0, 0, -9223372036854710271L);
+		QueryResultsLoaded = new EventDescriptor(130, 1, 16, 4, 0, 0, -9223372036854710271L);
+		ProjectSystemImportSnapshot = new EventDescriptor(131, 1, 16, 4, 0, 0, -9223372036854644735L);
+		FileOpen = new EventDescriptor(150, 1, 0, 4, 0, 3, 33281L);
+		LoadTSqlDocData = new EventDescriptor(151, 1, 0, 4, 0, 12, 32769L);
+		TSqlEditorFrameCreate = new EventDescriptor(152, 1, 0, 1, 0, 12, 32769L);
+		TSqlEditorActivate = new EventDescriptor(153, 1, 0, 1, 0, 12, 32769L);
+		TSqlEditorTabSwitch = new EventDescriptor(154, 1, 0, 1, 0, 12, 32769L);
+		TSqlEditorLaunch = new EventDescriptor(155, 1, 0, 1, 0, 12, 32769L);
+		TSqlOnlineEditorDocumentLoad = new EventDescriptor(156, 1, 16, 4, 0, 0, -9223372036854743039L);
+		ServerExplorerServerPropertiesRetrieved = new EventDescriptor(200, 1, 0, 4, 0, 0, 513L);
+		GotoDefinition = new EventDescriptor(300, 1, 16, 1, 0, 0, -9223372036854513151L);
+		FindAllReferences = new EventDescriptor(301, 1, 16, 1, 0, 0, -9223372036854513151L);
+		Refactor = new EventDescriptor(302, 1, 16, 1, 0, 0, -9223372036854513151L);
+		RefactorContributeChanges = new EventDescriptor(303, 1, 16, 1, 0, 0, -9223372036854513151L);
+		RefactorApplyChanges = new EventDescriptor(304, 1, 16, 1, 0, 0, -9223372036854513151L);
+	}
+
+
+
 	public static EventProviderVersionTwo S_EventProvider;
 
 	private static EventDescriptor SchemaCompare;
@@ -156,6 +241,8 @@ public static class SqlEtwProvider
 
 	private static EventDescriptor RefactorApplyChanges;
 
+
+
 	public static bool IsEnabled()
 	{
 		return S_EventProvider.IsEnabled();
@@ -171,84 +258,6 @@ public static class SqlEtwProvider
 		return S_EventProvider.IsEnabled((byte)level, LogCritical.Keywords);
 	}
 
-	static SqlEtwProvider()
-	{
-		S_EventProvider = new EventProviderVersionTwo(new Guid(LibraryData.MandatedEventProviderGuid));
-
-		SchemaCompare = new EventDescriptor(4, 1, 0, 4, 0, 3, 513L);
-		SchemaCompareError = new EventDescriptor(69, 1, 0, 2, 0, 3, 513L);
-		SqlEditorExecute = new EventDescriptor(5, 1, 0, 4, 0, 3, 513L);
-		ProjectLoad = new EventDescriptor(6, 1, 0, 4, 0, 3, 513L);
-		ProjectOpen = new EventDescriptor(7, 1, 0, 4, 0, 3, 513L);
-		ProjectWizardImportSchemaFinish = new EventDescriptor(8, 1, 0, 4, 0, 3, 513L);
-		ProjectBuild = new EventDescriptor(9, 1, 0, 1, 0, 3, 513L);
-		ProjectBuildError = new EventDescriptor(70, 1, 0, 2, 0, 3, 513L);
-		ProjectDeploy = new EventDescriptor(10, 1, 0, 1, 0, 3, 513L);
-		DisplayAdapterSchemaObjectChangeDone = new EventDescriptor(14, 1, 0, 4, 0, 4, 1025L);
-		SchemaViewNodePopulationComplete = new EventDescriptor(15, 1, 0, 4, 0, 4, 1025L);
-		ConnectionStringPersistedInRegistry = new EventDescriptor(16, 1, 0, 4, 0, 4, 1025L);
-		DataSchemaModelRecycle = new EventDescriptor(17, 1, 0, 4, 0, 4, 1025L);
-		ImportSchema = new EventDescriptor(25, 1, 0, 4, 0, 5, 9L);
-		ImportSchemaFinish = new EventDescriptor(26, 1, 0, 4, 0, 5, 9L);
-		ImportSchemaFinishError = new EventDescriptor(68, 1, 0, 4, 0, 5, 9L);
-		ImportSchemaGenerateAllScripts = new EventDescriptor(27, 1, 0, 4, 0, 5, 9L);
-		ImportSchemaGenerateSingleScript = new EventDescriptor(28, 1, 0, 4, 0, 5, 9L);
-		ImportSchemaAddAllScriptsToProject = new EventDescriptor(29, 1, 0, 4, 0, 5, 9L);
-		ImportSchemaAddSingleScriptToProject = new EventDescriptor(30, 1, 0, 4, 0, 5, 9L);
-		ImportSchemaGenerateProjectMapForType = new EventDescriptor(31, 1, 0, 4, 0, 5, 9L);
-		ImportSchemaGenerateProjectMapForElement = new EventDescriptor(32, 1, 0, 4, 0, 5, 9L);
-		ImportSchemaAddScriptsToProjectForType = new EventDescriptor(33, 1, 0, 4, 0, 5, 9L);
-		ImportScript = new EventDescriptor(34, 1, 0, 4, 0, 6, 17L);
-		ModelCompare = new EventDescriptor(67, 1, 0, 4, 0, 10, 257L);
-		Commit = new EventDescriptor(87, 1, 0, 4, 0, 0, 1L);
-		LogCritical = new EventDescriptor(71, 1, 0, 1, 0, 11, 2048L);
-		LogError = new EventDescriptor(72, 1, 0, 2, 0, 11, 2048L);
-		LogWarning = new EventDescriptor(73, 1, 0, 3, 0, 11, 2048L);
-		LogInformational = new EventDescriptor(74, 1, 0, 4, 0, 11, 2048L);
-		LogVerbose = new EventDescriptor(75, 1, 0, 5, 0, 11, 2048L);
-		TableDesignerUpdateContextView = new EventDescriptor(79, 1, 16, 4, 0, 0, -9223372036854771711L);
-		TableDesignerAddNewTable = new EventDescriptor(80, 1, 0, 4, 0, 0, 4097L);
-		TableDesignerOpenTable = new EventDescriptor(81, 1, 0, 4, 0, 0, 4097L);
-		TableDesignerSpecifyTableProperties = new EventDescriptor(82, 1, 0, 4, 0, 0, 4097L);
-		TableDesignerAddColumns = new EventDescriptor(83, 1, 0, 1, 0, 0, 4097L);
-		TableDesignerAddObjectFromCtxPane = new EventDescriptor(84, 1, 0, 4, 0, 0, 4097L);
-		TableDesignerRefactorRename = new EventDescriptor(85, 1, 0, 4, 0, 0, 4097L);
-		TableDesignerDeleteColumns = new EventDescriptor(86, 1, 0, 4, 0, 0, 4097L);
-		SchemaCompareDataPopulationJob = new EventDescriptor(88, 1, 0, 4, 0, 0, 16385L);
-		SchemaCompareDataPopulationCancel = new EventDescriptor(89, 1, 0, 4, 0, 0, 16385L);
-		SchemaCompareScriptPopulationJob = new EventDescriptor(90, 1, 0, 4, 0, 0, 16385L);
-		SchemaCompareScriptPopulationCancel = new EventDescriptor(91, 1, 0, 4, 0, 0, 16385L);
-		SchemaCompareGetAndResolveDataSchemaModel = new EventDescriptor(92, 1, 0, 4, 0, 0, 16385L);
-		SchemaCompareModelCompare = new EventDescriptor(93, 1, 0, 4, 0, 0, 16385L);
-		SchemaCompareGenerateVisual = new EventDescriptor(94, 1, 0, 4, 0, 0, 16385L);
-		SchemaCompareUpdateTargetJob = new EventDescriptor(95, 1, 0, 4, 0, 0, 16385L);
-		SchemaCompareUpdateTargetCancel = new EventDescriptor(96, 1, 0, 4, 0, 0, 16385L);
-		ProjectSystemSnapshot = new EventDescriptor(120, 1, 0, 4, 0, 0, 513L);
-		ProjectSystemSnapshotBuildFailed = new EventDescriptor(121, 1, 0, 4, 0, 0, 513L);
-		ProjectSystemPublishing = new EventDescriptor(122, 1, 0, 4, 0, 0, 513L);
-		ProjectSystemPublishCreateDeploymentPlan = new EventDescriptor(123, 1, 0, 4, 0, 0, 513L);
-		ProjectSystemPublishCreatePublishScripts = new EventDescriptor(124, 1, 0, 4, 0, 0, 513L);
-		ProjectSystemPublishShowScript = new EventDescriptor(125, 1, 0, 4, 0, 0, 513L);
-		ProjectSystemPublishExecuteScript = new EventDescriptor(126, 1, 0, 4, 0, 0, 513L);
-		ProjectSystemPublishResults = new EventDescriptor(127, 1, 0, 4, 0, 0, 513L);
-		QueryResultExecuteQuery = new EventDescriptor(128, 1, 16, 4, 0, 0, -9223372036854710271L);
-		QueryResultCreateScript = new EventDescriptor(129, 1, 16, 4, 0, 0, -9223372036854710271L);
-		QueryResultsLoaded = new EventDescriptor(130, 1, 16, 4, 0, 0, -9223372036854710271L);
-		ProjectSystemImportSnapshot = new EventDescriptor(131, 1, 16, 4, 0, 0, -9223372036854644735L);
-		FileOpen = new EventDescriptor(150, 1, 0, 4, 0, 3, 33281L);
-		LoadTSqlDocData = new EventDescriptor(151, 1, 0, 4, 0, 12, 32769L);
-		TSqlEditorFrameCreate = new EventDescriptor(152, 1, 0, 1, 0, 12, 32769L);
-		TSqlEditorActivate = new EventDescriptor(153, 1, 0, 1, 0, 12, 32769L);
-		TSqlEditorTabSwitch = new EventDescriptor(154, 1, 0, 1, 0, 12, 32769L);
-		TSqlEditorLaunch = new EventDescriptor(155, 1, 0, 1, 0, 12, 32769L);
-		TSqlOnlineEditorDocumentLoad = new EventDescriptor(156, 1, 16, 4, 0, 0, -9223372036854743039L);
-		ServerExplorerServerPropertiesRetrieved = new EventDescriptor(200, 1, 0, 4, 0, 0, 513L);
-		GotoDefinition = new EventDescriptor(300, 1, 16, 1, 0, 0, -9223372036854513151L);
-		FindAllReferences = new EventDescriptor(301, 1, 16, 1, 0, 0, -9223372036854513151L);
-		Refactor = new EventDescriptor(302, 1, 16, 1, 0, 0, -9223372036854513151L);
-		RefactorContributeChanges = new EventDescriptor(303, 1, 16, 1, 0, 0, -9223372036854513151L);
-		RefactorApplyChanges = new EventDescriptor(304, 1, 16, 1, 0, 0, -9223372036854513151L);
-	}
 
 	public static bool EventWriteSchemaCompare(bool IsStart, string EventContext)
 	{

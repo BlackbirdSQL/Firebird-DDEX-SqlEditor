@@ -22,7 +22,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslProcedureParameters : DslColumns
 {
-	public DslProcedureParameters(IBsLinkageParser parser) : base(parser)
+	public DslProcedureParameters() : base()
 	{
 		// Tracer.Trace(GetType(), "DslProcedureParameters.DslProcedureParameters");
 

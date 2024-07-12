@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Ctl.Commands;
@@ -17,6 +18,7 @@ using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Shared.Properties;
 using BlackbirdSql.Sys.Enums;
+using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -69,7 +71,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		try
 		{
-			IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject();
+			IVsProject3 miscellaneousProject = UnsafeCmd.MiscellaneousProjectHierarchy;
 
 			VSADDRESULT[] array = new VSADDRESULT[1];
 			VSADDITEMOPERATION addItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
@@ -80,10 +82,10 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 				? __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor
 				: __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseView);
 
-			Native.WrapComCall(miscellaneousProject.AddItemWithSpecific(grfEditorFlags: flags,
+			___(miscellaneousProject.AddItemWithSpecific(grfEditorFlags: flags,
 				itemidLoc: uint.MaxValue, dwAddItemOperation: addItemOperation, pszItemName: caption, cFilesToOpen: 1u,
 				rgpszFilesToOpen: [path], hwndDlgOwner: IntPtr.Zero, rguidEditorType: ref editor,
-				pszPhysicalView: physicalView, rguidLogicalView: ref logicalView, pResult: array), []);
+				pszPhysicalView: physicalView, rguidLogicalView: ref logicalView, pResult: array));
 
 			if (array[0] != VSADDRESULT.ADDRESULT_Success)
 			{
@@ -262,7 +264,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		Diag.ThrowIfNotOnUIThread();
 
-		IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject();
+		IVsProject3 miscellaneousProject = UnsafeCmd.MiscellaneousProjectHierarchy;
 
 		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, NativeDb.Extension, "NewQuery", out string pbstrItemName);
 		string tempFileName = Path.GetTempFileName();
@@ -298,13 +300,13 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
 
 		EnModelTargetType targetType = EnModelTargetType.QueryScript;
-		EnModelObjectType objectType = EnModelObjectType.NewSqlQuery;
+		EnModelObjectType objectType = EnModelObjectType.NewQuery;
 		EnModelObjectType elementType = objectType;
 
 		if (RctManager.ShutdownState)
 			return;
 
-		Csb csa = RctManager.CloneRegistered(datasetKey);
+		Csb csa = RctManager.CloneRegistered(datasetKey, EnRctKeyType.DatasetKey);
 
 		IList<string> identifierList = ["NewQuery"];
 		IList<string> identifierArray = null;
@@ -331,15 +333,17 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	public void NewSqlQuery(string datasetKey)
+	public void NewQuery(string datasetKey)
 	{
 		// Sanity check.
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
 		Diag.ThrowIfNotOnUIThread();
 
+
 		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
 
 		OpenNewQueryEditor(datasetKey, clsidEditorFactory, null);
+		
 	}
 
 
@@ -425,7 +429,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		if (lastFocusedSqlEditor != null)
 		{
-			SqlEditorExecuteQueryCommand command = new (lastFocusedSqlEditor);
+			CommandExecuteQuery command = new (lastFocusedSqlEditor);
 
 			_ = Task.Run(() => OnSqlQueryLoadedAsync(command, 50));
 		}
@@ -433,13 +437,13 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	private async Task<bool> OnSqlQueryLoadedAsync(AbstractSqlEditorCommand command, int delay)
+	private async Task<bool> OnSqlQueryLoadedAsync(AbstractCommand command, int delay)
 	{
 		// Tracer.Trace(GetType(), "OnSqlQueryLoadedAsync()");
 
 		// Give editor time to breath.
 		if (delay > 0)
-			Thread.Sleep(delay);
+			System.Threading.Thread.Sleep(delay);
 
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -450,5 +454,6 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 	#endregion Event Handling
+
 
 }

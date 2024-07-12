@@ -33,12 +33,12 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	public TMappedObjectConverter() : base()
 	{
-		// Tracer.Trace(GetType(), "TMappedObjectConverter.TMappedObjectConverter");
+		// Tracer.Trace(typeof(TMappedObjectConverter), ".ctor");
 	}
 
 	public TMappedObjectConverter(IVsDataConnection connection) : base(connection)
 	{
-		// Tracer.Trace(GetType(), "TMappedObjectConverter.TMappedObjectConverter(IVsDataConnection)");
+		// Tracer.Trace(typeof(TMappedObjectConverter), ".ctor(IVsDataConnection)");
 	}
 
 

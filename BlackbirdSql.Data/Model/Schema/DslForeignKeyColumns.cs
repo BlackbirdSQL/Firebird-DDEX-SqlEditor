@@ -15,6 +15,7 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System.Data;
 using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Data.Model.Schema;
@@ -22,7 +23,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslForeignKeyColumns : DslColumns
 {
-	public DslForeignKeyColumns(IBsLinkageParser parser) : base(parser)
+	public DslForeignKeyColumns() : base()
 	{
 		// Tracer.Trace(GetType(), "DslForeignKeyColumns.DslForeignKeyColumns");
 

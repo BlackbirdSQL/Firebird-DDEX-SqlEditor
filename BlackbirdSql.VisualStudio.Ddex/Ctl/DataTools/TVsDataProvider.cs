@@ -747,7 +747,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 				obj = null;
 			}
 		}
-		if (!IsLegacyProvider && obj == null)
+		if (!IsLegacyProvider && obj == null && ApcManager.ServiceProvider != null)
 		{
 			try
 			{

@@ -33,16 +33,21 @@ internal class DslRawTriggerDependencies : AbstractDslSchema
 		// Tracer.Trace(GetType(), "DslRawTriggerDependencies.DslRawTriggerDependencies");
 	}
 
+	
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
 		// Tracer.Trace(GetType(), "DslRawTriggerDependencies.GetCommandText");
 
-		var sql = new StringBuilder();
+		StringBuilder sql = new ();
 
 		string identityType = "0";
 		string generatorSelector = "IS NULL";
+
+		string transientRestrictions = restrictions != null && !string.IsNullOrEmpty(restrictions[2])
+			? $"WHERE trg.rdb$relation_name = '{restrictions[2]}'" : string.Empty;
 
 		if (MajorVersionNumber >= 3)
 		{
@@ -77,9 +82,9 @@ LEFT OUTER JOIN rdb$relation_fields fd_rfr
 LEFT OUTER JOIN rdb$generators fd_gen
 	--[= fd_rfr.rdb$generator_name | IS NULL]~1~
     ON fd_gen.rdb$generator_name {1}
-
+{2}
 GROUP BY TRIGGER_NAME, SEQUENCE_GENERATOR
-ORDER BY trg.rdb$trigger_name", identityType, generatorSelector);
+ORDER BY trg.rdb$trigger_name", identityType, generatorSelector, transientRestrictions);
 
 		// Tracer.Trace(sql.ToString());
 

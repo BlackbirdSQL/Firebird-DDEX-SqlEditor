@@ -17,7 +17,10 @@
 
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+
+
 namespace BlackbirdSql.Sys.Enums;
+
 
 public enum EnDbDataType
 {

@@ -1,8 +1,11 @@
-﻿using BlackbirdSql.Core.Ctl.ComponentModel;
+﻿
 using BlackbirdSql.EditorExtension.Properties;
+using BlackbirdSql.Sys.Ctl.ComponentModel;
+
 
 
 namespace BlackbirdSql.EditorExtension.Ctl.ComponentModel;
+
 
 public sealed class GlobalizedCategoryAttribute : AbstractGlobalizedCategoryAttribute
 {

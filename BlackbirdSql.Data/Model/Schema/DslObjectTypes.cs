@@ -23,6 +23,8 @@ internal static class DslObjectTypes
 	public const string Root = "";
 	public const string Domain = "Domain";
 	public const string Database = "Database";
+	public const string Function = "Function";
+	public const string FunctionParameter = "FunctionParameter";
 	public const string Table = "Table";
 	public const string TableColumn = "TableColumn";
 	public const string TableIndex = "TableIndex";
@@ -62,11 +64,13 @@ internal static class DslObjectTypes
 				return 1;
 
 			case DslObjectTypes.Table:
+			case DslObjectTypes.Function:
 			case DslObjectTypes.ScalarFunction:
 			case DslObjectTypes.StoredProcedure:
 			case DslObjectTypes.View:
 				return 3;
 
+			case DslObjectTypes.FunctionParameter:
 			case DslObjectTypes.TableColumn:
 			case DslObjectTypes.TableIndex:
 			case DslObjectTypes.TableUniqueKey:

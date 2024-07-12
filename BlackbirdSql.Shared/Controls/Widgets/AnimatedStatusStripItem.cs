@@ -45,9 +45,8 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 			if (value != _CurrentImage)
 			{
 				if (value < 0 || value >= _Images.Length)
-				{
 					value = 0;
-				}
+
 				_CurrentImage = value;
 				parentStatusStrip.Invalidate(invalidateChildren: true);
 			}

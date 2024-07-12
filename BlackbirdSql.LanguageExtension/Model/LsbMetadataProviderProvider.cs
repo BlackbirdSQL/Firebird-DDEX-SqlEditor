@@ -86,7 +86,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				{
 					if (_CacheTable == null || !_CacheTable.TryGetValue(qryMgrKey, out value))
 					{
-						value = new LsbMetadataProviderProvider(qryMgr.ConnectionStrategy.ConnectionInfo, qryMgrKey);
+						value = new LsbMetadataProviderProvider(qryMgr.Strategy.ConnectionInfo, qryMgrKey);
 						CacheTable.Add(qryMgrKey, value);
 					}
 
@@ -124,7 +124,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 			string text = null;
 
-			if (qryMgr.ConnectionStrategy is SqlConnectionStrategy { ConnectionInfo: ConnectionPropertyAgent connectionInfo })
+			if (qryMgr.Strategy is ConnectionStrategy { ConnectionInfo: ConnectionPropertyAgent connectionInfo })
 			{
 				text = connectionInfo.DatasetKey;
 			}
@@ -196,10 +196,10 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 			try
 			{
-				SqlConnectionStrategy.PopulateConnectionStringBuilder(csb, ConnectionInfo);
+				ConnectionStrategy.PopulateConnectionStringBuilder(csb, ConnectionInfo);
 
 				csb.Pooling = false;
-				connection = new FbConnection(csb.ToString());
+				connection = NativeDb.CreateDbConnection(csb.ToString());
 
 				await connection.OpenAsync().ConfigureAwait(continueOnCapturedContext: false);
 
@@ -245,7 +245,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 			ServerConnection.Open();
 
 			// ConnectionHelperUtils.SetLockAndCommandTimeout(ServerConnection.SqlConnectionObject);
-			ServerVersion = ServerConnection.GetVersion();
+			ServerVersion = NativeDb.GetServerVersion(ServerConnection);
 			DatabaseEngineType = metadataConnectionStringBuilder.IsServerConnection ? EnServerType.Default : EnServerType.Embedded;
 		}
 	}
@@ -441,7 +441,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 	{
 		ConnectionPropertyAgent uIConnectionInfo = ConnectionInfo;
 		Csb sqlConnectionStringBuilder = [];
-		SqlConnectionStrategy.PopulateConnectionStringBuilder(sqlConnectionStringBuilder, uIConnectionInfo);
+		ConnectionStrategy.PopulateConnectionStringBuilder(sqlConnectionStringBuilder, uIConnectionInfo);
 
 		return sqlConnectionStringBuilder;
 	}
@@ -452,6 +452,8 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		{
 			DisposeDriftDetectionConnection();
 			DisposeMetadataConnection();
+			ConnectionInfo?.Dispose();
+			ConnectionInfo = null;
 		}
 	}
 
@@ -462,6 +464,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 			if (ServerConnection != null)
 			{
 				ServerConnection.Close();
+				ServerConnection.Dispose();
 				ServerConnection = null;
 			}
 		}

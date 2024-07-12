@@ -6,7 +6,7 @@
 		<CommandRef name="CommandTextOpenScriptUniversal" />
 		<CommandRef name="CommandTraceRctUniversal" />
 		<CommandRef name="CommandValidateSolutionUniversal" />
-		<CommandRef name="CommandNewSqlQueryUniversal" />
+		<CommandRef name="CommandNewQueryUniversal" />
 		<CommandRef name="CommandNewDesignerQueryUniversal" />
 		<CommandRef name="CommandNewQueryGlobal" />
 		<CommandRef name="CommandOverrideNewQueryLocal" />
@@ -53,7 +53,7 @@
 	<Define name="CommandValidateSolutionUniversal">
 		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x033A" />
 	</Define>
-	<Define name="CommandNewSqlQueryUniversal">
+	<Define name="CommandNewQueryUniversal">
 		<CommandRef name="CommandHookCommandSetUniversalDefault" arguments="0x0310" />
 	</Define>
 	<Define name="CommandRetrieveDesignerUniversal">

@@ -2,6 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Collections.Generic;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -43,7 +44,9 @@ public abstract class AbstractEventsManager : IBsEventsManager
 		InternalInstance = this;
 		_Controller = controller;
 
-		controller.RegisterEventsManager(this);
+		_Instances ??= [];
+		_Instances.Add(this);
+
 		Initialize();
 
 	}
@@ -56,7 +59,25 @@ public abstract class AbstractEventsManager : IBsEventsManager
 	/// Example
 	/// <code>_Controller.OnExampleEvent -= OnExample;</code>
 	/// </remarks>
-	public abstract void Dispose();
+	public void Dispose()
+	{
+		Dispose(true);
+	}
+
+
+	protected abstract void Dispose(bool disposing);
+
+
+	public static void DisposeInstances()
+	{
+		if (_Instances == null)
+			return;
+
+		foreach (IBsEventsManager instance in _Instances)
+			instance.Dispose();
+
+		_Instances = null;
+	}
 
 
 	#endregion Constructors / Destructors
@@ -68,11 +89,15 @@ public abstract class AbstractEventsManager : IBsEventsManager
 	#region Fields - BlackbirdSqlDdexExtension
 	// =========================================================================================================
 
+	protected readonly object _LockObject = new object();
+
 	private readonly IBsPackageController _Controller;
 
 	protected string _TaskHandlerTaskName = "Task";
 	protected TaskProgressData _ProgressData = default;
 	protected ITaskHandler _TaskHandler = null;
+
+	protected static List<IBsEventsManager> _Instances = null;
 
 
 	#endregion Fields

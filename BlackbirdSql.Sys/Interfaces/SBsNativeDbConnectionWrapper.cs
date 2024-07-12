@@ -15,6 +15,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 
 // =========================================================================================================
 //										SBsNativeDbConnectionWrapper Interface
+//
 /// <summary>
 /// Service for native DbConnectionWrapper extension methods interface.
 /// </summary>

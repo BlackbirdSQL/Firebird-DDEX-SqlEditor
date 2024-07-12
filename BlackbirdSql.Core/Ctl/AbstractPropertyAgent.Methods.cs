@@ -20,7 +20,10 @@ using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 
+
+
 namespace BlackbirdSql.Core;
+
 
 // =========================================================================================================
 //
@@ -137,6 +140,14 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (!_IsDisposed && isDisposing)
 		{
 			_IsDisposed = true;
+
+			if (_DataConnection != null)
+			{
+				if (_DataConnection.State == ConnectionState.Open)
+					_DataConnection.Close();
+				_DataConnection.Dispose();
+				_DataConnection = null;
+			}
 		}
 	}
 

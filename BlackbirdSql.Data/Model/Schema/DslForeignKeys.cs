@@ -132,7 +132,7 @@ ORDER BY TABLE_NAME, CONSTRAINT_NAME");
 	}
 
 
-	protected override void ProcessResult(DataTable schema)
+	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{
 		// Tracer.Trace(GetType(), "DslForeignKeys.ProcessResult");
 

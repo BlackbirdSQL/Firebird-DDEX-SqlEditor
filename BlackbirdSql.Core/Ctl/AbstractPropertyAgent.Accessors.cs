@@ -777,7 +777,11 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 				{
 					DataConnection.Close();
 				}
-				catch { }
+				catch (Exception ex)
+				{
+					Diag.Expected(ex);
+				}
+
 
 				_GetSetConnectionOpened = false;
 			}

@@ -3,12 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
+using EnvDTE;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Design;
+using Microsoft.VisualStudio.Shell.Interop;
+using VSLangProj;
+
+
 
 namespace BlackbirdSql;
 
@@ -22,6 +32,7 @@ namespace BlackbirdSql;
 // =========================================================================================================
 public static class NativeDb
 {
+
 	private static IBsNativeDatabaseEngine _DatabaseEngineSvc = null;
 	private static IBsNativeProviderSchemaFactory _ProviderSchemaFactorySvc = null;
 	private static IBsNativeDatabaseInfo _DatabaseInfoSvc = null;
@@ -117,10 +128,10 @@ public static class NativeDb
 
 	public static string AssemblyQualifiedName => DatabaseEngineSvc.AssemblyQualifiedName_;
 	public static string ClientVersion => DatabaseEngineSvc.ClientVersion_;
+	public static Assembly  ClientFactoryAssembly => DatabaseEngineSvc.ClientFactoryAssembly_;
 	public static Type ClientFactoryType => DatabaseEngineSvc.ClientFactoryType_;
 	public static Type ConnectionType => DatabaseEngineSvc.ConnectionType_;
 	public static DescriberDictionary Describers => DatabaseEngineSvc.Describers_;
-	public static Type ExceptionType => DatabaseEngineSvc.ExceptionType_;
 	public static string Invariant => DatabaseEngineSvc.Invariant_;
 	public static string ProviderFactoryName => DatabaseEngineSvc.ProviderFactoryName_;
 	public static string ProviderFactoryClassName => DatabaseEngineSvc.ProviderFactoryClassName_;
@@ -137,6 +148,7 @@ public static class NativeDb
 	public static string DbEngineName => DatabaseEngineSvc.DbEngineName_;
 	public static string DataProviderName => DatabaseEngineSvc.DataProviderName_;
 	public static string ExternalUtilityConfigurationPath => DatabaseEngineSvc.ExternalUtilityConfigurationPath_;
+
 	public static string XmlActualPlanColumn => DatabaseEngineSvc.XmlActualPlanColumn_;
 	public static string XmlEstimatedPlanColumn => DatabaseEngineSvc.XmlEstimatedPlanColumn_;
 
@@ -144,14 +156,10 @@ public static class NativeDb
 	public static string RootObjectTypeName => DatabaseEngineSvc.RootObjectTypeName_;
 
 
-	public static DbConnection CastToAssemblyConnection(object connection)
+	public static DbConnection CastToNativeConnection(object connection)
 	{
-		return DatabaseEngineSvc.CastToAssemblyConnection_(connection);
+		return DatabaseEngineSvc.CastToNativeConnection_(connection);
 	}
-
-
-	public static string ConvertDataTypeToSql(string type, int length, int precision, int scale) =>
-		DatabaseEngineSvc.ConvertDataTypeToSql_(type, length, precision, scale);
 
 
 	public static string ConvertDataTypeToSql(object type, object length, object precision, object scale) =>
@@ -175,25 +183,6 @@ public static class NativeDb
 
 
 
-	/// <summary>
-	/// Creates a native database DbConnectionStringBuilder.
-	/// </summary>
-	public static DbConnectionStringBuilder CreateDbConnectionStringBuilder()
-	{
-		return DatabaseEngineSvc.CreateDbConnectionStringBuilder_();
-	}
-
-
-
-	/// <summary>
-	/// Creates a native database DbConnectionStringBuilder using a connection string.
-	/// </summary>
-	public static DbConnectionStringBuilder CreateDbConnectionStringBuilder(string connectionString)
-	{
-		return DatabaseEngineSvc.CreateDbConnectionStringBuilder_(connectionString);
-	}
-
-
 	public static IBsNativeDbConnectionWrapper CreateDbConnectionWrapper(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null)
 	{
 		return DatabaseEngineSvc.CreateDbConnectionWrapper_(connection, sqlConnectionCreatedObserver);
@@ -213,18 +202,178 @@ public static class NativeDb
 	}
 
 
+
+	// -----------------------------------------------------------------------------------------------------
+	/// <summary>
+	/// Registers all versions of the native db EntityFramework implementation with the
+	/// <see cref="ITypeResolutionService"/> of all design time user projects using the entity data model.
+	/// If the project argument is supplied, only that project is targeted.
+	/// </summary>
+	// -----------------------------------------------------------------------------------------------------
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check.")]
+	public static List<Project> ReindexEntityFrameworkAssemblies(Project project = null)
+	{
+		// Tracer.Trace(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()");
+
+		List<Project> projects = project == null ? UnsafeCmd.RecursiveGetDesignTimeProjects() : (project.IsEditable() ? [project] : []);
+
+		if (projects.Count == 0)
+			return projects;
+
+		// Tracer.Trace(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()", "Project count: {0}.", projects.Count);
+
+		ServiceProvider serviceProvider = null;
+		DynamicTypeService dynamicTypeService = null;
+		IVsSolution solution = null;
+
+		ITypeResolutionService typeResolutionService;
+
+		Type providerServicesType = DatabaseEngineSvc.ProviderServicesType_;
+		string typeKey = DatabaseEngineSvc.ProviderServicesTypeFullName_;
+
+		Dictionary<string, Type> typeCache;
+		VSProject projectObject;
+		string key;
+
+		foreach (Project proj in projects)
+		{
+			if (!proj.IsEditable())
+				continue;
+
+			projectObject = proj.Object as VSProject;
+
+			if (projectObject.References.Find(EFProvider) == null)
+				continue;
+
+
+			if (serviceProvider == null)
+			{
+				serviceProvider = new((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)ApcManager.Dte);
+				dynamicTypeService = serviceProvider.GetService(typeof(DynamicTypeService)) as DynamicTypeService;
+				Diag.ThrowIfServiceUnavailable(dynamicTypeService, typeof(DynamicTypeService));
+
+				solution = serviceProvider.GetService(typeof(IVsSolution)) as IVsSolution;
+			}
+
+			solution.GetProjectOfUniqueName(proj.UniqueName, out IVsHierarchy vsHierarchy);
+			typeResolutionService = dynamicTypeService.GetTypeResolutionService(vsHierarchy);
+			Diag.ThrowIfServiceUnavailable(typeResolutionService, typeof(ITypeResolutionService));
+
+			typeCache = (Dictionary<string, Type>)Reflect.GetFieldValue(typeResolutionService, "_typeCache");
+
+			if (typeCache == null)
+			{
+				typeCache = new Dictionary<string, Type>(127);
+				Reflect.SetFieldValue(typeResolutionService, "_typeCache", typeCache);
+			}
+			else if (typeCache.ContainsKey(typeKey))
+			{
+				continue;
+			}
+
+			// Tracer.Trace(typeof(Cmd), "ReindexEntityFrameworkAssemblies()", "Reindexing EntityFrameworkAssemblies for project: {0}.", proj.Name);
+
+			typeCache[typeKey] = providerServicesType;
+
+			foreach (string version in DatabaseEngineSvc.EntityFrameworkVersions_)
+			{
+				key = typeKey.Replace("_version_", version);
+
+				typeCache[key] = providerServicesType;
+			}
+
+		}
+
+		return projects;
+
+	}
+
+
+	/*
+	internal static ITypeResolutionService GetTypeResolutionService(System.IServiceProvider serviceProvider, EnvDTE.Project project)
+	{
+		if (serviceProvider == null)
+		{
+			ServiceProvider oleServiceProvider = new((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)ApcManager.Dte);
+			serviceProvider = oleServiceProvider.GetService(typeof(IDesignerHost));
+			Diag.ThrowIfServiceUnavailable(dynamicTypeService, typeof(DynamicTypeService));
+			throw new ArgumentNullException("serviceProvider");
+		}
+		ITypeResolutionService typeResolutionService = null;
+		if (GetServiceFromItemContext(serviceProvider, typeof(ITypeResolutionService)) is ITypeResolutionService result)
+		{
+			return result;
+		}
+		typeResolutionService = serviceProvider.GetService(typeof(ITypeResolutionService)) as ITypeResolutionService;
+		if (typeResolutionService == null)
+		{
+			IVsSolution vsSolution = (IVsSolution)serviceProvider.GetService(typeof(IVsSolution));
+			if (vsSolution == null)
+			{
+				return null;
+			}
+			if (project == null)
+			{
+				project = ProjectItemUtil.GetCurrentProject();
+				if (project == null)
+				{
+					return null;
+				}
+			}
+			NativeMethods.ThrowOnFailure(vsSolution.GetProjectOfUniqueName(project.UniqueName, out var ppHierarchy));
+			if (ppHierarchy == null)
+			{
+				return null;
+			}
+			IVsProject vsproject = ppHierarchy as IVsProject;
+			VSDOCUMENTPRIORITY[] priority = new VSDOCUMENTPRIORITY[1];
+			ProjectItems projectItems = null;
+			try
+			{
+				projectItems = project.ProjectItems;
+			}
+			catch (NotImplementedException)
+			{
+			}
+			if (projectItems != null)
+			{
+				typeResolutionService = GetTypeResolutionServiceFromProjectItems(serviceProvider, projectItems, ppHierarchy, vsproject, priority);
+			}
+			if (typeResolutionService == null)
+			{
+				DynamicTypeService dynamicTypeService = serviceProvider.GetService(typeof(DynamicTypeService)) as DynamicTypeService;
+				try
+				{
+					typeResolutionService = dynamicTypeService.GetTypeResolutionService(ppHierarchy, uint.MaxValue);
+				}
+				catch (Exception)
+				{
+				}
+			}
+		}
+		return typeResolutionService;
+	}
+	*/
+
+
 	public static byte GetErrorClass(object error) => DatabaseEngineSvc.GetErrorClass_(error);
 	public static int GetErrorLineNumber(object error) => DatabaseEngineSvc.GetErrorLineNumber_(error);
 	public static string GetErrorMessage(object error) => DatabaseEngineSvc.GetErrorMessage_(error);
 	public static int GetErrorNumber(object error) => DatabaseEngineSvc.GetErrorNumber_(error);
 	public static int GetObjectTypeIdentifierLength(string typeName) => DatabaseEngineSvc.GetObjectTypeIdentifierLength_(typeName);
 	public static IList<object> GetInfoMessageEventArgsErrors(DbInfoMessageEventArgs e) => DatabaseEngineSvc.GetInfoMessageEventArgsErrors_(e);
+
+	public static Version GetServerVersion(IDbConnection connection) => connection.GetVersion();
 	public static ICollection<object> GetErrorEnumerator(IList<object> errors) => DatabaseEngineSvc.GetErrorEnumerator_(errors);
 
 
 	public static bool IsSupportedCommandType(object command) => DatabaseEngineSvc.IsSupportedCommandType_(command);
 
-	public static bool IsSupportedConnection(object connection) => DatabaseEngineSvc.IsSupportedConnection_(connection);
+	public static bool IsSupportedConnection(IDbConnection connection) => DatabaseEngineSvc.IsSupportedConnection_(connection);
 
-	public static bool TransactionCompleted(IDbTransaction @this) => DatabaseEngineSvc.TransactionCompleted_(@this);
+	public static bool LockLoadedParser(string originalString, string updatedString) => DatabaseEngineSvc.LockLoadedParser_(originalString, updatedString);
+	public static void OpenConnection(DbConnection connection) => DatabaseEngineSvc.OpenConnection_(connection);
+
+	public static void UnlockLoadedParser() => DatabaseEngineSvc.UnlockLoadedParser_();
+
 }

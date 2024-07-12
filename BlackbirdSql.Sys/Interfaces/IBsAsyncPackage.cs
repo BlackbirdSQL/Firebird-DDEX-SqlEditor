@@ -11,9 +11,12 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
+
 namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.AsyncPackageGuid)]
+
+
 public interface IBsAsyncPackage
 {
 

@@ -25,6 +25,7 @@ using BlackbirdSql.Shared.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
+
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 
@@ -540,10 +541,10 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				_ = 0;
 			}
 
-			IVsProject3 miscellaneousProject = Core.Cmd.GetMiscellaneousProject(_ServiceProvider);
+			IVsProject3 miscellaneousProject = UnsafeCmd.GetMiscellaneousProjectHierarchy(_ServiceProvider);
 			VSADDRESULT[] pResult = new VSADDRESULT[1];
 			VSADDITEMOPERATION dwAddItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
-			Sys.Native.WrapComCall(miscellaneousProject.AddItem(uint.MaxValue, dwAddItemOperation, text3, 1u, [text], IntPtr.Zero, pResult), []);
+			___(miscellaneousProject.AddItem(uint.MaxValue, dwAddItemOperation, text3, 1u, [text], IntPtr.Zero, pResult));
 		}
 		catch (Exception)
 		{

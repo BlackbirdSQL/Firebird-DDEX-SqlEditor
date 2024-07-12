@@ -17,6 +17,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 
 // =========================================================================================================
 //										IBsNativeDbConnection Interface
+//
 /// <summary>
 /// Interface for native DbException extension methods service.
 /// </summary>

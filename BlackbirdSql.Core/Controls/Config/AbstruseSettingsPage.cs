@@ -44,7 +44,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 	private bool _Exposed = false;
 	private bool _Initialized = false;
-	private int _EventsCardinal = 0;
+	private int _EventCardinal = 0;
 
 	protected static object _LockGlobal = new object();
 	private PropertyGrid _Window = null;
@@ -176,14 +176,6 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 	// =========================================================================================================
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns true if when execution has entered an event handler that may cause recursion
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private bool EventsDisabled => _EventsCardinal > 0;
-
-
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public PropertyGrid Grid => _Window ?? (PropertyGrid)Window;
@@ -297,29 +289,44 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Increments the <see cref="EventsDisabled"/> counter when execution enters an event handler
-	/// to prevent recursion
+	/// Increments the <see cref="_EventCardinal"/> counter when execution
+	/// enters aN event handler to prevent recursion.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void DisableEvents()
+	private bool EventEnter(bool increment = true, bool force = false)
 	{
-		_EventsCardinal++;
+		lock (_LockObject)
+		{
+			if (_EventCardinal != 0 && !force)
+				return false;
+
+			if (increment)
+				_EventCardinal++;
+		}
+
+		return true;
 	}
 
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Decrements the <see cref="EventsDisabled"/> counter that was previously incremented by
-	/// <see cref="DisableEvents"/>.
+	/// Decrements the <see cref="_EventCardinal"/> counter that was previously
+	/// incremented by <see cref="EventEnter"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void EnableEvents()
+	private void EventExit()
 	{
-		if (_EventsCardinal == 0)
-			Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
-		else
-			_EventsCardinal--;
+		lock (_LockObject)
+		{
+			if (_EventCardinal <= 0)
+			{
+				ApplicationException ex = new($"Attempt to exit event when not in an event. _EventCardinal: {_EventCardinal}");
+				Diag.Dug(ex);
+				throw ex;
+			}
+			_EventCardinal--;
+		}
 	}
 
 
@@ -423,14 +430,12 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		if (_Window == null)
 			return;
 
-		if (EventsDisabled || _Initialized)
+		if (_Initialized || !EventEnter())
 			return;
 
 		_Initialized = true;
 
 		// Fix glitch.
-
-		DisableEvents();
 
 		try
 		{
@@ -452,7 +457,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		}
 		finally
 		{
-			EnableEvents();
+			EventExit();
 		}
 	}
 
@@ -489,7 +494,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		if (_Window == null)
 			return;
 
-		if (EventsDisabled || !_ValidFocusCell)
+		if (!EventEnter(false) || !_ValidFocusCell)
 			return;
 
 
@@ -503,13 +508,20 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				return;
 			}
 
-			DisableEvents();
 
+			EditControlFocusEventArgs args;
 
-			EditControlFocusEventArgs args = new(_Window.SelectedGridItem);
-			EditControlGotFocusEvent?.Invoke(sender, args);
+			EventEnter(true, true);
 
-			EnableEvents();
+			try
+			{
+				args = new(_Window.SelectedGridItem);
+				EditControlGotFocusEvent?.Invoke(sender, args);
+			}
+			finally
+			{
+				EventExit();
+			}
 			// Injection occurs here.
 			// We don't want the user being given the display text of a grid entry textbox to edit.
 			// That defeats the purpose of a type converter, so we convert it to an editable form
@@ -546,11 +558,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		if (_Window == null)
 			return;
 
-		if (EventsDisabled || !_ValidFocusCell)
+		if (!_ValidFocusCell || !EventEnter())
 			return;
-
-
-		DisableEvents();
 
 		try
 		{
@@ -575,7 +584,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		}
 		finally
 		{
-			EnableEvents();
+			EventExit();
 		}
 
 		// Tracer.Trace("Done OnEditControlLostFocus().");
@@ -603,18 +612,19 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		if (_Window == null)
 			return;
 
-		if (EventsDisabled || !_ValidMouseEventCell)
+		if (!_ValidMouseEventCell)
 			return;
 
 		if (e.Clicks % 2 == 0 || e.Button != MouseButtons.Left)
 			return;
 
-		GridItem gridEntry = _Window.SelectedGridItem;
-
-		DisableEvents();
+		if (!EventEnter())
+			return;
 
 		try
 		{
+			GridItem gridEntry = _Window.SelectedGridItem;
+
 			Control gridView = GridView;
 			if (gridView == null)
 				return;
@@ -643,7 +653,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		}
 		finally
 		{
-			EnableEvents();
+			EventExit();
 		}
 	}
 
@@ -658,9 +668,10 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			return;
 
 
-		DisableEvents();
-
 		AutomatorPropertyValueChangedEventArgs evt = null;
+
+
+		EventEnter(true, true);
 
 		try
 		{
@@ -675,7 +686,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		}
 		finally
 		{
-			EnableEvents();
+			EventExit();
 		}
 
 		if (evt.ReadOnlyChanged)
@@ -729,7 +740,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			if (_Window == null)
 				return;
 
-			DisableEvents();
+			EventEnter(true, true);
 
 			try
 			{
@@ -741,7 +752,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			}
 			finally
 			{
-				EnableEvents();
+				EventExit();
 			}
 		}
 	}

@@ -3,10 +3,12 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -32,6 +34,39 @@ public class TConnectionUIProperties : TConnectionProperties
 
 	// private static int _StaticCardinal = -1;
 	// private int _InstanceCardinal = -1;
+
+
+	/// <summary>
+	/// Determines if the connection properties object is sufficiently complete,
+	/// inclusive of password for connections other than Properties settings
+	/// connection strings, in order to establish a database connection.
+	/// </summary>
+	public override bool IsComplete
+	{
+		get
+		{
+			try
+			{
+				IEnumerable<Describer> describers = (ConnectionSource == EnConnectionSource.Application)
+					? Csb.PublicMandatoryKeys : Csb.MandatoryKeys;
+
+				foreach (Describer describer in describers)
+				{
+					if (!base.TryGetValue(describer.Key, out object value) || string.IsNullOrEmpty((string)value))
+					{
+						return false;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+			return true;
+		}
+	}
 
 
 
@@ -110,7 +145,10 @@ public class TConnectionUIProperties : TConnectionProperties
 				{
 					ConnectionStringBuilder.Remove(SysConstants.C_KeyExEdmx);
 					ConnectionStringBuilder[SysConstants.C_KeyExEdmu] = true;
+
+					NativeDb.ReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
 				}
+
 
 				// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}", ConnectionSource);
 			}

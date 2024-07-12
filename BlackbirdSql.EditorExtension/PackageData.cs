@@ -26,8 +26,8 @@ static class PackageData
 
 	
 	// Private Proffered Services and Object CLSIDs
-	public static readonly Guid CLSID_FontAndColorService = new("2EF6AAA5-7BAE-452B-AA43-6472FB2FFFFB");
-	public static readonly Guid CLSID_EditorMarkerService = new("984A3634-C7DE-41D9-992E-CE35638B513F");
+	public static readonly Guid CLSID_FontAndColorService = new("6A5BF0E3-449D-4318-8675-BCC7BB60C59F");
+	public static readonly Guid CLSID_EditorMarkerService = new("CE06B0EB-8ACA-4ED4-8E01-D97784955E61");
 
 
 	// Settings Guids

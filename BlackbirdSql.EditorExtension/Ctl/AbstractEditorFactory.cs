@@ -3,7 +3,6 @@
 
 using System;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
@@ -11,7 +10,6 @@ using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Shared.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
@@ -20,18 +18,20 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Uses Diag.ThrowIfNotOnUIThread()")]
 
-
-public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorFactory(withEncoding)
+public abstract class AbstractEditorFactory : AbstruseEditorFactory
 {
+
+	public AbstractEditorFactory(bool withEncoding) : base(withEncoding)
+	{
+
+	}
+
+
+
 
 	protected static volatile int _EditorId;
 
-
-	protected static uint dacTSqlEditorLaunchingCookie;
-
-	protected static IVsMonitorSelection _monitorSelection;
 
 
 	public override Guid ClsidEditorFactory
@@ -50,30 +50,35 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 	protected string EditorId { get; set; }
 
 
-	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr intPtrDocView, out IntPtr intPtrDocData, out string caption, out Guid cmdUIGuid, out int result)
+	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalViewName,
+		IVsHierarchy hierarchy, uint itemId, IntPtr pExistingDocData, out IntPtr pDocView,
+		out IntPtr pDocData, out string caption, out Guid cmdUIGuid, out int hresult)
 	{
 
+		pDocView = IntPtr.Zero;
+		pDocData = IntPtr.Zero;
+		caption = "";
+		cmdUIGuid = Guid.Empty;
+		hresult = VSConstants.S_FALSE;
+
+		if (ApcManager.SolutionClosing)
+			return VSConstants.E_FAIL;
 
 		RctManager.EnsureLoaded();
 
-		intPtrDocView = IntPtr.Zero;
-		intPtrDocData = IntPtr.Zero;
-		caption = "";
-		cmdUIGuid = Guid.Empty;
-		result = 1;
-
 		EditorId = "Editor" + _EditorId++;
+
 
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
 			Cursor current = Cursor.Current;
+
 			try
 			{
-				if (!string.IsNullOrEmpty(physicalView) && physicalView != "CodeFrame")
+				if (!string.IsNullOrEmpty(physicalViewName) && physicalViewName != "CodeFrame")
 				{
-					ArgumentException ex = new("physicalView is not CodeFrame or empty: " + physicalView);
+					ArgumentException ex = new("physicalView is not CodeFrame or empty: " + physicalViewName);
 					Diag.Dug(ex);
-					// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "physicalView is not null or empty- returning E_INVALIDARG");
 					return VSConstants.E_INVALIDARG;
 				}
 
@@ -83,22 +88,23 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 				{
 					ArgumentException ex = new("invalid create flags: " + createFlags);
 					Diag.Dug(ex);
-					// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "invalid create flags - returning E_INVALIDARG");
 					return VSConstants.E_INVALIDARG;
 				}
 
 				IVsTextLines vsTextLines = null;
-				if (existingDocData != IntPtr.Zero)
+
+				if (pExistingDocData != IntPtr.Zero)
 				{
 					if (WithEncoding)
 					{
-						// DataException ex = new("Data is not encoding compatible");
-						// Diag.Dug(ex);
+						DataException ex = new("Data is not encoding compatible");
+						Diag.Dug(ex);
 						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 					}
 
-					object objectForIUnknown = Marshal.GetObjectForIUnknown(existingDocData);
-					vsTextLines = objectForIUnknown as IVsTextLines;
+					object objExistingDocData = Marshal.GetObjectForIUnknown(pExistingDocData);
+					vsTextLines = objExistingDocData as IVsTextLines;
+
 					if (vsTextLines == null)
 					{
 						DataException ex = new("Data is not IVsTextLines compatible");
@@ -106,28 +112,27 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 					}
 
-					if (objectForIUnknown is not IVsUserData)
+					if (objExistingDocData is not IVsUserData)
 					{
 						DataException ex = new("Data is not IVsUserData compatible");
 						Diag.Dug(ex);
 						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 					}
 
-					Guid pguidLangService = Guid.Empty;
-					vsTextLines.GetLanguageServiceID(out pguidLangService);
+					Guid clsidExistingLangService = Guid.Empty;
+					vsTextLines.GetLanguageServiceID(out clsidExistingLangService);
 
-					if (!(pguidLangService == MandatedSqlLanguageServiceClsid)
-						&& !(pguidLangService == VS.CLSID_LanguageServiceDefault))
+					if (!(clsidExistingLangService == MandatedSqlLanguageServiceClsid)
+						&& !(clsidExistingLangService == VS.CLSID_LanguageServiceDefault))
 					{
-						InvalidOperationException ex = new("Invalid language service: " + pguidLangService);
+						InvalidOperationException ex = new("Invalid language service: " + clsidExistingLangService);
 						Diag.Dug(ex);
 						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 					}
 
 				}
 
-				result = 0;
-				int result2 = VSConstants.E_FAIL;
+				hresult = VSConstants.S_OK;
 
 				Cursor.Current = Cursors.WaitCursor;
 				IVsTextLines vsTextLines2 = null;
@@ -138,17 +143,17 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 
 					Guid clsid = typeof(VsTextBufferClass).GUID;
 					Guid iid = VSConstants.IID_IUnknown;
-					object obj = ((AsyncPackage)ApcManager.PackageInstance).CreateInstance(ref clsid, ref iid, typeof(object));
+					object objTextBuffer = EditorExtensionPackage.Instance.CreateInstance(ref clsid, ref iid, typeof(object));
 
 					if (WithEncoding)
 					{
-						IVsUserData obj2 = obj as IVsUserData;
+						IVsUserData vsUserData = objTextBuffer as IVsUserData;
 						Guid riidKey = VSConstants.VsTextBufferUserDataGuid.VsBufferEncodingPromptOnLoad_guid;
-						obj2.SetData(ref riidKey, 1u);
+						vsUserData.SetData(ref riidKey, 1u);
 					}
 
-					(obj as IObjectWithSite)?.SetSite(OleServiceProvider);
-					vsTextLines2 = obj as IVsTextLines;
+					(objTextBuffer as IObjectWithSite)?.SetSite(OleServiceProvider);
+					vsTextLines2 = objTextBuffer as IVsTextLines;
 				}
 				else
 				{
@@ -156,7 +161,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 				}
 
 				if (vsTextLines2 == null)
-					return result2;
+					return VSConstants.E_FAIL;
 
 				EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2);
 
@@ -164,8 +169,8 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 				TabbedEditorWindowPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker);
 
 
-				intPtrDocView = Marshal.GetIUnknownForObject(editorPane);
-				intPtrDocData = Marshal.GetIUnknownForObject(vsTextLines2);
+				pDocView = Marshal.GetIUnknownForObject(editorPane);
+				pDocData = Marshal.GetIUnknownForObject(vsTextLines2);
 				caption = string.Empty;
 
 				cmdUIGuid = VSConstants.GUID_TextEditorFactory;
@@ -173,11 +178,9 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 				Guid clsidLangService = MandatedSqlLanguageServiceClsid;
 
 				vsTextLines2.SetLanguageServiceID(ref clsidLangService);
-				IVsUserData obj3 = (IVsUserData)vsTextLines2;
-				Guid riidKey2 = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
-				___(obj3.SetData(ref riidKey2, false));
-
-				return VSConstants.S_OK;
+				IVsUserData vsUserData2 = (IVsUserData)vsTextLines2;
+				Guid clsidDetectLang = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
+				___(vsUserData2.SetData(ref clsidDetectLang, false));
 			}
 			catch (Exception ex)
 			{
@@ -195,6 +198,8 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 				Cursor.Current = current;
 			}
 		}
+
+		return VSConstants.S_OK;
 	}
 
 	protected virtual TabbedEditorWindowPane CreateTabbedEditorPane(IVsTextLines vsTextLines, string moniker)

@@ -148,6 +148,10 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		}
 		catch (Exception ex)
 		{
+#if DEBUG
+			Diag.Dug(ex);
+#endif
+
 			MessageCtl.ShowEx(ex, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Hand, null);
 		}
 

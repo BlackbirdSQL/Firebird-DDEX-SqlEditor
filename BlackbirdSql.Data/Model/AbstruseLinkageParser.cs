@@ -17,14 +17,61 @@ namespace BlackbirdSql.Data.Model;
 /// Handles Trigger / Generator linkage parsing specific tasks utilizing BlackbirdDsl.<see cref="Parser"/>.
 /// </summary>
 // =========================================================================================================
-public abstract class AbstruseLinkageParser : IBsLinkageParser, IDisposable
+public abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDisposable
 {
 
 
-	// -----------------------------------------------------------------------------------------------------
-	#region Fields - AbstruseLinkageParser
-	// -----------------------------------------------------------------------------------------------------
+	// -------------------------------------------------------
+	#region Constructors / Destructors - AbstruseLinkageParser
+	// -------------------------------------------------------
 
+
+	/// <summary>
+	/// Protected default .ctor for creating an instance for a db connection.
+	/// </summary>
+	/// <param name="connection"></param>
+	protected AbstruseLinkageParser()
+	{
+		// Tracer.Trace(typeof(AbstruseLinkageParser), $"StaticId:[{"0000"}] AbstruseLinkageParser(FbConnection)");
+		_Id = ++_IdSeed;
+	}
+
+
+
+	/// <summary>
+	/// Disposes of a parser.
+	/// </summary>
+	/// <param name="disposing">
+	/// True if this is a permanent disposal and a transient
+	/// parser should not be stored else false.
+	/// </param>
+	/// <returns>True of the parser was found and disposed else false.</returns>
+	public abstract void Dispose();
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Disposes of a parser.
+	/// </summary>
+	/// <param name="disposing">
+	/// If disposing is set to true, then all parsers with weak equivalency will
+	/// be tagged as intransient, meaning their trigger linkage databases cannot
+	/// be copied to another parser with weak equivalency. 
+	/// </param>
+	/// <returns>True of the parser was found and disposed else false.</returns>
+	// -------------------------------------------------------------------------
+	protected abstract bool Dispose(bool disposing);
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstruseLinkageParser
+	// =========================================================================================================
 
 
 	// A static class lock
@@ -69,52 +116,6 @@ public abstract class AbstruseLinkageParser : IBsLinkageParser, IDisposable
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - AbstruseLinkageParser
-	// =========================================================================================================
-
-
-	/// <summary>
-	/// Protected default .ctor for creating an instance for a db connection.
-	/// </summary>
-	/// <param name="connection"></param>
-	protected AbstruseLinkageParser()
-	{
-		// Tracer.Trace(typeof(AbstruseLinkageParser), $"StaticId:[{"0000"}] AbstruseLinkageParser(FbConnection)");
-		_Id = ++_IdSeed;
-	}
-
-
-
-	/// <summary>
-	/// Disposes of a parser.
-	/// </summary>
-	/// <param name="disposing">
-	/// True if this is a permanent disposal and a transient
-	/// parser should not be stored else false.
-	/// </param>
-	/// <returns>True of the parser was found and disposed else false.</returns>
-	public abstract void Dispose();
-
-
-	/// <summary>
-	/// Disposes of a parser.
-	/// </summary>
-	/// <param name="disposing">
-	/// True if this is a permanent disposal and a transient
-	/// parser should not be stored else false.
-	/// </param>
-	/// <returns>True of the parser was found and disposed else false.</returns>
-
-	protected abstract bool Dispose(bool isValidTransient);
-
-
-	#endregion Constructors / Destructors
-
-
-
-
-
-	// =========================================================================================================
 	#region Fields - AbstruseLinkageParser
 	// =========================================================================================================
 
@@ -142,6 +143,8 @@ public abstract class AbstruseLinkageParser : IBsLinkageParser, IDisposable
 
 
 	public abstract bool EnsureLoaded();
+
+	public abstract bool EnsureLoadedRestricted();
 
 	public abstract DataRow FindTrigger(object name);
 

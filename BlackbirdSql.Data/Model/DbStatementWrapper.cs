@@ -33,7 +33,15 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 	public void DisposeCommand()
 	{
-		_Command?.Dispose();
+		try
+		{
+			_Command?.Dispose();
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+		}
+
 		_Command = null;
 	}
 
@@ -400,7 +408,11 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		{
 			str = await command.GetCommandExplainedPlanAsync();
 		}
-		catch { }
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+		}
+
 
 		if (string.IsNullOrWhiteSpace(str))
 			return false;

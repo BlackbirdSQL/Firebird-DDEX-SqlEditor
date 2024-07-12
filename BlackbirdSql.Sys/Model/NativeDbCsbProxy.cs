@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Ctl.ComponentModel;
 using BlackbirdSql.Sys.Enums;
 
 using static BlackbirdSql.Sys.SysConstants;
@@ -26,7 +27,6 @@ namespace BlackbirdSql.Sys.Model;
 public class NativeDbCsbProxy : DbConnectionStringBuilder
 {
 
-
 	// ---------------------------------------------------------------------------------
 	#region Constructors / Destructors - AbstractCsb
 	// ---------------------------------------------------------------------------------
@@ -46,8 +46,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 
 
+
 	// =====================================================================================================
-	#region Constants - AbstractCsb
+	#region Constants - NativeDbCsbProxy
 	// =====================================================================================================
 
 
@@ -56,8 +57,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 
 
+
 	// =====================================================================================================
-	#region Fields - AbstractCsb
+	#region Fields - NativeDbCsbProxy
 	// =====================================================================================================
 
 
@@ -73,7 +75,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 
 	// =====================================================================================================
-	#region Property accessors - AbstractCsb
+	#region Property accessors - NativeDbCsbProxy
 	// =====================================================================================================
 
 
@@ -107,9 +109,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	public static DescriberDictionary Describers => _Describers ??= NativeDb.Describers;
 
 
-	[Category("Security")]
-	[DisplayName("User ID")]
-	[Description("Indicates the User ID to be used when connecting to the data source.")]
+	[GlobalizedCategory("PropertyCategorySecurity")]
+	[GlobalizedDisplayName("PropertyDisplayUserID")]
+	[GlobalizedDescription("PropertyDescriptionUserID")]
 	[DefaultValue(C_DefaultUserID)]
 	public string UserID
 	{
@@ -117,9 +119,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyUserID, value); }
 	}
 
-	[Category("Security")]
-	[DisplayName("Password")]
-	[Description("Indicates the password to be used when connecting to the data source.")]
+	[GlobalizedCategory("PropertyCategorySecurity")]
+	[GlobalizedDisplayName("PropertyDisplayPassword")]
+	[GlobalizedDescription("PropertyDescriptionPassword")]
 	[PasswordPropertyText(true)]
 	[DefaultValue(C_DefaultPassword)]
 	public string Password
@@ -128,9 +130,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyPassword, value); }
 	}
 
-	[Category("Source")]
-	[DisplayName("DataSource")]
-	[Description("The name of the Database server to which to connect.")]
+	[GlobalizedCategory("PropertyCategorySource")]
+	[GlobalizedDisplayName("PropertyDisplayDataSource")]
+	[GlobalizedDescription("PropertyDescriptionDataSource")]
 	[DefaultValue(C_DefaultDataSource)]
 	public string DataSource
 	{
@@ -138,9 +140,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyDataSource, value); }
 	}
 
-	[Category("Source")]
-	[DisplayName("Database")]
-	[Description("The name of the actual database or the database to be used when a connection is open. It is normally the path to an .FDB file or an alias.")]
+	[GlobalizedCategory("PropertyCategorySource")]
+	[GlobalizedDisplayName("PropertyDisplayDatabase")]
+	[GlobalizedDescription("PropertyDescriptionDatabase")]
 	[DefaultValue(C_DefaultDatabase)]
 	public string Database
 	{
@@ -148,9 +150,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyDatabase, value); }
 	}
 
-	[Category("Source")]
-	[DisplayName("Port")]
-	[Description("Port to use for TCP/IP connections")]
+	[GlobalizedCategory("PropertyCategorySource")]
+	[GlobalizedDisplayName("PropertyDisplayPort")]
+	[GlobalizedDescription("PropertyDescriptionPort")]
 	[DefaultValue(C_DefaultPort)]
 	public int Port
 	{
@@ -158,9 +160,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyPort, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("PacketSize")]
-	[Description("The size (in bytes) of network packets. PacketSize may be in the range 512-32767 bytes.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayPacketSize")]
+	[GlobalizedDescription("PropertyDescriptionPacketSize")]
 	[DefaultValue(C_DefaultPacketSize)]
 	public int PacketSize
 	{
@@ -168,9 +170,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyPacketSize, value); }
 	}
 
-	[Category("Security")]
-	[DisplayName("Role")]
-	[Description("The user role.")]
+	[GlobalizedCategory("PropertyCategorySecurity")]
+	[GlobalizedDisplayName("PropertyDisplayRole")]
+	[GlobalizedDescription("PropertyDescriptionRole")]
 	[DefaultValue(C_DefaultRole)]
 	public string Role
 	{
@@ -178,9 +180,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyRole, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Dialect")]
-	[Description("The database SQL dialect.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayDialect")]
+	[GlobalizedDescription("PropertyDescriptionDialect")]
 	[DefaultValue(C_DefaultDialect)]
 	public int Dialect
 	{
@@ -188,9 +190,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyDialect, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Character Set")]
-	[Description("The connection character set encoding.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayCharset")]
+	[GlobalizedDescription("PropertyDescriptionCharset")]
 	[DefaultValue(C_DefaultCharset)]
 	public string Charset
 	{
@@ -198,9 +200,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyCharset, value); }
 	}
 
-	[Category("Connection")]
-	[DisplayName("Connection Timeout")]
-	[Description("The time (in seconds) to wait for a connection to open.")]
+	[GlobalizedCategory("PropertyCategoryConnection")]
+	[GlobalizedDisplayName("PropertyDisplayConnectionTimeout")]
+	[GlobalizedDescription("PropertyDescriptionConnectionTimeout")]
 	[DefaultValue(C_DefaultConnectionTimeout)]
 	public int ConnectionTimeout
 	{
@@ -208,9 +210,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyConnectionTimeout, value); }
 	}
 
-	[Category("Pooling")]
-	[DisplayName("Pooling")]
-	[Description("When true the connection is grabbed from a pool or, if necessary, created and added to the appropriate pool.")]
+	[GlobalizedCategory("PropertyCategoryPooling")]
+	[GlobalizedDisplayName("PropertyDisplayPooling")]
+	[GlobalizedDescription("PropertyDescriptionPooling")]
 	[DefaultValue(C_DefaultPooling)]
 	public bool Pooling
 	{
@@ -218,9 +220,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyPooling, value); }
 	}
 
-	[Category("Connection")]
-	[DisplayName("Connection LifeTime")]
-	[Description("When a connection is returned to the pool, its creation time is compared with the current time, and the connection is destroyed if that time span (in seconds) exceeds the value specified by connection lifetime.")]
+	[GlobalizedCategory("PropertyCategoryConnection")]
+	[GlobalizedDisplayName("PropertyDisplayConnectionLifeTime")]
+	[GlobalizedDescription("PropertyDescriptionConnectionLifeTime")]
 	[DefaultValue(C_DefaultConnectionLifeTime)]
 	public int ConnectionLifeTime
 	{
@@ -228,9 +230,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyConnectionLifeTime, value); }
 	}
 
-	[Category("Pooling")]
-	[DisplayName("MinPoolSize")]
-	[Description("The minimun number of connections allowed in the pool.")]
+	[GlobalizedCategory("PropertyCategoryPooling")]
+	[GlobalizedDisplayName("PropertyDisplayMinPoolSize")]
+	[GlobalizedDescription("PropertyDescriptionMinPoolSize")]
 	[DefaultValue(C_DefaultMinPoolSize)]
 	public int MinPoolSize
 	{
@@ -238,9 +240,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyMinPoolSize, value); }
 	}
 
-	[Category("Pooling")]
-	[DisplayName("MaxPoolSize")]
-	[Description("The maximum number of connections allowed in the pool.")]
+	[GlobalizedCategory("PropertyCategoryPooling")]
+	[GlobalizedDisplayName("PropertyDisplayMaxPoolSize")]
+	[GlobalizedDescription("PropertyDescriptionMaxPoolSize")]
 	[DefaultValue(C_DefaultMaxPoolSize)]
 	public int MaxPoolSize
 	{
@@ -248,9 +250,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyMaxPoolSize, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("FetchSize")]
-	[Description("The maximum number of rows to be fetched in a single call to read into the internal row buffer.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayFetchSize")]
+	[GlobalizedDescription("PropertyDescriptionFetchSize")]
 	[DefaultValue(C_DefaultFetchSize)]
 	public int FetchSize
 	{
@@ -258,9 +260,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyFetchSize, value); }
 	}
 
-	[Category("Source")]
-	[DisplayName("ServerType")]
-	[Description("The type of server used.")]
+	[GlobalizedCategory("PropertyCategorySource")]
+	[GlobalizedDisplayName("PropertyDisplayServerType")]
+	[GlobalizedDescription("PropertyDescriptionServerType")]
 	[DefaultValue(C_DefaultServerType)]
 	public EnServerType ServerType
 	{
@@ -268,9 +270,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyServerType, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("IsolationLevel")]
-	[Description("The default Isolation Level for implicit transactions.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayIsolationLevel")]
+	[GlobalizedDescription("PropertyDescriptionIsolationLevel")]
 	[DefaultValue(C_DefaultIsolationLevel)]
 	public IsolationLevel IsolationLevel
 	{
@@ -278,9 +280,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyIsolationLevel, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Records Affected")]
-	[Description("Get the number of rows affected by a command when true.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayReturnRecordsAffected")]
+	[GlobalizedDescription("PropertyDescriptionReturnRecordsAffected")]
 	[DefaultValue(C_DefaultReturnRecordsAffected)]
 	public bool ReturnRecordsAffected
 	{
@@ -288,9 +290,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyReturnRecordsAffected, value); }
 	}
 
-	[Category("Pooling")]
-	[DisplayName("Enlist")]
-	[Description("If true, enlists the connections in the current transaction.")]
+	[GlobalizedCategory("PropertyCategoryPooling")]
+	[GlobalizedDisplayName("PropertyDisplayEnlist")]
+	[GlobalizedDescription("PropertyDescriptionEnlist")]
 	[DefaultValue(C_DefaultPooling)]
 	public bool Enlist
 	{
@@ -298,9 +300,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyEnlist, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Client Library")]
-	[Description("Client library for Embedded database.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayClientLibrary")]
+	[GlobalizedDescription("PropertyDescriptionClientLibrary")]
 	[DefaultValue(C_DefaultClientLibrary)]
 	public string ClientLibrary
 	{
@@ -308,9 +310,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyClientLibrary, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("DB Cache Pages")]
-	[Description("How many cache buffers to use for this session.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayDbCachePages")]
+	[GlobalizedDescription("PropertyDescriptionDbCachePages")]
 	[DefaultValue(C_DefaultDbCachePages)]
 	public int DbCachePages
 	{
@@ -318,9 +320,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyDbCachePages, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("No Triggers")]
-	[Description("Disables database triggers for this connection.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayNoDatabaseTriggers")]
+	[GlobalizedDescription("PropertyDescriptionNoDatabaseTriggers")]
 	[DefaultValue(C_DefaultNoDatabaseTriggers)]
 	public bool NoDatabaseTriggers
 	{
@@ -328,9 +330,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyNoDatabaseTriggers, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("No Garbage Collect")]
-	[Description("If true, disables sweeping the database upon attachment.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayNoGarbageCollect")]
+	[GlobalizedDescription("PropertyDescriptionNoGarbageCollect")]
 	[DefaultValue(C_DefaultNoGarbageCollect)]
 	public bool NoGarbageCollect
 	{
@@ -338,9 +340,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyNoGarbageCollect, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Compression")]
-	[Description("Enables or disables wire compression.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayCompression")]
+	[GlobalizedDescription("PropertyDescriptionCompression")]
 	[DefaultValue(C_DefaultCompression)]
 	public bool Compression
 	{
@@ -348,9 +350,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyCompression, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Crypt Key")]
-	[Description("Key used for database decryption.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayCryptKey")]
+	[GlobalizedDescription("PropertyDescriptionCryptKey")]
 	[DefaultValue(C_DefaultCryptKey)]
 	public byte[] CryptKey
 	{
@@ -358,9 +360,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyCryptKey, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Wire Crypt")]
-	[Description("Selection for wire encryption.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayWireCrypt")]
+	[GlobalizedDescription("PropertyDescriptionWireCrypt")]
 	[DefaultValue(C_DefaultWireCrypt)]
 	public EnWireCrypt WireCrypt
 	{
@@ -368,9 +370,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyWireCrypt, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Application Name")]
-	[Description("The name of the application making the connection.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayApplicationName")]
+	[GlobalizedDescription("PropertyDescriptionApplicationName")]
 	[DefaultValue(C_DefaultApplicationName)]
 	public string ApplicationName
 	{
@@ -378,9 +380,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyApplicationName, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Command Timeout")]
-	[Description("The time (in seconds) for command execution.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayCommandTimeout")]
+	[GlobalizedDescription("PropertyDescriptionCommandTimeout")]
 	[DefaultValue(C_DefaultCommandTimeout)]
 	public int CommandTimeout
 	{
@@ -388,9 +390,9 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		set { SetValue(C_KeyCommandTimeout, value); }
 	}
 
-	[Category("Advanced")]
-	[DisplayName("Parallel Workers")]
-	[Description("Number of parallel workers to use for certain operations in the database.")]
+	[GlobalizedCategory("PropertyCategoryAdvanced")]
+	[GlobalizedDisplayName("PropertyDisplayParallelWorkers")]
+	[GlobalizedDescription("PropertyDescriptionParallelWorkers")]
 	[DefaultValue(C_DefaultParallelWorkers)]
 	public int ParallelWorkers
 	{
@@ -406,7 +408,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 
 	// =====================================================================================================
-	#region Methods - AbstractCsb
+	#region Methods - NativeDbCsbProxy
 	// =====================================================================================================
 
 
@@ -545,12 +547,24 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 		if (propertyType.IsSubclassOf(typeof(Enum)))
 		{
+			if (value is string stringValue)
+				value = Enum.Parse(propertyType, stringValue, true);
+
 			if (value is Enum enumValue)
-				storedValue = enumValue;
-			else if (value is string stringValue)
-				storedValue = Enum.Parse(propertyType, stringValue, true);
+			{
+				propertyType = Enum.GetUnderlyingType(enumValue.GetType());
+
+				if (propertyType == typeof(int))
+					storedValue = Convert.ToInt32(enumValue);
+				else if (propertyType == typeof(long))
+					storedValue = Convert.ToInt64(enumValue);
+				else
+					storedValue = enumValue;
+			}
 			else
+			{
 				storedValue = value;
+			}
 		}
 		else if (propertyType == typeof(byte[]))
 		{

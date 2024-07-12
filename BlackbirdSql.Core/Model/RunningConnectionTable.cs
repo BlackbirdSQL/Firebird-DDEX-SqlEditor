@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 
 
@@ -38,7 +40,7 @@ namespace BlackbirdSql.Core.Model;
 /// in the Rct.
 /// </remarks>
 // =========================================================================================================
-public class RunningConnectionTable : AbstractRunningConnectionTable
+public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 {
 
 
@@ -50,22 +52,8 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 	/// <summary>
 	/// Singleton .ctor contructor.
 	/// </summary>
-	private RunningConnectionTable() : base()
+	protected RunningConnectionTable() : base()
 	{
-	}
-
-
-
-	/// <summary>
-	/// Creates the singleton instance of the RunningConnectionTable for this session.
-	/// Instantiation must always occur here and not by the Instance accessor to avoid
-	/// confusion.
-	/// </summary>
-	public static RunningConnectionTable CreateInstance()
-	{ 
-		IBsRunningConnectionTable instance = new RunningConnectionTable();
-
-		return (RunningConnectionTable)instance;
 	}
 
 
@@ -95,14 +83,27 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 	/// or ConnectionString..
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public new DataRow this[string hybridKey]
+	protected new DataRow this[string hybridKey]
 	{
 		get
 		{
 			if (hybridKey == null)
 				return null;
 
-			TryGetHybridRowValue(hybridKey, out DataRow value);
+			EnRctKeyType keyType = hybridKey.StartsWith(_Scheme) ? EnRctKeyType.ConnectionUrl : EnRctKeyType.DatasetKey;
+
+			if (keyType != EnRctKeyType.ConnectionUrl)
+			{
+				if (hybridKey.StartsWith("data source=", StringComparison.InvariantCultureIgnoreCase)
+					|| hybridKey.ToLowerInvariant().Contains(";data source="))
+				{
+					Csb csa = new(hybridKey, false);
+					hybridKey = csa.SafeDatasetMoniker;
+					keyType = EnRctKeyType.ConnectionUrl;
+				}
+			}
+
+			TryGetHybridRowValue(hybridKey, keyType, out DataRow value);
 
 			return value;
 		}
@@ -114,6 +115,9 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 	}
 
 
+	protected bool AsyncPending => _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Pending;
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -122,11 +126,11 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 	/// volatile unique connections defined in SqlEditor.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public DataTable Databases
+	protected DataTable InternalDatabases
 	{
 		get
 		{
-			if (_Databases == null)
+			if (_InternalDatabases == null)
 			{
 				if (_Instance == null)
 					return null;
@@ -143,16 +147,16 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 				_InternalConnectionsTable.AcceptChanges();
 
 				_InternalConnectionsTable.DefaultView.ApplyDefaultSort = false;
-				_InternalConnectionsTable.DefaultView.Sort = "Orderer,DataSource,DisplayName ASC";
+				_InternalConnectionsTable.DefaultView.Sort = "Orderer,DataSource,FullDisplayName ASC";
 				_InternalConnectionsTable.AcceptChanges();
 
-				_Databases = _InternalConnectionsTable.DefaultView.ToTable(false);
-				_Databases.PrimaryKey = [_Databases.Columns["Id"]];
-				_Databases.AcceptChanges();
-				_DataSources = null;
+				_InternalDatabases = _InternalConnectionsTable.DefaultView.ToTable(false);
+				_InternalDatabases.PrimaryKey = [_InternalDatabases.Columns["Id"]];
+				_InternalDatabases.AcceptChanges();
+				_InternalServers = null;
 			}
 
-			return _Databases;
+			return _InternalDatabases;
 
 		}
 	}
@@ -161,26 +165,26 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// The sorted and filtered view of the Databases table containing only
+	/// The sorted and filtered view of the InternalDatabases table containing only
 	/// DataSources/Servers.
 	/// </summary>
 	/// <returns>
 	/// The populated <see cref="DataTable"/> that can be used together with
-	/// <see cref="Databases"/> in a 1-n scenario. <see cref="ErmBindingSource"/> for
+	/// <see cref="InternalDatabases"/> in a 1-n scenario. <see cref="ErmBindingSource"/> for
 	/// an example.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public DataTable DataSources
+	protected DataTable InternalServers
 	{
 		get
 		{
-			if (_DataSources == null)
+			if (_InternalServers == null)
 			{
-				_DataSources = Databases.DefaultView.ToTable(true, "Orderer",
+				_InternalServers = InternalDatabases.DefaultView.ToTable(true, "Orderer",
 					"DataSource", "DataSourceLc", "Port");
-				_DataSources.AcceptChanges();
+				_InternalServers.AcceptChanges();
 			}
-			return _DataSources;
+			return _InternalServers;
 		}
 	}
 
@@ -188,32 +192,32 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns a strings enumerable of the Rct's registered DatasetKeys.
+	/// This internal table storing all registered connections and datasources/servers.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public IEnumerable<string> RegisteredDatasets
+	protected DataTable InternalConnectionsTable => _InternalConnectionsTable;
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a strings enumerable of the Rct's registered DatasetKeys'
+	/// FullDisplayNames.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected IEnumerable<string> InternalRegisteredDatasets
 	{
 		get
 		{
-			object datasetKey;
+			object fullDisplayName;
 
-			return Databases.Select()
-					.Where(x => (datasetKey = x[SysConstants.C_KeyExDatasetKey]) != DBNull.Value
-						&& !string.IsNullOrWhiteSpace((string)datasetKey))
-					.OrderBy(x => (string)x[SysConstants.C_KeyExDatasetKey])
-					.Select(x => (string)x[SysConstants.C_KeyExDatasetKey]);
+			return InternalDatabases.Select()
+					.Where(x => (fullDisplayName = x[SysConstants.C_KeyExFullDisplayName]) != DBNull.Value
+						&& !string.IsNullOrWhiteSpace((string)fullDisplayName))
+					.OrderBy(x => (string)x[SysConstants.C_KeyExFullDisplayName])
+					.Select(x => (string)x[SysConstants.C_KeyExFullDisplayName]);
 		}
 	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// The sequential drift detection stamp of the last attempt to modify the Rct.
-	/// The stamp may be updated even if the update was unsuccesful.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static long Stamp => _Stamp;
 
 
 	#endregion Property accessors
@@ -232,7 +236,7 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 	/// Adds a synonym DatasetKey to the synonyms dictionary.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public void AddSynonym(string synonym, string key)
+	protected void AddSynonym(string synonym, string key)
 	{
 		if (_Instance == null)
 			return;
@@ -265,7 +269,7 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 	/// ConnectionString, DatasetKey or DatsetKey synonym.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool TryGetHybridRowValue(string hybridKey, out DataRow value)
+	protected bool TryGetHybridRowValue(string hybridKey, EnRctKeyType keyType, out DataRow value)
 	{
 		if (hybridKey == null)
 		{
@@ -276,20 +280,26 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 
 		// Tracer.Trace(GetType(), "TryGetHybridRowValue()", "hybridKey: {0}", hybridKey);
 
-		bool isConnectionUrl = hybridKey.StartsWith(_Scheme);
 
-		if (!isConnectionUrl &&
-			(hybridKey.StartsWith("data source=", StringComparison.InvariantCultureIgnoreCase)
-			|| hybridKey.ToLowerInvariant().Contains(";data source=")))
+		if (keyType == EnRctKeyType.ConnectionString)
 		{
 			Csb csa = new(hybridKey, false);
 			hybridKey = csa.SafeDatasetMoniker;
-			isConnectionUrl = true;
+			keyType = EnRctKeyType.ConnectionUrl;
 		}
 
-		if (isConnectionUrl)
+		if (keyType == EnRctKeyType.ConnectionUrl)
 		{
-			DataRow[] rows = Databases.Select().Where(x => hybridKey.Equals(x[SysConstants.C_KeyExConnectionUrl])).ToArray();
+			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[SysConstants.C_KeyExConnectionUrl])).ToArray();
+
+			value = rows.Length > 0 ? rows[0] : null;
+
+			// if (value == null)
+			//	Tracer.Trace(GetType(), "TryGetHybridRowValue()", "FAILED Final hybridKey: {0}", hybridKey);
+		}
+		else if (keyType == EnRctKeyType.DisplayName)
+		{
+			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[SysConstants.C_KeyExFullDisplayName])).ToArray();
 
 			value = rows.Length > 0 ? rows[0] : null;
 
@@ -300,7 +310,7 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 		{
 			if (TryGetEntry(hybridKey, out int id))
 			{
-				value = Databases.Rows.Find(id);
+				value = InternalDatabases.Rows.Find(id);
 			}
 			else
 			{

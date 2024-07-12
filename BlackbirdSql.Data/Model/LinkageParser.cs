@@ -3,8 +3,8 @@
 
 using System;
 using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,7 +14,7 @@ using BlackbirdSql.Sys.Controls;
 using BlackbirdSql.Sys.Enums;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.Shell;
 
 
 
@@ -48,6 +48,17 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Protected default .ctor for creating a Transient instance with restrictions.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private LinkageParser(string connectionString, string[] restrictions) : base(connectionString, restrictions)
+	{
+		// Tracer.Trace(typeof(LinkageParser), ".ctor(string, string[]");
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Protected .ctor. for creating an unregistered clone.
 	/// Callers must make a call to EnsureLoaded() for the rhs beforehand.
 	/// </summary>
@@ -63,7 +74,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Instance() static to create or retrieve a parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private LinkageParser(IDbConnection connection) : this(connection, null)
+	private LinkageParser(IVsDataExplorerConnection root) : this(root, null)
 	{
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection)");
 	}
@@ -76,10 +87,10 @@ public class LinkageParser : AbstractLinkageParser
 	/// Instance() static to create or retrieve a parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private LinkageParser(IDbConnection connection, LinkageParser rhs) : base(connection, rhs)
+	private LinkageParser(IVsDataExplorerConnection root, LinkageParser rhs) : base(root, rhs)
 	{
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection, LinkageParser)");
-		_TaskHandler = new(_InstanceConnection);
+		_TaskHandler = new(_InstanceRoot);
 	}
 
 
@@ -94,7 +105,7 @@ public class LinkageParser : AbstractLinkageParser
 		if (_Enabled && Loaded)
 			return new LinkageParser(this);
 		else
-			return new LinkageParser(_InstanceConnection);
+			return new LinkageParser(_InstanceRoot);
 	}
 
 
@@ -104,7 +115,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates a distinct unique parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static LinkageParser CreateInstance(IDbConnection connection, bool canCreate)
+	private static LinkageParser CreateInstance(IVsDataExplorerConnection root, bool canCreate)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "canCreate: {0}.", canCreate);
 
@@ -112,17 +123,17 @@ public class LinkageParser : AbstractLinkageParser
 
 		lock (_LockGlobal)
 		{
-			parser = (LinkageParser)AbstractLinkageParser.GetInstance(connection);
+			parser = (LinkageParser)GetInstanceImpl(root);
 
 
 			if (parser == null)
 			{
-				LinkageParser rhs = (LinkageParser)FindEquivalentParser(connection);
+				LinkageParser rhs = (LinkageParser)FindEquivalentParser(root);
 
 				if (rhs != null)
-					parser = new(connection, rhs);
+					parser = new(root, rhs);
 				else if (canCreate)
-					parser = new(connection);
+					parser = new(root);
 			}
 		}
 
@@ -132,57 +143,92 @@ public class LinkageParser : AbstractLinkageParser
 
 
 	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Retrieves or creates the parser instance of a connection.
+	/// <summary>1
+	/// Retrieves or creates the parser instance of a connection, Waiting to ensure it
+	/// has linked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureInstance(IDbConnection connection)
+	public static LinkageParser EnsureLoaded(string connectionString, string[] restrictions)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection)");
+		// Tracer.Trace(typeof(LinkageParser), "EnsureLoaded()");
 
-		return CreateInstance(connection, true);
+		
+		LinkageParser parser;
+
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
+
+		(_, IVsDataExplorerConnection root) = manager.SearchExplorerConnectionEntry(connectionString, false, false);
+
+		if (root != null)
+		{
+			if (restrictions == null)
+				return EnsureLoaded(root);
+
+			parser = CreateInstance(root, true);
+
+			if (parser.Loaded)
+				return parser;
+
+			if (!parser.Loading && parser._Enabled)
+				parser.AsyncExecute(0, 0);
+		}
+
+
+		(_, root) = manager.SearchExplorerConnectionEntry(connectionString, false, true);
+
+		if (root != null)
+		{
+			parser = CreateInstance(root, false);
+
+			if (parser != null && parser.Loaded)
+				return parser;
+		}
+
+
+		parser = (LinkageParser)FindEquivalentParser(connectionString, true);
+
+		if (parser != null)
+			return parser;
+
+		lock (_LockGlobal)
+		{
+			if (_TransientInstance != null && ApcManager.IsWeakConnectionEquivalency(connectionString, _TransientInstance.ConnectionString)
+			&& ((LinkageParser)_TransientInstance)._TransientRestrictions[2].Equals(restrictions[2], StringComparison.InvariantCultureIgnoreCase))
+			{
+				return (LinkageParser)_TransientInstance;
+			}
+		}
+
+		parser = new(connectionString, restrictions);
+
+		parser.EnsureLoadedRestricted();
+
+		return parser;
 	}
 
 
 
 	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Retrieves or creates the parser instance of a Site.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureInstance(IVsDataConnection site)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(IVsDataConnection, Type)");
-
-		if (site == null)
-			return null;
-
-		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
-			return null;
-
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection)
-			return null;
-
-		return EnsureInstance((IDbConnection)vsDataConnectionSupport.ProviderObject);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
+	/// <summary>1
 	/// Retrieves or creates the parser instance of a connection, Waiting to ensure it
 	/// has linked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(IDbConnection connection)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureLoaded(IDbConnection)");
+		// Tracer.Trace(typeof(LinkageParser), "EnsureLoaded()");
 
-		LinkageParser parser = CreateInstance(connection, true);
+		IVsDataExplorerConnection root = connection.ExplorerConnection(true);
+
+		if (root == null)
+			return null;
+
+		LinkageParser parser = CreateInstance(root, true);
 
 		parser.EnsureLoaded();
 
 		return parser;
+
 	}
 
 
@@ -194,20 +240,16 @@ public class LinkageParser : AbstractLinkageParser
 	/// has linked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(IVsDataConnection site)
+	public static LinkageParser EnsureLoaded(IVsDataExplorerConnection root)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+		// Tracer.Trace(typeof(LinkageParser), "EnsureLoaded()");
 
-		if (site == null)
-			return null;
+		LinkageParser parser = CreateInstance(root, true);
 
-		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
-			return null;
+		parser.EnsureLoaded();
 
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection)
-			return null;
+		return parser;
 
-		return EnsureLoaded((IDbConnection)vsDataConnectionSupport.ProviderObject);
 	}
 
 
@@ -223,6 +265,10 @@ public class LinkageParser : AbstractLinkageParser
 	{
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
 
+		if (IsTransient)
+			return true;
+
+
 		AsyncExecute(0, 0);
 
 		return AsyncWait();
@@ -230,19 +276,28 @@ public class LinkageParser : AbstractLinkageParser
 
 
 
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Retrieves an existing parser for a connection else null if no LinkageParser
-	/// exists.
+	/// Launches a arser load with restrictions.
 	/// </summary>
+	/// <returns>True if successfully loaded or already loaded else false</returns>
 	// ---------------------------------------------------------------------------------
-	public static new LinkageParser GetInstance(IDbConnection connection)
+	[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
+	public override bool EnsureLoadedRestricted()
 	{
-		// Tracer.Trace(typeof(LinkageParser), "GetInstance(FbConnection)");
+		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
 
-		return CreateInstance(connection, false);
+		bool result = false;
+		// Fire and wait
+
+		ThreadHelper.JoinableTaskFactory.Run(async delegate
+		{
+			result = await PopulateLinkageTablesAsync(default, "SyncId", 0);
+		});
+
+		return result;
 	}
+
 
 
 
@@ -251,20 +306,11 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves an existing parser for a Site else null if no LinkageParser exists.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser GetInstance(IVsDataConnection site)
+	public static LinkageParser GetInstance(IVsDataExplorerConnection root)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "GetInstance(IVsDataConnection)");
 
-		if (site == null)
-			return null;
-
-		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
-			return null;
-
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection)
-			return null;
-
-		return GetInstance((IDbConnection)vsDataConnectionSupport.ProviderObject);
+		return CreateInstance(root, false);
 	}
 
 
@@ -291,7 +337,6 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	~LinkageParser()
 	{
-		_TransientParser = null;
 	}
 
 
@@ -396,7 +441,7 @@ public class LinkageParser : AbstractLinkageParser
 
 
 	// ---------------------------------------------------------------------------------
-	/// Clears a connection that has been locked against disposal by 
+	/// Single pass - clears a connection that has been locked against disposal by 
 	/// <see cref="LockLoadedParser"/> and returns true if the parser is the locked
 	/// parser.
 	// ---------------------------------------------------------------------------------
@@ -417,15 +462,15 @@ public class LinkageParser : AbstractLinkageParser
 			string disposingConnectionUrl = ApcManager.CreateConnectionUrl(ConnectionString);
 
 			// Tracer.Trace(typeof(RctManager), "IsLockedLoaded", "\nlockedConnectionUrl: {0}, disposingConnectionUrl: {1}.", lockedConnectionUrl, disposingConnectionUrl);
+			_LockedLoadedConnectionString = null;
 
 			if (lockedConnectionUrl.Equals(disposingConnectionUrl))
 				return true;
 
-			_LockedLoadedConnectionString = null;
-
 			return false;
 		}
 	}
+
 
 	public bool Loading => AsyncActive;
 
@@ -459,7 +504,7 @@ public class LinkageParser : AbstractLinkageParser
 
 		for (i = 0; i < multiplier; i++)
 		{
-			if (userToken.IsCancellationRequested || !ConnectionActive || _AsyncPayloadLauncher == null)
+			if (userToken.IsCancellationRequested || _AsyncPayloadLauncher == null)
 			{
 				break;
 			}
@@ -477,7 +522,7 @@ public class LinkageParser : AbstractLinkageParser
 		// Tracer.Trace(GetType(), "AsyncDelay()", "Exiting - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
 
 
-		return !userToken.IsCancellationRequested && ConnectionActive && _AsyncPayloadLauncher != null;
+		return !userToken.IsCancellationRequested && _AsyncPayloadLauncher != null;
 	}
 
 
@@ -493,17 +538,21 @@ public class LinkageParser : AbstractLinkageParser
 	 */
 
 
+
 	// ---------------------------------------------------------------------------------
-	/// <summary>
+	/// <summary>1
 	/// Ensures an instance is retrieved or else created and then initiates loading if
 	/// !PersistentSettings.OnDemandLinkage.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser AsyncEnsureLoading(IDbConnection connection, int delay = 0, int multiplier = 1)
+	public static LinkageParser AsyncEnsureLoading(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
 
-		LinkageParser parser = CreateInstance(connection, true);
+		if (root == null)
+			return null;
+
+		LinkageParser parser = CreateInstance(root, true);
 
 		if (parser == null)
 			return null;
@@ -512,55 +561,8 @@ public class LinkageParser : AbstractLinkageParser
 			parser.AsyncExecute(delay, multiplier);
 
 		return parser;
-	}
 
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>1
-	/// Ensures an instance is retrieved or else created and then initiates loading if
-	/// !PersistentSettings.OnDemandLinkage.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser AsyncEnsureLoading(IVsDataConnection site, int delay = 0, int multiplier = 1)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
-
-		if (site == null)
-			return null;
-
-		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
-			return null;
-
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection)
-			return null;
-
-		DbConnection connection = (DbConnection)vsDataConnectionSupport.ProviderObject;
-
-		if (connection.State != ConnectionState.Open)
-			return null;
-
-		return AsyncEnsureLoading(connection, delay, multiplier);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Ensures an instance is retrieved or else created and then initiates loading if
-	/// !PersistentSettings.OnDemandLinkage.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser AsyncEnsureLoading(IVsDataExplorerNode node, int delay = 0, int multiplier = 1)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
-
-		if (node == null || node.Object == null || node.ExplorerConnection.Connection == null)
-		{
-			return null;
-		}
-
-		return AsyncEnsureLoading(node.ExplorerConnection.Connection, delay, multiplier);
 	}
 
 
@@ -624,80 +626,6 @@ public class LinkageParser : AbstractLinkageParser
 	}
 
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// GetInstance and initiates loading if !PersistentSettings.OnDemandLinkage.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser AsyncRequestLoading(IDbConnection connection, int delay = 0, int multiplier = 1)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
-
-		try
-		{
-
-			LinkageParser parser = CreateInstance(connection, false);
-
-			if (parser == null)
-				return null;
-
-			if (!parser.Loading && !parser.Loaded && parser._Enabled && !NativeDb.OnDemandLinkage)
-				parser.AsyncExecute(delay, multiplier);
-
-			return parser;
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// GetInstance and initiates loading if !PersistentSettings.OnDemandLinkage.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser AsyncRequestLoading(IVsDataConnection site, int delay = 0, int multiplier = 1)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
-
-		if (site == null)
-			return null;
-
-		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
-			return null;
-
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection)
-			return null;
-
-		return AsyncRequestLoading((IDbConnection)vsDataConnectionSupport.ProviderObject, delay, multiplier);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// GetInstance and initiates loading if !PersistentSettings.OnDemandLinkage.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser AsyncRequestLoading(IVsDataExplorerNode node, int delay = 0, int multiplier = 1)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
-
-		if (node == null || node.Object == null || node.ExplorerConnection.Connection == null)
-		{
-			return null;
-		}
-
-		return AsyncRequestLoading(node.ExplorerConnection.Connection, delay, multiplier);
-	}
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Increments the sync call counter and suspends any async tasks. This should be
@@ -756,7 +684,7 @@ public class LinkageParser : AbstractLinkageParser
 				lock (_LockObject)
 				{
 					CancellationTokenSource tokenSource = (CancellationTokenSource)Reflect.GetField(_TaskHandler.UserCancellation, "m_source");
-					tokenSource.Cancel();
+					tokenSource?.Cancel();
 				}
 
 				_TaskHandler.Progress(Percent(_LinkStage), C_Elapsed_Disabling, _TotalElapsed, _Enabled, AsyncActive);
@@ -795,7 +723,7 @@ public class LinkageParser : AbstractLinkageParser
 								_Enabled = false;
 
 								CancellationTokenSource tokenSource = (CancellationTokenSource)Reflect.GetField(_TaskHandler.UserCancellation, "m_source");
-								tokenSource.Cancel();
+								tokenSource?.Cancel();
 							}
 
 							_TaskHandler.Progress(Percent(_LinkStage), C_Elapsed_Disabling, _TotalElapsed, _Enabled, AsyncActive);
@@ -912,27 +840,20 @@ public class LinkageParser : AbstractLinkageParser
 	/// <param name="site">
 	/// The IVsDataConnection explorer connection object
 	/// </param>
-	/// <param name="isValidTransient">
-	/// False if this is a user refresh and a transient parser should not be stored else
-	/// True.
+	/// <param name="disposing">
+	/// If disposing is set to true, then all parsers with weak equivalency will
+	/// be tagged as intransient, meaning their trigger linkage databases cannot
+	/// be copied to another parser with weak equivalency. 
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
-	// ---------------------------------------------------------------------------------
-	public static bool DisposeInstance(IVsDataConnection site)
+	// -------------------------------------------------------------------------
+	public static bool DisposeInstance(IVsDataExplorerConnection root, bool disposing)
 	{
 
-		if (site == null)
+		if (root == null)
 			return false;
 
-		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(IVsDataConnection)", "isValidTransient: {0}.", isValidTransient);
-
-		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
-			return false;
-
-		if (vsDataConnectionSupport.ProviderObject is not IDbConnection connection)
-			return false;
-
-		return DisposeInstance(connection);
+		return DisposeInstanceImpl(root, disposing);
 	}
 
 
@@ -942,31 +863,34 @@ public class LinkageParser : AbstractLinkageParser
 	/// Stores the ConnectionString of a connection changed by the SE that already has
 	/// it's linkage tables loaded. We don't want linkage tables disposed if The
 	/// ConnectionUrl has not changed when ServerExplorer has updated other properties.
-	/// The stored value wil be retrieved as a single pass in IVsDataViewSupport
+	/// The stored value will be retrieved as a single pass in IVsDataViewSupport
 	/// and cleared using <see cref="UnlockLoadedParser"/> or
 	/// <see cref="IsLockedLoaded"/>.
+	/// Returns true if the connection strings are equivalent and a parser was locked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void LockLoadedParser(string updatedString)
+	public static bool LockLoadedParser(string originalString, string updatedString)
 	{
 		// Tracer.Trace(typeof(RctManager), "LockLoadedParser()");
 
 		_LockedLoadedConnectionString = null;
 
 		// Get the site's parser.
-		LinkageParser parser = GetInstanceOrTransient(updatedString);
+		LinkageParser parser = GetInstanceOrTransient(originalString);
 
 
 		if (parser == null || !parser.Loaded)
-			return;
+			return false;
 
 
-		if (!ApcManager.IsConnectionEquivalency(parser.TransientString, updatedString))
-			return;
+		if (!ApcManager.IsConnectionEquivalency(originalString, updatedString))
+			return false;
 
 		// Tracer.Trace(typeof(RctManager), "LockLoadedParser()", "LOCKING!!!\nParser TransientString: {0}\nupdatedString: {1}", parser.TransientString, updatedString);
 
 		_LockedLoadedConnectionString = updatedString;
+
+		return true;
 	}
 
 
@@ -1043,134 +967,169 @@ public class LinkageParser : AbstractLinkageParser
 	{
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "SyncCardinal: {0}, UIThread: {1}", _SyncCardinal, ThreadHelper.CheckAccess());
 
-		if (_DbConnection == null)
+		if (_ConnectionString == null)
 		{
 			// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "Connection null SyncCardinal: {0}", _SyncCardinal);
-			ObjectDisposedException ex = new(Resources.ExceptionConnectionNull);
+			ObjectDisposedException ex = new(Resources.ExceptionConnectionStringNull);
 			Diag.Dug(ex);
 			return false;
 		}
 
-		if (!ConnectionActive)
-		{
-			// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "ENTER and exit - !ConnectionActive - SyncCardinal: {0}", _SyncCardinal);
-			return false;
-		}
+		FbConnection connection = null;
 
 		try
 		{
 
 			// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "ENTER - _LinkStage: {0}", _LinkStage);
+			if (!IsTransient)
+			{
+				_TaskHandler.Progress(Percent(_LinkStage), _LinkStage == EnLinkStage.Start ? 0 : C_Elapsed_Resuming, _TotalElapsed, _Enabled, AsyncActive);
 
-			_TaskHandler.Progress(Percent(_LinkStage), _LinkStage == EnLinkStage.Start ? 0 : C_Elapsed_Resuming, _TotalElapsed, _Enabled, AsyncActive);
-
-			Thread.Yield();
+				Thread.Yield();
+			}
 
 			if (_LinkStage < EnLinkStage.GeneratorsLoaded)
 			{
-				_TaskHandler.Progress(Resources.LinkageParserStageGeneratorsBegin,
-					Percent(_LinkStage + 1, true), C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageGeneratorsBegin,
+						Percent(_LinkStage + 1, true), C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
+				}
 
-				await GetRawGeneratorSchemaAsync(cancelToken);
+				if (connection == null)
+				{
+					connection = new(ConnectionString);
+					await connection.OpenAsync(cancelToken);
+				}
+				await GetRawGeneratorSchemaAsync(connection, cancelToken);
 
 				if (cancelToken.IsCancellationRequested)
 					_Enabled = false;
 
-				_TaskHandler.Progress(Resources.LinkageParserStageGeneratorsEnd,
-					Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageGeneratorsEnd,
+						Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				}
 			}
 
-			Thread.Yield();
+			if (!IsTransient)
+				Thread.Yield();
 
 			if (!_Enabled)
 				return false;
 
-			if (!ConnectionActive)
-				return false;
 
 
 			if (_LinkStage < EnLinkStage.TriggerDependenciesLoaded)
 			{
-				_TaskHandler.Progress(Resources.LinkageParserStageTriggerDependenciesStart,
-					Percent(_LinkStage + 1, true), C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageTriggerDependenciesStart,
+						Percent(_LinkStage + 1, true), C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
+				}
 
-				await GetRawTriggerDependenciesSchemaAsync(cancelToken);
+				if (connection == null)
+				{
+					connection = new(ConnectionString);
+					await connection.OpenAsync(cancelToken);
+				}
+				await GetRawTriggerDependenciesSchemaAsync(connection, cancelToken);
 
 				if (AsyncActive && cancelToken.IsCancellationRequested)
 					_Enabled = false;
 
-				_TaskHandler.Progress(Resources.LinkageParserStageTriggerDependenciesEnd,
-					Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageTriggerDependenciesEnd,
+						Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				}
 			}
 
-			Thread.Yield();
+			if (!IsTransient)
+				Thread.Yield();
 
 			if (!_Enabled)
 				return false;
 
-			if (!ConnectionActive)
-				return false;
+
+
 
 			if (_LinkStage < EnLinkStage.TriggersLoaded)
 			{
-				_TaskHandler.Progress(Resources.LinkageParserStageTriggersBegin, Percent(_LinkStage + 1, true),
-					C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageTriggersBegin, Percent(_LinkStage + 1, true),
+						C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
+				}
 
-				await GetRawTriggerSchemaAsync(cancelToken);
+				if (connection == null)
+				{
+					connection = new(ConnectionString);
+					await connection.OpenAsync(cancelToken);
+				}
+				await GetRawTriggerSchemaAsync(connection, cancelToken);
 
 				if (cancelToken.IsCancellationRequested)
 					_Enabled = false;
 
-				_TaskHandler.Progress(Resources.LinkageParserStageTriggersEnd, Percent(_LinkStage),
-					Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageTriggersEnd, Percent(_LinkStage),
+						Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				}
 			}
 
 			if (!_Enabled)
 				return false;
 
-			Thread.Yield();
+			if (!IsTransient)
+				Thread.Yield();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+		finally
+		{
+			if (connection != null)
+			{
+				await connection.CloseAsync();
+				connection.Dispose();
+			}
+
+		}
 
 
+		try
+		{
 			if (!SequencesPopulated)
 			{
-				_TaskHandler.Progress(Resources.LinkageParserStageSequencesBegin, Percent(_LinkStage + 1, true),
-					C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageSequencesBegin, Percent(_LinkStage + 1, true),
+						C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
+				}
 
 				BuildSequenceTable();
 
 				if (cancelToken.IsCancellationRequested)
 					_Enabled = false;
 
-				_TaskHandler.Progress(Resources.LinkageParserStageSequencesEnd, Percent(_LinkStage),
-					Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageSequencesEnd, Percent(_LinkStage),
+						Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				}
 			}
 
-			Thread.Yield();
+			if (!IsTransient)
+				Thread.Yield();
 
 
 			if (!_Enabled)
 				return false;
-
-			if (_LinkStage < EnLinkStage.Completed)
-			{
-				_TaskHandler.Progress(Resources.LinkageParserStageLinkingBegin, Percent(_LinkStage + 1, true),
-					C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
-
-				BuildTriggerTable();
-
-				_TaskHandler.Progress(Resources.LinkageParserStageLinkingEnd, Percent(_LinkStage),
-					Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
-			}
-
-			_LinkStage = EnLinkStage.Completed;
-
-			_TaskHandler.Progress(Resources.LinkageParserStageCompleted.FmtRes(_Triggers.Rows.Count),
-				Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
-
-			_Stopwatch = null;
-
-			_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
-
 		}
 		catch (Exception ex)
 		{
@@ -1178,39 +1137,95 @@ public class LinkageParser : AbstractLinkageParser
 			throw ex;
 		}
 
-		return true;
-	}
 
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns true if an SE node's collection requires completed Trigger/Generator
-	/// linkage tables in order to render, else false.
-	/// If true and linkage is incomplete or non-existent, the caller will first
-	/// initiate linkage, if required, and wait for the owning Explorer ConnectionNode's
-	/// linkage tables to be prepared before allowing a node to be rendered.
-	/// </summary>
-	// ----------------------------------------------------------------------------------
-	public static bool RequiresTriggers(string collection)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "RequiresTriggers()", "Collection: {0}.", collection);
-
-		switch (collection)
+		try
 		{
-			case "ForeignKeys":
-			case "Functions":
-			case "Indexes":
-			case "Procedures":
-			case "Tables":
-			case "RawGenerators":
-			case "RawTriggerDependencies":
-			case "RawTriggers":
-			case "Views":
-			case "ViewColumns":
-				return false;
-			default:
-				break;
+			if (_LinkStage < EnLinkStage.Completed)
+			{
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageLinkingBegin, Percent(_LinkStage + 1, true),
+						C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
+				}
+
+				BuildTriggerTable();
+
+				if (!IsTransient)
+				{
+					_TaskHandler.Progress(Resources.LinkageParserStageLinkingEnd, Percent(_LinkStage),
+						Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				}
+			}
+
+			_LinkStage = EnLinkStage.Completed;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		try
+		{
+			if (!IsTransient)
+			{
+				_TaskHandler.Progress(Resources.LinkageParserStageCompleted.FmtRes(_Triggers.Rows.Count),
+					Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+			}
+
+			_Stopwatch = null;
+
+			if (!IsTransient)
+				_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
+
+			lock (_LockGlobal)
+			{
+				if (!IsTransient && _TransientInstance != null
+					&& ApcManager.IsWeakConnectionEquivalency(_ConnectionString, _TransientInstance.ConnectionString))
+				{
+					_TransientInstance = null;
+				}
+
+				if (IsTransient)
+				{
+					_Sequences = null;
+
+					/*
+					 * Uncomment this routine if we ever want to have sequences by table.
+					 * 
+					object @object;
+					string tableName = _TransientRestrictions[2];
+
+					List<DataRow> rows = new(_Sequences.Rows.Count);
+
+
+					foreach (DataRow seqRow in _Sequences.Rows)
+					{
+						@object = seqRow["DEPENDENCY_TABLE"];
+
+						if (!Cmd.IsNullValueOrEmpty(@object) && tableName.Equals(@object.ToString(), StringComparison.InvariantCultureIgnoreCase))
+							continue;
+
+						rows.Add(seqRow);
+					}
+
+					_Sequences.BeginLoadData();
+
+					foreach(DataRow row in rows)
+						row.Delete();
+
+					_Sequences.EndLoadData();
+					_Sequences.AcceptChanges();
+					*/
+				}
+			}
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		return true;
@@ -1314,28 +1329,6 @@ public class LinkageParser : AbstractLinkageParser
 	#region Event handlers - LinkageParser
 	// =========================================================================================================
 
-
-	protected override void OnConnectionDisposed(object sender, EventArgs e)
-	{
-		if (_InstanceConnection == null)
-			return;
-
-		// Tracer.Trace(GetType(), "OnConnectionDisposed()", "Sender: {0}.", sender.GetType().Name);
-
-
-		Dispose(!_Disabling && Loaded);
-	}
-
-	protected override void OnConnectionStateChange(object sender, StateChangeEventArgs e)
-	{
-		if (e.OriginalState == ConnectionState.Closed || e.CurrentState == ConnectionState.Open || _InstanceConnection == null)
-			return;
-
-		// Tracer.Trace(GetType(), "OnConnectionStateChange()", "Sender: {0}.", sender.GetType().Name);
-
-
-		Dispose(!_Disabling && Loaded);
-	}
 
 
 	public void OnMessageBoxClose(object sender, FormClosedEventArgs e)

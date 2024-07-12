@@ -3,14 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Sys;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -20,8 +18,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 
 namespace BlackbirdSql.Core.Ctl;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 
 
 // =========================================================================================================
@@ -120,7 +116,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 
 	protected RunningDocumentTable Rdt => _Rdt
-		??= new RunningDocumentTable((IServiceProvider)ApcManager.PackageInstance);
+		??= new ((IServiceProvider)ApcManager.PackageInstance);
 
 
 	protected IVsRunningDocumentTable RdtSvc => _RdtSvc
@@ -584,20 +580,19 @@ public abstract class AbstractRdtManager : IDisposable
 	}
 
 
-	protected bool TryGetDocDataFromCookieImpl(uint cookie, out object docData)
+	protected object GetDocDataFromCookieImpl(uint cookie)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		docData = null;
+		object docData = null;
 
 		if (RdtSvc != null && __(RdtSvc.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _, out var _, out var _, out var ppunkDocData)))
 		{
 			docData = Marshal.GetObjectForIUnknown(ppunkDocData);
 			Marshal.Release(ppunkDocData);
-			return true;
 		}
 
-		return false;
+		return docData;
 	}
 
 
@@ -683,14 +678,14 @@ public abstract class AbstractRdtManager : IDisposable
 		return false;
 	}
 
-	protected bool IsDirty(uint docCookie)
+	protected bool IsDirtyImpl(uint docCookie)
 	{
-		if (TryGetDocDataFromCookieImpl(docCookie, out var docData))
-		{
-			return IsDirty(docData);
-		}
+		object docData = GetDocDataFromCookieImpl(docCookie);
 
-		return false;
+		if (docData == null)
+			return false;
+
+		return IsDirty(docData);
 	}
 
 	protected bool IsDirty(object docData)
@@ -819,7 +814,7 @@ public abstract class AbstractRdtManager : IDisposable
 			int num = RdtSvc2.QueryCloseRunningDocument(mkDocument, out foundAndClosed);
 			if (num != VSConstants.OLE_E_PROMPTSAVECANCELLED)
 			{
-				Native.WrapComCall(num, []);
+				___(num);
 			}
 		}
 	}

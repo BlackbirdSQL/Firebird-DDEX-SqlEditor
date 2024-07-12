@@ -82,6 +82,13 @@ public abstract class AbstractDesignerServices
 
 
 	/// <summary>
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
 	/// <see cref="ErrorHandler.Succeeded"/> token.
 	/// </summary>
 	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
@@ -137,7 +144,9 @@ public abstract class AbstractDesignerServices
 
 	public static void SetDocumentReadOnly(uint docCookie, bool readOnly)
 	{
-		if (RdtManager.TryGetDocDataFromCookie(docCookie, out var docData))
+		object docData = RdtManager.GetDocDataFromCookie(docCookie);
+
+		if (docData != null)
 		{
 			((IVsPersistDocData2)docData).SetDocDataReadOnly(readOnly ? 1 : 0);
 

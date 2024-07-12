@@ -310,7 +310,7 @@
 				<Part name="PROCEDURE_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="PROCEDURE_SCHEMA" isIdentifierPart="true" />
+				<!-- <Property name="PROCEDURE_SCHEMA" isIdentifierPart="true" /> -->
 				<Property name="PROCEDURE_NAME" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="SOURCE" type="System.String" />
@@ -338,7 +338,7 @@
 				<Part name="FUNCTION_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="FUNCTION_SCHEMA" isIdentifierPart="true" />
+				<!-- <Property name="FUNCTION_SCHEMA" isIdentifierPart="true" /> -->
 				<Property name="FUNCTION_NAME" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="SOURCE" type="System.String" />

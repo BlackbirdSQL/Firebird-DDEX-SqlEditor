@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using BlackbirdSql.Sys.Enums;
 
+
 namespace BlackbirdSql.Sys.Interfaces;
 
 public interface IBSqlTraceTelemetryProvider

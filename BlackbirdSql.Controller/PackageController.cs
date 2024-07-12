@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using BlackbirdSql.Controller.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Sys.Interfaces;
-using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
 
 
 namespace BlackbirdSql.Controller;
@@ -65,9 +65,35 @@ public sealed class PackageController : AbstractPackageController
 		_Instance ?? throw Diag.ExceptionInstance(typeof(IBsPackageController));
 
 
+	protected override void Dispose(bool disposing)
+	{
+		if (!disposing)
+			return;
+
+		base.Dispose(disposing);
+
+	}
+
+
 
 
 	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - PackageController
+	// =========================================================================================================
+
+
+	private static bool _EventsAdvisedUnsafe = false;
+	private static bool _Initialized = false;
+
+
+	#endregion Fields
+
 
 
 
@@ -79,7 +105,8 @@ public sealed class PackageController : AbstractPackageController
 
 	public ControllerPackage ControllerPackage => (ControllerPackage)PackageInstance;
 
-	public override bool SolutionValidating => ControllerEventsManager.Validating;
+	public override bool SolutionValidating => ControllerEventsManager.SolutionValidating;
+
 
 
 	#endregion Property Accessors
@@ -101,11 +128,18 @@ public sealed class PackageController : AbstractPackageController
 	// ---------------------------------------------------------------------------------
 	public override bool AdviseEvents()
 	{
+		lock (_LockObject)
+		{
+			if (!_Initialized)
+			{
+				_Initialized = true;
+				_OnInitializeEvent?.Invoke(this);
+			}
 
-		if (_EventsAdvisedUnsafe)
-			return false;
+			if (_EventsAdvisedUnsafe && !EventProjectRegistrationEnter(false))
+				return false;
+		}
 
-		_EventsAdvisedUnsafe = true;
 
 		// Ensure UI thread call is made for unsafe events.
 		// Fire and wait.
@@ -137,8 +171,11 @@ public sealed class PackageController : AbstractPackageController
 	// ---------------------------------------------------------------------------------
 	public override async Task<bool> AdviseEventsAsync()
 	{
-		if (_EventsAdvisedUnsafe)
-			return false;
+		lock (_LockObject)
+		{
+			if (_EventsAdvisedUnsafe && !EventProjectRegistrationEnter(false))
+				return false;
+		}
 
 
 		// Check we're on ui thread for async advising of unsafe events.
@@ -147,9 +184,7 @@ public sealed class PackageController : AbstractPackageController
 			return false;
 
 		// Warning suppression.
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		_EventsAdvisedUnsafe = true;
+		await TaskScheduler.Default;
 
 		return AdviseUnsafeEvents();
 
@@ -159,57 +194,54 @@ public sealed class PackageController : AbstractPackageController
 
 	protected override bool AdviseUnsafeEvents()
 	{
+		lock (_LockObject)
+		{
+			if (_EventsAdvisedUnsafe && !EventProjectRegistrationEnter(false))
+				return false;
+		}
+
+
 		Diag.ThrowIfNotOnUIThread();
 
-
 		// Sanity check. Disable events if enabled
-		UnadviseEvents(false);
+		// UnadviseEvents(false);
 
-		try
+		if (Dte == null)
+			Diag.ThrowException(new NullReferenceException(Resources.ExceptionDteIsNull));
+
+		// If it's null there's an issue. Possibly we've come in too early
+		if (VsSolution == null)
+			Diag.ThrowException(new NullReferenceException(Resources.ExceptionSVsSolutionIsNull));
+
+		if (!RdtManager.ServiceAvailable)
+			Diag.ThrowException(new NullReferenceException(Resources.ExceptionIVsRunningDocumentTableIsNull));
+
+		RegisterProjectEventHandlers();
+
+
+		// Tracer.Trace(GetType(), "AdviseUnsafeEvents()", "ProjectItemsEvents.");
+
+		if (!_EventsAdvisedUnsafe)
 		{
-			if (Dte == null)
-				throw new NullReferenceException(Resources.ExceptionDteIsNull);
+			_EventsAdvisedUnsafe = true;
 
-			// If it's null there's an issue. Possibly we've come in too early
-			if (VsSolution == null)
-				throw new NullReferenceException(Resources.ExceptionSVsSolutionIsNull);
 
-			if (!RdtManager.ServiceAvailable)
-				throw new NullReferenceException(Resources.ExceptionIVsRunningDocumentTableIsNull);
+			// Tracer.Trace(GetType(), "AdviseUnsafeEvents()", "SolutionEvents.");
 
+			// Enable solution event capture
+			VsSolution.AdviseSolutionEvents(this, out _HSolutionEvents);
+
+
+			// Enable rdt events.
+			try
+			{
+				RdtManager.AdviseRunningDocTableEvents(this, out _HDocTableEvents);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
 		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-
-		// Tracer.Trace(GetType(), "AdviseUnsafeEvents()", "AdviseSolutionEvents.");
-
-
-		// Enable solution event capture
-		VsSolution.AdviseSolutionEvents(this, out _HSolutionEvents);
-
-
-		Events2 events2 = Dte.Events as Events2;
-
-		events2.ProjectItemsEvents.ItemAdded += OnProjectItemAdded;
-		events2.ProjectItemsEvents.ItemRemoved += OnProjectItemRemoved;
-		events2.ProjectItemsEvents.ItemRenamed += OnProjectItemRenamed;
-
-
-
-
-		// Enable rdt events.
-		try
-		{
-			RdtManager.AdviseRunningDocTableEvents(this, out _HDocTableEvents);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
-
 
 		return true;
 	}

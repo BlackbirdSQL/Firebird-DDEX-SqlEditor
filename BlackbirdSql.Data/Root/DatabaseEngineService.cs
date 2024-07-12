@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using BlackbirdSql.Data.Model;
 using BlackbirdSql.Data.Model.Schema;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
+using EntityFramework.Firebird;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
 using Microsoft.VisualStudio.Data.Services;
@@ -38,7 +39,9 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	{
 	}
 
-	public static DatabaseEngineService CreateInstance() => new();
+	private static IBsNativeDatabaseEngine _Instance = null;
+
+	public static IBsNativeDatabaseEngine EnsureInstance() => _Instance ??= new DatabaseEngineService();
 
 
 	public string AssemblyQualifiedName_ => typeof(FirebirdClientFactory).AssemblyQualifiedName;
@@ -48,6 +51,20 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	public string ClientVersion_ => $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
 
 	public Type ClientFactoryType_ => typeof(FirebirdClientFactory);
+
+	public Type ProviderServicesType_ => typeof(FbProviderServices);
+
+	public string ProviderServicesTypeFullName_ => "EntityFramework.Firebird.FbProviderServices, EntityFramework.Firebird, Version=_version_, Culture=neutral, PublicKeyToken=42d22d092898e5f8";
+
+	public string[] EntityFrameworkVersions_ =>
+		[
+			"6.0.0.0", "6.1.0.0", "6.2.0.1", "6.3.0.0", "6.4.0.0", "6.5.0.0", "6.6.0.0", "6.7.0.0",
+			"7.0.0.0", "7.1.0.0", "7.1.1.0", "7.5.0.0", "7.10.0.0", "7.10.1.0",
+			"8.0.0.0", "8.0.1.0", "8.5.0.0", "8.5.1.0", "8.5.1.1", "8.5.2.0", "8.5.3.0", "8.5.4.0",
+			"9.0.0.0", "9.0.1.0", "9.0.2.0", "9.1.0.0", "9.1.1.0",
+			"10.0.0.0", "10.0.1.0"
+		];
+
 
 	public Type ConnectionType_ => typeof(FbConnection);
 
@@ -114,32 +131,28 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 			new Describer(C_KeyExEdmu, typeof(string))
 		],
 		[
-			StringPair("server", C_KeyDataSource),
-			StringPair("host", C_KeyDataSource),
-			StringPair("uid", C_KeyUserID),
-			StringPair("user", C_KeyUserID),
-			StringPair("username", C_KeyUserID),
-			StringPair("user name", C_KeyUserID),
-			StringPair("userpassword", C_KeyPassword),
-			StringPair("user password", C_KeyPassword),
-			StringPair("no triggers", C_KeyNoDatabaseTriggers),
-			StringPair("nodbtriggers", C_KeyNoDatabaseTriggers),
-			StringPair("no dbtriggers", C_KeyNoDatabaseTriggers),
-			StringPair("no database triggers", C_KeyNoDatabaseTriggers),
-			StringPair("timeout", C_KeyConnectionTimeout),
-			StringPair("db cache pages", C_KeyDbCachePages),
-			StringPair("cachepages", C_KeyDbCachePages),
-			StringPair("pagebuffers", C_KeyDbCachePages),
-			StringPair("page buffers", C_KeyDbCachePages),
-			StringPair("wire compression", C_KeyCompression),
-			StringPair("app", C_KeyApplicationName),
-			StringPair("parallel", C_KeyParallelWorkers)
+			Pair("server", C_KeyDataSource),
+			Pair("host", C_KeyDataSource),
+			Pair("uid", C_KeyUserID),
+			Pair("user", C_KeyUserID),
+			Pair("username", C_KeyUserID),
+			Pair("user name", C_KeyUserID),
+			Pair("userpassword", C_KeyPassword),
+			Pair("user password", C_KeyPassword),
+			Pair("no triggers", C_KeyNoDatabaseTriggers),
+			Pair("nodbtriggers", C_KeyNoDatabaseTriggers),
+			Pair("no dbtriggers", C_KeyNoDatabaseTriggers),
+			Pair("no database triggers", C_KeyNoDatabaseTriggers),
+			Pair("timeout", C_KeyConnectionTimeout),
+			Pair("db cache pages", C_KeyDbCachePages),
+			Pair("cachepages", C_KeyDbCachePages),
+			Pair("pagebuffers", C_KeyDbCachePages),
+			Pair("page buffers", C_KeyDbCachePages),
+			Pair("wire compression", C_KeyCompression),
+			Pair("app", C_KeyApplicationName),
+			Pair("parallel", C_KeyParallelWorkers)
 		]
 	);
-
-	public Type ExceptionType_ => typeof(FbException);
-
-
 
 	public string Invariant_ => LibraryData.Invariant;
 	public string ProviderFactoryName_ => LibraryData.ProviderFactoryName;
@@ -172,34 +185,18 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 
 
-	public void AsyncEnsureLinkageLoading_(IDbConnection connection, int delay = 0, int multiplier = 1)
+	public void AsyncEnsureLinkageLoading_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
 	{
-		LinkageParser.AsyncEnsureLoading(connection, delay, multiplier);
-	}
-	public void AsyncEnsureLinkageLoading_(IVsDataConnection site, int delay = 0, int multiplier = 1)
-	{
-		LinkageParser.AsyncEnsureLoading(site, delay, multiplier);
-	}
-	public void AsyncEnsureLinkageLoading_(IVsDataExplorerNode node, int delay = 0, int multiplier = 1)
-	{
-		LinkageParser.AsyncEnsureLoading(node, delay, multiplier);
+		LinkageParser.AsyncEnsureLoading(root, delay, multiplier);
 	}
 
-	public void AsyncRequestLinkageLoading_(IVsDataConnection site, int delay = 0, int multiplier = 1)
-	{
-		LinkageParser.AsyncRequestLoading(site, delay, multiplier);
-	}
 
-	public DbConnection CastToAssemblyConnection_(object connection)
+	public DbConnection CastToNativeConnection_(object connection)
 	{
 		return connection as FbConnection;
 	}
 
 
-	public string ConvertDataTypeToSql_(string type, int length, int precision, int scale)
-	{
-		return DbTypeHelper.ConvertDataTypeToSql(type, length, precision, scale);
-	}
 
 	public string ConvertDataTypeToSql_(object type, object length, object precision, object scale)
 	{
@@ -220,16 +217,6 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		return new FbConnection(connectionString);
 	}
 
-	public DbConnectionStringBuilder CreateDbConnectionStringBuilder_()
-	{
-		return new FbConnectionStringBuilder();
-	}
-
-	public DbConnectionStringBuilder CreateDbConnectionStringBuilder_(string connectionString)
-	{
-		return new FbConnectionStringBuilder(connectionString);
-	}
-
 	public IBsNativeDbConnectionWrapper CreateDbConnectionWrapper_(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null)
 	{
 		return new DbConnectionWrapper(connection, sqlConnectionCreatedObserver);
@@ -247,24 +234,24 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		return new DbStatementWrapper(owner, statement, index);
 	}
 
-	public bool DisposeLinkageParserInstance_(IVsDataConnection site)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Disposes of a parser given an IVsDataConnection site.
+	/// </summary>
+	/// <param name="site">
+	/// The IVsDataConnection explorer connection object
+	/// </param>
+	/// <param name="disposing">
+	/// If disposing is set to true, then all parsers with weak equivalency will
+	/// be tagged as intransient, meaning their trigger linkage databases cannot
+	/// be copied to another parser with weak equivalency. 
+	/// </param>
+	/// <returns>True of the parser was found and disposed else false.</returns>
+	// -------------------------------------------------------------------------
+	public bool DisposeLinkageParserInstance_(IVsDataExplorerConnection root, bool disposing)
 	{
-		return LinkageParser.DisposeInstance(site);
+		return LinkageParser.DisposeInstance(root, disposing);
 	}
-
-	public bool DisposeLinkageParserInstance_(IDbConnection connection)
-	{
-		return LinkageParser.DisposeInstance(connection);
-	}
-
-	public bool DisposeLinkageParsers_()
-	{
-		return LinkageParser.DisposeAll();
-	}
-
-	public IBsLinkageParser EnsureLinkageParserInstance_(IDbConnection connection) => LinkageParser.EnsureInstance(connection);
-
-	public IBsLinkageParser EnsureLinkageParserLoaded_(IDbConnection connection) => LinkageParser.EnsureLoaded(connection);
 
 	public byte GetErrorClass_(object error)
 	{
@@ -289,8 +276,8 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		return ((FbError)error).Number;
 	}
 
-	public IBsLinkageParser GetLinkageParserInstance_(IVsDataConnection site) => LinkageParser.GetInstance(site);
-	public IBsLinkageParser GetLinkageParserInstance_(IDbConnection connection) => LinkageParser.GetInstance(connection);
+	public IBsNativeDbLinkageParser GetLinkageParserInstance_(IVsDataExplorerConnection root) => LinkageParser.GetInstance(root);
+
 
 	public int GetObjectTypeIdentifierLength_(string typeName)
 	{
@@ -323,6 +310,10 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 		FbConnection connection = (FbConnection)@this.Connection;
 
+		if (connection == null || connection.State != ConnectionState.Open)
+			return false;
+
+
 		FbDatabaseInfo dbInfo = new(connection);
 
 		return dbInfo.GetActiveTransactionsCount() > 0;
@@ -334,12 +325,16 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		return command is IBsNativeDbStatementWrapper || command is FbCommand || command is FbBatchExecution;
 	}
 
-	public bool IsSupportedConnection_(object connection)
+	public bool IsSupportedConnection_(IDbConnection connection)
 	{
 		return connection is FbConnection;
 	}
 
-	public void LockLoadedParser_(string updatedString) => LinkageParser.LockLoadedParser(updatedString);
+
+	public bool LockLoadedParser_(string originalString, string updatedString) => LinkageParser.LockLoadedParser(originalString, updatedString);
+
+	public void OpenConnection_(DbConnection connection) => ((FbConnection)connection).Open();
+
 	public void UnlockLoadedParser_() => LinkageParser.UnlockLoadedParser();
 
 
@@ -348,7 +343,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	/// Converts a key and value to a KeyValuePair<string, string>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static KeyValuePair<string, string> StringPair(string key, string value)
+	private static KeyValuePair<string, string> Pair(string key, string value)
 	{
 		return new KeyValuePair<string, string>(key, value);
 	}

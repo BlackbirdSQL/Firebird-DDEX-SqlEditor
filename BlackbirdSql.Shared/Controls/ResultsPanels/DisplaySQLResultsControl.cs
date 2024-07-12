@@ -38,7 +38,7 @@ using Microsoft.VisualStudio.Threading;
 namespace BlackbirdSql.Shared.Controls.ResultsPanels;
 
 
-public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecutionHandler, IDisposable
+public class DisplaySQLResultsControl : IBQueryExecutionHandler, IBExecutionHandler, IDisposable
 {
 	private enum EnResultMessageType
 	{
@@ -1634,7 +1634,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 			if (!ShouldDiscardResults && !_HasMessages && args.ExecutionResult == EnScriptExecutionResult.Success)
 			{
-				string text = _QryMgr.ConnectionStrategy.GetCustomQuerySuccessMessage();
+				string text = _QryMgr.Strategy.GetCustomQuerySuccessMessage();
 
 				text ??= ControlsResources.MsgCommandSuccess;
 
@@ -1666,7 +1666,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 			{
 				try
 				{
-					_TextMessagesPage.ResultsWriter.AppendNormal(_QryMgr.HasTransactions
+					_TextMessagesPage.ResultsWriter.AppendNormal(_QryMgr.GetUpdateTransactionsStatus()
 						? ControlsResources.MsgQueryCancelledRollback :ControlsResources.MsgQueryCancelled);
 				}
 				catch (Exception ex)

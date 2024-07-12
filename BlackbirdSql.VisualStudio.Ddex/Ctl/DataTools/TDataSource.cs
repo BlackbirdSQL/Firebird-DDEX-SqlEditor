@@ -17,7 +17,7 @@ public class TDataSource
 		private readonly TDataSource _OwningDataSource = owningDataSource;
 
 
-		private readonly ICollection<TDataProvider> _DataProviders = new List<TDataProvider>();
+		private readonly ICollection<TDataProvider> _DataProviders = [];
 
 		public int Count => _DataProviders.Count;
 

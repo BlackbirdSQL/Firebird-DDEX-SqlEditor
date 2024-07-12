@@ -9,8 +9,6 @@ using System.Reflection;
 
 namespace BlackbirdSql.Core.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
-
 
 /// <summary>
 /// Editor related Host services.

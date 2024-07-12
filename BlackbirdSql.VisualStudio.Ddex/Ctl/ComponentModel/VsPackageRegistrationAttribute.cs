@@ -14,8 +14,15 @@ using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
-internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
+internal class VsPackageRegistrationAttribute: RegistrationAttribute
 {
+	public VsPackageRegistrationAttribute() : base()
+	{
+		BlackbirdSqlDdexExtension.RegisterDataServices();
+	}
+
+
+
 	/// <summary>
 	/// Registers the package in the local user's VS private registry
 	/// </summary>
@@ -38,7 +45,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 
 		try
 		{
-			Type providerFactoryClass = BlackbirdSqlDdexExtension.DatabaseEngineSvc.ClientFactoryType_;
+			Type providerFactoryClass = NativeDb.ClientFactoryType; 
 			string invariantName = providerFactoryClass.Assembly.GetName().Name;
 			// string invariantFullName = providerFactoryClass.Assembly.FullName;
 
@@ -59,7 +66,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			// Add the Firebird data source (if not exists???)
 			key = context.CreateKey("DataSources\\" + dataSourceGuid);
 
-			key.SetValue(null, BlackbirdSqlDdexExtension.DatabaseEngineSvc.DataProviderName_);
+			key.SetValue(null, NativeDb.DataProviderName);
 			key.SetValue("DefaultProvider", providerGuid);
 
 			// Add this package as a provider for the Firebird data source
@@ -144,6 +151,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			DisposeKey(ref key);
 		}
 	}
+
 
 
 	/// <summary>

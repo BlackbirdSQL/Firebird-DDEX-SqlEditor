@@ -22,7 +22,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslFunctionArguments : DslColumns
 {
-	public DslFunctionArguments(IBsLinkageParser parser) : base(parser)
+	public DslFunctionArguments() : base()
 	{
 		// Tracer.Trace(GetType(), "DslFunctionArguments.DslFunctionArguments");
 

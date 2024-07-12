@@ -164,7 +164,8 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 
 	private static AsyncLazy<T> _LiveModel = null;
-	private static AsyncLazy<ShellSettingsManager> _SettingsManager = null;
+	// private static AsyncLazy<ShellSettingsManager> _SettingsManager = null;
+	private static ShellSettingsManager _SettingsManager = null;
 	private static List<IBModelPropertyWrapper> _PropertyWrappers = null;
 
 
@@ -266,12 +267,14 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	public virtual IEnumerable<IBModelPropertyWrapper> PropertyWrappersEnumeration => PropertyWrappers.AsReadOnly();
 
 
+	// This is already lazy. Performing lazy on a lazy makes no sense and iac fails.
+	// private static AsyncLazy<ShellSettingsManager> SettingsManager =>
+	//	_SettingsManager ??=
+	//		new AsyncLazy<ShellSettingsManager>(new Func<Task<ShellSettingsManager>>(GetSettingsManagerAsync),
+	//		ThreadHelper.JoinableTaskFactory);
 
-	private static AsyncLazy<ShellSettingsManager> SettingsManager =>
-		_SettingsManager ??=
-			new AsyncLazy<ShellSettingsManager>(new Func<Task<ShellSettingsManager>>(GetSettingsManagerAsync),
-			ThreadHelper.JoinableTaskFactory);
-
+	private static ShellSettingsManager SettingsManager =>
+		_SettingsManager ??= new ShellSettingsManager(ServiceProvider.GlobalProvider);
 
 	public static event Action<T> SettingsSavedEvent;
 
@@ -321,16 +324,25 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 	public virtual async Task LoadAsync()
 	{
+		await TaskScheduler.Default;
+
 		BeforeLoadEvent?.Invoke(this, EventArgs.Empty);
 
-		ShellSettingsManager obj = await SettingsManager.GetValueAsync();
-		SettingsScope scope = SettingsScope.UserSettings;
-		SettingsStore readOnlySettingsStore = obj.GetReadOnlySettingsStore(scope);
+		SettingsStore readOnlySettingsStore = null;
+
+		if (_TransientSettings == null)
+		{
+			ShellSettingsManager manager = SettingsManager;
+
+			// ShellSettingsManager manager = await SettingsManager.GetValueAsync();
+			SettingsScope scope = SettingsScope.UserSettings;
+			readOnlySettingsStore = manager.GetReadOnlySettingsStore(scope);
+		}
 
 
 		foreach (IBModelPropertyWrapper propertyWrapper in PropertyWrappersEnumeration)
 		{
-			if (_TransientSettings != null)
+			if (readOnlySettingsStore == null)
 				((IBSettingsModelPropertyWrapper)propertyWrapper).Load(this, _TransientSettings);
 			else
 				((IBSettingsModelPropertyWrapper)propertyWrapper).Load(this, readOnlySettingsStore);
@@ -363,19 +375,19 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 	public virtual async Task SaveAsync()
 	{
-		ShellSettingsManager obj;
-		SettingsScope scope;
 		WritableSettingsStore writableSettingsStore = null;
 
 		if (_TransientSettings == null)
 		{
-			obj = await SettingsManager.GetValueAsync();
-			scope = SettingsScope.UserSettings;
-			writableSettingsStore = obj.GetWritableSettingsStore(scope);
+			ShellSettingsManager manager = SettingsManager;
+			// obj = await SettingsManager.GetValueAsync();
+			SettingsScope scope = SettingsScope.UserSettings;
+			writableSettingsStore = manager.GetWritableSettingsStore(scope);
 		}
+
 		foreach (IBModelPropertyWrapper propertyWrapper in PropertyWrappersEnumeration)
 		{
-			if (_TransientSettings != null)
+			if (writableSettingsStore == null)
 				((IBSettingsModelPropertyWrapper)propertyWrapper).Save(this, _TransientSettings);
 			else
 				((IBSettingsModelPropertyWrapper)propertyWrapper).Save(this, writableSettingsStore);
@@ -423,12 +435,13 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	}
 
 
-
+	/*
 	private static async Task<ShellSettingsManager> GetSettingsManagerAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 		return new ShellSettingsManager(ServiceProvider.GlobalProvider);
 	}
+	*/
 
 
 

@@ -199,7 +199,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 
 
 
-	public ResultsToTextOrFileBatchConsumer(IBSqlQueryExecutionHandler resultsControl)
+	public ResultsToTextOrFileBatchConsumer(IBQueryExecutionHandler resultsControl)
 		: base(resultsControl)
 	{
 		// Tracer.Trace(GetType(), "ResultsToTextOrFileBatchConsumer.ResultsToTextOrFileBatchConsumer", "", null);

@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
@@ -14,23 +12,25 @@ using BlackbirdSql.Sys.Properties;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Design;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
+using VSLangProj;
 
 
 
 namespace BlackbirdSql.Sys;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
 
 
 // =========================================================================================================
 //										AbstrusePackageController Class
 //
 /// <summary>
-/// Manages package events and settings. This is the PackageController base class.
+/// Manages package events and settings. This is the PackageController base class. This abstract class deals
+/// specifically with event handlers.
 /// </summary>
 /// <remarks>
 /// Also updates the app.config for DbProvider and EntityFramework and updates existing .edmx models that
@@ -41,7 +41,6 @@ namespace BlackbirdSql.Sys;
 // =========================================================================================================
 public abstract class AbstrusePackageController : IBsPackageController
 {
-
 
 	// ---------------------------------------------------------------------------------
 	#region Constructors / Destructors - AbstrusePackageController
@@ -60,24 +59,31 @@ public abstract class AbstrusePackageController : IBsPackageController
 			throw ex;
 		}
 
-
 		_Instance = this;
-		_PackageInstance = ddex;
 
-		if (Package.GetGlobalService(typeof(DTE)) is DTE2 dte)
+
+		if (!ThreadHelper.CheckAccess())
 		{
-			dte.Events.DTEEvents.OnBeginShutdown += OnBeginShutdown;
+			// Fire and forget
+
+			_ = Task.Factory.StartNew(
+				async () =>
+				{
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					Initialize();
+				},
+				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 		}
 		else
 		{
-			throw new NullReferenceException("DTE2 is not initialized");
+			Initialize();
 		}
+
 
 		ddex.OnLoadSolutionOptionsEvent += OnLoadSolutionOptions;
 		ddex.OnSaveSolutionOptionsEvent += OnSaveSolutionOptions;
 
 	}
-
 
 
 
@@ -92,6 +98,9 @@ public abstract class AbstrusePackageController : IBsPackageController
 		{
 			if (_Instance == null)
 			{
+				if (IdeShutdownState)
+					return null;
+
 				_ = (IBsPackageController)Package.GetGlobalService(typeof(IBsPackageController));
 
 				if (_Instance == null)
@@ -108,6 +117,9 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
+	protected abstract void Initialize();
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// AbstrusePackageController disposal
@@ -115,22 +127,20 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// ---------------------------------------------------------------------------------
 	public virtual void Dispose()
 	{
-		_PackageInstance.OnLoadSolutionOptionsEvent -= OnLoadSolutionOptions;
-		_PackageInstance.OnSaveSolutionOptionsEvent -= OnSaveSolutionOptions;
+		Dispose(true);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+		if (!disposing)
+			return;
 
 		UnadviseEvents(true);
-
-		if (_EventsManagers != null)
-		{
-			foreach (IBsEventsManager manager in _EventsManagers)
-				manager.Dispose();
-		}
-
-		
 	}
 
 
 	#endregion Constructors / Destructors
+
 
 
 
@@ -140,39 +150,44 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// =========================================================================================================
 
 
-	private DTE _Dte = null;
-	private bool _ProjectEvents = false;
 	private static bool _IdeShutdownState = false;
-	private static int _RdtEventsCardinal = 0;
 
-	protected static bool _EventsAdvisedUnsafe = false;
-	protected static bool _SolutionLoaded = false;
-	protected int _RefCnt = 0;
+	private int _EventProjectCardinal = -2;
+	private static int _EventRdtCardinal = 0;
+
+	private static bool _SolutionLoaded = false;
+
+
+	private int _RefLoadCnt = 0;
+	private int _RefOpenCnt = 0;
 
 	protected static IBsPackageController _Instance = null;
-	protected static List<IBsEventsManager> _EventsManagers = null;
 
-	// A package instance global lock
-	private readonly object _LockGlobal = new object();
+	// A package controller instance lock
+	protected readonly object _LockObject = new object();
 
 
-	private readonly IBsAsyncPackage _PackageInstance;
+	private IDictionary<VSProject, ReferencesEvents> _ProjectReferencesEvents = null;
+	private IDictionary<VSProject, BuildManagerEvents> _ProjectBuildManagerEvents = null;
 
-	protected IVsMonitorSelection _MonitorSelection = null;
-	private IVsTaskStatusCenterService _StatusCenterService = null;
 
-	protected uint _HSolutionEvents = uint.MaxValue;
-	protected uint _HDocTableEvents = uint.MaxValue;
-	protected uint _HSelectionEvents = uint.MaxValue;
+	private _dispReferencesEvents_ReferenceAddedEventHandler _ReferenceAddedEventHandler = null;
+	private _dispReferencesEvents_ReferenceRemovedEventHandler _ReferenceRemovedEventHandler = null;
+	private _dispReferencesEvents_ReferenceChangedEventHandler _ReferenceChangedEventHandler = null;
+	private _dispBuildManagerEvents_DesignTimeOutputDeletedEventHandler _DesignTimeOutputDeletedEventHandler = null;
+	private _dispBuildManagerEvents_DesignTimeOutputDirtyEventHandler _DesignTimeOutputDirtyEventHandler = null;
 
-	protected uint _ToolboxCmdUICookie;
 
-	private string _UserDataDirectory = null;
+	// System Events Delegates
+	protected IBsPackageController.InitializeDelegate _OnInitializeEvent;
+	private IBsPackageController.AssemblyObsoleteDelegate _OnAssemblyObsoleteEvent;
+	private IBsPackageController.BuildDoneDelegate _OnBuildDoneEvent;
 
 
 	private IBsPackageController.AfterAttributeChangeDelegate _OnAfterAttributeChangeEvent;
 	private IBsPackageController.AfterAttributeChangeExDelegate _OnAfterAttributeChangeExEvent;
 	private IBsPackageController.AfterDocumentWindowHideDelegate _OnAfterDocumentWindowHideEvent;
+	private IBsPackageController.AfterLastDocumentUnlockDelegate _OnAfterLastDocumentUnlockEvent;
 	private IBsPackageController.AfterSaveDelegate _OnAfterSaveEvent;
 	private IBsPackageController.AfterSaveAsyncDelegate _OnAfterSaveAsyncEvent;
 	private IBsPackageController.BeforeDocumentWindowShowDelegate _OnBeforeDocumentWindowShowEvent;
@@ -180,12 +195,14 @@ public abstract class AbstrusePackageController : IBsPackageController
 	private IBsPackageController.BeforeSaveDelegate _OnBeforeSaveEvent;
 	private IBsPackageController.BeforeSaveAsyncDelegate _OnBeforeSaveAsyncEvent;
 
+	private IBsPackageController.AfterCloseSolutionDelegate _OnAfterCloseSolutionEvent;
+	private IBsPackageController.AfterLoadProjectDelegate _OnAfterLoadProjectEvent;
 	private IBsPackageController.AfterOpenProjectDelegate _OnAfterOpenProjectEvent;
+	private IBsPackageController.AfterOpenSolutionDelegate _OnAfterOpenSolutionEvent;
 	private IBsPackageController.BeforeCloseProjectDelegate _OnBeforeCloseProjectEvent;
 	private IBsPackageController.BeforeCloseSolutionDelegate _OnBeforeCloseSolutionEvent;
 	private IBsPackageController.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
 	private IBsPackageController.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
-	private IBsPackageController.AfterCloseSolutionDelegate _OnAfterCloseSolutionEvent;
 	private IBsPackageController.QueryCloseProjectDelegate _OnQueryCloseProjectEvent;
 	private IBsPackageController.QueryCloseSolutionDelegate _OnQueryCloseSolutionEvent;
 
@@ -193,6 +210,21 @@ public abstract class AbstrusePackageController : IBsPackageController
 	private IBsPackageController.SelectionChangedDelegate _OnSelectionChangedEvent;
 	private IBsPackageController.ElementValueChangedDelegate _OnElementValueChangedEvent;
 	private IBsPackageController.CmdUIContextChangedDelegate _OnCmdUIContextChangedEvent;
+
+	// Project Events Delegates
+	private IBsPackageController.DesignTimeOutputDeletedDelegate _OnDesignTimeOutputDeletedEvent;
+	private IBsPackageController.DesignTimeOutputDirtyDelegate _OnDesignTimeOutputDirtyEvent;
+
+	private IBsPackageController.ProjectInitializedDelegate _OnProjectInitializedEvent;
+
+	private IBsPackageController.ProjectItemAddedDelegate _OnProjectItemAddedEvent;
+	private IBsPackageController.ProjectItemRemovedDelegate _OnProjectItemRemovedEvent;
+	private IBsPackageController.ProjectItemRenamedDelegate _OnProjectItemRenamedEvent;
+
+	private IBsPackageController.ReferenceAddedDelegate _OnReferenceAddedEvent;
+	private IBsPackageController.ReferenceChangedDelegate _OnReferenceChangedEvent;
+	private IBsPackageController.ReferenceRemovedDelegate _OnReferenceRemovedEvent;
+
 
 	// Custom events Delegates
 	private IBsPackageController.NewQueryRequestedDelegate _OnNewQueryRequestedEvent;
@@ -203,175 +235,32 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
+
 	// =========================================================================================================
 	#region Property Accessors - AbstrusePackageController
 	// =========================================================================================================
 
-	public string UserDataDirectory => _UserDataDirectory ??=
-		Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 
 	public static bool IdeShutdownState => _IdeShutdownState;
 
-
-	public IBsAsyncPackage PackageInstance => _PackageInstance;
-
-
-
-	public DTE Dte
-	{
-		get
-		{
-			if (_IdeShutdownState)
-				return null;
-
-			if (_Dte != null)
-				return _Dte;
-
-			_Dte = PackageInstance.GetService<DTE, DTE>();
-
-			if (_Dte == null)
-				ResetDte();
-
-			return _Dte;
-		}
-	}
-
-
-
-
-	private bool RdtEventsEnabled => _RdtEventsCardinal == 0;
-
-	public object SolutionObject => !_IdeShutdownState ? Dte.Solution : null;
-
+	public abstract DTE Dte { get; }
+	public abstract DTE2 Dte2 { get; }
+	public abstract string ProviderGuid { get; }
 	public abstract bool SolutionValidating { get; }
-
-
-	public IVsSolution VsSolution => _PackageInstance.VsSolution;
-
-	public bool IsCmdLineBuild
-	{
-		get
-		{
-			Diag.ThrowIfNotOnUIThread();
-
-			try
-			{
-				if (Package.GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
-				{
-					vsShell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out var pvar);
-					if (pvar is bool bvar)
-						return bvar;
-				}
-			}
-			catch (COMException)
-			{
-				return false;
-			}
-
-			return false;
-		}
-	}
-
-
-	public bool IsToolboxInitialized
-	{
-		get
-		{
-			if (SelectionMonitor != null)
-			{
-				Diag.ThrowIfNotOnUIThread();
-
-				___(SelectionMonitor.IsCmdUIContextActive(ToolboxCmdUICookie, out int pfActive));
-
-				return pfActive != 0;
-			}
-			return true;
-		}
-	}
-
-
-
-	public IVsMonitorSelection SelectionMonitor
-	{
-		get
-		{
-			Diag.ThrowIfNotOnUIThread();
-
-			if (_MonitorSelection == null)
-				EnsureMonitorSelection();
-			return _MonitorSelection;
-		}
-	}
-
-
-	public IAsyncServiceContainer Services => (IAsyncServiceContainer)_PackageInstance;
-
-
-	/// <summary>
-	/// Struggling to resolve deadlocking on GetService[Async] calls forLinkageParserl, so we're going
-	/// to maintain instances of certain services.
-	/// </summary>
-	/// <remarks>
-	/// Deadlock debug notes:
-	/// 1. Caveat: Both GetService() and GetServiceAsynce seem to require the UIThread at some point.
-	/// 2. The LinkageParser can switch between the UIThread and pool multiple times during the lifetime of
-	/// a task. By default building the linkage is async, but if a Linkage result set/schema is required
-	/// we complete the build process on the UIThread.
-	/// 3. A launcher task using Run or StartNew can be in a prelaunch phase where it cannot be notified of
-	/// it's cancellation.
-	/// The reproduceable: Suppose a ServerExplorer tree is expanded on it's Sequences node and the user
-	/// refreshes. The entire visible tree structure is refreshed. Any existing Linkage tables are disposed
-	/// of and an async rebuild is launched.
-	/// Once ServerExplorer reaches the expanded Sequences node, it will request the Sequences, which are held
-	/// in a linkage table, which is currently being built async.
-	/// So we notify the async task of cancellation and wait. The async task performs a cleanup and notifies
-	/// the sync task that it is handing over the linkage process.
-	/// This all sounds very beautiful and easy enough, but there are some major caveats...
-	/// 1. The async task launcher task (StartNew etc) may be in prelaunch, a phase in which it is inaccessible.
-	/// The timeslice on this phase is substantial, so during for example a refresh, it's a given that a sync
-	/// task will attempt to cancel an inacessible launcher, which is busy doing some of it's "launch stuff"
-	/// on the very UIThread the sync task has now blocked.
-	/// 2. A sync or async task has called GetService[Async], and at this juncture another task on the UIThread
-	/// may have sent out a cancellation request. GetService will deadlock behind it on the UI.
-	/// GetService[Async] also uses a substantial timeslice relatively speaking, so this deadlock will
-	/// happen more often than not.
-	/// 3. There has been a call to the Tracer, Diag class, TaskHandler or output window. GetService is gonna
-	/// happen somewhere in that logic, and it's a deadlock.
-	/// Solution: 1 has been resolved some time back, but with 2 and 3 we have no access whatsoever.
-	/// So the easiest solution is to store those service instances once they've been created, eliminating
-	/// the need for GetService during processing/linkage/building.
-	/// </remarks>
-
-	public IVsTaskStatusCenterService StatusCenterService => _StatusCenterService
-		??= GetService<SVsTaskStatusCenterService, IVsTaskStatusCenterService>();
-	
-	//	ThreadHelper.JoinableTaskFactory.Run(new Func<Task<IVsTaskStatusCenterService>>(GetStatusCenterServiceAsync));
-
-
-
-	public uint ToolboxCmdUICookie
-	{
-		get
-		{
-			if (_ToolboxCmdUICookie == 0 && SelectionMonitor != null)
-			{
-				Diag.ThrowIfNotOnUIThread();
-
-				Guid rguidCmdUI = new Guid(VSConstants.UICONTEXT.ToolboxInitialized_string);
-				SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ToolboxCmdUICookie);
-			}
-			return _ToolboxCmdUICookie;
-		}
-	}
-
-
-	/// <summary>
-	/// The extension wide package instance lock.
-	/// </summary>
-	public object LockGlobal => _LockGlobal;
+	public abstract bool IsCmdLineBuild { get; }
+	public abstract bool IsToolboxInitialized { get; }
+	public abstract IBsAsyncPackage PackageInstance { get; }
+	public abstract IVsMonitorSelection SelectionMonitor { get; }
+	public abstract IAsyncServiceContainer Services { get; }
+	public abstract bool SolutionClosing { get; }
+	public abstract Solution SolutionObject { get; }
+	public abstract Projects SolutionProjects { get; }
+	public abstract IVsTaskStatusCenterService StatusCenterService { get; }
+	public abstract uint ToolboxCmdUICookie { get; }
 
 
 	#endregion Property Accessors
+
 
 
 
@@ -422,6 +311,16 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 	/// <summary>
+	/// Accessor to the <see cref="IVsSolutionEvents.OnAfterLoadProject"/> event.
+	/// </summary>
+	event IBsPackageController.AfterLoadProjectDelegate IBsPackageController.OnAfterLoadProjectEvent
+	{
+		add { _OnAfterLoadProjectEvent += value; }
+		remove { _OnAfterLoadProjectEvent -= value; }
+	}
+
+
+	/// <summary>
 	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
 	/// </summary>
 	event IBsPackageController.LoadSolutionOptionsDelegate IBsPackageController.OnLoadSolutionOptionsEvent
@@ -447,6 +346,26 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		add { _OnAfterCloseSolutionEvent += value; }
 		remove { _OnAfterCloseSolutionEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents4.OnAfterLastDocumentUnlock"/> event.
+	/// </summary>
+	event IBsPackageController.AfterLastDocumentUnlockDelegate IBsPackageController.OnAfterLastDocumentUnlockEvent
+	{
+		add { _OnAfterLastDocumentUnlockEvent += value; }
+		remove { _OnAfterLastDocumentUnlockEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSolutionEvents.OnAfterOpenSolution"/> event.
+	/// </summary>
+	event IBsPackageController.AfterOpenSolutionDelegate IBsPackageController.OnAfterOpenSolutionEvent
+	{
+		add { _OnAfterOpenSolutionEvent += value; }
+		remove { _OnAfterOpenSolutionEvent -= value; }
 	}
 
 
@@ -498,6 +417,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 		remove { _OnBeforeSaveEvent -= value; }
 	}
 
+
 	/// <summary>
 	/// Accessor to the <see cref="IVsRunningDocTableEvents7.OnBeforeSaveAsync"/> event.
 	/// Comment out and remove IVsRunningDocTableEvents7 interface to enable OnAfterSave.
@@ -506,6 +426,35 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		add { _OnBeforeSaveAsyncEvent += value; }
 		remove { _OnBeforeSaveAsyncEvent -= value; }
+	}
+
+	/// <summary>
+	/// Accessor to the <see cref="OnInitialize"/> event.
+	/// </summary>
+	event IBsPackageController.InitializeDelegate IBsPackageController.OnInitializeEvent
+	{
+		add { _OnInitializeEvent += value; }
+		remove { _OnInitializeEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="DynamicTypeService.AssemblyObsolete"/> event.
+	/// </summary>
+	event IBsPackageController.AssemblyObsoleteDelegate IBsPackageController.OnAssemblyObsoleteEvent
+	{
+		add { _OnAssemblyObsoleteEvent += value; }
+		remove { _OnAssemblyObsoleteEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="BuildEvents.OnBuildDone"/> event.
+	/// </summary>
+	event IBsPackageController.BuildDoneDelegate IBsPackageController.OnBuildDoneEvent
+	{
+		add { _OnBuildDoneEvent += value; }
+		remove { _OnBuildDoneEvent -= value; }
 	}
 
 
@@ -549,6 +498,26 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 	/// <summary>
+	/// Accessor to the <see cref="BuildManagerEvents.DesignTimeOutputDeleted"/> event.
+	/// </summary>
+	event IBsPackageController.DesignTimeOutputDeletedDelegate IBsPackageController.OnDesignTimeOutputDeletedEvent
+	{
+		add { _OnDesignTimeOutputDeletedEvent += value; }
+		remove { _OnDesignTimeOutputDeletedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="BuildManagerEvents.DesignTimeOutputDirty"/> event.
+	/// </summary>
+	event IBsPackageController.DesignTimeOutputDirtyDelegate IBsPackageController.OnDesignTimeOutputDirtyEvent
+	{
+		add { _OnDesignTimeOutputDirtyEvent += value; }
+		remove { _OnDesignTimeOutputDirtyEvent -= value; }
+	}
+
+
+	/// <summary>
 	/// Accessor to the <see cref="IVsSolutionEvents.OnQueryCloseProject"/> event.
 	/// </summary>
 	event IBsPackageController.QueryCloseProjectDelegate IBsPackageController.OnQueryCloseProjectEvent
@@ -565,6 +534,79 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		add { _OnQueryCloseSolutionEvent += value; }
 		remove { _OnQueryCloseSolutionEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="OnProjectInitializedEvent"/> event. This event is guaranteed to be
+	/// fired once, but only once, for all Visible design time projects excluding the Misc project,
+	/// irrelevant of whether or not the extension package was initialized and active at the time the
+	/// project was loaded or opened.
+	/// </summary>
+	event IBsPackageController.ProjectInitializedDelegate IBsPackageController.OnProjectInitializedEvent
+	{
+		add { _OnProjectInitializedEvent += value; }
+		remove { _OnProjectInitializedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="ProjectItemsEvents.ItemAdded"/> event.
+	/// </summary>
+	event IBsPackageController.ProjectItemAddedDelegate IBsPackageController.OnProjectItemAddedEvent
+	{
+		add { _OnProjectItemAddedEvent += value; }
+		remove { _OnProjectItemAddedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="ProjectItemsEvents.ItemRemoved"/> event.
+	/// </summary>
+	event IBsPackageController.ProjectItemRemovedDelegate IBsPackageController.OnProjectItemRemovedEvent
+	{
+		add { _OnProjectItemRemovedEvent += value; }
+		remove { _OnProjectItemRemovedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="ProjectItemsEvents.ItemRenamed"/> event.
+	/// </summary>
+	event IBsPackageController.ProjectItemRenamedDelegate IBsPackageController.OnProjectItemRenamedEvent
+	{
+		add { _OnProjectItemRenamedEvent += value; }
+		remove { _OnProjectItemRenamedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event.
+	/// </summary>
+	event IBsPackageController.ReferenceAddedDelegate IBsPackageController.OnReferenceAddedEvent
+	{
+		add { _OnReferenceAddedEvent += value; }
+		remove { _OnReferenceAddedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="_dispReferencesEvents_Event.ReferenceChanged"/> event.
+	/// </summary>
+	event IBsPackageController.ReferenceChangedDelegate IBsPackageController.OnReferenceChangedEvent
+	{
+		add { _OnReferenceChangedEvent += value; }
+		remove { _OnReferenceChangedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="_dispReferencesEvents_Event.ReferenceRemoved"/> event.
+	/// </summary>
+	event IBsPackageController.ReferenceRemovedDelegate IBsPackageController.OnReferenceRemovedEvent
+	{
+		add { _OnReferenceRemovedEvent += value; }
+		remove { _OnReferenceRemovedEvent -= value; }
 	}
 
 
@@ -593,9 +635,90 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
+
 	// =========================================================================================================
 	#region Methods - AbstrusePackageController
 	// =========================================================================================================
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Adds event handlers for project events that reset the ITypeResolutionService
+	/// cache, so that we can rebuild the type references to the
+	/// EntityFramework.FirebirdClient assembly that ships with the extension.
+	/// This is to prevent invalid cast exceptions where project EntityFramework
+	/// versions differ.
+	/// </summary>
+	/// <remarks>
+	/// There are too many caveats in establicsing if a project's target frameworks
+	/// include .NetFramework, so all we care about is that it's a user project and it's
+	/// Object property is of type VSProject. The cache for a project will only be
+	/// updated if it references EntityFramework.Firebird.
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
+	private void AddProjectEventHandlers(Project project)
+	{
+		// Tracer.Trace(GetType(), "AddProjectEventHandlers()", "CALLING ReindexEntityFrameworkAssemblies() for project: {0}.", project.Name);
+
+		if (!project.IsEditable())
+			return;
+
+		VSProject projectObject = project.Object as VSProject;
+
+		if (_ProjectReferencesEvents != null && _ProjectReferencesEvents.Count != 0 && _ProjectReferencesEvents.ContainsKey(projectObject))
+			return;
+
+		try
+		{
+			_ReferenceAddedEventHandler ??= new _dispReferencesEvents_ReferenceAddedEventHandler(OnReferenceAdded);
+			_ReferenceRemovedEventHandler ??= new _dispReferencesEvents_ReferenceRemovedEventHandler(OnReferenceRemoved);
+			_ReferenceChangedEventHandler ??= new _dispReferencesEvents_ReferenceChangedEventHandler(OnReferenceChanged);
+			_DesignTimeOutputDeletedEventHandler ??= new _dispBuildManagerEvents_DesignTimeOutputDeletedEventHandler(OnDesignTimeOutputDeleted);
+			_DesignTimeOutputDirtyEventHandler ??= new _dispBuildManagerEvents_DesignTimeOutputDirtyEventHandler(OnDesignTimeOutputDirty);
+
+			// Reference and BuildManager events get lost if we don't maintain a reference to them.
+
+			_ProjectReferencesEvents ??= new Dictionary<VSProject, ReferencesEvents>();
+			_ProjectBuildManagerEvents ??= new Dictionary<VSProject, BuildManagerEvents>();
+
+			ReferencesEvents referenceEvents = projectObject.Events.ReferencesEvents;
+			_ProjectReferencesEvents[projectObject] = referenceEvents;
+
+			BuildManagerEvents buildManagerEvents = projectObject.Events.BuildManagerEvents;
+			_ProjectBuildManagerEvents[projectObject] = buildManagerEvents;
+
+
+			referenceEvents.ReferenceAdded += _ReferenceAddedEventHandler;
+			referenceEvents.ReferenceRemoved += _ReferenceRemovedEventHandler;
+			referenceEvents.ReferenceChanged += _ReferenceChangedEventHandler;
+			buildManagerEvents.DesignTimeOutputDeleted += _DesignTimeOutputDeletedEventHandler;
+			buildManagerEvents.DesignTimeOutputDirty += _DesignTimeOutputDirtyEventHandler;
+
+			_OnProjectInitializedEvent?.Invoke(project);
+
+
+			// Tracer.Trace(GetType(), "AddProjectEventHandlers()", "Added event handlers for project: {0}.", project.Name);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -625,17 +748,113 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
+	public abstract string CreateConnectionUrl(string connectionString);
+	public abstract string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root);
+	public abstract void InvalidateRctManager();
+	public abstract bool IsConnectionEquivalency(string connectionString1, string connectionString2);
+	public abstract bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2);
+	public abstract TInterface EnsureService<TService, TInterface>() where TInterface : class;
+
+
+
+	private bool EventProjectEnter(bool increment = true, bool force = false)
+	{
+		lock (_LockObject)
+		{
+			// Tracer.Trace(GetType(), "EventProjectEnter()", "_EventProjectCardinal: {0}, increment: {1}.", _EventProjectCardinal, increment);
+
+			if ((_EventProjectCardinal != 0 && !force) || SolutionObject == null)
+				return false;
+
+			if (increment)
+				_EventProjectCardinal++;
+		}
+
+		return true;
+	}
+
+
+
+	private void EventProjectExit()
+	{
+		lock (_LockObject)
+		{
+			// Tracer.Trace(GetType(), "EventProjectExit()", "_EventProjectCardinal: {0}.", _EventProjectCardinal);
+
+			if (_EventProjectCardinal <= 0)
+			{
+				ApplicationException ex = new($"Attempt to exit project event when not in a project event. _EventProjectCardinal: {_EventProjectCardinal}");
+				Diag.Dug(ex);
+				throw ex;
+			}
+			_EventProjectCardinal--;
+		}
+	}
+
+
+	protected bool EventProjectRegistrationEnter(bool increment = true)
+	{
+		lock (_LockObject)
+		{
+			// Tracer.Trace(GetType(), "EventProjectRegisterEnter()", "_EventProjectCardinal: {0}, increment: {1}.", _EventProjectCardinal, increment);
+
+			if (_EventProjectCardinal != -2 || SolutionObject == null)
+				return false;
+
+			if (increment)
+				_EventProjectCardinal++;
+		}
+
+		return true;
+	}
+
+
+
+	protected void EventProjectRegistrationExit()
+	{
+		lock (_LockObject)
+		{
+			// Tracer.Trace(GetType(), "EventProjectRegisterExit()", "_EventProjectCardinal: {0}.", _EventProjectCardinal);
+
+			if (_EventProjectCardinal != -1)
+			{
+				ApplicationException ex = new("Attempt to exit project event registration when events were not being registered.");
+				Diag.Dug(ex);
+				throw ex;
+			}
+			_EventProjectCardinal = 0;
+		}
+	}
+
+
+	protected void EventProjectDeregister()
+	{
+		// Tracer.Trace(GetType(), "EventProjectDeregister()", "_EventProjectCardinal: {0}.", _EventProjectCardinal);
+
+		lock (_LockObject)
+			_EventProjectCardinal = -2;
+	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Increments the <see cref="RdtEventsDisabled"/> counter when execution enters
+	/// Increments the <see cref="_EventRdtCardinal"/> counter when execution enters
 	/// an Rdt event handler to prevent recursion
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public void DisableRdtEvents()
+	public bool EventRdtEnter(bool increment = true, bool force = false)
 	{
-		lock (_LockGlobal)
-			_RdtEventsCardinal++;
+		lock (_LockObject)
+		{
+			if ((_EventRdtCardinal > 0 || IdeShutdownState) && !force)
+				return false;
+
+			if (increment)
+				_EventRdtCardinal++;
+		}
+
+		return true;
 	}
 
 
@@ -645,55 +864,20 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// incremented by <see cref="DisableRdtEvents"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public void EnableRdtEvents()
+	public void EventRdtExit()
 	{
-		lock (_LockGlobal)
+		lock (_LockObject)
 		{
-			if (_RdtEventsCardinal == 0)
-				Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
-			else
-				_RdtEventsCardinal--;
+			if (_EventRdtCardinal <= 0)
+			{
+				ApplicationException ex = new($"Attempt to exit RDT event when not in an Rdt event. _EventRdtCardinal: {_EventRdtCardinal}");
+				Diag.Dug(ex);
+				throw ex;
+			}
+			_EventRdtCardinal--;
 		}
 	}
 
-
-	public abstract string CreateConnectionUrl(IDbConnection connection);
-	public abstract string CreateConnectionUrl(string connectionString);
-	public abstract string GetRegisterConnectionDatasetKey(IDbConnection connection);
-	public abstract void InvalidateRctManager();
-	public abstract bool IsConnectionEquivalency(string connectionString1, string connectionString2);
-	public abstract bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2);
-
-	public void EnsureMonitorSelection()
-	{
-		if (_MonitorSelection != null)
-			return;
-
-		Diag.ThrowIfNotOnUIThread();
-
-		_MonitorSelection = Package.GetGlobalService(typeof(IVsMonitorSelection)) as IVsMonitorSelection;
-
-		if (_MonitorSelection != null && !IsCmdLineBuild)
-			___(_MonitorSelection.AdviseSelectionEvents(this, out _HSelectionEvents));
-
-
-		return;
-
-	}
-
-	public TInterface EnsureService<TService, TInterface>() where TInterface : class
-	{
-		TInterface @interface = PackageInstance.GetService<TService, TInterface>();
-		Diag.ThrowIfServiceUnavailable(@interface, typeof(TInterface));
-
-		return @interface;
-	}
-
-
-	/// <summary>
-	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
-	/// </summary>
-	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 	public TInterface GetService<TInterface>() where TInterface : class
@@ -712,35 +896,65 @@ public abstract class AbstrusePackageController : IBsPackageController
 		=> await PackageInstance.GetServiceAsync<TService, TInterface>();
 
 
+	protected abstract void InternalShutdownDte();
 
-	public async Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync()
+
+	protected void RegisterProjectEventHandlers()
 	{
-		return await ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
-						IVsTaskStatusCenterService>(swallowExceptions: false);
+		if (!EventProjectRegistrationEnter())
+			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and forget async
+
+			_ = Task.Factory.StartNew(
+				async () =>
+				{
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+					try
+					{
+						List<Project> projects = UnsafeCmd.RecursiveGetDesignTimeProjects();
+
+						// Tracer.Trace(GetType(), "AdviseEvents()", "Adding event handlers for {0} EF projects", projects.Count);
+						foreach (Project project in projects)
+							AddProjectEventHandlers(project);
+					}
+					finally
+					{
+						EventProjectRegistrationExit();
+					}
+				},
+				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+		}
+		else
+		{
+			try
+			{
+				List<Project> projects = UnsafeCmd.RecursiveGetDesignTimeProjects();
+
+				// Tracer.Trace(GetType(), "AdviseEvents()", "Adding event handlers for {0} EF projects", projects.Count);
+				foreach (Project project in projects)
+					AddProjectEventHandlers(project);
+			}
+			finally
+			{
+				EventProjectRegistrationExit();
+			}
+		}
 	}
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Registers events managers for future disposal.
-	/// </summary>
-	/// <param name="manager"></param>
-	// ---------------------------------------------------------------------------------
-	public void RegisterEventsManager(IBsEventsManager manager)
+	public static void ShutdownDte()
 	{
-		_EventsManagers ??= [];
-		_EventsManagers.Add(manager);
-	}
-
-
-	public static void ResetDte()
-	{
-		if (_Instance != null)
-			((AbstrusePackageController)_Instance)._Dte = null;
+		((AbstrusePackageController)_Instance)?.InternalShutdownDte();
 
 		_IdeShutdownState = true;
 	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -749,7 +963,6 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// <param name="disposing"></param>
 	// ---------------------------------------------------------------------------------
 	public abstract void UnadviseEvents(bool disposing);
-
 
 
 
@@ -763,15 +976,132 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 	// =========================================================================================================
-	#region General Event handling - AbstrusePackageController
+	#region General and Type Resolution Event handling - AbstrusePackageController
 	// =========================================================================================================
 
 
-	public int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType) => _OnNewQueryRequestedEvent != null
-	? _OnNewQueryRequestedEvent(site, nodeSystemType) : VSConstants.E_NOTIMPL;
+	protected void OnAssemblyObsolete(object sender, AssemblyObsoleteEventArgs e) =>
+		_OnAssemblyObsoleteEvent?.Invoke(sender, e);
 
 
-	#endregion General Event handling
+
+	protected void OnBeginShutdown() => ShutdownDte();
+
+
+
+	protected void OnBuildDone(vsBuildScope scope, vsBuildAction action) =>
+		_OnBuildDoneEvent?.Invoke(scope, action);
+
+
+
+	private void OnDesignTimeOutputDeleted(string bstrOutputMoniker) =>
+		_OnDesignTimeOutputDeletedEvent?.Invoke(bstrOutputMoniker);
+
+
+
+	void OnDesignTimeOutputDirty(string bstrOutputMoniker) =>
+		_OnDesignTimeOutputDirtyEvent?.Invoke(bstrOutputMoniker);
+
+
+
+	public int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType) =>
+		_OnNewQueryRequestedEvent?.Invoke(site, nodeSystemType) ?? VSConstants.E_NOTIMPL;
+
+
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
+	protected void OnProjectItemAdded(ProjectItem projectItem)
+	{
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnProjectItemAdded()", projectItem.ContainingProject.Name);
+
+		if (_OnProjectItemAddedEvent == null || !projectItem.ContainingProject.IsEditable())
+		{
+			return;
+		}
+
+		_OnProjectItemAddedEvent.Invoke(projectItem);
+	}
+
+
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
+	protected void OnProjectItemRemoved(ProjectItem projectItem)
+	{
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnProjectItemRemoved()", projectItem.ContainingProject.Name);
+
+		if (_OnProjectItemRemovedEvent == null || !projectItem.ContainingProject.IsEditable())
+		{
+			return;
+		}
+
+		_OnProjectItemRemovedEvent.Invoke(projectItem);
+	}
+
+
+
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
+	protected void OnProjectItemRenamed(ProjectItem projectItem, string oldName)
+	{
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnProjectItemRenamed()", projectItem.ContainingProject.Name);
+
+		if (_OnProjectItemRenamedEvent == null || !projectItem.ContainingProject.IsEditable())
+		{
+			return;
+		}
+
+		_OnProjectItemRenamedEvent.Invoke(projectItem, oldName);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Event handler for the Project
+	/// <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
+	/// </summary>
+	/// <param name="reference"></param>
+	// ---------------------------------------------------------------------------------
+	private void OnReferenceAdded(Reference reference)
+	{
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnReferenceAdded()", reference.ContainingProject.Name);
+
+		if (_OnReferenceAddedEvent == null || !reference.ContainingProject.IsEditable())
+		{
+			return;
+		}
+
+		_OnReferenceAddedEvent.Invoke(reference);
+	}
+
+
+
+	private void OnReferenceChanged(Reference reference)
+	{
+		if (_OnReferenceChangedEvent == null || !reference.ContainingProject.IsEditable())
+		{
+			return;
+		}
+
+		_OnReferenceChangedEvent.Invoke(reference);
+	}
+
+
+
+	private void OnReferenceRemoved(Reference reference)
+	{
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnReferenceRemoved()", reference.ContainingProject.Name);
+
+		if (_OnReferenceRemovedEvent == null || !reference.ContainingProject.IsEditable())
+		{
+			return;
+		}
+
+		_OnReferenceRemovedEvent.Invoke(reference);
+	}
+
+
+	#endregion General and Type Resolution Event handling
 
 
 
@@ -785,53 +1115,192 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// Events that we handle are listed first
 
 
-	protected void OnProjectItemAdded(ProjectItem projectItem)
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnAfterCloseSolution"/>,
+	/// <see cref="IVsSolutionEvents2.OnAfterCloseSolution"/> and
+	/// <see cref="IVsSolutionEvents3.OnAfterCloseSolution"/>
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public int OnAfterCloseSolution(object pUnkReserved)
 	{
-		// Tracer.Trace(GetType(), "OnProjectItemAdded()", "Added misc ProjectItem: {0}.", projectItem.Name);
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnAfterCloseSolution()");
+
+		_SolutionLoaded = false;
+		_ProjectReferencesEvents = null;
+		_ProjectBuildManagerEvents = null;
+
+		EventProjectDeregister();
+
+		return _OnAfterCloseSolutionEvent?.Invoke(pUnkReserved) ?? VSConstants.S_OK;
 	}
 
 
-	protected void OnProjectItemRemoved(ProjectItem projectItem)
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
+	public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
 	{
-		// Tracer.Trace(GetType(), "OnProjectItemRemoved()", "Removed misc ProjectItem: {0}.", projectItem.Name);
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnAfterLoadProject()");
+
+		Project project = pRealHierarchy.ToEditableProject();
+
+		if (project == null)
+			return VSConstants.S_OK;
+
+		if (project.Properties == null)
+		{
+			_ = Task.Factory.StartNew(async () => await OnAfterLoadProjectAsync(project),
+				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+
+			return VSConstants.S_OK;
+		}
+
+
+
+		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0
+			|| !_ProjectReferencesEvents.ContainsKey(project.Object as VSProject))
+		{
+			_ = Task.Factory.StartNew(
+				async () =>
+				{
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+					if (EventProjectEnter(true, true))
+					{
+						try
+						{
+							AddProjectEventHandlers(project);
+						}
+						finally
+						{
+							EventProjectExit();
+						}
+					}
+
+					_OnAfterLoadProjectEvent?.Invoke(project);
+				},
+				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+
+			return VSConstants.S_OK;
+		}
+
+
+		return _OnAfterLoadProjectEvent?.Invoke(project) ?? VSConstants.S_OK;
 	}
 
-	protected void OnProjectItemRenamed(ProjectItem projectItem, string oldName)
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Ensure project is fully loaded.
+	/// </summary>
+	/// <param name="project"></param>
+	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
+	private async Task OnAfterLoadProjectAsync(Project project)
 	{
-		// Tracer.Trace(GetType(), "OnProjectItemRenamed()", "Renamed misc ProjectItem: {0}, oldname: {1}.", projectItem.Name, oldName);
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		// Recycle until project object is complete if necessary
+		if (project.Properties == null)
+		{
+			if (++_RefLoadCnt < 100)
+			{
+				await Task.Delay(50);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+				ThreadHelper.JoinableTaskFactory.RunAsync(() => OnAfterLoadProjectAsync(project));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+				return;
+			}
+
+			Diag.Dug(new ApplicationException($"Time out waiting for project properties to load: {project.Name}."));
+
+			return;
+		}
+
+		// Tracer.Trace("Project opened");
+		// If anything gets through things are still happening so we can reset and allow events with incomplete project objects
+		// to continue recycling
+		_RefLoadCnt = 0;
+
+
+
+		if (EventProjectEnter(true, true))
+		{
+			try
+			{
+				AddProjectEventHandlers(project);
+			}
+			finally
+			{
+				EventProjectExit();
+			}
+		}
+
+		_OnAfterLoadProjectEvent?.Invoke(project);
 	}
+
 
 
 	/// <summary>
 	/// Implements <see cref="IVsSolutionEvents.OnAfterOpenProject"/>,
 	/// <see cref="IVsSolutionEvents2.OnAfterOpenProject"/> and <see cref="IVsSolutionEvents3.OnAfterOpenProject"/>
 	/// </summary>
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
 	{
-		if (!_ProjectEvents)
-			return VSConstants.S_OK;
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnAfterOpenProject()");
 
-		if (_OnAfterOpenProjectEvent == null)
-			return VSConstants.E_NOTIMPL;
+		Project project = pHierarchy.ToEditableProject();
 
-		// Get the root (project) node. 
-		var itemid = VSConstants.VSITEMID_ROOT;
-
-		pHierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
-
-
-		if (objProj is not Project project)
+		if (project == null)
 			return VSConstants.S_OK;
 
 		if (project.Properties == null)
-			_ = OnAfterOpenProjectAsync(project, fAdded);
-		else
-			return _OnAfterOpenProjectEvent.Invoke(project, fAdded);
+		{
+			_ = Task.Factory.StartNew(async () => await OnAfterOpenProjectAsync(project, fAdded),
+				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 
-		return VSConstants.S_OK;
+			return VSConstants.S_OK;
+		}
+
+
+		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0
+			|| !_ProjectReferencesEvents.ContainsKey(project.Object as VSProject))
+		{
+			_ = Task.Factory.StartNew(
+				async () =>
+				{
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+					if (EventProjectEnter(true, true))
+					{
+						try
+						{
+							AddProjectEventHandlers(project);
+						}
+						finally
+						{
+							EventProjectExit();
+						}
+					}
+
+					_OnAfterOpenProjectEvent?.Invoke(project, fAdded);
+				},
+				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+
+			return VSConstants.S_OK;
+		}
+
+
+		return _OnAfterOpenProjectEvent?.Invoke(project, fAdded) ?? VSConstants.S_OK;
+
 	}
-
-
 
 
 
@@ -849,116 +1318,191 @@ public abstract class AbstrusePackageController : IBsPackageController
 		// Recycle until project object is complete if necessary
 		if (project.Properties == null)
 		{
-			if (++_RefCnt < 1000)
+			if (++_RefOpenCnt < 100)
 			{
-				await Task.Delay(200);
+				await Task.Delay(50);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 				ThreadHelper.JoinableTaskFactory.RunAsync(() => OnAfterOpenProjectAsync(project, fAdded));
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+				return;
 			}
+
+			Diag.Dug(new ApplicationException($"Time out waiting for project properties to load: {project.Name}."));
+
 			return;
 		}
 
 		// Tracer.Trace("Project opened");
 		// If anything gets through things are still happening so we can reset and allow events with incomplete project objects
 		// to continue recycling
-		_RefCnt = 0;
+		_RefOpenCnt = 0;
+
+		if (EventProjectEnter(true, true))
+		{
+			try
+			{
+				AddProjectEventHandlers(project);
+			}
+			finally
+			{
+				EventProjectExit();
+			}
+		}
 
 		_OnAfterOpenProjectEvent?.Invoke(project, fAdded);
-
-		return;
 	}
 
 
-	protected void OnBeginShutdown()
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnAfterOpenSolution"/>,
+	/// <see cref="IVsSolutionEvents2.OnAfterOpenSolution"/> and
+	/// <see cref="IVsSolutionEvents3.OnAfterOpenSolution"/>
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution) =>
+		_OnAfterOpenSolutionEvent?.Invoke(pUnkReserved, fNewSolution) ?? VSConstants.E_NOTIMPL;
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnBeforeCloseProject"/>,
+	/// <see cref="IVsSolutionEvents2.OnBeforeCloseProject"/>
+	/// and <see cref="IVsSolutionEvents3.OnBeforeCloseProject"/>
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
+	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
 	{
-		ResetDte();
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnBeforeCloseProject()", "Guid: {0}.", pHierarchy.ProjectKind());
+
+		if (!pHierarchy.IsDesignTimeProject())
+			return VSConstants.S_OK;
+
+		// Tracer.Trace(GetType(), "OnBeforeCloseProject()", pHierarchy.ToProject().Name);
+
+		_OnBeforeCloseProjectEvent?.Invoke(pHierarchy, fRemoved);
+
+		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0)
+			return VSConstants.S_OK;
+
+		Project project = pHierarchy.ToEditableProject();
+
+		if (project == null)
+			return VSConstants.S_OK;
+
+		_ProjectReferencesEvents.Remove(project.Object as VSProject);
+		_ProjectBuildManagerEvents.Remove(project.Object as VSProject);
+
+		return VSConstants.S_OK;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnBeforeCloseSolution"/>,
+	/// <see cref="IVsSolutionEvents2.OnBeforeCloseSolution"/> and
+	/// <see cref="IVsSolutionEvents3.OnBeforeCloseSolution"/>
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public int OnBeforeCloseSolution(object pUnkReserved) => 
+		_OnBeforeCloseSolutionEvent?.Invoke(pUnkReserved) ?? VSConstants.E_NOTIMPL;
+
+
+
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
+	public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
+	{
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnBeforeUnloadProject()");
+
+		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0)
+			return VSConstants.S_OK;
+
+		Project project = pRealHierarchy.ToEditableProject();
+
+		if (project == null)
+			return VSConstants.S_OK;
+
+		_ProjectReferencesEvents.Remove(project.Object as VSProject);
+		_ProjectBuildManagerEvents.Remove(project.Object as VSProject);
+
+		return VSConstants.S_OK;
 	}
 
 
 
 	public void OnLoadSolutionOptions(Stream stream)
 	{
+		// Tracer.Trace(GetType(), "OnLoadSolutionOptions()");
+
+		RegisterProjectEventHandlers();
+
+
 		if (_SolutionLoaded)
 			return;
 
 		_SolutionLoaded = true;
 
-		try
-		{
-			_OnLoadSolutionOptionsEvent?.Invoke(stream);
-		}
-		finally
-		{
-			_ProjectEvents = true;
-		}
+		_OnLoadSolutionOptionsEvent?.Invoke(stream);
 
 	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnQueryCloseProject"/>,
+	/// <see cref="IVsSolutionEvents2.OnQueryCloseProject"/> and
+	/// <see cref="IVsSolutionEvents3.OnQueryCloseProject"/>
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
+	{
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnQueryCloseProject()", "Guid: {0}.", pHierarchy.ProjectKind());
+
+		if (_OnQueryCloseProjectEvent == null || !pHierarchy.IsDesignTimeProject())
+		{
+			return VSConstants.S_OK;
+		}
+
+		return _OnQueryCloseProjectEvent(pHierarchy, fRemoving, ref pfCancel);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnQueryCloseSolution"/>,
+	/// <see cref="IVsSolutionEvents2.OnQueryCloseSolution"/> and
+	/// <see cref="IVsSolutionEvents3.OnQueryCloseSolution"/>
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel) => 
+		_OnQueryCloseSolutionEvent?.Invoke(pUnkReserved, ref pfCancel) ?? VSConstants.E_NOTIMPL;
+
+
+
 
 	public void OnSaveSolutionOptions(Stream stream) =>
 		_OnSaveSolutionOptionsEvent?.Invoke(stream);
 
 
-	/// <summary>
-	/// Implements <see cref="IVsSolutionEvents.OnAfterCloseSolution"/>,
-	/// <see cref="IVsSolutionEvents2.OnAfterCloseSolution"/> and <see cref="IVsSolutionEvents3.OnAfterCloseSolution"/>
-	/// </summary>
-	public int OnAfterCloseSolution(object pUnkReserved)
-	{
-		_SolutionLoaded = false;
-		_ProjectEvents = false;
 
-		if (_OnAfterCloseSolutionEvent != null)
-			return _OnAfterCloseSolutionEvent(pUnkReserved);
-		else
-			return VSConstants.E_NOTIMPL;
-	}
-
-
-	/// <summary>
-	/// Implements <see cref="IVsSolutionEvents.OnBeforeCloseProject"/>,
-	/// <see cref="IVsSolutionEvents2.OnBeforeCloseProject"/> and <see cref="IVsSolutionEvents3.OnBeforeCloseProject"/>
-	/// </summary>
-	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved) =>
-		ThreadHelper.CheckAccess() && _OnBeforeCloseProjectEvent != null
-			? _OnBeforeCloseProjectEvent(pHierarchy, fRemoved) : VSConstants.E_NOTIMPL;
-
-
-	/// <summary>
-	/// Implements <see cref="IVsSolutionEvents.OnBeforeCloseSolution"/>,
-	/// <see cref="IVsSolutionEvents2.OnBeforeCloseSolution"/> and <see cref="IVsSolutionEvents3.OnBeforeCloseSolution"/>
-	/// </summary>
-	public int OnBeforeCloseSolution(object pUnkReserved) => _OnBeforeCloseSolutionEvent != null
-		? _OnBeforeCloseSolutionEvent(pUnkReserved) : VSConstants.E_NOTIMPL;
-
-
-	/// <summary>
-	/// Implements <see cref="IVsSolutionEvents.OnQueryCloseProject"/>,
-	/// <see cref="IVsSolutionEvents2.OnQueryCloseProject"/> and <see cref="IVsSolutionEvents3.OnQueryCloseProject"/>
-	/// </summary>
-	public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel) => _OnQueryCloseProjectEvent != null
-		? _OnQueryCloseProjectEvent(pHierarchy, fRemoving, ref pfCancel) : VSConstants.E_NOTIMPL;
-
-
-	/// <summary>
-	/// Implements <see cref="IVsSolutionEvents.OnQueryCloseSolution"/>,
-	/// <see cref="IVsSolutionEvents2.OnQueryCloseSolution"/> and <see cref="IVsSolutionEvents3.OnQueryCloseSolution"/>
-	/// </summary>
-	public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel) => _OnQueryCloseSolutionEvent != null
-		? _OnQueryCloseSolutionEvent(pUnkReserved, ref pfCancel) : VSConstants.E_NOTIMPL;
 
 
 	// Unhandled events follow
 
 	int IVsSolutionEvents3.OnAfterClosingChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
-	public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy) => VSConstants.E_NOTIMPL;
 	public int OnAfterMergeSolution(object pUnkReserved) => VSConstants.E_NOTIMPL;
 	int IVsSolutionEvents3.OnAfterOpeningChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
-	public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution) => VSConstants.E_NOTIMPL;
 	int IVsSolutionEvents3.OnBeforeClosingChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
 	int IVsSolutionEvents3.OnBeforeOpeningChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
-	public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy) => VSConstants.E_NOTIMPL;
 	public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel) => VSConstants.E_NOTIMPL;
 
 
@@ -976,15 +1520,14 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// Events that we handle are listed first
 
 
-	public int OnAfterAttributeChange(uint docCookie, uint grfAttribs) =>
-		_OnAfterAttributeChangeEvent != null && RdtEventsEnabled
-		? _OnAfterAttributeChangeEvent(docCookie, grfAttribs) : VSConstants.E_NOTIMPL;
+	public int OnAfterAttributeChange(uint docCookie, uint grfAttribs) => 
+		_OnAfterAttributeChangeEvent?.Invoke(docCookie, grfAttribs) ?? VSConstants.S_OK;
 
 
 	public int OnAfterAttributeChangeEx(uint docCookie, uint grfAttribs, IVsHierarchy pHierOld, uint itemidOld,
 		string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew)
 	{
-		if (_OnAfterAttributeChangeExEvent == null || !RdtEventsEnabled)
+		if (_OnAfterAttributeChangeExEvent == null)
 			return VSConstants.S_OK;
 
 		// Fire and wait.
@@ -994,24 +1537,21 @@ public abstract class AbstrusePackageController : IBsPackageController
 			return ThreadHelper.JoinableTaskFactory.Run(async delegate
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				return OnAfterAttributeChangeExImpl(docCookie, grfAttribs, pHierOld, itemidOld,
+
+				return _OnAfterAttributeChangeExEvent(docCookie, grfAttribs, pHierOld, itemidOld,
 					pszMkDocumentOld, pHierNew, itemidNew, pszMkDocumentNew);
 			});
 		}
 
-		return OnAfterAttributeChangeExImpl(docCookie, grfAttribs, pHierOld, itemidOld,
+		return _OnAfterAttributeChangeExEvent(docCookie, grfAttribs, pHierOld, itemidOld,
 			pszMkDocumentOld, pHierNew, itemidNew, pszMkDocumentNew);
 	}
 
-	private int OnAfterAttributeChangeExImpl(uint docCookie, uint grfAttribs, IVsHierarchy pHierOld, uint itemidOld,
-		string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew) =>
-			_OnAfterAttributeChangeExEvent(docCookie, grfAttribs, pHierOld, itemidOld,
-					pszMkDocumentOld, pHierNew, itemidNew, pszMkDocumentNew);
 
 
 	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
 	{
-		if (_OnAfterDocumentWindowHideEvent == null || !RdtEventsEnabled)
+		if (_OnAfterDocumentWindowHideEvent == null)
 			return VSConstants.S_OK;
 
 		// Fire and wait.
@@ -1021,67 +1561,52 @@ public abstract class AbstrusePackageController : IBsPackageController
 			return ThreadHelper.JoinableTaskFactory.Run(async delegate
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				return OnAfterDocumentWindowHideImpl(docCookie, pFrame);
+
+				return _OnAfterDocumentWindowHideEvent(docCookie, pFrame);
 			});
 		}
 
-		return OnAfterDocumentWindowHideImpl(docCookie, pFrame);
+		return _OnAfterDocumentWindowHideEvent(docCookie, pFrame); 
 	}
 
-	private int OnAfterDocumentWindowHideImpl(uint docCookie, IVsWindowFrame pFrame) =>
-		_OnAfterDocumentWindowHideEvent(docCookie, pFrame);
+
+
+	public int OnAfterSave(uint docCookie) => 
+		_OnAfterSaveEvent?.Invoke(docCookie) ?? VSConstants.E_NOTIMPL;
+
+
+
+	int IVsRunningDocTableEvents4.OnAfterLastDocumentUnlock(IVsHierarchy pHier, uint itemid, string pszMkDocument,
+			int fClosedWithoutSaving) => 
+		_OnAfterLastDocumentUnlockEvent?.Invoke(pHier, itemid, pszMkDocument, fClosedWithoutSaving) ?? VSConstants.E_NOTIMPL;
+
+
+
+	public IVsTask OnAfterSaveAsync(uint cookie, uint flags) => _OnAfterSaveAsyncEvent?.Invoke(cookie, flags);
 
 
 
 
-	public int OnAfterSave(uint docCookie) =>
-		_OnAfterSaveEvent != null && RdtEventsEnabled
-		? _OnAfterSaveEvent(docCookie) : VSConstants.E_NOTIMPL;
-
-	public IVsTask OnAfterSaveAsync(uint cookie, uint flags) =>
-		_OnAfterSaveAsyncEvent != null && RdtEventsEnabled
-		? _OnAfterSaveAsyncEvent(cookie, flags) : null;
-
-
-	public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
-	{
-		if (_OnBeforeDocumentWindowShowEvent == null || !RdtEventsEnabled)
-			return VSConstants.S_OK;
-
-		// Fire and wait.
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			return ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				return OnBeforeDocumentWindowShowImpl(docCookie, fFirstShow, pFrame);
-			});
-		}
-
-		return OnBeforeDocumentWindowShowImpl(docCookie, fFirstShow, pFrame);
-	}
-
-	private int OnBeforeDocumentWindowShowImpl(uint docCookie, int fFirstShow, IVsWindowFrame pFrame) =>
-		_OnBeforeDocumentWindowShowEvent(docCookie, fFirstShow, pFrame);
+	public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame) =>
+		_OnBeforeDocumentWindowShowEvent?.Invoke(docCookie, fFirstShow, pFrame) ?? VSConstants.E_NOTIMPL;
 
 
 
 
 	public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining,
-		uint dwEditLocksRemaining)
-		=> _OnBeforeLastDocumentUnlockEvent != null && RdtEventsEnabled
-		? _OnBeforeLastDocumentUnlockEvent(docCookie, dwRDTLockType, dwReadLocksRemaining, dwEditLocksRemaining)
-		: VSConstants.E_NOTIMPL;
+			uint dwEditLocksRemaining) =>
+		_OnBeforeLastDocumentUnlockEvent?.Invoke(docCookie, dwRDTLockType, dwReadLocksRemaining, dwEditLocksRemaining)
+			?? VSConstants.E_NOTIMPL;
 
-	int IVsRunningDocTableEvents3.OnBeforeSave(uint docCookie)
-		=> _OnBeforeSaveEvent != null && RdtEventsEnabled
-		? _OnBeforeSaveEvent(docCookie)
-		: VSConstants.E_NOTIMPL;
+
+
+	int IVsRunningDocTableEvents3.OnBeforeSave(uint docCookie) =>
+		_OnBeforeSaveEvent?.Invoke(docCookie) ?? VSConstants.E_NOTIMPL;
+
+
 
 	public IVsTask OnBeforeSaveAsync(uint cookie, uint flags, IVsTask saveTask) =>
-		_OnBeforeSaveAsyncEvent != null && RdtEventsEnabled
-		? _OnBeforeSaveAsyncEvent(cookie, flags, saveTask) : null;
+		_OnBeforeSaveAsyncEvent?.Invoke(cookie, flags, saveTask);
 
 
 
@@ -1089,8 +1614,6 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 	public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining,
 		uint dwEditLocksRemaining) => VSConstants.E_NOTIMPL;
-	int IVsRunningDocTableEvents4.OnAfterLastDocumentUnlock(IVsHierarchy pHier, uint itemid, string pszMkDocument,
-		int fClosedWithoutSaving) => VSConstants.E_NOTIMPL;
 	int IVsRunningDocTableEvents4.OnAfterSaveAll() => VSConstants.E_NOTIMPL;
 	int IVsRunningDocTableEvents4.OnBeforeFirstDocumentLock(IVsHierarchy pHier, uint itemid, string pszMkDocument) => VSConstants.E_NOTIMPL;
 
@@ -1106,15 +1629,13 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// =========================================================================================================
 
 
-	public int OnCmdUIContextChanged(uint dwCmdUICookie, int fActive)
-		=> _OnCmdUIContextChangedEvent != null
-		? _OnCmdUIContextChangedEvent(dwCmdUICookie, fActive)
-		: VSConstants.E_NOTIMPL;
+	public int OnCmdUIContextChanged(uint dwCmdUICookie, int fActive) => _OnCmdUIContextChangedEvent != null
+		? _OnCmdUIContextChangedEvent(dwCmdUICookie, fActive) : VSConstants.S_OK;
 
 
 	public int OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
 	{
-		if (_OnElementValueChangedEvent == null || !RdtEventsEnabled)
+		if (_OnElementValueChangedEvent == null)
 			return VSConstants.S_OK;
 
 		// Fire and wait.
@@ -1124,26 +1645,21 @@ public abstract class AbstrusePackageController : IBsPackageController
 			return ThreadHelper.JoinableTaskFactory.Run(async delegate
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				return OnElementValueChangedImpl(elementid, varValueOld, varValueNew);
+
+				return _OnElementValueChangedEvent(elementid, varValueOld, varValueNew);
 			});
 		}
 
-		return OnElementValueChangedImpl(elementid, varValueOld, varValueNew);
+		return _OnElementValueChangedEvent(elementid, varValueOld, varValueNew);
 	}
-
-	private int OnElementValueChangedImpl(uint elementid, object varValueOld, object varValueNew) =>
-		_OnElementValueChangedEvent(elementid, varValueOld, varValueNew);
-
-
 
 
 
 	public int OnSelectionChanged(IVsHierarchy pHierOld, uint itemidOld, IVsMultiItemSelect pMISOld,
-		ISelectionContainer pSCOld, IVsHierarchy pHierNew, uint itemidNew,
-		IVsMultiItemSelect pMISNew, ISelectionContainer pSCNew)
-		=> _OnSelectionChangedEvent != null
-		? _OnSelectionChangedEvent(pHierOld, itemidOld, pMISOld, pSCOld, pHierNew, itemidNew, pMISNew, pSCNew)
-		: VSConstants.E_NOTIMPL;
+			ISelectionContainer pSCOld, IVsHierarchy pHierNew, uint itemidNew,
+			IVsMultiItemSelect pMISNew, ISelectionContainer pSCNew) =>
+		_OnSelectionChangedEvent?.Invoke(pHierOld, itemidOld, pMISOld, pSCOld, pHierNew, itemidNew, pMISNew, pSCNew)
+			?? VSConstants.E_NOTIMPL;
 
 
 	#endregion IVsSelectionEvents Implementation and Event handling

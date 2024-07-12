@@ -3,6 +3,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 //
 
+using System.Data;
 using BlackbirdSql.Sys.Interfaces;
 
 
@@ -13,7 +14,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslTriggerColumns : DslColumns
 {
-	public DslTriggerColumns(IBsLinkageParser parser) : base(parser)
+	public DslTriggerColumns() : base()
 	{
 		// Tracer.Trace(GetType(), "DslTriggerColumns.DslTriggerColumns");
 

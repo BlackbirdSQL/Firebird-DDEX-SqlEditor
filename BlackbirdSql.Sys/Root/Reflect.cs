@@ -24,7 +24,6 @@ namespace BlackbirdSql;
 public abstract class Reflect
 {
 
-
 	public static T CreateInstance<T>(params object[] args)
 	{
 		// Tracer.Trace(typeof(Reflect), "CreateInstance<T>()", "Instance Type: {0}.", typeof(T).FullName);
@@ -323,6 +322,39 @@ public abstract class Reflect
 		return fieldInfo;
 	}
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Get a class object base's field FieldInfo given the containing class object,
+	/// the field name, the base type's depth and access modifier binding flags.
+	/// </summary>
+	/// <returns>
+	/// Returns the field's FieldInfo object else logs a diagnostics exception and
+	/// returns null on error
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	private static FieldInfo GetFieldInfoBase(object containerClassInstance, string fieldName, int depth, BindingFlags bindingFlags = BindingFlags.Default)
+	{
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+
+		Type typeClassInstance = containerClassInstance.GetType();
+
+		for (int i = 0; i < depth; i++)
+			typeClassInstance = typeClassInstance.BaseType;
+
+		FieldInfo fieldInfo = typeClassInstance.GetField(fieldName, bindingFlags);
+
+		if (fieldInfo == null)
+		{
+			COMException ex = new($"Could not get FieldInfo for field '{fieldName}' in container class '{containerClassInstance.GetType()}', base class '{typeClassInstance}'.");
+			Diag.Dug(ex);
+			return null;
+		}
+
+		return fieldInfo;
+	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -396,6 +428,49 @@ public abstract class Reflect
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Get a class static field's value given the containing class type, the field
+	/// name and access modifier binding flags.
+	/// </summary>
+	/// <returns>
+	/// Returns the field's value else logs a diagnostics exception and returns null
+	/// on error
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static object GetFieldValue(Type typeContainerClass, string fieldName,
+		BindingFlags bindingFlags = BindingFlags.Default)
+	{
+		// Tracer.Trace(typeof(Reflect), "GetFieldValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic;
+
+		
+
+		FieldInfo fieldInfo = GetFieldInfo(typeContainerClass, fieldName, bindingFlags);
+
+		if (fieldInfo == null)
+		{
+			COMException ex = new($"Could not get FieldInfo for static field '{fieldName}' in container class '{typeContainerClass}'.");
+			Diag.Dug(ex);
+			return null;
+		}
+
+		try
+		{
+			return fieldInfo.GetValue(null);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, $"Could not get Field Value for static field '{fieldInfo.Name}' in container class '{typeContainerClass}'.");
+			return false;
+		}
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Get a class object field's value given the containing class object, the field
 	/// name and access modifier binding flags.
 	/// </summary>
@@ -439,6 +514,33 @@ public abstract class Reflect
 			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
 		FieldInfo fieldInfo = GetFieldInfoBase(containerClassInstance, fieldName, bindingFlags);
+
+		if (fieldInfo == null)
+			return null;
+
+		return GetFieldInfoValueImpl(containerClassInstance, fieldInfo);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Get a class object base's field value given the containing class object, the field
+	/// name, the depth of the base class and access modifier binding flags.
+	/// </summary>
+	/// <returns>
+	/// Returns the field's value else logs a diagnostics exception and returns null
+	/// on error
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static object GetFieldValueBase(object containerClassInstance, string fieldName,
+		int depth, BindingFlags bindingFlags = BindingFlags.Default)
+	{
+		// Tracer.Trace(typeof(Reflect), "GetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+		FieldInfo fieldInfo = GetFieldInfoBase(containerClassInstance, fieldName, depth, bindingFlags);
 
 		if (fieldInfo == null)
 			return null;

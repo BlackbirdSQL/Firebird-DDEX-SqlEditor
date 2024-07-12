@@ -5,15 +5,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
-using System.Security.Permissions;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 
+
+
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
-[HostProtection(SecurityAction.LinkDemand, SharedState = true)]
+
 public abstract class AbstractBoolConverter : BooleanConverter, IBAutomatorConverter, IDisposable
 {
 	private IBSettingsModel _Model = null;

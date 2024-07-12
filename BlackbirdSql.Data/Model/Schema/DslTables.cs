@@ -117,7 +117,7 @@ internal class DslTables : AbstractDslSchema
 		return sql;
 	}
 
-	protected override void ProcessResult(DataTable schema)
+	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{
 		// Tracer.Trace(GetType(), "DslTables.ProcessResult");
 

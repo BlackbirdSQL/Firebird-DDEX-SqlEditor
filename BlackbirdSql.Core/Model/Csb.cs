@@ -118,13 +118,12 @@ public class Csb : AbstractCsb, ICloneable
 				clone[describer.Name] = this[describer.Name];
 			}
 
-			clone._EquivalencyConnectionString = _EquivalencyConnectionString;
-			clone._EquivalencyMoniker = _EquivalencyMoniker;
 			clone._Stamp = _Stamp;
 		}
 
 		return clone;
 	}
+
 
 	#endregion Constructors / Destructors
 
@@ -136,8 +135,6 @@ public class Csb : AbstractCsb, ICloneable
 	// =========================================================================================================
 
 
-	private string _EquivalencyConnectionString = null;
-	private string _EquivalencyMoniker = null;
 	private long _Stamp = -1;
 
 
@@ -217,6 +214,20 @@ public class Csb : AbstractCsb, ICloneable
 	/// are therefore functionally equivalent.
 	/// </summary>
 	public static IEnumerable<Describer> WeakEquivalencyKeys => Describers.WeakEquivalencyKeys;
+
+
+	/// <summary>
+	/// Performs a stored equivalency and validity check against connections. Many
+	/// commands as well as PropertyWindows use Csb to do status validations and
+	/// updates on pulsed events.
+	/// This can result in a very high volume of calls, so the agent stores the
+	/// <see cref="RctManager.Stamp"/> for low overhead responses when the connection
+	/// has not changed.
+	/// </summary>
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public bool IsInvalidated => _Stamp != RctManager.Stamp;
+
 
 	/// <summary>
 	/// Drift detection stamp of a csb.
@@ -301,6 +312,23 @@ public class Csb : AbstractCsb, ICloneable
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Creates a uniquely identifiable connection url. Connection urls are used for
+	/// uniquely naming connections and are unique to equivalent connections according
+	/// to describer equivalency.
+	/// </summary>
+	/// <returns>
+	/// The unique connection url in format:
+	/// fbsql://user_uc@server:port/Serilize64(databasepath_lc)/[Serilize64(newline_delimited_equivalencykeys)]/
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static string CreateConnectionUrl(IVsDataConnection site)
+	{
+		return (new Csb(site.DecryptedConnectionString(), false)).SafeDatasetMoniker;
+	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -318,7 +346,7 @@ public class Csb : AbstractCsb, ICloneable
 		if (string.IsNullOrWhiteSpace(connectionString))
 			return connectionString;
 
-		return (new Csb(connectionString, false)).SafeDatasetMoniker;
+		return new Csb(connectionString, false).SafeDatasetMoniker;
 	}
 
 
@@ -328,51 +356,15 @@ public class Csb : AbstractCsb, ICloneable
 	}
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Performs a stored equivalency and validity check against connections. Many
-	/// commands as well as PropertyWindows use Csb to do status validations and
-	/// updates on pulsed events.
-	/// This can result in a very high volume of calls, so the agent stores the
-	/// <see cref="RctManager.Stamp"/>, database moniker and connection string by a call
-	/// to <see cref="RegisterValidationState"/>, for low overhead responses when the
-	/// connection has not changed.
-	/// </summary>
-	/// <param name="obj"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	public bool IsInvalidated(IDbConnection connection)
+	public static string GetDisplayName(string connectionString)
 	{
-		if (connection == null) return true;
-
-		if (_EquivalencyConnectionString == null)
-		{
-			NullReferenceException ex = new($"Csb validation requested before the validity state was registered with RegisterValidityState().");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		// Before constructing anything we perform drift detection against the RctManager stamp and then
-		// perform equivalency checks between the connection strings.
-		// This will be fast low-overhead call and suitable for operations like QueryStatus()
-		// event handling.
-
-		// If stamp hasn't changed, nothing's changed.
-
-		if (_Stamp == RctManager.Stamp)
-			return false;
-
-		// If the connection string has changed.
-
-		if (_EquivalencyConnectionString != connection.ConnectionString)
-			return true;
-
-		// Finally check if the DatasetKey has changed. We have to do this so that controls displaying it can update
-		// themselves if it's changed.
-
-		return !DatasetKey.Equals(RctManager.GetDatasetKey(_EquivalencyMoniker));
-
+		return new Csb(connectionString, false).DisplayName;
 	}
+
+
+
+	public static bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2)
+		=> AreEquivalent(connectionString1, connectionString2, WeakEquivalencyKeys);
 
 
 
@@ -426,51 +418,13 @@ public class Csb : AbstractCsb, ICloneable
 
 
 
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Registers the state of the <see cref="RunningConnectionTable"/> and connection
-	/// data for future validity checks by <see cref="IsInvalidated(IDbConnection)"/>.
+	/// Updates the csa with the state of the <see cref="RunningConnectionTable"/> stamp
+	/// for future validity checks by <see cref="IsInvalidated"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public void RegisterValidationState(string dbConnectionString)
-	{
-		string invalidArgument = string.IsNullOrWhiteSpace(dbConnectionString) ? nameof(dbConnectionString) : null;
-
-		if (invalidArgument == null && string.IsNullOrWhiteSpace(DataSource))
-			invalidArgument = "DataSource";
-
-		if (invalidArgument == null && string.IsNullOrWhiteSpace(Database))
-			invalidArgument = "Database";
-
-		if (invalidArgument == null && string.IsNullOrWhiteSpace(UserID))
-			invalidArgument = "UserID";
-
-		if (invalidArgument != null)
-		{
-			ArgumentNullException ex = new($"{invalidArgument} is null or empty.");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		UpdateValidationRctState();
-
-		_EquivalencyMoniker = BuildUniqueConnectionUrl(DataSource, Database, this, true);
-		_EquivalencyConnectionString = dbConnectionString;
-	}
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Updates the csa with the state of the <see cref="RunningConnectionTable"/> for
-	/// future validity checks by <see cref="IsInvalidated(IDbConnection)"/>.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public void UpdateValidationRctState()
+	public void RefreshDriftDetectionState()
 	{
 		_Stamp = RctManager.Stamp;
 	}

@@ -2,7 +2,6 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 
@@ -15,6 +14,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 
 // =========================================================================================================
 //										IBsNativeDbCommand Interface
+//
 /// <summary>
 /// Interface for native DbException extension methods service.
 /// </summary>

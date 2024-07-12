@@ -175,7 +175,7 @@ public class PropertiesWindowManager : IDisposable
 	private ArrayList GetPropertyWindowObjects()
 	{
 		ArrayList arrayList = [];
-		object propertiesWindowDisplayObject = QryMgr.ConnectionStrategy.GetPropertiesWindowDisplayObject();
+		object propertiesWindowDisplayObject = QryMgr.Strategy.GetPropertiesWindowDisplayObject();
 		if (propertiesWindowDisplayObject != null)
 		{
 			if (propertiesWindowDisplayObject is IBPropertyWindowQueryManagerInitialize propertyWindowQueryExecutorInitialize

@@ -14,12 +14,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-		<NoWarn>1701;1702</NoWarn>
+		<NoWarn>1701;1702;</NoWarn>
 		<DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-		<NoWarn>1701;1702</NoWarn>
+		<NoWarn>1701;1702;</NoWarn>
 		<DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
@@ -30,6 +30,9 @@
 	<ItemGroup>
 		<Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
 		<Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
+		<Compile Include="Enums\EnRctKeyType.cs" />
+		<Compile Include="Interfaces\IBDataConnectionSupport.cs" />
+		<Compile Include="Interfaces\IBRctEventSink.cs" />
 		<Compile Include="Interfaces\IBDataConnectionDlgHandler.cs" />
 		<Compile Include="Controls\Config\AbstruseSettingsPage.cs" />
 		<Compile Include="Controls\Config\AbstractPersistentSettingsPage.cs" />
@@ -37,7 +40,6 @@
 		<Compile Include="Interfaces\IBDataConnectionDlg.cs" />
 		<Compile Include="Interfaces\IBSettingsPage.cs" />
 		<Compile Include="Interfaces\IBEditorWindowPane.cs" />
-		<Compile Include="Ctl\AbstractGlobalsAgent.cs" />
 		<Compile Include="AbstractPackageController.cs" />
 		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\AutomatorAttribute.cs" />
@@ -63,6 +65,8 @@
 		<Compile Include="Interfaces\IBAutomatorConverter.cs" />
 		<Compile Include="Interfaces\IBEditConverter.cs" />
 		<Compile Include="Interfaces\IBDataReaderHandler.cs" />
+		<Compile Include="Model\RctEventSink.cs" />
+		<Compile Include="Interfaces\IBsDataViewSupport.cs" />
 		<Compile Include="Root\RdtManager.cs" />
 		<Compile Include="Model\AbstruseRunningConnectionTable.cs" />
 		<Compile Include="Root\RctManager.cs" />
@@ -80,15 +84,11 @@
 		<Compile Include="Ctl\CommandProviders\AbstractCommandProvider.cs" />
 		<Compile Include="Ctl\CommandProviders\CommandProperties.cs" />
 		<Compile Include="Ctl\ComponentModel\AbstractEnumConverter.cs" />
-		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedCategoryAttribute.cs" />
-		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedDescriptionAttribute.cs" />
-		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedDisplayNameAttribute.cs" />
 		<Compile Include="Properties\ControlsResources.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
 			<DependentUpon>ControlsResources.resx</DependentUpon>
 		</Compile>
-		<Compile Include="Root\UnsafeCmd.cs" />
 		<Compile Include="Ctl\AbstractIconsCollection.cs" />
 		<Compile Include="Ctl\AbstractPropertyAgent.Accessors.cs" />
 		<Compile Include="Ctl\AbstractPropertyAgent.Events.cs" />
@@ -105,7 +105,6 @@
 		<Compile Include="Extensions\XmlParser.cs" />
 		<Compile Include="GlobalSuppressions.cs" />
 		<Compile Include="Interfaces\IBDesignerExplorerServices.cs" />
-		<Compile Include="Interfaces\IBGlobalsAgent.cs" />
 		<Compile Include="Interfaces\IBIconsCollection.cs" />
 		<Compile Include="Interfaces\IBSettingsModelPropertyWrapper.cs" />
 		<Compile Include="Interfaces\IBPropertyAgent.cs" />
@@ -125,11 +124,9 @@
 		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 		<Compile Include="AbstractCorePackage.cs" />
 		<Compile Include="AbstractEventsManager.cs" />
-		<Compile Include="Ctl\GlobalsAgent.cs" />
 		<Compile Include="Ctl\AbstractHostess.cs" />
 		<Compile Include="Ctl\Config\PersistentSettings.cs" />
 		<Compile Include="Ctl\Hostess.cs" />
-		<Compile Include="Root\Cmd.cs" />
 		<Compile Include="Root\StringUtils.cs" />
 		<Compile Include="Root\UnsafeNative.cs" />
 		<Compile Include="SystemData.cs" />

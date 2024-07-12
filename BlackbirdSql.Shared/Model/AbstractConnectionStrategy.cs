@@ -1,8 +1,7 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.ConnectionStrategy
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.Strategy
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Drawing;
@@ -10,6 +9,7 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Ctl.Config;
 using BlackbirdSql.Shared.Interfaces;
@@ -24,6 +24,11 @@ namespace BlackbirdSql.Shared.Model;
 
 public abstract class AbstractConnectionStrategy : IDisposable
 {
+
+	public AbstractConnectionStrategy()
+	{
+	}
+
 	protected Csb _Csa = null;
 	protected long _Stamp = -1;
 	protected long _ConnectionStamp = -1;
@@ -40,8 +45,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	private static readonly Color DefaultColor = SystemColors.Control;
 
+	private bool? _HasTransactions;
 	private IDbConnection _Connection;
 	private IDbTransaction _Transaction = null;
+	private int _TransactionCardinal = 0;
 
 
 	protected ConnectionPropertyAgent _ConnectionInfo;
@@ -68,6 +75,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
+				if (_ConnectionInfo == value)
+					return;
+
+				_ConnectionInfo?.Dispose();
 				_ConnectionInfo = value;
 			}
 		}
@@ -89,12 +100,16 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				// connection's connection string.
 				string connectionString = RctManager.UpdateConnectionFromRegistration(_Connection);
 
+				if (connectionString == null)
+					return _Connection;
+
 				Csb csaCurrent = new(connectionString, false);
 				Csb csaRegistered = RctManager.CloneRegistered(_ConnectionInfo);
 
 				// Compare the current connection with the registered connection.
 				if (Csb.AreEquivalent(csaRegistered, csaCurrent, Csb.DescriberKeys))
-				{
+				{ 
+					// Nothing's changed.
 					_ConnectionStamp = RctManager.Stamp;
 					return _Connection;
 				}
@@ -107,8 +122,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 				if (Csb.AreEquivalent(csaRegistered, csaCurrent, Csb.ConnectionKeys))
 				{
-					// Tracer.Trace(GetType(), "get_Connection()", "Connections are equivalent.");
-
+					// The connection is the same but it's adornments have changed.
 					lock (_LockObject)
 					{
 						_ConnectionStamp = RctManager.Stamp;
@@ -120,6 +134,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				// Tracer.Trace(GetType(), "get_Connection()", "Connections are not equivalent: \nCurrent: {0}\nRegistered: {1}",
 				//	csaCurrent.ConnectionString, csaRegistered.ConnectionString);
 
+				// If we're here it's a reset.
 
 				IDbConnection connection = NativeDb.CreateDbConnection(csaRegistered.ConnectionString);
 
@@ -141,7 +156,17 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			{
 				if (_Transaction != null)
 				{
-					bool transactionCompleted = _Connection == null || _Transaction.Completed();
+					bool transactionCompleted = true;
+
+					try
+					{
+						transactionCompleted = _Connection == null || _Transaction.Completed();
+					}
+					catch (Exception ex)
+					{
+						Diag.Expected(ex);
+					}
+
 
 					if (transactionCompleted)
 						DisposeTransaction(true);
@@ -240,9 +265,31 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	public virtual bool IsExecutionPlanAndQueryStatsSupported => true;
 
-	public abstract bool TtsActive { get; }
 
-	public abstract bool HasTransactions { get; }
+	/// <summary>
+	/// HasTransactions HandleQueryStatus() requests piggyback off of previous
+	/// <see cref="GetUpdateTransactionsStatus()"/> calls.
+	/// This reduces the number of IDbTransaction.HasTransactions() requests.
+	/// </summary>
+	public bool HasTransactions
+	{
+		get
+		{
+			_TransactionCardinal++;
+
+			if (!_HasTransactions.HasValue
+				|| (_TransactionCardinal % 20) == 0)
+			{
+				GetUpdateTransactionsStatus();
+			}
+
+			return _HasTransactions.Value;
+		}
+	}
+
+
+	public bool TtsActive => Transaction != null;
+
 
 	public event ConnectionChangedEvent ConnectionChanged;
 
@@ -250,9 +297,6 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	public event DatabaseChangedEvent DatabaseChanged;
 
-	public AbstractConnectionStrategy()
-	{
-	}
 
 
 	public void BeginTransaction(IsolationLevel isolationLevel)
@@ -276,10 +320,52 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	public void DisposeTransaction(bool force)
 	{
-		if (!force && HasTransactions)
-			Diag.ThrowException(new DataException("Attempt to dispose of database Transaction object that has pending transactions."));
+		if (_Transaction == null)
+			return;
 
-		_Transaction?.Dispose();
+		bool hasTransactions = false;
+
+		try
+		{
+			hasTransactions = _Transaction.HasTransactions();
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+		}
+
+
+
+		try
+		{
+			if (!force && hasTransactions)
+			{
+				Diag.ThrowException(new DataException("Attempt to dispose of database Transaction object that has pending transactions."));
+			}
+		}
+		catch { }
+
+		try
+		{
+			if (hasTransactions)
+				_Transaction.Rollback();
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+		}
+
+
+		try
+		{
+			_Transaction.Dispose();
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+		}
+
+
 		_Transaction = null;
 	}
 
@@ -293,14 +379,33 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			if (connection == value)
 				return;
 
-			DisposeTransaction(false);
+			// If we're here and there are transactions nothing we can really do about it
+			// because this could have been initiated from anywhere.
+			DisposeTransaction(true);
 
 			if (_Connection != null)
 			{
-				if (_Connection.State != ConnectionState.Closed)
-					_Connection.Close();
-				_Connection.Dispose();
+				try
+				{
+					if (_Connection.State != ConnectionState.Closed)
+						_Connection.Close();
+				}
+				catch (Exception ex)
+				{
+					Diag.Expected(ex);
+				}
+
+
+				try
+				{
+					_Connection.Dispose();
+				}
+				catch (Exception ex)
+				{
+					Diag.Expected(ex);
+				}
 			}
+
 
 			_Connection = value;
 
@@ -320,7 +425,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	public void SetConnectionInfo(ConnectionPropertyAgent ci)
 	{
-		IDbConnection connection = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection: false);
+		CreateDbConnectionFromConnectionInfo(ci, false, out IDbConnection connection);
 		SetConnectionInfo(ci, connection);
 	}
 
@@ -342,18 +447,18 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	}
 
 
-	protected virtual void AcquireConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
+	protected virtual bool AcquireConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
 	{
 		ci = new ConnectionPropertyAgent();
-		connection = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection);
+		return CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection, out connection);
 	}
 
-	protected virtual void ChangeConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
+	protected virtual void ModifyConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
 	{
 		AcquireConnectionInfo(tryOpenConnection, out ci, out connection);
 	}
 
-	protected abstract IDbConnection CreateDbConnectionFromConnectionInfo(ConnectionPropertyAgent ci, bool tryOpenConnection);
+	protected abstract bool CreateDbConnectionFromConnectionInfo(ConnectionPropertyAgent ci, bool tryOpenConnection, out IDbConnection connection);
 
 
 	public virtual int GetExecutionTimeout()
@@ -369,37 +474,40 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	public abstract bool CommitTransactions();
 
-	public abstract void RollbackTransactions();
+	public abstract bool RollbackTransactions();
 
 	public IDbConnection EnsureConnection(bool tryOpenConnection)
 	{
 		lock (_LockObject)
 		{
+			bool result = true;
+
 			if (Connection == null || (tryOpenConnection && Connection.State != ConnectionState.Open))
 			{
 				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
-				AcquireConnectionInfo(tryOpenConnection, out var ci, out var connection);
+				result = AcquireConnectionInfo(tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection);
 
 				if (ci != null && connection == null)
-					connection = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection);
+					result = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection, out connection);
 
 				SetConnectionInfo(ci, connection);
 			}
 
-			return Connection;
+			return result ? Connection : null;
 		}
 	}
 
-	public IDbConnection ChangeConnection(bool tryOpenConnection)
+	public IDbConnection ModifyConnection(bool tryOpenConnection)
 	{
 		lock (_LockObject)
 		{
 			if (tryOpenConnection)
 			{
-				ChangeConnectionInfo(tryOpenConnection, out var ci, out var connection);
+				ModifyConnectionInfo(tryOpenConnection, out var ci, out var connection);
 				if (ci != null)
 				{
-					connection ??= CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection: false);
+					if (connection == null)
+						CreateDbConnectionFromConnectionInfo(ci, false, out connection);
 
 					SetConnectionInfo(ci, connection);
 					return Connection;
@@ -438,7 +546,6 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 	}
 
-	public abstract List<string> GetAvailableDatabases();
 
 	public void Dispose()
 	{
@@ -458,10 +565,12 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				Connection.Dispose();
 				SetDbConnection(null);
 			}
+			_ConnectionInfo?.Dispose();
+			_ConnectionInfo = null;
 		}
 	}
 
-	public virtual void SetDatasetKeyOnConnection(string selectedDatasetKey, DbConnectionStringBuilder csb)
+	public virtual void SetDatasetKeyOnConnection(string selectedDisplayName, DbConnectionStringBuilder csb)
 	{
 		try
 		{
@@ -470,9 +579,9 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				_Csa = (Csb)csb;
 				_Stamp = RctManager.Stamp;
 
-				if (csb == null || _Csa.DatasetKey != selectedDatasetKey)
+				if (csb == null || _Csa.FullDisplayName != selectedDisplayName)
 				{
-					_Csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(selectedDatasetKey);
+					_Csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(selectedDisplayName, EnRctKeyType.DisplayName);
 					_Stamp = RctManager.Stamp;
 				}
 
@@ -505,8 +614,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 		catch (DbException ex)
 		{
+#if DEBUG
 			Diag.Dug(ex);
-			MessageCtl.ShowEx(ex, ControlsResources.ErrDatabaseNotAccessible.FmtRes(selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+#endif
+			MessageCtl.ShowEx(ex, ControlsResources.ErrDatabaseNotAccessibleEx.FmtRes(selectedDisplayName), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 	}
 
@@ -608,7 +719,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			try
 			{
-				testConnection = CreateDbConnectionFromConnectionInfo(ci, false);
+				CreateDbConnectionFromConnectionInfo(ci, false, out testConnection);
 				testConnection.Open();
 			}
 			catch (Exception ex)
@@ -659,9 +770,12 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			return;
 		}
 
+#if DEBUG
 		Diag.Dug(exception);
+#endif
 
-		if (!Cmd.IsInAutomationFunction())
+
+		if (!UnsafeCmd.IsInAutomationFunction())
 		{
 			string value = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopFailedToOpenConnection, ci.DataSource);
 			string value2 = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopErrorMessage, exception.Message);
@@ -689,6 +803,26 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	public abstract string GetProductLevel();
 
 	public abstract IBBatchExecutionHandler CreateBatchExecutionHandler();
+
+
+	public bool GetUpdateTransactionsStatus()
+	{
+		bool hasTransactions = false;
+
+		try
+		{
+			hasTransactions = Transaction != null && _Transaction.HasTransactions();
+		}
+		catch
+		{
+			DisposeTransaction(true);
+		}
+
+		_TransactionCardinal = 0;
+		_HasTransactions = hasTransactions;
+
+		return hasTransactions;
+	}
 
 
 
@@ -744,7 +878,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		}
 
-		((Csb)scsb).Pooling = false;
+		// ((Csb)scsb).Pooling = false;
 	}
 
 

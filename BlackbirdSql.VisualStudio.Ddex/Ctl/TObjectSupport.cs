@@ -1,7 +1,6 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
 using System;
 using System.Globalization;
 using System.IO;
@@ -12,7 +11,6 @@ using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-
 
 
 
@@ -37,19 +35,19 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 	public TObjectSupport(string fileName, string path) : base(fileName, path)
 	{
-		// Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport()", "fileName: {0}, path: {1}", fileName, path);
+		// Tracer.Trace(typeof(TObjectSupport), ".ctor(string, string)", "fileName: {0}, path: {1}", fileName, path);
 	}
 
 
 	public TObjectSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
-		// Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport()", "resourceName: {0}", resourceName);
+		// Tracer.Trace(typeof(TObjectSupport), ".ctor(string, Assenbly)", "resourceName: {0}", resourceName);
 	}
 
 
 	public TObjectSupport(IVsDataConnection connection) : base(typeof(TObjectSupport).FullName, typeof(TObjectSupport).Assembly)
 	{
-		// Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport(IVsDataConnection)");
+		// Tracer.Trace(typeof(TObjectSupport), ".ctor(IVsDataConnection)");
 	}
 
 

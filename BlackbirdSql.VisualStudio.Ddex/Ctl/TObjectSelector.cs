@@ -1,7 +1,6 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +15,6 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
-
 
 
 // =========================================================================================================
@@ -47,13 +45,13 @@ public class TObjectSelector : TObjectSelectorTable
 
 	public TObjectSelector() : base()
 	{
-		// Tracer.Trace(GetType(), "TObjectSelector.TObjectSelector()");
+		// Tracer.Trace(typeof(TObjectSelector), ".ctor");
 	}
 
 
 	public TObjectSelector(IVsDataConnection connection) : base(connection)
 	{
-		// Tracer.Trace(GetType(), "TObjectSelector(IVsDataConnection)");
+		// Tracer.Trace(typeof(TObjectSelector), ".ctor(IVsDataConnection)");
 	}
 
 
@@ -80,7 +78,7 @@ public class TObjectSelector : TObjectSelectorTable
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions,
 		string[] properties, object[] parameters)
 	{
-		// Tracer.Trace(GetType(), "SelectObjects()", "typeName: {0}", typeName);
+		// Tracer.Trace(GetType(), "SelectObjects()", "typeName: {0}, ConnectionSource: {1}.", typeName, RctManager.ConnectionSource);
 		
 
 		try
@@ -100,6 +98,13 @@ public class TObjectSelector : TObjectSelectorTable
 			throw;
 		}
 
+		// There is only one place the Site can come from. However it is possible and does happen
+		// that IVsDataExplorerConnection.Connection and Site do not reference the same object.
+		// So we reference LinkageParser instances and RctEventSinks with the
+		// IVsDataExplorerConnection root nodes. The references to the nodes is robust.
+		// This is far less volatile than using IVsDataConnection.
+
+
 
 		object lockedProviderObject = Site.GetLockedProviderObject();
 
@@ -114,15 +119,18 @@ public class TObjectSelector : TObjectSelectorTable
 		IVsDataReader reader;
 		DataTable schema;
 
+		bool connectionCreated = false;
+		DbConnection connection = null;
+
 		try
 		{
-			DbConnection connection = NativeDb.CastToAssemblyConnection(lockedProviderObject);
+			connection = NativeDb.CastToNativeConnection(lockedProviderObject);
 
 			// VS glitch. Null if ado has picked up a project data model firebird assembly.
 			if (connection == null)
 			{
 				// Tracer.Trace(GetType(), "SelectObjects()", "Glitch!!!!");
-
+				connectionCreated = true;
 				connection = (DbConnection)NativeDb.CreateDbConnection(Site.DecryptedConnectionString());
 				connection.Open();
 			}
@@ -130,7 +138,6 @@ public class TObjectSelector : TObjectSelectorTable
 			{
 				Site.EnsureConnected();
 			}
-
 
 			schema = GetSchema(connection, typeName, ref restrictions, parameters);
 
@@ -144,8 +151,6 @@ public class TObjectSelector : TObjectSelectorTable
 
 			Tracer.Warning(GetType(), "SelectObjects", "{0} error: {1}.", NativeDb.DbEngineName, exf.Message);
 
-			NativeDb.DatabaseEngineSvc.DisposeLinkageParsers_();
-
 			Site.Close();
 
 			reader = new AdoDotNetTableReader(new DataTable());
@@ -158,6 +163,13 @@ public class TObjectSelector : TObjectSelectorTable
 		finally
 		{
 			Site.UnlockProviderObject();
+
+			if (connectionCreated)
+			{
+				if (connection.State == ConnectionState.Open)
+					connection.Close();
+				connection.Dispose();
+			}
 		}
 
 		// Tracer.Trace(GetType(), "SelectObjects()", "Completed typeName: {0}", typeName);
@@ -167,7 +179,7 @@ public class TObjectSelector : TObjectSelectorTable
 
 
 
-	protected override DataTable GetSchema(DbConnection connection, string typeName, ref object[] restrictions, object[] parameters)
+	protected override DataTable GetSchema(IDbConnection connection, string typeName, ref object[] restrictions, object[] parameters)
 	{
 		// Tracer.Trace(GetType(), "GetSchema()", "typeName: {0}", typeName);
 
@@ -192,15 +204,14 @@ public class TObjectSelector : TObjectSelectorTable
 		string collectionName = parameters[0].ToString();
 		DataTable schema = connection.GetSchemaEx(collectionName, restrictionArray);
 
-
-		if (parameters.Length == 2 && parameters[1] is DictionaryEntry entry)
+		// Not used.
+		if (parameters.Length > 1 && parameters[1] is DictionaryEntry entry
+			&& entry.Value is object[] array)
 		{
-			if (entry.Value is object[] array2)
-			{
-				IDictionary<string, object> mappings = GetMappings(array2);
-				ApplyMappings(schema, mappings);
-			}
+			IDictionary<string, object> mappings = GetMappings(array);
+			ApplyMappings(schema, mappings);
 		}
+		
 
 		return schema;
 	}

@@ -2,11 +2,11 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Sys.Events;
+
+
 
 namespace BlackbirdSql.Sys.Interfaces;
 
@@ -15,6 +15,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 
 // =========================================================================================================
 //									IBsNativeDbConnectionWrapper Interface
+//
 /// <summary>
 /// Interface for native DbConnectionWrapper extension methods service.
 /// </summary>

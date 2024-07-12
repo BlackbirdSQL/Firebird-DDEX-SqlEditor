@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.OLE.Interop;
 
 
 
-
 namespace BlackbirdSql.Sys;
 
 
@@ -17,10 +16,8 @@ namespace BlackbirdSql.Sys;
 /// Central location for accessing of native members. 
 /// </summary>
 // =========================================================================================================
-
 public abstract class Native
 {
-
 
 	// ---------------------------------------------------------------------------------
 	#region Enums, Constants and Static Fields - Native
@@ -260,27 +257,6 @@ public abstract class Native
 	// TranslateMessage
 	[DllImport("user32", CharSet = CharSet.Auto)]
 	public static extern bool TranslateMessage([In][Out] ref MSG msg);
-
-	// WrapComCall
-	public static int WrapComCall(int hr)
-	{
-		if (!__(hr))
-			throw Marshal.GetExceptionForHR(hr);
-
-		return hr;
-	}
-
-	// WrapComCall
-	public static int WrapComCall(int hr, params int[] expectedFailures)
-	{
-		if (!__(hr) && (expectedFailures == null || Array.IndexOf(expectedFailures, hr) < 0))
-		{
-			throw Marshal.GetExceptionForHR(hr);
-		}
-
-		return hr;
-	}
-
 
 
 	#endregion Static Methods

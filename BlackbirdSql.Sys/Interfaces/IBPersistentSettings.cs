@@ -3,6 +3,7 @@
 
 using BlackbirdSql.Sys.Events;
 
+
 namespace BlackbirdSql.Sys.Interfaces;
 
 public interface IBPersistentSettings

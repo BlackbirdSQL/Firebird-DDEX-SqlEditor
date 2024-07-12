@@ -5,7 +5,9 @@ using System;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
+
 namespace BlackbirdSql.Sys.Interfaces;
+
 
 // =========================================================================================================
 //										IBsEventsManager Interface

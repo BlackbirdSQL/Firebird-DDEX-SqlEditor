@@ -1,7 +1,6 @@
 ﻿
 using System;
 using System.Data;
-using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,10 +20,10 @@ namespace BlackbirdSql.Sys.Interfaces;
 public interface IBsNativeProviderSchemaFactory
 {
 	// Schema factory to handle custom collections
-	DataTable GetSchema(DbConnection connection, string collectionName, string[] restrictions);
+	DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions);
 
 
-	Task<DataTable> GetSchemaAsync(DbConnection connection, string collectionName,
+	Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName,
 		string[] restrictions, CancellationToken cancellationToken);
 
 }

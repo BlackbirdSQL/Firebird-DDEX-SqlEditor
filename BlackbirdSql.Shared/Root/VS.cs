@@ -63,9 +63,6 @@ public abstract class VS : BlackbirdSql.VS
 	public static readonly Guid ClsidVSDebugCommand = new Guid(VSDebugCommandGuid);
 
 
-	private static IVsExtensibility3 _S_Extensibility;
-
-
 	#endregion SqlEditor Members
 
 
@@ -141,12 +138,6 @@ public abstract class VS : BlackbirdSql.VS
 		return c.ClientRectangle.Contains(pt);
 	}
 
-	public static IVsExtensibility3 GetExtensibility()
-	{
-		Diag.ThrowIfNotOnUIThread();
-
-		return _S_Extensibility ??= (IVsExtensibility3)Package.GetGlobalService(typeof(IVsExtensibility3));
-	}
 
 
 	public static IVsWindowFrame GetWindowFrameForDocData(object docData, System.IServiceProvider serviceProvider)

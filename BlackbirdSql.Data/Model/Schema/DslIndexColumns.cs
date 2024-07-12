@@ -19,6 +19,7 @@
 
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System.Data;
 using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Data.Model.Schema;
@@ -26,7 +27,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslIndexColumns : DslColumns
 {
-	public DslIndexColumns(IBsLinkageParser parser) : base(parser)
+	public DslIndexColumns() : base()
 	{
 		// Tracer.Trace(GetType(), "DslIndexColumns.DslIndexColumns");
 

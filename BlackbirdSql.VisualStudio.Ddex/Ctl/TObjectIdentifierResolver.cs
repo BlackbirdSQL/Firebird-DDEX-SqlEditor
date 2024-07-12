@@ -2,13 +2,14 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 // =========================================================================================================
 //										TObjectIdentifierResolver Class
@@ -27,12 +28,12 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public TObjectIdentifierResolver() : base()
 	{
-		// Tracer.Trace(GetType(), "TObjectIdentifierResolver.TObjectIdentifierResolver");
+		// Tracer.Trace(typeof(TObjectIdentifierResolver), ".ctor");
 	}
 
 	public TObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
 	{
-		// Tracer.Trace(GetType(), "TObjectIdentifierResolver.TObjectIdentifierResolver(IVsDataConnection)");
+		// Tracer.Trace(typeof(TObjectIdentifierResolver), ".ctor(IVsDataConnection)");
 	}
 
 

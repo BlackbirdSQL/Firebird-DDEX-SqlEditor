@@ -1193,9 +1193,6 @@
   <data name="DefaultDatabaseName" xml:space="preserve">
     <value>&lt;default&gt;</value>
   </data>
-  <data name="DefaultMessageBoxCaption" xml:space="preserve">
-    <value>BlackbirdSQL SqlEditor</value>
-  </data>
   <data name="DeriveToImplementCustomColumn" xml:space="preserve">
     <value>Use class derived from the grid control to implement custom columns.</value>
   </data>
@@ -1313,7 +1310,10 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
     <value>Connection failed. ConnectionString: {0}. Error message: {1}.</value>
   </data>
   <data name="ErrDatabaseNotAccessible" xml:space="preserve">
-    <value>Database not accessible</value>
+    <value>Database not accessible.</value>
+  </data>
+  <data name="ErrDatabaseNotAccessibleEx" xml:space="preserve">
+    <value>Database not accessible: {0}.</value>
   </data>
   <data name="ErrDirWasnotFoundForRCmd" xml:space="preserve">
     <value>Cannot find directory in the path specified for ":r" command.</value>
@@ -1384,8 +1384,8 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="ErrScriptingErrorNoParam" xml:space="preserve">
     <value>A scripting error occurred.</value>
   </data>
-  <data name="ErrScriptingIncorrectSyntax" xml:space="preserve">
-    <value>Incorrect syntax was encountered while parsing {0}.</value>
+  <data name="ErrScriptingParseFailure" xml:space="preserve">
+    <value>An error was encountered while parsing with message: {0}.</value>
   </data>
   <data name="ErrScriptingWarningNoParam" xml:space="preserve">
     <value>Scripting warning.</value>
@@ -2599,6 +2599,9 @@ All files (*.*)
   </data>
   <data name="StatusBarQueryCompletedWithErrors" xml:space="preserve">
     <value>Query completed with errors.</value>
+  </data>
+  <data name="StatusBarQueryCompletedWithErrorsRollback" xml:space="preserve">
+    <value>Query completed with errors (A rollback is recommended).</value>
   </data>
   <data name="StatusBarQueryTimedOut" xml:space="preserve">
     <value>Query batch timed out.</value>

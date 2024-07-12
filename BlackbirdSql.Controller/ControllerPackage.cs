@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.EditorExtension;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Shell;
@@ -37,10 +36,10 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	/// <summary>
 	/// ControllerPackage .ctor
 	/// </summary>
-	public ControllerPackage() : base()
+	protected ControllerPackage() : base()
 	{
 		// Enable solution open/close event handling.
-		AddOptionKey(GlobalsAgent.C_PersistentKey);
+		AddOptionKey(SystemData.C_PersistentKey);
 
 		// Create the Controller.
 		// Create the Controller Events Manager. 
@@ -55,7 +54,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	{
 		try
 		{
-			ApcManager.ResetDte();
+			ApcManager.ShutdownDte();
 
 			_ApcInstance?.Dispose();
 			_ApcInstance = null;
@@ -296,12 +295,14 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 	protected override void OnLoadOptions(string key, Stream stream)
 	{
+		// Tracer.Trace(GetType(), "OnLoadOptions()");
+
 		// If this is called early we have to initialize user option push notifications
 		// and environment events synchronously.
 		PropagateSettings();
 		ApcInstance.AdviseEvents();
 
-		if (key == GlobalsAgent.C_PersistentKey)
+		if (key == SystemData.C_PersistentKey)
 			_OnLoadSolutionOptionsEvent?.Invoke(stream);
 		else
 			base.OnLoadOptions(key, stream);
@@ -310,7 +311,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 	protected override void OnSaveOptions(string key, Stream stream)
 	{
-		if (key == GlobalsAgent.C_PersistentKey)
+		if (key == SystemData.C_PersistentKey)
 			_OnSaveSolutionOptionsEvent?.Invoke(stream);
 		else
 			base.OnSaveOptions(key, stream);

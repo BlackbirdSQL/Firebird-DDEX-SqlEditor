@@ -4,17 +4,19 @@
 using System.ComponentModel;
 using System.Drawing.Design;
 using BlackbirdSql.Core.Ctl.ComponentModel;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Controls.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedCategoryAttribute;
-using GlobalizedDisplayNameAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
-using BlackbirdSql.Core.Interfaces;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
+
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
+
 
 // =========================================================================================================
 //										DebugSettingsModel Class
@@ -23,21 +25,27 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 /// Settings Model for Debug options
 /// </summary>
 // =========================================================================================================
-public class DebugSettingsModel(IBTransientSettings transientSettings)
-	: AbstractSettingsModel<DebugSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - DebugSettingsModel
+	#region Constructors / Destructors - DebugSettingsModel
 	// ---------------------------------------------------------------------------------
 
+
+	public DebugSettingsModel(IBTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_LivePrefix, transientSettings)
+	{
+
+	}
 
 	public DebugSettingsModel() : this(null)
 	{
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	#endregion Constructors / Destructors
+
 
 
 

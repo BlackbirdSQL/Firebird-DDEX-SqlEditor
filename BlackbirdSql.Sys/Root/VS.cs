@@ -2,11 +2,18 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 
 namespace BlackbirdSql;
 
+[SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+public enum __VSPROPID
+{
+	VSPROPID_SOLUTIONCLOSING = -8020
+}
 
 
 // =========================================================================================================
@@ -29,19 +36,20 @@ public abstract class VS
 	public const int STG_E_FILEALREADYEXISTS = -2147286960; // 0x80030050
 	public const int STG_E_NOTCURRENT = -2147286783; // 0x80030101
 	public const int OLE_E_NOTIFYCANCELLED = -2147217842; // 0x80040E4E
-
+		
 
 	#endregion Constants
 
 
 
 
-	// ---------------------------------------------------------------------------------
-	#region Fields - VS
-	// ---------------------------------------------------------------------------------
+		// ---------------------------------------------------------------------------------
+		#region Fields - VS
+		// ---------------------------------------------------------------------------------
 
 
-	// private static Control _MarshalingControl;
+		// private static Control _MarshalingControl;
+	private static IVsExtensibility3 _S_Extensibility;
 
 
 	#endregion Fields
@@ -151,13 +159,14 @@ public abstract class VS
 	#region Miscellaneous Visual Studio Members - VS
 	// ---------------------------------------------------------------------------------
 
-	public static readonly Guid CLSID_VsTextView = new Guid("F5E7E71E-1401-11d1-883B-0000F87579D2");
-	public static readonly Guid CLSID_VsTextBuffer = new Guid("8E7B96A8-E33D-11d0-A6D5-00C04FB67F6A");
+	public static readonly Guid CLSID_VsTextView = new ("F5E7E71E-1401-11d1-883B-0000F87579D2");
+	public static readonly Guid CLSID_VsTextBuffer = new ("8E7B96A8-E33D-11d0-A6D5-00C04FB67F6A");
+
 
 	public const string SqlEventProviderGuid = "77142e1c-50fe-42cc-8a75-00c27af955c0";
 
 	public static Guid CLSID_CTextViewCommandGroup => new(VSConstants.CMDSETID.StandardCommandSet2K_guid.ToString());
-
+	
 
 	// Visual Studio Text Manager Clsid
 	public static Guid CLSID_TextManager => new("F5E7E71D-1401-11d1-883B-0000F87579D2");
@@ -282,6 +291,15 @@ public abstract class VS
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
+	public static IVsExtensibility3 GetExtensibility()
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		return _S_Extensibility ??= (IVsExtensibility3)Package.GetGlobalService(typeof(IVsExtensibility3));
+	}
+
 	/*
 	 * 
 	private delegate DialogResult SafeShowMessageBoxDelegate(string title, string text, string helpKeyword,
@@ -343,7 +361,7 @@ public abstract class VS
 					msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_THIRD;
 					break;
 			}
-			Native.WrapComCall(vsUIShell.ShowMessageBox(0u, ref rclsidComp, title, string.IsNullOrEmpty(text) ? null : text, helpKeyword, 0u, (OLEMSGBUTTON)buttons, msgdefbtn, msgicon, 0, out pnResult));
+			___(vsUIShell.ShowMessageBox(0u, ref rclsidComp, title, string.IsNullOrEmpty(text) ? null : text, helpKeyword, 0u, (OLEMSGBUTTON)buttons, msgdefbtn, msgicon, 0, out pnResult));
 		}
 		return (DialogResult)pnResult;
 	}

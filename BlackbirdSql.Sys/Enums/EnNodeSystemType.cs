@@ -1,7 +1,6 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using System;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -25,7 +24,6 @@ public enum EnNodeSystemType
 
 public static class EnNodeSystemTypeExtensions
 {
-
 
 	/// <summary>
 	/// Determines the IsSystemObject type of a node.

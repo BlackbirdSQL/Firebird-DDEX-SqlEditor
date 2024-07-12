@@ -19,6 +19,8 @@ using BlackbirdSql.Sys.Interfaces;
 namespace BlackbirdSql;
 
 // [Exportable(typeof(IBTrace), "BlackbirdSql.Sys.Diagnostics.Tracer", 0, null)]
+
+
 public class Tracer : IBTrace // , IBExportable
 {
 	public enum EnLevel : uint

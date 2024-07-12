@@ -377,7 +377,7 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 
 	private string GetFirstBindingForCommand(string commandName)
 	{
-		Commands commands = (ApcManager.Instance.Dte as DTE2).Commands;
+		Commands commands = (ApcManager.Dte as DTE2).Commands;
 		Command command;
 		try
 		{

@@ -15,6 +15,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 
 // =========================================================================================================
 //										SBsNativeDatabaseEngine Interface
+//
 /// <summary>
 /// Service for native DatabaseEngine interface.
 /// </summary>

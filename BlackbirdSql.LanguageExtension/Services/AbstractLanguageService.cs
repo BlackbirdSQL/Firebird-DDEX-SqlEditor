@@ -788,7 +788,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 					AuxilliaryDocData auxDocData = EditorExtensionPackage.Instance.GetAuxilliaryDocData(source.GetTextLines());
 					if (auxDocData.QryMgr.IsConnected && metadataProviderProvider is SmoMetadataProviderProvider smoMetadataProviderProvider)
 					{
-						IDbConnection connection = auxDocData.QryMgr.ConnectionStrategy.Connection;
+						IDbConnection connection = auxDocData.QryMgr.Strategy.Connection;
 						if (connection != null && !string.IsNullOrEmpty(connection.Database))
 						{
 							smoMetadataProviderProvider.AsyncAddDatabaseToDriftDetectionSet(connection.Database);

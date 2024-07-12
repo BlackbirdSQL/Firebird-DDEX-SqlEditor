@@ -7,7 +7,9 @@ using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
+
 
 // =========================================================================================================
 //										EquivalencySettingsModel Class
@@ -16,13 +18,19 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 /// Settings Model for Connection equivalency keys options
 /// </summary>
 // =========================================================================================================
-public class EquivalencySettingsModel(IBTransientSettings transientSettings)
-	: AbstractSettingsModel<EquivalencySettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class EquivalencySettingsModel : AbstractSettingsModel<EquivalencySettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - EquivalencySettingsModel
+	#region Constructors / Destructors - EquivalencySettingsModel
 	// ---------------------------------------------------------------------------------
+
+
+	public EquivalencySettingsModel(IBTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_LivePrefix, transientSettings)
+	{
+
+	}
 
 
 	public EquivalencySettingsModel() : this(null)
@@ -30,7 +38,8 @@ public class EquivalencySettingsModel(IBTransientSettings transientSettings)
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	#endregion Constructors / Destructors
+
 
 
 

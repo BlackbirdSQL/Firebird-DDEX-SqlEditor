@@ -2,15 +2,16 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.BaseEditorFactory
 
 using System;
-using BlackbirdSql.Shared.Controls.Tabs;
-using BlackbirdSql.Core;
+using System.Runtime.InteropServices;
 using BlackbirdSql.EditorExtension.Ctl.Config;
+using BlackbirdSql.Shared.Controls.Tabs;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 
 namespace BlackbirdSql.EditorExtension.Ctl;
+
 
 public abstract class AbstruseEditorFactory : IVsEditorFactory
 {
@@ -48,12 +49,21 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 
 	protected IServiceProvider ServiceProvider { get; private set; }
 
-	public abstract int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr docViewIntPtr, out IntPtr docDataIntPtr, out string caption, out Guid cmdUIGuid, out int result);
+
+
+
 
 	/// <summary>
 	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	public abstract int CreateEditorInstance(uint createFlags, string moniker, string physicalViewName,
+		IVsHierarchy hierarchy, uint itemId, IntPtr pExistingDocData, out IntPtr pDocView,
+		out IntPtr pDocData, out string caption, out Guid cmdUIGuid, out int hresult);
+
 
 
 	public int MapLogicalView(ref Guid logicalView, out string strLogicalView)

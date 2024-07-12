@@ -97,7 +97,7 @@ public static class CommandProperties
 	// public static CommandID DetachDatabase = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSEDetachDatabase);
 	public static CommandID NewQueryGlobal = new CommandID(new Guid(VS.SeDataCommandSetGuid), C_CmdIdSENewQueryGlobal);
 	public static CommandID OverrideNewQueryLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), C_CmdIdSENewQueryLocal);
-	public static CommandID NewSqlQuery = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdNewSqlQuery);
+	public static CommandID NewQuery = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdNewQuery);
 	public static CommandID NewDesignerQuery = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdNewDesignerQuery);
 	public static CommandID ShowAddTableDialog = new CommandID(new Guid(VS.DavCommandSetGuid), C_CmdIdAddTableViewForQRY);
 	public static CommandID OpenTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenTextObject);

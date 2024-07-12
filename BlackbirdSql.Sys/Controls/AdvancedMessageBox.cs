@@ -354,21 +354,21 @@ public partial class AdvancedMessageBox : Form
 		bool flag = _ExMessage.InnerException != null;
 		int num = 1;
 		StringBuilder stringBuilder2 = new StringBuilder();
-		stringBuilder2.Append(ControlsResources.MessageTitle);
+		stringBuilder2.Append(ControlsResources.AdvancedMessageBox_MessageTitle);
 		stringBuilder2.Append(Caption);
 		for (Exception innerException = _ExMessage; innerException != null; innerException = innerException.InnerException)
 		{
 			stringBuilder2.Append(value);
 			if (flag && num == 2)
 			{
-				stringBuilder2.Append(ControlsResources.AdditionalInfo);
+				stringBuilder2.Append(ControlsResources.AdvancedMessageBox_AdditionalInfo);
 				stringBuilder2.Append(Environment.NewLine);
 			}
 
 			stringBuilder2.Append(Environment.NewLine);
 			if (innerException.Message == null || innerException.Message.Length == 0)
 			{
-				stringBuilder2.Append(ControlsResources.CantComplete);
+				stringBuilder2.Append(ControlsResources.AdvancedMessageBox_CantComplete);
 			}
 			else
 			{
@@ -402,7 +402,7 @@ public partial class AdvancedMessageBox : Form
 			if (text.Length > 0)
 			{
 				stringBuilder2.Append(Environment.NewLine);
-				stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
+				stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ClipboardOrEmailHelpLink, text));
 				stringBuilder2.Append(Environment.NewLine);
 			}
 
@@ -477,7 +477,7 @@ public partial class AdvancedMessageBox : Form
 
 				if (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.HelpLink)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ClipboardOrEmailHelpLink, text));
 				}
 
 				if (type == EnAdvancedInfoType.All)
@@ -514,7 +514,7 @@ public partial class AdvancedMessageBox : Form
 				{
 					stringBuilder.Append("------------------------------");
 					stringBuilder.Append(Environment.NewLine);
-					stringBuilder.Append(ControlsResources.CodeLocation);
+					stringBuilder.Append(ControlsResources.AdvancedMessageBox_CodeLocation);
 					stringBuilder.Append(Environment.NewLine);
 					stringBuilder.Append(Environment.NewLine);
 				}
@@ -552,25 +552,25 @@ public partial class AdvancedMessageBox : Form
 			{
 				if (exf.GetServer() != null && exf.GetServer().Length > 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlServerName, exf.GetServer()));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlServerName, exf.GetServer()));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlError, exf.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlError, exf.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlSeverity, exf.GetClass().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlSeverity, exf.GetClass().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlState, exf.GetState().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlState, exf.GetState().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
 				if (exf.GetProcedure() != null && exf.GetProcedure().Length > 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlProcedure, exf.GetProcedure()));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlProcedure, exf.GetProcedure()));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
 				if (exf.GetLineNumber() != 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlLineNumber, exf.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlLineNumber, exf.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
@@ -713,7 +713,7 @@ public partial class AdvancedMessageBox : Form
 			int num = 1;
 			if (isInternal)
 			{
-				stringBuilder2.Append(ControlsResources.MessageTitle);
+				stringBuilder2.Append(ControlsResources.AdvancedMessageBox_MessageTitle);
 				stringBuilder2.Append(Caption);
 			}
 
@@ -726,7 +726,7 @@ public partial class AdvancedMessageBox : Form
 
 				if (flag && num == 2)
 				{
-					stringBuilder2.Append(ControlsResources.AdditionalInfo);
+					stringBuilder2.Append(ControlsResources.AdvancedMessageBox_AdditionalInfo);
 					stringBuilder2.Append(Environment.NewLine);
 				}
 
@@ -737,7 +737,7 @@ public partial class AdvancedMessageBox : Form
 
 				if (innerException.Message == null || innerException.Message.Length == 0)
 				{
-					stringBuilder2.Append(ControlsResources.CantComplete);
+					stringBuilder2.Append(ControlsResources.AdvancedMessageBox_CantComplete);
 				}
 				else
 				{
@@ -749,11 +749,11 @@ public partial class AdvancedMessageBox : Form
 					stringBuilder2.Append(' ');
 					if (innerException is DbException dbInnerException && dbInnerException.HasSqlException())
 					{
-						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSourceNumber, NativeDb.DataProviderName, dbInnerException.GetErrorCode()));
+						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSourceNumber, NativeDb.DataProviderName, dbInnerException.GetErrorCode()));
 					}
 					else
 					{
-						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSource, innerException.Source));
+						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSource, innerException.Source));
 					}
 				}
 
@@ -762,7 +762,7 @@ public partial class AdvancedMessageBox : Form
 				if (text.Length > 0)
 				{
 					stringBuilder2.Append(Environment.NewLine);
-					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
+					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ClipboardOrEmailHelpLink, text));
 					stringBuilder2.Append(Environment.NewLine);
 				}
 
@@ -772,7 +772,7 @@ public partial class AdvancedMessageBox : Form
 			if (isInternal)
 			{
 				stringBuilder2.Append(value);
-				stringBuilder2.Append(ControlsResources.Buttons);
+				stringBuilder2.Append(ControlsResources.AdvancedMessageBox_Buttons);
 				stringBuilder2.Append(Environment.NewLine);
 				for (int i = 0; i < _ButtonCount; i++)
 				{
@@ -805,32 +805,32 @@ public partial class AdvancedMessageBox : Form
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append("---------------");
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(ControlsResources.SqlServerInfo);
+				stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlServerInfo);
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append(Environment.NewLine);
 
 				if (exf.GetServer() != null && exf.GetServer().Length > 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlServerName, exf.GetServer()));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlServerName, exf.GetServer()));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlError, exf.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlError, exf.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlSeverity, exf.GetClass().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlSeverity, exf.GetClass().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlState, exf.GetState().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlState, exf.GetState().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
 
 				if (exf.GetProcedure() != null && exf.GetProcedure().Length > 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlProcedure, exf.GetProcedure()));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlProcedure, exf.GetProcedure()));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
 				if (exf.GetLineNumber() != 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlLineNumber, exf.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlLineNumber, exf.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
 					stringBuilder.Append(Environment.NewLine);
 				}
 			}
@@ -840,7 +840,7 @@ public partial class AdvancedMessageBox : Form
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append("---------------");
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(ControlsResources.CodeLocation);
+				stringBuilder.Append(ControlsResources.AdvancedMessageBox_CodeLocation);
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append(ex.StackTrace);
@@ -881,7 +881,7 @@ public partial class AdvancedMessageBox : Form
 			}
 			catch (Exception exError)
 			{
-				ShowError(ControlsResources.CopyToClipboardError, exError);
+				ShowError(ControlsResources.AdvancedMessageBox_CopyToClipboardError, exError);
 			}
 		}
 	}
@@ -930,7 +930,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception)
 		{
-			ShowError(string.Format(CultureInfo.CurrentCulture, ControlsResources.CantStartHelpLink, text), null);
+			ShowError(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_CantStartHelpLink, text), null);
 			return;
 		}
 
@@ -942,7 +942,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception exError)
 		{
-			ShowError(string.Format(CultureInfo.CurrentCulture, ControlsResources.CantStartHelpLink, text), exError);
+			ShowError(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_CantStartHelpLink, text), exError);
 		}
 	}
 
@@ -991,15 +991,15 @@ public partial class AdvancedMessageBox : Form
 		switch (_Buttons)
 		{
 			case EnMessageBoxButtons.OK:
-				_ButtonTextArray[0] = ControlsResources.OKButton;
+				_ButtonTextArray[0] = ControlsResources.MessageCtl_OKButton;
 				button1.DialogResult = DialogResult.OK;
 				AcceptButton = button1;
 				CancelButton = button1;
 				_ButtonCount = 1;
 				break;
 			case EnMessageBoxButtons.OKCancel:
-				_ButtonTextArray[0] = ControlsResources.OKButton;
-				_ButtonTextArray[1] = ControlsResources.CancelButton;
+				_ButtonTextArray[0] = ControlsResources.MessageCtl_OKButton;
+				_ButtonTextArray[1] = ControlsResources.AdvancedMessageBox_CancelButton;
 				button1.DialogResult = DialogResult.OK;
 				button2.DialogResult = DialogResult.Cancel;
 				AcceptButton = button1;
@@ -1007,17 +1007,17 @@ public partial class AdvancedMessageBox : Form
 				_ButtonCount = 2;
 				break;
 			case EnMessageBoxButtons.YesNo:
-				_ButtonTextArray[0] = ControlsResources.YesButton;
-				_ButtonTextArray[1] = ControlsResources.NoButton;
+				_ButtonTextArray[0] = ControlsResources.MessageCtl_YesButton;
+				_ButtonTextArray[1] = ControlsResources.MessageCtl_NoButton;
 				button1.DialogResult = DialogResult.Yes;
 				button2.DialogResult = DialogResult.No;
 				_ButtonCount = 2;
 				ControlBox = false;
 				break;
 			case EnMessageBoxButtons.YesNoCancel:
-				_ButtonTextArray[0] = ControlsResources.YesButton;
-				_ButtonTextArray[1] = ControlsResources.NoButton;
-				_ButtonTextArray[2] = ControlsResources.CancelButton;
+				_ButtonTextArray[0] = ControlsResources.MessageCtl_YesButton;
+				_ButtonTextArray[1] = ControlsResources.MessageCtl_NoButton;
+				_ButtonTextArray[2] = ControlsResources.AdvancedMessageBox_CancelButton;
 				button1.DialogResult = DialogResult.Yes;
 				button2.DialogResult = DialogResult.No;
 				button3.DialogResult = DialogResult.Cancel;
@@ -1025,9 +1025,9 @@ public partial class AdvancedMessageBox : Form
 				CancelButton = button3;
 				break;
 			case EnMessageBoxButtons.AbortRetryIgnore:
-				_ButtonTextArray[0] = ControlsResources.AbortButton;
-				_ButtonTextArray[1] = ControlsResources.RetryButton;
-				_ButtonTextArray[2] = ControlsResources.IgnoreButton;
+				_ButtonTextArray[0] = ControlsResources.AdvancedMessageBox_AbortButton;
+				_ButtonTextArray[1] = ControlsResources.MessageCtl_RetryButton;
+				_ButtonTextArray[2] = ControlsResources.MessageCtl_IgnoreButton;
 				button1.DialogResult = DialogResult.Abort;
 				button2.DialogResult = DialogResult.Retry;
 				button3.DialogResult = DialogResult.Ignore;
@@ -1035,8 +1035,8 @@ public partial class AdvancedMessageBox : Form
 				ControlBox = false;
 				break;
 			case EnMessageBoxButtons.RetryCancel:
-				_ButtonTextArray[0] = ControlsResources.RetryButton;
-				_ButtonTextArray[1] = ControlsResources.CancelButton;
+				_ButtonTextArray[0] = ControlsResources.MessageCtl_RetryButton;
+				_ButtonTextArray[1] = ControlsResources.AdvancedMessageBox_CancelButton;
 				button1.DialogResult = DialogResult.Retry;
 				button2.DialogResult = DialogResult.Cancel;
 				CancelButton = button2;
@@ -1077,7 +1077,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		else if (chkDontShow.Text.Length == 0)
 		{
-			chkDontShow.Text = ControlsResources.DefaultCheckboxText;
+			chkDontShow.Text = ControlsResources.AdvancedMessageBox_DefaultCheckboxText;
 		}
 	}
 
@@ -1119,22 +1119,22 @@ public partial class AdvancedMessageBox : Form
 			while (innerException2 != null && (_MaxMessages < 0 || num < _MaxMessages))
 			{
 				StringBuilder stringBuilder = new StringBuilder();
-				string text = innerException2.Message != null && innerException2.Message.Length != 0 ? innerException2.Message : ControlsResources.CantComplete;
+				string text = innerException2.Message != null && innerException2.Message.Length != 0 ? innerException2.Message : ControlsResources.AdvancedMessageBox_CantComplete;
 				if (_ShowHelpButton)
 				{
 					string text2 = BuildHelpURL(innerException2);
 					bool num3 = text2.Length > 0;
 					_HelpUrlArray.Add(text2);
-					text2 = text.Length <= 50 ? text : string.Format(CultureInfo.CurrentCulture, ControlsResources.AddEllipsis, text[..50]);
+					text2 = text.Length <= 50 ? text : string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_AddEllipsis, text[..50]);
 					ToolStripItem toolStripItem;
 					if (num3)
 					{
-						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.HelpMenuText, text2), null, ItemHelp_Click);
+						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_HelpMenuText, text2), null, ItemHelp_Click);
 						_HelpUrlCount++;
 					}
 					else
 					{
-						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.NoHelpMenuText, text2), null, ItemHelp_Click);
+						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_NoHelpMenuText, text2), null, ItemHelp_Click);
 						toolStripItem.Enabled = false;
 					}
 
@@ -1162,14 +1162,14 @@ public partial class AdvancedMessageBox : Form
 					string arg = (dbInnerException2 != null) ? innerException2.Source : NativeDb.DataProviderName;
 
 					if (num4 > 0)
-						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSourceNumber, arg, num4));
+						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSourceNumber, arg, num4));
 					else
-						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSource, arg));
+						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSource, arg));
 				}
 				else if (num4 > 0)
 				{
 					stringBuilder.Append(' ');
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorNumber, num4));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorNumber, num4));
 				}
 
 				if (num == 0)
@@ -1253,14 +1253,14 @@ public partial class AdvancedMessageBox : Form
 
 		if (_ButtonTextArray == null || _ButtonTextArray.Length < 5)
 		{
-			ApplicationException ex = new(ControlsResources.CantComplete);
+			ApplicationException ex = new(ControlsResources.AdvancedMessageBox_CantComplete);
 			Diag.Dug(ex);
 			throw ex;
 		}
 
 		if (_IsButtonPressed)
 		{
-			ApplicationException ex = new(ControlsResources.CantReuseObject);
+			ApplicationException ex = new(ControlsResources.AdvancedMessageBox_CantReuseObject);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -1428,7 +1428,7 @@ public partial class AdvancedMessageBox : Form
 		catch (Exception exError)
 		{
 			Diag.Dug(exError);
-			ShowError(ControlsResources.CantShowTechnicalDetailsError, exError);
+			ShowError(ControlsResources.AdvancedMessageBox_CantShowTechnicalDetailsError, exError);
 		}
 	}
 

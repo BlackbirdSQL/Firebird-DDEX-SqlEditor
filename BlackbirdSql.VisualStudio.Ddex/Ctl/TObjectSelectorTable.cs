@@ -3,16 +3,16 @@
 
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using BlackbirdSql.Core.Ctl.CommandProviders;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 // =========================================================================================================
 //											TObjectSelectorTable Class
@@ -93,7 +93,7 @@ public class TObjectSelectorTable : AdoDotNetObjectSelector
 
 
 
-	protected virtual DataTable GetSchema(DbConnection connection, string typeName, ref object[] restrictions, object[] parameters)
+	protected virtual DataTable GetSchema(IDbConnection connection, string typeName, ref object[] restrictions, object[] parameters)
 	{
 		// Tracer.Trace(GetType(), "GetSchema()", "typeName: {0}", typeName);
 

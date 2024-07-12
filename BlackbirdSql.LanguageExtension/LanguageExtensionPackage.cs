@@ -65,7 +65,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	// ----------------------------------------------------------
 
 
-	public LanguageExtensionPackage() : base()
+	protected LanguageExtensionPackage() : base()
 	{
 		// SyncServiceContainer.AddService(typeof(LsbLanguageService), ServicesCreatorCallback, promote: true);
 	}
@@ -78,8 +78,8 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	{
 		get
 		{
-			if (_Instance == null)
-				DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
+			// if (_Instance == null)
+			//	DemandLoadPackage(Sys.LibraryData.AsyncPackageGuid, out _);
 			return (LanguageExtensionPackage)_Instance;
 		}
 	}
@@ -425,7 +425,6 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 		}
 		return _UserPreferences;
 	}
-
 
 
 

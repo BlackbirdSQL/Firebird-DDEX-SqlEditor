@@ -6,6 +6,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -25,9 +26,51 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls;
 public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 {
 
-	// ---------------------------------------------------------------------------------
+
+	// ---------------------------------------------------------
+	#region Constructors / Destructors - TConnectionPromptDialog
+	// ---------------------------------------------------------
+
+
+	public TConnectionPromptDialog()
+	{
+		// Tracer.Trace(typeof(TConnectionPromptDialog), ".ctor");
+
+		try
+		{
+			InitializeComponent();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		int width = savePasswordCheckBox.PreferredSize.Width;
+		if (savePasswordCheckBox.Width < width)
+		{
+			Width += width - savePasswordCheckBox.Width;
+		}
+
+		int preferredHeight = headerLabel.PreferredHeight;
+		if (headerLabel.Height > preferredHeight)
+		{
+			Height += headerLabel.Height - preferredHeight;
+		}
+
+		MinimumSize = new Size(Width, Height);
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
 	#region Property Accessors - TConnectionPromptDialog
-	// ---------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
 	/// <summary>
@@ -69,47 +112,6 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - TConnectionPromptDialog
-	// =========================================================================================================
-
-
-	public TConnectionPromptDialog()
-	{
-		// Tracer.Trace(GetType(), "TConnectionPromptDialog.TConnectionPromptDialog");
-
-		try
-		{
-			InitializeComponent();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-
-		int width = savePasswordCheckBox.PreferredSize.Width;
-		if (savePasswordCheckBox.Width < width)
-		{
-			Width += width - savePasswordCheckBox.Width;
-		}
-
-		int preferredHeight = headerLabel.PreferredHeight;
-		if (headerLabel.Height > preferredHeight)
-		{
-			Height += headerLabel.Height - preferredHeight;
-		}
-
-		MinimumSize = new Size(Width, Height);
-	}
-
-
-	#endregion Constructors / Destructors
-
-
-
-
-
-	// =========================================================================================================
 	#region Method Implementations & Overloads - TConnectionPromptDialog
 	// =========================================================================================================
 
@@ -136,10 +138,10 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 		try
 		{
-			serverTextBox.Text = ConnectionUIProperties.ContainsKey("DataSource") ? ConnectionUIProperties["DataSource"] as string : "";
-			databaseTextBox.Text = ConnectionUIProperties.ContainsKey("Database") ? ConnectionUIProperties["Database"] as string : "";
+			serverTextBox.Text = ConnectionUIProperties.ContainsKey(SysConstants.C_KeyDataSource) ? ConnectionUIProperties[SysConstants.C_KeyDataSource] as string : "";
+			databaseTextBox.Text = ConnectionUIProperties.ContainsKey(SysConstants.C_KeyDatabase) ? ConnectionUIProperties[SysConstants.C_KeyDatabase] as string : "";
 
-			userNameTextBox.Text = ConnectionUIProperties.ContainsKey("User ID") ? ConnectionUIProperties["User ID"] as string : "";
+			userNameTextBox.Text = ConnectionUIProperties.ContainsKey(SysConstants.C_KeyUserID) ? ConnectionUIProperties[SysConstants.C_KeyUserID] as string : "";
 			if (ConnectionUIProperties.TryGetValue("Password", out object value))
 				passwordTextBox.Text = value as string;
 			else
@@ -180,7 +182,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 				// if (serverTextBox.Text.Trim() == "")
 				//	ConnectionUIProperties.Remove("DataSource");
 				// else
-					ConnectionUIProperties["DataSource"] = serverTextBox.Text.Trim();
+					ConnectionUIProperties[SysConstants.C_KeyDataSource] = serverTextBox.Text.Trim();
 			}
 
 			if (databaseTextBox.Enabled)
@@ -188,7 +190,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 				// if (databaseTextBox.Text.Trim() == "")
 				//	ConnectionUIProperties.Remove("Database");
 				// else
-					ConnectionUIProperties["Database"] = databaseTextBox.Text.Trim();
+					ConnectionUIProperties[SysConstants.C_KeyDatabase] = databaseTextBox.Text.Trim();
 			}
 
 			if (userNameTextBox.Enabled)
@@ -196,13 +198,13 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 				// if (userNameTextBox.Text.Trim() == "")
 				//	ConnectionUIProperties.Remove("User ID");
 				// else
-					ConnectionUIProperties["User ID"] = userNameTextBox.Text.Trim();
+					ConnectionUIProperties[SysConstants.C_KeyUserID] = userNameTextBox.Text.Trim();
 			}
 
 			// if (passwordTextBox.Text.Trim() == "")
 			//	ConnectionUIProperties.Remove("Password");
 			// else
-				ConnectionUIProperties["Password"] = passwordTextBox.Text;
+				ConnectionUIProperties[SysConstants.C_KeyPassword] = passwordTextBox.Text;
 
 			ConnectionSupport.ConnectionString = ConnectionUIProperties.ToString();
 		}

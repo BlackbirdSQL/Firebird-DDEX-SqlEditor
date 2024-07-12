@@ -21,7 +21,7 @@ namespace BlackbirdSql.Shared.Controls.PropertiesWindow
 	public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBPropertyWindowQueryManagerInitialize
 	{
 
-		public ConnectedPropertiesWindow(SqlConnectionStrategy connectionStrategy) : base()
+		public ConnectedPropertiesWindow(ConnectionStrategy connectionStrategy) : base()
 		{
 			Strategy = connectionStrategy;
 		}
@@ -40,7 +40,7 @@ namespace BlackbirdSql.Shared.Controls.PropertiesWindow
 
 
 		[Browsable(false)]
-		private SqlConnectionStrategy Strategy { get; set; }
+		private ConnectionStrategy Strategy { get; set; }
 
 		[Browsable(false)]
 		private QueryManager QryMgr { get; set; }
@@ -329,7 +329,7 @@ namespace BlackbirdSql.Shared.Controls.PropertiesWindow
 		{
 			if (Connection != null)
 			{
-				if (_Csa == null || _Csa.IsInvalidated(Connection))
+				if (_Csa == null || _Csa.IsInvalidated)
 				{
 					_Csa = RctManager.ShutdownState ? null : RctManager.CloneVolatile(Connection);
 

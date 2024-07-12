@@ -48,15 +48,16 @@ internal abstract class AbstractDslSchema
 
 	#region Methods
 
-	public DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
+	public DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
 		// Tracer.Trace(GetType(), "GetSchema", "collectionName: {0}", collectionName);
 
-		var dataTable = new DataTable(collectionName);
-		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
+		DataTable dataTable = new (collectionName);
+		FbCommand command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
+
 		try
 		{
-			using (var adapter = new FbDataAdapter(command))
+			using (FbDataAdapter adapter = new (command))
 			{
 				// Exceptions will be handled in SelectObjects();
 				adapter.Fill(dataTable);
@@ -68,57 +69,27 @@ internal abstract class AbstractDslSchema
 		}
 
 		TrimStringFields(dataTable);
-		ProcessResult(dataTable);
+		ProcessResult(dataTable, RequiresTriggers(collectionName)
+			? connection.ConnectionString : null, RequiresTriggers(collectionName) ? restrictions : null);
+
 		return dataTable;
 	}
 
-	/*
-	public DataTable GetRawSchema(FbConnection connection, string collectionName)
-	{
-		// Tracer.Trace(GetType(), "GetRawSchema", "collectionName: {0}", collectionName);
-
-		var dataTable = new DataTable(collectionName);
-		var command = BuildRawCommand(connection);
-		try
-		{
-			using (var adapter = new FbDataAdapter(command))
-			{
-				try
-				{
-					adapter.Fill(dataTable);
-				}
-				catch (Exception ex)
-				{
-					Diag.Dug(ex);
-					throw;
-				}
-			}
-		}
-		finally
-		{
-			command.Dispose();
-		}
-
-		TrimStringFields(dataTable);
-		ProcessResult(dataTable);
-		return dataTable;
-	}
-	*/
 
 
-	public async Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	public async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
 		// Tracer.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
 
-		var dataTable = new DataTable(collectionName);
-		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
+		DataTable dataTable = new (collectionName);
+		FbCommand command = await BuildCommandAsync(connection, collectionName, ParseRestrictions(restrictions), cancellationToken);
 
 		if (cancellationToken.IsCancellationRequested)
 			return dataTable;
 
 		try
 		{
-			using (var adapter = new FbDataAdapter(command))
+			using (FbDataAdapter adapter = new (command))
 			{
 				try
 				{
@@ -145,7 +116,7 @@ internal abstract class AbstractDslSchema
 		TrimStringFields(dataTable);
 		if (cancellationToken.IsCancellationRequested)
 			return dataTable;
-		ProcessResult(dataTable);
+		ProcessResult(dataTable, connection.ConnectionString, restrictions);
 
 		return dataTable;
 	}
@@ -157,11 +128,13 @@ internal abstract class AbstractDslSchema
 
 	#region Protected Methods
 
-	protected FbCommand BuildCommand(FbConnection connection, string collectionName, string[] restrictions)
+	protected FbCommand BuildCommand(IDbConnection connection, string collectionName, string[] restrictions)
 	{
 		// Tracer.Trace(GetType(), "BuildCommand", "collectionName: {0}", collectionName);
 
-		SetMajorVersionNumber(connection);
+		FbConnection dbConnection = connection as FbConnection;
+
+		SetMajorVersionNumber(dbConnection);
 
 		string schemaCollection;
 
@@ -182,10 +155,65 @@ internal abstract class AbstractDslSchema
 
 		string filter = string.Format("CollectionName='{0}'", schemaCollection);
 		StringBuilder builder = GetCommandText(restrictions);
-		DataRow[] restrictionRows = connection.GetSchema(DbMetaDataCollectionNames.Restrictions).Select(filter);
+		DataRow[] restrictionRows = dbConnection.GetSchema(DbMetaDataCollectionNames.Restrictions).Select(filter);
 		// var transaction = connection.InnerConnection.ActiveTransaction;
 
-		FbCommand command = new(builder.ToString(), connection /*, transaction*/);
+		FbCommand command = new(builder.ToString(), dbConnection /*, transaction*/);
+
+		if (restrictions != null && restrictions.Length > 0)
+		{
+			int index = 0;
+			int newIndex;
+			string rname;
+
+			for (int i = 0; i < restrictions.Length; i++)
+			{
+				if (restrictions[i] != null)
+				{
+					rname = restrictionRows[i]["RestrictionName"].ToString();
+					newIndex = command.AddParameter(rname, index, restrictions[i]);
+
+					if (newIndex != -1)
+						index = newIndex;
+				}
+			}
+		}
+
+
+		return command;
+	}
+
+	protected async Task<FbCommand> BuildCommandAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken)
+	{
+		// Tracer.Trace(GetType(), "BuildCommandAsync", "collectionName: {0}", collectionName);
+
+		FbConnection dbConnection = connection as FbConnection;
+		
+		SetMajorVersionNumber(dbConnection);
+
+		string schemaCollection;
+
+		switch (collectionName)
+		{
+			case "TriggerColumns":
+				schemaCollection = "Columns";
+				break;
+			case "IdentityTriggers":
+			case "StandardTriggers":
+			case "SystemTriggers":
+				schemaCollection = "Triggers";
+				break;
+			default:
+				schemaCollection = collectionName;
+				break;
+		}
+
+		string filter = string.Format("CollectionName='{0}'", schemaCollection);
+		StringBuilder builder = GetCommandText(restrictions);
+		DataRow[] restrictionRows = (await dbConnection.GetSchemaAsync(DbMetaDataCollectionNames.Restrictions, cancelToken)).Select(filter);
+		// var transaction = connection.InnerConnection.ActiveTransaction;
+
+		FbCommand command = new(builder.ToString(), dbConnection /*, transaction*/);
 
 		if (restrictions != null && restrictions.Length > 0)
 		{
@@ -212,7 +240,7 @@ internal abstract class AbstractDslSchema
 
 
 
-	protected virtual void ProcessResult(DataTable schema)
+	protected virtual void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{ }
 
 	protected virtual string[] ParseRestrictions(string[] restrictions)
@@ -223,7 +251,40 @@ internal abstract class AbstractDslSchema
 
 	#endregion
 
+
+
+
+
 	#region Private Methods
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns true if an SE node's collection requires completed Trigger/Generator
+	/// linkage tables in order to render, else false.
+	/// If true and linkage is incomplete or non-existent, the caller will first
+	/// initiate linkage, if required, and wait for the owning Explorer ConnectionNode's
+	/// linkage tables to be prepared before allowing a node to be rendered.
+	/// </summary>
+	// ----------------------------------------------------------------------------------
+	private static bool RequiresTriggers(string collection)
+	{
+		switch (collection)
+		{
+			case "Columns":
+			case "ForeignKeyColumns":
+			case "IndexColumns":
+			case "TriggerColumns":
+				return true;
+			default:
+				break;
+		}
+
+		return false;
+	}
+
+
+
 	/// <summary>
 	/// Determines the major version number from the Serverversion on the inner connection.
 	/// </summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BlackbirdSql.Sys.Extensions;
 using BlackbirdSql.Sys.Interfaces;
 
+
 namespace BlackbirdSql.Sys.Events;
 
 /// <summary>

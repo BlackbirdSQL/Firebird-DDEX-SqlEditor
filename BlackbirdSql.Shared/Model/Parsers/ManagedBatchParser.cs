@@ -140,15 +140,15 @@ public class ManagedBatchParser : IDisposable
 
 				_Current++;
 
-				// Tracer.Trace(GetType(), "ParseAsync()", "Calling ProcessParsedBatchStatementAsync() for ParserAction: {0}, Statement: {1}.",
+				// Tracer.Trace(GetType(), "ParseAsync()", "Calling BatchStatementCallbackAsync() for ParserAction: {0}, Statement: {1}.",
 				//	_BatchParser.CurrentAction, _BatchParser.Current);
 
 				// ------------------------------------------------------------------------------- //
 				// ******************** Execution Point (6) - ManagedBatchParser.ParseAsync() ******************** //
 				// ------------------------------------------------------------------------------- //
-				await _Executor.ProcessParsedBatchStatementAsync(sqlStatement, 1, cancelToken);
+				result = await _Executor.BatchStatementCallbackAsync(sqlStatement, 1, cancelToken);
 
-				// Tracer.Trace(GetType(), "ParseAsync()", "Done Calling ProcessParsedBatchStatementAsync() for ParserAction: {0}, Statement: {1}.",
+				// Tracer.Trace(GetType(), "ParseAsync()", "Done Calling BatchStatementCallbackAsync() for ParserAction: {0}, Statement: {1}.",
 				//	_BatchParser.CurrentAction, _BatchParser.Current);
 
 			}
@@ -156,6 +156,9 @@ public class ManagedBatchParser : IDisposable
 
 			// Tracer.Trace(GetType(), "ParseAsync()", "Calling OnBatchDataLoaded() for ParserAction: {0}, Statement: {1}.",
 			//	_BatchParser.CurrentAction, _BatchParser.Current);
+
+			if (result == EnParserAction.Abort)
+				break;
 
 			// Call statistics output
 			QESQLQueryDataEventArgs args = new(_ExecutionType,

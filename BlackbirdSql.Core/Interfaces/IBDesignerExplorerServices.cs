@@ -12,7 +12,7 @@ namespace BlackbirdSql.Core.Interfaces;
 [Guid(SystemData.DesignerExplorerServicesGuid)]
 public interface IBDesignerExplorerServices
 {
-	void NewSqlQuery(string datasetKey);
+	void NewQuery(string datasetKey);
 
 	void ViewCode(IVsDataExplorerNode node, EnModelTargetType targetType);
 

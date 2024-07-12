@@ -1,9 +1,7 @@
 // $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
 using System;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -23,37 +21,38 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 public class TSourceInformation : AdoDotNetSourceInformation
 {
 
-
-
 	// ---------------------------------------------------------------------------------
-	#region Property Accessors - TSourceInformation
-	// ---------------------------------------------------------------------------------
-
-
-	#endregion Property Accessors
-
-
-
-
-	// =========================================================================================================
 	#region Constructors / Destructors - TSourceInformation
-	// =========================================================================================================
+	// ---------------------------------------------------------------------------------
 
 
 	public TSourceInformation() : base()
 	{
+		// Tracer.Trace(typeof(TSourceInformation), ".ctor");
+
 		AddExtendProperties();
 	}
 
 	public TSourceInformation(IVsDataConnection connection) : base(connection)
 	{
+		// Tracer.Trace(typeof(TSourceInformation), ".ctor(IVsDataConnection)");
+
 		AddExtendProperties();
 	}
 
 
-
-
 	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - TSourceInformation
+	// =========================================================================================================
+
+
+	#endregion Property Accessors
 
 
 

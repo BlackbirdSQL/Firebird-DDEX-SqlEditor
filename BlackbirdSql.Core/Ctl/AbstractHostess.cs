@@ -3,11 +3,11 @@
 
 using System;
 using System.ComponentModel.Design;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Sys;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -108,6 +108,12 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 	}
 
 
+	/// <summary>
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
+	/// </summary>
+	public static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
 
 
 	public bool ActivateDocumentIfOpen(string documentMoniker)
@@ -136,7 +142,7 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 			Guid rguidLogicalView = Guid.Empty;
 			uint grfIDO = doNotShowWindowFrame ? 0u : (uint)__VSIDOFLAGS.IDO_ActivateIfOpen;
 
-			_ = Native.WrapComCall(service.IsDocumentOpen(null, uint.MaxValue, mkDocument, ref rguidLogicalView,
+			_ = ___(service.IsDocumentOpen(null, uint.MaxValue, mkDocument, ref rguidLogicalView,
 				grfIDO, out IVsUIHierarchy ppHierOpen, null, out ppWindowFrame, out int pfOpen));
 		}
 		catch (Exception ex)
@@ -194,7 +200,7 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 		Guid pguidCmdGroup = command.Guid;
 		uint iD = (uint)command.ID;
 		object pvaIn = null;
-		Native.WrapComCall(ShellService.PostExecCommand(ref pguidCmdGroup, iD, 0u, ref pvaIn));
+		___(ShellService.PostExecCommand(ref pguidCmdGroup, iD, 0u, ref pvaIn));
 	}
 
 

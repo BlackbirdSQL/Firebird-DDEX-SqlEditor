@@ -2,23 +2,22 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Interfaces;
+using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
+using static BlackbirdSql.Sys.Interfaces.IBsPackageController;
+
 
 
 namespace BlackbirdSql;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
-
 
 
 // =========================================================================================================
@@ -30,123 +29,167 @@ namespace BlackbirdSql;
 // =========================================================================================================
 public static class ApcManager
 {
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
+	public static string ActiveDocument
+	{
+		get
+		{
+			if (IdeShutdownState)
+				return string.Empty;
+
+			EnvDTE.Document document = null;
+
+			try
+			{
+				document = Instance?.Dte?.ActiveDocument;
+			}
+			catch (InvalidCastException ex)
+			{
+				if (ex.HResult == VSConstants.E_NOINTERFACE)
+				{
+					ShutdownDte();
+					return string.Empty;
+				}
+			}
+			catch
+			{
+				return string.Empty;
+			}
+
+			return document == null ? string.Empty : document.FullName;
+		}
+	}
+
+
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
+	public static Project ActiveProject
+	{
+		get
+		{
+			if (IdeShutdownState)
+				return null;
+
+			Project result = null;
+
+			try
+			{
+				object activeSolutionProjects = Dte.ActiveSolutionProjects;
+
+				if (activeSolutionProjects != null && activeSolutionProjects is Array array && array.Length > 0)
+				{
+					object value = array.GetValue(0);
+
+					if (value != null && value is Project project)
+					{
+						result = project;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				return null;
+			}
+
+			return result;
+		}
+	}
+
+
+
+	public static EnvDTE.Window ActiveWindow
+	{
+		get
+		{
+			if (IdeShutdownState)
+				return null;
+
+			EnvDTE.Window window = null;
+
+			try
+			{
+				window = Instance?.Dte?.ActiveWindow;
+			}
+			catch (InvalidCastException ex)
+			{
+				if (ex.HResult == VSConstants.E_NOINTERFACE)
+				{
+					ShutdownDte();
+					return null;
+				}
+			}
+			catch
+			{
+				window = null;
+			}
+
+			return window;
+		}
+	}
+
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
 	public static string ActiveWindowObjectKind
 	{
 		get
 		{
-			/*
-			 * Deprecated. We're just peeking.
-			 * 
-			// Fire and wait.
-			if (!ThreadHelper.CheckAccess())
-			{
-				string result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-				{
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-					return GetActiveWindowObjectKind();
-				});
-
-				return result;
-			}
-
-			return GetActiveWindowObjectKind();
-			*/
-
-			// We're just peeking at stored values.
-			// Diag.ThrowIfNotOnUIThread();
-
-			if (IdeShutdownState)
-				return null;
-
-			EnvDTE.Window window = null;
-
 			try
 			{
-				window = Instance.Dte?.ActiveWindow;
-			}
-			catch (InvalidCastException ex)
-			{
-				if (ex.HResult == VSConstants.E_NOINTERFACE)
-				{
-					ResetDte();
-					return null;
-				}
+				EnvDTE.Window window = ActiveWindow;
+				if (window == null)
+					return string.Empty;
+
+				string kind = window.ObjectKind;
+				if (kind == null)
+					return string.Empty;
+
+				return kind;
 			}
 			catch
 			{
-				window = null;
+				return string.Empty;
 			}
-
-
-			if (window == null)
-				return null;
-
-			return window.ObjectKind;
-
 		}
 	}
 
 
 
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
 	public static string ActiveWindowObjectType
 	{
 		get
 		{
-			/*
-			 * Deprecated. We're just peeking.
-			 * 
-			// Fire and wait.
-			if (!ThreadHelper.CheckAccess())
-			{
-				string result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-				{
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-					return GetActiveWindowObjectType();
-				});
-
-				return result;
-			}
-			*/
-
-			// We're just peeking at stored values.
-			// Diag.ThrowIfNotOnUIThread();
-
-			if (IdeShutdownState)
-				return null;
-
-			EnvDTE.Window window = null;
-
 			try
 			{
-				window = Instance.Dte?.ActiveWindow;
-			}
-			catch (InvalidCastException ex)
-			{
-				if (ex.HResult == VSConstants.E_NOINTERFACE)
-				{
-					ResetDte();
-					return null;
-				}
+				EnvDTE.Window window = ActiveWindow;
+				if (window == null)
+					return string.Empty;
+
+				if (window.Object == null)
+					return string.Empty;
+
+				return window.Object.GetType().FullName;
 			}
 			catch
 			{
-				window = null;
+				return string.Empty;
 			}
-
-
-			if (window == null)
-				return null;
-
-
-			object @object = window.Object;
-			if (@object == null)
-				return null;
-
-
-			return @object.GetType().FullName;
-
 		}
 	}
+
+
+	public static string ActiveWindowType => ActiveWindow?.GetType().FullName ?? string.Empty;
+
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
+	public static bool CanValidateSolution => SolutionProjects != null && SolutionProjects.Count > 0;
+
+
+	public static DTE Dte => IdeShutdownState ? null : Instance.Dte;
+
+	public static bool IdeShutdownState => AbstrusePackageController.IdeShutdownState;
 
 
 	// ---------------------------------------------------------------------------------
@@ -154,19 +197,10 @@ public static class ApcManager
 	/// Gets the singleton AbstractPackageController instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IBsPackageController Instance => AbstrusePackageController.Instance;
-
-	public static bool CanValidateSolution => Instance.Dte.Solution != null
-		&& Instance.Dte.Solution.Projects != null
-		&& Instance.Dte.Solution.Projects.Count > 0;
+	private static IBsPackageController Instance => AbstrusePackageController.Instance;
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Accessor to the singleton package instance as a service container.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static IAsyncServiceContainer Services => (IAsyncServiceContainer)Instance.PackageInstance;
+	public static bool IsToolboxInitialized => !IdeShutdownState && Instance.IsToolboxInitialized;
 
 
 	// ---------------------------------------------------------------------------------
@@ -174,22 +208,25 @@ public static class ApcManager
 	/// Gets the singleton PackageInstance instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IBsAsyncPackage PackageInstance => Instance.PackageInstance;
+	public static IBsAsyncPackage PackageInstance => Instance?.PackageInstance;
 
-	public static bool IdeShutdownState => AbstrusePackageController.IdeShutdownState;
 
-	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance.PackageInstance;
+	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance?.PackageInstance;
 
-	public static IVsTaskStatusCenterService StatusCenterService => Instance.StatusCenterService;
+	public static Solution SolutionObject => IdeShutdownState ? null : Instance.SolutionObject;
+
+	public static Projects SolutionProjects => SolutionObject != null ? Instance.SolutionProjects : null;
+
+	public static IVsTaskStatusCenterService StatusCenterService => Instance?.StatusCenterService;
 
 	public static IVsDataExplorerConnectionManager ExplorerConnectionManager
 	{
 		get
 		{
 			IVsDataExplorerConnectionManager manager =
-			(ApcManager.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-				as IVsDataExplorerConnectionManager)
-			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+				(OleServiceProvider?.QueryService<IVsDataExplorerConnectionManager>()
+					as IVsDataExplorerConnectionManager)
+				?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
 
 			return manager;
 		}
@@ -202,25 +239,26 @@ public static class ApcManager
 	}
 
 	public static Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider
-		=> Instance.PackageInstance.OleServiceProvider;
+		=> Instance?.PackageInstance?.OleServiceProvider;
 
-	public static IVsMonitorSelection SelectionMonitor => Instance.SelectionMonitor;
+	public static string ProviderGuid => Instance?.ProviderGuid;
 
-	public static bool SolutionValidating => Instance.SolutionValidating;
+	public static IVsMonitorSelection SelectionMonitor => Instance?.SelectionMonitor;
 
+	public static bool SolutionClosing => IdeShutdownState || Instance.SolutionClosing;
 
-	public static string CreateConnectionUrl(IDbConnection connection)
-		=> Instance.CreateConnectionUrl(connection);
+	public static bool SolutionValidating => Instance != null && Instance.SolutionValidating;
+
 
 	public static string CreateConnectionUrl(string connectionString)
-		=> Instance.CreateConnectionUrl(connectionString);
+		=> Instance?.CreateConnectionUrl(connectionString);
 
 	public static TInterface EnsureService<TService, TInterface>() where TInterface : class
-		=> Instance.EnsureService<TService, TInterface>();
+		=> Instance?.EnsureService<TService, TInterface>();
 
 	public static TInterface EnsureService<TInterface>() where TInterface : class
 	{
-		TInterface @interface = Instance.GetService<TInterface, TInterface>();
+		TInterface @interface = Instance?.GetService<TInterface, TInterface>();
 		Diag.ThrowIfServiceUnavailable(@interface, typeof(TInterface));
 
 		return @interface;
@@ -229,7 +267,7 @@ public static class ApcManager
 
 	public static async Task<TInterface> EnsureServiceAsync<TService, TInterface>() where TInterface : class
 	{
-		TInterface @interface = await Instance.GetServiceAsync<TService, TInterface>(); 
+		TInterface @interface = await Instance?.GetServiceAsync<TService, TInterface>(); 
 		Diag.ThrowIfServiceUnavailable(@interface, typeof(TInterface));
 
 		return @interface;
@@ -239,31 +277,42 @@ public static class ApcManager
 
 
 	public static TInterface GetService<TService, TInterface>() where TInterface : class
-		=> Instance.GetService<TService, TInterface>();
+		=> Instance?.GetService<TService, TInterface>();
 
 	public static TInterface GetService<TInterface>() where TInterface : class
-		=> Instance.GetService<TInterface, TInterface>();
+		=> Instance?.GetService<TInterface, TInterface>();
 
 	public static async Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class
-		=> await Instance.GetServiceAsync<TService, TInterface>();
+		=> await Instance?.GetServiceAsync<TService, TInterface>();
 
-	public static async Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync()
-		=> await Instance.GetStatusCenterServiceAsync();
+	public static string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root)
+		=> Instance?.GetRegisterConnectionDatasetKey(root);
 
-	public static string GetRegisterConnectionDatasetKey(IDbConnection connection)
-		=> Instance.GetRegisterConnectionDatasetKey(connection);
-
-	public static void InvalidateRctManager() => Instance.InvalidateRctManager();
+	public static void InvalidateRctManager() => Instance?.InvalidateRctManager();
 
 	public static bool IsConnectionEquivalency(string connectionString1, string connectionString2)
-			=> Instance.IsConnectionEquivalency(connectionString1, connectionString2);
+			=> Instance != null && Instance.IsConnectionEquivalency(connectionString1, connectionString2);
 
 	public static bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2)
-		=> Instance.IsWeakConnectionEquivalency(connectionString1, connectionString2);
-
-	public static void ResetDte() => AbstrusePackageController.ResetDte();
+		=> Instance != null && Instance.IsWeakConnectionEquivalency(connectionString1, connectionString2);
 
 
-	public static void ValidateSolution() => Instance.ValidateSolution();
+
+	public static void ShutdownDte()
+	{
+		// Tracer.Trace(typeof(AbstrusePackageController), "ShutdownDte()");
+
+		AbstrusePackageController.ShutdownDte();
+	}
+
+
+
+	public static void ValidateSolution() => Instance?.ValidateSolution();
+
+	public static event ElementValueChangedDelegate OnElementValueChangedEvent
+	{
+		add { if (Instance != null) Instance.OnElementValueChangedEvent += value; }
+		remove { if (Instance != null) Instance.OnElementValueChangedEvent -= value; }
+	}
 
 }

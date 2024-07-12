@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
@@ -23,7 +22,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Implementation of <see cref="IVsDataConnectionProperties"/> interface.
 /// </summary>
 // =========================================================================================================
-public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnectionProperties
+public class TConnectionProperties : TAbstractConnectionProperties
 {
 
 	// ---------------------------------------------------------------------------------
@@ -62,9 +61,6 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 	// =================================================================================
 
 
-	public Csb Csa => ConnectionStringBuilder;
-
-
 	/// <summary>
 	/// Determines if the connection properties object is sufficiently complete,
 	/// inclusive of password for connections other than Properties settings
@@ -76,8 +72,10 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 		{
 			try
 			{
-				IEnumerable<Describer> describers = (ConnectionSource == EnConnectionSource.Application)
-					? Csb.PublicMandatoryKeys : Csb.MandatoryKeys;
+				// IEnumerable<Describer> describers = (ConnectionSource == EnConnectionSource.Application)
+				//	? Csb.PublicMandatoryKeys : Csb.MandatoryKeys;
+
+				IEnumerable<Describer> describers = Csb.MandatoryKeys;
 
 				foreach (Describer describer in describers)
 				{

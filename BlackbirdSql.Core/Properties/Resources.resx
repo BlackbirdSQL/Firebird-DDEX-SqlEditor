@@ -147,7 +147,7 @@
   <data name="CommandProvider_NewGlobalDesigner" xml:space="preserve">
     <value>&amp;New Designer Query</value>
   </data>
-  <data name="CommandProvider_NewSqlQuery" xml:space="preserve">
+  <data name="CommandProvider_NewQuery" xml:space="preserve">
     <value>New SQL &amp;Query</value>
   </data>
   <data name="CommandProvider_NewSystemDesigner" xml:space="preserve">
@@ -286,13 +286,19 @@
     <value>Retry number {0}. Delaying {1} ms before next retry. Exception: {2}</value>
   </data>
   <data name="RunningConnectionTableEdmDataset" xml:space="preserve">
-    <value>{0} [{1}] {2}</value>
+    <value>[{0}] {1}</value>
+  </data>
+  <data name="RunningConnectionTableFullDisplayNameFormat" xml:space="preserve">
+    <value>{0} | {1}</value>
+  </data>
+  <data name="RunningConnectionTableGlyphFormat" xml:space="preserve">
+    <value>{0} {1}</value>
   </data>
   <data name="RunningConnectionTableProjectDatasetId" xml:space="preserve">
-    <value>{0} [{1}] {2}</value>
+    <value>[{0}] {1}</value>
   </data>
   <data name="RunningConnectionTableUtilityDatasetId" xml:space="preserve">
-    <value>{0} {1}</value>
+    <value>{0}</value>
   </data>
   <data name="TextBoxRequiredFieldToolTip" xml:space="preserve">
     <value>This field cannot be empty</value>
