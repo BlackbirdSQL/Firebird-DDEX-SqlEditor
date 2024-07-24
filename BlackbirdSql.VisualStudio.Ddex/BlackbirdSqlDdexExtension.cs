@@ -23,7 +23,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
+using Microsoft.VisualStudio.Threading;
 using Task = System.Threading.Tasks.Task;
 
 
@@ -88,7 +88,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // Register services
 [ProvideService(typeof(IBsPackageController), IsAsyncQueryable = true,
 	ServiceName = ExtensionData.PackageControllerServiceName)]
-[ProvideService(typeof(IBProviderObjectFactory), IsAsyncQueryable = true,
+[ProvideService(typeof(IBsProviderObjectFactory), IsAsyncQueryable = true,
 	ServiceName = ExtensionData.ProviderObjectFactoryServiceName)]
 
 // Implement Visual studio options/settings
@@ -221,18 +221,17 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// Gets a service interface from this service provider asynchronously.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
-	public override Task<TInterface> GetServiceAsync<TService, TInterface>()
+	// [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
+	public async override Task<TInterface> GetServiceAsync<TService, TInterface>()
 	{
 		Type type = typeof(TService);
 
-		Task<object> task = CreateServiceInstanceAsync(type, default);
+		object svc = await CreateServiceInstanceAsync(type, default);
 
 
-		if (task == null || task.Result == null)
-			return ((AsyncPackage)this).GetServiceAsync<TService, TInterface>();
+		svc ??= await ((AsyncPackage)this).GetServiceAsync<TService, TInterface>();
 
-		return task as Task<TInterface>;
+		return (TInterface)svc;
 	}
 
 
@@ -245,40 +244,47 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// ---------------------------------------------------------------------------------
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		Progress(progress, "Initializing extension...");
+		ProgressAsync(progress, "Initializing extension...").Forget();
 
+		_S_Stopwatch.Start();
 
-		Progress(progress, "Propagating user settings...");
+		ProgressAsync(progress, "Extension propagating user settings...").Forget();
 
 		// Load all packages settings models and propogate throughout the extension hierarchy.
 		PropagateSettings();
 
-		Progress(progress, "Propagating user settings... Done.");
+		ProgressAsync(progress, "Extension propagating user settings... Done.").Forget();
 
 		await base.InitializeAsync(cancellationToken, progress);
 
-		Progress(progress, "Registering DDEX Provider services...");
+		ProgressAsync(progress, "Extension registering DDEX Provider services...").Forget();
 
 		if (ApcManager.IdeShutdownState)
 			return;
 
 		// Add provider object and schema factories
-		ServiceContainer.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
-		ServiceContainer.AddService(typeof(IBDataConnectionDlgHandler), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBsProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBsDataConnectionDlgHandler), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBsDataConnectionPromptDialogHandler), ServicesCreatorCallbackAsync, promote: true);
 
-		Progress(progress, "Registering DDEX Provider services... Done.");
-		
+		ProgressAsync(progress, "Extension registering DDEX Provider services... Done.").Forget();
+
 
 
 		// Perform any final initialization tasks.
 		// It is the final descendent package class's responsibility to initiate the call to FinalizeAsync.
-		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-		Progress(progress, "Initialization phase complete.");
+
+		long elapsed = _S_Stopwatch.ElapsedTicks;
+
+
+		ProgressAsync(progress, "Extension Initialization launching Finalization phase...",
+			_EnStatisticsStage.MainThreadLoadStart, elapsed).Forget();
 
 		// We are the final descendent package class so call FinalizeAsync().
 		await FinalizeAsync(cancellationToken, progress);
 
+		ProgressAsync(progress, "Extension Initialization complete... Loaded.").Forget();
 	}
 
 
@@ -293,19 +299,28 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// ---------------------------------------------------------------------------------
 	public override async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		Diag.ThrowIfNotOnUIThread();
-
 		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
+		ProgressAsync(progress, "Finalizing phase launched. Switching to main thread...").Forget();
 
-		Progress(progress, "Finalizing...");
-	
+		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+		long elapsed = _S_Stopwatch.ElapsedTicks;
+
+		ProgressAsync(progress, "Finalizing phase launched. Switch to main thread... Done.",
+			_EnStatisticsStage.MainThreadLoadEnd, elapsed).Forget();
+
+
 
 		// Descendents have completed their final async initialization now we perform ours.
 		await base.FinalizeAsync(cancellationToken, progress);
 
-		Progress(progress, "Loading completed.");
+		elapsed = _S_Stopwatch.ElapsedTicks;
+		_S_Stopwatch = null;
+
+		ProgressAsync(progress, "Finalization phase completed.",
+			_EnStatisticsStage.InitializationEnd, elapsed).Forget();
 
 	}
 
@@ -328,13 +343,17 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 			throw ex;
 		}
 
-		if (serviceType == typeof(IBProviderObjectFactory) || serviceType == typeof(IVsDataProviderObjectFactory))
+		if (serviceType == typeof(IBsProviderObjectFactory) || serviceType == typeof(IVsDataProviderObjectFactory))
 		{
 			return new TProviderObjectFactory();
 		}
-		if (serviceType == typeof(IBDataConnectionDlgHandler))
+		if (serviceType == typeof(IBsDataConnectionDlgHandler))
 		{
 			return new TDataConnectionDlgHandler();
+		}
+		if (serviceType == typeof(IBsDataConnectionPromptDialogHandler))
+		{
+			return new TConnectionPromptDialogHandler();
 		}
 
 
@@ -355,7 +374,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// ---------------------------------------------------------------------------------
 	public override async Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType)
 	{
-		if (serviceType == typeof(IBProviderObjectFactory))
+		if (serviceType == typeof(IBsProviderObjectFactory))
 			return await CreateServiceInstanceAsync(serviceType, token);
 
 
@@ -409,10 +428,10 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// ---------------------------------------------------------------------------------
 	protected override void PropagateSettings()
 	{
-		if (_Initialized)
+		if (_InitializedSettings)
 			return;
 
-		_Initialized = true;
+		_InitializedSettings = true;
 
 		PropagateSettingsEventArgs e = new();
 

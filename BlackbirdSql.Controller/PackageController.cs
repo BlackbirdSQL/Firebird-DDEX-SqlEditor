@@ -2,10 +2,12 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BlackbirdSql.Controller.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Sys.Interfaces;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
@@ -89,7 +91,6 @@ public sealed class PackageController : AbstractPackageController
 
 
 	private static bool _EventsAdvisedUnsafe = false;
-	private static bool _Initialized = false;
 
 
 	#endregion Fields
@@ -119,49 +120,6 @@ public sealed class PackageController : AbstractPackageController
 	// =========================================================================================================
 
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Enables unsafe solution, running document table and selection monitor event handling
-	/// on the UI and safe solution OnLoadOptions and OnSaveOptions event handling.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override bool AdviseEvents()
-	{
-		lock (_LockObject)
-		{
-			if (!_Initialized)
-			{
-				_Initialized = true;
-				_OnInitializeEvent?.Invoke(this);
-			}
-
-			if (_EventsAdvisedUnsafe && !EventProjectRegistrationEnter(false))
-				return false;
-		}
-
-
-		// Ensure UI thread call is made for unsafe events.
-		// Fire and wait.
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				return AdviseUnsafeEvents();
-			});
-
-			return result;
-		}
-
-		return AdviseUnsafeEvents();
-	}
-
-
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Enables unsafe solution, running document table and selection monitor event handling
@@ -169,11 +127,11 @@ public sealed class PackageController : AbstractPackageController
 	/// Only calls unsafe if on ui thread. Does not attempt switch.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override async Task<bool> AdviseEventsAsync()
+	public override async Task<bool> AdviseUnsafeEventsAsync()
 	{
 		lock (_LockObject)
 		{
-			if (_EventsAdvisedUnsafe && !EventProjectRegistrationEnter(false))
+			if (_EventsAdvisedUnsafe)
 				return false;
 		}
 
@@ -181,27 +139,31 @@ public sealed class PackageController : AbstractPackageController
 		// Check we're on ui thread for async advising of unsafe events.
 
 		if (!ThreadHelper.CheckAccess())
-			return false;
+		{
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		// Warning suppression.
-		await TaskScheduler.Default;
+			lock (_LockObject)
+			{
+				if (_EventsAdvisedUnsafe)
+					return false;
+			}
+		}
 
-		return AdviseUnsafeEvents();
-
+		return AdviseUnsafeEventsImpl();
 	}
 
 
 
-	protected override bool AdviseUnsafeEvents()
+	private bool AdviseUnsafeEventsImpl()
 	{
+		Diag.ThrowIfNotOnUIThread();
+
 		lock (_LockObject)
 		{
-			if (_EventsAdvisedUnsafe && !EventProjectRegistrationEnter(false))
+			if (_EventsAdvisedUnsafe)
 				return false;
 		}
 
-
-		Diag.ThrowIfNotOnUIThread();
 
 		// Sanity check. Disable events if enabled
 		// UnadviseEvents(false);
@@ -216,17 +178,14 @@ public sealed class PackageController : AbstractPackageController
 		if (!RdtManager.ServiceAvailable)
 			Diag.ThrowException(new NullReferenceException(Resources.ExceptionIVsRunningDocumentTableIsNull));
 
-		RegisterProjectEventHandlers();
-
-
-		// Tracer.Trace(GetType(), "AdviseUnsafeEvents()", "ProjectItemsEvents.");
+		// Tracer.Trace(GetType(), "AdviseUnsafeEventsImpl()", "ProjectItemsEvents.");
 
 		if (!_EventsAdvisedUnsafe)
 		{
 			_EventsAdvisedUnsafe = true;
 
 
-			// Tracer.Trace(GetType(), "AdviseUnsafeEvents()", "SolutionEvents.");
+			// Tracer.Trace(GetType(), "AdviseUnsafeEventsImpl()", "SolutionEvents.");
 
 			// Enable solution event capture
 			VsSolution.AdviseSolutionEvents(this, out _HSolutionEvents);
@@ -244,6 +203,100 @@ public sealed class PackageController : AbstractPackageController
 		}
 
 		return true;
+	}
+
+
+	public override async Task<bool> RegisterProjectEventHandlersAsync()
+	{
+		if (!EventProjectRegistrationEnter(false))
+			return false;
+
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+			lock (_LockObject)
+			{
+				if (!EventProjectRegistrationEnter(false))
+					return false;
+			}
+		}
+
+		return RegisterProjectEventHandlersImpl();
+	}
+
+
+	private bool RegisterProjectEventHandlersImpl()
+	{
+		if (!EventProjectRegistrationEnter())
+			return false;
+
+
+		try
+		{
+			List<Project> projects = UnsafeCmd.RecursiveGetDesignTimeProjects();
+
+			// Tracer.Trace(GetType(), "UiRegisterProjectEventHandlers()", "Adding event handlers for {0} EF projects", projects.Count);
+			foreach (Project project in projects)
+				AddProjectEventHandlers(project);
+		}
+		finally
+		{
+			EventProjectRegistrationExit();
+		}
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Enables unsafe solution, running document table and selection monitor event handling
+	/// on the UI and safe solution OnLoadOptions and OnSaveOptions event handling.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override bool UiAdviseUnsafeEvents()
+	{
+		lock (_LockObject)
+		{
+			if (_EventsAdvisedUnsafe)
+				return false;
+		}
+
+
+		// Ensure UI thread call is made for unsafe events.
+		// Fire and wait.
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and forget async
+			Task.Run(AdviseUnsafeEventsAsync).Forget();
+			return true;
+		}
+
+		return AdviseUnsafeEventsImpl();
+	}
+
+
+
+	public override void UiRegisterProjectEventHandlers()
+	{
+		if (!EventProjectRegistrationEnter(false))
+			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and forget async
+			Task.Run(RegisterProjectEventHandlersAsync).Forget();
+			return;
+		}
+
+
+		RegisterProjectEventHandlersImpl();
+
+		return;
 	}
 
 

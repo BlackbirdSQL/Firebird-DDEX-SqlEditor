@@ -2,16 +2,15 @@
 using System;
 using System.Globalization;
 using System.Threading;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio.Shell;
-
 
 
 
 namespace BlackbirdSql.Shared.Ctl.ComponentModel;
 
-
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+
+
 class VsProvideFileExtensionMappingAttribute(Type factoryType, string defaultName, short nameResourceID, int sortPriority = 0) : RegistrationAttribute
 {
 	private readonly string _DefaultName = defaultName;

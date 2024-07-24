@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using BlackbirdSql.Core;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Properties;
 
@@ -48,8 +47,8 @@ public class SaveFormats
 
 	public SaveFormats()
 	{
-		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.CommaSeparated, ControlsResources.SqlExportFromGridFilterCSV));
-		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.TabSeparated, ControlsResources.SqlExportFromGridFilterTabDelimitted));
-		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.TabSeparated, ControlsResources.SqlExportFromGridFilterAllFiles));
+		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.CommaSeparated, Resources.SqlExportFromGridFilterCSV));
+		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.TabSeparated, Resources.SqlExportFromGridFilterTabDelimitted));
+		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.TabSeparated, Resources.SqlExportFromGridFilterAllFiles));
 	}
 }

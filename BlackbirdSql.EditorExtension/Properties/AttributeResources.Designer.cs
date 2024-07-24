@@ -1357,6 +1357,16 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon IconProperties16x {
+            get {
+                object obj = ResourceManager.GetObject("IconProperties16x", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advanced.
         /// </summary>
         internal static string OptionCategoryAdvanced {
@@ -1497,15 +1507,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         internal static string OptionDescriptionExecutionDeadlockPriority {
             get {
                 return ResourceManager.GetString("OptionDescriptionExecutionDeadlockPriority", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to By default, open new queries in SQLCMD (OLE scripting) mode.
-        /// </summary>
-        internal static string OptionDescriptionExecutionDefaultOleScripting {
-            get {
-                return ResourceManager.GetString("OptionDescriptionExecutionDefaultOleScripting", resourceCulture);
             }
         }
         
@@ -2055,15 +2056,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         internal static string OptionDisplayExecutionDeadlockPriority {
             get {
                 return ResourceManager.GetString("OptionDisplayExecutionDeadlockPriority", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Default to SQLCMD mode.
-        /// </summary>
-        internal static string OptionDisplayExecutionDefaultOleScripting {
-            get {
-                return ResourceManager.GetString("OptionDisplayExecutionDefaultOleScripting", resourceCulture);
             }
         }
         
@@ -2622,16 +2614,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         internal static string OptionPageResultsText {
             get {
                 return ResourceManager.GetString("OptionPageResultsText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon Properties_16x {
-            get {
-                object obj = ResourceManager.GetObject("Properties_16x", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
     }

@@ -61,79 +61,11 @@ namespace BlackbirdSql.LanguageExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon AsymmetricKey {
-            get {
-                object obj = ResourceManager.GetObject("AsymmetricKey", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (Example: dateadd).
-        /// </summary>
-        public static string CasingExampleLower {
-            get {
-                return ResourceManager.GetString("CasingExampleLower", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (Example: DATEADD).
-        /// </summary>
-        public static string CasingExampleUpper {
-            get {
-                return ResourceManager.GetString("CasingExampleUpper", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Certificate {
-            get {
-                object obj = ResourceManager.GetObject("Certificate", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Column {
-            get {
-                object obj = ResourceManager.GetObject("Column", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Comment.
         /// </summary>
         public static string Comment {
             get {
                 return ResourceManager.GetString("Comment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Credential {
-            get {
-                object obj = ResourceManager.GetObject("Credential", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Database {
-            get {
-                object obj = ResourceManager.GetObject("Database", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -147,20 +79,20 @@ namespace BlackbirdSql.LanguageExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to subscribe to Settings events.
+        ///   Looks up a localized string similar to The script exceeds the Transact-SQL IntelliSense maximum script size setting. You can change the setting on the Text Editor/Transact-SQL/IntelliSense Page in the Tools/Options menu..
         /// </summary>
-        public static string ExceptionFailedToSubscribeSettingsEvents {
+        public static string ErrorFileTooBig {
             get {
-                return ResourceManager.GetString("ExceptionFailedToSubscribeSettingsEvents", resourceCulture);
+                return ResourceManager.GetString("ErrorFileTooBig", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The script exceeds the Transact-SQL IntelliSense maximum script size setting. You can change the setting on the Text Editor/Transact-SQL/IntelliSense Page in the Tools/Options menu..
+        ///   Looks up a localized string similar to Failed to subscribe to Settings events.
         /// </summary>
-        public static string FileTooBig {
+        public static string ExFailedToSubscribeSettingsEvents {
             get {
-                return ResourceManager.GetString("FileTooBig", resourceCulture);
+                return ResourceManager.GetString("ExFailedToSubscribeSettingsEvents", resourceCulture);
             }
         }
         
@@ -170,6 +102,146 @@ namespace BlackbirdSql.LanguageExtension.Properties {
         public static string FormatFilterList {
             get {
                 return ResourceManager.GetString("FormatFilterList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconAsymmetricKey {
+            get {
+                object obj = ResourceManager.GetObject("IconAsymmetricKey", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconCertificate {
+            get {
+                object obj = ResourceManager.GetObject("IconCertificate", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconColumn {
+            get {
+                object obj = ResourceManager.GetObject("IconColumn", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconCredential {
+            get {
+                object obj = ResourceManager.GetObject("IconCredential", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconDatabase {
+            get {
+                object obj = ResourceManager.GetObject("IconDatabase", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconLogin {
+            get {
+                object obj = ResourceManager.GetObject("IconLogin", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconScalarValuedFunction {
+            get {
+                object obj = ResourceManager.GetObject("IconScalarValuedFunction", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconSchema {
+            get {
+                object obj = ResourceManager.GetObject("IconSchema", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconStoredProcedure {
+            get {
+                object obj = ResourceManager.GetObject("IconStoredProcedure", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconTable {
+            get {
+                object obj = ResourceManager.GetObject("IconTable", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconTableValuedFunction {
+            get {
+                object obj = ResourceManager.GetObject("IconTableValuedFunction", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconUser {
+            get {
+                object obj = ResourceManager.GetObject("IconUser", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconVariable {
+            get {
+                object obj = ResourceManager.GetObject("IconVariable", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon IconView {
+            get {
+                object obj = ResourceManager.GetObject("IconView", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -228,16 +300,6 @@ namespace BlackbirdSql.LanguageExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Login {
-            get {
-                object obj = ResourceManager.GetObject("Login", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Option Page:      {0}\{1}.
         /// </summary>
         public static string NotifyOptionPage {
@@ -270,26 +332,6 @@ namespace BlackbirdSql.LanguageExtension.Properties {
         public static string RTL {
             get {
                 return ResourceManager.GetString("RTL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon ScalarValuedFunction {
-            get {
-                object obj = ResourceManager.GetObject("ScalarValuedFunction", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Schema {
-            get {
-                object obj = ResourceManager.GetObject("Schema", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -357,16 +399,6 @@ namespace BlackbirdSql.LanguageExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon StoredProcedure {
-            get {
-                object obj = ResourceManager.GetObject("StoredProcedure", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to String.
         /// </summary>
         public static string String {
@@ -385,61 +417,11 @@ namespace BlackbirdSql.LanguageExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Table {
-            get {
-                object obj = ResourceManager.GetObject("Table", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon TableValuedFunction {
-            get {
-                object obj = ResourceManager.GetObject("TableValuedFunction", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Text.
         /// </summary>
         public static string Text {
             get {
                 return ResourceManager.GetString("Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon User {
-            get {
-                object obj = ResourceManager.GetObject("User", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Variable {
-            get {
-                object obj = ResourceManager.GetObject("Variable", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon View {
-            get {
-                object obj = ResourceManager.GetObject("View", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
     }

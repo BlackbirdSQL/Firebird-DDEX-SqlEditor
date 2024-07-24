@@ -5,34 +5,35 @@ using BlackbirdSql.Shared.Ctl.ComponentModel;
 using BlackbirdSql.Shared.Properties;
 
 
-namespace BlackbirdSql.Shared.Controls.PropertiesWindow
+
+namespace BlackbirdSql.Shared.Controls.PropertiesWindow;
+
+
+public class DisconnectedPropertiesWindow : AbstractPropertiesWindow
 {
-	public class DisconnectedPropertiesWindow : AbstractPropertiesWindow
+	private static readonly string _NoConnection = ControlsResources.PropertiesWindow_Disconnected;
+
+	private static DisconnectedPropertiesWindow _Instance = null;
+
+	public static DisconnectedPropertiesWindow Instance
 	{
-		private static readonly string _NoConnection = ControlsResources.QueryWindowDisconnected;
-
-		private static DisconnectedPropertiesWindow _Instance = null;
-
-		public static DisconnectedPropertiesWindow Instance
+		get
 		{
-			get
-			{
-				return _Instance ??= new DisconnectedPropertiesWindow();
-			}
+			return _Instance ??= new DisconnectedPropertiesWindow();
 		}
+	}
 
-		[GlobalizedCategory("PropertyWindowCurrentConnectionParameters")]
-		[GlobalizedDescription("PropertyWindowStatusDescription")]
-		[GlobalizedDisplayName("PropertyWindowStatusDisplayName")]
-		public string Status => _NoConnection;
+	[GlobalizedCategory("PropertyWindowCurrentConnectionParameters")]
+	[GlobalizedDescription("PropertyWindowStatusDescription")]
+	[GlobalizedDisplayName("PropertyWindowStatusDisplayName")]
+	public string Status => _NoConnection;
 
-		private DisconnectedPropertiesWindow()
-		{
-		}
+	private DisconnectedPropertiesWindow()
+	{
+	}
 
-		public override string GetClassName()
-		{
-			return AttributeResources.PropertyWindowQueryWindowOptions;
-		}
+	public override string GetClassName()
+	{
+		return AttributeResources.PropertyWindowQueryWindowOptions;
 	}
 }

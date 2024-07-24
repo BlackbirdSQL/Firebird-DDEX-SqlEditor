@@ -29,7 +29,7 @@ internal sealed class FilterTypeParser : RelOpBaseTypeParser
 		base.ParseProperties(parsedItem, targetPropertyBag, context);
 		if ((parsedItem as FilterType).StartupExpression && targetPropertyBag["Predicate"] is PropertyValue propertyValue)
 		{
-			propertyValue.SetDisplayNameAndDescription(ControlsResources.StartupExpressionPredicate, null);
+			propertyValue.SetDisplayNameAndDescription(ControlsResources.Graphing_StartupExpressionPredicate, null);
 		}
 	}
 }

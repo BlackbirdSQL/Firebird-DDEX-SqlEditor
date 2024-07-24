@@ -1,14 +1,12 @@
-﻿#region Assembly Microsoft.SqlServer.DataStorage, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
-// C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLCommon\Microsoft.SqlServer.DataStorage.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.SqlServer.DataStorage, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
+// Microsoft.SqlServer.Management.UI.Grid.SortingArray
 
 using System;
 using System.Collections;
 using System.Threading;
-using BlackbirdSql.Core;
-using BlackbirdSql.Shared.Properties;
 using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Shared.Properties;
+
 
 namespace BlackbirdSql.Shared.Ctl.IO;
 
@@ -64,7 +62,7 @@ public class SortingArray : IBSortingArray
 			return InsertWith(iGroup, val);
 		}
 
-		Exception ex = new(ControlsResources.IncorrectGroupNumber);
+		Exception ex = new(Resources.ExIncorrectGroupNumber);
 		Diag.Dug(ex);
 		throw ex;
 	}
@@ -78,7 +76,7 @@ public class SortingArray : IBSortingArray
 			return m_iRows;
 		}
 
-		Exception ex = new(ControlsResources.IncorrectGroupNumber);
+		Exception ex = new(Resources.ExIncorrectGroupNumber);
 		Diag.Dug(ex);
 		throw ex;
 	}
@@ -87,7 +85,7 @@ public class SortingArray : IBSortingArray
 	{
 		if (iRow >= m_iRows)
 		{
-			Exception ex = new(ControlsResources.IncorrectRowNumber);
+			Exception ex = new(Resources.ExIncorrectRowNumber);
 			Diag.Dug(ex);
 			throw ex;
 		}

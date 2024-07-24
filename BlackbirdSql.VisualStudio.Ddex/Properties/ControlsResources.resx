@@ -181,10 +181,11 @@ Exception message: {0}</value>
   <data name="TConnectionUIControl_Database.ToolTip" xml:space="preserve">
     <value>The dropdown list displays the Database Names of configured connections for the selected Server.
 Glyph prefix legend:
+ ⨠ Session (non-persistent) connections.
  ⛭ Project Settings (App.Config) connections.
  ⛮ Entity Data Model (edmx) connections.
  ⧉ FlameRobin connections.
-Server Explorer connections and connections modified during a Session have no glyph.
+Server Explorer connections have no glyph.
 </value>
   </data>
   <data name="TConnectionUIControl_DatasetKeyDescription" xml:space="preserve">

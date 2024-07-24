@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Data.Common;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys.Ctl;
-using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 

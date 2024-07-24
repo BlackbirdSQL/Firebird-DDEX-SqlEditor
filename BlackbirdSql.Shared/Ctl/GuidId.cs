@@ -1,11 +1,13 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.GuidId
+
 using System;
 using System.Globalization;
 
 
 
 namespace BlackbirdSql.Shared.Ctl;
+
 
 public sealed class GuidId(Guid guid, uint id)
 {

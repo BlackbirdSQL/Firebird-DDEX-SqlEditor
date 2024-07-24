@@ -22,10 +22,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="Controls\Config\AbstractLiveSettingsDialog.cs" />
-		<Compile Include="Controls\Config\AbstractLiveSettingsDialog.Designer.cs">
-			<DependentUpon>AbstractLiveSettingsDialog.cs</DependentUpon>
-		</Compile>
 		<Compile Include="Controls\Config\LiveSettingsDialog.cs" />
 		<Compile Include="Model\Config\ContextSettingsModel.cs" />
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
@@ -69,9 +65,6 @@
 		<EmbeddedResource Include="Properties\Resources.resx">
 			<Generator>PublicResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Controls\Config\AbstractLiveSettingsDialog.resx">
-			<DependentUpon>AbstractLiveSettingsDialog.cs</DependentUpon>
 		</EmbeddedResource>
 		<EmbeddedResource Include="Controls\Config\LiveSettingsDialog.resx">
 			<DependentUpon>LiveSettingsDialog.cs</DependentUpon>

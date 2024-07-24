@@ -709,6 +709,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Displays the extension&apos;s load statistics to the output window if enabled..
+        /// </summary>
+        public static string OptionDescriptionGeneralEnableLoadStatistics {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralEnableLoadStatistics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enables logging of tasks to the output window pane. This option should remain enabled..
         /// </summary>
         public static string OptionDescriptionGeneralEnableTaskLog {
@@ -1146,6 +1155,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayGeneralEnableDiagnostics {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralEnableDiagnostics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Output load statistics.
+        /// </summary>
+        public static string OptionDisplayGeneralEnableLoadStatistics {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralEnableLoadStatistics", resourceCulture);
             }
         }
         

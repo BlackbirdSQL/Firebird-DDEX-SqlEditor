@@ -1,5 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TabbedEditorPane
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace BlackbirdSql.Shared.Controls;
 
 public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerInfo, IOleCommandTarget,
 	IVsWindowFrameNotify3, IVsMultiViewDocumentView, IVsHasRelatedSaveItems, IVsDocumentLockHolder,
-	IVsBroadcastMessageEvents, IBTabbedEditorService, IVsDocOutlineProvider, IVsDocOutlineProvider2,
+	IVsBroadcastMessageEvents, IBsWindowPaneServiceProvider, IVsDocOutlineProvider, IVsDocOutlineProvider2,
 	IVsToolboxActiveUserHook, IVsToolboxUser, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsCodeWindow, IVsExtensibleObject
 {
 
@@ -59,11 +60,13 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		{
 			if (disposing)
 			{
+				/*
 				if (ThreadHelper.CheckAccess() && _BroadcastMessageEventsCookie != 0
 					&& Package.GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 				{
 					___(vsShell.UnadviseBroadcastMessages(_BroadcastMessageEventsCookie));
 				}
+				*/
 
 				if (_LockHolderCookie != 0)
 				{
@@ -96,11 +99,12 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		base.Initialize();
 
 		// TODO: Added to test broadcast messages.
-		if (ThreadHelper.CheckAccess() && _BroadcastMessageEventsCookie == 0
+		/* if (ThreadHelper.CheckAccess() && _BroadcastMessageEventsCookie == 0
 			&& Package.GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 		{
 			___(vsShell.AdviseBroadcastMessages(this, out _BroadcastMessageEventsCookie));
 		}
+		*/
 
 		ApcManager.OnElementValueChangedEvent += OnElementValueChanged;
 
@@ -133,7 +137,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	private AbstractTabbedEditorUIControl _TabbedEditorUI;
 	private Guid _RequestedView;
 	private bool _IsAppActivated = true;
-	private IBTextEditor _TextEditor;
+	private IBsTextEditor _TextEditor;
 	private bool _IsLoading;
 	private bool _IsClosing;
 	private bool _IsInUpdateCmdUIContext;
@@ -144,7 +148,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	private IList<uint> _OverrideSaveDocCookieList;
 	private bool _FirstTimeShowEventHandled;
 	private bool _IsHelpInitialized;
-	private uint _BroadcastMessageEventsCookie = 0;
+	// private uint _BroadcastMessageEventsCookie = 0;
 
 	protected bool _IsDisposed = false;
 
@@ -160,7 +164,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	public bool IsToolboxInitialized => ApcManager.IsToolboxInitialized;
 
 
-	IBTextEditor IBTabbedEditorService.TextEditor
+	IBsTextEditor IBsWindowPaneServiceProvider.TextEditor
 	{
 		get
 		{
@@ -178,13 +182,13 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	protected virtual Guid PrimaryViewGuid => VSConstants.LOGVIEWID_Designer;
 
-	AbstractEditorTab IBTabbedEditorService.ActiveTab => _TabbedEditorUI.TopEditorTab;
+	AbstractEditorTab IBsWindowPaneServiceProvider.ActiveTab => _TabbedEditorUI.TopEditorTab;
 
 	public IVsWindowFrame TabFrame => Frame;
 
 	public AbstractTabbedEditorUIControl TabbedEditorControl => _TabbedEditorUI;
 
-	Guid IBTabbedEditorService.InitialLogicalView => _RequestedView;
+	Guid IBsWindowPaneServiceProvider.InitialLogicalView => _RequestedView;
 
 	private IVsCodeWindow XamlCodeWindow
 	{
@@ -253,7 +257,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	bool IBTabbedEditorService.IsTabVisible(Guid logicalView)
+	bool IBsWindowPaneServiceProvider.IsTabVisible(Guid logicalView)
 	{
 		foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
 		{
@@ -309,7 +313,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	private static IEnumerable<uint> EnumerateOpenedDocuments(IBTabbedEditorService designerService, __VSRDTSAVEOPTIONS rdtSaveOptions)
+	private static IEnumerable<uint> EnumerateOpenedDocuments(IBsWindowPaneServiceProvider designerService, __VSRDTSAVEOPTIONS rdtSaveOptions)
 	{
 		EnDocumentsFlag enumerateDocumentsFlag = GetDesignerDocumentFlagFromSaveOption(rdtSaveOptions);
 
@@ -318,7 +322,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	private static IEnumerable<uint> EnumerateOpenedDocuments(IBTabbedEditorService designerService, EnDocumentsFlag requestedDocumentsFlag)
+	private static IEnumerable<uint> EnumerateOpenedDocuments(IBsWindowPaneServiceProvider designerService, EnDocumentsFlag requestedDocumentsFlag)
 	{
 		foreach (uint editableDocument in designerService.GetEditableDocuments())
 		{
@@ -466,9 +470,9 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	public virtual bool UpdateTabs(QESQLQueryDataEventArgs args)
+	public virtual bool UpdateTabsButtonText(QueryExecutionCompletedEventArgs args)
 	{
-		return _TabbedEditorUI != null && _TabbedEditorUI.Tabs.Count > 0 && !_IsClosing;
+		return _TabbedEditorUI != null && _TabbedEditorUI.Tabs.Count > 0 && !_IsClosing && !ApcManager.SolutionClosing;
 	}
 
 
@@ -553,63 +557,10 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		if (serviceType == typeof(IOleCommandTarget))
 			return this;
 
-		if (serviceType == typeof(IBTabbedEditorService))
+		if (serviceType == typeof(IBsWindowPaneServiceProvider))
 			return this;
 
 		return base.GetService(serviceType);
-	}
-
-	private void OnSaveOptions(object sender, EventArgs e)
-	{
-		// Tracer.Trace(GetType(), "OnSaveOptions()");
-
-		if (_TabbedEditorUI != null)
-			_ = _TabbedEditorUI.TopEditorTab;
-	}
-
-
-
-	protected void OnQueryScriptExecutionCompleted(object sender, ScriptExecutionCompletedEventArgs args)
-	{
-	}
-
-
-
-	private void OnTabActivated(object sender, EventArgs e)
-	{
-		_RequestedView = Guid.Empty;
-
-		if (Frame == null)
-			return;
-
-		Guid rguid = Guid.Empty;
-
-		if (sender is AbstractEditorTab editorTab)
-		{
-			if (editorTab.EditorTabType != EnEditorTabType.TopXaml)
-				_ = editorTab.EditorTabType;
-
-			rguid = editorTab.CommandUIGuid;
-		}
-
-		Frame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, ref rguid);
-	}
-
-
-
-	private void OnToolboxItemPicked(object sender, ToolboxEventArgs e)
-	{
-		if (_TabbedEditorUI != null && _TabbedEditorUI.IsSplitterVisible)
-		{
-			Guid rguidLogicalView = VSConstants.LOGVIEWID_Designer;
-			IVsToolboxUser tab = GetTab(ref rguidLogicalView);
-
-			if (tab != null)
-			{
-				e.HResult = tab.ItemPicked(e.Data);
-				e.Handled = true;
-			}
-		}
 	}
 
 
@@ -839,7 +790,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	void IBTabbedEditorService.Activate(Guid logicalView, EnTabViewMode mode)
+	void IBsWindowPaneServiceProvider.Activate(Guid logicalView, EnTabViewMode mode)
 	{
 		ActivateView(ref logicalView, mode);
 	}
@@ -848,16 +799,16 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	int IOleCommandTarget.Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		int hresult = HandleExec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+		int hresult = OnExec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
 		if (hresult == VSConstants.S_OK)
 			return hresult;
 
 		GuidId guidId = new GuidId(pguidCmdGroup, nCmdID);
 
-		if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBToolbarCommandHandler commandHandler))
+		if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBsToolbarCommandHandler commandHandler))
 		{
-			return commandHandler.HandleExec(this, nCmdexecopt, pvaIn, pvaOut);
+			return commandHandler.OnExec(this, nCmdexecopt, pvaIn, pvaOut);
 		}
 
 		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdID == 289 && _IsLoading)
@@ -881,7 +832,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		int hresult = HandleQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+		int hresult = OnQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
 		if (hresult == VSConstants.S_OK)
 			return hresult;
@@ -891,9 +842,9 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			uint cmdID = prgCmds[i].cmdID;
 			GuidId guidId = new GuidId(pguidCmdGroup, cmdID);
 
-			if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBToolbarCommandHandler commandHandler))
+			if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBsToolbarCommandHandler commandHandler))
 			{
-				return commandHandler.HandleQueryStatus(this, ref prgCmds[i], pCmdText);
+				return commandHandler.OnQueryStatus(this, ref prgCmds[i], pCmdText);
 			}
 		}
 
@@ -911,7 +862,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	public virtual int HandleExec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	public virtual int OnExec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdID == 377)
 		{
@@ -925,7 +876,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	public virtual int HandleQueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+	public virtual int OnQueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
 		return VSConstants.E_NOTIMPL;
 	}
@@ -1553,6 +1504,62 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				___(ppctx.AddSubcontext(vsUserContext, 500, out _));
 
 			_IsHelpInitialized = true;
+		}
+	}
+
+
+
+	private void OnSaveOptions(object sender, EventArgs e)
+	{
+		// Tracer.Trace(GetType(), "OnSaveOptions()");
+
+		if (_TabbedEditorUI != null)
+			_ = _TabbedEditorUI.TopEditorTab;
+	}
+
+
+
+	protected void OnQueryExecutionCompleted(object sender, QueryExecutionCompletedEventArgs args)
+	{
+		UpdateTabsButtonText(args);
+	}
+
+
+
+	private void OnTabActivated(object sender, EventArgs e)
+	{
+		_RequestedView = Guid.Empty;
+
+		if (Frame == null)
+			return;
+
+		Guid rguid = Guid.Empty;
+
+		if (sender is AbstractEditorTab editorTab)
+		{
+			if (editorTab.EditorTabType != EnEditorTabType.TopXaml)
+				_ = editorTab.EditorTabType;
+
+			rguid = editorTab.CommandUIGuid;
+		}
+
+		Frame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, ref rguid);
+	}
+
+
+
+	private void OnToolboxItemPicked(object sender, ToolboxEventArgs e)
+	{
+		if (_TabbedEditorUI != null && _TabbedEditorUI.IsSplitterVisible)
+		{
+			Guid rguidLogicalView = VSConstants.LOGVIEWID_Designer;
+			IVsToolboxUser tab = GetTab(ref rguidLogicalView);
+
+			if (tab != null)
+			{
+				e.HResult = tab.ItemPicked(e.Data);
+				e.Handled = true;
+			}
 		}
 	}
 

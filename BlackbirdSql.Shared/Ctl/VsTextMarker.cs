@@ -11,8 +11,9 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Shared.Ctl;
 
-
 [ComVisible(false)]
+
+
 public class VsTextMarker : IVsPackageDefinedTextMarkerType, IVsMergeableUIItem
 {
 	private readonly uint visualFlags;

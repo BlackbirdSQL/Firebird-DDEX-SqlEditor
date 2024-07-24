@@ -292,14 +292,14 @@ public abstract class VS : BlackbirdSql.VS
 		// Tracer.Trace(typeof(VS), "GetTextWriterForQueryResultsToFile()");
 
 		FileEncodingDialog fileEncodingDlg = new FileEncodingDialog();
-		string text = Properties.ControlsResources.SqlExportFromGridFilterTabDelimitted;
+		string text = Properties.Resources.SqlExportFromGridFilterTabDelimitted;
 
 		if (xmlResults)
-			text = Properties.ControlsResources.SqlXMLFileFilter;
+			text = Properties.Resources.SqlXMLFileFilter;
 
 
-		text = text + "|" + Properties.ControlsResources.SqlExportFromGridFilterAllFiles;
-		string fileNameUsingSaveDialog = GetFileNameUsingSaveDialog(MakeVsFilterString(text), Properties.ControlsResources.SaveResults, intialDirectory, fileEncodingDlg);
+		text = text + "|" + Properties.Resources.SqlExportFromGridFilterAllFiles;
+		string fileNameUsingSaveDialog = GetFileNameUsingSaveDialog(MakeVsFilterString(text), Properties.Resources.SaveResults, intialDirectory, fileEncodingDlg);
 
 		if (fileNameUsingSaveDialog != null)
 		{

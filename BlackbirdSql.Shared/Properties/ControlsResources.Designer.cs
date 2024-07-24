@@ -61,597 +61,6 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon Actual_Executionplan {
-            get {
-                object obj = ResourceManager.GetObject("Actual_Executionplan", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} of
-        ///{1} ({2}%).
-        /// </summary>
-        internal static string ActualOfEstimated {
-            get {
-                return ResourceManager.GetString("ActualOfEstimated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: already sorting data.
-        /// </summary>
-        internal static string AlreadySortingData {
-            get {
-                return ResourceManager.GetString("AlreadySortingData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: already storing data..
-        /// </summary>
-        internal static string AlreadyStoringData {
-            get {
-                return ResourceManager.GetString("AlreadyStoringData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Ascending.
-        /// </summary>
-        internal static string Ascending {
-            get {
-                return ResourceManager.GetString("Ascending", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Auto scroll interval should be greater than zero..
-        /// </summary>
-        internal static string AutoScrollMoreThanZero {
-            get {
-                return ResourceManager.GetString("AutoScrollMoreThanZero", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred while executing batch. Error message is: {0}.
-        /// </summary>
-        internal static string BatchError {
-            get {
-                return ResourceManager.GetString("BatchError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Batch execution completed {0} times..
-        /// </summary>
-        internal static string BatchExecCompleted {
-            get {
-                return ResourceManager.GetString("BatchExecCompleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Beginning execution loop.
-        /// </summary>
-        internal static string BeginningBatchExec {
-            get {
-                return ResourceManager.GetString("BeginningBatchExec", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All Clones.
-        /// </summary>
-        internal static string BothClones {
-            get {
-                return ResourceManager.GetString("BothClones", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid argument: buffer size should be a positive number..
-        /// </summary>
-        internal static string BufferSizeShouldBePositive {
-            get {
-                return ResourceManager.GetString("BufferSizeShouldBePositive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_00 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_00", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_01 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_01", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_02 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_02", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_03 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_03", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_04 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_04", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_05 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_05", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_06 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_06", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_07 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_07", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_08 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_08", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_09 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_09", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_10 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_10", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_11 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_11", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_12 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_12", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_13 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_13", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_14 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_14", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_15 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_15", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_16 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_17 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_17", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_18 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_18", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_19 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_19", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_20 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_20", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap CancelBar_21 {
-            get {
-                object obj = ResourceManager.GetObject("CancelBar_21", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The query has exceeded the maximum number of execution plans that can be displayed. Only the first {0} execution plans are displayed..
-        /// </summary>
-        internal static string CanDisplayOnlyNExecutionPlanControls {
-            get {
-                return ResourceManager.GetString("CanDisplayOnlyNExecutionPlanControls", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The query has exceeded the maximum number of result sets that can be displayed in the results grid. Only the first {0} result sets are displayed in the grid..
-        /// </summary>
-        internal static string CanDisplayOnlyNGridResults {
-            get {
-                return ResourceManager.GetString("CanDisplayOnlyNGridResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A new reader cannot be added while storage is storing data..
-        /// </summary>
-        internal static string CannotAddReaderWhenStoringData {
-            get {
-                return ResourceManager.GetString("CannotAddReaderWhenStoringData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find data for execution plan..
-        /// </summary>
-        internal static string CannotFindDataForExecutionPlan {
-            get {
-                return ResourceManager.GetString("CannotFindDataForExecutionPlan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot print empty grid..
-        /// </summary>
-        internal static string CannotPrintEmptyGrid {
-            get {
-                return ResourceManager.GetString("CannotPrintEmptyGrid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to state of the header item that is merged with the one to its right cannot be specified..
-        /// </summary>
-        internal static string CannotSetMergeItemState {
-            get {
-                return ResourceManager.GetString("CannotSetMergeItemState", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {2} Row {0}.
-        /// </summary>
-        internal static string CellDefaultAccessibleName {
-            get {
-                return ResourceManager.GetString("CellDefaultAccessibleName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cell height must be greater than zero..
-        /// </summary>
-        internal static string CellHeightShouldBeGreaterThanZero {
-            get {
-                return ResourceManager.GetString("CellHeightShouldBeGreaterThanZero", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Clear selection, click on the cell, and select it..
-        /// </summary>
-        internal static string ClearSelAndSelectCell {
-            get {
-                return ResourceManager.GetString("ClearSelAndSelectCell", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to System Configuration: Clustered.
-        /// </summary>
-        internal static string ClusteredMode {
-            get {
-                return ResourceManager.GetString("ClusteredMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You must specify a column delimiter..
-        /// </summary>
-        internal static string ColumnDelimiterCannotBeEmpty {
-            get {
-                return ResourceManager.GetString("ColumnDelimiterCannotBeEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Click on header.
-        /// </summary>
-        internal static string ColumnHeaderAADefaultAction {
-            get {
-                return ResourceManager.GetString("ColumnHeaderAADefaultAction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {1}.
-        /// </summary>
-        internal static string ColumnHeaderAAName {
-            get {
-                return ResourceManager.GetString("ColumnHeaderAAName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Column index must be greater than or equal to zero and less than the number of columns..
-        /// </summary>
-        internal static string ColumnIndexShouldBeInRange {
-            get {
-                return ResourceManager.GetString("ColumnIndexShouldBeInRange", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Column # {0} is not of checkbox type..
-        /// </summary>
-        internal static string ColumnIsNotCheckBox {
-            get {
-                return ResourceManager.GetString("ColumnIsNotCheckBox", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Column # {0}.
-        /// </summary>
-        internal static string ColumnNumber {
-            get {
-                return ResourceManager.GetString("ColumnNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Number of columns in the new reader does not match storage..
-        /// </summary>
-        internal static string ColumnsCountDoesNotMatch {
-            get {
-                return ResourceManager.GetString("ColumnsCountDoesNotMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Column definitions do not match those in the storage..
-        /// </summary>
-        internal static string ColumnsDoNotMatch {
-            get {
-                return ResourceManager.GetString("ColumnsDoNotMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Columns With No Statistics.
-        /// </summary>
-        internal static string ColumnsWithNoStatistics {
-            get {
-                return ResourceManager.GetString("ColumnsWithNoStatistics", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Columns with no statistics warning..
-        /// </summary>
-        internal static string ColumnsWithNoStatisticsDescription {
-            get {
-                return ResourceManager.GetString("ColumnsWithNoStatisticsDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Column width should be greater than zero..
-        /// </summary>
-        internal static string ColumnWidthShouldBeGreaterThanZero {
-            get {
-                return ResourceManager.GetString("ColumnWidthShouldBeGreaterThanZero", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Column width in pixels should be less than or equal to {0}..
-        /// </summary>
-        internal static string ColumnWidthShouldBeLessThanMax {
-            get {
-                return ResourceManager.GetString("ColumnWidthShouldBeLessThanMax", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Attempting to connect to database server {0}..
-        /// </summary>
-        internal static string CommonMessageLoopAttemptingToConnect {
-            get {
-                return ResourceManager.GetString("CommonMessageLoopAttemptingToConnect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connecting....
-        /// </summary>
-        internal static string CommonMessageLoopConnecting {
-            get {
-                return ResourceManager.GetString("CommonMessageLoopConnecting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The connection error is:  {0}..
-        /// </summary>
-        internal static string CommonMessageLoopErrorMessage {
-            get {
-                return ResourceManager.GetString("CommonMessageLoopErrorMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to open a database connection to the server {0}..
-        /// </summary>
-        internal static string CommonMessageLoopFailedToOpenConnection {
-            get {
-                return ResourceManager.GetString("CommonMessageLoopFailedToOpenConnection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Broken.
-        /// </summary>
-        internal static string ConnectionStateBroken {
-            get {
-                return ResourceManager.GetString("ConnectionStateBroken", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to closed.
-        /// </summary>
-        internal static string ConnectionStateClosed {
-            get {
-                return ResourceManager.GetString("ConnectionStateClosed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to connecting.
-        /// </summary>
-        internal static string ConnectionStateConnecting {
-            get {
-                return ResourceManager.GetString("ConnectionStateConnecting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Debugging.
-        /// </summary>
-        internal static string ConnectionStateDebugging {
-            get {
-                return ResourceManager.GetString("ConnectionStateDebugging", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Executing.
         /// </summary>
         internal static string ConnectionStateExecuting {
@@ -661,698 +70,185 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fetching.
+        ///   Looks up a localized string similar to The query has exceeded the maximum number of execution plans that can be displayed. Only the first {0} execution plans are displayed..
         /// </summary>
-        internal static string ConnectionStateFetching {
+        internal static string ExCanDisplayOnlyNExecutionPlanControls {
             get {
-                return ResourceManager.GetString("ConnectionStateFetching", resourceCulture);
+                return ResourceManager.GetString("ExCanDisplayOnlyNExecutionPlanControls", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to not connected.
+        ///   Looks up a localized string similar to The query has exceeded the maximum number of result sets that can be displayed in the results grid. Only the first {0} result sets are displayed in the grid..
         /// </summary>
-        internal static string ConnectionStateNotConnected {
+        internal static string ExCanDisplayOnlyNGridResults {
             get {
-                return ResourceManager.GetString("ConnectionStateNotConnected", resourceCulture);
+                return ResourceManager.GetString("ExCanDisplayOnlyNGridResults", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open.
+        ///   Looks up a localized string similar to Cannot find data for execution plan..
         /// </summary>
-        internal static string ConnectionStateOpen {
+        internal static string ExCannotFindDataForExecutionPlan {
             get {
-                return ResourceManager.GetString("ConnectionStateOpen", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cost: {0} %.
-        /// </summary>
-        internal static string CostFormat {
-            get {
-                return ResourceManager.GetString("CostFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unrecoverable error; current control is not IGridEmbeddedControl..
-        /// </summary>
-        internal static string CurControlIsNotIGridEmbedded {
-            get {
-                return ResourceManager.GetString("CurControlIsNotIGridEmbedded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;default&gt;.
-        /// </summary>
-        internal static string DefaultDatabaseName {
-            get {
-                return ResourceManager.GetString("DefaultDatabaseName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use class derived from the grid control to implement custom columns..
-        /// </summary>
-        internal static string DeriveToImplementCustomColumn {
-            get {
-                return ResourceManager.GetString("DeriveToImplementCustomColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Descending.
-        /// </summary>
-        internal static string Descending {
-            get {
-                return ResourceManager.GetString("Descending", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap design {
-            get {
-                object obj = ResourceManager.GetObject("design", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} ({1}).
-        /// </summary>
-        internal static string DisplayUserNameAndSPID {
-            get {
-                return ResourceManager.GetString("DisplayUserNameAndSPID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The setting &apos;Optimize rendering for screens with different pixel densities&apos; has been disabled. Restart Visual Studio to take effect..
-        /// </summary>
-        internal static string DpiAwarenessIssue_Fix_Result_Message {
-            get {
-                return ResourceManager.GetString("DpiAwarenessIssue_Fix_Result_Message", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Go to disable it..
-        /// </summary>
-        internal static string DpiAwarenessIssue_Infobar_ActionItem_Text {
-            get {
-                return ResourceManager.GetString("DpiAwarenessIssue_Infobar_ActionItem_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disabling screen optimization for different pixel densities can avoid Data Flow display issues. Please click &quot;{0}&quot; and restart Visual Studio to make it work.
-        ///You can enable it again from Visual Studio Options -&gt; Environment-&gt;General -&gt; Optimize rendering for screens with different pixel densities..
-        /// </summary>
-        internal static string DpiAwarenessIssue_Message_Format {
-            get {
-                return ResourceManager.GetString("DpiAwarenessIssue_Message_Format", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Edge.
-        /// </summary>
-        internal static string Edge {
-            get {
-                return ResourceManager.GetString("Edge", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}/{1} from {2} to {3}.
-        /// </summary>
-        internal static string EdgeDisplayPropertiesLabel {
-            get {
-                return ResourceManager.GetString("EdgeDisplayPropertiesLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Edit Query Text from Showplan XML (possibly truncated).
-        /// </summary>
-        internal static string EditQueryText {
-            get {
-                return ResourceManager.GetString("EditQueryText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Primary Or Secondary Clones.
-        /// </summary>
-        internal static string EitherClones {
-            get {
-                return ResourceManager.GetString("EitherClones", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cancel editing.
-        /// </summary>
-        internal static string EmbeddedEditCancelAAName {
-            get {
-                return ResourceManager.GetString("EmbeddedEditCancelAAName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cancel editing without committing changes into storage.
-        /// </summary>
-        internal static string EmbeddedEditCancelDefaultAction {
-            get {
-                return ResourceManager.GetString("EmbeddedEditCancelDefaultAction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Commit editing.
-        /// </summary>
-        internal static string EmbeddedEditCommitAAName {
-            get {
-                return ResourceManager.GetString("EmbeddedEditCommitAAName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Commit changes into storage and stop editing.
-        /// </summary>
-        internal static string EmbeddedEditCommitDefaultAction {
-            get {
-                return ResourceManager.GetString("EmbeddedEditCommitDefaultAction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ** An error was encountered during execution of batch. Exiting..
-        /// </summary>
-        internal static string ErrBatchExecutionFailedExiting {
-            get {
-                return ResourceManager.GetString("ErrBatchExecutionFailedExiting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ** An error was encountered during execution of batch. Continuing..
-        /// </summary>
-        internal static string ErrBatchExecutionFailedIgnoring {
-            get {
-                return ResourceManager.GetString("ErrBatchExecutionFailedIgnoring", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to create temporary XML file..
-        /// </summary>
-        internal static string ErrCannotCreateTempFile {
-            get {
-                return ResourceManager.GetString("ErrCannotCreateTempFile", resourceCulture);
+                return ResourceManager.GetString("ExCannotFindDataForExecutionPlan", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Failed to get external files manager..
         /// </summary>
-        internal static string ErrCannotGetExternalFilesManager {
+        internal static string ExCannotGetExternalFilesManager {
             get {
-                return ResourceManager.GetString("ErrCannotGetExternalFilesManager", resourceCulture);
+                return ResourceManager.GetString("ExCannotGetExternalFilesManager", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Cannot initialize new instance of editor..
         /// </summary>
-        internal static string ErrCannotInitNewEditorInst {
+        internal static string ExCannotInitNewEditorInst {
             get {
-                return ResourceManager.GetString("ErrCannotInitNewEditorInst", resourceCulture);
+                return ResourceManager.GetString("ExCannotInitNewEditorInst", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection Selection Error.
+        ///   Looks up a localized string similar to Cannot print empty grid..
         /// </summary>
-        internal static string ErrChangeConnectionCaption {
+        internal static string ExCannotPrintEmptyGrid {
             get {
-                return ResourceManager.GetString("ErrChangeConnectionCaption", resourceCulture);
+                return ResourceManager.GetString("ExCannotPrintEmptyGrid", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection failed. ConnectionString: {0}. Error message: {1}..
+        ///   Looks up a localized string similar to state of the header item that is merged with the one to its right cannot be specified..
         /// </summary>
-        internal static string ErrDatabaseConnection {
+        internal static string ExCannotSetMergeItemState {
             get {
-                return ResourceManager.GetString("ErrDatabaseConnection", resourceCulture);
+                return ResourceManager.GetString("ExCannotSetMergeItemState", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Database not accessible..
+        ///   Looks up a localized string similar to Cell height must be greater than zero..
         /// </summary>
-        internal static string ErrDatabaseNotAccessible {
+        internal static string ExCellHeightShouldBeGreaterThanZero {
             get {
-                return ResourceManager.GetString("ErrDatabaseNotAccessible", resourceCulture);
+                return ResourceManager.GetString("ExCellHeightShouldBeGreaterThanZero", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Database not accessible: {0}..
+        ///   Looks up a localized string similar to Column index must be greater than or equal to zero and less than the number of columns..
         /// </summary>
-        internal static string ErrDatabaseNotAccessibleEx {
+        internal static string ExColumnIndexShouldBeInRange {
             get {
-                return ResourceManager.GetString("ErrDatabaseNotAccessibleEx", resourceCulture);
+                return ResourceManager.GetString("ExColumnIndexShouldBeInRange", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find directory in the path specified for &quot;:r&quot; command..
+        ///   Looks up a localized string similar to Column # {0} is not of checkbox type..
         /// </summary>
-        internal static string ErrDirWasnotFoundForRCmd {
+        internal static string ExColumnIsNotCheckBox {
             get {
-                return ResourceManager.GetString("ErrDirWasnotFoundForRCmd", resourceCulture);
+                return ResourceManager.GetString("ExColumnIsNotCheckBox", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Disable TTS Error.
+        ///   Looks up a localized string similar to Column width should be greater than zero..
         /// </summary>
-        internal static string ErrDisableTtsCaption {
+        internal static string ExColumnWidthShouldBeGreaterThanZero {
             get {
-                return ResourceManager.GetString("ErrDisableTtsCaption", resourceCulture);
+                return ResourceManager.GetString("ExColumnWidthShouldBeGreaterThanZero", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Disconnect Error.
+        ///   Looks up a localized string similar to Column width in pixels should be less than or equal to {0}..
         /// </summary>
-        internal static string ErrDisconnectCaption {
+        internal static string ExColumnWidthShouldBeLessThanMax {
             get {
-                return ResourceManager.GetString("ErrDisconnectCaption", resourceCulture);
+                return ResourceManager.GetString("ExColumnWidthShouldBeLessThanMax", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execution Plan Error.
+        ///   Looks up a localized string similar to Unrecoverable error; current control is not IGridEmbeddedControl..
         /// </summary>
-        internal static string ErrExecutionPlanCaption {
+        internal static string ExCurControlIsNotIGridEmbedded {
             get {
-                return ResourceManager.GetString("ErrExecutionPlanCaption", resourceCulture);
+                return ResourceManager.GetString("ExCurControlIsNotIGridEmbedded", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A fatal scripting error occurred..
+        ///   Looks up a localized string similar to Use class derived from the grid control to implement custom columns..
         /// </summary>
-        internal static string ErrFatalScriptingErrorNoParam {
+        internal static string ExDeriveToImplementCustomColumn {
             get {
-                return ResourceManager.GetString("ErrFatalScriptingErrorNoParam", resourceCulture);
+                return ResourceManager.GetString("ExDeriveToImplementCustomColumn", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The file specified for :r command was not found..
+        ///   Looks up a localized string similar to System Configuration: Clustered.
         /// </summary>
-        internal static string ErrFileWasnotFoundForRCmd {
+        internal static string ExecutionPlan_ClusteredMode {
             get {
-                return ResourceManager.GetString("ErrFileWasnotFoundForRCmd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot process the file specified in :r command. Message: {0}..
-        /// </summary>
-        internal static string ErrGenericRCmdError {
-            get {
-                return ResourceManager.GetString("ErrGenericRCmdError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution time-out value should be an integer between {0} and {1}..
-        /// </summary>
-        internal static string ErrInvalidExecutionTimeout {
-            get {
-                return ResourceManager.GetString("ErrInvalidExecutionTimeout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Maximum characters displayed in each cell should be an integer between {0} and {1}..
-        /// </summary>
-        internal static string ErrInvalidMaxCharsPerCell {
-            get {
-                return ResourceManager.GetString("ErrInvalidMaxCharsPerCell", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Maximum characters per column should be an integer between {0} and {1}..
-        /// </summary>
-        internal static string ErrInvalidMaxCharsPerColumn {
-            get {
-                return ResourceManager.GetString("ErrInvalidMaxCharsPerColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An invalid path was specified to the :r command..
-        /// </summary>
-        internal static string ErrInvalidPathInRCmd {
-            get {
-                return ResourceManager.GetString("ErrInvalidPathInRCmd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to LOCK_TIMEOUT value should be an integer between {0} and {1}..
-        /// </summary>
-        internal static string ErrInvalidSetLockTimeout {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetLockTimeout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to QUERY_GOVERNOR_COST_LIMIT value should be an integer between {0} and {1}..
-        /// </summary>
-        internal static string ErrInvalidSetQueryGov {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetQueryGov", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ROWCOUNT value should be an integer between {0} and {1}..
-        /// </summary>
-        internal static string ErrInvalidSetRowcount {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetRowcount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TEXTSIZE value should be an integer between {0} and {1}..
-        /// </summary>
-        internal static string ErrInvalidSetTextsize {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetTextsize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Modify Connection Error.
-        /// </summary>
-        internal static string ErrModifyConnectionCaption {
-            get {
-                return ResourceManager.GetString("ErrModifyConnectionCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Command {0} is not supported. String was not processed..
-        /// </summary>
-        internal static string ErrNotSupportedSqlCmdCommand {
-            get {
-                return ResourceManager.GetString("ErrNotSupportedSqlCmdCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Variable {0} is not defined..
-        /// </summary>
-        internal static string ErrOLESQLVarNotDefined {
-            get {
-                return ResourceManager.GetString("ErrOLESQLVarNotDefined", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error.
-        /// </summary>
-        internal static string Error {
-            get {
-                return ResourceManager.GetString("Error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred while saving execution plan..
-        /// </summary>
-        internal static string ErrorWhileSavingExecutionPlan {
-            get {
-                return ResourceManager.GetString("ErrorWhileSavingExecutionPlan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The path specified to the :r command is too long..
-        /// </summary>
-        internal static string ErrPathIsTooLongForRCmd {
-            get {
-                return ResourceManager.GetString("ErrPathIsTooLongForRCmd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Query execution failed.
-        /// </summary>
-        internal static string ErrQueryExecutionCaption {
-            get {
-                return ResourceManager.GetString("ErrQueryExecutionCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A scripting error occurred..
-        /// </summary>
-        internal static string ErrScriptingErrorNoParam {
-            get {
-                return ResourceManager.GetString("ErrScriptingErrorNoParam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error was encountered while parsing with message: {0}..
-        /// </summary>
-        internal static string ErrScriptingParseFailure {
-            get {
-                return ResourceManager.GetString("ErrScriptingParseFailure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scripting warning..
-        /// </summary>
-        internal static string ErrScriptingWarningNoParam {
-            get {
-                return ResourceManager.GetString("ErrScriptingWarningNoParam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select Connection Error.
-        /// </summary>
-        internal static string ErrSelectConnectionCaption {
-            get {
-                return ResourceManager.GetString("ErrSelectConnectionCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text writer is null..
-        /// </summary>
-        internal static string ErrTextWriterNull {
-            get {
-                return ResourceManager.GetString("ErrTextWriterNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Transactions are still pending on this connection. You must Commit or Rollback pending Transactions before proceeding..
-        /// </summary>
-        internal static string ErrTransactionsActive {
-            get {
-                return ResourceManager.GetString("ErrTransactionsActive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TTS Error.
-        /// </summary>
-        internal static string ErrTtsCaption {
-            get {
-                return ResourceManager.GetString("ErrTtsCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to close connection specified in the SQLCMD script..
-        /// </summary>
-        internal static string ErrUnableToCloseCon {
-            get {
-                return ResourceManager.GetString("ErrUnableToCloseCon", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Fatal scripting error. Cannot open connection specified in the SQLCMD script..
-        /// </summary>
-        internal static string ErrUnableToConnect {
-            get {
-                return ResourceManager.GetString("ErrUnableToConnect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot execute {0} {1}..
-        /// </summary>
-        internal static string ErrUnableToExecProcess {
-            get {
-                return ResourceManager.GetString("ErrUnableToExecProcess", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot launch {0} {1}..
-        /// </summary>
-        internal static string ErrUnableToLaunchProcesss {
-            get {
-                return ResourceManager.GetString("ErrUnableToLaunchProcesss", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to set up page..
-        /// </summary>
-        internal static string ErrUnableToPageSetup {
-            get {
-                return ResourceManager.GetString("ErrUnableToPageSetup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to preview page..
-        /// </summary>
-        internal static string ErrUnableToPrintPreview {
-            get {
-                return ResourceManager.GetString("ErrUnableToPrintPreview", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to print results..
-        /// </summary>
-        internal static string ErrUnableToPrintResults {
-            get {
-                return ResourceManager.GetString("ErrUnableToPrintResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to process :r command..
-        /// </summary>
-        internal static string ErrUnableToProcessRCmd {
-            get {
-                return ResourceManager.GetString("ErrUnableToProcessRCmd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to redirect output to {0}..
-        /// </summary>
-        internal static string ErrUnableToRedirOutput {
-            get {
-                return ResourceManager.GetString("ErrUnableToRedirOutput", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred while saving results..
-        /// </summary>
-        internal static string ErrWhileSavingResults {
-            get {
-                return ResourceManager.GetString("ErrWhileSavingResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Single Clone Match.
-        /// </summary>
-        internal static string ExactMatchClones {
-            get {
-                return ResourceManager.GetString("ExactMatchClones", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Previous execution is not yet complete..
-        /// </summary>
-        internal static string ExecutionNotCompleted {
-            get {
-                return ResourceManager.GetString("ExecutionNotCompleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ExecutionPlan {
-            get {
-                object obj = ResourceManager.GetObject("ExecutionPlan", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution Plan Description.
-        /// </summary>
-        internal static string ExecutionPlanDescriptionAAName {
-            get {
-                return ResourceManager.GetString("ExecutionPlanDescriptionAAName", resourceCulture);
+                return ResourceManager.GetString("ExecutionPlan_ClusteredMode", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Execution Plan Files (*.sqlplan)|*.sqlplan|All Files (*.*)|*.*.
         /// </summary>
-        internal static string ExecutionPlanFilter {
+        internal static string ExecutionPlan_Filter {
             get {
-                return ResourceManager.GetString("ExecutionPlanFilter", resourceCulture);
+                return ResourceManager.GetString("ExecutionPlan_Filter", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execution Plan Graph.
+        ///   Looks up a localized string similar to /*
+        ///Missing Index Details from {0}
+        ///The Query Processor estimates that implementing the following index could improve the query cost by {1}%.
+        ///*/.
         /// </summary>
-        internal static string ExecutionPlanGraphAAName {
+        internal static string ExecutionPlan_MissingIndexDetailsTitle {
             get {
-                return ResourceManager.GetString("ExecutionPlanGraphAAName", resourceCulture);
+                return ResourceManager.GetString("ExecutionPlan_MissingIndexDetailsTitle", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to get temporary file name..
+        ///   Looks up a localized string similar to Missing Index (Impact {0}): {1}.
         /// </summary>
-        internal static string FailedToGetTempFileName {
+        internal static string ExecutionPlan_MissingIndexFormat {
             get {
-                return ResourceManager.GetString("FailedToGetTempFileName", resourceCulture);
+                return ResourceManager.GetString("ExecutionPlan_MissingIndexFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Query {0}: Query cost (relative to the batch): {1}%.
+        /// </summary>
+        internal static string ExecutionPlan_QueryCostFormat {
+            get {
+                return ResourceManager.GetString("ExecutionPlan_QueryCostFormat", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Error loading execution plan XML file {0}..
         /// </summary>
-        internal static string FailedToLoadExecutionPlanFile {
+        internal static string ExFailedToLoadExecutionPlanFile {
             get {
-                return ResourceManager.GetString("FailedToLoadExecutionPlanFile", resourceCulture);
+                return ResourceManager.GetString("ExFailedToLoadExecutionPlanFile", resourceCulture);
             }
         }
         
@@ -1360,81 +256,360 @@ namespace BlackbirdSql.Shared.Properties {
         ///   Looks up a localized string similar to Error processing execution plan results. The error message is:
         ///{0}.
         /// </summary>
-        internal static string FailedToReadExecutionPlan {
+        internal static string ExFailedToReadExecutionPlan {
             get {
-                return ResourceManager.GetString("FailedToReadExecutionPlan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: file stream already initialized..
-        /// </summary>
-        internal static string FileStreamAlreadyInitialized {
-            get {
-                return ResourceManager.GetString("FileStreamAlreadyInitialized", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: file stream must be initialized first..
-        /// </summary>
-        internal static string FileStreamNeedsToBeInitializedFirst {
-            get {
-                return ResourceManager.GetString("FileStreamNeedsToBeInitializedFirst", resourceCulture);
+                return ResourceManager.GetString("ExFailedToReadExecutionPlan", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to First scrollable column index should be greater than or equal to zero and less than the number of columns..
         /// </summary>
-        internal static string FirstScrollableColumnShouldBeValid {
+        internal static string ExFirstScrollableColumnShouldBeValid {
             get {
-                return ResourceManager.GetString("FirstScrollableColumnShouldBeValid", resourceCulture);
+                return ResourceManager.GetString("ExFirstScrollableColumnShouldBeValid", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to First scrollable row index should be greater than or equal to zero and less than the number of rows..
         /// </summary>
-        internal static string FirstScrollableRowShouldBeValid {
+        internal static string ExFirstScrollableRowShouldBeValid {
             get {
-                return ResourceManager.GetString("FirstScrollableRowShouldBeValid", resourceCulture);
+                return ResourceManager.GetString("ExFirstScrollableRowShouldBeValid", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The first scrollable index will not be valid after deletion..
         /// </summary>
-        internal static string FirstScrollableWillBeBad {
+        internal static string ExFirstScrollableWillBeBad {
             get {
-                return ResourceManager.GetString("FirstScrollableWillBeBad", resourceCulture);
+                return ResourceManager.GetString("ExFirstScrollableWillBeBad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GridColumnInfoCollection is read-only, and its items cannot be modified..
+        /// </summary>
+        internal static string ExGridColumnInfoCollectionIsReadOnly {
+            get {
+                return ResourceManager.GetString("ExGridColumnInfoCollectionIsReadOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grid column number should be greater than zero..
+        /// </summary>
+        internal static string ExGridColumnNumberShouldBeAboveZero {
+            get {
+                return ResourceManager.GetString("ExGridColumnNumberShouldBeAboveZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EditableCellType should be greater than or equal to EditableCellType.FirstCustomEditableCellType..
+        /// </summary>
+        internal static string ExInvalidCellType {
+            get {
+                return ResourceManager.GetString("ExInvalidCellType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MergedHeaderResizeProportion property can be set only for columns that have merged header.
+        /// </summary>
+        internal static string ExInvalidColIndexForMergedResizeProp {
+            get {
+                return ResourceManager.GetString("ExInvalidColIndexForMergedResizeProp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create clipboard data object for currently selected block of cells because nothing is selected.
+        /// </summary>
+        internal static string ExInvalidCurrentSelBlockForClipboard {
+            get {
+                return ResourceManager.GetString("ExInvalidCurrentSelBlockForClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom ColumnType should be greater than or equal to GridColumnType.FirstCustomColumnType..
+        /// </summary>
+        internal static string ExInvalidCustomColType {
+            get {
+                return ResourceManager.GetString("ExInvalidCustomColType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clipboard operation cannot be performed in current grid state..
+        /// </summary>
+        internal static string ExInvalidGridStateForClipboard {
+            get {
+                return ResourceManager.GetString("ExInvalidGridStateForClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MergedHeaderResizeProportion property should be between 0f and 1f..
+        /// </summary>
+        internal static string ExInvalidMergedHeaderResizeProportion {
+            get {
+                return ResourceManager.GetString("ExInvalidMergedHeaderResizeProportion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EmbeddedComboBox.SetCurSelectionIndex: invalid index..
+        /// </summary>
+        internal static string ExInvalidSelIndexInEmbeddedCombo {
+            get {
+                return ResourceManager.GetString("ExInvalidSelIndexInEmbeddedCombo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EmbeddedComboBox.SetCurSelectionAsString: item that must be selected does not exist..
+        /// </summary>
+        internal static string ExInvalidSelStringInEmbeddedCombo {
+            get {
+                return ResourceManager.GetString("ExInvalidSelStringInEmbeddedCombo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This method should be called from the UI thread where the grid was created..
+        /// </summary>
+        internal static string ExInvalidThreadForMethod {
+            get {
+                return ResourceManager.GetString("ExInvalidThreadForMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last non-scrollable column cannot have merged header..
+        /// </summary>
+        internal static string ExLastNonScrollCannotBeMerged {
+            get {
+                return ResourceManager.GetString("ExLastNonScrollCannotBeMerged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Memory-based storage is limited to {0} rows..
+        /// </summary>
+        internal static string ExMemoryBasedStorageIsLimitedToNRows {
+            get {
+                return ResourceManager.GetString("ExMemoryBasedStorageIsLimitedToNRows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multipanel grid container is not available..
+        /// </summary>
+        internal static string ExMultiPanelGridContainerIsNotAvailable {
+            get {
+                return ResourceManager.GetString("ExMultiPanelGridContainerIsNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to embeddedControl must implement IGridEmbeddedControl..
+        /// </summary>
+        internal static string ExNoIGridEmbeddedControl {
+            get {
+                return ResourceManager.GetString("ExNoIGridEmbeddedControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to embeddedControl MUST implement IGridEmbeddedControlManagement.
+        /// </summary>
+        internal static string ExNoIGridEmbeddedControlManagement {
+            get {
+                return ResourceManager.GetString("ExNoIGridEmbeddedControlManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot set multiple selection blocks while in single selection mode..
+        /// </summary>
+        internal static string ExNoMultiBlockSelInSingleSelMode {
+            get {
+                return ResourceManager.GetString("ExNoMultiBlockSelInSingleSelMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot select non-existing cell ({0}, {1}, {2}, {3})..
+        /// </summary>
+        internal static string ExNonExistingGridSelectionBlock {
+            get {
+                return ResourceManager.GetString("ExNonExistingGridSelectionBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of rows should be greater than or equal to zero..
+        /// </summary>
+        internal static string ExNumOfRowsShouldBeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("ExNumOfRowsShouldBeGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only SolidBrush can be specified as parameter.
+        /// </summary>
+        internal static string ExOnlySolidBrush {
+            get {
+                return ResourceManager.GetString("ExOnlySolidBrush", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Row index must be greater than or equal to zero and less than the number of rows..
+        /// </summary>
+        internal static string ExRowIndexShouldBeInRange {
+            get {
+                return ResourceManager.GetString("ExRowIndexShouldBeInRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while saving execution plan..
+        /// </summary>
+        internal static string ExSavingExecutionPlan {
+            get {
+                return ResourceManager.GetString("ExSavingExecutionPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while saving results..
+        /// </summary>
+        internal static string ExSavingResults {
+            get {
+                return ResourceManager.GetString("ExSavingResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text and bitmap for the header item that is merged with the one to its right cannot be specified..
+        /// </summary>
+        internal static string ExShouldBeNoDataForMergedColumHeader {
+            get {
+                return ResourceManager.GetString("ExShouldBeNoDataForMergedColumHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to column # {0} has check box on its header. Use overloaded HeaderInfo method for such columns..
+        /// </summary>
+        internal static string ExShouldSetHeaderStateForCheckBox {
+            get {
+                return ResourceManager.GetString("ExShouldSetHeaderStateForCheckBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to column # {0} does not have check box on its header. Use overloaded HeaderInfo method for such columns..
+        /// </summary>
+        internal static string ExShouldSetHeaderStateForRegualrCol {
+            get {
+                return ResourceManager.GetString("ExShouldSetHeaderStateForRegualrCol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text writer is null..
+        /// </summary>
+        internal static string ExTextWriterNull {
+            get {
+                return ResourceManager.GetString("ExTextWriterNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to set up page..
+        /// </summary>
+        internal static string ExUnableToPageSetup {
+            get {
+                return ResourceManager.GetString("ExUnableToPageSetup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to preview page..
+        /// </summary>
+        internal static string ExUnableToPrintPreview {
+            get {
+                return ResourceManager.GetString("ExUnableToPrintPreview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to print results..
+        /// </summary>
+        internal static string ExUnableToPrintResults {
+            get {
+                return ResourceManager.GetString("ExUnableToPrintResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected run type..
+        /// </summary>
+        internal static string ExUnexpectedRunType {
+            get {
+                return ResourceManager.GetString("ExUnexpectedRunType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution plan source type can not be recognized..
+        /// </summary>
+        internal static string ExUnknownExecutionPlanSource {
+            get {
+                return ResourceManager.GetString("ExUnknownExecutionPlanSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom level must be an integer value between {0} and {1}..
+        /// </summary>
+        internal static string ExZoomLevelShouldBeBetween {
+            get {
+                return ResourceManager.GetString("ExZoomLevelShouldBeBetween", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to SQL Results - Execution Plan.
         /// </summary>
-        internal static string FontAndColorCategorySqlResultsExecutionPlan {
+        internal static string FontAndColorCategoryResultsExecutionPlan {
             get {
-                return ResourceManager.GetString("FontAndColorCategorySqlResultsExecutionPlan", resourceCulture);
+                return ResourceManager.GetString("FontAndColorCategoryResultsExecutionPlan", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to SQL Results - Grid.
         /// </summary>
-        internal static string FontAndColorCategorySqlResultsGrid {
+        internal static string FontAndColorCategoryResultsGrid {
             get {
-                return ResourceManager.GetString("FontAndColorCategorySqlResultsGrid", resourceCulture);
+                return ResourceManager.GetString("FontAndColorCategoryResultsGrid", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to SQL Results - Text.
         /// </summary>
-        internal static string FontAndColorCategorySqlResultsText {
+        internal static string FontAndColorCategoryResultsText {
             get {
-                return ResourceManager.GetString("FontAndColorCategorySqlResultsText", resourceCulture);
+                return ResourceManager.GetString("FontAndColorCategoryResultsText", resourceCulture);
             }
         }
         
@@ -1556,74 +731,661 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} of
+        ///{1} ({2}%).
+        /// </summary>
+        internal static string Graphing_ActualOfEstimated {
+            get {
+                return ResourceManager.GetString("Graphing_ActualOfEstimated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ascending.
+        /// </summary>
+        internal static string Graphing_Ascending {
+            get {
+                return ResourceManager.GetString("Graphing_Ascending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Clones.
+        /// </summary>
+        internal static string Graphing_BothClones {
+            get {
+                return ResourceManager.GetString("Graphing_BothClones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Columns With No Statistics.
+        /// </summary>
+        internal static string Graphing_ColumnsWithNoStatistics {
+            get {
+                return ResourceManager.GetString("Graphing_ColumnsWithNoStatistics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cost: {0} %.
+        /// </summary>
+        internal static string Graphing_CostFormat {
+            get {
+                return ResourceManager.GetString("Graphing_CostFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Descending.
+        /// </summary>
+        internal static string Graphing_Descending {
+            get {
+                return ResourceManager.GetString("Graphing_Descending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edge.
+        /// </summary>
+        internal static string Graphing_Edge {
+            get {
+                return ResourceManager.GetString("Graphing_Edge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}/{1} from {2} to {3}.
+        /// </summary>
+        internal static string Graphing_EdgeDisplayPropertiesLabel {
+            get {
+                return ResourceManager.GetString("Graphing_EdgeDisplayPropertiesLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Query Text from Showplan XML (possibly truncated).
+        /// </summary>
+        internal static string Graphing_EditQueryText {
+            get {
+                return ResourceManager.GetString("Graphing_EditQueryText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Primary Or Secondary Clones.
+        /// </summary>
+        internal static string Graphing_EitherClones {
+            get {
+                return ResourceManager.GetString("Graphing_EitherClones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Single Clone Match.
+        /// </summary>
+        internal static string Graphing_ExactMatchClones {
+            get {
+                return ResourceManager.GetString("Graphing_ExactMatchClones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution Plan Description.
+        /// </summary>
+        internal static string Graphing_ExecutionPlanDescriptionAAName {
+            get {
+                return ResourceManager.GetString("Graphing_ExecutionPlanDescriptionAAName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution Plan Graph.
+        /// </summary>
+        internal static string Graphing_ExecutionPlanGraphAAName {
+            get {
+                return ResourceManager.GetString("Graphing_ExecutionPlanGraphAAName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A partial update was converted to a full update because of an online index build.
         /// </summary>
-        internal static string FullUpdateForOnlineIndexBuild {
+        internal static string Graphing_FullUpdateForOnlineIndexBuild {
             get {
-                return ResourceManager.GetString("FullUpdateForOnlineIndexBuild", resourceCulture);
+                return ResourceManager.GetString("Graphing_FullUpdateForOnlineIndexBuild", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Good Enough Plan Found.
         /// </summary>
-        internal static string GoodEnoughPlanFound {
+        internal static string Graphing_GoodEnoughPlanFound {
             get {
-                return ResourceManager.GetString("GoodEnoughPlanFound", resourceCulture);
+                return ResourceManager.GetString("Graphing_GoodEnoughPlanFound", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GridColumnInfoCollection is read-only, and its items cannot be modified..
+        ///   Looks up a localized string similar to Hash wrote {0} pages to and read {1} pages from tempdb with granted memory {2}KB and used memory {3}KB.
         /// </summary>
-        internal static string GridColumnInfoCollectionIsReadOnly {
+        internal static string Graphing_HashSpillDetails {
             get {
-                return ResourceManager.GetString("GridColumnInfoCollectionIsReadOnly", resourceCulture);
+                return ResourceManager.GetString("Graphing_HashSpillDetails", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Grid column number should be greater than zero..
+        ///   Looks up a localized string similar to Level.
         /// </summary>
-        internal static string GridColumnNumberShouldBeAboveZero {
+        internal static string Graphing_Level {
             get {
-                return ResourceManager.GetString("GridColumnNumberShouldBeAboveZero", resourceCulture);
+                return ResourceManager.GetString("Graphing_Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The query memory grant detected &quot;{0}&quot;, which may impact the reliability. Grant size: Initial {1} KB, Final {2} KB, Used {3} KB..
+        /// </summary>
+        internal static string Graphing_MemoryGrantWarning {
+            get {
+                return ResourceManager.GetString("Graphing_MemoryGrantWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Memory Limit Exceeded.
+        /// </summary>
+        internal static string Graphing_MemoryLimitExceeded {
+            get {
+                return ResourceManager.GetString("Graphing_MemoryLimitExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SQL Server.
+        /// </summary>
+        internal static string Graphing_MessageBoxCaption {
+            get {
+                return ResourceManager.GetString("Graphing_MessageBoxCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}: {1}.
+        /// </summary>
+        internal static string Graphing_NameValuePair {
+            get {
+                return ResourceManager.GetString("Graphing_NameValuePair", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}].
+        /// </summary>
+        internal static string Graphing_NodeDisplayPropertiesName1 {
+            get {
+                return ResourceManager.GetString("Graphing_NodeDisplayPropertiesName1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}[{1}].
+        /// </summary>
+        internal static string Graphing_NodeDisplayPropertiesName2 {
+            get {
+                return ResourceManager.GetString("Graphing_NodeDisplayPropertiesName2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Join Predicate.
+        /// </summary>
+        internal static string Graphing_NoJoinPredicate {
+            get {
+                return ResourceManager.GetString("Graphing_NoJoinPredicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Join predicate warning..
+        /// </summary>
+        internal static string Graphing_NoJoinPredicateDescription {
+            get {
+                return ResourceManager.GetString("Graphing_NoJoinPredicateDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alias.
+        /// </summary>
+        internal static string Graphing_ObjectAlias {
+            get {
+                return ResourceManager.GetString("Graphing_ObjectAlias", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alias used for the referenced object..
+        /// </summary>
+        internal static string Graphing_ObjectAliasDescription {
+            get {
+                return ResourceManager.GetString("Graphing_ObjectAliasDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Schema.
+        /// </summary>
+        internal static string Graphing_ObjectSchema {
+            get {
+                return ResourceManager.GetString("Graphing_ObjectSchema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Schema name for the referenced object..
+        /// </summary>
+        internal static string Graphing_ObjectSchemaDescription {
+            get {
+                return ResourceManager.GetString("Graphing_ObjectSchemaDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server.
+        /// </summary>
+        internal static string Graphing_ObjectServer {
+            get {
+                return ResourceManager.GetString("Graphing_ObjectServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table.
+        /// </summary>
+        internal static string Graphing_ObjectTable {
+            get {
+                return ResourceManager.GetString("Graphing_ObjectTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table name for the referenced object..
+        /// </summary>
+        internal static string Graphing_ObjectTableDescription {
+            get {
+                return ResourceManager.GetString("Graphing_ObjectTableDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0:0.#######} ({1}%).
+        /// </summary>
+        internal static string Graphing_OperatorDisplayCost {
+            get {
+                return ResourceManager.GetString("Graphing_OperatorDisplayCost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ({0}).
+        /// </summary>
+        internal static string Graphing_Parenthesis {
+            get {
+                return ResourceManager.GetString("Graphing_Parenthesis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Per-thread counter information..
+        /// </summary>
+        internal static string Graphing_PerThreadCounterDescription {
+            get {
+                return ResourceManager.GetString("Graphing_PerThreadCounterDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type conversion in expression ({0}) may affect &quot;{1}&quot; in query plan choice.
+        /// </summary>
+        internal static string Graphing_PlanAffectingConvert {
+            get {
+                return ResourceManager.GetString("Graphing_PlanAffectingConvert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plan-affecting type conversion warning..
+        /// </summary>
+        internal static string Graphing_PlanAffectingConvertDescription {
+            get {
+                return ResourceManager.GetString("Graphing_PlanAffectingConvertDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Primary Clones.
+        /// </summary>
+        internal static string Graphing_PrimaryClones {
+            get {
+                return ResourceManager.GetString("Graphing_PrimaryClones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thread {0}.
+        /// </summary>
+        internal static string Graphing_RuntimeCounterThread {
+            get {
+                return ResourceManager.GetString("Graphing_RuntimeCounterThread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All threads.
+        /// </summary>
+        internal static string Graphing_RuntimeCounterThreadAll {
+            get {
+                return ResourceManager.GetString("Graphing_RuntimeCounterThreadAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thread {0} on Instance {1}.
+        /// </summary>
+        internal static string Graphing_RuntimeCounterThreadOnInstance {
+            get {
+                return ResourceManager.GetString("Graphing_RuntimeCounterThreadOnInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scalar Operator.
+        /// </summary>
+        internal static string Graphing_ScalarOperator {
+            get {
+                return ResourceManager.GetString("Graphing_ScalarOperator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secondary Clones.
+        /// </summary>
+        internal static string Graphing_SecondaryClones {
+            get {
+                return ResourceManager.GetString("Graphing_SecondaryClones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seek Keys.
+        /// </summary>
+        internal static string Graphing_SeekKeys {
+            get {
+                return ResourceManager.GetString("Graphing_SeekKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keys used by a seek operation..
+        /// </summary>
+        internal static string Graphing_SeekKeysDescription {
+            get {
+                return ResourceManager.GetString("Graphing_SeekKeysDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sort wrote {0} pages to and read {1} pages from tempdb with granted memory {2}KB and used memory {3}KB.
+        /// </summary>
+        internal static string Graphing_SortSpillDetails {
+            get {
+                return ResourceManager.GetString("Graphing_SortSpillDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator used tempdb to spill data during execution.
+        /// </summary>
+        internal static string Graphing_SpillOccurredDisplayString {
+            get {
+                return ResourceManager.GetString("Graphing_SpillOccurredDisplayString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator used tempdb to spill data during execution with spill level {0} and {1} spilled thread(s).
+        /// </summary>
+        internal static string Graphing_SpillToTempDb {
+            get {
+                return ResourceManager.GetString("Graphing_SpillToTempDb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator used tempdb to spill data during execution with spill level {0}.
+        /// </summary>
+        internal static string Graphing_SpillToTempDbOld {
+            get {
+                return ResourceManager.GetString("Graphing_SpillToTempDbOld", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Startup Expression Predicate.
+        /// </summary>
+        internal static string Graphing_StartupExpressionPredicate {
+            get {
+                return ResourceManager.GetString("Graphing_StartupExpressionPredicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time Out.
+        /// </summary>
+        internal static string Graphing_TimeOut {
+            get {
+                return ResourceManager.GetString("Graphing_TimeOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The query had to wait {0} seconds for {1} during execution.
+        /// </summary>
+        internal static string Graphing_Wait {
+            get {
+                return ResourceManager.GetString("Graphing_Wait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto scroll interval should be greater than zero..
+        /// </summary>
+        internal static string Grid_AutoScrollMoreThanZero {
+            get {
+                return ResourceManager.GetString("Grid_AutoScrollMoreThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {2} Row {0}.
+        /// </summary>
+        internal static string Grid_CellDefaultAccessibleName {
+            get {
+                return ResourceManager.GetString("Grid_CellDefaultAccessibleName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear selection, click on the cell, and select it..
+        /// </summary>
+        internal static string Grid_ClearSelAndSelectCell {
+            get {
+                return ResourceManager.GetString("Grid_ClearSelAndSelectCell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click on header.
+        /// </summary>
+        internal static string Grid_ColumnHeaderAADefaultAction {
+            get {
+                return ResourceManager.GetString("Grid_ColumnHeaderAADefaultAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {1}.
+        /// </summary>
+        internal static string Grid_ColumnHeaderAAName {
+            get {
+                return ResourceManager.GetString("Grid_ColumnHeaderAAName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Column # {0}.
+        /// </summary>
+        internal static string Grid_ColumnNumber {
+            get {
+                return ResourceManager.GetString("Grid_ColumnNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel editing.
+        /// </summary>
+        internal static string Grid_EmbeddedEditCancelAAName {
+            get {
+                return ResourceManager.GetString("Grid_EmbeddedEditCancelAAName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel editing without committing changes into storage.
+        /// </summary>
+        internal static string Grid_EmbeddedEditCancelDefaultAction {
+            get {
+                return ResourceManager.GetString("Grid_EmbeddedEditCancelDefaultAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commit editing.
+        /// </summary>
+        internal static string Grid_EmbeddedEditCommitAAName {
+            get {
+                return ResourceManager.GetString("Grid_EmbeddedEditCommitAAName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commit changes into storage and stop editing.
+        /// </summary>
+        internal static string Grid_EmbeddedEditCommitDefaultAction {
+            get {
+                return ResourceManager.GetString("Grid_EmbeddedEditCommitDefaultAction", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to GridControl.
         /// </summary>
-        internal static string GridControlAaName {
+        internal static string Grid_GridControlAaName {
             get {
-                return ResourceManager.GetString("GridControlAaName", resourceCulture);
+                return ResourceManager.GetString("Grid_GridControlAaName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cell is not a button..
+        /// </summary>
+        internal static string Grid_InvalidNonButtonCellType {
+            get {
+                return ResourceManager.GetString("Grid_InvalidNonButtonCellType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cell is not a string..
+        /// </summary>
+        internal static string Grid_InvalidNonStringCellType {
+            get {
+                return ResourceManager.GetString("Grid_InvalidNonStringCellType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (No column name).
+        /// </summary>
+        internal static string Grid_ResultsNoColumnTitle {
+            get {
+                return ResourceManager.GetString("Grid_ResultsNoColumnTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Grid Results.
+        /// </summary>
+        internal static string Grid_SaveGridResults {
+            get {
+                return ResourceManager.GetString("Grid_SaveGridResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter should be greater than or equal to zero..
+        /// </summary>
+        internal static string Grid_ScrollPosShouldBeMoreOrEqualZero {
+            get {
+                return ResourceManager.GetString("Grid_ScrollPosShouldBeMoreOrEqualZero", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Click to select all grid cells.
         /// </summary>
-        internal static string GridSelectAllCellsTooltip {
+        internal static string Grid_SelectAllCellsTooltip {
             get {
-                return ResourceManager.GetString("GridSelectAllCellsTooltip", resourceCulture);
+                return ResourceManager.GetString("Grid_SelectAllCellsTooltip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Click to select the whole column.
         /// </summary>
-        internal static string GridSelectWholeColumnTooltip {
+        internal static string Grid_SelectWholeColumnTooltip {
             get {
-                return ResourceManager.GetString("GridSelectWholeColumnTooltip", resourceCulture);
+                return ResourceManager.GetString("Grid_SelectWholeColumnTooltip", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Click to select the whole row.
         /// </summary>
-        internal static string GridSelectWholeRowTooltip {
+        internal static string Grid_SelectWholeRowTooltip {
             get {
-                return ResourceManager.GetString("GridSelectWholeRowTooltip", resourceCulture);
+                return ResourceManager.GetString("Grid_SelectWholeRowTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start editing the cell.
+        /// </summary>
+        internal static string Grid_StartEditCell {
+            get {
+                return ResourceManager.GetString("Grid_StartEditCell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} - Click to follow.
+        ///Click and hold to select this cell..
+        /// </summary>
+        internal static string Grid_ToolTipUrl {
+            get {
+                return ResourceManager.GetString("Grid_ToolTipUrl", resourceCulture);
             }
         }
         
@@ -1631,27 +1393,68 @@ namespace BlackbirdSql.Shared.Properties {
         ///   Looks up a localized string similar to Click to show in XML Editor
         ///      Click and hold to select this cell.
         /// </summary>
-        internal static string GridXMLCellTooltip {
+        internal static string Grid_XMLCellTooltip {
             get {
-                return ResourceManager.GetString("GridXMLCellTooltip", resourceCulture);
+                return ResourceManager.GetString("Grid_XMLCellTooltip", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hash wrote {0} pages to and read {1} pages from tempdb with granted memory {2}KB and used memory {3}KB.
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static string HashSpillDetails {
+        internal static System.Drawing.Icon IconActualExecutionPlan {
             get {
-                return ResourceManager.GetString("HashSpillDetails", resourceCulture);
+                object obj = ResourceManager.GetObject("IconActualExecutionPlan", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon IconErrorOffset32x {
+            get {
+                object obj = ResourceManager.GetObject("IconErrorOffset32x", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon IconParallelProcess {
+            get {
+                object obj = ResourceManager.GetObject("IconParallelProcess", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon IconProperties16x {
+            get {
+                object obj = ResourceManager.GetObject("IconProperties16x", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon IconWarning {
+            get {
+                object obj = ResourceManager.GetObject("IconWarning", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap horizontal_collapse {
+        internal static System.Drawing.Bitmap ImgCancelBar_00 {
             get {
-                object obj = ResourceManager.GetObject("horizontal_collapse", resourceCulture);
+                object obj = ResourceManager.GetObject("ImgCancelBar_00", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1659,9 +1462,9 @@ namespace BlackbirdSql.Shared.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap horizontal_expand {
+        internal static System.Drawing.Bitmap ImgCancelBar_01 {
             get {
-                object obj = ResourceManager.GetObject("horizontal_expand", resourceCulture);
+                object obj = ResourceManager.GetObject("ImgCancelBar_01", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1669,284 +1472,930 @@ namespace BlackbirdSql.Shared.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap hsplit {
+        internal static System.Drawing.Bitmap ImgCancelBar_02 {
             get {
-                object obj = ResourceManager.GetObject("hsplit", resourceCulture);
+                object obj = ResourceManager.GetObject("ImgCancelBar_02", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The supplied group number is incorrect..
-        /// </summary>
-        internal static string IncorrectGroupNumber {
-            get {
-                return ResourceManager.GetString("IncorrectGroupNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Row number is incorrect..
-        /// </summary>
-        internal static string IncorrectRowNumber {
-            get {
-                return ResourceManager.GetString("IncorrectRowNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connecting to {0}....
-        /// </summary>
-        internal static string InfoConnectingToSvr {
-            get {
-                return ResourceManager.GetString("InfoConnectingToSvr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connecting to {0} as {1}....
-        /// </summary>
-        internal static string InfoConnectingToSvrAsUser {
-            get {
-                return ResourceManager.GetString("InfoConnectingToSvrAsUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disconnecting connection from {0}....
-        /// </summary>
-        internal static string InfoDisconnectingFromSvr {
-            get {
-                return ResourceManager.GetString("InfoDisconnectingFromSvr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disconnecting connection from {0} as {1}....
-        /// </summary>
-        internal static string InfoDisconnectingFromSvrAsUser {
-            get {
-                return ResourceManager.GetString("InfoDisconnectingFromSvrAsUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Argument is not valid..
-        /// </summary>
-        internal static string InvalidArgument {
-            get {
-                return ResourceManager.GetString("InvalidArgument", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to EditableCellType should be greater than or equal to EditableCellType.FirstCustomEditableCellType..
-        /// </summary>
-        internal static string InvalidCellType {
-            get {
-                return ResourceManager.GetString("InvalidCellType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to MergedHeaderResizeProportion property can be set only for columns that have merged header.
-        /// </summary>
-        internal static string InvalidColIndexForMergedResizeProp {
-            get {
-                return ResourceManager.GetString("InvalidColIndexForMergedResizeProp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unsupported command object.  Use SqlCommand or ReliableSqlCommand..
-        /// </summary>
-        internal static string InvalidCommandType {
-            get {
-                return ResourceManager.GetString("InvalidCommandType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot create clipboard data object for currently selected block of cells because nothing is selected.
-        /// </summary>
-        internal static string InvalidCurrentSelBlockForClicpboard {
-            get {
-                return ResourceManager.GetString("InvalidCurrentSelBlockForClicpboard", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Custom ColumnType should be greater than or equal to GridColumnType.FirstCustomColumnType..
-        /// </summary>
-        internal static string InvalidCustomColType {
-            get {
-                return ResourceManager.GetString("InvalidCustomColType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Clipboard operation cannot be performed in current grid state..
-        /// </summary>
-        internal static string InvalidGridStateForClipboard {
-            get {
-                return ResourceManager.GetString("InvalidGridStateForClipboard", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to MergedHeaderResizeProportion property should be between 0f and 1f..
-        /// </summary>
-        internal static string InvalidMergedHeaderResizeProportion {
-            get {
-                return ResourceManager.GetString("InvalidMergedHeaderResizeProportion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cell is not a button..
-        /// </summary>
-        internal static string InvalidNonButtonCellType {
-            get {
-                return ResourceManager.GetString("InvalidNonButtonCellType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cell is not a string..
-        /// </summary>
-        internal static string InvalidNonStringCellType {
-            get {
-                return ResourceManager.GetString("InvalidNonStringCellType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to EmbeddedComboBox.SetCurSelectionIndex: invalid index..
-        /// </summary>
-        internal static string InvalidSelIndexInEmbeddedCombo {
-            get {
-                return ResourceManager.GetString("InvalidSelIndexInEmbeddedCombo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to EmbeddedComboBox.SetCurSelectionAsString: item that must be selected does not exist..
-        /// </summary>
-        internal static string InvalidSelStringInEmbeddedCombo {
-            get {
-                return ResourceManager.GetString("InvalidSelStringInEmbeddedCombo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This method should be called from the UI thread where the grid was created..
-        /// </summary>
-        internal static string InvalidThreadForMethod {
-            get {
-                return ResourceManager.GetString("InvalidThreadForMethod", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Last non-scrollable column cannot have merged header..
-        /// </summary>
-        internal static string LastNonScrollCannotBeMerged {
-            get {
-                return ResourceManager.GetString("LastNonScrollCannotBeMerged", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Level.
-        /// </summary>
-        internal static string Level {
-            get {
-                return ResourceManager.GetString("Level", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading....
-        /// </summary>
-        internal static string LoadingText {
-            get {
-                return ResourceManager.GetString("LoadingText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Memory-based storage is limited to {0} rows..
-        /// </summary>
-        internal static string MemoryBasedStorageIsLimitedToNRows {
-            get {
-                return ResourceManager.GetString("MemoryBasedStorageIsLimitedToNRows", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The query memory grant detected &quot;{0}&quot;, which may impact the reliability. Grant size: Initial {1} KB, Final {2} KB, Used {3} KB..
-        /// </summary>
-        internal static string MemoryGrantWarning {
-            get {
-                return ResourceManager.GetString("MemoryGrantWarning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Details on memory grant warning.
-        /// </summary>
-        internal static string MemoryGrantWarningDescription {
-            get {
-                return ResourceManager.GetString("MemoryGrantWarningDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Memory Limit Exceeded.
-        /// </summary>
-        internal static string MemoryLimitExceeded {
-            get {
-                return ResourceManager.GetString("MemoryLimitExceeded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server.
-        /// </summary>
-        internal static string MessageBoxCaption {
-            get {
-                return ResourceManager.GetString("MessageBoxCaption", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Messages {
+        internal static System.Drawing.Bitmap ImgCancelBar_03 {
             get {
-                object obj = ResourceManager.GetObject("Messages", resourceCulture);
+                object obj = ResourceManager.GetObject("ImgCancelBar_03", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*
-        ///Missing Index Details from {0}
-        ///The Query Processor estimates that implementing the following index could improve the query cost by {1}%.
-        ///*/.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string MissingIndexDetailsTitle {
+        internal static System.Drawing.Bitmap ImgCancelBar_04 {
             get {
-                return ResourceManager.GetString("MissingIndexDetailsTitle", resourceCulture);
+                object obj = ResourceManager.GetObject("ImgCancelBar_04", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Missing Index (Impact {0}): {1}.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string MissingIndexFormat {
+        internal static System.Drawing.Bitmap ImgCancelBar_05 {
             get {
-                return ResourceManager.GetString("MissingIndexFormat", resourceCulture);
+                object obj = ResourceManager.GetObject("ImgCancelBar_05", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_06 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_06", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_07 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_07", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_08 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_08", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_09 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_09", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_10 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_10", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_11 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_12 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_12", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_13 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_13", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_14 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_14", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_15 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_15", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_16 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_17 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_17", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_18 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_18", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_19 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_19", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_20 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgCancelBar_21 {
+            get {
+                object obj = ResourceManager.GetObject("ImgCancelBar_21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgDesign {
+            get {
+                object obj = ResourceManager.GetObject("ImgDesign", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgExecutionPlan {
+            get {
+                object obj = ResourceManager.GetObject("ImgExecutionPlan", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgHorizontalCollapse {
+            get {
+                object obj = ResourceManager.GetObject("ImgHorizontalCollapse", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgHorizontalExpand {
+            get {
+                object obj = ResourceManager.GetObject("ImgHorizontalExpand", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgHorizontalSplit {
+            get {
+                object obj = ResourceManager.GetObject("ImgHorizontalSplit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgMessages {
+            get {
+                object obj = ResourceManager.GetObject("ImgMessages", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_00 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_00", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_01 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_01", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_02 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_02", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_03 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_03", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_04 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_04", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_05 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_05", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_06 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_06", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_07 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_07", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_08 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_08", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_09 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_09", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_10 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_10", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_11 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_12 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_12", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_13 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_13", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_14 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_14", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_15 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_15", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_16 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_17 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_17", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_18 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_18", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_19 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_19", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_20 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgProgressBar_21 {
+            get {
+                object obj = ResourceManager.GetObject("ImgProgressBar_21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgResults {
+            get {
+                object obj = ResourceManager.GetObject("ImgResults", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_01 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_01", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_02 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_02", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_03 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_03", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_04 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_04", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_05 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_05", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_06 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_06", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_07 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_07", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_08 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_08", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_09 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_09", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_10 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_10", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_11 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_12 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_12", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_13 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_13", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgRevSpin_14 {
+            get {
+                object obj = ResourceManager.GetObject("ImgRevSpin_14", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_01 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_01", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_02 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_02", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_03 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_03", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_04 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_04", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_05 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_05", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_06 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_06", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_07 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_07", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_08 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_08", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_09 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_09", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_10 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_10", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_11 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_12 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_12", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_13 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_13", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSpin_14 {
+            get {
+                object obj = ResourceManager.GetObject("ImgSpin_14", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSql {
+            get {
+                object obj = ResourceManager.GetObject("ImgSql", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgStatistics {
+            get {
+                object obj = ResourceManager.GetObject("ImgStatistics", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgStatusBarCancel {
+            get {
+                object obj = ResourceManager.GetObject("ImgStatusBarCancel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgStatusBarConnect {
+            get {
+                object obj = ResourceManager.GetObject("ImgStatusBarConnect", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgStatusBarError {
+            get {
+                object obj = ResourceManager.GetObject("ImgStatusBarError", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgStatusBarOffline {
+            get {
+                object obj = ResourceManager.GetObject("ImgStatusBarOffline", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgStatusOK {
+            get {
+                object obj = ResourceManager.GetObject("ImgStatusOK", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSuccess {
+            get {
+                object obj = ResourceManager.GetObject("ImgSuccess", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSwapHorz {
+            get {
+                object obj = ResourceManager.GetObject("ImgSwapHorz", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgSwapVert {
+            get {
+                object obj = ResourceManager.GetObject("ImgSwapVert", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgTextPlan {
+            get {
+                object obj = ResourceManager.GetObject("ImgTextPlan", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgTSQL {
+            get {
+                object obj = ResourceManager.GetObject("ImgTSQL", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgTSuccess {
+            get {
+                object obj = ResourceManager.GetObject("ImgTSuccess", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgVerticalCollapse {
+            get {
+                object obj = ResourceManager.GetObject("ImgVerticalCollapse", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgVerticalExpand {
+            get {
+                object obj = ResourceManager.GetObject("ImgVerticalExpand", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ImgVerticalSplit {
+            get {
+                object obj = ResourceManager.GetObject("ImgVerticalSplit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -1980,676 +2429,56 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Multipanel grid container is not available..
+        ///   Looks up a localized string similar to Broken.
         /// </summary>
-        internal static string MultiPanelGridContainerIsNotAvailable {
+        internal static string PropertiesWindow_ConnectionStateBroken {
             get {
-                return ResourceManager.GetString("MultiPanelGridContainerIsNotAvailable", resourceCulture);
+                return ResourceManager.GetString("PropertiesWindow_ConnectionStateBroken", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}: {1}.
+        ///   Looks up a localized string similar to closed.
         /// </summary>
-        internal static string NameValuePair {
+        internal static string PropertiesWindow_ConnectionStateClosed {
             get {
-                return ResourceManager.GetString("NameValuePair", resourceCulture);
+                return ResourceManager.GetString("PropertiesWindow_ConnectionStateClosed", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{0}].
+        ///   Looks up a localized string similar to connecting.
         /// </summary>
-        internal static string NodeDisplayPropertiesName1 {
+        internal static string PropertiesWindow_ConnectionStateConnecting {
             get {
-                return ResourceManager.GetString("NodeDisplayPropertiesName1", resourceCulture);
+                return ResourceManager.GetString("PropertiesWindow_ConnectionStateConnecting", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}[{1}].
+        ///   Looks up a localized string similar to Fetching.
         /// </summary>
-        internal static string NodeDisplayPropertiesName2 {
+        internal static string PropertiesWindow_ConnectionStateFetching {
             get {
-                return ResourceManager.GetString("NodeDisplayPropertiesName2", resourceCulture);
+                return ResourceManager.GetString("PropertiesWindow_ConnectionStateFetching", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to embeddedControl must implement IGridEmbeddedControl..
+        ///   Looks up a localized string similar to Open.
         /// </summary>
-        internal static string NoIGridEmbeddedControl {
+        internal static string PropertiesWindow_ConnectionStateOpen {
             get {
-                return ResourceManager.GetString("NoIGridEmbeddedControl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to embeddedControl MUST implement IGridEmbeddedControlManagement.
-        /// </summary>
-        internal static string NoIGridEmbeddedControlManagement {
-            get {
-                return ResourceManager.GetString("NoIGridEmbeddedControlManagement", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No Join Predicate.
-        /// </summary>
-        internal static string NoJoinPredicate {
-            get {
-                return ResourceManager.GetString("NoJoinPredicate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No Join predicate warning..
-        /// </summary>
-        internal static string NoJoinPredicateDescription {
-            get {
-                return ResourceManager.GetString("NoJoinPredicateDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot set multiple selection blocks while in single selection mode..
-        /// </summary>
-        internal static string NoMultiBlockSelInSingleSelMode {
-            get {
-                return ResourceManager.GetString("NoMultiBlockSelInSingleSelMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot select non-existing cell ({0}, {1}, {2}, {3})..
-        /// </summary>
-        internal static string NonExistingGridSelectionBlock {
-            get {
-                return ResourceManager.GetString("NonExistingGridSelectionBlock", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Number of rows should be greater than or equal to zero..
-        /// </summary>
-        internal static string NumOfRowsShouldBeGreaterThanZero {
-            get {
-                return ResourceManager.GetString("NumOfRowsShouldBeGreaterThanZero", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Alias.
-        /// </summary>
-        internal static string ObjectAlias {
-            get {
-                return ResourceManager.GetString("ObjectAlias", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Alias used for the referenced object..
-        /// </summary>
-        internal static string ObjectAliasDescription {
-            get {
-                return ResourceManager.GetString("ObjectAliasDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Schema.
-        /// </summary>
-        internal static string ObjectSchema {
-            get {
-                return ResourceManager.GetString("ObjectSchema", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Schema name for the referenced object..
-        /// </summary>
-        internal static string ObjectSchemaDescription {
-            get {
-                return ResourceManager.GetString("ObjectSchemaDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Server.
-        /// </summary>
-        internal static string ObjectServer {
-            get {
-                return ResourceManager.GetString("ObjectServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Table.
-        /// </summary>
-        internal static string ObjectTable {
-            get {
-                return ResourceManager.GetString("ObjectTable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Table name for the referenced object..
-        /// </summary>
-        internal static string ObjectTableDescription {
-            get {
-                return ResourceManager.GetString("ObjectTableDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Only SolidBrush can be specified as parameter.
-        /// </summary>
-        internal static string OnlySolidBrush {
-            get {
-                return ResourceManager.GetString("OnlySolidBrush", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error was encountered while trying to open the editor for the template..
-        /// </summary>
-        internal static string OpenOnlineEditorException {
-            get {
-                return ResourceManager.GetString("OpenOnlineEditorException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0:0.#######} ({1}%).
-        /// </summary>
-        internal static string OperatorDisplayCost {
-            get {
-                return ResourceManager.GetString("OperatorDisplayCost", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ({0}).
-        /// </summary>
-        internal static string Parenthesis {
-            get {
-                return ResourceManager.GetString("Parenthesis", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Per-thread counter information..
-        /// </summary>
-        internal static string PerThreadCounterDescription {
-            get {
-                return ResourceManager.GetString("PerThreadCounterDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type conversion in expression ({0}) may affect &quot;{1}&quot; in query plan choice.
-        /// </summary>
-        internal static string PlanAffectingConvert {
-            get {
-                return ResourceManager.GetString("PlanAffectingConvert", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plan-affecting type conversion warning..
-        /// </summary>
-        internal static string PlanAffectingConvertDescription {
-            get {
-                return ResourceManager.GetString("PlanAffectingConvertDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please select directory.
-        /// </summary>
-        internal static string PleaseSelectDirectory {
-            get {
-                return ResourceManager.GetString("PleaseSelectDirectory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not retrieve the object from the server explorer.  Try closing the window and editing the object again..
-        /// </summary>
-        internal static string PowerBuffer_ModelDisposed {
-            get {
-                return ResourceManager.GetString("PowerBuffer_ModelDisposed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Retrieving updated definition from server.
-        /// </summary>
-        internal static string PowerBuffer_RetrievingDefinitionFromServer {
-            get {
-                return ResourceManager.GetString("PowerBuffer_RetrievingDefinitionFromServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Primary Clones.
-        /// </summary>
-        internal static string PrimaryClones {
-            get {
-                return ResourceManager.GetString("PrimaryClones", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_00 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_00", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_01 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_01", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_02 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_02", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_03 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_03", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_04 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_04", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_05 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_05", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_06 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_06", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_07 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_07", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_08 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_08", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_09 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_09", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_10 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_10", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_11 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_11", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_12 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_12", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_13 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_13", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_14 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_14", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_15 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_15", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_16 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_17 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_17", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_18 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_18", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_19 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_19", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_20 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_20", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProgressBar_21 {
-            get {
-                object obj = ResourceManager.GetObject("ProgressBar_21", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon Properties_16x {
-            get {
-                object obj = ResourceManager.GetObject("Properties_16x", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}  ({1}).
-        /// </summary>
-        internal static string PropertyWindowConnectionInfo {
-            get {
-                return ResourceManager.GetString("PropertyWindowConnectionInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (No column name).
-        /// </summary>
-        internal static string QEGridResultsNoColumnTitle {
-            get {
-                return ResourceManager.GetString("QEGridResultsNoColumnTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Advanced.
-        /// </summary>
-        internal static string QeQueryOptionsAdvanced {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsAdvanced", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ANSI.
-        /// </summary>
-        internal static string QeQueryOptionsAnsi {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsAnsi", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution.
-        /// </summary>
-        internal static string QeQueryOptionsExecution {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsExecution", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to General.
-        /// </summary>
-        internal static string QeQueryOptionsGeneral {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsGeneral", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Grid.
-        /// </summary>
-        internal static string QeQueryOptionsGrid {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsGrid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Results.
-        /// </summary>
-        internal static string QeQueryOptionsResults {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text.
-        /// </summary>
-        internal static string QeQueryOptionsText {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Query {0}: Query cost (relative to the batch): {1}%.
-        /// </summary>
-        internal static string QueryCostFormat {
-            get {
-                return ResourceManager.GetString("QueryCostFormat", resourceCulture);
+                return ResourceManager.GetString("PropertiesWindow_ConnectionStateOpen", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Disconnected.
         /// </summary>
-        internal static string QueryWindowDisconnected {
+        internal static string PropertiesWindow_Disconnected {
             get {
-                return ResourceManager.GetString("QueryWindowDisconnected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid argument: reader cannot be null..
-        /// </summary>
-        internal static string ReaderCannotBeNull {
-            get {
-                return ResourceManager.GetString("ReaderCannotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Editor Factory:   {0}.
-        /// </summary>
-        internal static string Reg_NotifyEditorFactory {
-            get {
-                return ResourceManager.GetString("Reg_NotifyEditorFactory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logical View:     {0}.
-        /// </summary>
-        internal static string Reg_NotifyEditorView {
-            get {
-                return ResourceManager.GetString("Reg_NotifyEditorView", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Results {
-            get {
-                object obj = ResourceManager.GetObject("Results", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Row index must be greater than or equal to zero and less than the number of rows..
-        /// </summary>
-        internal static string RowIndexShouldBeInRange {
-            get {
-                return ResourceManager.GetString("RowIndexShouldBeInRange", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 
-        ///Statement #{0} ({1} row(s) selected, {2} in total)
-        ///.
-        /// </summary>
-        internal static string RowsSelectedMessage {
-            get {
-                return ResourceManager.GetString("RowsSelectedMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Thread {0}.
-        /// </summary>
-        internal static string RuntimeCounterThread {
-            get {
-                return ResourceManager.GetString("RuntimeCounterThread", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All threads.
-        /// </summary>
-        internal static string RuntimeCounterThreadAll {
-            get {
-                return ResourceManager.GetString("RuntimeCounterThreadAll", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Thread {0} on Instance {1}.
-        /// </summary>
-        internal static string RuntimeCounterThreadOnInstance {
-            get {
-                return ResourceManager.GetString("RuntimeCounterThreadOnInstance", resourceCulture);
+                return ResourceManager.GetString("PropertiesWindow_Disconnected", resourceCulture);
             }
         }
         
@@ -2660,162 +2489,9 @@ namespace BlackbirdSql.Shared.Properties {
         ///*.*
         ///    .
         /// </summary>
-        internal static string SaveAsXmlaFilterString {
+        internal static string ShellTextViewControl_SaveAsXmlaFilterString {
             get {
-                return ResourceManager.GetString("SaveAsXmlaFilterString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save Grid Results.
-        /// </summary>
-        internal static string SaveGridResults {
-            get {
-                return ResourceManager.GetString("SaveGridResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save Results.
-        /// </summary>
-        internal static string SaveResults {
-            get {
-                return ResourceManager.GetString("SaveResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scalar Operator.
-        /// </summary>
-        internal static string ScalarOperator {
-            get {
-                return ResourceManager.GetString("ScalarOperator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The query is currently executing. Do you want to cancel the query?.
-        /// </summary>
-        internal static string ScriptIsStillBeingExecuted {
-            get {
-                return ResourceManager.GetString("ScriptIsStillBeingExecuted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter should be greater than or equal to zero..
-        /// </summary>
-        internal static string ScrollPosShouldBeMoreOrEqualZero {
-            get {
-                return ResourceManager.GetString("ScrollPosShouldBeMoreOrEqualZero", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Secondary Clones.
-        /// </summary>
-        internal static string SecondaryClones {
-            get {
-                return ResourceManager.GetString("SecondaryClones", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Seek Keys.
-        /// </summary>
-        internal static string SeekKeys {
-            get {
-                return ResourceManager.GetString("SeekKeys", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Keys used by a seek operation..
-        /// </summary>
-        internal static string SeekKeysDescription {
-            get {
-                return ResourceManager.GetString("SeekKeysDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} ({1}.{2} {3}).
-        /// </summary>
-        internal static string ServerNameAndBuildAndProduct {
-            get {
-                return ResourceManager.GetString("ServerNameAndBuildAndProduct", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text and bitmap for the header item that is merged with the one to its right cannot be specified..
-        /// </summary>
-        internal static string ShouldBeNoDataForMergedColumHeader {
-            get {
-                return ResourceManager.GetString("ShouldBeNoDataForMergedColumHeader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to column # {0} has check box on its header. Use overloaded HeaderInfo method for such columns..
-        /// </summary>
-        internal static string ShouldSetHeaderStateForCheckBox {
-            get {
-                return ResourceManager.GetString("ShouldSetHeaderStateForCheckBox", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to column # {0} does not have check box on its header. Use overloaded HeaderInfo method for such columns..
-        /// </summary>
-        internal static string ShouldSetHeaderStateForRegualrCol {
-            get {
-                return ResourceManager.GetString("ShouldSetHeaderStateForRegualrCol", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sort wrote {0} pages to and read {1} pages from tempdb with granted memory {2}KB and used memory {3}KB.
-        /// </summary>
-        internal static string SortSpillDetails {
-            get {
-                return ResourceManager.GetString("SortSpillDetails", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SortView default constructor cannot be used..
-        /// </summary>
-        internal static string SortViewDefaultConstructorCannotBeUsed {
-            get {
-                return ResourceManager.GetString("SortViewDefaultConstructorCannotBeUsed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Operator used tempdb to spill data during execution.
-        /// </summary>
-        internal static string SpillOccurredDisplayString {
-            get {
-                return ResourceManager.GetString("SpillOccurredDisplayString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Operator used tempdb to spill data during execution with spill level {0} and {1} spilled thread(s).
-        /// </summary>
-        internal static string SpillToTempDb {
-            get {
-                return ResourceManager.GetString("SpillToTempDb", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Operator used tempdb to spill data during execution with spill level {0}.
-        /// </summary>
-        internal static string SpillToTempDbOld {
-            get {
-                return ResourceManager.GetString("SpillToTempDbOld", resourceCulture);
+                return ResourceManager.GetString("ShellTextViewControl_SaveAsXmlaFilterString", resourceCulture);
             }
         }
         
@@ -2847,1028 +2523,344 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sql {
-            get {
-                object obj = ResourceManager.GetObject("sql", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution visualizer (Actual).
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_ActualPlan_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_ActualPlan_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution plan (Actual).
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_ActualTextPlan_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_ActualTextPlan_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Messages.
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_Message_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Message_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Messages ({0}).
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_MessageCount_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_MessageCount_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution visualizer (Estimated).
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_Plan_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Plan_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tabulated Results.
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_ResultsGrid_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_ResultsGrid_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tabulated Results ({0}/{1}).
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_ResultsGridCount_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_ResultsGridCount_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text Results.
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_ResultsText_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_ResultsText_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text Results ({0}/{1}).
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_ResultsTextCount_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_ResultsTextCount_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to FB-SQL.
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_Sql_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Sql_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Statistics.
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_Statistics_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Statistics_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Statistics ({0}).
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_StatisticsSnapshotCount_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_StatisticsSnapshotCount_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution plan (Estimated).
-        /// </summary>
-        internal static string SqlEditorTabbedEditorPane_TextPlan_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_TextPlan_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}: Msg {1}, Level {2}, State {3}.
-        /// </summary>
-        internal static string SQLErrorFormat4 {
-            get {
-                return ResourceManager.GetString("SQLErrorFormat4", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Msg {0}, Level {1}, State {2}.
-        /// </summary>
-        internal static string SQLErrorFormat4_NoSource {
-            get {
-                return ResourceManager.GetString("SQLErrorFormat4_NoSource", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}: Msg {1}, Level {2}, Line {3}.
-        /// </summary>
-        internal static string SQLErrorFormatDbEngine {
-            get {
-                return ResourceManager.GetString("SQLErrorFormatDbEngine", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution mode cannot be changed when query is executing.
-        /// </summary>
-        internal static string SqlExecutionModeChangeFailed {
-            get {
-                return ResourceManager.GetString("SqlExecutionModeChangeFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All files (*.*)|*.*.
-        /// </summary>
-        internal static string SqlExportFromGridFilterAllFiles {
-            get {
-                return ResourceManager.GetString("SqlExportFromGridFilterAllFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CSV (Comma delimited) (*.csv) | *.csv.
-        /// </summary>
-        internal static string SqlExportFromGridFilterCSV {
-            get {
-                return ResourceManager.GetString("SqlExportFromGridFilterCSV", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text (Tab delimited) (*.txt) | *.txt.
-        /// </summary>
-        internal static string SqlExportFromGridFilterTabDelimitted {
-            get {
-                return ResourceManager.GetString("SqlExportFromGridFilterTabDelimitted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to XML files (*.xml)|*.xml|All files (*.*)|*.*.
-        /// </summary>
-        internal static string SqlXMLFileFilter {
-            get {
-                return ResourceManager.GetString("SqlXMLFileFilter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Start editing the cell.
-        /// </summary>
-        internal static string StartEditCell {
-            get {
-                return ResourceManager.GetString("StartEditCell", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Startup Expression Predicate.
-        /// </summary>
-        internal static string StartupExpressionPredicate {
-            get {
-                return ResourceManager.GetString("StartupExpressionPredicate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Statistics {
-            get {
-                object obj = ResourceManager.GetObject("Statistics", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_cancel {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_cancel", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_connect {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_connect", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_error {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_error", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_offline {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_offline", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin1 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin10 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin10", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin11 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin11", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin12 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin12", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin13 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin13", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin14 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin14", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin2 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin3 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin3", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin4 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin4", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin5 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin5", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin6 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin6", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin7 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin7", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin8 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin8", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_spin9 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_spin9", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBar_success {
-            get {
-                object obj = ResourceManager.GetObject("StatusBar_success", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Status bar.
         /// </summary>
-        internal static string StatusBarAccessibleName {
+        internal static string StatusBar_AccessibleName {
             get {
-                return ResourceManager.GetString("StatusBarAccessibleName", resourceCulture);
+                return ResourceManager.GetString("StatusBar_AccessibleName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancelling query....
+        ///   Looks up a localized string similar to Cancelling....
         /// </summary>
-        internal static string StatusBarCancellingQuery {
+        internal static string StatusBar_Cancelling {
             get {
-                return ResourceManager.GetString("StatusBarCancellingQuery", resourceCulture);
+                return ResourceManager.GetString("StatusBar_Cancelling", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Connected..
         /// </summary>
-        internal static string StatusBarConnected {
+        internal static string StatusBar_Connected {
             get {
-                return ResourceManager.GetString("StatusBarConnected", resourceCulture);
+                return ResourceManager.GetString("StatusBar_Connected", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Connecting..
         /// </summary>
-        internal static string StatusBarConnecting {
+        internal static string StatusBar_Connecting {
             get {
-                return ResourceManager.GetString("StatusBarConnecting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connection Ready.
-        /// </summary>
-        internal static string StatusBarConnectionReady {
-            get {
-                return ResourceManager.GetString("StatusBarConnectionReady", resourceCulture);
+                return ResourceManager.GetString("StatusBar_Connecting", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Disconnected..
         /// </summary>
-        internal static string StatusBarDisconnected {
+        internal static string StatusBar_Disconnected {
             get {
-                return ResourceManager.GetString("StatusBarDisconnected", resourceCulture);
+                return ResourceManager.GetString("StatusBar_Disconnected", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Executing query....
         /// </summary>
-        internal static string StatusBarExecutingQuery {
+        internal static string StatusBar_ExecutingQuery {
             get {
-                return ResourceManager.GetString("StatusBarExecutingQuery", resourceCulture);
+                return ResourceManager.GetString("StatusBar_ExecutingQuery", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to New Connection Opened.
         /// </summary>
-        internal static string StatusBarNewConnectionOpened {
+        internal static string StatusBar_NewConnectionOpened {
             get {
-                return ResourceManager.GetString("StatusBarNewConnectionOpened", resourceCulture);
+                return ResourceManager.GetString("StatusBar_NewConnectionOpened", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} rows.
         /// </summary>
-        internal static string StatusBarNumberOfReturnedRows {
+        internal static string StatusBar_NumberOfReturnedRows {
             get {
-                return ResourceManager.GetString("StatusBarNumberOfReturnedRows", resourceCulture);
+                return ResourceManager.GetString("StatusBar_NumberOfReturnedRows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offline.
+        /// </summary>
+        internal static string StatusBar_Offline {
+            get {
+                return ResourceManager.GetString("StatusBar_Offline", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Parsing query batch....
         /// </summary>
-        internal static string StatusBarParsingQueryBatch {
+        internal static string StatusBar_ParsingQueryBatch {
             get {
-                return ResourceManager.GetString("StatusBarParsingQueryBatch", resourceCulture);
+                return ResourceManager.GetString("StatusBar_ParsingQueryBatch", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Query cancelled..
         /// </summary>
-        internal static string StatusBarQueryCancelled {
+        internal static string StatusBar_QueryCancelled {
             get {
-                return ResourceManager.GetString("StatusBarQueryCancelled", resourceCulture);
+                return ResourceManager.GetString("StatusBar_QueryCancelled", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Query cancelled (A rollback is recommended)..
         /// </summary>
-        internal static string StatusBarQueryCancelledRollback {
+        internal static string StatusBar_QueryCancelledRollback {
             get {
-                return ResourceManager.GetString("StatusBarQueryCancelledRollback", resourceCulture);
+                return ResourceManager.GetString("StatusBar_QueryCancelledRollback", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Query executed successfully at {0:T}.
         /// </summary>
-        internal static string StatusBarQueryCompletedSuccessfully {
+        internal static string StatusBar_QueryCompletedSuccessfully {
             get {
-                return ResourceManager.GetString("StatusBarQueryCompletedSuccessfully", resourceCulture);
+                return ResourceManager.GetString("StatusBar_QueryCompletedSuccessfully", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Query completed with errors..
         /// </summary>
-        internal static string StatusBarQueryCompletedWithErrors {
+        internal static string StatusBar_QueryCompletedWithErrors {
             get {
-                return ResourceManager.GetString("StatusBarQueryCompletedWithErrors", resourceCulture);
+                return ResourceManager.GetString("StatusBar_QueryCompletedWithErrors", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Query completed with errors (A rollback is recommended)..
         /// </summary>
-        internal static string StatusBarQueryCompletedWithErrorsRollback {
+        internal static string StatusBar_QueryCompletedWithErrorsRollback {
             get {
-                return ResourceManager.GetString("StatusBarQueryCompletedWithErrorsRollback", resourceCulture);
+                return ResourceManager.GetString("StatusBar_QueryCompletedWithErrorsRollback", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Query batch timed out..
         /// </summary>
-        internal static string StatusBarQueryTimedOut {
+        internal static string StatusBar_QueryTimedOut {
             get {
-                return ResourceManager.GetString("StatusBarQueryTimedOut", resourceCulture);
+                return ResourceManager.GetString("StatusBar_QueryTimedOut", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to {0} ({1}.{2}).
         /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin1 {
+        internal static string StatusBar_ServerNameAndBuild {
             get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("StatusBar_ServerNameAndBuild", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to not connected.
         /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin10 {
+        internal static string TabbedEditorWindowPane_ConnectionStateNotConnected {
             get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin10", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin11 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin11", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin12 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin12", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin13 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin13", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin14 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin14", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin2 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin3 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin3", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin4 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin4", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin5 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin5", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin6 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin6", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin7 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin7", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin8 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin8", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarR_spin9 {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarR_spin9", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusBarT_success {
-            get {
-                object obj = ResourceManager.GetObject("StatusBarT_success", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap StatusOK {
-            get {
-                object obj = ResourceManager.GetObject("StatusOK", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: storage must be initialized first..
-        /// </summary>
-        internal static string StorageNotInitialized {
-            get {
-                return ResourceManager.GetString("StorageNotInitialized", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to StorageView default constructor cannot be used..
-        /// </summary>
-        internal static string StorageViewDefaultConstructorCannotBeUsed {
-            get {
-                return ResourceManager.GetString("StorageViewDefaultConstructorCannotBeUsed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap swap_horz {
-            get {
-                object obj = ResourceManager.GetObject("swap_horz", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap swap_vert {
-            get {
-                object obj = ResourceManager.GetObject("swap_vert", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Collapse Pane.
-        /// </summary>
-        internal static string TabbedEditor_CollapsePane {
-            get {
-                return ResourceManager.GetString("TabbedEditor_CollapsePane", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Horizontal Split.
-        /// </summary>
-        internal static string TabbedEditor_HorizontalSplit {
-            get {
-                return ResourceManager.GetString("TabbedEditor_HorizontalSplit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Design.
-        /// </summary>
-        internal static string TabbedEditor_SplitContainerButton1Text {
-            get {
-                return ResourceManager.GetString("TabbedEditor_SplitContainerButton1Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Script.
-        /// </summary>
-        internal static string TabbedEditor_SplitContainerButton2Text {
-            get {
-                return ResourceManager.GetString("TabbedEditor_SplitContainerButton2Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Split Strip.
-        /// </summary>
-        internal static string TabbedEditor_SplitStrip {
-            get {
-                return ResourceManager.GetString("TabbedEditor_SplitStrip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Swap.
-        /// </summary>
-        internal static string TabbedEditor_SwapButton {
-            get {
-                return ResourceManager.GetString("TabbedEditor_SwapButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Vertical Split.
-        /// </summary>
-        internal static string TabbedEditor_VerticalSplit {
-            get {
-                return ResourceManager.GetString("TabbedEditor_VerticalSplit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap TextPlan {
-            get {
-                object obj = ResourceManager.GetObject("TextPlan", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This command is not supported..
-        /// </summary>
-        internal static string ThisCommandIsNotSupported {
-            get {
-                return ResourceManager.GetString("ThisCommandIsNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Time Out.
-        /// </summary>
-        internal static string TimeOut {
-            get {
-                return ResourceManager.GetString("TimeOut", resourceCulture);
+                return ResourceManager.GetString("TabbedEditorWindowPane_ConnectionStateNotConnected", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Toolbar.
         /// </summary>
-        internal static string ToolBarHostAccessibleName {
+        internal static string ToolBarHost_AccessibleName {
             get {
-                return ResourceManager.GetString("ToolBarHostAccessibleName", resourceCulture);
+                return ResourceManager.GetString("ToolBarHost_AccessibleName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} - Click to follow.
-        ///Click and hold to select this cell..
+        ///   Looks up a localized string similar to Split Strip.
         /// </summary>
-        internal static string ToolTipUrl {
+        internal static string ToolStrip_SplitStrip {
             get {
-                return ResourceManager.GetString("ToolTipUrl", resourceCulture);
+                return ResourceManager.GetString("ToolStrip_SplitStrip", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to Execution visualizer (Actual).
         /// </summary>
-        internal static System.Drawing.Bitmap TSQL {
+        internal static string ToolStripButton_ActualPlan_Button_Text {
             get {
-                object obj = ResourceManager.GetObject("TSQL", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("ToolStripButton_ActualPlan_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to apply connection settings.
+        ///   Looks up a localized string similar to Execution plan (Actual).
         /// </summary>
-        internal static string UnableToApplyConnectionSettings {
+        internal static string ToolStripButton_ActualTextPlan_Button_Text {
             get {
-                return ResourceManager.GetString("UnableToApplyConnectionSettings", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_ActualTextPlan_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are uncommitted transactions. Do you wish to commit these transactions before closing the window?.
+        ///   Looks up a localized string similar to Collapse Pane.
         /// </summary>
-        internal static string UncommittedTransactionsWarning {
+        internal static string ToolStripButton_CollapsePane {
             get {
-                return ResourceManager.GetString("UncommittedTransactionsWarning", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_CollapsePane", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unexpected run type..
+        ///   Looks up a localized string similar to Horizontal Split.
         /// </summary>
-        internal static string UnexpectedRunType {
+        internal static string ToolStripButton_HorizontalSplit {
             get {
-                return ResourceManager.GetString("UnexpectedRunType", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_HorizontalSplit", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execution plan source type can not be recognized..
+        ///   Looks up a localized string similar to Messages.
         /// </summary>
-        internal static string UnknownExecutionPlanSource {
+        internal static string ToolStripButton_Message_Button_Text {
             get {
-                return ResourceManager.GetString("UnknownExecutionPlanSource", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_Message_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to Messages ({0}).
         /// </summary>
-        internal static System.Drawing.Bitmap vertical_collapse {
+        internal static string ToolStripButton_MessageCount_Button_Text {
             get {
-                object obj = ResourceManager.GetObject("vertical_collapse", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("ToolStripButton_MessageCount_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to Execution visualizer (Estimated).
         /// </summary>
-        internal static System.Drawing.Bitmap vertical_expand {
+        internal static string ToolStripButton_Plan_Button_Text {
             get {
-                object obj = ResourceManager.GetObject("vertical_expand", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("ToolStripButton_Plan_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to View has to be set before executing double click event..
+        ///   Looks up a localized string similar to Tabulated Results.
         /// </summary>
-        internal static string ViewHaveToBeSetBeforeExecutingDoubleClickEvent {
+        internal static string ToolStripButton_ResultsGrid_Button_Text {
             get {
-                return ResourceManager.GetString("ViewHaveToBeSetBeforeExecutingDoubleClickEvent", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_ResultsGrid_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized string similar to Tabulated Results ({0}/{1}).
         /// </summary>
-        internal static System.Drawing.Bitmap vsplit {
+        internal static string ToolStripButton_ResultsGridCount_Button_Text {
             get {
-                object obj = ResourceManager.GetObject("vsplit", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("ToolStripButton_ResultsGridCount_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The query had to wait {0} seconds for {1} during execution.
+        ///   Looks up a localized string similar to Text Results.
         /// </summary>
-        internal static string Wait {
+        internal static string ToolStripButton_ResultsText_Button_Text {
             get {
-                return ResourceManager.GetString("Wait", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_ResultsText_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SQL Server Advanced Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
+        ///   Looks up a localized string similar to Text Results ({0}/{1}).
         /// </summary>
-        internal static string WarnSqlAdvancedQueryChanges {
+        internal static string ToolStripButton_ResultsTextCount_Button_Text {
             get {
-                return ResourceManager.GetString("WarnSqlAdvancedQueryChanges", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_ResultsTextCount_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SQL Server ANSI Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
+        ///   Looks up a localized string similar to Design.
         /// </summary>
-        internal static string WarnSqlAnsiQueryChanges {
+        internal static string ToolStripButton_SplitContainerButton1Text {
             get {
-                return ResourceManager.GetString("WarnSqlAnsiQueryChanges", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_SplitContainerButton1Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SQL Server General Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
+        ///   Looks up a localized string similar to FB-SQL.
         /// </summary>
-        internal static string WarnSqlGeneralQueryChanges {
+        internal static string ToolStripButton_Sql_Button_Text {
             get {
-                return ResourceManager.GetString("WarnSqlGeneralQueryChanges", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_Sql_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SQL Server General option changes will only be applied to new SQL Server Query Editor windows. .
+        ///   Looks up a localized string similar to Statistics.
         /// </summary>
-        internal static string WarnSqlGeneralResultsChanges {
+        internal static string ToolStripButton_StatisticsSnapshot_Button_Text {
             get {
-                return ResourceManager.GetString("WarnSqlGeneralResultsChanges", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_StatisticsSnapshot_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SQL Server Results to Grid option changes will only be applied to new SQL Server Query Editor windows. .
+        ///   Looks up a localized string similar to Statistics ({0}).
         /// </summary>
-        internal static string WarnSqlResultsToGridChanges {
+        internal static string ToolStripButton_StatisticsSnapshotCount_Button_Text {
             get {
-                return ResourceManager.GetString("WarnSqlResultsToGridChanges", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_StatisticsSnapshotCount_Button_Text", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SQL Server Results to Text option changes will only be applied to new SQL Server Query Editor windows. .
+        ///   Looks up a localized string similar to Swap.
         /// </summary>
-        internal static string WarnSqlResultsToTextChanges {
+        internal static string ToolStripButton_SwapButton {
             get {
-                return ResourceManager.GetString("WarnSqlResultsToTextChanges", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_SwapButton", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Zoom level must be an integer value between {0} and {1}..
+        ///   Looks up a localized string similar to Execution plan (Estimated).
         /// </summary>
-        internal static string ZoomLevelShouldBeBetween {
+        internal static string ToolStripButton_TextPlan_Button_Text {
             get {
-                return ResourceManager.GetString("ZoomLevelShouldBeBetween", resourceCulture);
+                return ResourceManager.GetString("ToolStripButton_TextPlan_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vertical Split.
+        /// </summary>
+        internal static string ToolStripButton_VerticalSplit {
+            get {
+                return ResourceManager.GetString("ToolStripButton_VerticalSplit", resourceCulture);
             }
         }
     }

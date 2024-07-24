@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.GridResultsPanel
 
 using System;
 using System.Collections;
@@ -732,7 +730,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			catch (Exception e)
 			{
 				Diag.Dug(e);
-				MessageCtl.ShowEx(ControlsResources.ErrWhileSavingResults, e);
+				MessageCtl.ShowEx(ControlsResources.ExSavingResults, e);
 			}
 			finally
 			{
@@ -802,7 +800,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		saveFormat = EnGridSaveFormats.CommaSeparated;
 		FileEncodingDialog fileEncodingDlg = new FileEncodingDialog();
 		SaveFormats saveFormats = new SaveFormats();
-		string fileNameUsingSaveDialog = VS.GetFileNameUsingSaveDialog(VS.MakeVsFilterString(saveFormats.FilterString), ControlsResources.SaveGridResults, DefaultResultsDirectory, fileEncodingDlg, out int filterIndex);
+		string fileNameUsingSaveDialog = VS.GetFileNameUsingSaveDialog(VS.MakeVsFilterString(saveFormats.FilterString), ControlsResources.Grid_SaveGridResults, DefaultResultsDirectory, fileEncodingDlg, out int filterIndex);
 		if (fileNameUsingSaveDialog != null)
 		{
 			DefaultResultsDirectory = Path.GetDirectoryName(fileNameUsingSaveDialog);

@@ -45,7 +45,7 @@ internal class LsbAuthoringScope : Microsoft.VisualStudio.Package.AuthoringScope
 
 		CodeObjectQuickInfo codeObjectQuickInfo = null;
 		object localfunc() => Resolver.GetQuickInfo(_ParseResult, line + 1, col + 1, _DisplayInfoProvider);
-		IBMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
+		IBsMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
 
 		if (metadataProviderProvider != null)
 		{
@@ -90,7 +90,7 @@ internal class LsbAuthoringScope : Microsoft.VisualStudio.Package.AuthoringScope
 				{
 					IList<Declaration> list = null;
 
-					IBMetadataProviderProvider metadataProviderProvider = source.GetMetadataProviderProvider();
+					IBsMetadataProviderProvider metadataProviderProvider = source.GetMetadataProviderProvider();
 					if (metadataProviderProvider != null)
 					{
 						object localfunc() => Resolver.FindCompletions(_ParseResult, line + 1, col + 1, _DisplayInfoProvider);

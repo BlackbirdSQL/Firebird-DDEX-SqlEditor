@@ -1,20 +1,21 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.Strategy
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.SqlEditorStrategy
 
 using System;
 using System.Data;
 using System.Data.Common;
 using System.Drawing;
-using System.Globalization;
 using System.Text;
-using System.Threading;
-using System.Windows.Forms;
-using BlackbirdSql.Core.Enums;
+using System.Threading.Tasks;
+using BlackbirdSql.Core.Events;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Ctl.Config;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Properties;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -22,182 +23,127 @@ using Microsoft.VisualStudio.Shell;
 namespace BlackbirdSql.Shared.Model;
 
 
+// =========================================================================================================
+//
+//									AbstractConnectionStrategy Class
+//
+/// <summary>
+/// Abstract ConnectionStrategy class. Manages connections for a query.
+/// </summary>
+// =========================================================================================================
 public abstract class AbstractConnectionStrategy : IDisposable
 {
 
+	// ------------------------------------------------------------
+	#region Constructors / Destructors - AbstractConnectionStrategy
+	// ------------------------------------------------------------
+
+	/// <summary>
+	/// Default .ctor.
+	/// </summary>
 	public AbstractConnectionStrategy()
 	{
 	}
 
-	protected Csb _Csa = null;
-	protected long _Stamp = -1;
-	protected long _ConnectionStamp = -1;
-	protected string _LastDatasetKey = null;
 
-	public delegate void ConnectionChangedEvent(object sender, ConnectionChangedEventArgs args);
-
-	public delegate void DatabaseChangedEvent(object sender, EventArgs args);
-
-	public class ConnectionChangedEventArgs(IDbConnection previousConnection) : EventArgs
+	public void Dispose()
 	{
-		public IDbConnection PreviousConnection { get; private set; } = previousConnection;
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
 	}
 
-	private static readonly Color DefaultColor = SystemColors.Control;
-
-	private bool? _HasTransactions;
-	private IDbConnection _Connection;
-	private IDbTransaction _Transaction = null;
-	private int _TransactionCardinal = 0;
 
 
-	protected ConnectionPropertyAgent _ConnectionInfo;
+	protected virtual void Dispose(bool disposing)
+	{
+		lock (_LockObject)
+			ConnInfo = null;
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstractConnectionStrategy
+	// =========================================================================================================
+
 
 	// A protected 'this' object lock
 	protected readonly object _LockObject = new object();
 
+	private int _EventCardinal = 0;
+
+	protected IBsConnectionInfo _ConnInfo;
+	private bool? _HasTransactions;
+	protected long _ConnectionStamp = -1;
+	private int _TransactionCardinal = 0;
+
+	private static readonly Color _SDefaultColor = SystemColors.Control;
+
+	protected ConnectionChangedDelegate _ConnectionChangedEvent;
+	protected DatabaseChangedDelegate _DatabaseChangedEvent;
+
+
+	#endregion Fields
 
 
 
-	public string LastDatasetKey => _LastDatasetKey;
 
 
-	public virtual ConnectionPropertyAgent ConnectionInfo
+	// =========================================================================================================
+	#region Property Accessors - AbstractConnectionStrategy
+	// =========================================================================================================
+
+
+	public IDbConnection Connection => _ConnInfo?.DataConnection;
+
+	public long ConnectionStamp => _ConnectionStamp;
+
+	public IBsConnectionInfo ConnInfo
 	{
 		get
 		{
 			lock (_LockObject)
-			{
-				return _ConnectionInfo;
-			}
-		}
-		protected set
-		{
-			lock (_LockObject)
-			{
-				if (_ConnectionInfo == value)
-					return;
-
-				_ConnectionInfo?.Dispose();
-				_ConnectionInfo = value;
-			}
-		}
-	}
-
-	public IDbConnection Connection
-	{
-		get
-		{
-			lock (_LockObject)
-			{
-				if (_Connection == null || _ConnectionInfo == null || _ConnectionStamp == RctManager.Stamp)
-					return _Connection;
-
-				// We have to ensure the connection hasn't changed.
-
-				// Get the connection string of the current connection adorned with the additional Csa properties
-				// so that we don't get a negative equivalency because of missing stripped Csa properties in the
-				// connection's connection string.
-				string connectionString = RctManager.UpdateConnectionFromRegistration(_Connection);
-
-				if (connectionString == null)
-					return _Connection;
-
-				Csb csaCurrent = new(connectionString, false);
-				Csb csaRegistered = RctManager.CloneRegistered(_ConnectionInfo);
-
-				// Compare the current connection with the registered connection.
-				if (Csb.AreEquivalent(csaRegistered, csaCurrent, Csb.DescriberKeys))
-				{ 
-					// Nothing's changed.
-					_ConnectionStamp = RctManager.Stamp;
-					return _Connection;
-				}
-
-				// Tracer.Trace(GetType(), "get_Connection()", "Connections are not equivalent: \nCurrent: {0}\nRegistered: {1}",
-				//	csaCurrent.ConnectionString, csaRegistered.ConnectionString);
-
-				ConnectionPropertyAgent connectionInfo = new();
-				connectionInfo.Parse(csaRegistered.ConnectionString);
-
-				if (Csb.AreEquivalent(csaRegistered, csaCurrent, Csb.ConnectionKeys))
-				{
-					// The connection is the same but it's adornments have changed.
-					lock (_LockObject)
-					{
-						_ConnectionStamp = RctManager.Stamp;
-						ConnectionInfo = connectionInfo;
-						return _Connection;
-					}
-				}
-
-				// Tracer.Trace(GetType(), "get_Connection()", "Connections are not equivalent: \nCurrent: {0}\nRegistered: {1}",
-				//	csaCurrent.ConnectionString, csaRegistered.ConnectionString);
-
-				// If we're here it's a reset.
-
-				IDbConnection connection = NativeDb.CreateDbConnection(csaRegistered.ConnectionString);
-
-				if (_Connection.State == ConnectionState.Open)
-					connection.Open();
-
-				SetConnectionInfo(connectionInfo, connection);
-
-				return _Connection;
-			}
-		}
-	}
-
-	public IDbTransaction Transaction
-	{
-		get
-		{
-			lock (_LockObject)
-			{
-				if (_Transaction != null)
-				{
-					bool transactionCompleted = true;
-
-					try
-					{
-						transactionCompleted = _Connection == null || _Transaction.Completed();
-					}
-					catch (Exception ex)
-					{
-						Diag.Expected(ex);
-					}
-
-
-					if (transactionCompleted)
-						DisposeTransaction(true);
-				}
-
-				return _Transaction;
-			}
+				return _ConnInfo;
 		}
 		set
 		{
 			lock (_LockObject)
 			{
-				if (value == null)
-					DisposeTransaction(false);
+				_ConnectionStamp = RctManager.Stamp;
 
-				_Transaction = value;
+				if (ReferenceEquals(_ConnInfo, value))
+					return;
+
+
+				IBsConnectionInfo previousConnInfo = _ConnInfo;
+
+				if (previousConnInfo != null)
+					previousConnInfo.ConnectionChangedEvent -= OnPropertyAgentConnectionChanged;
+
+				_ConnInfo = value;
+
+				ConnectionChangedEventArgs args = new(_ConnInfo?.DataConnection, previousConnInfo?.DataConnection);
+
+				OnPropertyAgentConnectionChanged(this, args);
+
+				if (_ConnInfo != null)
+					_ConnInfo.ConnectionChangedEvent += OnPropertyAgentConnectionChanged;
+
+				EventEnter(true, true);
+
+				try
+				{
+					previousConnInfo?.Dispose();
+				}
+				finally
+				{
+					EventExit();
+				}
 			}
-		}
-	}
-
-	public virtual string DisplayServerName
-	{
-		get
-		{
-			ConnectionPropertyAgent connectionInfo = ConnectionInfo;
-			if (connectionInfo != null && !string.IsNullOrEmpty(connectionInfo.DataSource))
-			{
-				return connectionInfo.ServerNameNoDot;
-			}
-
-			return string.Empty;
 		}
 	}
 
@@ -207,20 +153,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
-				Csb csa;
-
-				if (Connection != null)
+				if (ConnInfo != null)
 				{
-					csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(Connection);
-					return csa == null
-						? SysConstants.C_DefaultExDatasetId
-						: (string.IsNullOrWhiteSpace(csa.DatasetId)
-							? csa.Dataset : csa.DatasetId);
-				}
+					Csb csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(ConnInfo);
 
-				if (ConnectionInfo != null)
-				{
-					csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(ConnectionInfo);
 					return csa == null
 						? SysConstants.C_DefaultExDatasetId
 						: (string.IsNullOrWhiteSpace(csa.DatasetId)
@@ -232,27 +168,133 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 	}
 
+
+	public virtual string DisplayServerName
+	{
+		get
+		{
+			IBsConnectionInfo connectionInfo = ConnInfo;
+			if (connectionInfo != null && !string.IsNullOrEmpty(connectionInfo.DataSource))
+			{
+				return connectionInfo.DataSource;
+			}
+
+			return string.Empty;
+		}
+	}
+
+
 	public virtual string DisplayUserName
 	{
 		get
 		{
-			string text = string.Empty;
-			ConnectionPropertyAgent connectionInfo = ConnectionInfo;
-			if (connectionInfo != null)
-			{
-				text = connectionInfo.UserID;
-			}
+			string value = string.Empty;
+			IBsConnectionInfo connectionInfo = ConnInfo;
 
-			return text;
+			if (connectionInfo != null)
+				value = connectionInfo.UserID;
+
+			return value;
 		}
 	}
 
+
+	/// <summary>
+	/// Returns the last known HasTransactions status.
+	/// </summary>
+	public bool HadTransactions
+	{
+		get
+		{
+			if (Connection == null)
+			{
+				_HasTransactions = false;
+				_TransactionCardinal = 0;
+				return false;
+			}
+
+			if (!_HasTransactions.HasValue)
+				return HasTransactions;
+
+			return _HasTransactions.Value;
+		}
+	}
+
+
+	/// <summary>
+	/// HasTransactions OnQueryStatus() requests piggyback off of previous
+	/// <see cref="GetUpdateTransactionsStatus()"/> calls.
+	/// This reduces the number of IDbTransaction.HasTransactions() requests.
+	/// </summary>
+	public bool HasTransactions
+	{
+		get
+		{
+			if (Connection == null)
+			{
+				_HasTransactions = false;
+				_TransactionCardinal = 0;
+				return false;
+			}
+
+			_TransactionCardinal++;
+
+			if (!_HasTransactions.HasValue
+				|| (_TransactionCardinal % LibraryData.C_ConnectionValidationModulus) == 0)
+			{
+				GetUpdateTransactionsStatus(true);
+			}
+
+			return _HasTransactions.Value;
+		}
+	}
+
+
+	public string CurrentDatasetKey => _ConnInfo?.DatasetKey;
+
+
+	public IDbConnection LiveConnection
+	{
+		get
+		{
+			lock (_LockObject)
+			{
+				if (Connection == null || _ConnectionStamp == RctManager.Stamp)
+				{
+					_ConnectionStamp = RctManager.Stamp;
+					return Connection;
+				}
+
+				IDbConnection connection = _ConnInfo.LiveConnection;
+
+				if (connection != null)
+				{
+					_ConnectionStamp = RctManager.Stamp;
+					return connection;
+				}
+
+				// If we're here it's a reset.
+
+				Csb csaRegistered = RctManager.CloneRegistered(_ConnInfo);
+
+				ConnInfo = (IBsConnectionInfo)new ConnectionInfoPropertyAgent();
+
+				_ConnInfo.Parse(csaRegistered.ConnectionString);
+				_ConnInfo.CreateDataConnection();
+
+				return Connection;
+			}
+		}
+	}
+
+
+	public object LockObject => _LockObject;
 
 	public virtual Color StatusBarColor
 	{
 		get
 		{
-			ConnectionPropertyAgent connectionInfo = ConnectionInfo;
+			IBsConnectionInfo connectionInfo = ConnInfo;
 			Color result = PersistentSettings.EditorStatusBarBackgroundColor;
 			if (connectionInfo != null && UseCustomColor(connectionInfo))
 			{
@@ -263,370 +305,291 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 	}
 
-	public virtual bool IsExecutionPlanAndQueryStatsSupported => true;
 
-
-	/// <summary>
-	/// HasTransactions HandleQueryStatus() requests piggyback off of previous
-	/// <see cref="GetUpdateTransactionsStatus()"/> calls.
-	/// This reduces the number of IDbTransaction.HasTransactions() requests.
-	/// </summary>
-	public bool HasTransactions
-	{
-		get
-		{
-			_TransactionCardinal++;
-
-			if (!_HasTransactions.HasValue
-				|| (_TransactionCardinal % 20) == 0)
-			{
-				GetUpdateTransactionsStatus();
-			}
-
-			return _HasTransactions.Value;
-		}
-	}
+	public IDbTransaction Transaction => _ConnInfo?.DataTransaction;
 
 
 	public bool TtsActive => Transaction != null;
 
 
-	public event ConnectionChangedEvent ConnectionChanged;
-
-	protected event ConnectionChangedEvent ConnectionChangedPriority;
-
-	public event DatabaseChangedEvent DatabaseChanged;
 
 
-
-	public void BeginTransaction(IsolationLevel isolationLevel)
+	public event ConnectionChangedDelegate ConnectionChangedEvent
 	{
-		if (Transaction != null)
-			return;
-
-		Transaction = Connection.BeginTransaction(isolationLevel);
-	}
-
-	public void CommitTransaction()
-	{
-		Transaction?.Commit();
-	}
-
-	public void RollbackTransaction()
-	{
-		Transaction?.Rollback();
+		add { _ConnectionChangedEvent += value; }
+		remove { _ConnectionChangedEvent -= value; }
 	}
 
 
-	public void DisposeTransaction(bool force)
+	public event DatabaseChangedDelegate DatabaseChangedEvent
 	{
-		if (_Transaction == null)
-			return;
-
-		bool hasTransactions = false;
-
-		try
-		{
-			hasTransactions = _Transaction.HasTransactions();
-		}
-		catch (Exception ex)
-		{
-			Diag.Expected(ex);
-		}
-
-
-
-		try
-		{
-			if (!force && hasTransactions)
-			{
-				Diag.ThrowException(new DataException("Attempt to dispose of database Transaction object that has pending transactions."));
-			}
-		}
-		catch { }
-
-		try
-		{
-			if (hasTransactions)
-				_Transaction.Rollback();
-		}
-		catch (Exception ex)
-		{
-			Diag.Expected(ex);
-		}
-
-
-		try
-		{
-			_Transaction.Dispose();
-		}
-		catch (Exception ex)
-		{
-			Diag.Expected(ex);
-		}
-
-
-		_Transaction = null;
+		add { _DatabaseChangedEvent += value; }
+		remove { _DatabaseChangedEvent -= value; }
 	}
 
 
-	protected void SetDbConnection(IDbConnection value)
+	#endregion Property Accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - AbstractConnectionStrategy
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the IsComplete ConnectionInfo object for a connection. If the object is not
+	/// complete but publicly complete calls the password prompt dialog. If the object
+	/// does not exist or is not publicly complete, calls the connection dialog.
+	/// </summary>
+	/// <param name="ci">
+	/// Outputs the new ConnInfo or null if ConnInfo is unchanged or the request was
+	/// cancelled.
+	/// </param>
+	/// <returns>True is processing may continue else false.</returns>
+	// ---------------------------------------------------------------------------------
+	private bool AcquireValidConnectionInfo(out IBsConnectionInfo ci)
 	{
-		lock (_LockObject)
+		bool isComplete = ConnInfo != null && ConnInfo.IsComplete;
+
+		if (isComplete)
 		{
-			IDbConnection connection = _Connection;
-
-			if (connection == value)
-				return;
-
-			// If we're here and there are transactions nothing we can really do about it
-			// because this could have been initiated from anywhere.
-			DisposeTransaction(true);
-
-			if (_Connection != null)
-			{
-				try
-				{
-					if (_Connection.State != ConnectionState.Closed)
-						_Connection.Close();
-				}
-				catch (Exception ex)
-				{
-					Diag.Expected(ex);
-				}
-
-
-				try
-				{
-					_Connection.Dispose();
-				}
-				catch (Exception ex)
-				{
-					Diag.Expected(ex);
-				}
-			}
-
-
-			_Connection = value;
-
-			if (_Connection != null)
-			{
-				Csb csa = RctManager.CloneRegistered(_Connection);
-				if (csa == null)
-					return;
-
-				_LastDatasetKey = csa.DatasetKey;
-			}
-
-			OnConnectionChangedPriority(connection);
-			OnConnectionChanged(connection);
-		}
-	}
-
-	public void SetConnectionInfo(ConnectionPropertyAgent ci)
-	{
-		CreateDbConnectionFromConnectionInfo(ci, false, out IDbConnection connection);
-		SetConnectionInfo(ci, connection);
-	}
-
-	public void SetConnectionInfo(ConnectionPropertyAgent ci, IDbConnection connection)
-	{
-		if (ci != null && connection == null)
-		{
-			ArgumentNullException ex = new("connection");
-			Diag.Dug(ex);
-			throw ex;
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "ConnInfo is not null");
+			ci = null;
+			return true;
 		}
 
-		lock (_LockObject)
+		bool isCompletePublic = ConnInfo != null && ConnInfo.IsCompletePublic;
+
+		if (isCompletePublic)
 		{
-			_ConnectionStamp = RctManager.Stamp;
-			ConnectionInfo = ci;
-			SetDbConnection(connection);
+			ci = PromptForCompleteConnection();
 		}
+		else
+		{
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "ConnInfo is null. Prompting");
+
+			ci = PromptForConnection();
+		}
+
+
+		if (ci == null)
+			return false;
+
+
+		return true;
 	}
 
 
-	protected virtual bool AcquireConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the IsComplete ConnectionInfo object for a connection. If the object is not
+	/// complete but publicly complete calls the password prompt dialog. If the object
+	/// does not exist or is not publicly complete, calls the connection dialog.
+	/// </summary>
+	/// <param name="ci">
+	/// Outputs the new ConnInfo or null if ConnInfo is unchanged or the request was
+	/// cancelled.
+	/// </param>
+	/// <returns>True is processing may continue else false.</returns>
+	// ---------------------------------------------------------------------------------
+	private async Task<IBsConnectionInfo> AcquireValidConnectionInfoAsync()
 	{
-		ci = new ConnectionPropertyAgent();
-		return CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection, out connection);
+		bool isComplete = ConnInfo != null && ConnInfo.IsComplete;
+
+		if (isComplete)
+			return null;
+
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+
+		bool isCompletePublic = ConnInfo != null && ConnInfo.IsCompletePublic;
+		IBsConnectionInfo ci;
+
+		if (isCompletePublic)
+			ci = PromptForCompleteConnection();
+		else
+			ci = PromptForConnection();
+
+		return ci;
 	}
 
-	protected virtual void ModifyConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
-	{
-		AcquireConnectionInfo(tryOpenConnection, out ci, out connection);
-	}
-
-	protected abstract bool CreateDbConnectionFromConnectionInfo(ConnectionPropertyAgent ci, bool tryOpenConnection, out IDbConnection connection);
 
 
-	public virtual int GetExecutionTimeout()
-	{
-		int result = 0;
+	public void BeginTransaction(IsolationLevel isolationLevel) => _ConnInfo.BeginTransaction(isolationLevel);
 
-		if (ConnectionInfo != null)
-			return ConnectionInfo.CommandTimeout;
 
-		return result;
-	}
+	public bool CloseConnection() => _ConnInfo == null || _ConnInfo.CloseConnection();
 
 
 	public abstract bool CommitTransactions();
 
-	public abstract bool RollbackTransactions();
 
-	public IDbConnection EnsureConnection(bool tryOpenConnection)
+
+	public abstract IBsBatchExecutionHandler CreateBatchExecutionHandler();
+
+
+	public void DisposeTransaction(bool force) => _ConnInfo?.DisposeTransaction(force);
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns the verified open connection else null if the user cancelled.
+	/// If the connection could not be created/opened/verified, disposes of the
+	/// connection then throws an exception.
+	/// </summary>
+	/// <returns>
+	/// Returns a verified open connection else null.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public IDbConnection EnsureVerifiedOpenConnection()
 	{
-		lock (_LockObject)
+		if (ConnInfo != null && ConnInfo.IsComplete)
 		{
-			bool result = true;
-
-			if (Connection == null || (tryOpenConnection && Connection.State != ConnectionState.Open))
+			try
 			{
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
-				result = AcquireConnectionInfo(tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection);
-
-				if (ci != null && connection == null)
-					result = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection, out connection);
-
-				SetConnectionInfo(ci, connection);
-			}
-
-			return result ? Connection : null;
-		}
-	}
-
-	public IDbConnection ModifyConnection(bool tryOpenConnection)
-	{
-		lock (_LockObject)
-		{
-			if (tryOpenConnection)
-			{
-				ModifyConnectionInfo(tryOpenConnection, out var ci, out var connection);
-				if (ci != null)
-				{
-					if (connection == null)
-						CreateDbConnectionFromConnectionInfo(ci, false, out connection);
-
-					SetConnectionInfo(ci, connection);
-					return Connection;
-				}
-			}
-
-			return null;
-		}
-	}
-
-	public virtual void ResetConnection()
-	{
-		lock (_LockObject)
-		{
-			_ConnectionStamp = -1;
-			ConnectionInfo = null;
-			SetDbConnection(null);
-		}
-	}
-
-	private void OnConnectionChanged(IDbConnection previousConnection)
-	{
-		lock (_LockObject)
-		{
-			ConnectionChangedEventArgs args = new (previousConnection);
-			ConnectionChanged?.Invoke(this, args);
-		}
-	}
-
-	private void OnConnectionChangedPriority(IDbConnection previousConnection)
-	{
-		lock (_LockObject)
-		{
-			ConnectionChangedEventArgs args = new (previousConnection);
-			ConnectionChangedPriority?.Invoke(this, args);
-		}
-	}
-
-
-	public void Dispose()
-	{
-		Dispose(disposing: true);
-		GC.SuppressFinalize(this);
-	}
-
-	protected virtual void Dispose(bool disposing)
-	{
-		lock (_LockObject)
-		{
-			if (disposing && Connection != null)
-			{
-				DisposeTransaction(true);
-
-				Connection.Close();
-				Connection.Dispose();
-				SetDbConnection(null);
-			}
-			_ConnectionInfo?.Dispose();
-			_ConnectionInfo = null;
-		}
-	}
-
-	public virtual void SetDatasetKeyOnConnection(string selectedDisplayName, DbConnectionStringBuilder csb)
-	{
-		try
-		{
-			lock (_LockObject)
-			{
-				_Csa = (Csb)csb;
-				_Stamp = RctManager.Stamp;
-
-				if (csb == null || _Csa.FullDisplayName != selectedDisplayName)
-				{
-					_Csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(selectedDisplayName, EnRctKeyType.DisplayName);
-					_Stamp = RctManager.Stamp;
-				}
-
-				if (_Csa != null)
+				lock (_LockObject)
 				{
 					if (Connection == null)
-						SetDbConnection(NativeDb.CreateDbConnection(_Csa.ConnectionString));
+						ConnInfo.CreateDataConnection();
+					ConnInfo.OpenOrVerifyConnection();
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Expected(ex);
+				throw;
+			}
+
+			return Connection;
+		}
 
 
-					bool isOpen = Connection.State == ConnectionState.Open;
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
 
-					if (isOpen)
+		if (!AcquireValidConnectionInfo(out IBsConnectionInfo ci))
+			return null;
+
+
+		if (ci != null)
+		{
+			// We have a new ConnInfo.
+
+			lock (_LockObject)
+			{
+				ConnInfo = ci;
+
+				_ConnInfo.CreateDataConnection();
+				_ConnInfo.OpenOrVerifyConnection();
+			}
+
+		}
+
+		return Connection;
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns the verified open connection else null if the user cancelled.
+	/// If the connection could not be created/opened/verified, throws an exception.
+	/// </summary>
+	/// <returns>
+	/// Returns a verified open connection.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public async Task<IDbConnection> EnsureVerifiedOpenConnectionAsync()
+	{
+		if (ConnInfo != null && ConnInfo.IsComplete)
+		{
+			try
+			{
+				lock (_LockObject)
+				{
+					if (Connection == null)
+						ConnInfo.CreateDataConnection();
+				}
+
+				_ = await ConnInfo.OpenOrVerifyConnectionAsync();
+			}
+			catch (Exception ex)
+			{
+				Diag.Expected(ex);
+				throw;
+			}
+
+			return Connection;
+		}
+
+
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
+
+		IBsConnectionInfo ci = await AcquireValidConnectionInfoAsync();
+
+		if (ThreadHelper.CheckAccess())
+		{
+			Diag.Dug(new ApplicationException("Task has moved onto main thread"));
+		}
+
+
+		if (ci == null)
+			return null;
+
+
+		// We have a new ConnInfo.
+
+		lock (_LockObject)
+		{
+			ConnInfo = ci;
+
+			_ConnInfo.CreateDataConnection();
+		}
+
+		_ = await _ConnInfo.OpenOrVerifyConnectionAsync();
+
+		return Connection;
+	}
+
+
+
+	private static Color GetCustomColor(IBsConnectionInfo ci)
+	{
+		Color result = _SDefaultColor;
+		/*
+		if (ci != null)
+		{
+			object obj = ci.AdvancedOptions["CUSTOM_CONNECTION_COLOR"];
+			if (obj != null)
+			{
+				if (obj is string text)
+				{
+					if (int.TryParse(text, out int result2))
 					{
-						DisposeTransaction(false);
-						Connection.Close();
+						result = Color.FromArgb(result2);
 					}
-
-					Connection.ConnectionString = _Csa.ConnectionString;
-
-					if (ConnectionInfo == null)
-						ConnectionInfo = new();
-
-					_ConnectionStamp = RctManager.Stamp;
-					ConnectionInfo.Parse(_Csa);
-					DatabaseChanged?.Invoke(this, new EventArgs());
-					if (isOpen)
-						Connection.Open();
 				}
 			}
 		}
-		catch (DbException ex)
-		{
-#if DEBUG
-			Diag.Dug(ex);
-#endif
-			MessageCtl.ShowEx(ex, ControlsResources.ErrDatabaseNotAccessibleEx.FmtRes(selectedDisplayName), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-		}
+		*/
+		return result;
 	}
 
-	public virtual object GetPropertiesWindowDisplayObject()
+
+
+
+
+
+	public virtual string GetCustomQuerySuccessMessage()
 	{
 		return null;
 	}
 
-	public abstract void ResetAndEnableConnectionStatistics();
+
 
 	public virtual string GetEditorCaption(bool ignoreSettings)
 	{
@@ -666,7 +629,204 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		return stringBuilder.ToString();
 	}
 
-	private static bool UseCustomColor(ConnectionPropertyAgent ci)
+
+
+	public virtual int GetExecutionTimeout()
+	{
+		int result = 0;
+
+		if (ConnInfo != null)
+			return ConnInfo.CommandTimeout;
+
+		return result;
+	}
+
+
+
+	public virtual object GetPropertiesWindowDisplayObject()
+	{
+		return null;
+	}
+
+
+
+	public abstract Version GetServerVersion();
+
+
+
+	public bool GetUpdateTransactionsStatus(bool suppressExceptions)
+	{
+		bool hasTransactions = false;
+
+		_TransactionCardinal = 0;
+
+		try
+		{
+			hasTransactions = _ConnInfo != null && _ConnInfo.HasTransactions;
+		}
+		catch
+		{
+			if (!suppressExceptions)
+			{
+				_HasTransactions = false;
+				throw;
+			}
+		}
+
+		_HasTransactions = hasTransactions;
+
+		return hasTransactions;
+	}
+
+
+
+	public bool ModifyConnection()
+	{
+		lock (_LockObject)
+		{
+			IBsConnectionInfo ci = PromptForConnection();
+
+			if (ci == null)
+				return false;
+
+			ConnInfo = ci;
+
+			_ConnInfo.CreateDataConnection();
+			_ConnInfo.OpenOrVerifyConnection();
+
+			return true;
+		}
+	}
+
+
+
+	private IBsConnectionInfo PromptForCompleteConnection()
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		// Tracer.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()");
+
+		if (_ConnInfo == null)
+			return null;
+
+
+		IBsDataConnectionPromptDialogHandler connectionDialogHandler = ApcManager.EnsureService<IBsDataConnectionPromptDialogHandler>();
+
+		using (connectionDialogHandler)
+		{
+			try
+			{
+
+				connectionDialogHandler.PublicConnectionString = LiveConnection.ConnectionString;
+
+				if (connectionDialogHandler.ShowDialog() && !RctManager.ShutdownState)
+				{
+					string connectionString = connectionDialogHandler.CompleteConnectionString;
+
+					if (Csb.IsComplete(connectionString))
+					{
+						// Tracer.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()", "ConnectionString result: {0}.", connectionString);
+						connectionString = RctManager.AdornConnectionStringFromRegistration(connectionString);
+
+						RctManager.UpdateRegisteredConnection(connectionString, EnConnectionSource.Session, true);
+
+						IBsConnectionInfo ci = (IBsConnectionInfo)new ConnectionInfoPropertyAgent();
+
+						ci.Parse(connectionString);
+
+						return ci;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+		}
+
+		return null;
+	}
+
+
+
+	private IBsConnectionInfo PromptForConnection()
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		// Tracer.Trace(typeof(AbstractConnectionStrategy), "PromptForConnection()");
+
+		IBsDataConnectionDlgHandler connectionDialogHandler = ApcManager.EnsureService<IBsDataConnectionDlgHandler>();
+
+		using (connectionDialogHandler)
+		{
+			try
+			{
+				connectionDialogHandler.AddSources(new Guid(VS.AdoDotNetTechnologyGuid));
+
+				if (ConnInfo != null)
+				{
+					if (RctManager.ShutdownState)
+						return null;
+
+					string connectionString = RctManager.AdornConnectionStringFromRegistration(ConnInfo.ConnectionString);
+
+					connectionDialogHandler.Title = "Modify SqlEditor Connection";
+					if (!string.IsNullOrEmpty(connectionString))
+						connectionDialogHandler.EncryptedConnectionString = DataProtection.EncryptString(connectionString);
+				}
+				else
+				{
+					connectionDialogHandler.Title = "Configure SqlEditor Connection";
+				}
+
+				if (connectionDialogHandler.ShowDialog())
+				{
+					string connectionString = DataProtection.DecryptString(connectionDialogHandler.EncryptedConnectionString);
+
+					if (RctManager.ShutdownState)
+						return null;
+
+					IBsConnectionInfo ci = (IBsConnectionInfo)new ConnectionInfoPropertyAgent();
+					ci.Parse(connectionString);
+
+					return ci;
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+		}
+
+		return null;
+	}
+
+
+	public abstract void ResetAndEnableConnectionStatistics();
+
+
+
+	public virtual void ResetConnection()
+	{
+		lock (_LockObject)
+		{
+			_ConnectionStamp = -1;
+			ConnInfo = null;
+		}
+	}
+
+
+
+	public abstract bool RollbackTransactions();
+
+
+
+	protected abstract void UpdateStateForCurrentConnection(ConnectionState currentState, ConnectionState previousState);
+
+
+	private static bool UseCustomColor(IBsConnectionInfo ci)
 	{
 		return false;
 		/*
@@ -687,199 +847,117 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		*/
 	}
 
-	private static Color GetCustomColor(ConnectionPropertyAgent ci)
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - AbstractConnectionStrategy
+	// =========================================================================================================
+
+
+
+
+	// -------------------------------------------------------------------------------------------
+	/// <summary>
+	/// Increments the <see cref="_EventCardinal"/> counter when execution enters an event
+	/// handler to prevent recursion.
+	/// </summary>
+	/// <returns>
+	/// Returns false if an event has already been entered else true if it is safe to enter.
+	/// </returns>
+	// -------------------------------------------------------------------------------------------
+	public bool EventEnter(bool increment = true, bool force = false)
 	{
-		Color result = DefaultColor;
-		/*
-		if (ci != null)
+		lock (_LockObject)
 		{
-			object obj = ci.AdvancedOptions["CUSTOM_CONNECTION_COLOR"];
-			if (obj != null)
-			{
-				if (obj is string text)
-				{
-					if (int.TryParse(text, out int result2))
-					{
-						result = Color.FromArgb(result2);
-					}
-				}
-			}
+			if (_EventCardinal != 0 && !force)
+				return false;
+
+			if (increment)
+				_EventCardinal++;
 		}
-		*/
-		return result;
+
+		return true;
 	}
 
-	protected void CreateAndOpenConnectionWithCommonMessageLoop(ConnectionPropertyAgent ci, string connectingInfoMessage, string errorPrescription, out IDbConnection connection)
+
+
+	// ---------------------------------------------------------------------------------------
+	/// <summary>
+	/// Decrements the <see cref="_EventCardinal"/> counter that was previously incremented
+	/// by <see cref="EventEnter"/>.
+	/// </summary>
+	// ---------------------------------------------------------------------------------------
+	public void EventExit()
 	{
-		connection = null;
-		IDbConnection testConnection = null;
-		Exception exception = null;
-		ManualResetEvent resetEvent = new ManualResetEvent(initialState: false);
-		Action action = delegate
+		lock (_LockObject)
 		{
-			try
-			{
-				CreateDbConnectionFromConnectionInfo(ci, false, out testConnection);
-				testConnection.Open();
-			}
-			catch (Exception ex)
-			{
-				exception = ex;
-			}
-			finally
-			{
-				resetEvent.Set();
-			}
-		};
-		CommonMessagePump obj = new CommonMessagePump
-		{
-			AllowCancel = true,
-			EnableRealProgress = false,
-			Timeout = TimeSpan.MaxValue,
-			WaitTitle = ControlsResources.CommonMessageLoopConnecting
-		};
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopAttemptingToConnect, ci.DataSource));
-		if (connectingInfoMessage != null)
-		{
-			stringBuilder.Append(Environment.NewLine + Environment.NewLine);
-			stringBuilder.Append(connectingInfoMessage);
+			if (_EventCardinal == 0)
+				Diag.Dug(new InvalidOperationException(Resources.ExEventsAlreadyEnabled));
+			else
+				_EventCardinal--;
 		}
+	}
 
-		obj.WaitText = stringBuilder.ToString();
-		action.BeginInvoke(null, null);
-		if (obj.ModalWaitForHandles(resetEvent) != CommonMessagePumpExitCode.HandleSignaled)
-		{
-			((Action)delegate
-			{
-				int connectionTimeout = 15; // Ns2.SqlServerConnectionService.GetConnectionTimeout(ci);
-				if (resetEvent.WaitOne(2 * connectionTimeout) && testConnection != null)
-				{
-					testConnection.Close();
-					testConnection.Dispose();
-				}
-			}).BeginInvoke(null, null);
-		}
-		else
-		{
-			connection = testConnection;
-		}
 
-		if (exception == null)
-		{
+
+	private void OnConnectionStateChanged(object sender, StateChangeEventArgs args)
+	{
+		UpdateStateForCurrentConnection(args.CurrentState, args.OriginalState);
+	}
+
+
+	private void OnPropertyAgentConnectionChanged(object sender, ConnectionChangedEventArgs args)
+	{
+		// Tracer.Trace(GetType(), "OnPropertyAgentConnectionChanged()", "Current: {0}, Previous: {1}.", args.CurrentConnection != null, args.PreviousConnection != null);
+
+		if (!EventEnter())
 			return;
-		}
-
-#if DEBUG
-		Diag.Dug(exception);
-#endif
-
-
-		if (!UnsafeCmd.IsInAutomationFunction())
-		{
-			string value = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopFailedToOpenConnection, ci.DataSource);
-			string value2 = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopErrorMessage, exception.Message);
-			StringBuilder stringBuilder2 = new StringBuilder();
-			stringBuilder2.Append(value);
-			stringBuilder2.Append(Environment.NewLine + Environment.NewLine);
-			if (!string.IsNullOrEmpty(errorPrescription))
-			{
-				stringBuilder2.Append(errorPrescription);
-				stringBuilder2.Append(Environment.NewLine + Environment.NewLine);
-			}
-
-			stringBuilder2.Append(value2);
-			MessageCtl.ShowEx(stringBuilder2.ToString(), string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-		}
-	}
-
-	public virtual string GetCustomQuerySuccessMessage()
-	{
-		return null;
-	}
-
-	public abstract Version GetServerVersion();
-
-	public abstract string GetProductLevel();
-
-	public abstract IBBatchExecutionHandler CreateBatchExecutionHandler();
-
-
-	public bool GetUpdateTransactionsStatus()
-	{
-		bool hasTransactions = false;
 
 		try
 		{
-			hasTransactions = Transaction != null && _Transaction.HasTransactions();
+			lock (_LockObject)
+			{
+				if (args.PreviousConnection is DbConnection previousConnection)
+				{
+					previousConnection.StateChange -= OnConnectionStateChanged;
+				}
+
+				if (args.CurrentConnection is DbConnection currentConnection)
+				{
+					currentConnection.StateChange += OnConnectionStateChanged;
+					UpdateStateForCurrentConnection(currentConnection.State, ConnectionState.Closed);
+				}
+
+				_ConnectionChangedEvent?.Invoke(this, args);
+			}
 		}
-		catch
+		finally
 		{
-			DisposeTransaction(true);
+			EventExit();
 		}
-
-		_TransactionCardinal = 0;
-		_HasTransactions = hasTransactions;
-
-		return hasTransactions;
 	}
 
 
 
-	public static void PopulateConnectionStringBuilder(DbConnectionStringBuilder scsb, ConnectionPropertyAgent connectionInfo)
-	{
-		if (connectionInfo.Database != null)
-		{
-			connectionInfo.PopulateConnectionStringBuilder(scsb, false);
-			// scsb.TrustServerCertificate = SqlServerConnectionService.GetTrustServerCertificate(connectionInfo);
-			// scsb.Encrypt = SqlServerConnectionService.GetEncryptConnection(connectionInfo);
+	#endregion Event Handling
 
 
-			// bool flag = false;
 
-			/*
-			if (SqlAuthenticationMethodUtils.IsAuthenticationSupported())
-			{
-				if (connectionInfo.AuthenticationType == 2)
-				{
-					SqlAuthenticationMethodUtils.SetAuthentication(scsb, SqlConnectionInfo.AuthenticationMethod.ActiveDirectoryPassword.ToString());
-				}
-				else if (connectionInfo.AuthenticationType == 3)
-				{
-					 SqlAuthenticationMethodUtils.SetAuthentication(scsb, SqlConnectionInfo.AuthenticationMethod.ActiveDirectoryIntegrated.ToString());
-					flag = true;
-				}
-				else if (connectionInfo.AuthenticationType == 5)
-				{
-					SqlAuthenticationMethodUtils.SetAuthentication(scsb, SqlConnectionInfo.AuthenticationMethod.ActiveDirectoryInteractive.ToString());
-				}
-			}
-			*/
 
-			/*
-			if (!flag)
-			{
-				if (SqlServerConnectionService.IsWindowsAuthentication(connectionInfo))
-				{
-					scsb.IntegratedSecurity = true;
-				}
-				else
-				{
-					Scsb.UserID = connectionInfo.UserID;
-					if (connectionInfo.AuthenticationType != 5)
-					{
-						scsb.Password = connectionInfo.Password;
-					}
 
-					scsb.PersistSecurityInfo = connectionInfo.PersistPassword;
-				}
-			}
-			*/
+	// =========================================================================================================
+	#region Sub-Classes - AbstractConnectionStrategy
+	// =========================================================================================================
 
-		}
 
-		// ((Csb)scsb).Pooling = false;
-	}
+	public delegate void DatabaseChangedDelegate(object sender, EventArgs args);
 
+
+	#endregion Sub-Classes
 
 }

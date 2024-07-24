@@ -14,7 +14,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 //										PersistentSettings Class
 //
 /// <summary>
-/// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
+/// Consolidated single access point for daisy-chained packages settings models (IBsSettingsModel).
 /// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
 /// descendent tree from the top-level extension lib down to the Core.
 /// PersistentSettings can be either consumers or providers of options, or both.
@@ -62,7 +62,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	/// Gets the singleton PersistentSettings instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public new static IBPersistentSettings Instance => _Instance ??= new PersistentSettings();
+	public new static IBsPersistentSettings Instance => _Instance ??= new PersistentSettings();
 
 
 	#endregion Constructors / Destructors
@@ -79,7 +79,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
-	public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
+	public override void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
 	{
 		base.RegisterSettingsEventHandlers(onSettingsSavedDelegate);
 
@@ -154,7 +154,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	// ---------------------------------------------------------------------------------
 	public override void OnSettingsSaved(object sender)
 	{
-		IBSettingsModel model = (IBSettingsModel)sender;
+		IBsSettingsModel model = (IBsSettingsModel)sender;
 
 		PropagateSettingsEventArgs e = new(model.GetPackage(), model.GetGroup());
 

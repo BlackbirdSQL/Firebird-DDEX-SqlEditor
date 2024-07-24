@@ -2,16 +2,19 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ToolsOptions.CurrentWndOptions
 
 using System.Windows.Forms;
+using BlackbirdSql.Core.Controls.Config;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension.Ctl.Config;
 using BlackbirdSql.EditorExtension.Properties;
+using BlackbirdSql.Shared.Ctl.Config;
 
 namespace BlackbirdSql.EditorExtension.Controls.Config;
 
-public sealed class LiveSettingsDialog : AbstractLiveSettingsDialog
+public sealed class LiveSettingsDialog : AbstractTransientSettingsDialog
 {
 
-	public LiveSettingsDialog(IBTransientSettings settings)
+	public LiveSettingsDialog(IBsTransientSettings settings)
+		: base(AttributeResources.IconProperties16x, VsFontColorPreferences.EnvironmentFont)
 	{
 		InitializeComponent();
 		InitializeDialog(settings);
@@ -22,20 +25,18 @@ public sealed class LiveSettingsDialog : AbstractLiveSettingsDialog
 		base.Dispose(disposing);
 	}
 
-	private void InitializeDialog(IBTransientSettings transientSettings)
+	private void InitializeDialog(IBsTransientSettings transientSettings)
 	{
-		IBSettingsPage[] pages = new IBSettingsPage[4];
-		SettingsProvider.TransientExecutionSettingsPage executionSettingsDlg = new(transientSettings);
-		pages[0] = executionSettingsDlg;
-		SettingsProvider.TransientExecutionAdvancedSettingsPage executionAdvancedSettingsDlg = new(transientSettings);
-		pages[1] = executionAdvancedSettingsDlg;
-		SettingsProvider.TransientResultsGridSettingsPage resultsGridSettingsDlg = new(transientSettings);
-		pages[2] = resultsGridSettingsDlg;
-		SettingsProvider.TransientResultsTextSettingsPage resultsTextSettingsDlg = new(transientSettings);
-		pages[3] = resultsTextSettingsDlg;
+		IBsSettingsPage[] pages =
+			[
+				new SettingsProvider.TransientExecutionSettingsPage(transientSettings),
+				new SettingsProvider.TransientExecutionAdvancedSettingsPage(transientSettings),
+				new SettingsProvider.TransientResultsGridSettingsPage(transientSettings),
+				new SettingsProvider.TransientResultsTextSettingsPage(transientSettings),
+			];
 
 
-		TreeNode[] rootNode = 
+		TreeNode[] rootNode =
 		[
 			new(AttributeResources.OptionPageExecution)
 			{
@@ -66,7 +67,7 @@ public sealed class LiveSettingsDialog : AbstractLiveSettingsDialog
 		rootNode[0].Nodes.Add(treeNode01);
 
 
-				
+
 		rootNode[1].Expand();
 		AssociateTreeNodeContext(rootNode[1], new TreeNodeContext(2, folder: true));
 		TreeNode treeNode10 = new(AttributeResources.OptionPageResultsGrid)

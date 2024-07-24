@@ -73,7 +73,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			ValidateServerName();
 	}
 
-	public AbstractCsb(IBPropertyAgent ci, bool validateServerName) : base()
+	public AbstractCsb(IBsPropertyAgent ci, bool validateServerName) : base()
 	{
 		Parse(ci);
 
@@ -299,53 +299,99 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	}
 
 
+	/// <summary>
+	/// The closest estimate to the SE display name.
+	/// </summary>
 	[Browsable (false)]
-	public string DisplayName
+	public string ServerExplorerName
 	{
 		get
 		{
 			string retval = ConnectionName;
 			if (string.IsNullOrWhiteSpace(retval))
 				retval = DatasetKey;
-			if (string.IsNullOrWhiteSpace(retval) && !string.IsNullOrWhiteSpace(DataSource))
+			if (string.IsNullOrWhiteSpace(retval))
 			{
 				retval = DatasetId;
 				if (string.IsNullOrWhiteSpace(retval))
 					retval = Dataset;
-				retval = DatasetKeyFormat.FmtRes(DataSource, retval);
+				if (!string.IsNullOrWhiteSpace(DataSource))
+					retval = DatasetKeyFormat.FmtRes(DataSource, retval);
+			}
+			return retval;
+		}
+	}
+
+	/// <summary>
+	/// The unqualified name which is the ConnectionName else DatasetId else Dataset.
+	/// </summary>
+	[Browsable(false)]
+	public string DisplayName
+	{
+		get
+		{
+			string retval = ConnectionName;
+			if (string.IsNullOrWhiteSpace(retval))
+			{
+				retval = DatasetId;
+				if (string.IsNullOrWhiteSpace(retval))
+					retval = Dataset;
 			}
 			return retval;
 		}
 	}
 
 
+	/// <summary>
+	/// The DisplayName adorned with the ConnectionSource glyph
+	/// </summary>
 	[Browsable(false)]
-	public string FullDisplayName
+	public string AdornedDisplayName
 	{
 		get
 		{
-			// Update the database (datasetId) dropdown field.
-			// If there's a connection name the datasetId will mean
-			// nothing without the connection name and may produce duuplicates,
-			// so prefix it with a qualifier.
-			string retval;
-
-			if (!string.IsNullOrWhiteSpace(ConnectionName))
-			{
-				string datasetId = DatasetId;
-				if (string.IsNullOrWhiteSpace(datasetId))
-					datasetId = Dataset;
-
-				retval = RctManager.FullDisplayNameFormat.FmtRes(DisplayName, datasetId);
-			}
-			else
-			{
-				retval = DisplayName;
-			}
 
 			char glyph = '\0';
 
-			if (ConnectionSource == EnConnectionSource.Application)
+			if (ConnectionSource == EnConnectionSource.Session)
+				glyph = RctManager.SessionGlyph;
+			else if (ConnectionSource == EnConnectionSource.Application)
+				glyph = RctManager.ProjectDatasetGlyph;
+			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
+				glyph = RctManager.EdmDatasetGlyph;
+			else if (ConnectionSource == EnConnectionSource.ExternalUtility)
+				glyph = RctManager.UtilityDatasetGlyph;
+
+			string retval = DisplayName;
+
+			if (glyph != '\0')
+				retval = Resources.RunningConnectionTableGlyphFormat.FmtRes(glyph, retval);
+
+			return retval;
+		}
+	}
+
+
+	/// <summary>
+	/// The DatasetKey if ConnectionName is null else the DisplayName qualified with the server name.
+	/// </summary>
+	[Browsable(false)]
+	public string QualifiedName => string.IsNullOrEmpty(ConnectionName) ? DatasetKey : DatasetKeyFormat.FmtRes(DataSource, DisplayName);
+
+
+
+	[Browsable(false)]
+	public string AdornedQualifiedName
+	{
+		get
+		{
+			string retval = QualifiedName;
+
+			char glyph = '\0';
+
+			if (ConnectionSource == EnConnectionSource.Session)
+				glyph = RctManager.SessionGlyph;
+			else if (ConnectionSource == EnConnectionSource.Application)
 				glyph = RctManager.ProjectDatasetGlyph;
 			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
 				glyph = RctManager.EdmDatasetGlyph;
@@ -372,7 +418,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	[Browsable(false)]
-	public string DatasetMoniker
+	public string LiveDatasetMoniker
 	{
 		get
 		{
@@ -669,7 +715,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		// Append the serialized database path and dot separated equivalency connection properties as the url path.
 
 		// Serialize the db path.
-		StringBuilder stringBuilder = new(StringUtils.Serialize64(csa.Database.ToLowerInvariant()));
+		StringBuilder stringBuilder = new(Serialization.Serialize64(csa.Database.ToLowerInvariant()));
 
 		stringBuilder.Append(SystemData.C_UnixFieldSeparator);
 
@@ -725,7 +771,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 			}
 
-			stringBuilder.Append(StringUtils.Serialize64(sb.ToString()));
+			stringBuilder.Append(Serialization.Serialize64(sb.ToString()));
 		}
 
 
@@ -806,7 +852,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		ConnectionKey = connectionNode.GetConnectionKey();
 		if (ConnectionKey == null)
 		{
-			COMException ex = new($"ConnectionKey for explorer connection {node.ExplorerConnection.DerivedDisplayName()} for node {node.Name} is null");
+			COMException ex = new($"ConnectionKey for explorer connection {node.ExplorerConnection.SafeName()} for node {node.Name} is null");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -825,7 +871,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
-	protected abstract void Parse(IBPropertyAgent ci);
+	protected abstract void Parse(IBsPropertyAgent ci);
 
 
 

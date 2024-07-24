@@ -85,7 +85,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		CategoryName = ControlsResources.FontAndColorCategorySqlResultsText;
+		CategoryName = ControlsResources.FontAndColorCategoryResultsText;
 		Guid = VS.CLSID_FontAndColorsSqlResultsTextCategory;
 		FontDefault = new Font("Courier New", Control.DefaultFont.SizeInPoints);
 		FontAndColorUtilities.EncodeAutomaticColor(out var pcrResult);

@@ -79,7 +79,7 @@ internal sealed class RelOpTypeParser : AbstractXmlPlanParser
 		object obj2 = node["LogicalOp"];
 		if (obj == null || obj2 == null)
 		{
-			throw new FormatException(ControlsResources.UnknownExecutionPlanSource);
+			throw new FormatException(ControlsResources.ExUnknownExecutionPlanSource);
 		}
 		string text = obj.ToString();
 		string text2 = obj2.ToString();

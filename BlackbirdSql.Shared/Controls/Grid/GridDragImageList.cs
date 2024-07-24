@@ -1,14 +1,12 @@
-﻿#region Assembly Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
-// C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLCommon\Microsoft.SqlServer.GridControl.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
+// Microsoft.SqlServer.Management.UI.Grid.GridDragImageList
 
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-using BlackbirdSql.Shared;
+
 
 namespace BlackbirdSql.Shared.Controls.Grid;
 
@@ -88,8 +86,8 @@ public sealed class GridDragImageList : IDisposable
 			IntPtr intPtr = ControlPaint.CreateHBitmapTransparencyMask(bitmapImage);
 			IntPtr intPtr2 = ControlPaint.CreateHBitmapColorMask(bitmapImage, intPtr);
 			ImageList_Add(Handle, intPtr2, intPtr);
-			SafeNative.DeleteObject(intPtr2);
-			SafeNative.DeleteObject(intPtr);
+			Native.DeleteObject(intPtr2);
+			Native.DeleteObject(intPtr);
 			GC.KeepAlive(this);
 		}
 		finally

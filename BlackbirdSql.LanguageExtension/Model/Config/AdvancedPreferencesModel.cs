@@ -26,7 +26,7 @@ namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 /// Option Model for Language Service Advanced options
 /// </summary>
 // =========================================================================================================
-public class AdvancedPreferencesModel(IBTransientSettings transientSettings)
+public class AdvancedPreferencesModel(IBsTransientSettings transientSettings)
 	: AbstractSettingsModel<AdvancedPreferencesModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
 {
 

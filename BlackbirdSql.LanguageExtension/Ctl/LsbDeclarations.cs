@@ -117,7 +117,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 	{
 		Declaration declaration = _FilteredDeclarations[index];
 
-		IBMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
+		IBsMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
 		if (metadataProviderProvider != null)
 		{
 			object localfunc() => declaration.Description;
@@ -136,7 +136,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 	{
 		Declaration declaration = _FilteredDeclarations[index];
 
-		IBMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
+		IBsMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
 
 		if (metadataProviderProvider != null)
 		{
@@ -159,7 +159,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 		Declaration declaration = _FilteredDeclarations[index];
 		DeclarationType declarationType = DeclarationType.Table;
 
-		IBMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
+		IBsMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
 
 		if (metadataProviderProvider != null)
 		{

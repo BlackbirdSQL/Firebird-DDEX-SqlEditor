@@ -91,7 +91,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 			}
 			if (NodeOriginal["PhysicalOperationKind"] is string text2)
 			{
-				text = string.Format(CultureInfo.CurrentCulture, "{0} {1}", text, string.Format(ControlsResources.Parenthesis, text2));
+				text = string.Format(CultureInfo.CurrentCulture, "{0} {1}", text, ControlsResources.Graphing_Parenthesis.FmtRes(text2));
 			}
 			object obj = NodeOriginal["Object"];
 			string text3;
@@ -124,9 +124,9 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 			text = text.Replace(")", "");
 			if (text.Length == 0)
 			{
-				return string.Format(ControlsResources.NodeDisplayPropertiesName1, ID);
+				return string.Format(ControlsResources.Graphing_NodeDisplayPropertiesName1, ID);
 			}
-			return string.Format(ControlsResources.NodeDisplayPropertiesName2, text, ID);
+			return string.Format(ControlsResources.Graphing_NodeDisplayPropertiesName2, text, ID);
 		}
 		set
 		{
@@ -186,7 +186,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 			{
 				return string.Empty;
 			}
-			return string.Format(ControlsResources.OperatorDisplayCost, NodeOriginal.Cost, (int)Math.Round(num));
+			return ControlsResources.Graphing_OperatorDisplayCost.FmtRes(NodeOriginal.Cost, (int)Math.Round(num));
 		}
 	}
 
@@ -207,7 +207,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 	{
 		get
 		{
-			parallelProcessingImage ??= new Icon(typeof(BlackbirdSql.Shared.Controls.Graphing.NodeDisplay), "ParallelProcess.ico").ToBitmap();
+			parallelProcessingImage ??= ControlsResources.IconParallelProcess.ToBitmap();
 			return parallelProcessingImage;
 		}
 	}
@@ -216,7 +216,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 	{
 		get
 		{
-			warningImage ??= new Icon(typeof(BlackbirdSql.Shared.Controls.Graphing.NodeDisplay), "Warning.ico").ToBitmap();
+			warningImage ??= ControlsResources.IconWarning.ToBitmap();
 			return warningImage;
 		}
 	}
@@ -225,7 +225,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 	{
 		get
 		{
-			criticalWarningImage ??= new Icon(typeof(NodeDisplay), "Error_Offset_32x.ico").ToBitmap();
+			criticalWarningImage ??= ControlsResources.IconErrorOffset32x.ToBitmap();
 			return criticalWarningImage;
 		}
 	}
@@ -595,7 +595,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		}
 		text = text.PadLeft(text2.Length);
 		text2 = text2.PadLeft(text.Length);
-		return string.Format(ControlsResources.ActualOfEstimated, text, text2, num);
+		return string.Format(ControlsResources.Graphing_ActualOfEstimated, text, text2, num);
 	}
 
 	protected virtual string[] GetDisplayLinesOfText()
@@ -604,7 +604,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		double num = NodeOriginal.RelativeCost * 100.0;
 		if (!HasPDWCost || num > 0.0)
 		{
-			string text2 = string.Format(ControlsResources.CostFormat, (int)Math.Round(num));
+			string text2 = string.Format(ControlsResources.Graphing_CostFormat, (int)Math.Round(num));
 			text = text + "\n" + text2;
 		}
 		string elapsedTimeDisplayString = GetElapsedTimeDisplayString();

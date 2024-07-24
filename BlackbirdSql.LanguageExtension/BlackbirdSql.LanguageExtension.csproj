@@ -41,8 +41,8 @@
 	  <Compile Include="Ctl\LsbDeclarations.cs" />
 	  <Compile Include="Model\AbstractMetadataProvider.cs" />
 	  <Compile Include="Model\AbstractMetadataProviderProvider.cs" />
-	  <Compile Include="Interfaces\IBBinderQueue.cs" />
-	  <Compile Include="Interfaces\IBMetadataProviderProvider.cs" />
+	  <Compile Include="Interfaces\IBsBinderQueue.cs" />
+	  <Compile Include="Interfaces\IBsMetadataProviderProvider.cs" />
 	  <Compile Include="Services\LsbLanguageService.cs" />
 	  <Compile Include="Model\LsbMetadataFactory.cs" />
 	  <Compile Include="Model\LsbMetadataProvider.cs" />

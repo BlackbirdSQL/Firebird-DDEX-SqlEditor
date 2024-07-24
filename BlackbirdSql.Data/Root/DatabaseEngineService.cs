@@ -120,15 +120,11 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 			new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, false, false),
 			new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, false, false),
 
-			new Describer(C_KeyExServerEngine, typeof(EnEngineType), C_DefaultExServerEngine),
 			new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion),
 			new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, false, false, false),
-			new Describer(C_KeyExAdministratorLogin, typeof(string), C_DefaultExAdministratorLogin),
-			new Describer(C_KeyExServerFullyQualifiedDomainName, typeof(string), C_DefaultExServerFullyQualifiedDomainName),
-			new Describer(C_KeyExOtherParams, typeof(string)),
-			new Describer(C_KeyExIcon, typeof(object)),
-			new Describer(C_KeyExEdmx, typeof(string)),
-			new Describer(C_KeyExEdmu, typeof(string))
+			new Describer(C_KeyExEdmx, typeof(bool)),
+			new Describer(C_KeyExEdmu, typeof(bool)),
+			new Describer(C_KeyExCreationFlags, typeof(EnEditorCreationFlags))
 		],
 		[
 			Pair("server", C_KeyDataSource),
@@ -223,7 +219,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	}
 
 
-	public IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBQueryManager qryMgr, string script)
+	public IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
 	{
 		return new DbBatchParser(executionType, qryMgr, script);
 	}
@@ -352,7 +348,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 	public bool TransactionCompleted_(IDbTransaction @this)
 	{
-		if (@this == null || @this.Connection == null)
+		if (@this?.Connection == null)
 			return true;
 
 		return (bool)Reflect.GetPropertyValue(@this, "IsCompleted");

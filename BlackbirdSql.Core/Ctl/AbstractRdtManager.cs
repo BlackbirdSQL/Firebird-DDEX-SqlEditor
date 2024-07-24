@@ -828,7 +828,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 
 
-	protected bool ShowFrame(string mkDocument)
+	protected bool ShowFrameImpl(string mkDocument)
 	{
 		bool result = false;
 		if (!string.IsNullOrEmpty(mkDocument))
@@ -837,6 +837,8 @@ public abstract class AbstractRdtManager : IDisposable
 			if (windowFrame != null)
 			{
 				Diag.ThrowIfNotOnUIThread();
+
+				windowFrame.Show();
 
 				result = true;
 			}

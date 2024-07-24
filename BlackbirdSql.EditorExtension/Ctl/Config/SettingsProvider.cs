@@ -64,27 +64,27 @@ public class SettingsProvider
 
 	[ComVisible(true)]
 	[Guid(PackageData.TransientExecutionSettingsGuid)]
-	public class TransientExecutionSettingsPage(IBTransientSettings transientSettings)
+	public class TransientExecutionSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientExecutionSettingsPage, ExecutionSettingsModel>(transientSettings) { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.TransientExecutionAdvancedSettingsGuid)]
-	public class TransientExecutionAdvancedSettingsPage(IBTransientSettings transientSettings)
+	public class TransientExecutionAdvancedSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientExecutionAdvancedSettingsPage, ExecutionAdvancedSettingsModel>(transientSettings) { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.TransientResultsSettingsGuid)]
-	public class TransientResultsSettingsPage(IBTransientSettings transientSettings)
+	public class TransientResultsSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientResultsSettingsPage, ResultsSettingsModel>(transientSettings)	{ }
 
 	[ComVisible(true)]
 	[Guid(PackageData.TransientResultsGridSettingsGuid)]
-	public class TransientResultsGridSettingsPage(IBTransientSettings transientSettings)
+	public class TransientResultsGridSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientResultsGridSettingsPage, ResultsGridSettingsModel>(transientSettings) { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.TransientResultsTextSettingsGuid)]
-	public class TransientResultsTextSettingsPage(IBTransientSettings transientSettings)
+	public class TransientResultsTextSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientResultsTextSettingsPage, ResultsTextSettingsModel>(transientSettings) { }
 
 

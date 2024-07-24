@@ -6,13 +6,17 @@ using System.Collections;
 using System.Threading;
 using BlackbirdSql.Shared.Controls.ResultsPanels;
 using BlackbirdSql.Shared.Ctl.QueryExecution;
+using BlackbirdSql.Shared.Enums;
+using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 // using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio.Shell;
 
 
+
 namespace BlackbirdSql.Shared.Controls.PropertiesWindow;
+
 
 public class PropertiesWindowManager : IDisposable
 {
@@ -32,7 +36,7 @@ public class PropertiesWindowManager : IDisposable
 	public PropertiesWindowManager(TabbedEditorWindowPane editorPane)
 	{
 		EditorPane = editorPane;
-		AuxilliaryDocData auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(editorPane.DocData);
+		AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(editorPane.DocData);
 		QryMgr = auxDocData.QryMgr;
 		TabbedEditorUiCtl = editorPane.TabbedEditorUiCtl;
 		RegistererEventHandlers();
@@ -42,7 +46,7 @@ public class PropertiesWindowManager : IDisposable
 	{
 		TabbedEditorUIControl editorUI = TabbedEditorUiCtl;
 		editorUI.OnFocusHandler = (EventHandler)Delegate.Combine(editorUI.OnFocusHandler, new EventHandler(OnFocusReceived));
-		QryMgr.ScriptExecutionCompletedEvent += OnScriptExecutionCompleted;
+		QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
 		QryMgr.StatusChangedEvent += OnConnectionChanged;
 		TabbedEditorUiCtl.TabActivatedEvent += OnTabActivated;
 		DisplaySQLResultsControl displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
@@ -54,7 +58,7 @@ public class PropertiesWindowManager : IDisposable
 	{
 		TabbedEditorUIControl editorUI = TabbedEditorUiCtl;
 		editorUI.OnFocusHandler = (EventHandler)Delegate.Remove(editorUI.OnFocusHandler, new EventHandler(OnFocusReceived));
-		QryMgr.ScriptExecutionCompletedEvent -= OnScriptExecutionCompleted;
+		QryMgr.ExecutionCompletedEvent -= OnQueryExecutionCompleted;
 		QryMgr.StatusChangedEvent -= OnConnectionChanged;
 		TabbedEditorUiCtl.TabActivatedEvent -= OnTabActivated;
 		DisplaySQLResultsControl displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
@@ -72,14 +76,14 @@ public class PropertiesWindowManager : IDisposable
 		EnsurePropertyWindowObjectIsLatest();
 	}
 
-	private void OnScriptExecutionCompleted(object sender, EventArgs args)
+	private void OnQueryExecutionCompleted(object sender, EventArgs args)
 	{
 		RefreshPropertyWindow();
 	}
 
-	private void OnConnectionChanged(object sender, QueryManager.StatusChangedEventArgs args)
+	private void OnConnectionChanged(object sender, QueryStatusChangedEventArgs args)
 	{
-		if (args.Change == QueryManager.EnStatusType.Connection || args.Change == QueryManager.EnStatusType.Connected)
+		if (args.StatusFlag == EnQueryStatusFlags.Connection || args.StatusFlag == EnQueryStatusFlags.Connected)
 		{
 			RefreshPropertyWindow();
 		}
@@ -178,7 +182,7 @@ public class PropertiesWindowManager : IDisposable
 		object propertiesWindowDisplayObject = QryMgr.Strategy.GetPropertiesWindowDisplayObject();
 		if (propertiesWindowDisplayObject != null)
 		{
-			if (propertiesWindowDisplayObject is IBPropertyWindowQueryManagerInitialize propertyWindowQueryExecutorInitialize
+			if (propertiesWindowDisplayObject is IBsPropertyWindowQueryManagerInitialize propertyWindowQueryExecutorInitialize
 				&& !propertyWindowQueryExecutorInitialize.IsInitialized())
 			{
 				propertyWindowQueryExecutorInitialize.Initialize(QryMgr);

@@ -1,5 +1,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.SmoMetadataProviderProvider
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -7,9 +8,11 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
 using BlackbirdSql.Shared.Ctl.QueryExecution;
+using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.SqlServer.Management.SqlParser.Binder;
@@ -29,13 +32,13 @@ namespace BlackbirdSql.LanguageExtension.Model;
 /// </summary>
 public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 {
-	protected LsbMetadataProviderProvider(ConnectionPropertyAgent uici, string cacheKey)
+	protected LsbMetadataProviderProvider(IBsConnectionInfo ci, string cacheKey)
 	{
 		IsInitialized = false;
 		_ = IsInitialized;
 		CacheKey = cacheKey;
 		DatabaseEngineType = EnServerType.Default;
-		ConnectionInfo = (ConnectionPropertyAgent)uici.Copy();
+		ConnInfo = (IBsConnectionInfo)ci.Copy();
 
 		base.BuildEvent.Reset();
 		new InitializeMetadataProviderDelegate(Initialize).BeginInvoke(null, null);
@@ -86,7 +89,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				{
 					if (_CacheTable == null || !_CacheTable.TryGetValue(qryMgrKey, out value))
 					{
-						value = new LsbMetadataProviderProvider(qryMgr.Strategy.ConnectionInfo, qryMgrKey);
+						value = new LsbMetadataProviderProvider(qryMgr.Strategy.ConnInfo, qryMgrKey);
 						CacheTable.Add(qryMgrKey, value);
 					}
 
@@ -124,9 +127,9 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 			string text = null;
 
-			if (qryMgr.Strategy is ConnectionStrategy { ConnectionInfo: ConnectionPropertyAgent connectionInfo })
+			if (qryMgr.Strategy is ConnectionStrategy { ConnInfo: IBsConnectionInfo ci })
 			{
-				text = connectionInfo.DatasetKey;
+				text = ci.DatasetKey;
 			}
 
 			return text;
@@ -149,7 +152,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 
 
-	private ConnectionPropertyAgent ConnectionInfo { get; set; }
+	private IBsConnectionInfo ConnInfo { get; set; }
 
 	private DbConnection DriftDetectionConnection { get; set; }
 
@@ -173,7 +176,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	public void AsyncAddDatabaseToDriftDetectionSet(string databaseName)
 	{
-		_DatabasesToCheckForDrift ??= ImmutableHashSet<string>.Empty;
+		_DatabasesToCheckForDrift ??= [];
 
 		ThreadingTools.ApplyChangeOptimistically(ref _DatabasesToCheckForDrift, (databases) => databases.Add(databaseName));
 	}
@@ -196,7 +199,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 			try
 			{
-				ConnectionStrategy.PopulateConnectionStringBuilder(csb, ConnectionInfo);
+				ConnectionManager.PopulateConnectionStringBuilder(csb, ConnInfo);
 
 				csb.Pooling = false;
 				connection = NativeDb.CreateDbConnection(csb.ToString());
@@ -439,11 +442,11 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	private Csb GetMetadataConnectionStringBuilder()
 	{
-		ConnectionPropertyAgent uIConnectionInfo = ConnectionInfo;
-		Csb sqlConnectionStringBuilder = [];
-		ConnectionStrategy.PopulateConnectionStringBuilder(sqlConnectionStringBuilder, uIConnectionInfo);
+		IBsConnectionInfo ci = ConnInfo;
+		Csb csb = [];
+		ci.PopulateConnectionStringBuilder(csb, false);
 
-		return sqlConnectionStringBuilder;
+		return csb;
 	}
 
 	private void DisposeConnections()
@@ -452,8 +455,8 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		{
 			DisposeDriftDetectionConnection();
 			DisposeMetadataConnection();
-			ConnectionInfo?.Dispose();
-			ConnectionInfo = null;
+			ConnInfo?.Dispose();
+			ConnInfo = null;
 		}
 	}
 

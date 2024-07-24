@@ -17,7 +17,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposable
+public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposable
 {
 	private const int C_ColumnSizeIndex = 2;
 
@@ -88,7 +88,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 		// Tracer.Trace(GetType(), "QEDiskDataStorage.StartConsumingDataWithoutStoring", "", null);
 		if (_StorageReader == null)
 		{
-			InvalidOperationException ex = new(QEResources.ErrQEStorageNoReader);
+			InvalidOperationException ex = new(Resources.ExStorageNoReader);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -103,7 +103,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 		InitiateStopStoringData();
 	}
 
-	public IBStorageView GetStorageView()
+	public IBsStorageView GetStorageView()
 	{
 		QEStorageViewOnReader qEStorageViewOnReader = new QEStorageViewOnReader(this);
 		if (MaxCharsToStore > 0)
@@ -127,9 +127,9 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 	public int ColumnCount => _ColumnInfoArray.Count;
 
 
-	public IBColumnInfo GetColumnInfo(int iCol)
+	public IBsColumnInfo GetColumnInfo(int iCol)
 	{
-		return (IBColumnInfo)_ColumnInfoArray[iCol];
+		return (IBsColumnInfo)_ColumnInfoArray[iCol];
 	}
 
 	public bool IsClosed()
@@ -181,14 +181,14 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 	{
 		if (_StorageReader == null)
 		{
-			InvalidOperationException ex = new(QEResources.ErrQEStorageNoReader);
+			InvalidOperationException ex = new(Resources.ExStorageNoReader);
 			Diag.Dug(ex);
 			throw ex;
 		}
 
 		if (!_IsClosed)
 		{
-			InvalidOperationException ex = new(QEResources.ErrQEStorageAlreadyStoring);
+			InvalidOperationException ex = new(Resources.ExStorageAlreadyStoring);
 			Diag.Dug(ex);
 			throw ex;
 		}

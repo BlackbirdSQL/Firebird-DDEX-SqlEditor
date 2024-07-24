@@ -24,9 +24,9 @@ namespace BlackbirdSql.Core.Ctl.ComponentModel;
 /// accessing globalized strings in AttributeResources.resx.
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDisposable
+public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, IDisposable
 {
-	private IBSettingsModel _Model = null;
+	private IBsSettingsModel _Model = null;
 	private string _PropertyName = string.Empty;
 	private int _Min = int.MinValue, _Max = int.MaxValue;
 	private object _DefaultValue, _CurrentValue;
@@ -163,7 +163,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 	private void RegisterModel(ITypeDescriptorContext context)
 	{
 
-		if (context == null || context.Instance is not IBSettingsModel model)
+		if (context == null || context.Instance is not IBsSettingsModel model)
 			return;
 
 		// The model instance may have changed on the same property between

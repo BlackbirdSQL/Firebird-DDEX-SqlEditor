@@ -18,7 +18,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 
 	private bool _CouldNotAddGrid;
 
-	public ResultsToGridBatchConsumer(IBQueryExecutionHandler resultsControl)
+	public ResultsToGridBatchConsumer(IBsQueryExecutionHandler resultsControl)
 		: base(resultsControl)
 	{
 		// Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.ResultsToGridBatchConsumer", "", null);
@@ -31,7 +31,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 		base.CleanupAfterFinishingExecution();
 	}
 
-	public override async Task<bool> OnNewResultSetAsync(object sender, QESQLBatchNewResultSetEventArgs args)
+	public override async Task<bool> OnNewResultSetAsync(object sender, BatchNewResultSetEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "OnNewResultSetAsync()");
 
@@ -47,7 +47,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 			{
 				Diag.StackException("ERROR or DISCARD: Could not add more grids");
 				await args.ResultSet.InitializeAsync(true, args.CancelToken);
-				await HandleNewResultSetForDiscardAsync(args);
+				await RegisterNewResultSetForDiscardEventsAsync(args);
 				return false;
 			}
 
@@ -91,7 +91,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 		return !args.CancelToken.IsCancellationRequested;
 	}
 
-	public override void OnStatementCompleted(object sender, QESQLStatementCompletedEventArgs args)
+	public override void OnStatementCompleted(object sender, BatchStatementCompletedEventArgs args)
 	{
 		base.OnStatementCompleted(sender, args);
 	}
@@ -105,3 +105,5 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 			_GridContainer = null;
 	}
 }
+
+

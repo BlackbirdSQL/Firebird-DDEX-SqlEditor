@@ -7,7 +7,12 @@ using System.Windows.Forms;
 using BlackbirdSql.Shared.Enums;
 
 
+
 namespace BlackbirdSql.Shared.Events;
+
+
+public delegate void MouseButtonDoubleClickedEventHandler(object sender, MouseButtonDoubleClickedEventArgs args);
+
 
 public class MouseButtonDoubleClickedEventArgs : EventArgs
 {

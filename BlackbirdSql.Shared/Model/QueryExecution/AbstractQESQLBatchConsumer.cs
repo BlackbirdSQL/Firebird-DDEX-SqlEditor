@@ -14,10 +14,10 @@ using BlackbirdSql.Sys;
 namespace BlackbirdSql.Shared.Model.QueryExecution;
 
 
-public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDisposable
+public abstract class AbstractQESQLBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 {
 
-	protected AbstractQESQLBatchConsumer(IBQueryExecutionHandler resultsControl)
+	protected AbstractQESQLBatchConsumer(IBsQueryExecutionHandler resultsControl)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.QESQLBatchConsumerBase", "", null);
 		_ResultsControl = resultsControl;
@@ -60,11 +60,11 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 
 	protected const int C_NewMessagesFlushFreqMore1000 = 100;
 
-	protected IBQueryExecutionHandler _ResultsControl;
+	protected IBsQueryExecutionHandler _ResultsControl;
 
-	private MoreRowsAvailableEventHandler _MoreRowsFromDSForDiscardHandler;
+	private MoreRowsAvailableEventHandler _OnMoreRowsFromDSForDiscard;
 
-	private QESQLBatchNewResultSetEventArgs _ResultSetArgsForDiscard;
+	private BatchNewResultSetEventArgs _ResultSetForDiscardArgs;
 
 	public int CurrentErrorCount => _CurrentErrorCount;
 
@@ -108,26 +108,15 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 		return string.Format(CultureInfo.InvariantCulture, "{0}\\{1}.xml", Path.GetDirectoryName(tempFileName), Path.GetFileNameWithoutExtension(tempFileName));
 	}
 
-	protected virtual async Task<bool> HandleNewResultSetForDiscardAsync(QESQLBatchNewResultSetEventArgs args)
-	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.HandleNewResultSetForDiscard", "", null);
-		_MoreRowsFromDSForDiscardHandler = MoreRowsFromDSForDiscard;
-		_ResultSetArgsForDiscard = args;
-		_ResultSetArgsForDiscard.ResultSet.MoreRowsAvailableEvent += _MoreRowsFromDSForDiscardHandler;
 
-		await _ResultSetArgsForDiscard.ResultSet.StartConsumingDataWithoutStoringAsync(args.CancelToken);
-
-		return !args.CancelToken.IsCancellationRequested;
-	}
-
-	private void MoreRowsFromDSForDiscard(object sender, MoreRowsAvailableEventArgs a)
+	private void OnMoreRowsFromDSForDiscard(object sender, MoreRowsAvailableEventArgs a)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.MoreRowsFromDSForDiscard", "", null);
 		if (a.AllRows)
 		{
-			_ResultSetArgsForDiscard.ResultSet.MoreRowsAvailableEvent -= _MoreRowsFromDSForDiscardHandler;
-			_MoreRowsFromDSForDiscardHandler = null;
-			_ResultSetArgsForDiscard = null;
+			_ResultSetForDiscardArgs.ResultSet.MoreRowsAvailableEvent -= _OnMoreRowsFromDSForDiscard;
+			_OnMoreRowsFromDSForDiscard = null;
+			_ResultSetForDiscardArgs = null;
 		}
 	}
 
@@ -149,7 +138,7 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnCancelling", "", null);
 	}
 
-	public virtual void OnMessage(object sender, QESQLBatchMessageEventArgs args)
+	public virtual void OnMessage(object sender, BatchMessageEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnMessage", "", null);
 		if (!DiscardResults)
@@ -169,7 +158,7 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 		}
 	}
 
-	public virtual void OnErrorMessage(object sender, QESQLBatchErrorMessageEventArgs args)
+	public virtual void OnErrorMessage(object sender, BatchErrorMessageEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnErrorMessage", "", null);
 		if (!DiscardResults)
@@ -184,13 +173,13 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 		}
 	}
 
-	public virtual void OnSpecialAction(object sender, QESQLBatchSpecialActionEventArgs args)
+	public virtual void OnSpecialAction(object sender, BatchSpecialActionEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnSpecialAction", "", null);
-		_ResultsControl.ProcessSpecialActionOnBatch(args);
+		_ResultsControl.ProcessBatchSpecialAction(args);
 	}
 
-	public virtual void OnStatementCompleted(object sender, QESQLStatementCompletedEventArgs args)
+	public virtual void OnStatementCompleted(object sender, BatchStatementCompletedEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnStatementCompleted", "sender: {0}, args.RecordCount: {1}", sender, args.RecordCount);
 	}
@@ -198,14 +187,14 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 	public virtual void Cleanup()
 	{
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.Cleanup", "", null);
-		if (_ResultSetArgsForDiscard != null)
+		if (_ResultSetForDiscardArgs != null)
 		{
-			if (_MoreRowsFromDSForDiscardHandler != null)
+			if (_OnMoreRowsFromDSForDiscard != null)
 			{
-				_ResultSetArgsForDiscard.ResultSet.MoreRowsAvailableEvent -= _MoreRowsFromDSForDiscardHandler;
-				_MoreRowsFromDSForDiscardHandler = null;
+				_ResultSetForDiscardArgs.ResultSet.MoreRowsAvailableEvent -= _OnMoreRowsFromDSForDiscard;
+				_OnMoreRowsFromDSForDiscard = null;
 			}
-			_ResultSetArgsForDiscard = null;
+			_ResultSetForDiscardArgs = null;
 		}
 	}
 
@@ -220,5 +209,19 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnFinishedProcessingResultSet", "", null);
 	}
 
-	public abstract Task<bool> OnNewResultSetAsync(object sender, QESQLBatchNewResultSetEventArgs args);
+	public abstract Task<bool> OnNewResultSetAsync(object sender, BatchNewResultSetEventArgs args);
+
+	protected virtual async Task<bool> RegisterNewResultSetForDiscardEventsAsync(BatchNewResultSetEventArgs args)
+	{
+		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.HandleNewResultSetForDiscard", "", null);
+		_OnMoreRowsFromDSForDiscard = OnMoreRowsFromDSForDiscard;
+		_ResultSetForDiscardArgs = args;
+		_ResultSetForDiscardArgs.ResultSet.MoreRowsAvailableEvent += _OnMoreRowsFromDSForDiscard;
+
+		await _ResultSetForDiscardArgs.ResultSet.StartConsumingDataWithoutStoringAsync(args.CancelToken);
+
+		return !args.CancelToken.IsCancellationRequested;
+	}
+
+
 }

@@ -2,10 +2,12 @@
 using System;
 using System.IO;
 using System.Security;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 
 
 
@@ -83,6 +85,29 @@ public abstract class Cmd
 		return path;
 	}
 
+
+	public static async Task<bool> AwaitableAsync()
+	{
+		if (!ThreadHelper.CheckAccess())
+			return false;
+
+		// Warning suppression.
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		return true;
+	}
+
+
+	public static async Task<bool> CheckAccessAsync()
+	{
+		if (!ThreadHelper.CheckAccess())
+			return false;
+
+		// Warning suppression.
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		return true;
+	}
 
 	// CheckForEmptyString
 	public static void CheckForEmptyString(string variable, string variableName)

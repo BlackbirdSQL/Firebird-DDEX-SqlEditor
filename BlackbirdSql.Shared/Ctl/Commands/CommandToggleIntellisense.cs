@@ -1,13 +1,10 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorToggleIntellisenseCommand
 
 using System;
 using BlackbirdSql.Shared.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-
 
 
 
@@ -25,22 +22,11 @@ public class CommandToggleIntellisense : AbstractCommand
 	{
 	}
 
-	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	protected override int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		if (IsDwEditorConnection)
-		{
-			if (AuxDocData != null)
-				StoredAuxDocData.IntellisenseEnabled = false;
-
-			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
-		}
-
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (AuxDocData == null)
-			return VSConstants.S_OK;
-
-		if (!StoredIsExecuting)
+		if (!ExecutionLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 
@@ -50,9 +36,9 @@ public class CommandToggleIntellisense : AbstractCommand
 		return VSConstants.S_OK;
 	}
 
-	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (AuxDocData != null)
+		if (!ExecutionLocked && StoredAuxDocData != null)
 			StoredAuxDocData.IntellisenseEnabled = !StoredAuxDocData.IntellisenseEnabled.AsBool();
 
 		return VSConstants.S_OK;

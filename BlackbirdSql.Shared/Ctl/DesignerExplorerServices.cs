@@ -1,11 +1,11 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Package.DesignerServices.DatabaseChangesManager
+// Split into two for brevity.
 
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
@@ -17,8 +17,8 @@ using BlackbirdSql.Shared.Ctl.Config;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Shared.Properties;
+using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
-using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -38,7 +38,7 @@ namespace BlackbirdSql.Shared.Ctl;
 /// Service for handling open query commands.
 /// </summary>
 // =========================================================================================================
-public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExplorerServices
+public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExplorerServices
 {
 
 	// ----------------------------------------------------------
@@ -106,7 +106,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	// combined with local methods
 	private static void OpenExplorerEditor(IVsDataExplorerNode node, EnModelObjectType objectType,
 		IList<string> identifierList, EnModelTargetType targetType, Guid editorFactory,
-		Action<DbConnectionStringBuilder, bool> documentLoadedCallback, string physicalViewName = null)
+		bool autoExecute, string physicalViewName = null)
 	{
 		if (editorFactory == Guid.Empty)
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
@@ -130,11 +130,16 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		RaiseBeforeOpenDocument(mkDocument, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
+		EnEditorCreationFlags creationFlags = autoExecute ? EnEditorCreationFlags.CreateAndExecute : EnEditorCreationFlags.CreateConnection;
 
+		if (csa != null) 
+			csa[SysConstants.C_KeyExCreationFlags] = creationFlags;
 
-		bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(mkDocument, node, targetType, csa);
+		OpenMiscellaneousSqlFile(mkDocument, node, targetType, csa, null);
 
-		ExecuteDocumentLoadedCallback(documentLoadedCallback, csa, editorAlreadyOpened);
+		// bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(mkDocument, node, targetType, csa);
+
+		// ExecuteDocumentLoadedCallback(documentLoadedCallback, csa, editorAlreadyOpened);
 
 		return;
 
@@ -143,7 +148,8 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	private static bool OpenMiscellaneousSqlFile(string explorerMoniker, IVsDataExplorerNode node, EnModelTargetType targetType, Csb csa)
+	private static bool OpenMiscellaneousSqlFile(string explorerMoniker, IVsDataExplorerNode node,
+		EnModelTargetType targetType, Csb csa, string initialScript)
 	{
 		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "ExplorerMoniker: {0}.", explorerMoniker);
 
@@ -153,7 +159,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		if (RdtManager.InflightMonikerCsbTable.ContainsKey(explorerMoniker))
 		{
-			foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
+			foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBsEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
 			{
 				if (pair.Value.ExplorerMoniker == null)
 					continue;
@@ -207,7 +213,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		if (tempFilename == null)
 		{
-			MessageCtl.ShowEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(string.Empty, Resources.ExCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return false;
 		}
 
@@ -216,12 +222,12 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		StreamWriter streamWriter = null;
 		try
 		{
-			string script = node != null
+			initialScript ??= node != null
 				? Moniker.GetDecoratedDdlSource(node, targetType)
-				: Resources.DesignerExplorerServices_DecoratedNewQuery + "\r\n";
+				: string.Empty;
 
 			streamWriter = new StreamWriter(tempFilename);
-			streamWriter.Write(script);
+			streamWriter.Write(initialScript);
 			streamWriter.Flush();
 			streamWriter.Close();
 			streamWriter = null;
@@ -244,7 +250,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			Directory.Delete(tempDirectory);
 		}
 
-		foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
+		foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBsEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
 		{
 			if (explorerMoniker.Equals(pair.Value.ExplorerMoniker) && pair.Value.DocCookie == 0)
 			{
@@ -258,7 +264,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	public static void OpenNewMiscellaneousSqlFile(string initialContent = "")
+	public static void OpenNewMiscellaneousSqlFile(string baseName, string initialContent)
 	{
 		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
 
@@ -266,11 +272,11 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		IVsProject3 miscellaneousProject = UnsafeCmd.MiscellaneousProjectHierarchy;
 
-		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, NativeDb.Extension, "NewQuery", out string pbstrItemName);
+		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, NativeDb.Extension, baseName, out string pbstrItemName);
 		string tempFileName = Path.GetTempFileName();
 		if (tempFileName == null)
 		{
-			MessageCtl.ShowEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(string.Empty, Resources.ExCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return;
 		}
 		StreamWriter streamWriter = null;
@@ -293,8 +299,8 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	private static void OpenNewQueryEditor(string datasetKey, Guid editorFactory, Action<DbConnectionStringBuilder> documentLoadedCallback,
-		string physicalViewName = null)
+	private static void OpenNewQueryEditor(string datasetKey, string baseName, Guid editorFactory,
+		string initialScript, bool executeQuery, string physicalViewName = null)
 	{
 		if (editorFactory == Guid.Empty)
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
@@ -306,26 +312,25 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		if (RctManager.ShutdownState)
 			return;
 
-		Csb csa = RctManager.CloneRegistered(datasetKey, EnRctKeyType.DatasetKey);
+		Csb csa = datasetKey != null ? RctManager.CloneRegistered(datasetKey, EnRctKeyType.DatasetKey) : null;
 
-		IList<string> identifierList = ["NewQuery"];
-		IList<string> identifierArray = null;
-
-
-		if (identifierList != null)
-			identifierArray = new List<string>(identifierList);
-
+		IList<string> identifierList = [baseName];
+		IList<string> identifierArray = new List<string>(identifierList); 
 
 		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenNewQueryEditor()", "csa.DataSource: {0}, csa.Database: {1}", csa.DataSource, csa.Database);
 
-		string mkDocument = Moniker.BuildDocumentMoniker(csa.DataSource, csa.Database, elementType, ref identifierArray, targetType, true);
+		string mkDocument = Moniker.BuildDocumentMoniker(csa?.DataSource, csa?.Database, elementType, ref identifierArray, targetType, true);
 
 		RaiseBeforeOpenDocument(mkDocument, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
+		if (csa != null)
+			csa[SysConstants.C_KeyExCreationFlags] = EnEditorCreationFlags.CreateConnection;
 
-		bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(mkDocument, null, targetType, csa);
+		OpenMiscellaneousSqlFile(mkDocument, null, targetType, csa, initialScript);
 
-		ExecuteDocumentLoadedCallback(documentLoadedCallback, csa, editorAlreadyOpened);
+		// bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(mkDocument, null, targetType, csa);
+
+		// ExecuteDocumentLoadedCallback(documentLoadedCallback, csa, editorAlreadyOpened);
 
 		return;
 
@@ -333,16 +338,17 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	public void NewQuery(string datasetKey)
+	public void NewQuery(string datasetKey, string baseName, string initialScript)
 	{
 		// Sanity check.
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
+
 		Diag.ThrowIfNotOnUIThread();
 
 
 		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
 
-		OpenNewQueryEditor(datasetKey, clsidEditorFactory, null);
+		OpenNewQueryEditor(datasetKey, baseName, clsidEditorFactory, initialScript, false);
 		
 	}
 
@@ -358,10 +364,10 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		// Tracer.Trace(GetType(), "ViewCode()");
 
-		Moniker moniker = null;
-		IList<string> identifierList = null;
-		EnModelObjectType objectType = EnModelObjectType.Unknown;
-		Action<DbConnectionStringBuilder, bool> callback = null;
+		Moniker moniker;
+		IList<string> identifierList;
+		EnModelObjectType objectType;
+		bool autoExecute = false;
 
 		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
 
@@ -386,7 +392,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			if ((objectType == EnModelObjectType.Table || objectType == EnModelObjectType.View)
 				&& targetType == EnModelTargetType.QueryScript && PersistentSettings.EditorExecuteQueryOnOpen)
 			{
-				callback = OnSqlQueryLoaded;
+				autoExecute = true;
 			}
 		}
 		catch (Exception ex)
@@ -397,7 +403,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		try
 		{
-			OpenExplorerEditor(node, objectType, identifierList, targetType, clsidEditorFactory, callback, null);
+			OpenExplorerEditor(node, objectType, identifierList, targetType, clsidEditorFactory, autoExecute, null);
 		}
 		catch (Exception ex)
 		{
@@ -423,7 +429,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		if (alreadyLoaded)
 			return;
 
-		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
+		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBsEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
 
 		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
 

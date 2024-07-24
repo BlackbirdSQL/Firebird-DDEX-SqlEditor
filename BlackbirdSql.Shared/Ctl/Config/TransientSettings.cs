@@ -19,18 +19,19 @@ using BlackbirdSql.Shared.Interfaces;
 
 namespace BlackbirdSql.Shared.Ctl.Config;
 
+
 // =========================================================================================================
 //										TransientSettings Class
 //
 /// <summary>
-/// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
+/// Consolidated single access point for daisy-chained packages settings models (IBsSettingsModel).
 /// As a convention we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
 /// descendent tree from the top-level extension lib down to the Core. There is no point using services as
 /// this configuration is fixed. ie:
 /// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
-public class TransientSettings : PersistentSettings, IBEditorTransientSettings, IBTransientSettings, ICloneable
+public class TransientSettings : PersistentSettings, IBsEditorTransientSettings, IBsTransientSettings, ICloneable
 {
 
 	// ---------------------------------------------------------------------------------
@@ -189,11 +190,6 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 	{
 		get { return (EnBlobSubType)this["EditorExecutionGeneralSetBlobDisplay"]; }
 		set { this["EditorExecutionGeneralSetBlobDisplay"] = value; }
-	}
-	public new bool EditorExecutionDefaultOleScripting
-	{
-		get { return (bool)this["EditorExecutionGeneralDefaultOleScripting"]; }
-		set { this["EditorExecutionGeneralDefaultOleScripting"] = value; }
 	}
 	public new int EditorExecutionTimeout
 	{
@@ -523,11 +519,6 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 		set { _ExecOptions[10] = value; }
 	}
 
-	public bool WithOleSqlScripting
-	{
-		get { return _ExecOptions[11]; }
-		set { _ExecOptions[11] = value; }
-	}
 
 	public bool SuppressProviderMessageHeaders
 	{
@@ -613,7 +604,7 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 	{
 		Type type = property.GetType();
 
-		string cmd = SqlResources.ResourceManager.GetString(type.Name);
+		string cmd = SqlCmdResources.ResourceManager.GetString(type.Name);
 
 		return cmd == null;
 	}
@@ -630,7 +621,7 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
-	public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
+	public override void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
 	{
 	}
 

@@ -33,7 +33,7 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 	// ---------------------------------------------------------------------------------
 
 
-	public DebugSettingsModel(IBTransientSettings transientSettings)
+	public DebugSettingsModel(IBsTransientSettings transientSettings)
 		: base(C_Package, C_Group, C_LivePrefix, transientSettings)
 	{
 

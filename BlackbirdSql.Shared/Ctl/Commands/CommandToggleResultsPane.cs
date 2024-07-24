@@ -23,18 +23,21 @@ public class CommandToggleResultsPane : AbstractCommand
 	{
 	}
 
-	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	protected override int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		prgCmd.cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
+		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
+
+		if (!ExecutionLocked)
+			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
 	}
 
-	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (WindowPane != null)
+		if (!ExecutionLocked && WindowPane != null)
 		{
-			if (((IBTabbedEditorService)WindowPane).ActiveTab is SqlEditorCodeTab)
+			if (((IBsWindowPaneServiceProvider)WindowPane).ActiveTab is SqlEditorCodeTab)
 			{
 				bool splitterHidden = !WindowPane.IsSplitterVisible;
 				WindowPane.IsSplitterVisible = splitterHidden;

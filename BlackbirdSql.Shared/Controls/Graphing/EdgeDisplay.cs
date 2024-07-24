@@ -59,7 +59,7 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 	{
 		get
 		{
-			return string.Format(ControlsResources.EdgeDisplayPropertiesLabel, EdgeOriginal.EstimatedRowCount, EdgeOriginal.RowSize, NodeFrom.ID, NodeTo.ID);
+			return string.Format(ControlsResources.Graphing_EdgeDisplayPropertiesLabel, EdgeOriginal.EstimatedRowCount, EdgeOriginal.RowSize, NodeFrom.ID, NodeTo.ID);
 		}
 		set
 		{
@@ -167,7 +167,7 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 
 	string ICustomTypeDescriptor.GetComponentName()
 	{
-		return ControlsResources.Edge;
+		return ControlsResources.Graphing_Edge;
 	}
 
 	TypeConverter ICustomTypeDescriptor.GetConverter()

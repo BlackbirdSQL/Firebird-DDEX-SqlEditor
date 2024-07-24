@@ -467,7 +467,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 			}
 			catch (Exception ex)
 			{
-				Diag.Expected(ex);
+				Diag.Debug(ex);
 			}
 		}
 
@@ -479,7 +479,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex);
+			Diag.Debug(ex);
 		}
 
 
@@ -490,7 +490,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex);
+			Diag.Debug(ex);
 		}
 
 

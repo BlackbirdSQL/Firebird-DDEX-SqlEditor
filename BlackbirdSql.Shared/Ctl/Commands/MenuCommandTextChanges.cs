@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.MenuCommandTextChanges
 
 using System;
 using System.ComponentModel.Design;
@@ -15,7 +13,7 @@ namespace BlackbirdSql.Shared.Ctl.Commands;
 [ComVisible(false)]
 
 
-public class MenuCommandTextChanges : MenuCommand, IBMenuCommandTextChanges
+public class MenuCommandTextChanges : MenuCommand, IBsMenuCommandTextChanges
 {
 
 	public MenuCommandTextChanges(EventHandler handler, CommandID command)

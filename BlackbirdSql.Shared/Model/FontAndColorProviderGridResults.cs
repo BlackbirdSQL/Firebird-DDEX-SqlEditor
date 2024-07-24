@@ -56,7 +56,7 @@ public sealed class FontAndColorProviderGridResults : AbstractFontAndColorProvid
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		CategoryName = ControlsResources.FontAndColorCategorySqlResultsGrid;
+		CategoryName = ControlsResources.FontAndColorCategoryResultsGrid;
 		Guid = VS.CLSID_FontAndColorsSqlResultsGridCategory;
 		FontDefault = new Font(Control.DefaultFont.Name, Control.DefaultFont.SizeInPoints);
 		FontAndColorUtilities.EncodeAutomaticColor(out var pcrResult);

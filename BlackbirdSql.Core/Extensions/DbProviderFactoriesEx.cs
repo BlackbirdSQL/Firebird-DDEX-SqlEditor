@@ -91,8 +91,6 @@ public static class DbProviderFactoriesEx
 	public static bool ConfigurationManagerRegisterAssembly(string invariant, string factoryName,
 		string factoryDescription, string assemblyQualifiedName)
 	{
-		// Diag.DebugTrace();
-
 		/*
 		 * ConfigurationManager.GetSection()
 		 * ---------------------------------
@@ -160,9 +158,6 @@ public static class DbProviderFactoriesEx
 
 		}
 
-		// Diag.DebugTrace(String.Format("Adding inveriant in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
-		//	table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName));
-
 		table.Rows.Add(factoryName, factoryDescription, invariant, assemblyQualifiedName);
 		table.AcceptChanges();
 
@@ -216,9 +211,6 @@ public static class DbProviderFactoriesEx
 		if (row == null)
 			return false;
 
-
-		// Diag.DebugTrace(String.Format("Adding inveriant in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
-		//	table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName));
 
 		object @object = row[0] == DBNull.Value ? null : row[0];
 		factoryName = @object?.ToString();
@@ -362,7 +354,7 @@ public static class DbProviderFactoriesEx
 
 						if (badCount == 0)
 						{
-							Diag.OutputPaneWriteLine(Resources.DbProviderFactoriesEx_Recovery.FmtRes(validationCount), false);
+							Diag.AsyncOutputPaneWriteLine(Resources.DbProviderFactoriesEx_Recovery.FmtRes(validationCount), false);
 
 							// Give output time to breath.
 							System.Threading.Thread.Sleep(10);
@@ -371,7 +363,7 @@ public static class DbProviderFactoriesEx
 
 						badCount++;
 
-						Diag.OutputPaneWriteLine(Resources.DbProviderFactoriesEx_RecoveryInvariantFaulted.FmtRes(invariant), false);
+						Diag.AsyncOutputPaneWriteLine(Resources.DbProviderFactoriesEx_RecoveryInvariantFaulted.FmtRes(invariant), false);
 					}
 
 
@@ -414,7 +406,7 @@ public static class DbProviderFactoriesEx
 							else
 								fmt = Resources.DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated;
 
-							Diag.OutputPaneWriteLine(fmt.FmtRes(invariant), false);
+							Diag.AsyncOutputPaneWriteLine(fmt.FmtRes(invariant), false);
 
 
 							continue;
@@ -452,7 +444,7 @@ public static class DbProviderFactoriesEx
 					{
 						invariant = (string)pair.Value.GetProperty("InvariantName");
 
-						Diag.OutputPaneWriteLine(Resources.DbProviderFactoriesEx_RecoveryInvariantFailed.FmtRes(invariant), false);
+						Diag.AsyncOutputPaneWriteLine(Resources.DbProviderFactoriesEx_RecoveryInvariantFailed.FmtRes(invariant), false);
 					}
 				}
 
@@ -472,7 +464,7 @@ public static class DbProviderFactoriesEx
 
 				fmt += "\n" + sb + "\n";
 
-				Diag.OutputPaneWriteLine(fmt, false);
+				Diag.AsyncOutputPaneWriteLine(fmt, false);
 			}
 
 		}
@@ -538,10 +530,7 @@ public static class DbProviderFactoriesEx
 			return false;
 		}
 
-		// Diag.DebugTrace(String.Format("Adding invariant in DbProviderFactories section (Columns:{0}) [{1}::{2}::{3}::{4}]",
-		//	table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName));
-
-
+		
 		table.Rows.Add(factoryName, factoryDescription, invariant, assemblyQualifiedName);
 		table.AcceptChanges();
 

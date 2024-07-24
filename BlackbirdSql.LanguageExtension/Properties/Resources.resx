@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="ScalarValuedFunction" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconScalarValuedFunction" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAYAICAQAAEABADoAgAAZgAAABAQEAABAAQAKAEAAE4DAAAgIAAAAQAIAKgIAAB2BAAAEBAAAAEA
         CABoBQAAHg0AACAgAAABACAAqBAAAIYSAAAQEAAAAQAgAGgEAAAuIwAAKAAAACAAAABAAAAAAQAEAAAA
@@ -291,7 +291,7 @@
         AAAAHwAAgB8AAIA/AACAAAAAgAAAAOAAAAD4AAAA+AAAAPgAAAD4AAAA+AAAAPgAAAD//wAA
 </value>
   </data>
-  <data name="Variable" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconVariable" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAEBAQAAAABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAABAA
         AAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgACAgAAAgICAAMDAwAAAAP8AAP8AAAD//wD/AAAA/wD/AP//
@@ -304,7 +304,7 @@
   <data name="SurroundWith" xml:space="preserve">
     <value>Surround With</value>
   </data>
-  <data name="Column" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconColumn" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAIAEBAAAAEACABoBQAAJgAAABAQAAABACAAaAQAAI4FAAAoAAAAEAAAACAAAAABAAgAAAAAAAAA
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/9/QD//v4A//v6AOnd2ADpz8MA6dnSAP/y7AD/9O8Az2k2AM5p
@@ -351,7 +351,7 @@
         PTzAAzw8wAM8PMADAADAAz04wAMrKMADIiD//wAA
 </value>
   </data>
-  <data name="TableValuedFunction" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconTableValuedFunction" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAYAICAQAAEABADoAgAAZgAAABAQEAABAAQAKAEAAE4DAAAgIAAAAQAIAKgIAAB2BAAAEBAAAAEA
         CABoBQAAHg0AACAgAAABACAAqBAAAIYSAAAQEAAAAQAgAGgEAAAuIwAAKAAAACAAAABAAAAAAQAEAAAA
@@ -524,7 +524,7 @@
         AACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAA
 </value>
   </data>
-  <data name="Database" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconDatabase" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAYAICAQAAEABADoAgAAZgAAABAQEAABAAQAKAEAAE4DAAAgIAAAAQAIAKgIAAB2BAAAEBAAAAEA
         CABoBQAAHg0AACAgAAABACAAqBAAAIYSAAAQEAAAAQAgAGgEAAAuIwAAKAAAACAAAABAAAAAAQAEAAAA
@@ -697,7 +697,7 @@
         AACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAIABAADAAwAA
 </value>
   </data>
-  <data name="Schema" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconSchema" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAIAEBAQAAEABAAoAQAAJgAAABAQAAABAAgAaAUAAE4BAAAoAAAAEAAAACAAAAABAAQAAAAAAIAA
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAgAAAAICAAIAAAACAAIAAgIAAAICAgADAwMAAAAD/AAD/
@@ -736,7 +736,7 @@
   <data name="InsertSnippet" xml:space="preserve">
     <value>Insert Snippet</value>
   </data>
-  <data name="Certificate" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconCertificate" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAIAEBAQAAEABAAoAQAAJgAAABAQAAABAAgAaAUAAE4BAAAoAAAAEAAAACAAAAABAAQAAAAAAIAA
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAgAAAAICAAIAAAACAAIAAgIAAAICAgADAwMAAAAD/AAD/
@@ -769,7 +769,7 @@
         AAAAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAAA=
 </value>
   </data>
-  <data name="AsymmetricKey" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconAsymmetricKey" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAYAEBAQAAEABAAoAQAAZgAAABAQAAABAAgAaAUAAI4BAAAQEAAAAQAgAGgEAAD2BgAAICAQAAEA
         BADoAgAAXgsAACAgAAABAAgAqAgAAEYOAAAgIAAAAQAgAKgQAADuFgAAKAAAABAAAAAgAAAAAQAEAAAA
@@ -945,7 +945,7 @@
   <data name="RTL" xml:space="preserve">
     <value>RTL_False</value>
   </data>
-  <data name="Login" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconLogin" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAIAEBAAAAEACABoBQAAJgAAABAQAAABACAAaAQAAI4FAAAoAAAAEAAAACAAAAABAAgAAAAAAAAA
         AAAAAAAAAAAAAAAAAAAAAAAAdW2aACIdMQAAAAAASzlaANLA0QATAAAA1rOzAOlvYgD8iW0A/+/rAP+W
@@ -992,7 +992,7 @@
         Lyj4Hxoh+B8kI/gfAgL4HzY7+B8rHPw/ERL//wIC
 </value>
   </data>
-  <data name="Table" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconTable" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAIAEBAQAAEABAAoAQAAJgAAABAQAAABAAgAaAUAAE4BAAAoAAAAEAAAACAAAAABAAQAAAAAAIAA
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAgAAAAICAAIAAAACAAIAAgIAAAICAgADAwMAAAAD/AAD/
@@ -1025,7 +1025,7 @@
         AACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAP//AAA=
 </value>
   </data>
-  <data name="Credential" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconCredential" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAYAEBAQAAEABAAoAQAAZgAAABAQAAABAAgAaAUAAI4BAAAQEAAAAQAgAGgEAAD2BgAAICAQAAEA
         BADoAgAAXgsAACAgAAABAAgAqAgAAEYOAAAgIAAAAQAgAKgQAADuFgAAKAAAABAAAAAgAAAAAQAEAAAA
@@ -1201,7 +1201,7 @@
   <data name="NotifyOptionPage" xml:space="preserve">
     <value>Option Page:      {0}\{1}</value>
   </data>
-  <data name="StoredProcedure" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconStoredProcedure" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAYAICAQAAEABADoAgAAZgAAABAQEAABAAQAKAEAAE4DAAAgIAAAAQAIAKgIAAB2BAAAEBAAAAEA
         CABoBQAAHg0AACAgAAABACAAqBAAAIYSAAAQEAAAAQAgAGgEAAAuIwAAKAAAACAAAABAAAAAAQAEAAAA
@@ -1374,7 +1374,7 @@
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAA
 </value>
   </data>
-  <data name="User" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconUser" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAYAICAQAAEABADoAgAAZgAAABAQEAABAAQAKAEAAE4DAAAgIAAAAQAIAKgIAAB2BAAAEBAAAAEA
         CABoBQAAHg0AACAgAAABACAAqBAAAIYSAAAQEAAAAQAgAGgEAAAuIwAAKAAAACAAAABAAAAAAQAEAAAA
@@ -1547,7 +1547,7 @@
         AAAAAwAAAAMAAAADAAAAAwAAAAMAAMADAADwDwAA8A8AAOAPAADgDwAA8A8AAPAPAAD4HwAA
 </value>
   </data>
-  <data name="View" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="IconView" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAYAICAQAAEABADoAgAAZgAAABAQEAABAAQAKAEAAE4DAAAgIAAAAQAIAKgIAAB2BAAAEBAAAAEA
         CABoBQAAHg0AACAgAAABACAAqBAAAIYSAAAQEAAAAQAgAGgEAAAuIwAAKAAAACAAAABAAAAAAQAEAAAA
@@ -1720,7 +1720,7 @@
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAMAAAADAAAAA
 </value>
   </data>
-  <data name="FileTooBig" xml:space="preserve">
+  <data name="ErrorFileTooBig" xml:space="preserve">
     <value>The script exceeds the Transact-SQL IntelliSense maximum script size setting. You can change the setting on the Text Editor/Transact-SQL/IntelliSense Page in the Tools/Options menu.</value>
   </data>
   <data name="FormatFilterList" xml:space="preserve">
@@ -1765,9 +1765,6 @@
   <data name="Text" xml:space="preserve">
     <value>Text</value>
   </data>
-  <data name="CasingExampleLower" xml:space="preserve">
-    <value>(Example: dateadd)</value>
-  </data>
   <data name="IntellisenseCompletionUndoText" xml:space="preserve">
     <value>Sql IntelliSense Completion</value>
   </data>
@@ -1777,10 +1774,7 @@
   <data name="IntellisenseDisabledForSqlCmdMode" xml:space="preserve">
     <value>Transact-SQL IntelliSense is not active for this editor because the editor is in SQLCMD mode.</value>
   </data>
-  <data name="CasingExampleUpper" xml:space="preserve">
-    <value>(Example: DATEADD)</value>
-  </data>
-  <data name="ExceptionFailedToSubscribeSettingsEvents" xml:space="preserve">
+  <data name="ExFailedToSubscribeSettingsEvents" xml:space="preserve">
     <value>Failed to subscribe to Settings events</value>
   </data>
   <data name="PreviewModeCompletionDescription" xml:space="preserve">

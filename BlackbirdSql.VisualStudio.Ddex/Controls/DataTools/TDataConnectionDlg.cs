@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 
-public partial class TDataConnectionDlg : Form, IBDataConnectionDlg
+public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 {
 	private class TiDataSourceCollection(TDataConnectionDlg dialog)
 		: ICollection<TDataSource>, IEnumerable<TDataSource>, IEnumerable

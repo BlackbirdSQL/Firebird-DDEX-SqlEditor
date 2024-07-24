@@ -32,7 +32,7 @@ public sealed class UserPreferenceChangedHandler : IComponent, IDisposable
 
 	public UserPreferenceChangedHandler(Form form)
 	{
-		SystemEvents.UserPreferenceChanged += HandleUserPreferenceChanged;
+		SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 		_Frm = form;
 	}
 
@@ -47,7 +47,7 @@ public sealed class UserPreferenceChangedHandler : IComponent, IDisposable
 		GC.SuppressFinalize(this);
 	}
 
-	private void HandleUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+	private void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
 	{
 		IUIService iUIService = ((_Frm.Site != null)
 			? (_Frm.Site.GetService(typeof(IUIService)) as IUIService)
@@ -63,7 +63,7 @@ public sealed class UserPreferenceChangedHandler : IComponent, IDisposable
 	{
 		if (disposing)
 		{
-			SystemEvents.UserPreferenceChanged -= HandleUserPreferenceChanged;
+			SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged;
 			Disposed?.Invoke(this, EventArgs.Empty);
 		}
 	}

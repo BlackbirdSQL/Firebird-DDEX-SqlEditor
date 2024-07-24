@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.Shared.Ctl;
 
 
-public class SqlTextSpan : IBTextSpan
+public class SqlTextSpan : IBsTextSpan
 {
 	private readonly int _anchorLine;
 

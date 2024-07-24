@@ -61,17 +61,17 @@ public abstract class Cmd : BlackbirdSql.Cmd
 		if (auxDocData.QryMgr.IsExecuting)
 		{
 			if (!inAutomation)
-				dialogResult = MessageCtl.ShowEx(ControlsResources.ScriptIsStillBeingExecuted, "", "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+				dialogResult = MessageCtl.ShowEx(Resources.ExScriptIsStillBeingExecuted, "", "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 
 			if (dialogResult == DialogResult.No)
 				return true;
 
 			auxDocData.QryMgr.Cancel(synchronous: true);
 		}
-		else if (auxDocData.QryMgr.GetUpdateTransactionsStatus())
+		else if (auxDocData.QryMgr.GetUpdateTransactionsStatus(true))
 		{
 			if (!inAutomation)
-				dialogResult = MessageCtl.ShowEx(ControlsResources.UncommittedTransactionsWarning, "", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+				dialogResult = MessageCtl.ShowEx(Resources.WarnUncommittedTransactions, "", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
 
 			switch (dialogResult)
 			{

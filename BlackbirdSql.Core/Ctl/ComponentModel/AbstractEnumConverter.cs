@@ -11,7 +11,7 @@ using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
-public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IBAutomatorConverter, IDisposable
+public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IBsAutomatorConverter, IDisposable
 {
 
 	// ---------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 	private readonly object _LockLocal = new object();
 
-	IBSettingsModel _Model;
+	IBsSettingsModel _Model;
 	private string _PropertyName;
 	private bool _IsAutomator = false;
 
@@ -198,7 +198,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 	private bool RegisterModel(ITypeDescriptorContext context, int value)
 	{
-		if (context == null || context.Instance is not IBSettingsModel model)
+		if (context == null || context.Instance is not IBsSettingsModel model)
 			return false;
 
 		// The model instance may have changed on the same property between
@@ -207,7 +207,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		if (_Model != null && object.ReferenceEquals(_Model, model))
 			return false;
 
-		IBSettingsModel prevModel = null;
+		IBsSettingsModel prevModel = null;
 
 		if (_Model != null)
 		{
@@ -220,7 +220,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		_Model.Disposed += OnModelDisposed;
 
 		string name = context.PropertyDescriptor.Name;
-		IBModelPropertyWrapper wrapper = model[name];
+		IBsModelPropertyWrapper wrapper = model[name];
 
 
 		_PropertyName = name;
@@ -246,7 +246,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 		_Dependents = new Dictionary<string, int>(model.PropertyWrappers.Count);
 
-		foreach (IBModelPropertyWrapper property in model.PropertyWrappers)
+		foreach (IBsModelPropertyWrapper property in model.PropertyWrappers)
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{

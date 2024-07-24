@@ -5,7 +5,12 @@ using System;
 using System.Windows.Forms;
 
 
+
 namespace BlackbirdSql.Shared.Events;
+
+
+public delegate void StandardKeyProcessingEventHandler(object sender, StandardKeyProcessingEventArgs args);
+
 
 public class StandardKeyProcessingEventArgs : EventArgs
 {

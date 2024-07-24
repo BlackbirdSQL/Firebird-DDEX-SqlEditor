@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorViewFilter
 
 using System;
 using BlackbirdSql.Core.Ctl.CommandProviders;
@@ -66,9 +64,6 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 				break;
 			case EnCommandSet.CmdIdToggleIntellisense:
 				command = new CommandToggleIntellisense(window);
-				break;
-			case EnCommandSet.CmdIdToggleSqlCmdMode:
-				command = new CommandToggleSqlCmdMode(window);
 				break;
 			case EnCommandSet.CmdIdQuerySettings:
 				command = new CommandQuerySettings(window);
@@ -149,11 +144,15 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 			{
 				switch ((VSConstants.VSStd2KCmdID)cmdId)
 				{
+					case VSConstants.VSStd2KCmdID.SETBREAKPOINT:
+						prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
+						hresult = VSConstants.S_OK;
+						break;
 					case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
 					case VSConstants.VSStd2KCmdID.SURROUNDWITH:
-						auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(WindowPane.DocData);
+						auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(WindowPane.DocData);
 
-						if (auxDocData != null && auxDocData.QryMgr != null && !auxDocData.QryMgr.IsExecuting)
+						if (auxDocData != null && auxDocData.QryMgr != null && !auxDocData.QryMgr.IsLocked)
 						{
 							prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 						}
@@ -175,7 +174,11 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 				switch ((VSConstants.VSStd97CmdID)cmdId)
 				{
 					case VSConstants.VSStd97CmdID.RunToCursor:
+					case VSConstants.VSStd97CmdID.RunToCallstCursor:
 					case VSConstants.VSStd97CmdID.InsertBreakpoint:
+						prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
+						hresult = VSConstants.S_OK;
+						break;
 					case VSConstants.VSStd97CmdID.GotoDecl:
 					case VSConstants.VSStd97CmdID.GotoRef:
 						prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
@@ -183,7 +186,7 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 						break;
 					case VSConstants.VSStd97CmdID.GotoDefn:
 					case VSConstants.VSStd97CmdID.FindReferences:
-						auxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(WindowPane.DocData);
+						auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(WindowPane.DocData);
 
 						if (auxDocData != null && (auxDocData.StrategyFactory.IsOnline || auxDocData.StrategyFactory is ConnectionStrategyFactory))
 						{
@@ -204,7 +207,7 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 			}
 			else if (pguidCmdGroup == VS.ClsidVSDebugCommand)
 			{
-				prgCmds[i].cmdf = (uint)(/* OLECMDF.OLECMDF_SUPPORTED | */ OLECMDF.OLECMDF_INVISIBLE);
+				prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
 				hresult = VSConstants.S_OK;
 			}
 			else if (pguidCmdGroup == VSConstants.VsStd14 && prgCmds[i].cmdID == (uint)VSConstants.VSStd14CmdID.ShowQuickFixesForPosition)

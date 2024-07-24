@@ -19,7 +19,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Shared.Controls.ResultsPanels;
 
 
-public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // , IOleCommandTarget
+public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite // , IOleCommandTarget
 {
 
 	public ExecutionPlanControl()
@@ -105,7 +105,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 		}
 		catch (Exception innerException)
 		{
-			throw new ApplicationException(string.Format(CultureInfo.CurrentCulture, ControlsResources.FailedToLoadExecutionPlanFile, xmlFile), innerException);
+			throw new ApplicationException(ControlsResources.ExFailedToLoadExecutionPlanFile.FmtRes(xmlFile), innerException);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 	}
 	*/
 
-	void Interfaces.IBObjectWithSite.SetSite(IServiceProvider serviceProvider)
+	void Interfaces.IBsObjectWithSite.SetSite(IServiceProvider serviceProvider)
 	{
 		this.serviceProvider = serviceProvider;
 		OnHosted();
@@ -335,14 +335,14 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 			while (File.Exists(text) && num < 100);
 			if (num == 100)
 			{
-				throw new InvalidOperationException(ControlsResources.ErrCannotCreateTempFile);
+				throw new InvalidOperationException(Resources.ExCannotCreateTempFile);
 			}
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.LoadXml(showPlanXml);
 			xmlDocument.Save(text);
 			if (Package.GetGlobalService(typeof(IVsExternalFilesManager)) is not IVsExternalFilesManager obj)
 			{
-				Exception ex = new InvalidOperationException(ControlsResources.ErrCannotGetExternalFilesManager);
+				Exception ex = new InvalidOperationException(ControlsResources.ExCannotGetExternalFilesManager);
 				Diag.ThrowException(ex);
 			}
 			___(obj.GetExternalFilesProject(out IVsProject ppProject));
@@ -386,7 +386,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 			string text = pvar.ToString();
 			text = text.Replace("*", "");
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine(string.Format(CultureInfo.CurrentCulture, ControlsResources.MissingIndexDetailsTitle, text, missingIndexImpact));
+			stringBuilder.AppendLine(string.Format(CultureInfo.CurrentCulture, ControlsResources.ExecutionPlan_MissingIndexDetailsTitle, text, missingIndexImpact));
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine("/ * ");
 			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "USE {0}", missingIndexDatabase));
@@ -407,7 +407,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 			StreamWriter streamWriter = null;
 			SaveFileDialog saveFileDialog = new SaveFileDialog
 			{
-				Filter = ControlsResources.ExecutionPlanFilter,
+				Filter = ControlsResources.ExecutionPlan_Filter,
 				RestoreDirectory = true
 			};
 			if (saveFileDialog.ShowDialog() == DialogResult.OK && (stream = saveFileDialog.OpenFile()) != null)
@@ -428,7 +428,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 		catch (Exception e)
 		{
 			Diag.Dug(e);
-			Cmd.ShowExceptionInDialog(ControlsResources.ErrorWhileSavingExecutionPlan, e);
+			Cmd.ShowExceptionInDialog(ControlsResources.ExSavingExecutionPlan, e);
 		}
 	}
 
@@ -555,7 +555,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 		catch (Exception e2)
 		{
 			Tracer.LogExCatch(GetType(), e2);
-			Cmd.ShowExceptionInDialog(ControlsResources.ErrUnableToPrintResults, e2);
+			Cmd.ShowExceptionInDialog(ControlsResources.ExUnableToPrintResults, e2);
 		}
 	}
 
@@ -583,7 +583,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 		catch (Exception e2)
 		{
 			Tracer.LogExCatch(GetType(), e2);
-			Cmd.ShowExceptionInDialog(ControlsResources.ErrUnableToPrintPreview, e2);
+			Cmd.ShowExceptionInDialog(ControlsResources.ExUnableToPrintPreview, e2);
 		}
 	}
 
@@ -603,7 +603,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 		catch (Exception e2)
 		{
 			Tracer.LogExCatch(GetType(), e2);
-			Cmd.ShowExceptionInDialog(ControlsResources.ErrUnableToPageSetup, e2);
+			Cmd.ShowExceptionInDialog(ControlsResources.ExUnableToPageSetup, e2);
 		}
 	}
 	*/
@@ -694,10 +694,10 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 		if (isClusteredMode)
 		{
 			panel.DescriptionCtl.IsClusteredMode = isClusteredMode;
-			panel.DescriptionCtl.ClusteredMode = ControlsResources.ClusteredMode;
+			panel.DescriptionCtl.ClusteredMode = ControlsResources.ExecutionPlan_ClusteredMode;
 		}
 		int num = ((totalCost > 0.0) ? ((int)Math.Round(panel.GraphControl.Cost * 100.0 / totalCost)) : ((int)Math.Round(100.0 / (double)GraphPanelCount)));
-		panel.Title = string.Format(CultureInfo.CurrentCulture, ControlsResources.QueryCostFormat, queryNumber, num);
+		panel.Title = string.Format(CultureInfo.CurrentCulture, ControlsResources.ExecutionPlan_QueryCostFormat, queryNumber, num);
 		SetOptionalMissingIndex(panel);
 	}
 
@@ -787,7 +787,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 			text3 += string.Format(CultureInfo.InvariantCulture, "INCLUDE ({0})", text2);
 		}
 		string value6 = xmlNode2.Attributes["Impact"].Value;
-		string caption = string.Format(CultureInfo.InvariantCulture, ControlsResources.MissingIndexFormat, value6, text3);
+		string caption = string.Format(CultureInfo.InvariantCulture, ControlsResources.ExecutionPlan_MissingIndexFormat, value6, text3);
 		panel.DescriptionCtl.SetOptionalMissingIndex(caption, text3, value6, value2);
 	}
 	*/

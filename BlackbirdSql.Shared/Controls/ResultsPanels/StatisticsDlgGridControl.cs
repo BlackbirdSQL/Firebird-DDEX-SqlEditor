@@ -4,9 +4,6 @@
 using System.Drawing;
 using BlackbirdSql.Shared.Controls.Grid;
 
-// using Microsoft.SqlServer.Management.UI.Grid;
-
-
 
 
 namespace BlackbirdSql.Shared.Controls.ResultsPanels;

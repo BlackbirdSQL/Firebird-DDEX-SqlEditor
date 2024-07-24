@@ -32,7 +32,7 @@ internal abstract class AbstractDataReaderNodeBuilder : INodeBuilder
 	{
 		if (dataSource is not IDataReader dataReader)
 		{
-			throw new ArgumentException(ControlsResources.UnknownExecutionPlanSource);
+			throw new ArgumentException(ControlsResources.ExUnknownExecutionPlanSource);
 		}
 		List<ExecutionPlanGraph> list = new List<ExecutionPlanGraph>();
 		Dictionary<int, Node> dictionary = null;
@@ -129,7 +129,7 @@ internal abstract class AbstractDataReaderNodeBuilder : INodeBuilder
 			}
 			if (node["PhysicalOp"] is not string text2 || node["LogicalOp"] is not string text3)
 			{
-				throw new FormatException(ControlsResources.UnknownExecutionPlanSource);
+				throw new FormatException(ControlsResources.ExUnknownExecutionPlanSource);
 			}
 			text2 = operatorReplaceExpression.Replace(text2, "");
 			text3 = operatorReplaceExpression.Replace(text3, "");

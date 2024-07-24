@@ -71,7 +71,7 @@ public interface IBsNativeDatabaseEngine
 
 	DbConnection CastToNativeConnection_(object connection);
 	string ConvertDataTypeToSql_(object type, object length, object precision, object scale);
-	IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBQueryManager qryMgr, string script);
+	IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script);
 	DbCommand CreateDbCommand_(string cmdText = null);
 	IDbConnection CreateDbConnection_(string connectionString);
 	IBsNativeDbConnectionWrapper CreateDbConnectionWrapper_(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null);

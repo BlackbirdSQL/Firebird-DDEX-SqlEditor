@@ -1,14 +1,11 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.ResultSetAndGridContainer
 
 using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Shared.Controls.Grid;
-using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
@@ -23,7 +20,7 @@ namespace BlackbirdSql.Shared.Ctl.QueryExecution;
 
 public sealed class ResultSetAndGridContainer : IDisposable
 {
-	private IBGridControl2 _GridCtl;
+	private IBsGridControl2 _GridCtl;
 
 	private QEResultSet _QeResultSet;
 
@@ -45,7 +42,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	public QEResultSet QEResultSet => _QeResultSet;
 
-	public IBGridControl2 GridCtl => _GridCtl;
+	public IBsGridControl2 GridCtl => _GridCtl;
 
 	public double ControlToWindowRatio
 	{
@@ -69,7 +66,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		_MoreRowsAvailableHandler = OnMoreRowsAvailableFromStorage;
 	}
 
-	public void Initialize(IBGridControl2 grid)
+	public void Initialize(IBsGridControl2 grid)
 	{
 		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.Initialize", "", null);
 		_GridCtl = grid;
@@ -104,7 +101,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 			string text = _QeResultSet.ColumnNames[i];
 			if (text == null || text.Length == 0)
 			{
-				text = ControlsResources.QEGridResultsNoColumnTitle;
+				text = ControlsResources.Grid_ResultsNoColumnTitle;
 			}
 
 			_GridCtl.SetHeaderInfo(i + 1, text, null);

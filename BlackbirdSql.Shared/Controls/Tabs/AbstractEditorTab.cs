@@ -21,7 +21,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.Shared.Controls.Tabs;
 
 
-
 public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMultiViewDocumentView,
 	IVsWindowFrameNotify3, IOleCommandTarget, IVsToolboxActiveUserHook, IVsToolboxPageChooser,
 	IVsDefaultToolboxTabState, IVsToolboxUser
@@ -723,7 +722,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IOleCommandTarget.Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		int num = _TabbedEditorPane.HandleExec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+		int num = _TabbedEditorPane.OnExec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
 		if (num == 0)
 			return num;
@@ -731,7 +730,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		if (AbstractTabbedEditorWindowPane.ToolbarManager.TryGetCommandHandler(_TabbedEditorPane.GetType(),
 			new GuidId(pguidCmdGroup, nCmdID), out var commandHandler))
 		{
-			return commandHandler.HandleExec(_TabbedEditorPane, nCmdexecopt, pvaIn, pvaOut);
+			return commandHandler.OnExec(_TabbedEditorPane, nCmdexecopt, pvaIn, pvaOut);
 		}
 		if (_CmdTarget == null || _CmdTarget is AbstractTabbedEditorWindowPane)
 			return 0;
@@ -743,7 +742,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		int hresult = _TabbedEditorPane.HandleQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+		int hresult = _TabbedEditorPane.OnQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
 		if (hresult == VSConstants.S_OK)
 			return hresult;
@@ -755,7 +754,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			if (AbstractTabbedEditorWindowPane.ToolbarManager.TryGetCommandHandler(_TabbedEditorPane.GetType(),
 				new GuidId(pguidCmdGroup, prgCmds[i].cmdID), out var commandHandler))
 			{
-				return commandHandler.HandleQueryStatus(_TabbedEditorPane, ref prgCmds[i], pCmdText);
+				return commandHandler.OnQueryStatus(_TabbedEditorPane, ref prgCmds[i], pCmdText);
 			}
 		}
 

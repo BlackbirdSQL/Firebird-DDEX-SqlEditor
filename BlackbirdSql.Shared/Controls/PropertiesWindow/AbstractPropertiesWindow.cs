@@ -8,6 +8,7 @@ using System.ComponentModel;
 
 namespace BlackbirdSql.Shared.Controls.PropertiesWindow;
 
+
 public abstract class AbstractPropertiesWindow : ICustomTypeDescriptor
 {
 	public AttributeCollection GetAttributes()

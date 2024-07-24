@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.Marker
 
 using System;
 using System.Collections;
@@ -14,8 +12,9 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Shared.Ctl;
 
-
 [ComVisible(false)]
+
+
 public class Marker(IDictionary markers) : IVsTextMarkerClient
 {
 	private readonly IDictionary _markers = markers;
@@ -192,7 +191,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 			return 1;
 		}
 
-		COMException ex = new(ControlsResources.ThisCommandIsNotSupported, VSConstants.E_UNEXPECTED);
+		COMException ex = new(Resources.ExCommandNotSupported, VSConstants.E_UNEXPECTED);
 		Diag.Dug(ex);
 		throw ex;
 	}
@@ -210,7 +209,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 	{
 		if (_TextSpan == null)
 		{
-			COMException ex = new(ControlsResources.ViewHaveToBeSetBeforeExecutingDoubleClickEvent, VSConstants.E_UNEXPECTED);
+			COMException ex = new(Resources.ExViewHasToBeSetBeforeExecutingDoubleClickEvent, VSConstants.E_UNEXPECTED);
 			Diag.Dug(ex);
 			throw ex;
 		}

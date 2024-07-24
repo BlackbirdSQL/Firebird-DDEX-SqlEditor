@@ -5,7 +5,12 @@ using System;
 using BlackbirdSql.Shared.Ctl;
 
 
+
 namespace BlackbirdSql.Shared.Events;
+
+
+public delegate void SelectionChangedEventHandler(object sender, SelectionChangedEventArgs args);
+
 
 public class SelectionChangedEventArgs : EventArgs
 {

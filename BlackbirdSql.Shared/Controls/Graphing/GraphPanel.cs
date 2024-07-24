@@ -36,7 +36,7 @@ public class GraphPanel : ContainerControl
 				{
 					Click += editQueryTextHandler;
 					toolTip = new ToolTip();
-					toolTip.SetToolTip(this, ControlsResources.EditQueryText);
+					toolTip.SetToolTip(this, ControlsResources.Graphing_EditQueryText);
 				}
 				else
 				{
@@ -165,7 +165,7 @@ public class GraphPanel : ContainerControl
 		SuspendLayout();
 		graphControl = CreateGraphControl();
 		graphControl.Name = "ShowPlanGraph";
-		graphControl.AccessibleName = ControlsResources.ExecutionPlanGraphAAName;
+		graphControl.AccessibleName = ControlsResources.Graphing_ExecutionPlanGraphAAName;
 		graphControl.Dock = DockStyle.Fill;
 		graphControl.MouseDown += OnChildControlMouseDown;
 		graphControl.IsActiveChangedEvent += OnGraphControlIsActiveChanged;
@@ -178,7 +178,7 @@ public class GraphPanel : ContainerControl
 		};
 		_DescriptionCtl = MakeNewDescription();
 		_DescriptionCtl.Name = "DescriptionCtl";
-		_DescriptionCtl.AccessibleName = ControlsResources.ExecutionPlanDescriptionAAName;
+		_DescriptionCtl.AccessibleName = ControlsResources.Graphing_ExecutionPlanDescriptionAAName;
 		_DescriptionCtl.Dock = DockStyle.Top;
 		_DescriptionCtl.Width = Width;
 		_DescriptionCtl.MouseDown += OnChildControlMouseDown;

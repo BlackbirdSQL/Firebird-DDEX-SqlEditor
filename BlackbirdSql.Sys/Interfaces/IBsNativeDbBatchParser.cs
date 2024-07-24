@@ -50,12 +50,12 @@ public interface IBsNativeDbBatchParser : IDisposable
 
 	bool CloseConnection();
 
-	Task<bool> CommitTransactionAsync(CancellationToken cancelToken);
+	Task<bool> CommitTransactionsAsync(CancellationToken cancelToken);
 
 	IDbConnection RenewConnection(string connectionString);
 
 
-	Task<bool> RollbackTransactionAsync(CancellationToken cancelToken);
+	Task<bool> RollbackTransactionsAsync(CancellationToken cancelToken);
 
 	int Parse();
 

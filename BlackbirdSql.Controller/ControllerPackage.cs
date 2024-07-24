@@ -8,6 +8,7 @@ using BlackbirdSql.EditorExtension;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 
 
 namespace BlackbirdSql.Controller;
@@ -128,34 +129,36 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	/// </summary>
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
+
 		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
 
-		Progress(progress, "Initializing ApcManager ...");
+		ProgressAsync(progress, "Initializing ApcManager...").Forget();
 		
 		await base.InitializeAsync(cancellationToken, progress);
 
 
 
-		Progress(progress, "Loading ApcManager Event manager...");
+		ProgressAsync(progress, "ApcManager requesting Event propogatation...").Forget();
 
 		// First try.
-		await ApcInstance.AdviseEventsAsync();
+		Task.Run(ApcInstance.AdviseUnsafeEventsAsync).Forget();
+		Task.Run(ApcInstance.RegisterProjectEventHandlersAsync).Forget();
 
-		Progress(progress, "Loading ApcManager Event manager... Done.");
+		ProgressAsync(progress, "ApcManager requesting Event propogation... Done.").Forget();
 
 		
 
-		Progress(progress, "Loading ApcManager service...");
+		ProgressAsync(progress, "ApcManager loading service...").Forget();
 		
 		ServiceContainer.AddService(typeof(IBsPackageController), ServicesCreatorCallbackAsync, promote: true);
 
-		Progress(progress, "Loading ApcManager service... Done.");
+		ProgressAsync(progress, "ApcManager loading service... Done.").Forget();
 		
 
 
-		Progress(progress, "Initializing ApcManager ... Done.");
+		ProgressAsync(progress, "Initializing ApcManager ... Done.").Forget();
 		
 	}
 
@@ -176,15 +179,15 @@ public abstract class ControllerPackage : EditorExtensionPackage
 			return;
 
 
-		Progress(progress, "Finalizing ApcManager initialization...");
-		Progress(progress, "Finalizing: Advising ApcManager Events...");
+		ProgressAsync(progress, "Finalizing ApcManager...").Forget();
+
+		ProgressAsync(progress, "Finalizing ApcManager. Advising Events...").Forget();
 
 		// Second try.
-		_ApcInstance.AdviseEvents();
+		await _ApcInstance.AdviseUnsafeEventsAsync();
+		await _ApcInstance.RegisterProjectEventHandlersAsync();
 
-
-
-		Progress(progress, "Finalizing: Advising ApcManager Events... Done.");
+		ProgressAsync(progress, "Finalizing ApcManager. Advising Events... Done.").Forget();
 
 		await base.FinalizeAsync(cancellationToken, progress);
 
@@ -193,16 +196,16 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		// If we get here and the Rct is not loaded/loading it means "no solution".
 		if (!RctManager.Loading)
 		{
-			Progress(progress, "Finalizing: Loading Running Connection Table...");
+			ProgressAsync(progress, "Finalizing ApcManager. Loading Running Connection Table...").Forget();
 
 			RctManager.LoadConfiguredConnections();
 
-			Progress(progress, "Finalizing: Loading Running Connection Table... Done.");
+			ProgressAsync(progress, "Finalizing ApcManager. Loading Running Connection Table... Done.").Forget();
 		}
 
 
 
-		Progress(progress, "Finalizing ApcManager initialization... Done.");
+		ProgressAsync(progress, "Finalizing ApcManager... Done.").Forget();
 		
 	}
 
@@ -300,7 +303,8 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		// If this is called early we have to initialize user option push notifications
 		// and environment events synchronously.
 		PropagateSettings();
-		ApcInstance.AdviseEvents();
+		ApcInstance.UiAdviseUnsafeEvents();
+		ApcInstance.UiRegisterProjectEventHandlers();
 
 		if (key == SystemData.C_PersistentKey)
 			_OnLoadSolutionOptionsEvent?.Invoke(stream);

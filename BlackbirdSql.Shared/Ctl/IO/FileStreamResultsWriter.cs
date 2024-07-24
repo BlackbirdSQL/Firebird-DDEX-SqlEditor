@@ -8,7 +8,6 @@ using BlackbirdSql.Shared.Interfaces;
 
 
 
-
 namespace BlackbirdSql.Shared.Ctl.IO;
 
 
@@ -61,7 +60,7 @@ public sealed class FileStreamResultsWriter : AbstractResultsWriter
 		}
 	}
 
-	public override void AppendError(string text, int line, IBTextSpan textSpan, bool noCRLF)
+	public override void AppendError(string text, int line, IBsTextSpan textSpan, bool noCRLF)
 	{
 		AppendError(text, noCRLF);
 	}

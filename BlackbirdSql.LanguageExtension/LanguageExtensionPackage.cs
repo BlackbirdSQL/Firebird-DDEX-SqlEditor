@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Threading;
 using Microsoft.Win32;
 
 
@@ -205,7 +206,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 			throw ex;
 		}
 		/*
-		else if (serviceType == typeof(IBDesignerExplorerServices))
+		else if (serviceType == typeof(IBsDesignerExplorerServices))
 		{
 			object service = new DesignerExplorerServices()
 				?? throw Diag.ExceptionService(serviceType);
@@ -238,29 +239,18 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	// ---------------------------------------------------------------------------------
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		Progress(progress, "Initializing Language services...");
-		
+		ProgressAsync(progress, "Initializing Language services...").Forget();
 
-		Progress(progress, "Registering Language service...");
+
+		ProgressAsync(progress, "Language service registering...").Forget();
 
 		ServiceContainer.AddService(typeof(LsbLanguageService), ServicesCreatorCallbackAsync, promote: true);
 
-		Progress(progress, "Registering Language service... Done.");
-
-		
-
-		Progress(progress, "Loading Language service preferences...");
-
-		// AdvancedPreferencesModel advancedPreferences = await AdvancedPreferencesModel.GetLiveInstanceAsync();
-		// await advancedPreferences.LoadAsync();
-
-		Progress(progress, "Loading Language service preferences... Done.");
-
-		
+		ProgressAsync(progress, "Language registering service... Done.").Forget();
 
 		await base.InitializeAsync(cancellationToken, progress);
 
-		Progress(progress, "Initializing Language services... Done.");
+		ProgressAsync(progress, "Initializing Language services... Done.").Forget();
 
 	}
 
@@ -281,13 +271,13 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 			return;
 
 
-		Progress(progress, "Finalizing Language services initialization...");
+		ProgressAsync(progress, "Finalizing Language Services...").Forget();
 
 		await base.FinalizeAsync(cancellationToken, progress);
 
 
 
-		Progress(progress, "Finalizing: Proffering Language Services...");
+		ProgressAsync(progress, "Finalizing Language Services. Proffering services...").Forget();
 
 		// TODO: Used by Declarations.
 
@@ -300,11 +290,11 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 		IsInitialized = true;
 
-		Progress(progress, "Finalizing: Proffering Language Services... Done.");
+		ProgressAsync(progress, "Finalizing Language Services. Proffering Language services... Done.").Forget();
 
-		
 
-		Progress(progress, "Finalizing Language services initialization... Done.");
+
+		ProgressAsync(progress, "Finalizing Language Services... Done.").Forget();
 
 	}
 

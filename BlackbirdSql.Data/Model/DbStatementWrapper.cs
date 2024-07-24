@@ -1,5 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QEOLESQLExec
+
 using System;
 using System.Data;
 using System.Data.Common;
@@ -262,13 +263,13 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 				case SqlStatementType.Commit:
 
-					await CommitTransactionAsync(true, cancelToken);
+					await CommitTransactionsAsync(true, cancelToken);
 					AfterStatementExecution(null, statement.Text, statementType, -1);
 					break;
 
 				case SqlStatementType.Rollback:
 
-					await RollbackTransactionAsync(cancelToken);
+					await RollbackTransactionsAsync(cancelToken);
 					AfterStatementExecution(null, statement.Text, statementType, -1);
 					break;
 
@@ -337,7 +338,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		}
 		catch
 		{
-			await RollbackTransactionAsync(cancelToken);
+			await RollbackTransactionsAsync(cancelToken);
 			// CloseConnection();
 
 			throw;
@@ -365,7 +366,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 		// DisposeCommand();
 		if (!cancelToken.IsCancellationRequested)
-			await CommitTransactionAsync(false, cancelToken);
+			await CommitTransactionsAsync(false, cancelToken);
 		// CloseConnection();
 
 		return rowsSelected;
@@ -438,24 +439,24 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 		if (!cancelToken.IsCancellationRequested && autoCommit && (bool)Reflect.GetPropertyValue(_Command, "IsDDLCommand"))
 		{
-			await CommitTransactionAsync(autoCommit, cancelToken);
+			await CommitTransactionsAsync(autoCommit, cancelToken);
 		}
 
 		return rowsAffected;
 	}
 
-	private async Task<bool> CommitTransactionAsync(bool force, CancellationToken cancelToken)
+	private async Task<bool> CommitTransactionsAsync(bool force, CancellationToken cancelToken)
 	{
 		if (_CanCommit)
-			return await _Owner.CommitTransactionAsync(cancelToken);
+			return await _Owner.CommitTransactionsAsync(cancelToken);
 
 		return false;
 	}
 
-	private async Task<bool> RollbackTransactionAsync(CancellationToken cancelToken)
+	private async Task<bool> RollbackTransactionsAsync(CancellationToken cancelToken)
 	{
 		if (_CanCommit)
-			return await _Owner.RollbackTransactionAsync(cancelToken);
+			return await _Owner.RollbackTransactionsAsync(cancelToken);
 
 		return false;
 	}

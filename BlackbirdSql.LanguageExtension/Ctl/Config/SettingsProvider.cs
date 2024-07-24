@@ -33,7 +33,7 @@ public class SettingsProvider
 
 	[ComVisible(true)]
 	[Guid(PackageData.TransientLanguagePreferencesPageGuid)]
-	public class TransientAdvancedPreferencesPage(IBTransientSettings transientSettings)
+	public class TransientAdvancedPreferencesPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientAdvancedPreferencesPage, AdvancedPreferencesModel>(transientSettings) { }
 
 }

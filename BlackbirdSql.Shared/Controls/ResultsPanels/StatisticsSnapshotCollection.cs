@@ -9,7 +9,10 @@ using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Sys.Enums;
 
+
+
 namespace BlackbirdSql.Shared.Controls.ResultsPanels;
+
 
 public class StatisticsSnapshotCollection : CollectionBase
 {
@@ -150,9 +153,9 @@ public class StatisticsSnapshotCollection : CollectionBase
 		{
 			StatisticsSnapshot snapshot = new(InternalConnection);
 
-			QESQLQueryDataEventArgs args = new(qryMgr.LiveSettings.ExecutionType, EnSqlStatementAction.Inactive,
-				qryMgr.LiveSettings.EditorResultsOutputMode, qryMgr.IsWithActualPlan, qryMgr.IsWithClientStats,
-				0, 0, 0, 0, qryMgr.QueryExecutionStartTime, DateTime.Now);
+			QueryDataEventArgs args = new(qryMgr.LiveSettings.ExecutionType, EnSqlStatementAction.Inactive,
+				/* qryMgr.LiveSettings.EditorResultsOutputMode , qryMgr.IsWithActualPlan, */ qryMgr.IsWithClientStats,
+				0, 0, /* 0, 0, */ qryMgr.QueryExecutionStartTime, DateTime.Now);
 
 			snapshot.Load(args);
 
@@ -172,7 +175,7 @@ public class StatisticsSnapshotCollection : CollectionBase
 
 
 
-	public void RetrieveStatisticsIfNeeded(QESQLQueryDataEventArgs args)
+	public void RetrieveStatisticsIfNeeded(QueryDataEventArgs args)
 	{
 		if (!_Initialized)
 		{

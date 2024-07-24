@@ -4,44 +4,40 @@
 using System;
 using System.Drawing;
 using System.Globalization;
-using BlackbirdSql.Core;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Properties;
-
-// using Microsoft.SqlServer.Management.UI.Grid;
-
 
 
 
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class DlgStorage : IBDlgStorage, IBGridStorage, IDisposable
+public class DlgStorage : IBsDlgStorage, IBsGridStorage, IDisposable
 {
-	protected IBGridMemDataStorage _GridMemStorage;
+	protected IBsGridMemDataStorage _GridMemStorage;
 
 	// [CLSCompliant(false)]
-	protected IBStorageView _StorageView;
+	protected IBsStorageView _StorageView;
 
 	// [CLSCompliant(false)]
-	protected IBDlgGridControl _DlgGridCtl;
+	protected IBsDlgGridControl _DlgGridCtl;
 
 	protected CustomizeCellGDIObjectsEventHandler _OnCustCellGDIObjectsHandler;
 
 	// [CLSCompliant(false)]
-	public virtual IBMemDataStorage Storage => _GridMemStorage;
+	public virtual IBsMemDataStorage Storage => _GridMemStorage;
 
 	// [CLSCompliant(false)]
-	public virtual IBStorageView StorageView => _StorageView;
+	public virtual IBsStorageView StorageView => _StorageView;
 
 	public event FillControlWithDataEventHandler FillControlWithDataEvent;
 
 	public event SetCellDataFromControlEventHandler SetCellDataFromControlEvent;
 
 	// [CLSCompliant(false)]
-	public DlgStorage(IBDlgGridControl grid)
+	public DlgStorage(IBsDlgGridControl grid)
 	{
 		_GridMemStorage = new GridMemDataStorage();
 		_GridMemStorage.InitStorage();
@@ -91,7 +87,7 @@ public class DlgStorage : IBDlgStorage, IBGridStorage, IDisposable
 		{
 			return data;
 		}
-		return ControlsResources.InvalidNonStringCellType;
+		return ControlsResources.Grid_InvalidNonStringCellType;
 	}
 
 	public virtual int IsCellEditable(long nRowIndex, int nColIndex)
@@ -126,7 +122,7 @@ public class DlgStorage : IBDlgStorage, IBGridStorage, IDisposable
 		{
 			image = null;
 			state = EnButtonCellState.Normal;
-			buttonLabel = ControlsResources.InvalidNonButtonCellType;
+			buttonLabel = ControlsResources.Grid_InvalidNonButtonCellType;
 		}
 	}
 
@@ -140,7 +136,7 @@ public class DlgStorage : IBDlgStorage, IBGridStorage, IDisposable
 		return EnGridCheckBoxState.None;
 	}
 
-	public virtual void FillControlWithData(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
+	public virtual void FillControlWithData(long nRowIndex, int nColIndex, IBsGridEmbeddedControl control)
 	{
 		if (FillControlWithDataEvent != null)
 		{
@@ -153,7 +149,7 @@ public class DlgStorage : IBDlgStorage, IBGridStorage, IDisposable
 		control.SetCurSelectionAsString(cellDataAsString);
 	}
 
-	public virtual bool SetCellDataFromControl(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
+	public virtual bool SetCellDataFromControl(long nRowIndex, int nColIndex, IBsGridEmbeddedControl control)
 	{
 		if (SetCellDataFromControlEvent != null)
 		{

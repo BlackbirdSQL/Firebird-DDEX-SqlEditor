@@ -15,13 +15,13 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public abstract class AbstractMemDataStorage : IBMemDataStorage, IBDataStorage, IDisposable
+public abstract class AbstractMemDataStorage : IBsMemDataStorage, IBsDataStorage, IDisposable
 {
 	protected ArrayList _ColumnInfoArray;
 
 	protected ArrayList _RowsArray;
 
-	public virtual IBStorageView GetStorageView()
+	public virtual IBsStorageView GetStorageView()
 	{
 		return new MemStorageView(this);
 	}
@@ -77,9 +77,9 @@ public abstract class AbstractMemDataStorage : IBMemDataStorage, IBDataStorage, 
 
 	public int ColumnCount => _ColumnInfoArray.Count;
 
-	public IBColumnInfo GetColumnInfo(int iCol)
+	public IBsColumnInfo GetColumnInfo(int iCol)
 	{
-		return (IBColumnInfo)_ColumnInfoArray[iCol];
+		return (IBsColumnInfo)_ColumnInfoArray[iCol];
 	}
 
 	public bool IsClosed()

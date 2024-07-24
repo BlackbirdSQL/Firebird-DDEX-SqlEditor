@@ -1,4 +1,5 @@
 ﻿// Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
+// Microsoft.SqlServer.Management.UI.Grid.ColumnReorderRequestedEventHandler
 // Microsoft.SqlServer.Management.UI.Grid.ColumnsReorderedEventArgs
 
 using System;
@@ -6,6 +7,10 @@ using System;
 
 
 namespace BlackbirdSql.Shared.Events;
+
+
+public delegate void ColumnsReorderedEventHandler(object sender, ColumnsReorderedEventArgs a);
+
 
 public class ColumnsReorderedEventArgs : EventArgs
 {

@@ -22,7 +22,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Implementation of <see cref="IVsDataConnectionSupport"/> interface
 /// </summary>
 // =========================================================================================================
-public class TConnectionSupport : AdoDotNetConnectionSupport, IBDataConnectionSupport
+public class TConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectionSupport
 {
 
 
@@ -231,38 +231,24 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBDataConnectionSu
 		{
 			connectionUIProperties = @this.Site.CreateObject<IVsDataConnectionUIProperties>(Site.Source);
 		}
-#if DEBUG
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Debug(ex);
 			throw;
 		}
-#else
-		catch
-		{
-			throw;
-		}
-#endif
 
 		try
 		{
 			if (_ConnectionSource != EnConnectionSource.Undefined)
-				(connectionUIProperties as IBDataConnectionProperties).ConnectionSource = _ConnectionSource;
+				(connectionUIProperties as IBsDataConnectionProperties).ConnectionSource = _ConnectionSource;
 
 			connectionUIProperties.Parse(ConnectionString);
 		}
-#if DEBUG
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Debug(ex);
 			throw;
 		}
-#else
-		catch
-		{
-			throw;
-		}
-#endif
 
 		if (doPromptCheck && !(connectionUIProperties as TConnectionProperties).IsComplete)
 			return false;
@@ -275,24 +261,17 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBDataConnectionSu
 			// Fire and wait.
 			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
 			{
-				await TaskScheduler.Default;
+				await Cmd.AwaitableAsync();
 				NativeDb.DatabaseEngineSvc.OpenConnection_(Connection);
 				return true;
 			});
 			*/
 		}
-#if DEBUG
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Expected(ex);
 			throw;
 		}
-#else
-		catch
-		{
-			throw;
-		}
-#endif
 
 		return true;
 	}

@@ -22,29 +22,29 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 	[Browsable(false)]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short pageNameResourceID, bool supportsAutomation = true)
-	: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, new string[0])
+	: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, [])
 	{
 	}
 
 	[Browsable(false)]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string subSubCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short subSubCategoryResourceID, short pageNameResourceID, bool supportsAutomation = true)
-	: this(pageType, categoryName, subCategoryName, subSubCategoryName, pageName, categoryResourceID, subCategoryResourceID, subSubCategoryResourceID, pageNameResourceID, supportsAutomation, new string[0])
+	: this(pageType, categoryName, subCategoryName, subSubCategoryName, pageName, categoryResourceID, subCategoryResourceID, subSubCategoryResourceID, pageNameResourceID, supportsAutomation, [])
 	{
 	}
 
 	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short pageNameResourceID, bool supportsAutomation, string keywordListResourceName)
-		: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, new string[1] { "@" + keywordListResourceName })
+		: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, ["@" + keywordListResourceName])
 	{
 	}
 
 	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string subSubCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short subSubCategoryResourceID, short pageNameResourceID, bool supportsAutomation, string keywordListResourceName)
-	: this(pageType, categoryName, subCategoryName, subSubCategoryName, pageName, categoryResourceID, subCategoryResourceID, subSubCategoryResourceID, pageNameResourceID, supportsAutomation, new string[1] { "@" + keywordListResourceName })
+	: this(pageType, categoryName, subCategoryName, subSubCategoryName, pageName, categoryResourceID, subCategoryResourceID, subSubCategoryResourceID, pageNameResourceID, supportsAutomation, ["@" + keywordListResourceName])
 	{
 	}
 
 	public VsProvideOptionPageAttribute(Type pageType, string categoryName, string subCategoryName, string pageName, short categoryResourceID, short subCategoryResourceID, short pageNameResourceID, bool supportsAutomation, int keywordListResourceId)
-		: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, new string[1] { "#" + keywordListResourceId })
+		: this(pageType, categoryName, subCategoryName, null, pageName, categoryResourceID, subCategoryResourceID, -1, pageNameResourceID, supportsAutomation, ["#" + keywordListResourceId])
 	{
 	}
 

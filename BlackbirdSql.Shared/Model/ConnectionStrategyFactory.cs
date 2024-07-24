@@ -1,49 +1,70 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.DefaultSqlEditorStrategy
 
 using System;
 using System.Data.Common;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Enums;
 
 
 
 namespace BlackbirdSql.Shared.Model;
 
 
-public sealed class ConnectionStrategyFactory : IBConnectionStrategy, IDisposable
+// =========================================================================================================
+//
+//									ConnectionStrategyFactory Class
+//
+/// <summary>
+/// ConnectionStrategy factory.
+/// </summary>
+// =========================================================================================================
+public sealed class ConnectionStrategyFactory : IBsConnectionStrategyFactory, IDisposable
 {
 
-	public ConnectionStrategyFactory(DbConnectionStringBuilder csb, bool isOnline = false)
+	// -----------------------------------------------------------
+	#region Constructors / Destructors - ConnectionStrategyFactory
+	// -----------------------------------------------------------
+
+	/// <summary>
+	/// Default .ctor.
+	/// </summary>
+	public ConnectionStrategyFactory(DbConnectionStringBuilder csb, EnEditorCreationFlags creationFlags)
 	{
-		if (csb != null)
+		if (csb is Csb csa)
 		{
-			_DefaultConnectionInfo = new ConnectionPropertyAgent();
-			_DefaultConnectionInfo.Parse(csb.ConnectionString);
+			bool createDataConnection = (creationFlags & EnEditorCreationFlags.CreateConnection) > 0;
+
+			_DefaultConnectionInfo = new ConnectionInfoPropertyAgent();
+			_DefaultConnectionInfo.Parse(csa.ConnectionString);
+
+			if (createDataConnection)
+				_DefaultConnectionInfo.CreateDataConnection();
 		}
 
-		_IsOnline = isOnline;
+		// _IsOnline = isOnline;
 	}
 
 
 	/*
-	public DefaultConnectionStrategy()
+	public ConnectionStrategyFactory()
 	{
 	}
 
 
 
-	public DefaultConnectionStrategy(ConnectionPropertyAgent defaultConnectionInfo)
+	public ConnectionStrategyFactory(ConnectionInfoPropertyAgent defaultConnectionInfo)
 		: this(defaultConnectionInfo, isOnline: false)
 	{
 	}
 
 
 
-	public DefaultConnectionStrategy(ConnectionPropertyAgent defaultConnectionInfo, bool isOnline)
+	public ConnectionStrategyFactory(ConnectionInfoPropertyAgent defaultConnectionInfo, bool isOnline)
 	{
 		if (defaultConnectionInfo == null)
 		{
@@ -66,14 +87,29 @@ public sealed class ConnectionStrategyFactory : IBConnectionStrategy, IDisposabl
 	}
 
 
+	#endregion Constructors / Destructors
 
 
 
-	private readonly ConnectionPropertyAgent _DefaultConnectionInfo;
 
-	private readonly bool _IsOnline;
+	// =========================================================================================================
+	#region Fields - ConnectionStrategyFactory
+	// =========================================================================================================
 
 
+	private readonly IBsConnectionInfo _DefaultConnectionInfo;
+	// private readonly bool _IsOnline;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - ConnectionStrategyFactory
+	// =========================================================================================================
 
 
 	public string DatabaseName
@@ -86,32 +122,56 @@ public sealed class ConnectionStrategyFactory : IBConnectionStrategy, IDisposabl
 		}
 	}
 
-	public bool IsOnline => _IsOnline;
+	public IBsExtendedCommandHandler ExtendedCommandHandler => null;
 
-	public bool IsDw => false;
+	public bool IsOnline => false; // _IsOnline;
 
 	public object MetadataProviderProvider => null;
 
 	public EnEditorMode Mode => EnEditorMode.Standard;
 
-	public IBExtendedCommandHandler ExtendedCommandHandler => null;
+
+	#endregion Property Accessors
 
 
 
 
-	public IBErrorTaskFactory GetErrorTaskFactory()
-	{
-		return null;
-	}
+
+	// =========================================================================================================
+	#region Methods - ConnectionStrategyFactory
+	// =========================================================================================================
+
 
 	public ConnectionStrategy CreateConnectionStrategy()
 	{
 		ConnectionStrategy strategy = new ConnectionStrategy();
+
 		if (_DefaultConnectionInfo != null)
-		{
-			strategy.SetConnectionInfo(_DefaultConnectionInfo);
-		}
+			strategy.ConnInfo = _DefaultConnectionInfo;
 
 		return strategy;
 	}
+
+
+
+	public IBsErrorTaskFactory GetErrorTaskFactory()
+	{
+		return null;
+	}
+
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - ConnectionStrategyFactory
+	// =========================================================================================================
+
+
+
+	#endregion Event Handling
+
 }

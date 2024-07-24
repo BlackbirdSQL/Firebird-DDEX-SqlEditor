@@ -12,7 +12,6 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Controls;
 
 
-
 public class TabbedEditorUIControl : AbstractTabbedEditorUIControl
 {
 
@@ -25,14 +24,11 @@ public class TabbedEditorUIControl : AbstractTabbedEditorUIControl
 
 
 	private StatusStrip _StatusBar;
-	private QEStatusBarManager _StatusBarManager;
+	private StatusBarManager _StatusBarMgr;
 
 
 
 	public StatusStrip StatusBar => _StatusBar;
-
-
-	public QEStatusBarManager StatusBarManager => _StatusBarManager;
 
 
 	protected override void AddCustomControlsToPanel(Panel panel)
@@ -62,19 +58,19 @@ public class TabbedEditorUIControl : AbstractTabbedEditorUIControl
 
 	private StatusStrip CreateStatusBar()
 	{
-		_StatusBarManager = new QEStatusBarManager();
+		_StatusBarMgr = new StatusBarManager();
 
 		_StatusBar = new StatusStrip
 		{
 			Dock = DockStyle.Top,
 			SizingGrip = false,
 			ShowItemToolTips = true,
-			AccessibleName = ControlsResources.StatusBarAccessibleName
+			AccessibleName = ControlsResources.StatusBar_AccessibleName
 		};
 
 		_StatusBar.Height += 4;
 
-		_StatusBarManager.Initialize(_StatusBar, rowCountValid: true, (IBSqlEditorWindowPane)TabbedEditorPane);
+		_StatusBarMgr.Initialize(_StatusBar, rowCountValid: true, (IBSqlEditorWindowPane)TabbedEditorPane);
 
 		return _StatusBar;
 	}
@@ -83,9 +79,9 @@ public class TabbedEditorUIControl : AbstractTabbedEditorUIControl
 	{
 		base.Dispose(disposing);
 
-		if (disposing && _StatusBarManager != null)
+		if (disposing && _StatusBarMgr != null)
 		{
-			_StatusBarManager.Dispose();
+			_StatusBarMgr.Dispose();
 		}
 	}
 }

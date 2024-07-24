@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 namespace BlackbirdSql.Shared.Events;
 
+
 public class BitmapCellAccessibilityInfoNeededEventArgs : EventArgs
 {
 	public int ColumnIndex { get; private set; }

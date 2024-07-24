@@ -126,7 +126,4 @@
   <data name="ExceptionDuplicateSingletonInstances" xml:space="preserve">
     <value>Singleton instance already exists. Attempt to create duplicate {0} instances.</value>
   </data>
-  <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
-    <value>Events already enabled.</value>
-  </data>
 </root>

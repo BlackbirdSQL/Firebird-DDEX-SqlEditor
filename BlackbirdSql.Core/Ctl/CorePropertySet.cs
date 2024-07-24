@@ -39,12 +39,11 @@ public abstract class CorePropertySet : PropertySet
 	// ---------------------------------------------------------------------------------
 	public static readonly Describer[] Describers = Csb.Describers.GetDescribers(
 	[
-		C_KeyExIcon, C_KeyDataSource, C_KeyPort, C_KeyServerType, C_KeyDatabase,
+		C_KeyDataSource, C_KeyPort, C_KeyServerType, C_KeyDatabase,
 		C_KeyUserID, C_KeyPassword, C_KeyExDataset, C_KeyExDatasetKey,
 		C_KeyExConnectionKey, C_KeyExDatasetId, C_KeyExConnectionName,
-		C_KeyExConnectionSource, C_KeyExServerEngine, C_KeyExServerVersion,
-		C_KeyExPersistPassword, C_KeyExAdministratorLogin,
-		C_KeyExServerFullyQualifiedDomainName, C_KeyExOtherParams
+		C_KeyExConnectionSource, C_KeyExServerVersion,
+		C_KeyExPersistPassword
 	]);
 
 	public static readonly KeyValuePair<string, string>[] Synonyms = Csb.Describers.GetSynonyms(Describers);

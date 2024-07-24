@@ -18,10 +18,10 @@ using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql;
 
-// [Exportable(typeof(IBTrace), "BlackbirdSql.Sys.Diagnostics.Tracer", 0, null)]
+// [Exportable(typeof(IBsTrace), "BlackbirdSql.Sys.Diagnostics.Tracer", 0, null)]
 
 
-public class Tracer : IBTrace // , IBExportable
+public class Tracer : IBsTrace // , IBExportable
 {
 	public enum EnLevel : uint
 	{

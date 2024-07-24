@@ -35,7 +35,7 @@ public sealed class FontAndColorProviderExecutionPlan : AbstractFontAndColorProv
 
 	private FontAndColorProviderExecutionPlan()
 	{
-		CategoryName = ControlsResources.FontAndColorCategorySqlResultsExecutionPlan;
+		CategoryName = ControlsResources.FontAndColorCategoryResultsExecutionPlan;
 		Guid = VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory;
 		FontDefault = new Font("Courier New", 10f);
 		AllColorableItemInfo allColorableItemInfo = new AllColorableItemInfo

@@ -19,6 +19,7 @@ using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.Shell;
 
 
 
@@ -166,27 +167,37 @@ public static partial class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Formats time span for display in sql statistics output.
+	/// Formats time span for display in statistics output.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FmtSqlStats(this TimeSpan value)
+	public static string FmtStats(this TimeSpan value, bool trim = false)
 	{
-		string empty = value.ToString();
-		if (!string.IsNullOrEmpty(empty))
+		string result = value.ToString();
+
+		if (!string.IsNullOrEmpty(result))
 		{
 			string numberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-			int num = empty.LastIndexOf(numberDecimalSeparator, StringComparison.Ordinal);
-			if (num != -1)
+			int pos = result.LastIndexOf(numberDecimalSeparator, StringComparison.Ordinal);
+			if (pos != -1)
 			{
-				int num2 = num + 4;
-				if (num2 <= empty.Length)
+				int num2 = pos + 4;
+				if (num2 <= result.Length)
 				{
-					empty = empty[..num2];
+					result = result[..num2];
 				}
+			}
+
+			if (trim)
+			{
+				while (result.StartsWith("00:"))
+					result = result.TrimPrefix("00:");
+
+				if (result.Length > 3 && result[0] == '0' && result[2] != ':')
+					result = result[1..];
 			}
 		}
 
-		return empty;
+		return result;
 	}
 
 
@@ -360,24 +371,24 @@ public static partial class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Formats time span ticks for display in sql statistics output.
+	/// Formats time span ticks for display in statistics output.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FmtSqlStats(this long ticks)
+	public static string FmtStats(this long ticks, bool trim = false)
 	{
 		TimeSpan value = new(ticks);
 
-		return value.FmtSqlStats();
+		return value.FmtStats(trim);
 	}
 
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Formats time span for display in an sql window statusbar.
+	/// Formats time span for display in a window statusbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FmtSqlStatus(this TimeSpan value)
+	public static string FmtStatus(this TimeSpan value)
 	{
 		return new TimeSpan(value.Days, value.Hours, value.Minutes, value.Seconds, 0).ToString();
 	}
@@ -386,14 +397,14 @@ public static partial class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Formats time ticks for display in an sql window statusbar.
+	/// Formats time ticks for display in a window statusbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FmtSqlStatus(this long ticks)
+	public static string FmtStatus(this long ticks)
 	{
 		TimeSpan value = new(ticks);
 
-		return value.FmtSqlStatus();
+		return value.FmtStatus();
 	}
 
 

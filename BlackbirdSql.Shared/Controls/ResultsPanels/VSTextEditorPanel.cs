@@ -104,7 +104,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 		{
 			if (_TextWriter == null)
 			{
-				Exception ex = new InvalidOperationException(ControlsResources.ErrTextWriterNull);
+				Exception ex = new InvalidOperationException(ControlsResources.ExTextWriterNull);
 				Diag.ThrowException(ex);
 			}
 
@@ -370,7 +370,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 				catch (Exception e)
 				{
 					Diag.Dug(e);
-					MessageCtl.ShowEx(ControlsResources.ErrWhileSavingResults, e);
+					MessageCtl.ShowEx(ControlsResources.ExSavingResults, e);
 				}
 			}
 		}

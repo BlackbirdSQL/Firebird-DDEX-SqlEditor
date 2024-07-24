@@ -9,21 +9,21 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Ctl;
 
 
-public class TextEditorProxy : MarshalByRefObject, IBTextEditor, IDisposable
+public class TextEditorProxy : MarshalByRefObject, IBsTextEditor, IDisposable
 {
 
-	public TextEditorProxy(IBTextEditor editor)
+	public TextEditorProxy(IBsTextEditor editor)
 	{
 		_UnderlyingEditor = editor;
 	}
 
 
 
-	private IBTextEditor _UnderlyingEditor;
+	private IBsTextEditor _UnderlyingEditor;
 
-	private IBTextEditorEvents _TextEditorEvents;
+	private IBsTextEditorEvents _TextEditorEvents;
 
-	public IBTextEditorEvents TextEditorEvents => _TextEditorEvents;
+	public IBsTextEditorEvents TextEditorEvents => _TextEditorEvents;
 
 
 	public void Select(int offset, int length)
@@ -36,7 +36,7 @@ public class TextEditorProxy : MarshalByRefObject, IBTextEditor, IDisposable
 		_UnderlyingEditor?.Focus();
 	}
 
-	public void SetTextEditorEvents(IBTextEditorEvents events)
+	public void SetTextEditorEvents(IBsTextEditorEvents events)
 	{
 		MarshalByRefObject marshalByRefObject = null;
 		if (events != null)
@@ -47,7 +47,7 @@ public class TextEditorProxy : MarshalByRefObject, IBTextEditor, IDisposable
 				throw new NotSupportedException();
 			}
 		}
-		IBTextEditorEvents textEditorEvents = _TextEditorEvents;
+		IBsTextEditorEvents textEditorEvents = _TextEditorEvents;
 		_TextEditorEvents = null;
 		textEditorEvents?.SetTextEditor(null);
 		_TextEditorEvents = events;

@@ -22,7 +22,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	{
 	}
 
-	public DbBatchParser(EnSqlExecutionType executionType, IBQueryManager qryMgr, string script)
+	public DbBatchParser(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
 	{
 		_ExecutionType = executionType;
 		_QryMgr = qryMgr;
@@ -91,7 +91,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 
 
 
-	private readonly IBQueryManager _QryMgr = null;
+	private readonly IBsQueryManager _QryMgr = null;
 
 	// private bool _Cancelled = false;
 	private int _StatementCount;
@@ -151,7 +151,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 			if (_LocalConnection != null)
 				return _LocalConnection;
 
-			return _QryMgr.Connection;
+			return _QryMgr.DataConnection;
 		}
 	}
 
@@ -253,7 +253,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 		return true;
 	}
 
-	public async Task<bool> CommitTransactionAsync(CancellationToken cancelToken)
+	public async Task<bool> CommitTransactionsAsync(CancellationToken cancelToken)
 	{
 		if (_LocalConnection == null)
 		{
@@ -337,7 +337,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	}
 
 
-	public async Task<bool> RollbackTransactionAsync(CancellationToken cancelToken)
+	public async Task<bool> RollbackTransactionsAsync(CancellationToken cancelToken)
 	{
 		if (_LocalConnection == null)
 		{

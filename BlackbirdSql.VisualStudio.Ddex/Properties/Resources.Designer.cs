@@ -160,15 +160,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Events already enabled..
-        /// </summary>
-        public static string ExceptionEventsAlreadyEnabled {
-            get {
-                return ResourceManager.GetString("ExceptionEventsAlreadyEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failed to retrieve Package settings.
         /// </summary>
         public static string ExceptionFailedToRetrievePackageSettings {

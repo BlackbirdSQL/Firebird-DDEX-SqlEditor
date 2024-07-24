@@ -3,13 +3,19 @@
 
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
+using BlackbirdSql.EditorExtension.Properties;
 using BlackbirdSql.Shared.Controls;
-using BlackbirdSql.Shared.Properties;
+using BlackbirdSql.Shared.Ctl.Commands;
+using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
@@ -60,6 +66,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 		caption = "";
 		cmdUIGuid = Guid.Empty;
 		hresult = VSConstants.S_FALSE;
+		bool autoExecute;
 
 		if (ApcManager.SolutionClosing)
 			return VSConstants.E_FAIL;
@@ -67,7 +74,6 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 		RctManager.EnsureLoaded();
 
 		EditorId = "Editor" + _EditorId++;
-
 
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
@@ -163,10 +169,10 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				if (vsTextLines2 == null)
 					return VSConstants.E_FAIL;
 
-				EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2);
+				autoExecute = EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2);
 
 
-				TabbedEditorWindowPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker);
+				TabbedEditorWindowPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker, autoExecute);
 
 
 				pDocView = Marshal.GetIUnknownForObject(editorPane);
@@ -187,7 +193,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				Diag.Dug(ex);
 				if (ex is NullReferenceException || ex is ApplicationException || ex is ArgumentException || ex is InvalidOperationException)
 				{
-					MessageCtl.ShowEx(SharedResx.BaseEditorFactory_FailedToCreateEditor, ex);
+					MessageCtl.ShowEx(Resources.ExFailedToCreateEditor, ex);
 					return VSConstants.E_FAIL;
 				}
 
@@ -199,18 +205,49 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 			}
 		}
 
+		// if (autoExecute && editorPane != null)
+		//	ExecuteQuery(editorPane);
+
 		return VSConstants.S_OK;
 	}
 
-	protected virtual TabbedEditorWindowPane CreateTabbedEditorPane(IVsTextLines vsTextLines, string moniker)
+	protected virtual TabbedEditorWindowPane CreateTabbedEditorPane(IVsTextLines vsTextLines, string moniker, bool autoExecute)
 	{
-		return new TabbedEditorWindowPane(ServiceProvider, EditorExtensionPackage.Instance, vsTextLines, moniker);
+		return new TabbedEditorWindowPane(ServiceProvider, EditorExtensionPackage.Instance, vsTextLines, moniker, autoExecute);
 	}
 
-	protected virtual void EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData)
+	protected virtual bool EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData)
 	{
-		EditorExtensionPackage.Instance.EnsureAuxilliaryDocData(hierarchy, documentMoniker, docData);
+		return EditorExtensionPackage.Instance.EnsureAuxilliaryDocData(hierarchy, documentMoniker, docData);
 	}
 
 
+	/*
+	protected void ExecuteQuery(IBSqlEditorWindowPane editorPane)
+	{
+		// Tracer.Trace(GetType(), "OnExec()", "ExecutionType: {0}.", executionType);
+
+		// ----------------------------------------------------------------------------------- //
+		// ******************** Execution Point (0) - AbstractEditorFactory.ExecuteQuery() ******************** //
+		// ----------------------------------------------------------------------------------- //
+		_ = Task.Run(() => ExecuteQueryAsync(editorPane, 50));
+	}
+
+
+
+	private async Task<bool> ExecuteQueryAsync(IBSqlEditorWindowPane editorPane, int delay)
+	{
+		// Tracer.Trace(GetType(), "ExecuteQueryAsync()");
+
+		// Give editor time to breath.
+		if (delay > 0)
+			System.Threading.Thread.Sleep(delay);
+
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		editorPane.AsyncExecuteQuery(EnSqlExecutionType.QueryOnly);
+
+		return true;
+	}
+	*/
 }

@@ -13,13 +13,13 @@ namespace BlackbirdSql.Shared.Model.IO;
 
 public class MemStorageView : AbstractStorageView
 {
-	protected IBMemDataStorage _MemStorage;
+	protected IBsMemDataStorage _MemStorage;
 
 	public MemStorageView()
 	{
 	}
 
-	public MemStorageView(IBMemDataStorage storage)
+	public MemStorageView(IBsMemDataStorage storage)
 	{
 		_MemStorage = storage;
 	}
@@ -35,7 +35,7 @@ public class MemStorageView : AbstractStorageView
 	public override int ColumnCount => _MemStorage.ColumnCount;
 
 
-	public override IBColumnInfo GetColumnInfo(int iCol)
+	public override IBsColumnInfo GetColumnInfo(int iCol)
 	{
 		return _MemStorage.GetColumnInfo(iCol);
 	}
@@ -44,7 +44,7 @@ public class MemStorageView : AbstractStorageView
 	{
 		if (i64Row > int.MaxValue)
 		{
-			Exception ex = new(string.Format(CultureInfo.CurrentCulture, ControlsResources.MemoryBasedStorageIsLimitedToNRows, int.MaxValue));
+			Exception ex = new(string.Format(CultureInfo.CurrentCulture, ControlsResources.ExMemoryBasedStorageIsLimitedToNRows, int.MaxValue));
 			Diag.Dug(ex);
 			throw ex;
 		}

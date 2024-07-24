@@ -32,10 +32,11 @@ namespace BlackbirdSql.Core.Model.Config;
 //										AbstractSettingsModel Class
 //
 /// <summary>
-/// Base class template for the user options model.
+/// Base class template for the user options model. If created with transientSettings then uses a volatile
+/// copy of the model that can be used in code and modified programatically or by using 
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : AbstractSettingsModel<T>
+public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : AbstractSettingsModel<T>
 {
 
 	// -------------------------------------------------------
@@ -55,9 +56,9 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 
 	/// <summary>
-	/// Transient settings .ctor used by <see cref="CreateAsync(IBTransientSettings)"/>.
+	/// Transient settings .ctor used by <see cref="CreateAsync(IBsTransientSettings)"/>.
 	/// </summary>
-	protected AbstractSettingsModel(string package, string group, string livePrefix, IBTransientSettings transientSettings)
+	protected AbstractSettingsModel(string package, string group, string livePrefix, IBsTransientSettings transientSettings)
 		: this(package, group, livePrefix)
 	{
 		_TransientSettings = transientSettings;
@@ -134,7 +135,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	/// Creates a new instance of the options class and loads the values from the store.
 	/// This is for transient settings. Save operations save to memory.
 	/// </summary>
-	public static async Task<T> CreateAsync(IBTransientSettings transientSettings)
+	public static async Task<T> CreateAsync(IBsTransientSettings transientSettings)
 	{
 		object[] args = [transientSettings];
 		T instance = (T)Activator.CreateInstance(typeof(T), args);
@@ -160,13 +161,13 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	private readonly string _SettingsGroup;
 	private readonly string _LivePrefix;
 
-	private readonly IBTransientSettings _TransientSettings = null;
+	private readonly IBsTransientSettings _TransientSettings = null;
 
 
 	private static AsyncLazy<T> _LiveModel = null;
 	// private static AsyncLazy<ShellSettingsManager> _SettingsManager = null;
 	private static ShellSettingsManager _SettingsManager = null;
-	private static List<IBModelPropertyWrapper> _PropertyWrappers = null;
+	private static List<IBsModelPropertyWrapper> _PropertyWrappers = null;
 
 
 	#endregion Fields
@@ -182,7 +183,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public IBModelPropertyWrapper this[string propertyName]
+	public IBsModelPropertyWrapper this[string propertyName]
 	{
 		get
 		{
@@ -226,7 +227,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public List<IBModelPropertyWrapper> PropertyWrappers
+	public List<IBsModelPropertyWrapper> PropertyWrappers
 	{
 		get
 		{
@@ -236,7 +237,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 					return _PropertyWrappers;
 
 
-				List<IBModelPropertyWrapper> list = [];
+				List<IBsModelPropertyWrapper> list = [];
 				_PropertyWrappers = list;
 
 				foreach (PropertyInfo property in GetOptionProperties())
@@ -264,7 +265,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public virtual IEnumerable<IBModelPropertyWrapper> PropertyWrappersEnumeration => PropertyWrappers.AsReadOnly();
+	public virtual IEnumerable<IBsModelPropertyWrapper> PropertyWrappersEnumeration => PropertyWrappers.AsReadOnly();
 
 
 	// This is already lazy. Performing lazy on a lazy makes no sense and iac fails.
@@ -279,10 +280,10 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	public static event Action<T> SettingsSavedEvent;
 
 	public event AutomationVerbEventHandler SettingsResetEvent;
-	// public event IBSettingsModel.SelectedItemChangedEventHandler SelectedItemChangedEvent;
-	public event IBSettingsModel.EditControlFocusEventHandler EditControlGotFocusEvent;
-	public event IBSettingsModel.EditControlFocusEventHandler EditControlLostFocusEvent;
-	public event IBSettingsModel.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
+	// public event IBsSettingsModel.SelectedItemChangedEventHandler SelectedItemChangedEvent;
+	public event IBsSettingsModel.EditControlFocusEventHandler EditControlGotFocusEvent;
+	public event IBsSettingsModel.EditControlFocusEventHandler EditControlLostFocusEvent;
+	public event IBsSettingsModel.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
 
 	public event EventHandler BeforeLoadEvent;
 	public event EventHandler Disposed;
@@ -324,7 +325,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 	public virtual async Task LoadAsync()
 	{
-		await TaskScheduler.Default;
+		await Cmd.AwaitableAsync();
 
 		BeforeLoadEvent?.Invoke(this, EventArgs.Empty);
 
@@ -340,7 +341,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 		}
 
 
-		foreach (IBModelPropertyWrapper propertyWrapper in PropertyWrappersEnumeration)
+		foreach (IBsModelPropertyWrapper propertyWrapper in PropertyWrappersEnumeration)
 		{
 			if (readOnlySettingsStore == null)
 				((IBSettingsModelPropertyWrapper)propertyWrapper).Load(this, _TransientSettings);
@@ -357,7 +358,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 		lock (_LockGlobal)
 		{
-			foreach (IBModelPropertyWrapper propertyWrapper in PropertyWrappersEnumeration)
+			foreach (IBsModelPropertyWrapper propertyWrapper in PropertyWrappersEnumeration)
 			{
 				((IBSettingsModelPropertyWrapper)propertyWrapper).LoadDefault(this);
 			}
@@ -385,7 +386,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 			writableSettingsStore = manager.GetWritableSettingsStore(scope);
 		}
 
-		foreach (IBModelPropertyWrapper propertyWrapper in PropertyWrappersEnumeration)
+		foreach (IBsModelPropertyWrapper propertyWrapper in PropertyWrappersEnumeration)
 		{
 			if (writableSettingsStore == null)
 				((IBSettingsModelPropertyWrapper)propertyWrapper).Save(this, _TransientSettings);

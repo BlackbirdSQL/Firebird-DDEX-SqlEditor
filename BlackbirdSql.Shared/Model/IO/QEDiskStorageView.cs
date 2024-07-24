@@ -5,7 +5,7 @@ using BlackbirdSql.Shared.Interfaces;
 
 namespace BlackbirdSql.Shared.Model.IO;
 
-internal class QEDiskStorageView : DiskStorageView, IBQEStorageView, IBStorageView, IDisposable
+internal class QEDiskStorageView : DiskStorageView, IBsQEStorageView, IBsStorageView, IDisposable
 {
 	public int MaxNumBytesToDisplay
 	{
@@ -24,7 +24,7 @@ internal class QEDiskStorageView : DiskStorageView, IBQEStorageView, IBStorageVi
 		}
 	}
 
-	public QEDiskStorageView(IBDiskDataStorage storage)
+	public QEDiskStorageView(IBsDiskDataStorage storage)
 		: base(storage)
 	{
 		// Tracer.Trace(GetType(), "QEDiskStorageView.QEDiskStorageView", "", null);

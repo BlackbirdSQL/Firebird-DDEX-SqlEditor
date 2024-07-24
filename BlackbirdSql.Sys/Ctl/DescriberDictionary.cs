@@ -441,6 +441,19 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 		return descriptor.IsAdvanced;
 	}
 
+	public bool IsEquivalency(string key)
+	{
+		if (!TryGetValue(key, out Describer descriptor))
+		{
+			ArgumentException ex = new("Descriptors: " + key);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		return descriptor.IsEquivalency;
+	}
+
+
 
 	public bool IsParameter(string key)
 	{
@@ -491,7 +504,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 	public class EnumerableAdvanced(DescriberDictionary owner)
-	: IBEnumerableDescribers<EnumeratorAdvanced>
+	: IBsEnumerableDescribers<EnumeratorAdvanced>
 	{
 		private readonly DescriberDictionary _Owner = owner;
 
@@ -511,7 +524,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 	public class EnumerableEquivalencyDescribers(DescriberDictionary owner)
-	: IBEnumerableDescribers<EnumeratorEquivalency>
+	: IBsEnumerableDescribers<EnumeratorEquivalency>
 	{
 		private readonly DescriberDictionary _Owner = owner;
 
@@ -530,7 +543,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 	public class EnumerableWeakEquivalencyDescribers(DescriberDictionary owner)
-		: IBEnumerableDescribers<EnumeratorWeakEquivalency>
+		: IBsEnumerableDescribers<EnumeratorWeakEquivalency>
 	{
 		private readonly DescriberDictionary _Owner = owner;
 
@@ -548,7 +561,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 	public class EnumerableMandatory(DescriberDictionary owner)
-	: IBEnumerableDescribers<EnumeratorMandatory>
+	: IBsEnumerableDescribers<EnumeratorMandatory>
 	{
 		private readonly DescriberDictionary _Owner = owner;
 
@@ -568,7 +581,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 	public class EnumerablePublicMandatory(DescriberDictionary owner)
-		: IBEnumerableDescribers<EnumeratorPublicMandatory>
+		: IBsEnumerableDescribers<EnumeratorPublicMandatory>
 	{
 		private readonly DescriberDictionary _Owner = owner;
 
@@ -588,7 +601,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 	public class EnumerableConnection(DescriberDictionary owner)
-	: IBEnumerableDescribers<EnumeratorConnection>
+	: IBsEnumerableDescribers<EnumeratorConnection>
 	{
 		private readonly DescriberDictionary _Owner = owner;
 
@@ -606,7 +619,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	}
 
 	public class EnumerableDescribers(DescriberDictionary owner)
-		: IBEnumerableDescribers<EnumeratorDescribers>
+		: IBsEnumerableDescribers<EnumeratorDescribers>
 	{
 		private readonly DescriberDictionary _Owner = owner;
 

@@ -14,13 +14,15 @@ using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Enums;
 
 
+
 namespace BlackbirdSql.Shared.Ctl.Config;
+
 
 // =========================================================================================================
 //										PersistentSettings Class
 //
 /// <summary>
-/// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
+/// Consolidated single access point for daisy-chained packages settings models (IBsSettingsModel).
 /// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
 /// descendent tree from the top-level extension lib down to the Core.
 /// PersistentSettings can be either consumers or providers of options, or both.
@@ -71,7 +73,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	// =========================================================================================================
 
 
-	public static CommandObject CmdObject => _CmdObject ??= new(SqlResources.ResourceManager);
+	public static CommandObject CmdObject => _CmdObject ??= new(SqlCmdResources.ResourceManager);
 
 	// LanguageService AdvancedPreferencesModel
 
@@ -122,8 +124,6 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static bool EditorExecutionTtsDefault => (bool)GetSetting("EditorExecutionGeneralTtsDefault", true);
 	public static int EditorExecutionSetRowCount => (int)GetSetting("EditorExecutionGeneralSetRowCount", SysConstants.C_DefaultSetRowCount);
 	public static EnBlobSubType EditorExecutionSetBlobDisplay => (EnBlobSubType)GetSetting("EditorExecutionGeneralSetBlobDisplay", SysConstants.C_DefaultSetBlobDisplay);
-	public static bool EditorExecutionDefaultOleScripting => (bool)GetSetting("EditorExecutionGeneralDefaultOleScripting",
-		SysConstants.C_DefaultDefaultOleScripting);
 	public static int EditorExecutionTimeout => (int)GetSetting("EditorExecutionGeneralExecutionTimeout", SysConstants.C_DefaultExecutionTimeout);
 
 	// Editor ExecutionAdvancedSettingsModel
@@ -267,7 +267,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
-	// public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
+	// public override void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
 
 
 	/// <summary>

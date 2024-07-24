@@ -15,11 +15,11 @@ namespace BlackbirdSql.Shared.Model.IO;
 
 public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, IDataRecord
 {
-	protected IBFileStreamReader _FsReader;
+	protected IBsFileStreamReader _FsReader;
 
-	protected IBFileStreamWriter _FsWriter;
+	protected IBsFileStreamWriter _FsWriter;
 
-	protected IBDiskDataStorage _DiskDataStorage;
+	protected IBsDiskDataStorage _DiskDataStorage;
 
 	protected long _CurrentOffset;
 
@@ -49,10 +49,10 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 
 	protected DiskStorageView()
 	{
-		throw new Exception(ControlsResources.StorageViewDefaultConstructorCannotBeUsed);
+		throw new Exception(Resources.ExStorageViewDefaultConstructorCannotBeUsed);
 	}
 
-	protected internal DiskStorageView(IBDiskDataStorage storage)
+	protected internal DiskStorageView(IBsDiskDataStorage storage)
 	{
 		_DiskDataStorage = storage;
 		_CurrentOffset = 0L;
@@ -111,7 +111,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	public override int ColumnCount => _DiskDataStorage.ColumnCount;
 
 
-	public override IBColumnInfo GetColumnInfo(int iCol)
+	public override IBsColumnInfo GetColumnInfo(int iCol)
 	{
 		return _DiskDataStorage.GetColumnInfo(iCol);
 	}
@@ -120,7 +120,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	{
 		if (i64Row >= RowCount || iCol >= ColumnCount)
 		{
-			throw new Exception(ControlsResources.InvalidArgument);
+			throw new Exception(Resources.ExInvalidArgument);
 		}
 		if (iCol == 0 || iCol != m_iPrevCol + 1 || i64Row != m_i64PrevRow)
 		{
@@ -145,7 +145,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	{
 		object result = null;
 		bool IsNull = false;
-		IBColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(iCol);
+		IBsColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(iCol);
 		Type type = columnInfo.FieldType;
 		bool flag = columnInfo.IsSqlVariant;
 
@@ -448,7 +448,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 		int num = _DiskDataStorage.ColumnCount;
 		for (int i = 0; i < num; i++)
 		{
-			IBColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(i);
+			IBsColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(i);
 			dataTable.Columns.Add(new DataColumn(columnInfo.ColumnName, columnInfo.FieldType));
 		}
 		return dataTable;
@@ -579,7 +579,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 		int num = _DiskDataStorage.ColumnCount;
 		for (int i = 0; i < num; i++)
 		{
-			IBColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(i);
+			IBsColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(i);
 			if (string.Compare(columnInfo.ColumnName, name, StringComparison.Ordinal) == 0)
 			{
 				return i;
@@ -607,7 +607,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	{
 		if (m_i64CurrentRow - 1 >= RowCount || i >= ColumnCount)
 		{
-			throw new Exception(ControlsResources.InvalidArgument);
+			throw new Exception(Resources.ExInvalidArgument);
 		}
 		InitFileWriter();
 		_CurrentOffset = _DiskDataStorage.GetRowOffset(m_i64CurrentRow - 1);

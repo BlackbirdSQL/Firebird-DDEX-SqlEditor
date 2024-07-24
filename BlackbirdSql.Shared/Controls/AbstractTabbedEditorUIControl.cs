@@ -13,7 +13,6 @@ using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -22,8 +21,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Shared.Controls;
 
-
 [DesignerCategory("code")]
+
+
 public abstract class AbstractTabbedEditorUIControl : Control, IServiceProvider
 {
 
@@ -53,9 +53,9 @@ public abstract class AbstractTabbedEditorUIControl : Control, IServiceProvider
 				_SplitContainer.TabActivationRequestEvent += SplitContainer_TabActivationRequest;
 				_SplitContainer.UseCustomTabActivation = true;
 				_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.ImageAndText,
-					ControlsResources.TabbedEditor_SplitContainerButton1Text, ControlsResources.design);
+					ControlsResources.ToolStripButton_SplitContainerButton1Text, ControlsResources.ImgDesign);
 				_SplitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_TextView, EnSplitterBarButtonDisplayStyle.ImageAndText,
-					ControlsResources.SqlEditorTabbedEditorPane_Sql_Button_Text, ControlsResources.sql);
+					ControlsResources.ToolStripButton_Sql_Button_Text, ControlsResources.ImgSql);
 			}
 			finally
 			{
@@ -255,7 +255,7 @@ public abstract class AbstractTabbedEditorUIControl : Control, IServiceProvider
 			_Panel.SuspendLayout();
 			SuspendLayout();
 
-			_ToolbarHost.AccessibleName = ControlsResources.ToolBarHostAccessibleName;
+			_ToolbarHost.AccessibleName = ControlsResources.ToolBarHost_AccessibleName;
 
 			try
 			{

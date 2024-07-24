@@ -10,10 +10,11 @@ using Microsoft.VisualStudio.Shell;
 namespace BlackbirdSql.Core.Controls.Config;
 
 // =========================================================================================================
-//										AbstractLiveSettingsPage Class
+//										AbstractTransientSettingsPage Class
 //
 /// <summary>
-/// Base class for live (.
+/// Base class for live user options settings which can be used with an implementation of
+/// <see cref="AbstractTransientSettingsDialog"/>.
 /// </summary>
 // =========================================================================================================
 [ComVisible(true)]
@@ -22,7 +23,7 @@ public abstract class AbstractTransientSettingsPage<TPage, T> : AbstractSettings
 
 {
 
-	public AbstractTransientSettingsPage(IBTransientSettings transientSettings)
+	public AbstractTransientSettingsPage(IBsTransientSettings transientSettings)
 	{
 		// Tracer.Trace(GetType(), ".ctor");
 

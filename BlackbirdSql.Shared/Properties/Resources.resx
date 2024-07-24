@@ -117,7 +117,213 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DesignerExplorerServices_DecoratedNewQuery" xml:space="preserve">
-    <value>/* ** New Query ** */</value>
+  <data name="BatchRowsSelectedMessage" xml:space="preserve">
+    <value>
+Statement #{0} ({1} row(s) selected, {2} in total)
+</value>
+  </data>
+  <data name="DisplayUserNameAndSPID" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="ErrorFatalScriptingNoParam" xml:space="preserve">
+    <value>A fatal scripting error occurred.</value>
+  </data>
+  <data name="ErrorScriptingNoParam" xml:space="preserve">
+    <value>A scripting error occurred.</value>
+  </data>
+  <data name="ExAlreadySortingData" xml:space="preserve">
+    <value>Invalid calling sequence: already sorting data</value>
+  </data>
+  <data name="ExAlreadyStoringData" xml:space="preserve">
+    <value>Invalid calling sequence: already storing data.</value>
+  </data>
+  <data name="ExBufferSizeShouldBePositive" xml:space="preserve">
+    <value>Invalid argument: buffer size should be a positive number.</value>
+  </data>
+  <data name="ExCannotAddReaderWhenStoringData" xml:space="preserve">
+    <value>A new reader cannot be added while storage is storing data.</value>
+  </data>
+  <data name="ExCannotCreateTempFile" xml:space="preserve">
+    <value>Failed to create temporary XML file.</value>
+  </data>
+  <data name="ExChangeConnectionCaption" xml:space="preserve">
+    <value>Connection Selection Error</value>
+  </data>
+  <data name="ExColumnsCountDoesNotMatch" xml:space="preserve">
+    <value>Number of columns in the new reader does not match storage.</value>
+  </data>
+  <data name="ExColumnsDoNotMatch" xml:space="preserve">
+    <value>Column definitions do not match those in the storage.</value>
+  </data>
+  <data name="ExCommandNotSupported" xml:space="preserve">
+    <value>This command is not supported.</value>
+  </data>
+  <data name="ExDatabaseConnection" xml:space="preserve">
+    <value>Connection failed. ConnectionString: {0}. Error message: {1}.</value>
+  </data>
+  <data name="ExDatabaseNotAccessible" xml:space="preserve">
+    <value>Database not accessible.</value>
+  </data>
+  <data name="ExDatabaseNotAccessibleEx" xml:space="preserve">
+    <value>Database not accessible: {0}.</value>
+  </data>
+  <data name="ExDisableTtsCaption" xml:space="preserve">
+    <value>Disable TTS Error</value>
+  </data>
+  <data name="ExDisconnectCaption" xml:space="preserve">
+    <value>Disconnect Error</value>
+  </data>
+  <data name="ExEventsAlreadyEnabled" xml:space="preserve">
+    <value>Events already enabled.</value>
+  </data>
+  <data name="ExExecutionNotCompleted" xml:space="preserve">
+    <value>Previous execution is not yet complete.</value>
+  </data>
+  <data name="ExExecutionPlanCaption" xml:space="preserve">
+    <value>Execution Plan Error</value>
+  </data>
+  <data name="ExFailedToGetTempFileName" xml:space="preserve">
+    <value>Failed to get temporary file name.</value>
+  </data>
+  <data name="ExFileStreamAlreadyInitialized" xml:space="preserve">
+    <value>Invalid calling sequence: file stream already initialized.</value>
+  </data>
+  <data name="ExFileStreamNeedsToBeInitializedFirst" xml:space="preserve">
+    <value>Invalid calling sequence: file stream must be initialized first.</value>
+  </data>
+  <data name="ExIncorrectGroupNumber" xml:space="preserve">
+    <value>The supplied group number is incorrect.</value>
+  </data>
+  <data name="ExIncorrectRowNumber" xml:space="preserve">
+    <value>Row number is incorrect.</value>
+  </data>
+  <data name="ExInvalidArgument" xml:space="preserve">
+    <value>Argument is not valid.</value>
+  </data>
+  <data name="ExInvalidCommandType" xml:space="preserve">
+    <value>Unsupported command object.  Use SqlCommand or ReliableSqlCommand.</value>
+  </data>
+  <data name="ExModifyConnectionCaption" xml:space="preserve">
+    <value>Modify Connection Error</value>
+  </data>
+  <data name="ExQueryBatchError" xml:space="preserve">
+    <value>An error occurred while executing batch. Error message is: {0}</value>
+  </data>
+  <data name="ExQueryExecutionCaption" xml:space="preserve">
+    <value>Query execution failed</value>
+  </data>
+  <data name="ExReaderCannotBeNull" xml:space="preserve">
+    <value>Invalid argument: reader cannot be null.</value>
+  </data>
+  <data name="ExResultSetAlreadyInited" xml:space="preserve">
+    <value>Initialize has already been called.</value>
+  </data>
+  <data name="ExResultSetAlreadyStoring" xml:space="preserve">
+    <value>Storage is already storing the data.</value>
+  </data>
+  <data name="ExResultSetNotInitialized" xml:space="preserve">
+    <value>Initialize should be called before.</value>
+  </data>
+  <data name="ExScriptingParseFailure" xml:space="preserve">
+    <value>An error was encountered while parsing with message: {0}.</value>
+  </data>
+  <data name="ExScriptIsStillBeingExecuted" xml:space="preserve">
+    <value>The query is currently executing. Do you want to cancel the query?</value>
+  </data>
+  <data name="ExSortViewDefaultConstructorCannotBeUsed" xml:space="preserve">
+    <value>SortView default constructor cannot be used.</value>
+  </data>
+  <data name="ExSqlExecutionModeChangeFailed" xml:space="preserve">
+    <value>Execution mode cannot be changed when query is executing</value>
+  </data>
+  <data name="ExStorageAlreadyStoring" xml:space="preserve">
+    <value>Invalid calling sequence: already storing data.</value>
+  </data>
+  <data name="ExStorageNoReader" xml:space="preserve">
+    <value>Object is not initialized with the reader.</value>
+  </data>
+  <data name="ExStorageNotInitialized" xml:space="preserve">
+    <value>Invalid calling sequence: storage must be initialized first.</value>
+  </data>
+  <data name="ExStorageViewDefaultConstructorCannotBeUsed" xml:space="preserve">
+    <value>StorageView default constructor cannot be used.</value>
+  </data>
+  <data name="ExTransactionsActive" xml:space="preserve">
+    <value>Transactions are still pending on this connection. You must Commit or Rollback pending Transactions before proceeding.</value>
+  </data>
+  <data name="ExUnableToCloseCon" xml:space="preserve">
+    <value>Unable to close connection specified in the SQLCMD script.</value>
+  </data>
+  <data name="ExViewHasToBeSetBeforeExecutingDoubleClickEvent" xml:space="preserve">
+    <value>View has to be set before executing double click event.</value>
+  </data>
+  <data name="InfoConnectionAutoClosed" xml:space="preserve">
+    <value>Query Information: Inactive connection '{0}' closed. ConnectionLifetime: {1} seconds.</value>
+  </data>
+  <data name="InfoDisconnectingFromSvr" xml:space="preserve">
+    <value>Disconnecting connection from {0}...</value>
+  </data>
+  <data name="InfoDisconnectingFromSvrAsUser" xml:space="preserve">
+    <value>Disconnecting connection from {0} as {1}...</value>
+  </data>
+  <data name="NewQueryBaseName" xml:space="preserve">
+    <value>NewQuery</value>
+  </data>
+  <data name="QueryBatchExecCompleted" xml:space="preserve">
+    <value>Batch execution completed {0} times.</value>
+  </data>
+  <data name="QueryBeginningBatchExec" xml:space="preserve">
+    <value>Beginning execution loop</value>
+  </data>
+  <data name="SaveResults" xml:space="preserve">
+    <value>Save Results</value>
+  </data>
+  <data name="SQLErrorFormat4" xml:space="preserve">
+    <value>{0}: Msg {1}, Level {2}, State {3}</value>
+  </data>
+  <data name="SQLErrorFormat4_NoSource" xml:space="preserve">
+    <value>Msg {0}, Level {1}, State {2}</value>
+  </data>
+  <data name="SQLErrorFormatDbEngine" xml:space="preserve">
+    <value>{0}: Msg {1}, Level {2}, Line {3}</value>
+  </data>
+  <data name="SqlExportFromGridFilterAllFiles" xml:space="preserve">
+    <value>All files (*.*)|*.*</value>
+  </data>
+  <data name="SqlExportFromGridFilterCSV" xml:space="preserve">
+    <value>CSV (Comma delimited) (*.csv) | *.csv</value>
+  </data>
+  <data name="SqlExportFromGridFilterTabDelimitted" xml:space="preserve">
+    <value>Text (Tab delimited) (*.txt) | *.txt</value>
+  </data>
+  <data name="SqlXMLFileFilter" xml:space="preserve">
+    <value>XML files (*.xml)|*.xml|All files (*.*)|*.*</value>
+  </data>
+  <data name="WarnBatchExecutionFailedIgnoring" xml:space="preserve">
+    <value>** An error was encountered during execution of batch. Continuing.</value>
+  </data>
+  <data name="WarnQueryConnectionBroken" xml:space="preserve">
+    <value>{0}Broken connection '{1}' has been reset.
+{2}This is possibly due to a network error.</value>
+  </data>
+  <data name="WarnQueryConnectionDead" xml:space="preserve">
+    <value>{0}Dead connection '{1}' has been reset.
+{2}This is possibly due to a network error.</value>
+  </data>
+  <data name="WarnQueryConnectionReset" xml:space="preserve">
+    <value>{0}Connection '{1}' has been reset.
+{2}This is possibly due to a network error.</value>
+  </data>
+  <data name="WarnQueryPrefix" xml:space="preserve">
+    <value>Query Warning: </value>
+  </data>
+  <data name="WarnQueryTransactionsDiscarded" xml:space="preserve">
+    <value>{0}There were active transactions that were discarded.</value>
+  </data>
+  <data name="WarnScriptingNoParam" xml:space="preserve">
+    <value>Scripting warning.</value>
+  </data>
+  <data name="WarnUncommittedTransactions" xml:space="preserve">
+    <value>There are uncommitted transactions. Do you wish to commit these transactions before closing the window?</value>
   </data>
 </root>

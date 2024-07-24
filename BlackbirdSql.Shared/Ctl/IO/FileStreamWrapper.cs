@@ -1,13 +1,17 @@
 // Microsoft.SqlServer.DataStorage, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
 // Microsoft.SqlServer.Management.UI.Grid.FileStreamWrapper
+
 using System;
 using System.IO;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Properties;
 
+
+
 namespace BlackbirdSql.Shared.Ctl.IO;
 
-public class FileStreamWrapper : IBFileStreamWrapper, IDisposable
+
+public class FileStreamWrapper : IBsFileStreamWrapper, IDisposable
 {
 	public const int DEFAULT_BUFFER_SIZE = 8192;
 
@@ -52,11 +56,11 @@ public class FileStreamWrapper : IBFileStreamWrapper, IDisposable
 	{
 		if (m_bInitialized)
 		{
-			throw new Exception(ControlsResources.FileStreamAlreadyInitialized);
+			throw new Exception(Resources.ExFileStreamAlreadyInitialized);
 		}
 		if (iBufferSize <= 0)
 		{
-			throw new Exception(ControlsResources.BufferSizeShouldBePositive);
+			throw new Exception(Resources.ExBufferSizeShouldBePositive);
 		}
 		m_iBufferSize = iBufferSize;
 		m_fs = new FileStream(sFileName, bOpenExisting ? FileMode.Open : FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite, m_iBufferSize, useAsync: false);
@@ -89,7 +93,7 @@ public class FileStreamWrapper : IBFileStreamWrapper, IDisposable
 	{
 		if (!m_bInitialized)
 		{
-			throw new Exception(ControlsResources.FileStreamNeedsToBeInitializedFirst);
+			throw new Exception(Resources.ExFileStreamNeedsToBeInitializedFirst);
 		}
 		MoveTo(i64Offset);
 		int num = 0;
@@ -119,7 +123,7 @@ public class FileStreamWrapper : IBFileStreamWrapper, IDisposable
 	{
 		if (!m_bInitialized)
 		{
-			throw new Exception(ControlsResources.FileStreamNeedsToBeInitializedFirst);
+			throw new Exception(Resources.ExFileStreamNeedsToBeInitializedFirst);
 		}
 		int num = 0;
 		while (num < iBytes)

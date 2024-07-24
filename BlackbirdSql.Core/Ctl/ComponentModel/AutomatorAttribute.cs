@@ -11,7 +11,7 @@ namespace BlackbirdSql.Core.Ctl.ComponentModel;
 /// A dependent property's driver/automator is specified in the constructor.
 /// Use the default constructor for the automator property and specify
 /// RefreshProperties(RefreshProperties.All).
-/// Automators must have a TypeConverter that descends from IBAutomatorConverter.
+/// Automators must have a TypeConverter that descends from IBsAutomatorConverter.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 public class AutomatorAttribute: Attribute
@@ -22,7 +22,7 @@ public class AutomatorAttribute: Attribute
 
 	/// <summary>
 	/// Default .ctor for specifying an automator/driver property. The property
-	/// must have a TypeConverter descendent from IBAutomatorConverter.
+	/// must have a TypeConverter descendent from IBsAutomatorConverter.
 	/// </summary>
 	public AutomatorAttribute()
 	{
@@ -37,7 +37,7 @@ public class AutomatorAttribute: Attribute
 	/// of a dependent property.
 	/// </param>
 	/// <param name="invert">
-	/// Set to true if the boolean value or enum value of an IBAutomatorConverter
+	/// Set to true if the boolean value or enum value of an IBsAutomatorConverter
 	/// inverts the readonly state of the property.
 	/// Defaults to false.
 	/// </param>

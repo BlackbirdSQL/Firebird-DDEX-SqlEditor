@@ -469,7 +469,7 @@ public class TViewSupport : DataViewSupport, IBsDataViewSupport
 			{
 				Csb csa = new(ViewHierarchy.ExplorerConnection.DecryptedConnectionString(), true);
 
-				ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = csa.DatasetMoniker;
+				ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = csa.LiveDatasetMoniker;
 
 				_PropertiesInitialized = true;
 			}

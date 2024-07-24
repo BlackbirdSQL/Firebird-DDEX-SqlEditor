@@ -1,11 +1,12 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.Source
+
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using Babel;
-using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
 using BlackbirdSql.LanguageExtension.Interfaces;
 using BlackbirdSql.LanguageExtension.Model;
@@ -45,8 +46,8 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			else
 				_IntelliSenseEnabled = auxDocData.IntellisenseEnabled.Value;
 
-			auxDocData.QryMgr.ScriptExecutionCompletedEvent += HandleScriptExecutionCompleted;
-			auxDocData.QryMgr.BatchExecutionCompletedEvent += HandleBatchExecutionCompleted;
+			auxDocData.QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
+			auxDocData.QryMgr.BatchExecutionCompletedEvent += OnBatchExecutionCompleted;
 		}
 
 		_IsServerSupported = false;
@@ -64,8 +65,6 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	private readonly object _LockObject = new object();
 
-	private bool _IsSqlCmdModeEnabled;
-
 	private bool _IntelliSenseEnabled;
 
 	private int _PrvChangeCount;
@@ -81,8 +80,6 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 	private readonly LsbLanguageService _SqlLanguageService;
 
 	public ITextUndoTransaction CurrentCommitUndoTransaction { get; set; }
-
-	public bool IsSqlCmdModeEnabled => _IsSqlCmdModeEnabled;
 
 	private LsbMetadataProviderProvider MetadataProviderProviderInstance { get; set; } = null;
 
@@ -111,7 +108,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		get
 		{
 			string name = null;
-			IBMetadataProviderProvider metadataProviderProvider = GetMetadataProviderProvider();
+			IBsMetadataProviderProvider metadataProviderProvider = GetMetadataProviderProvider();
 
 			if (metadataProviderProvider != null && metadataProviderProvider is LsbMetadataProviderProvider)
 			{
@@ -135,7 +132,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 				}
 				else // if (!IsDisconnectedMode)
 				{
-					name = GetDatabaseNameFromConnectionInfo(ConnectionInfo);
+					name = GetDatabaseNameFromConnectionInfo(ConnInfo);
 				}
 			}
 			return name;
@@ -164,16 +161,16 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		}
 	}
 
-	public ConnectionPropertyAgent ConnectionInfo
+	public IBsConnectionInfo ConnInfo
 	{
 		get
 		{
-			ConnectionPropertyAgent result = null;
+			IBsConnectionInfo result = null;
 
 			AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 
 			if (auxDocData != null)
-				result = auxDocData.QryMgr.Strategy.ConnectionInfo;
+				result = auxDocData.QryMgr.Strategy.ConnInfo;
 
 			return result;
 		}
@@ -181,26 +178,27 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 
 
-	public IBMetadataProviderProvider GetMetadataProviderProvider()
+	public IBsMetadataProviderProvider GetMetadataProviderProvider()
 	{
 		// TBC: MetaDataProvider not yet implemented
 
 		if (Cmd.ToBeCompleted)
 			return null;
 
-		IBMetadataProviderProvider metadataProviderProvider = null;
+		IBsMetadataProviderProvider metadataProviderProvider = null;
 
-		AuxilliaryDocData auxDocData = ((IBEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
+		AuxilliaryDocData auxDocData = ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
 
 		if (auxDocData != null && auxDocData.IntellisenseEnabled.AsBool())
 		{
-			metadataProviderProvider = (IBMetadataProviderProvider)auxDocData.StrategyFactory.MetadataProviderProvider;
+			// TODO: MetadataProviderProvider always null atm.
+			metadataProviderProvider = (IBsMetadataProviderProvider)auxDocData.StrategyFactory.MetadataProviderProvider;
 			metadataProviderProvider ??= MetadataProviderProviderInstance;
 
 			if (metadataProviderProvider == null && auxDocData.QryMgr.IsConnected)
 			{
-				ConnectionPropertyAgent connectionInfo = auxDocData.QryMgr.Strategy.ConnectionInfo;
-				if (connectionInfo != null && !string.IsNullOrEmpty(GetDatabaseNameFromConnectionInfo(connectionInfo)))
+				IBsConnectionInfo ci = auxDocData.QryMgr.Strategy.ConnInfo;
+				if (ci != null && !string.IsNullOrEmpty(GetDatabaseNameFromConnectionInfo(ci)))
 				{
 					MetadataProviderProviderInstance = LsbMetadataProviderProvider.Cache.Instance.Acquire(auxDocData.QryMgr);
 					metadataProviderProvider = MetadataProviderProviderInstance;
@@ -211,17 +209,17 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		return metadataProviderProvider;
 	}
 
-	public string GetDatabaseNameFromConnectionInfo(ConnectionPropertyAgent uici)
+	public string GetDatabaseNameFromConnectionInfo(IBsConnectionInfo ci)
 	{
 		string result = null;
 
-		if (uici != null)
-			result = uici.DatasetKey;
+		if (ci != null)
+			result = ci.DatasetKey;
 
 		return result;
 	}
 
-	private void HandleBatchExecutionCompleted(object sender, QESQLBatchExecutedEventArgs args)
+	private void OnBatchExecutionCompleted(object sender, BatchExecutionCompletedEventArgs args)
 	{
 		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 
@@ -232,7 +230,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		}
 	}
 
-	private void HandleScriptExecutionCompleted(object sender, ScriptExecutionCompletedEventArgs args)
+	private void OnQueryExecutionCompleted(object sender, QueryExecutionCompletedEventArgs args)
 	{
 		if (GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
 			&& LsbMetadataProviderProvider.CheckForDatabaseChangesAfterQueryExecution)
@@ -244,7 +242,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 	private AuxilliaryDocData GetAuxilliaryDocData()
 	{
 		IVsTextLines docData = GetTextLines();
-		return ((IBEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(docData);
+		return ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(docData);
 	}
 
 	public bool ExecuteParseRequest(string text)
@@ -254,7 +252,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		IBinder binder = null;
 
 		AuxilliaryDocData auxDocData = null;
-		IBMetadataProviderProvider metadataProviderProvider = GetMetadataProviderProvider();
+		IBsMetadataProviderProvider metadataProviderProvider = GetMetadataProviderProvider();
 
 		if (metadataProviderProvider != null)
 		{
@@ -420,13 +418,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	void IVsUserDataEvents.OnUserDataChange(ref Guid riidKey, object vtNewValue)
 	{
-		if (riidKey.Equals(VS.CLSID_PropOleSql))
-		{
-			_IsSqlCmdModeEnabled = (bool)vtNewValue;
-			(GetColorizer().Scanner as LsbLineScanner).IsSqlCmdModeEnabled = _IsSqlCmdModeEnabled;
-			IsDirty = true;
-		}
-		else if (riidKey.Equals(VS.CLSID_PropBatchSeparator))
+		if (riidKey.Equals(VS.CLSID_PropBatchSeparator))
 		{
 			string batchSeparator = vtNewValue as string;
 			(GetColorizer().Scanner as LsbLineScanner).BatchSeparator = batchSeparator;
@@ -479,11 +471,11 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	public override DocumentTask CreateErrorTaskItem(TextSpan span, MARKERTYPE markerType, string filename)
 	{
-		AuxilliaryDocData auxDocData = ((IBEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
+		AuxilliaryDocData auxDocData = ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
 
 		if (auxDocData != null)
 		{
-			IBErrorTaskFactory errorTaskFactory = auxDocData.StrategyFactory.GetErrorTaskFactory();
+			IBsErrorTaskFactory errorTaskFactory = auxDocData.StrategyFactory.GetErrorTaskFactory();
 
 			if (errorTaskFactory != null)
 				return errorTaskFactory.CreateErrorTaskItem(span, markerType, filename, GetTextLines());
@@ -494,11 +486,11 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	public override DocumentTask CreateErrorTaskItem(TextSpan span, string filename, string message, TaskPriority priority, TaskCategory category, MARKERTYPE markerType, TaskErrorCategory errorCategory)
 	{
-		AuxilliaryDocData auxDocData = ((IBEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
+		AuxilliaryDocData auxDocData = ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
 
 		if (auxDocData != null)
 		{
-			IBErrorTaskFactory errorTaskFactory = auxDocData.StrategyFactory.GetErrorTaskFactory();
+			IBsErrorTaskFactory errorTaskFactory = auxDocData.StrategyFactory.GetErrorTaskFactory();
 
 			if (errorTaskFactory != null)
 			{
@@ -527,8 +519,8 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
 			if (auxDocData != null)
 			{
-				auxDocData.QryMgr.BatchExecutionCompletedEvent -= HandleBatchExecutionCompleted;
-				auxDocData.QryMgr.ScriptExecutionCompletedEvent -= HandleScriptExecutionCompleted;
+				auxDocData.QryMgr.BatchExecutionCompletedEvent -= OnBatchExecutionCompleted;
+				auxDocData.QryMgr.ExecutionCompletedEvent -= OnQueryExecutionCompleted;
 			}
 		}
 	}

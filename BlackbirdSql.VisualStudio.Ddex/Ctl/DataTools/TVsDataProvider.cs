@@ -842,7 +842,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 				case "PlatformVersion":
 					return "2.0";
 				case "FactoryService":
-					return $"{{{(Attribute.GetCustomAttribute(typeof(IBProviderObjectFactory), typeof(GuidAttribute)) as GuidAttribute).Value}}}";
+					return $"{{{(Attribute.GetCustomAttribute(typeof(IBsProviderObjectFactory), typeof(GuidAttribute)) as GuidAttribute).Value}}}";
 				default:
 					break;
 

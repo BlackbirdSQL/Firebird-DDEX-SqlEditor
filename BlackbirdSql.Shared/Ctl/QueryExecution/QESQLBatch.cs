@@ -35,7 +35,7 @@ namespace BlackbirdSql.Shared.Ctl.QueryExecution;
 /// Batch processing class.
 /// </summary>
 // =========================================================================================================
-public class QESQLBatch : IBDataReaderHandler, IDisposable
+public class QESQLBatch : IBsDataReaderHandler, IDisposable
 {
 
 	// --------------------------------------------
@@ -103,10 +103,10 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 	private bool _NoResultsExpected;
 	private readonly QueryManager _QryMgr;
 	private long _RowsAffected;
-	private EnSqlSpecialActions _SpecialActions;
+	private EnSpecialActions _SpecialActions;
 	private IBsNativeDbStatementWrapper _SqlStatement = null;
 	private bool _SuppressProviderMessageHeaders;
-	private IBTextSpan _TextSpan;
+	private IBsTextSpan _TextSpan;
 	private long _TotalRowsAffected;
 
 
@@ -154,12 +154,12 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 
 
 	public event EventHandler CancellingEvent;
-	public event QESQLBatchErrorMessageEventHandler ErrorMessageEvent;
+	public event BatchErrorMessageEventHandler ErrorMessageEvent;
 	public event EventHandler FinishedResultSetEvent;
-	public event QESQLBatchMessageEventHandler MessageEvent;
-	public event QESQLBatchNewResultSetEventHandler NewResultSetEventAsync;
-	public event QESQLBatchSpecialActionEventHandler SpecialActionEvent;
-	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
+	public event BatchMessageEventHandler MessageEvent;
+	public event BatchNewResultSetEventHandler NewResultSetEventAsync;
+	public event BatchSpecialActionEventHandler SpecialActionEvent;
+	public event BatchStatementCompletedEventHandler StatementCompletedEvent;
 
 
 	#endregion Property Accessors
@@ -232,7 +232,7 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 
-		IBBatchExecutionHandler batchExecutionHandler = _QryMgr.Strategy.CreateBatchExecutionHandler();
+		IBsBatchExecutionHandler batchExecutionHandler = _QryMgr.Strategy.CreateBatchExecutionHandler();
 		batchExecutionHandler?.Register(conn, _SqlStatement, this);
 
 		lock (_LockLocal)
@@ -283,7 +283,7 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 
 				if (result != EnScriptExecutionResult.Failure)
 				{
-					QESQLStatementCompletedEventArgs args = new(statementIndex, rowsSelected, totalRowsSelected, false);
+					BatchStatementCompletedEventArgs args = new(statementIndex, rowsSelected, totalRowsSelected, false);
 					OnSqlStatementCompleted(_SqlStatement, args);
 
 					// Tracer.Trace(GetType(), "ExecuteAsync()", " ExecuteNonQuery returned!");
@@ -319,7 +319,8 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex);
+			if (!cancelToken.IsCancellationRequested)
+				Diag.Expected(ex);
 
 			result = HandleExecutionExceptions(ex, cancelToken);
 		}
@@ -350,15 +351,15 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 			HandleSqlMessages(ex.GetErrors(), true);
 
 			_QryMgr.IsCancelling = true;
-			ShowQueryWindowFrame();
+			_QryMgr.ShowWindowFrame();
 
-			MessageCtl.ShowEx(ex, ex.Message, ControlsResources.ErrQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(ex, ex.Message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return;
 		}
 
 
-		QESQLBatchErrorMessageEventArgs args = new QESQLBatchErrorMessageEventArgs(
-			string.Format(CultureInfo.CurrentCulture, ControlsResources.BatchError, ex.Message), "");
+		BatchErrorMessageEventArgs args = new BatchErrorMessageEventArgs(
+			Resources.ExQueryBatchError.FmtRes(ex.Message), "");
 		RaiseErrorMessage(args);
 	}
 
@@ -371,9 +372,9 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 			HandleSqlMessages(ex.GetErrors(), true);
 
 			_QryMgr.IsCancelling = true;
-			ShowQueryWindowFrame();
+			_QryMgr.ShowWindowFrame();
 
-			MessageCtl.ShowEx(ex, ex.Message, ControlsResources.ErrQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(ex, ex.Message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 	}
 
@@ -467,7 +468,7 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 					{
 						isError = true;
 						text = NativeDb.GetErrorMessage(error).Trim();
-						// text = ControlsResources.SQLErrorFormatDbEngine.FmtRes(error.Message == null ? string.Empty : error.Message.Trim(),
+						// text = Resources.SQLErrorFormatDbEngine.FmtRes(error.Message == null ? string.Empty : error.Message.Trim(),
 						//	error.Number, error.Class, error.LineNumber + num);
 					}
 
@@ -484,9 +485,9 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 				else if (NativeDb.GetErrorClass(error) > 0 && NativeDb.GetErrorNumber(error) > 0)
 				{
 					text = !_SuppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture,
-						ControlsResources.SQLErrorFormat4, NativeDb.GetErrorMessage(error), NativeDb.GetErrorNumber(error),
+						Resources.SQLErrorFormat4, NativeDb.GetErrorMessage(error), NativeDb.GetErrorNumber(error),
 						NativeDb.GetErrorClass(error), -1) : string.Format(CultureInfo.CurrentCulture,
-						ControlsResources.SQLErrorFormat4_NoSource, NativeDb.GetErrorNumber(error),
+						Resources.SQLErrorFormat4_NoSource, NativeDb.GetErrorNumber(error),
 						NativeDb.GetErrorClass(error), -1);
 					text = text.Trim();
 				}
@@ -508,9 +509,9 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 
 
 
-	private static bool IsExecutionPlanResultSet(IDataReader dataReader, out EnSqlSpecialActions batchSpecialAction)
+	private static bool IsExecutionPlanResultSet(IDataReader dataReader, out EnSpecialActions batchSpecialAction)
 	{
-		batchSpecialAction = EnSqlSpecialActions.None;
+		batchSpecialAction = EnSpecialActions.None;
 
 		if (dataReader == null)
 		{
@@ -524,12 +525,12 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 		{
 			if (string.Compare(dataReader.GetName(0), NativeDb.XmlActualPlanColumn, StringComparison.OrdinalIgnoreCase) == 0)
 			{
-				batchSpecialAction = EnSqlSpecialActions.ActualPlanIncluded;
+				batchSpecialAction = EnSpecialActions.ActualPlanIncluded;
 				return true;
 			}
 			else if (string.Compare(dataReader.GetName(0), NativeDb.XmlEstimatedPlanColumn, StringComparison.OrdinalIgnoreCase) == 0)
 			{
-				batchSpecialAction = EnSqlSpecialActions.EstimatedPlanOnly;
+				batchSpecialAction = EnSpecialActions.EstimatedPlanOnly;
 				return true;
 			}
 		}
@@ -539,7 +540,7 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 
 
 
-	public async Task<EnScriptExecutionResult> ProcessAsync(IDbConnection conn, EnSqlSpecialActions specialActions, CancellationToken cancelToken)
+	public async Task<EnScriptExecutionResult> ProcessAsync(IDbConnection conn, EnSpecialActions specialActions, CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "ProcessAsync()", " ExecutionOptions.EstimatedPlanOnly: " + QryMgr.LiveSettings.EstimatedPlanOnly);
 
@@ -708,9 +709,7 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 		}
 		catch (Exception ex)
 		{
-#if DEBUG
-			Diag.Dug(ex);
-#endif
+			Diag.Expected(ex);
 
 			result = HandleExecutionExceptions(ex, cancelToken);
 		}
@@ -776,15 +775,15 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 			throw ex;
 		}
 
-		bool isPlan = IsExecutionPlanResultSet(dataReader, out EnSqlSpecialActions batchSpecialActiont);
+		bool isPlan = IsExecutionPlanResultSet(dataReader, out EnSpecialActions batchSpecialActiont);
 
 		// Tracer.Trace(GetType(), "ProcessResultSetAsync()", "Entry. _SpecialActions: {0}, SpecialActionEvent: {1}, IsExecutionPlanResultSet(): {2}, batchSpecialAction: {3}.",
 		// 	_SpecialActions, SpecialActionEvent, isPlan, batchSpecialActiont);
 
 
-		if ((_SpecialActions & EnSqlSpecialActions.ExecutionPlansMask) != 0
+		if ((_SpecialActions & EnSpecialActions.ExecutionPlansMask) != 0
 			&& SpecialActionEvent != null
-			&& IsExecutionPlanResultSet(dataReader, out EnSqlSpecialActions batchSpecialAction)
+			&& IsExecutionPlanResultSet(dataReader, out EnSpecialActions batchSpecialAction)
 			&& (_SpecialActions & batchSpecialAction) != 0)
 		{
 			return ProcessResultSetForExecutionPlan(dataReader, batchSpecialAction, cancelToken);
@@ -806,7 +805,7 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 		{
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ProcessResultSet", "result set has been created!");
 			EnScriptExecutionResult result = EnScriptExecutionResult.Success;
-			QESQLBatchNewResultSetEventArgs args = new(_ActiveResultSet, cancelToken);
+			BatchNewResultSetEventArgs args = new(_ActiveResultSet, cancelToken);
 
 			// Tracer.Trace(GetType(), "ProcessResultSetAsync()", "firing new resultset event!");
 
@@ -847,7 +846,7 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 
 
 	protected EnScriptExecutionResult ProcessResultSetForExecutionPlan(IDataReader dataReader,
-	EnSqlSpecialActions batchSpecialAction, CancellationToken cancelToken)
+	EnSpecialActions batchSpecialAction, CancellationToken cancelToken)
 	{
 		if (dataReader == null && SqlStatement == null)
 		{
@@ -858,7 +857,7 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 
 		// Tracer.Trace(GetType(), "QESQLBatch.ProcessResultSetForExecutionPlan", "", null);
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ProcessResultSetForExecutionPlan", "firing SpecialAction event for showplan", null);
-		QESQLBatchSpecialActionEventArgs args = new QESQLBatchSpecialActionEventArgs(batchSpecialAction, this, dataReader);
+		BatchSpecialActionEventArgs args = new BatchSpecialActionEventArgs(batchSpecialAction, this, dataReader);
 
 		try
 		{
@@ -923,36 +922,6 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 	}
 
 
-
-	private void ShowQueryWindowFrame()
-	{
-		uint cookie = _QryMgr.Owner.DocCookie;
-		if (cookie == 0)
-			return;
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			// Fire and wait.
-
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-				IVsWindowFrame frame = RdtManager.GetWindowFrame(cookie);
-				frame?.Show();
-
-				return true;
-			});
-
-		}
-		else
-		{
-			IVsWindowFrame frame = RdtManager.GetWindowFrame(cookie);
-			frame?.Show();
-		}
-	}
-
-
 	#endregion Methods
 
 
@@ -971,25 +940,25 @@ public class QESQLBatch : IBDataReaderHandler, IDisposable
 		HandleSqlMessages(errors, false);
 	}
 
-	public void OnSqlStatementCompleted(object sender, QESQLStatementCompletedEventArgs e)
+	public void OnSqlStatementCompleted(object sender, BatchStatementCompletedEventArgs e)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatch.OnSqlStatementCompleted", "", null);
 		StatementCompletedEvent?.Invoke(sender, e);
 
 		if (MessageEvent != null)
 		{
-			RaiseMessage(new(string.Format(CultureInfo.CurrentCulture, ControlsResources.RowsSelectedMessage,
+			RaiseMessage(new(Resources.BatchRowsSelectedMessage.FmtRes(
 				e.StatementIndex+1, e.RowsSelected.ToString(CultureInfo.InvariantCulture),
 				e.TotalRowsSelected.ToString(CultureInfo.InvariantCulture))));
 		}
 	}
 
-	public void RaiseMessage(QESQLBatchMessageEventArgs args)
+	private void RaiseMessage(BatchMessageEventArgs args)
 	{
 		MessageEvent?.Invoke(this, args);
 	}
 
-	public void RaiseErrorMessage(QESQLBatchErrorMessageEventArgs args)
+	private void RaiseErrorMessage(BatchErrorMessageEventArgs args)
 	{
 		ErrorMessageEvent?.Invoke(this, args);
 	}

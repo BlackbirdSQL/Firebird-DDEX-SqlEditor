@@ -1,18 +1,15 @@
 // Microsoft.SqlServer.BatchParser, Version=16.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
 // ManagedBatchParser.Parser
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using Microsoft.VisualStudio.Threading;
-using BlackbirdSql.Sys.Interfaces;
-using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Model;
-using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Enums;
-using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Events;
+using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Interfaces;
+using BlackbirdSql.Sys.Model;
+using Microsoft.VisualStudio.Threading;
 
 
 
@@ -22,12 +19,13 @@ namespace BlackbirdSql.Shared.Model.Parsers;
 
 public class ManagedBatchParser : IDisposable
 {
-	public ManagedBatchParser(IBQueryManager qryMgr, IBQESQLBatchConsumer batchConsumer, EnSqlExecutionType executionType, EnSqlOutputMode outputMode, string script)
+	public ManagedBatchParser(IBsQueryManager qryMgr, /* IBsQESQLBatchConsumer batchConsumer, */
+		EnSqlExecutionType executionType, /* EnSqlOutputMode outputMode, */ string script)
 	{
 		_QryMgr = qryMgr;
-		_BatchConsumer = batchConsumer;
+		// _BatchConsumer = batchConsumer;
 		_ExecutionType = executionType;
-		_OutputMode = outputMode;
+		// _OutputMode = outputMode;
 		_Script = script;
 	}
 
@@ -51,13 +49,14 @@ public class ManagedBatchParser : IDisposable
 
 
 
-	public void Cleanup(IBQueryManager qryMgr = null, IBQESQLBatchConsumer batchConsumer = null, EnSqlExecutionType executionType = EnSqlExecutionType.QueryOnly,
-		EnSqlOutputMode outputMode = EnSqlOutputMode.ToGrid, string script = null)
+	public void Cleanup(IBsQueryManager qryMgr = null, /* IBsQESQLBatchConsumer batchConsumer = null, */
+		EnSqlExecutionType executionType = EnSqlExecutionType.QueryOnly,
+		/* EnSqlOutputMode outputMode = EnSqlOutputMode.ToGrid , */ string script = null)
 	{
 		_QryMgr = qryMgr;
-		_BatchConsumer = batchConsumer;
+		// _BatchConsumer = batchConsumer;
 		_ExecutionType = executionType;
-		_OutputMode = outputMode;
+		// _OutputMode = outputMode;
 		_Script = script;
 		_BatchParser?.Dispose();
 		_BatchParser = null;
@@ -71,13 +70,13 @@ public class ManagedBatchParser : IDisposable
 	EnParseMode _ParseMode = EnParseMode.RecognizeAll;
 
 	private string _Script;
-	private IBCommandExecuter _Executor = null;
+	private IBsCommandExecuter _Executor = null;
 	private EnSqlExecutionType _ExecutionType;
-	private EnSqlOutputMode _OutputMode;
+	// private EnSqlOutputMode _OutputMode;
 	private IBsNativeDbBatchParser _BatchParser = null;
 
-	private IBQueryManager _QryMgr;
-	IBQESQLBatchConsumer _BatchConsumer;
+	private IBsQueryManager _QryMgr;
+	//m IBsQESQLBatchConsumer _BatchConsumer;
 
 	private int _Current = -1;
 	private bool _SubstitutionEnabled = true;
@@ -111,7 +110,7 @@ public class ManagedBatchParser : IDisposable
 		_ = _SubstitutionEnabled;
 	}
 
-	public void SetCommandExecuter(IBCommandExecuter pICommandExecuter)
+	public void SetCommandExecuter(IBsCommandExecuter pICommandExecuter)
 	{
 		_Executor = pICommandExecuter;
 	}
@@ -123,6 +122,8 @@ public class ManagedBatchParser : IDisposable
 
 		_BatchParser = NativeDbBatchParserProxy.CreateInstance(_ExecutionType, _QryMgr, _Script);
 		_BatchParser.Parse();
+
+		RaiseScriptParsedEvent(cancelToken);
 
 		IBsNativeDbStatementWrapper sqlStatement = null;
 		EnParserAction result = EnParserAction.Continue;
@@ -161,13 +162,7 @@ public class ManagedBatchParser : IDisposable
 				break;
 
 			// Call statistics output
-			QESQLQueryDataEventArgs args = new(_ExecutionType,
-				cancelToken.IsCancellationRequested ? EnSqlStatementAction.Cancelled : _BatchParser.CurrentAction,
-				_OutputMode, _QryMgr.IsWithActualPlan, _QryMgr.IsWithClientStats, _BatchParser.TotalRowsSelected,
-				_BatchParser.StatementCount, _BatchConsumer.CurrentErrorCount, _BatchConsumer.CurrentMessageCount,
-				_QryMgr.QueryExecutionStartTime, DateTime.Now);
-
-			_Executor.OnBatchDataLoaded(this, args);
+			RaiseDataLoadedEvent(cancelToken);
 
 			if (cancelToken.IsCancellationRequested)
 				break;
@@ -204,4 +199,25 @@ public class ManagedBatchParser : IDisposable
 		Dispose(true);
 		// GC.SuppressFinalize(this);
 	}
+
+	private void RaiseScriptParsedEvent(CancellationToken cancelToken)
+	{
+		QueryDataEventArgs args = new(_ExecutionType,
+			cancelToken.IsCancellationRequested ? EnSqlStatementAction.Cancelled : _BatchParser.CurrentAction,
+			_QryMgr.IsWithClientStats, _BatchParser.TotalRowsSelected, _BatchParser.StatementCount,
+			_QryMgr.QueryExecutionStartTime, DateTime.Now);
+
+		_Executor.OnBatchScriptParsed(this, args);
+	}
+
+	private void RaiseDataLoadedEvent(CancellationToken cancelToken)
+	{
+		QueryDataEventArgs args = new(_ExecutionType, cancelToken.IsCancellationRequested ? EnSqlStatementAction.Cancelled : _BatchParser.CurrentAction,
+			/* _OutputMode, _QryMgr.IsWithActualPlan, */ _QryMgr.IsWithClientStats, _BatchParser.TotalRowsSelected,
+			_BatchParser.StatementCount, /* _BatchConsumer.CurrentErrorCount, _BatchConsumer.CurrentMessageCount, */
+			_QryMgr.QueryExecutionStartTime, DateTime.Now);
+
+		_Executor.OnBatchDataLoaded(this, args);
+	}
+
 }

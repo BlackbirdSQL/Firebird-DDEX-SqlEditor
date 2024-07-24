@@ -150,9 +150,6 @@
   <data name="ExceptionDuplicatingSiteInformation" xml:space="preserve">
     <value>Source information for site already exists</value>
   </data>
-  <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
-    <value>Events already enabled.</value>
-  </data>
   <data name="ExceptionFailedToRetrievePackageSettings" xml:space="preserve">
     <value>Failed to retrieve Package settings</value>
   </data>

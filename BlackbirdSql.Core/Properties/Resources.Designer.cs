@@ -484,15 +484,6 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Events already enabled..
-        /// </summary>
-        public static string ExceptionEventsAlreadyEnabled {
-            get {
-                return ResourceManager.GetString("ExceptionEventsAlreadyEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to UriComponents.SerializationInfoString must not be combined with other UriComponents..
         /// </summary>
         public static string ExceptionNetUriNotJustSerialization {
@@ -529,11 +520,40 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Events already enabled..
+        /// </summary>
+        public static string ExEventsAlreadyEnabled {
+            get {
+                return ResourceManager.GetString("ExEventsAlreadyEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retry number {0}. Ignoring Exception: {1}.
         /// </summary>
         public static string IgnoreOnException {
             get {
                 return ResourceManager.GetString("IgnoreOnException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load statistics: Async initialization: {0}ms, MainTread initializations: {1}ms
+        ///                 SwitchToMainThread: {2}ms
+        ///                 Total time (excl. SwitchToMainThread): {3}ms..
+        /// </summary>
+        public static string LoadTimeStatistics {
+            get {
+                return ResourceManager.GetString("LoadTimeStatistics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NewQuery.
+        /// </summary>
+        public static string NewQueryBaseName {
+            get {
+                return ResourceManager.GetString("NewQueryBaseName", resourceCulture);
             }
         }
         
@@ -570,15 +590,6 @@ namespace BlackbirdSql.Core.Properties {
         public static string RunningConnectionTableEdmDataset {
             get {
                 return ResourceManager.GetString("RunningConnectionTableEdmDataset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} | {1}.
-        /// </summary>
-        public static string RunningConnectionTableFullDisplayNameFormat {
-            get {
-                return ResourceManager.GetString("RunningConnectionTableFullDisplayNameFormat", resourceCulture);
             }
         }
         

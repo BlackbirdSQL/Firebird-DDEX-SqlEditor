@@ -750,7 +750,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// Returns false if an event has already been entered else true if it is safe to enter.
 	/// </returns>
 	// -------------------------------------------------------------------------------------------
-	protected bool EventEnter(bool increment = false, bool force = false)
+	protected bool EventEnter(bool increment = true, bool force = false)
 	{
 		lock (_LockObject)
 		{
@@ -777,7 +777,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		lock (_LockObject)
 		{
 			if (_EventCardinal == 0)
-				Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
+				Diag.Dug(new InvalidOperationException(Resources.ExEventsAlreadyEnabled));
 			else
 				_EventCardinal--;
 		}

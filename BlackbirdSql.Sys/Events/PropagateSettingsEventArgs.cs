@@ -120,7 +120,7 @@ public class PropagateSettingsEventArgs : EventArgs
 		Arguments.Add(pair);
 	}
 
-	public void Add(IBSettingsModel model, IBModelPropertyWrapper wrapper)
+	public void Add(IBsSettingsModel model, IBsModelPropertyWrapper wrapper)
 	{
 		object value = wrapper.WrappedPropertyGetMethod(model);
 		Arguments.Add(new MutablePair<string, object>(model.LivePrefix + wrapper.PropertyName, value));
@@ -152,12 +152,12 @@ public class PropagateSettingsEventArgs : EventArgs
 		}
 	}
 
-	public void AddRange(IBSettingsModel model)
+	public void AddRange(IBsSettingsModel model)
 	{
 		if (model == null)
 			return;
 
-		foreach (IBModelPropertyWrapper wrapper in model.PropertyWrappersEnumeration)
+		foreach (IBsModelPropertyWrapper wrapper in model.PropertyWrappersEnumeration)
 		{
 			Add(model, wrapper);
 		}

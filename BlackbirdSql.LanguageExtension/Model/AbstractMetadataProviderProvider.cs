@@ -18,7 +18,7 @@ namespace BlackbirdSql.LanguageExtension.Model;
 /// <summary>
 /// Placeholder. Under development.
 /// </summary>
-public abstract class AbstractMetadataProviderProvider : IBMetadataProviderProvider, IDisposable
+public abstract class AbstractMetadataProviderProvider : IBsMetadataProviderProvider, IDisposable
 {
 	protected AbstractMetadataProviderProvider()
 	{
@@ -53,7 +53,7 @@ public abstract class AbstractMetadataProviderProvider : IBMetadataProviderProvi
 
 
 
-	private class BinderQueueImpl : IBBinderQueue, IDisposable
+	private class BinderQueueImpl : IBsBinderQueue, IDisposable
 	{
 		internal BinderQueueImpl()
 		{
@@ -272,7 +272,7 @@ public abstract class AbstractMetadataProviderProvider : IBMetadataProviderProvi
 
 	private ManualResetEvent _MetadataBuildingEvent;
 
-	public IBBinderQueue BinderQueue { get; private set; }
+	public IBsBinderQueue BinderQueue { get; private set; }
 
 	protected bool IsDisposed { get; private set; }
 

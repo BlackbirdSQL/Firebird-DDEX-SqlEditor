@@ -21,13 +21,6 @@ internal class LsbLineScanner : IScanner
 
 	private readonly LineScanner _BabelScanner;
 
-	public bool IsSqlCmdModeEnabled
-	{
-		set
-		{
-			_BabelScanner.IsSqlCmdModeEnabled = value;
-		}
-	}
 
 	public string BatchSeparator
 	{

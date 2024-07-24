@@ -1,12 +1,16 @@
 // Microsoft.SqlServer.DataStorage, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
 // Microsoft.SqlServer.Management.UI.Grid.FileStreamReader
+
 using System;
 using System.Data.SqlTypes;
 using BlackbirdSql.Shared.Interfaces;
 
+
+
 namespace BlackbirdSql.Shared.Ctl.IO;
 
-public class FileStreamReader : IBFileStreamReader, IDisposable
+
+public class FileStreamReader : IBsFileStreamReader, IDisposable
 {
 	public const int DEFAULT_BUFFER_SIZE = 8192;
 
@@ -333,7 +337,7 @@ public class FileStreamReader : IBFileStreamReader, IDisposable
 			if (5 == num)
 			{
 				IsNull = false;
-				bytesVal = new byte[0];
+				bytesVal = [];
 			}
 			else
 			{

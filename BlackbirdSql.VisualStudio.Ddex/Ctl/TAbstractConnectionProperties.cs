@@ -28,7 +28,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// IVsDataConnectionProperties and IVsDataConnectionUIProperties interfaces using Csb
 /// instead of FbConnectionStringBuilder.
 /// </summary>
-public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>, IBDataConnectionProperties,
+public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>, IBsDataConnectionProperties,
 	IVsDataConnectionProperties, IDictionary<string, object>,
 	ICollection<KeyValuePair<string, object>>, IEnumerable<KeyValuePair<string, object>>,
 	IEnumerable, IVsDataConnectionUIProperties, ICustomTypeDescriptor, INotifyPropertyChanged

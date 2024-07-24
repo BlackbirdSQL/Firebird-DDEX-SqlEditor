@@ -12,7 +12,7 @@ using BlackbirdSql.Shared.Interfaces;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Shared.Model.IO;
 
-public abstract class AbstractStorageView : IBStorageView, IDisposable
+public abstract class AbstractStorageView : IBsStorageView, IDisposable
 {
 	protected const int C_DEFAULT_MAX_NUM_BYTES_TO_DISPLAY = 256;
 
@@ -222,7 +222,7 @@ public abstract class AbstractStorageView : IBStorageView, IDisposable
 
 	public abstract long RowCount { get; }
 
-	public abstract IBColumnInfo GetColumnInfo(int iCol);
+	public abstract IBsColumnInfo GetColumnInfo(int iCol);
 
 	public abstract int ColumnCount { get; }
 

@@ -3,17 +3,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
 using BlackbirdSql.EditorExtension.Events;
 using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Shared.Model;
-using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
@@ -120,27 +119,28 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 		if (!ThreadHelper.CheckAccess())
 		{
-			// Fire and wait.
+			// Fire and forget.
 
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				InitializeUnsafe();
-				return true;
-			});
-
+			Task.Run(InitializeUnsafeAsync).Forget();
 			return;
 		}
 
-
-		InitializeUnsafe();
-
+		InitializeUnsafeImpl();
 	}
 
-
-	private void InitializeUnsafe()
+	private async Task<bool> InitializeUnsafeAsync()
 	{
-		// Diag.ThrowIfNotOnUIThread();
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		InitializeUnsafeImpl();
+
+		return true;
+	}
+
+	private bool InitializeUnsafeImpl()
+	{
+		Diag.ThrowIfNotOnUIThread();
+
 
 		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
 		CurrentDocumentFrame = pvarValue as IVsWindowFrame;
@@ -170,6 +170,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		Guid rclsidUpgradingCmdUI = VSConstants.UICONTEXT.SolutionOrProjectUpgrading_guid;
 		___(SelectionMonitor.GetCmdUIContextCookie(ref rclsidUpgradingCmdUI, out _SolutionOrProjectUpgradingCookie));
 
+		return true;
 	}
 
 

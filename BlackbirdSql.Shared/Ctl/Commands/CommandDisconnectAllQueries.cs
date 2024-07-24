@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorDisconnectAllQueriesCommand
 
 using System;
 using BlackbirdSql.Shared.Ctl.QueryExecution;
@@ -28,19 +26,19 @@ public class CommandDisconnectAllQueries : AbstractCommand
 
 
 
-	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	protected override int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (QryMgr != null)
+		if (StoredQryMgr != null)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
 	}
 
-	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		foreach (AuxilliaryDocData value in ((IBEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable.Values)
+		foreach (AuxilliaryDocData value in ((IBsEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable.Values)
 		{
 			QueryManager qryMgr = value.QryMgr;
 
@@ -52,10 +50,7 @@ public class CommandDisconnectAllQueries : AbstractCommand
 				}
 				else
 				{
-					qryMgr.Strategy.Transaction?.Dispose();
-					qryMgr.Strategy.Transaction = null;
-					qryMgr.Strategy.Connection?.Close();
-					qryMgr.Strategy.ResetConnection();
+					qryMgr.Disconnect();
 				}
 			}
 		}

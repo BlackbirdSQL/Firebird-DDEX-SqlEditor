@@ -26,7 +26,7 @@ namespace BlackbirdSql.Data.Ctl;
 /// Handles TaskHandler and statusbar output for the LinkageParser.
 /// </summary>
 // =========================================================================================================
-public class LinkageParserTaskHandler : IBTaskHandlerClient
+public class LinkageParserTaskHandler : IBsTaskHandlerClient
 {
 
 	// -----------------------------------------------------------------------------------------------------

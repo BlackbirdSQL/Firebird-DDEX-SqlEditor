@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys;
@@ -32,7 +33,7 @@ namespace BlackbirdSql.Core.Model;
 /// If anything happens in the SE's table, we will know about it in <see cref="RctEventSink"/>.
 /// </summary>
 // =========================================================================================================
-internal class RctEventSink : IBRctEventSink
+internal class RctEventSink : IBsRctEventSink
 {
 
 
@@ -72,7 +73,7 @@ internal class RctEventSink : IBRctEventSink
 
 		viewSupport.OnCloseEvent -= OnNodeRemoving;
 
-		// Tracer.Trace(typeof(RctEventSink), "Dispose()", "Deregistered events for {0}.", _Root.DerivedDisplayName());
+		// Tracer.Trace(typeof(RctEventSink), "Dispose()", "Deregistered events for {0}.", _Root.SafeName());
 
 		_Root = null;
 		_ConnectionEventsAttached = false;
@@ -99,7 +100,7 @@ internal class RctEventSink : IBRctEventSink
 	private string _ConnectionString = null;
 	private bool _ConnectionEventsAttached = false;
 
-	private static IDictionary<IVsDataExplorerConnection, IBRctEventSink> _RctEventSinks = null;
+	private static IDictionary<IVsDataExplorerConnection, IBsRctEventSink> _RctEventSinks = null;
 
 
 	#endregion Fields
@@ -141,11 +142,11 @@ internal class RctEventSink : IBRctEventSink
 			return;
 
 
-		if (_RctEventSinks != null && _RctEventSinks.TryGetValue(e.Node.ExplorerConnection, out IBRctEventSink eventSink))
+		if (_RctEventSinks != null && _RctEventSinks.TryGetValue(e.Node.ExplorerConnection, out IBsRctEventSink eventSink))
 		{
 			if (!eventSink.Initialized)
 			{
-				Tracer.Warning(typeof(RctEventSink), "AdviseServerExplorerEvents()", "Events already advised for node {0}.", e.Node.ExplorerConnection.DerivedDisplayName());
+				Tracer.Warning(typeof(RctEventSink), "AdviseServerExplorerEvents()", "Events already advised for node {0}.", e.Node.ExplorerConnection.SafeName());
 				return;
 			}
 		}
@@ -172,7 +173,10 @@ internal class RctEventSink : IBRctEventSink
 		if (_RctEventSinks != null && _RctEventSinks.ContainsKey(root))
 			return;
 
-		// Tracer.Trace(typeof(RctEventSink), "InitializeServerExplorerModel()", root.DerivedDisplayName());
+		// Tracer.Trace(typeof(RctEventSink), "InitializeServerExplorerModel()", root.SafeName());
+
+		_RctEventSinks ??= new Dictionary<IVsDataExplorerConnection, IBsRctEventSink>();
+		_RctEventSinks[root] = new RctEventSink(root, true);
 
 		try
 		{
@@ -185,19 +189,14 @@ internal class RctEventSink : IBRctEventSink
 			// node is deleted.
 			// if (!gotViewSupport)
 
+			Reflect.InvokeMethod(root, "InitializeModel", BindingFlags.Default, null, true);
 
-			_RctEventSinks ??= new Dictionary<IVsDataExplorerConnection, IBRctEventSink>();
-			_RctEventSinks[root] = new RctEventSink(root, true);
-
-
-			Reflect.InvokeMethod(root, "InitializeModel");
-
-			// Tracer.Trace(typeof(RctEventSink), "InitializeServerExplorerModel()", "Model; initialized for {0}.", root.DerivedDisplayName());
+			// Tracer.Trace(typeof(RctEventSink), "InitializeServerExplorerModel()", "Model; initialized for {0}.", root.SafeName());
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
-			throw;
+			Diag.Expected(ex);
+			_RctEventSinks.Remove(root);
 		}
 	}
 
@@ -207,12 +206,12 @@ internal class RctEventSink : IBRctEventSink
 		// Tracer.Trace(typeof(RctEventSink), "NotifyInitializedModel()", "Performing full registration.");
 
 		if (_Root.Connection == null)
-			Diag.ThrowException(new ArgumentException($"The ExplorerConnection.Connectionfor Server Explorer node '{_Root.DerivedDisplayName()}' is null. Aborting."));
+			Diag.ThrowException(new ArgumentException($"The ExplorerConnection.Connectionfor Server Explorer node '{_Root.SafeName()}' is null. Aborting."));
 
 		_ConnectionString = _Root.DecryptedConnectionString();
 
 		if (_ConnectionString == null)
-			Diag.ThrowException(new ArgumentNullException($"The Connection string for Server Explorer node '{_Root.DerivedDisplayName()}' is null. Aborting."));
+			Diag.ThrowException(new ArgumentNullException($"The Connection string for Server Explorer node '{_Root.SafeName()}' is null. Aborting."));
 
 
 		try
@@ -226,14 +225,14 @@ internal class RctEventSink : IBRctEventSink
 
 
 			// else
-			//	Tracer.Warning(typeof(RctEventSink), "NotifyInitializedModel()", "The Server Explorer node '{0}' has already been initialized.", _Root.DerivedDisplayName());
+			//	Tracer.Warning(typeof(RctEventSink), "NotifyInitializedModel()", "The Server Explorer node '{0}' has already been initialized.", _Root.SafeName());
 
 
 			IBsDataViewSupport viewSupport = sender as IBsDataViewSupport;
 
 			viewSupport.OnCloseEvent += OnNodeRemoving;
 
-			// Tracer.Trace(typeof(RctEventSink), "AdviseEvents()", "Registered events for {0}.", _Root.DerivedDisplayName());
+			// Tracer.Trace(typeof(RctEventSink), "AdviseEvents()", "Registered events for {0}.", _Root.SafeName());
 		}
 		catch (Exception ex)
 		{
@@ -243,7 +242,7 @@ internal class RctEventSink : IBRctEventSink
 
 		if (!Initialized)
 		{
-			_RctEventSinks ??= new Dictionary<IVsDataExplorerConnection, IBRctEventSink>();
+			_RctEventSinks ??= new Dictionary<IVsDataExplorerConnection, IBsRctEventSink>();
 			_RctEventSinks[_Root] = this;
 		}
 	}
@@ -273,14 +272,14 @@ internal class RctEventSink : IBRctEventSink
 	// ---------------------------------------------------------------------------------
 	private void UnadviseServerExplorerEvents()
 	{
-		IBRctEventSink rctEventSink = null;
+		IBsRctEventSink rctEventSink = null;
 
 		if (_RctEventSinks == null || !_RctEventSinks.TryGetValue(_Root, out rctEventSink))
 		{
-			Diag.ThrowException(new ApplicationException($"RctEventSink not found for explorerConnection: {_Root.DerivedDisplayName()}."));
+			Diag.ThrowException(new ApplicationException($"RctEventSink not found for explorerConnection: {_Root.SafeName()}."));
 		}
 
-		// Tracer.Trace(typeof(RctEventSink), "UnadviseEvents()", "Unregistering events for {0}.", _Root.DerivedDisplayName());
+		// Tracer.Trace(typeof(RctEventSink), "UnadviseEvents()", "Unregistering events for {0}.", _Root.SafeName());
 
 
 		_RctEventSinks.Remove(_Root);
@@ -338,7 +337,7 @@ internal class RctEventSink : IBRctEventSink
 		lock (_LockClass)
 		{
 			if (_EventCardinal == 0)
-				Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
+				Diag.Dug(new InvalidOperationException(Resources.ExEventsAlreadyEnabled));
 			else
 				_EventCardinal--;
 		}
@@ -374,7 +373,7 @@ internal class RctEventSink : IBRctEventSink
 		if (!ReferenceEquals(root, _Root))
 		{
 			Diag.ThrowException(new ArgumentException(
-				$"The root node passed in the event arguments does not match stored root node object for {_Root.DerivedDisplayName()}."));
+				$"The root node passed in the event arguments does not match stored root node object for {_Root.SafeName()}."));
 		}
 #endif
 
@@ -388,7 +387,7 @@ internal class RctEventSink : IBRctEventSink
 			string connectionString = site.DecryptedConnectionString();
 
 			if(string.IsNullOrWhiteSpace(connectionString))
-				throw new ArgumentNullException($"The new connection string for Server Explorer node {_Root.DerivedDisplayName()} is null or empty. Aborting.");
+				throw new ArgumentNullException($"The new connection string for Server Explorer node {_Root.SafeName()} is null or empty. Aborting.");
 
 
 			_ConnectionString = connectionString;
@@ -434,7 +433,7 @@ internal class RctEventSink : IBRctEventSink
 		if (!ReferenceEquals(root, _Root))
 		{
 			Diag.ThrowException(new ArgumentException(
-				$"The root node passed in the event arguments does not match stored root node object for {_Root.DerivedDisplayName()}."));
+				$"The root node passed in the event arguments does not match stored root node object for {_Root.SafeName()}."));
 		}
 #endif
 
@@ -575,7 +574,7 @@ internal class RctEventSink : IBRctEventSink
 		if (!ReferenceEquals(root, _Root))
 		{
 			Diag.ThrowException(new ArgumentException(
-				$"The root node passed in the event arguments does not match stored root node object for {_Root.DerivedDisplayName()}."));
+				$"The root node passed in the event arguments does not match stored root node object for {_Root.SafeName()}."));
 		}
 #endif
 

@@ -1,11 +1,15 @@
 // sqlmgmt, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
 // Microsoft.SqlServer.Management.SqlMgmt.ShowPlan.DisplayNameDescriptionAttribute
+
 using System;
+
 
 
 namespace BlackbirdSql.Shared.Controls.Graphing.ComponentModel;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+
+
 public class DisplayNameDescriptionAttribute : Attribute
 {
 	private readonly string _DisplayName;

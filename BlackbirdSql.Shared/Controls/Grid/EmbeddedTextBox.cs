@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
-// C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLCommon\Microsoft.SqlServer.GridControl.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
+// Microsoft.SqlServer.Management.UI.Grid.EmbeddedTextBox
 
 using System;
 using System.Security.Permissions;
@@ -12,238 +10,236 @@ using Microsoft.VisualStudio;
 
 
 
+namespace BlackbirdSql.Shared.Controls.Grid;
 
-// namespace Microsoft.SqlServer.Management.UI.Grid
-namespace BlackbirdSql.Shared.Controls.Grid
+
+public class EmbeddedTextBox : TextBox, IBsGridEmbeddedControl, IBsGridEmbeddedControlManagement2, IBsGridEmbeddedControlManagement
 {
-	public class EmbeddedTextBox : TextBox, IBGridEmbeddedControl, IBGridEmbeddedControlManagement2, IBGridEmbeddedControlManagement
+	protected int m_MarginsWidth;
+
+	protected long m_RowIndex = -1L;
+
+	protected int m_ColumnIndex = -1;
+
+	protected bool m_alwaysShowContextMenu = true;
+
+	public bool AlwaysShowContextMenu
 	{
-		protected int m_MarginsWidth;
-
-		protected long m_RowIndex = -1L;
-
-		protected int m_ColumnIndex = -1;
-
-		protected bool m_alwaysShowContextMenu = true;
-
-		public bool AlwaysShowContextMenu
+		get
 		{
-			get
-			{
-				return m_alwaysShowContextMenu;
-			}
-			set
-			{
-				m_alwaysShowContextMenu = value;
-			}
+			return m_alwaysShowContextMenu;
 		}
-
-		public bool WantMouseClick => true;
-
-		public int ColumnIndex
+		set
 		{
-			get
-			{
-				return m_ColumnIndex;
-			}
-			set
-			{
-				m_ColumnIndex = value;
-			}
+			m_alwaysShowContextMenu = value;
 		}
+	}
 
-		public long RowIndex
+	public bool WantMouseClick => true;
+
+	public int ColumnIndex
+	{
+		get
 		{
-			get
-			{
-				return m_RowIndex;
-			}
-			set
-			{
-				m_RowIndex = value;
-			}
+			return m_ColumnIndex;
 		}
-
-		public new bool Enabled
+		set
 		{
-			get
-			{
-				return base.Enabled;
-			}
-			set
-			{
-				base.Enabled = value;
-			}
+			m_ColumnIndex = value;
 		}
+	}
 
-		public event ContentsChangedEventHandler ContentsChangedEvent;
-
-		protected EmbeddedTextBox()
+	public long RowIndex
+	{
+		get
 		{
+			return m_RowIndex;
 		}
-
-		public EmbeddedTextBox(Control parent, int MarginsWidth)
+		set
 		{
-			m_MarginsWidth = MarginsWidth;
-			Parent = parent;
-			Multiline = false;
-			Text = "";
-			Visible = false;
-			AutoSize = false;
-			BorderStyle = !Application.RenderWithVisualStyles ? BorderStyle.FixedSingle : BorderStyle.Fixed3D;
-			TextChanged += OnTextChanged;
+			m_RowIndex = value;
 		}
+	}
 
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-		protected override bool ProcessKeyMessage(ref Message m)
+	public new bool Enabled
+	{
+		get
 		{
-			Keys keys = (Keys)(int)m.WParam;
-			Keys modifierKeys = ModifierKeys;
-			if ((keys | modifierKeys) == Keys.Return || (keys | modifierKeys) == Keys.Escape)
-			{
-				if (m.Msg == Native.WM_CHAR)
-				{
-					return true;
-				}
+			return base.Enabled;
+		}
+		set
+		{
+			base.Enabled = value;
+		}
+	}
 
-				return ProcessKeyPreview(ref m);
-			}
+	public event ContentsChangedEventHandler ContentsChangedEvent;
 
+	protected EmbeddedTextBox()
+	{
+	}
+
+	public EmbeddedTextBox(Control parent, int MarginsWidth)
+	{
+		m_MarginsWidth = MarginsWidth;
+		Parent = parent;
+		Multiline = false;
+		Text = "";
+		Visible = false;
+		AutoSize = false;
+		BorderStyle = !Application.RenderWithVisualStyles ? BorderStyle.FixedSingle : BorderStyle.Fixed3D;
+		TextChanged += OnTextChanged;
+	}
+
+	[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
+	protected override bool ProcessKeyMessage(ref Message m)
+	{
+		Keys keys = (Keys)(int)m.WParam;
+		Keys modifierKeys = ModifierKeys;
+		if ((keys | modifierKeys) == Keys.Return || (keys | modifierKeys) == Keys.Escape)
+		{
 			if (m.Msg == Native.WM_CHAR)
 			{
+				return true;
+			}
+
+			return ProcessKeyPreview(ref m);
+		}
+
+		if (m.Msg == Native.WM_CHAR)
+		{
+			return ProcessKeyEventArgs(ref m);
+		}
+
+		switch (keys & Keys.KeyCode)
+		{
+			case Keys.Tab:
+			case Keys.Prior:
+			case Keys.Next:
+			case Keys.Up:
+			case Keys.Down:
+				return ProcessKeyPreview(ref m);
+			default:
 				return ProcessKeyEventArgs(ref m);
-			}
-
-			switch (keys & Keys.KeyCode)
-			{
-				case Keys.Tab:
-				case Keys.Prior:
-				case Keys.Next:
-				case Keys.Up:
-				case Keys.Down:
-					return ProcessKeyPreview(ref m);
-				default:
-					return ProcessKeyEventArgs(ref m);
-			}
 		}
+	}
 
-		[SecurityPermission(SecurityAction.InheritanceDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-		protected override void WndProc(ref Message m)
+	[SecurityPermission(SecurityAction.InheritanceDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
+	[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
+	protected override void WndProc(ref Message m)
+	{
+		switch (m.Msg)
 		{
-			switch (m.Msg)
-			{
-				case 48:
-					WmSetFont(ref m);
-					break;
-				case 123:
-					if (ContextMenu != null || (m_alwaysShowContextMenu && ContextMenu == null))
-					{
-						base.WndProc(ref m);
-					}
-
-					break;
-				default:
+			case 48:
+				WmSetFont(ref m);
+				break;
+			case 123:
+				if (ContextMenu != null || (m_alwaysShowContextMenu && ContextMenu == null))
+				{
 					base.WndProc(ref m);
-					break;
-			}
-		}
-
-		public void ReceiveKeyboardEvent(KeyEventArgs ke)
-		{
-			bool flag = false;
-			if (!ReadOnly && ke.Modifiers == Keys.None)
-			{
-				if (ke.KeyCode == Keys.F2)
-				{
-					Select(Text.Length, 0);
-					flag = true;
-				}
-				else if (ke.KeyCode == Keys.Back || ke.KeyCode == Keys.Delete)
-				{
-					Text = string.Empty;
-					flag = true;
 				}
 
-				if (!ContainsFocus && flag)
-				{
-					Focus();
-				}
-			}
+				break;
+			default:
+				base.WndProc(ref m);
+				break;
 		}
+	}
 
-		public void ReceiveChar(char c)
+	public void ReceiveKeyboardEvent(KeyEventArgs ke)
+	{
+		bool flag = false;
+		if (!ReadOnly && ke.Modifiers == Keys.None)
 		{
-			if (!ReadOnly)
+			if (ke.KeyCode == Keys.F2)
 			{
-				Text = c.ToString();
-				SelectedText = string.Empty;
-				Select(1, 0);
+				Select(Text.Length, 0);
+				flag = true;
 			}
-		}
-
-		public void PostProcessFocusFromKeyboard(Keys keyStroke, Keys modifiers)
-		{
-			string text = Text;
-			if (text != null)
+			else if (ke.KeyCode == Keys.Back || ke.KeyCode == Keys.Delete)
 			{
-				Select(0, text.Length);
+				Text = string.Empty;
+				flag = true;
+			}
+
+			if (!ContainsFocus && flag)
+			{
+				Focus();
 			}
 		}
+	}
 
-		public void SetHorizontalAlignment(HorizontalAlignment alignment)
+	public void ReceiveChar(char c)
+	{
+		if (!ReadOnly)
 		{
-			TextAlign = alignment;
+			Text = c.ToString();
+			SelectedText = string.Empty;
+			Select(1, 0);
 		}
+	}
 
-		public void ClearData()
+	public void PostProcessFocusFromKeyboard(Keys keyStroke, Keys modifiers)
+	{
+		string text = Text;
+		if (text != null)
 		{
-			Text = "";
-			PasswordChar = '\0';
-			Select(0, 0);
+			Select(0, text.Length);
 		}
+	}
 
-		public int AddDataAsString(string Item)
-		{
-			SetDataInternal(Item);
-			return VSConstants.S_OK;
-		}
+	public void SetHorizontalAlignment(HorizontalAlignment alignment)
+	{
+		TextAlign = alignment;
+	}
 
-		public int SetCurSelectionAsString(string strNewSel)
-		{
-			SetDataInternal(strNewSel);
-			return VSConstants.S_OK;
-		}
+	public void ClearData()
+	{
+		Text = "";
+		PasswordChar = '\0';
+		Select(0, 0);
+	}
 
-		public void SetCurSelectionIndex(int nIndex)
-		{
-		}
+	public int AddDataAsString(string Item)
+	{
+		SetDataInternal(Item);
+		return VSConstants.S_OK;
+	}
 
-		public int GetCurSelectionIndex()
-		{
-			return VSConstants.S_OK;
-		}
+	public int SetCurSelectionAsString(string strNewSel)
+	{
+		SetDataInternal(strNewSel);
+		return VSConstants.S_OK;
+	}
 
-		public string GetCurSelectionAsString()
-		{
-			return Text;
-		}
+	public void SetCurSelectionIndex(int nIndex)
+	{
+	}
 
-		private void WmSetFont(ref Message m)
-		{
-			base.WndProc(ref m);
-			Native.SendMessage(Handle, 211, (IntPtr)3, Native.Util.MAKELPARAM(m_MarginsWidth, m_MarginsWidth));
-		}
+	public int GetCurSelectionIndex()
+	{
+		return VSConstants.S_OK;
+	}
 
-		private void SetDataInternal(string myText)
-		{
-			Text = myText;
-			Select(0, 0);
-		}
+	public string GetCurSelectionAsString()
+	{
+		return Text;
+	}
 
-		private void OnTextChanged(object sender, EventArgs args)
-		{
-			ContentsChangedEvent?.Invoke(this, args);
-		}
+	private void WmSetFont(ref Message m)
+	{
+		base.WndProc(ref m);
+		Native.SendMessage(Handle, 211, (IntPtr)3, Native.Util.MAKELPARAM(m_MarginsWidth, m_MarginsWidth));
+	}
+
+	private void SetDataInternal(string myText)
+	{
+		Text = myText;
+		Select(0, 0);
+	}
+
+	private void OnTextChanged(object sender, EventArgs args)
+	{
+		ContentsChangedEvent?.Invoke(this, args);
 	}
 }

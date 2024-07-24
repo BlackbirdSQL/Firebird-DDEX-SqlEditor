@@ -18,6 +18,7 @@ namespace BlackbirdSql.Shared;
 // =========================================================================================================
 public static class LibraryData
 {
+	public const int C_ConnectionValidationModulus = 20;
 	public const string LanguageName = "FB-SQL";
 	public const string C_ShowPlanNamespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan";
 

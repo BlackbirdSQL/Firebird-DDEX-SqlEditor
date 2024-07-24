@@ -27,15 +27,15 @@ public static partial class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns the derived DisplayName from the DecryptedConnectionString() of an
+	/// Returns the derived QualifiedName from the DecryptedConnectionString() of an
 	/// <see cref="IVsDataExplorerConnection"/>. Use this in place of the
 	/// ExplorerConnection's DisplayName if you do not want ViewSupport accidentally
 	/// initialized.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string DerivedDisplayName(this IVsDataExplorerConnection @this)
+	public static string SafeName(this IVsDataExplorerConnection @this)
 	{
-		string retval = Csb.GetDisplayName(@this.DecryptedConnectionString());
+		string retval = Csb.GetServerExplorerName(@this.DecryptedConnectionString());
 
 		if (string.IsNullOrWhiteSpace(retval))
 			retval = @this.ConnectionNode.Name;
@@ -150,7 +150,7 @@ public static partial class ExtensionMembers
 	{
 		if (@this.ConnectionNode == null)
 		{
-			ArgumentException exa = new($"Failed to retrieve ConnectionKey. Connection Node for IVsDataExplorerConnection {@this.DerivedDisplayName()} is null");
+			ArgumentException exa = new($"Failed to retrieve ConnectionKey. Connection Node for IVsDataExplorerConnection {@this.SafeName()} is null");
 			Diag.Dug(exa);
 			throw exa;
 		}
@@ -162,7 +162,7 @@ public static partial class ExtensionMembers
 
 		if (!deepSearch && @object == null)
 		{
-			ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.DerivedDisplayName()}. ConnectionNode._object returned null");
+			ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.SafeName()}. ConnectionNode._object returned null");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -173,7 +173,7 @@ public static partial class ExtensionMembers
 
 			if (!deepSearch && leaf == null)
 			{
-				ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.DerivedDisplayName()}. ConnectionNode.Object._leaf returned null");
+				ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.SafeName()}. ConnectionNode.Object._leaf returned null");
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -184,7 +184,7 @@ public static partial class ExtensionMembers
 
 				if (!deepSearch && retval == null)
 				{
-					ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.DerivedDisplayName()}. ConnectionNode.Object._leaf.Id returned null");
+					ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.SafeName()}. ConnectionNode.Object._leaf.Id returned null");
 					Diag.Dug(ex);
 					throw ex;
 				}
@@ -201,7 +201,7 @@ public static partial class ExtensionMembers
 
 		if (retval == null)
 		{
-			ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.DerivedDisplayName()}. No entry exists in the ExplorerConnectionManager.");
+			ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.SafeName()}. No entry exists in the ExplorerConnectionManager.");
 			Diag.Dug(ex);
 			throw ex;
 		}

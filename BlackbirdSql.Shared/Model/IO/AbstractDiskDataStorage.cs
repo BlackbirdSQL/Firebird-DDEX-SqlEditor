@@ -19,7 +19,7 @@ using Microsoft.VisualStudio.Threading;
 
 namespace BlackbirdSql.Shared.Model.IO;
 
-public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage, IDisposable
+public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStorage, IDisposable
 {
 	protected string _FileName;
 
@@ -33,7 +33,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 
 	protected StorageDataReader _StorageReader;
 
-	protected IBFileStreamWriter _FsWriter;
+	protected IBsFileStreamWriter _FsWriter;
 
 	protected bool _DataStorageEnabled;
 
@@ -90,7 +90,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 
 	public event StorageNotifyDelegate StorageNotify;
 
-	public virtual IBStorageView GetStorageView()
+	public virtual IBsStorageView GetStorageView()
 	{
 		return new DiskStorageView(this);
 	}
@@ -130,7 +130,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 	{
 		if (storageReader == null)
 		{
-			throw new Exception(ControlsResources.ReaderCannotBeNull);
+			throw new Exception(Resources.ExReaderCannotBeNull);
 		}
 
 		_StorageReader = new StorageDataReader(storageReader);
@@ -139,7 +139,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 
 		if (_FileName.Length == 0)
 		{
-			throw new Exception(ControlsResources.FailedToGetTempFileName);
+			throw new Exception(Resources.ExFailedToGetTempFileName);
 		}
 		_FsWriter = new FileStreamWriter();
 		_FsWriter.Init(_FileName);
@@ -172,23 +172,23 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		}
 		if (storageReader == null)
 		{
-			throw new ArgumentException(ControlsResources.ReaderCannotBeNull);
+			throw new ArgumentException(Resources.ExReaderCannotBeNull);
 		}
 		if (storageReader.FieldCount != _ColumnInfoArray.Count)
 		{
-			throw new ArgumentException(ControlsResources.ColumnsCountDoesNotMatch);
+			throw new ArgumentException(Resources.ExColumnsCountDoesNotMatch);
 		}
 		for (int i = 0; i < storageReader.FieldCount; i++)
 		{
-			IBColumnInfo columnInfo = GetColumnInfo(i);
+			IBsColumnInfo columnInfo = GetColumnInfo(i);
 			if (columnInfo.ColumnName != storageReader.GetName(i) || columnInfo.DataTypeName != storageReader.GetDataTypeName(i))
 			{
-				throw new ArgumentException(ControlsResources.ColumnsDoNotMatch);
+				throw new ArgumentException(Resources.ExColumnsDoNotMatch);
 			}
 		}
 		if (_DataStorageEnabled)
 		{
-			throw new Exception(ControlsResources.CannotAddReaderWhenStoringData);
+			throw new Exception(Resources.ExCannotAddReaderWhenStoringData);
 		}
 		_StorageReader = new StorageDataReader(storageReader);
 
@@ -198,9 +198,9 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 	public async Task<bool> StartStoringDataAsync(CancellationToken cancelToken)
 	{
 		if (_DataStorageEnabled)
-			throw new Exception(ControlsResources.AlreadyStoringData);
+			throw new Exception(Resources.ExAlreadyStoringData);
 
-		await TaskScheduler.Default;
+		await Cmd.AwaitableAsync();
 
 		_DataStorageEnabled = true;
 
@@ -246,12 +246,12 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 	{
 		if (_DataStorageEnabled)
 		{
-			throw new InvalidOperationException(ControlsResources.AlreadyStoringData);
+			throw new InvalidOperationException(Resources.ExAlreadyStoringData);
 		}
 
 		if (_StorageReader == null)
 		{
-			throw new InvalidOperationException(ControlsResources.StorageNotInitialized);
+			throw new InvalidOperationException(Resources.ExStorageNotInitialized);
 		}
 
 		_DataStorageEnabled = true;
@@ -264,7 +264,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 	public virtual async Task<bool> SerializeDataAsync(CancellationToken cancelToken)
 	{
 		Type type = null;
-		IBColumnInfo columnInfo = null;
+		IBsColumnInfo columnInfo = null;
 
 
 		object[] array = new object[_ColumnInfoArray.Count];
@@ -315,7 +315,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 					_CurrentOffset += _FsWriter.WriteNull();
 					continue;
 				}
-				if (((IBColumnInfo)_ColumnInfoArray[i]).IsSqlVariant)
+				if (((IBsColumnInfo)_ColumnInfoArray[i]).IsSqlVariant)
 				{
 					DiskDataEntity.StringValue = type.ToString();
 					_CurrentOffset += _FsWriter.WriteString(DiskDataEntity.StringValue);
@@ -601,9 +601,9 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 	public int ColumnCount => _ColumnInfoArray.Count;
 
 
-	public IBColumnInfo GetColumnInfo(int index)
+	public IBsColumnInfo GetColumnInfo(int index)
 	{
-		return (IBColumnInfo)_ColumnInfoArray[index];
+		return (IBsColumnInfo)_ColumnInfoArray[index];
 	}
 
 	public bool IsClosed()

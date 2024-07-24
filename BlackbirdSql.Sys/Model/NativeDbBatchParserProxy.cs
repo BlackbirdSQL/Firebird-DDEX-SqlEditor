@@ -16,13 +16,13 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 	{
 	}
 
-	private NativeDbBatchParserProxy(EnSqlExecutionType executionType, IBQueryManager qryMgr, string script)
+	private NativeDbBatchParserProxy(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
 	{
 		_NativeObject = NativeDb.CreateDbBatchParser(executionType, qryMgr, script);
 	}
 
 
-	public static IBsNativeDbBatchParser CreateInstance(EnSqlExecutionType executionType, IBQueryManager qryMgr, string script)
+	public static IBsNativeDbBatchParser CreateInstance(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
 	{
 		return new NativeDbBatchParserProxy(executionType, qryMgr, script);
 	}
@@ -93,9 +93,9 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 		return _NativeObject.CloseConnection();
 	}
 
-	public async Task<bool> CommitTransactionAsync(CancellationToken cancelToken)
+	public async Task<bool> CommitTransactionsAsync(CancellationToken cancelToken)
 	{
-		return await _NativeObject.CommitTransactionAsync(cancelToken);
+		return await _NativeObject.CommitTransactionsAsync(cancelToken);
 	}
 
 
@@ -105,9 +105,9 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 	}
 
 
-	public async Task<bool> RollbackTransactionAsync(CancellationToken cancelToken)
+	public async Task<bool> RollbackTransactionsAsync(CancellationToken cancelToken)
 	{
-		return await _NativeObject.RollbackTransactionAsync(cancelToken);
+		return await _NativeObject.RollbackTransactionsAsync(cancelToken);
 	}
 
 

@@ -255,9 +255,6 @@
   <data name="ExceptionDuplicateSingletonInstances" xml:space="preserve">
     <value>Singleton instance already exists. Attempt to create duplicate {0} instances.</value>
   </data>
-  <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
-    <value>Events already enabled.</value>
-  </data>
   <data name="ExceptionNetUriNotJustSerialization" xml:space="preserve">
     <value>UriComponents.SerializationInfoString must not be combined with other UriComponents.</value>
   </data>
@@ -273,8 +270,19 @@
   <data name="Exception_FailedToSaveFile" xml:space="preserve">
     <value>Failed to save file: {0}</value>
   </data>
+  <data name="ExEventsAlreadyEnabled" xml:space="preserve">
+    <value>Events already enabled.</value>
+  </data>
   <data name="IgnoreOnException" xml:space="preserve">
     <value>Retry number {0}. Ignoring Exception: {1}</value>
+  </data>
+  <data name="LoadTimeStatistics" xml:space="preserve">
+    <value>Load statistics: Async initialization: {0}ms, MainTread initializations: {1}ms
+                 SwitchToMainThread: {2}ms
+                 Total time (excl. SwitchToMainThread): {3}ms.</value>
+  </data>
+  <data name="NewQueryBaseName" xml:space="preserve">
+    <value>NewQuery</value>
   </data>
   <data name="Properties_NotExtensible" xml:space="preserve">
     <value>The properties are not extensible.</value>
@@ -287,9 +295,6 @@
   </data>
   <data name="RunningConnectionTableEdmDataset" xml:space="preserve">
     <value>[{0}] {1}</value>
-  </data>
-  <data name="RunningConnectionTableFullDisplayNameFormat" xml:space="preserve">
-    <value>{0} | {1}</value>
   </data>
   <data name="RunningConnectionTableGlyphFormat" xml:space="preserve">
     <value>{0} {1}</value>

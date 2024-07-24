@@ -34,7 +34,7 @@ public class PropertyViewDlg : Form
 	public PropertyViewDlg()
 	{
 		InitializeComponent();
-		Icon = ControlsResources.Actual_Executionplan;
+		Icon = ControlsResources.IconActualExecutionPlan;
 	}
 
 	protected override void Dispose(bool disposing)

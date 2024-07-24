@@ -6,8 +6,6 @@ using BlackbirdSql.Shared.Interfaces;
 
 
 
-
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane
 namespace BlackbirdSql.Shared.Ctl.IO;
 
 
@@ -35,12 +33,12 @@ public abstract class AbstractResultsWriter
 
 	public abstract void AppendError(string text, bool noCRLF);
 
-	public void AppendError(string text, int line, IBTextSpan textSpan)
+	public void AppendError(string text, int line, IBsTextSpan textSpan)
 	{
 		AppendError(text, line, textSpan, noCRLF: false);
 	}
 
-	public abstract void AppendError(string text, int line, IBTextSpan textSpan, bool noCRLF);
+	public abstract void AppendError(string text, int line, IBsTextSpan textSpan, bool noCRLF);
 
 	public void AppendWarning(string text)
 	{

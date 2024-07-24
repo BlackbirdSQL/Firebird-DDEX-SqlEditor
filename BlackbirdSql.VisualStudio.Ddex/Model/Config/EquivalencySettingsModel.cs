@@ -26,7 +26,7 @@ public class EquivalencySettingsModel : AbstractSettingsModel<EquivalencySetting
 	// ---------------------------------------------------------------------------------
 
 
-	public EquivalencySettingsModel(IBTransientSettings transientSettings)
+	public EquivalencySettingsModel(IBsTransientSettings transientSettings)
 		: base(C_Package, C_Group, C_LivePrefix, transientSettings)
 	{
 

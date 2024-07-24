@@ -3,9 +3,6 @@
 
 using System.Collections;
 
-// using Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution;
-
-
 
 
 namespace BlackbirdSql.Shared.Ctl.QueryExecution;

@@ -2,7 +2,8 @@
 // Microsoft.SqlServer.Management.UI.Grid.BlockOfCells
 
 using System;
-using BlackbirdSql.Core;
+
+
 
 namespace BlackbirdSql.Shared.Controls.Grid;
 

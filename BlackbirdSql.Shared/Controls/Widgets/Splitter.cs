@@ -1,5 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.Splitter
+
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -7,6 +8,8 @@ using System.Globalization;
 using System.Security;
 using System.Security.Permissions;
 using System.Windows.Forms;
+
+
 
 namespace BlackbirdSql.Shared.Controls.Widgets;
 

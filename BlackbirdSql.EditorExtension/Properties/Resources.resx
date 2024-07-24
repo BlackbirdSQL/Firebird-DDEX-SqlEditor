@@ -194,67 +194,22 @@
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
 </value>
   </data>
-  <data name="ColumnDelimiterCannotBeEmpty" xml:space="preserve">
-    <value>You must specify a column delimiter.</value>
-  </data>
-  <data name="ErrCannotInstantiateFromAbstractAncestor" xml:space="preserve">
-    <value>Cannot instantiate EditorExtensionPackage from abstract ancestor</value>
-  </data>
-  <data name="ErrInvalidExecutionTimeout" xml:space="preserve">
-    <value>Execution time-out value should be an integer between {0} and {1}.</value>
-  </data>
-  <data name="ErrInvalidMaxCharsPerCell" xml:space="preserve">
-    <value>Maximum characters displayed in each cell should be an integer between {0} and {1}.</value>
-  </data>
-  <data name="ErrInvalidMaxCharsPerColumn" xml:space="preserve">
-    <value>Maximum characters per column should be an integer between {0} and {1}.</value>
-  </data>
-  <data name="ErrInvalidSetLockTimeout" xml:space="preserve">
-    <value>LOCK_TIMEOUT value should be an integer between {0} and {1}.</value>
-  </data>
-  <data name="ErrInvalidSetQueryGov" xml:space="preserve">
-    <value>QUERY_GOVERNOR_COST_LIMIT value should be an integer between {0} and {1}.</value>
-  </data>
-  <data name="ErrInvalidSetRowcount" xml:space="preserve">
-    <value>ROWCOUNT value should be an integer between {0} and {1}.</value>
-  </data>
-  <data name="ErrInvalidSetTextsize" xml:space="preserve">
-    <value>TEXTSIZE value should be an integer between {0} and {1}.</value>
-  </data>
   <data name="ErrorMarkerDescription" xml:space="preserve">
     <value>FB-SQL editor error message marker</value>
   </data>
   <data name="ErrorMarkerDisplayName" xml:space="preserve">
     <value>Error Message</value>
   </data>
-  <data name="ExceptionFailedToSubscribeSettingsEvents" xml:space="preserve">
+  <data name="ExFailedToCreateEditor" xml:space="preserve">
+    <value>Failed to create an editor.</value>
+  </data>
+  <data name="ExFailedToSubscribeSettingsEvents" xml:space="preserve">
     <value>Failed to subscribe to Settings events</value>
   </data>
-  <data name="ExceptionInvalidBoundArgument" xml:space="preserve">
-    <value>Value of '{1}' is not valid for '{0}'. '{0}' should be between {2} and {3}.</value>
+  <data name="NewQueryBaseName" xml:space="preserve">
+    <value>NewQuery</value>
   </data>
-  <data name="ExceptionNoInterface" xml:space="preserve">
-    <value>Service for interface {0} unavailable.</value>
-  </data>
-  <data name="PleaseSelectDirectory" xml:space="preserve">
-    <value>Please select directory</value>
-  </data>
-  <data name="WarnSqlAdvancedQueryChanges" xml:space="preserve">
-    <value>SQL Server Advanced Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
-  </data>
-  <data name="WarnSqlAnsiQueryChanges" xml:space="preserve">
-    <value>SQL Server ANSI Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
-  </data>
-  <data name="WarnSqlGeneralQueryChanges" xml:space="preserve">
-    <value>SQL Server General Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
-  </data>
-  <data name="WarnSqlGeneralResultsChanges" xml:space="preserve">
-    <value>SQL Server General option changes will only be applied to new SQL Server Query Editor windows. </value>
-  </data>
-  <data name="WarnSqlResultsToGridChanges" xml:space="preserve">
-    <value>SQL Server Results to Grid option changes will only be applied to new SQL Server Query Editor windows. </value>
-  </data>
-  <data name="WarnSqlResultsToTextChanges" xml:space="preserve">
-    <value>SQL Server Results to Text option changes will only be applied to new SQL Server Query Editor windows. </value>
+  <data name="ResultsEditorFactory_Caption" xml:space="preserve">
+    <value>FBSQL Results Window</value>
   </data>
 </root>

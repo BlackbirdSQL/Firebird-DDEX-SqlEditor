@@ -22,7 +22,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// utilize <see cref="CreateObject"/>
 /// </remarks>
 // =========================================================================================================
-public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProviderObjectFactory
+public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBsProviderObjectFactory
 {
 
 	// ---------------------------------------------------------------------------------

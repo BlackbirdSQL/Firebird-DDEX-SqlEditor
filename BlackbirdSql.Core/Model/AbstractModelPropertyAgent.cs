@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
-using System.Globalization;
-using System.Net;
 using System.Text;
-using System.Windows.Media.Imaging;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Interfaces;
+
+
 
 namespace BlackbirdSql.Core.Model;
 
@@ -20,40 +16,23 @@ namespace BlackbirdSql.Core.Model;
 //
 /// <summary>
 /// 
-/// The Method Members partial class of the AbstractModelPropertyAgent class.
-/// A conglomerate base class for supporting all of... the Sql client UIConnectionInfo class and UI
-/// Connection and Model classes, and implementing the IDataConnectionProperties, ICustomTypeDescriptor
-/// and all other known connection interfaces.
+/// The database properties conglomerate base class for supporting all of... the Sql client UIConnectionInfo
+/// class and UI Connection and Model classes, and implementing the IDataConnectionProperties,
+/// ICustomTypeDescriptor and all other known connection interfaces.
 /// </summary>
-/// <remarks>
-/// It is the final owning (child) class's responsibility to perform the once off
-/// creation of the static private property set for it's class by calling the static
-/// CreatePropertySet(). The final child class is the class that initiated
-/// instanciation and is identifiable in that it has no _Owner private instance
-/// variable.
-/// Steps for adding an additional property in descendents:
-/// 1. Add the core property descriptor support using
-/// <see cref="Add(string, Type, object)"/>.
-/// 2. Add the property accessor using <see cref="GetProperty(string)"/> and 
-/// <see cref="SetProperty(string, object)"/>.
-/// 3. If the property type cannot be supported by the built-in types in 
-/// <see cref="SetProperty(string, object)"/>, overload the method to support the new type.
-/// 4. If (3) applies include a Set_[NewType]Property() method to support the new type using the builtin
-/// Set_[Type]Property() methods as a template.
-/// 5. If (4) applies add a Will[NewType]Change() method if an existing builtin method cannot be used.  
-/// Note: Additional properties will not be included in the connection string or have actual property
-/// descriptors. <see cref="ICustomTypeDescriptor"/> members will still need to be overloaded.
-/// </remarks>
 // =========================================================================================================
-public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
+public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent, IBsModelPropertyAgent
 {
 
-	// ---------------------------------------------------------------------------------
+	// ------------------------------------------------------------
 	#region Constructors / Destructors - AbstractModelPropertyAgent
-	// ---------------------------------------------------------------------------------
+	// ------------------------------------------------------------
 
-	public AbstractModelPropertyAgent(IBPropertyAgent rhs, bool generateNewId)
-		: base (rhs, generateNewId)
+	/// <summary>
+	/// Universal .ctor.
+	/// </summary>
+	public AbstractModelPropertyAgent(IBsModelPropertyAgent rhs, bool generateNewId)
+		: base(rhs, generateNewId)
 	{
 	}
 
@@ -68,7 +47,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	}
 
 
-	public AbstractModelPropertyAgent(IBPropertyAgent rhs) : this(rhs, true)
+	public AbstractModelPropertyAgent(IBsModelPropertyAgent rhs) : this(rhs, true)
 	{
 	}
 
@@ -86,6 +65,130 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	static AbstractModelPropertyAgent()
 	{
 	}
+
+
+
+	public override void Dispose()
+	{
+		base.Dispose();
+	}
+
+
+
+	protected override bool Dispose(bool disposing)
+	{
+		if (!base.Dispose(disposing))
+			return false;
+
+		DisposeTransaction(true);
+
+		try
+		{
+			_ConnectionChangedEvent?.Invoke(this, new(null, _DataConnection));
+		}
+		catch { }
+
+		if (_DataConnection != null)
+			DisposeConnection();
+
+		return true;
+	}
+
+
+
+	public void DisposeConnection()
+	{
+		if (_DataConnection == null)
+			return;
+
+		DisposeTransaction(true);
+
+		bool hasException = false;
+
+		try
+		{
+			if (_DataConnection.State == ConnectionState.Open)
+				_DataConnection.Close();
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+
+			hasException = true;
+		}
+
+
+		try
+		{
+			_DataConnection.Dispose();
+		}
+		catch (Exception ex)
+		{
+			if (!hasException)
+				Diag.Expected(ex);
+		}
+
+		_DataConnection = null;
+	}
+
+
+
+	public void DisposeTransaction(bool force)
+	{
+		if (_DataTransaction == null)
+			return;
+
+		bool hasTransactions = false;
+		bool hasException = false;
+
+		try
+		{
+			hasTransactions = _DataTransaction.HasTransactions();
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+
+			hasException = true;
+		}
+
+
+
+		if (!force && hasTransactions)
+			Diag.ThrowException(new DataException("Attempt to dispose of database Transaction object that has pending transactions."));
+
+		try
+		{
+			if (hasTransactions)
+				_DataTransaction.Rollback();
+		}
+		catch (Exception ex)
+		{
+			if (!hasException)
+				Diag.Expected(ex);
+
+			hasException = true;
+		}
+
+
+		try
+		{
+			_DataTransaction.Dispose();
+		}
+		catch (Exception ex)
+		{
+			if (!hasException)
+				Diag.Expected(ex);
+		}
+
+
+		_DataTransaction = null;
+	}
+
+
+
+	public abstract override IBsPropertyAgent Copy();
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -131,7 +234,8 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 	}
 
-	#endregion Additional Constructors / Destructors
+
+	#endregion Constructors / Destructors
 
 
 
@@ -140,6 +244,9 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	#region Fields - AbstractModelPropertyAgent
 	// =========================================================================================================
 
+
+	protected IDbConnection _DataConnection = null;
+	protected IDbTransaction _DataTransaction = null;
 
 	protected static new DescriberDictionary _Describers = null;
 
@@ -155,24 +262,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	// =========================================================================================================
 
 
-	public override DbConnection DataConnection
-	{
-		get
-		{
-			_DataConnection ??= (DbConnection)NativeDb.CreateDbConnection(ConnectionStringBuilder.ConnectionString);
-
-			return _DataConnection;
-		}
-	}
-
-
-	public override BitmapImage IconImage => ModelIconsCollection.Instance.GetImage(
-		Isset("Icon") ? (IBIconType)GetProperty("Icon") : ModelIconsCollection.Instance.ServerError_32);
-
-
-	// public override string[] AdvancedOptions => CorePropertySet.AdvancedOptions;
-
-	public override DescriberDictionary Describers
+	protected override DescriberDictionary Describers
 	{
 		get
 		{
@@ -185,35 +275,8 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 
 
-	public virtual string ServerNameNoDot
-	{
-		get
-		{
-			string text = DataSource ?? "localhost";
+	public IDbConnection DataConnection => _DataConnection;
 
-
-			if (text.Length == 0 || text == ".")
-				return "localhost";
-
-			if (text.StartsWith(".\\", StringComparison.Ordinal))
-			{
-				return string.Format(CultureInfo.InvariantCulture, "{0}:{1}", "localhost", text[1..]);
-			}
-
-			return text;
-		}
-	}
-
-
-	#endregion Property Accessors
-
-
-
-
-
-	// =========================================================================================================
-	#region Descriptors Property Accessors - AbstractModelPropertyAgent
-	// =========================================================================================================
 
 
 	public int PacketSize
@@ -378,169 +441,73 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	}
 
 
-	#endregion 	Descriptors Property Accessors
-
-
-
-
-
-	// =========================================================================================================
-	#region Property Getters/Setters - AbstractModelPropertyAgent
-	// =========================================================================================================
-
-
-
-	public override (IBIconType, bool) GetSet_Icon()
+	public Version ServerVersion
 	{
-		if (ServerType == EnServerType.Embedded)
-		{
-			Icon = CoreIconsCollection.Instance.EmbeddedDatabase_32;
-
-			return (CoreIconsCollection.Instance.EmbeddedDatabase_32, false);
-		}
-
-		if (ServerEngine == EnEngineType.Unknown)
-			return (CoreIconsCollection.Instance.ServerError_32, false);
-
-		IBIconType iconType;
-
-		switch (ServerEngine)
-		{
-			case EnEngineType.LocalClassicServer:
-				iconType = ModelIconsCollection.Instance.LocalClassicServer_32;
-				break;
-			case EnEngineType.LocalSuperClassic:
-				iconType = ModelIconsCollection.Instance.LocalSuperClassic_32;
-				break;
-			case EnEngineType.LocalSuperServer:
-				iconType = ModelIconsCollection.Instance.LocalSuperServer_32;
-				break;
-			case EnEngineType.ClassicServer:
-				iconType = ModelIconsCollection.Instance.ClassicServer_32;
-				break;
-			case EnEngineType.SuperClassic:
-				iconType = ModelIconsCollection.Instance.SuperClassic_32;
-				break;
-			case EnEngineType.SuperServer:
-				iconType = ModelIconsCollection.Instance.SuperServer_32;
-				break;
-			default:
-				InvalidOperationException ex = new(string.Format(Resources.EngineTypeIconNotfound, ServerEngine));
-				Diag.Dug(ex);
-				throw ex;
-		}
-
-		Icon = iconType;
-
-		return (iconType, false);
+		get { return (Version)GetProperty("ServerVersion"); }
+		set { SetProperty("ServerVersion", value); }
 	}
 
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the ServerEngine property and sets it if successful.
-	/// </summary>
-	/// <returns>Returns the value tuple of the derived ServerEngine else null and
-	/// a boolean indicating wehther or not a connection was opened.</returns>
-	// ---------------------------------------------------------------------------------
-	public override (EnEngineType, bool) GetSet_ServerEngine()
+	public string ConnectionString => _Csa?.ConnectionString;
+
+	public string Moniker => _Moniker ??= Csa.SafeDatasetMoniker;
+
+
+	public IDbTransaction DataTransaction
 	{
-		EnEngineType serverEngine;
-
-		if (ServerType == EnServerType.Embedded)
+		get
 		{
-			serverEngine = EnEngineType.EmbeddedDatabase;
-			return (serverEngine, false);
-		}
-		else if (DataConnection.State != ConnectionState.Open && !IsComplete)
-		{
-			return (EnEngineType.Unknown, false);
-		}
-
-		Version version = ServerVersion;
-
-		if (version == null)
-			return (EnEngineType.Unknown, false);
-
-		bool opened = false;
-
-		string serverClass = null;
-
-		if (version.Major < 4)
-		{
-			if (version.Major < 3)
-				serverClass = "Classic";
-			else
-				serverClass = "SuperServer";
-		}
-		else
-		{
-
-			if (DataConnection.State != ConnectionState.Open)
+			lock (_LockObject)
 			{
+				if (_DataTransaction == null)
+					return null;
+
+				bool transactionCompleted = true;
+
 				try
 				{
-					DataConnection.Open();
+					transactionCompleted = _DataTransaction.Completed();
 				}
-				catch
-				{ }
-
-				if (DataConnection.State != ConnectionState.Open)
-					return (EnEngineType.Unknown, false);
-
-				opened = true;
-			}
-
-			DbCommand cmd = CreateCommand("select rdb$config_value from RDB$CONFIG where rdb$config_name='ServerMode'");
-
-			try
-			{
-				serverClass = (string)cmd.ExecuteScalar();
-			}
-			catch { }
+				catch (Exception ex)
+				{
+					Diag.Expected(ex);
+				}
 
 
-			if (string.IsNullOrEmpty(serverClass))
-			{
-				ArgumentException ex = new("The Database server return an empty argument for ServerMode");
-				Diag.Dug(ex);
-				throw ex;
+				if (transactionCompleted)
+					DisposeTransaction(true);
+
+				return _DataTransaction;
 			}
 		}
-
-		string host = DataSource;
-
-		if (string.IsNullOrEmpty(host))
-			host = Dns.GetHostName();
-
-		bool isLocalHost = PropertySet.IsLocalIpAddress(host);
-
-
-		switch (serverClass.ToLower())
-		{
-			case "classic":
-				serverEngine = isLocalHost ? EnEngineType.LocalClassicServer : EnEngineType.ClassicServer;
-				break;
-			case "superclassic":
-				serverEngine = isLocalHost ? EnEngineType.LocalSuperClassic : EnEngineType.SuperClassic;
-				break;
-			case "superserver":
-				serverEngine = isLocalHost ? EnEngineType.LocalSuperServer : EnEngineType.SuperServer;
-				break;
-			default:
-				ArgumentException ex = new("The Database server returned a bad argument for ServerMode: " + serverClass);
-				Diag.Dug(ex);
-				throw ex;
-		}
-
-		ServerEngine = serverEngine;
-
-		return (serverEngine, opened);
 	}
 
-	#endregion Property Getters/Setters
+
+	public bool HasTransactions
+	{
+		get
+		{
+			try
+			{
+				return DataTransaction != null && _DataTransaction.HasTransactions();
+			}
+			catch
+			{
+				DisposeTransaction(true);
+
+				throw;
+			}
+		}
+	}
+
+
+	public ConnectionState State => _DataConnection == null ? ConnectionState.Closed : _DataConnection.State;
+
+
+	#endregion 	Property Accessors
+
 
 
 
@@ -550,14 +517,108 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	// =========================================================================================================
 
 
-	public abstract override IBPropertyAgent Copy();
+	public void BeginTransaction(IsolationLevel isolationLevel)
+	{
+		if (_DataTransaction != null)
+			return;
+
+		lock (_LockObject)
+			_DataTransaction = DataConnection.BeginTransaction(isolationLevel);
+
+	}
 
 
 
-	public override DbCommand CreateCommand(string cmd = null)
+	public override bool CloseConnection()
+	{
+		if (_DataConnection == null)
+			return true;
+
+		DisposeTransaction(true);
+
+		try
+		{
+			_DataConnection.Close();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+		}
+
+		try
+		{
+			_ConnectionChangedEvent?.Invoke(this, new(null, _DataConnection));
+		}
+		catch { }
+
+		DisposeConnection();
+
+		return false;
+	}
+
+
+
+	public DbCommand CreateCommand(string cmd = null)
 	{
 		return NativeDb.CreateDbCommand(cmd);
 	}
+
+
+	protected override (Version, bool) GetServerVersion()
+	{
+		if (DataConnection is not DbConnection dbConnection)
+			return (null, false);
+
+		bool opened = false;
+
+		if (dbConnection.State != ConnectionState.Open)
+		{
+			try
+			{
+				dbConnection.Open();
+			}
+			catch
+			{ }
+
+			if (dbConnection.State != ConnectionState.Open)
+				return (null, false);
+
+			opened = true;
+		}
+
+
+		Version version = new(dbConnection.ServerVersion);
+
+		return (version, opened);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the ServerVersion property and sets it if successful.
+	/// </summary>
+	/// <returns>Returns the value tuple of the derived ServerVersion else null and
+	/// a boolean indicating wehther or not a connection was opened.</returns>
+	// ---------------------------------------------------------------------------------
+	public (Version, bool) GetSet_ServerVersion()
+	{
+		if (State != ConnectionState.Open && !IsComplete)
+			return (null, false);
+
+
+		bool opened;
+		Version version;
+
+		(version, opened) = GetServerVersion();
+
+		if (version != null)
+			ServerVersion = version;
+
+		return (version, opened);
+	}
+
 
 
 	public override void Parse(string connectionString)
@@ -567,23 +628,87 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 
 
-	public override object GetProperty(string name)
+	public override void Test()
 	{
-		if (_AssignedConnectionProperties.TryGetValue(name, out object value))
-			return value;
+		IDbConnection conn = NativeDb.CreateDbConnection(ConnectionString);
 
-		return base.GetProperty(name);
+		conn.Open();
+		conn.Close();
+		conn.Dispose();
 	}
 
 
 
-	public override IBPropertyAgent ToConnectionInfo()
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Attempts to derive a value for a property and sets it if successful.
+	/// </summary>
+	/// <param name="name">The property name</param>
+	/// <param name="value">The derived value or fallback value else null</param>
+	/// <returns>
+	/// Returns true if a useable value was derived, even if the value could not be used
+	/// to set the property, else false if no useable property could be derived. An
+	/// example of a useable derived property that will not be used to set the property
+	/// is the ServerError Icon property when a connection cannot be established.
+	/// </returns>
+	/// <remarks>
+	/// This method may be recursively called because a derived property may be dependent
+	/// on other derived properties, any of which may require access to an open database
+	/// connection. Each get/set method returns a boolean indicating whether or not it
+	/// opened the connection. We track that and only close the connection (if necessary)
+	/// when we exit the recursion to avoid repetitively opening and closing the connection. 
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
+	protected override bool TryGetSetDerivedProperty(string name, out object value)
 	{
-		return new ConnectionPropertyAgent(this);
+		bool connectionOpened = false;
+		bool result = false;
+
+		_GetSetCardinal++;
+
+		try
+		{
+			switch (name)
+			{
+				case "ServerVersion":
+					(value, connectionOpened) = GetSet_ServerVersion();
+					result = value != null;
+					break;
+				default:
+					result = base.TryGetSetDerivedProperty(name, out value);
+					break;
+			}
+		}
+		finally
+		{
+			_GetSetConnectionOpened |= connectionOpened;
+			_GetSetCardinal--;
+
+			if (_GetSetCardinal == 0 && _GetSetConnectionOpened)
+			{
+				CloseConnection();
+
+				_GetSetConnectionOpened = false;
+			}
+		}
+
+		return result;
+
 	}
 
 
 	#endregion Methods
 
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - AbstractModelPropertyAgent
+	// =========================================================================================================
+
+
+
+	#endregion Event Handling
 
 }

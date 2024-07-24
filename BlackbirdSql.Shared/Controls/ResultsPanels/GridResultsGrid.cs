@@ -20,7 +20,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Shared.Controls.ResultsPanels;
 
 
-public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBStatusBarContributer
+public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBsStatusBarContributer
 {
 
 	static GridResultsGrid()
@@ -118,7 +118,7 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 			}
 		}
 
-		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
+		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBsGridStorage storage, long nRowIndex)
 		{
 			g.FillRectangle(bkBrush, rect);
 			AdjustCellRect(ref rect);
@@ -158,7 +158,7 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 			}
 		}
 
-		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
+		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBsGridStorage storage, long nRowIndex)
 		{
 			g.FillRectangle(bkBrush, rect.X - 1, rect.Y, rect.Width, rect.Height);
 			AdjustCellRect(ref rect);
@@ -195,7 +195,7 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 			}
 		}
 
-		protected override string GetCellStringToMeasure(long rowIndex, IBGridStorage storage)
+		protected override string GetCellStringToMeasure(long rowIndex, IBsGridStorage storage)
 		{
 			m_cellSB.Length = 0;
 			m_cellSB.Append(storage.GetCellDataAsString(rowIndex, ColumnIndex));
@@ -317,14 +317,14 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 
 	private static void PreloadStringsFromResources()
 	{
-		s_xmlCellTooltip = ControlsResources.GridXMLCellTooltip;
-		s_selectAllCellsTooltip = ControlsResources.GridSelectAllCellsTooltip;
-		s_selectWholeRowTooltip = ControlsResources.GridSelectWholeColumnTooltip;
-		s_selectWholeColumnTooltip = ControlsResources.GridSelectWholeRowTooltip;
+		s_xmlCellTooltip = ControlsResources.Grid_XMLCellTooltip;
+		s_selectAllCellsTooltip = ControlsResources.Grid_SelectAllCellsTooltip;
+		s_selectWholeRowTooltip = ControlsResources.Grid_SelectWholeColumnTooltip;
+		s_selectWholeColumnTooltip = ControlsResources.Grid_SelectWholeRowTooltip;
 	}
 
 
-	void IBStatusBarContributer.GetColumnAndRowNumber(out long rowNumber, out long columnNumber)
+	void IBsStatusBarContributer.GetColumnAndRowNumber(out long rowNumber, out long columnNumber)
 	{
 		GetCurrentCell(out rowNumber, out var columnIndex);
 		columnNumber = columnIndex;
@@ -349,8 +349,8 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 			bool flag = false;
 			if (IsHandleCreated)
 			{
-				Sys.Native.SCROLLINFO sCROLLINFO = new Sys.Native.SCROLLINFO(bInitWithAllMask: true);
-				Sys.Native.GetScrollInfo(Handle, 0, sCROLLINFO);
+				Sys.Native.SCROLLINFOEx sCROLLINFO = new Sys.Native.SCROLLINFOEx(bInitWithAllMask: true);
+				Native.GetScrollInfo(Handle, 0, sCROLLINFO);
 				flag = sCROLLINFO.nMax > sCROLLINFO.nPage;
 			}
 
@@ -678,10 +678,10 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 		}
 	}
 
-	bool IBGridControl2.Focus()
+	bool IBsGridControl2.Focus()
 	{
 		return Focus();
 	}
 
-	bool IBGridControl2.ContainsFocus => ContainsFocus;
+	bool IBsGridControl2.ContainsFocus => ContainsFocus;
 }

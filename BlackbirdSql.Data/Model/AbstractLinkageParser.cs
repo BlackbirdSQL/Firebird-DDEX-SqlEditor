@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Data.Properties;
 using BlackbirdSql.Sys.Interfaces;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -379,7 +378,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// individual tasks to the IDE task handler and status bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected System.Diagnostics.Stopwatch _Stopwatch;
+	protected Stopwatch _Stopwatch;
 
 
 	/// <summary>

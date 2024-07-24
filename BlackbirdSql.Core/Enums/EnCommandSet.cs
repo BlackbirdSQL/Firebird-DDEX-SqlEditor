@@ -48,7 +48,6 @@ public enum EnCommandSet
 	CmdIdCancelQuery = 0x0305, // 773
 	CmdIdShowEstimatedPlan = 0x0306, // 774
 	CmdIdToggleIntellisense = 0x0307, // 775
-	CmdIdToggleSqlCmdMode = 0x0308, // 776
 	CmdIdToggleClientStatistics = 0x0309, // 777
 	CmdIdToggleExecutionPlan = 0x030A, // 778
 	CmdIdResultsAsText = 0x030B, // 779

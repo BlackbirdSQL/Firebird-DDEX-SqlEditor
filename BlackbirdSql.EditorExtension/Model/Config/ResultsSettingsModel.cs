@@ -26,7 +26,7 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for General Results options
 /// </summary>
 // =========================================================================================================
-public class ResultsSettingsModel(IBTransientSettings transientSettings)
+public class ResultsSettingsModel(IBsTransientSettings transientSettings)
 	: AbstractSettingsModel<ResultsSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
 {
 

@@ -15,7 +15,7 @@ namespace BlackbirdSql.Core.Ctl.Config;
 //										PersistentSettings Class
 //
 /// <summary>
-/// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
+/// Consolidated single access point for daisy-chained packages settings models (IBsSettingsModel).
 /// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
 /// descendent tree from the top-level extension lib down to the Core.
 /// PersistentSettings can be either consumers or providers of options, or both.
@@ -23,14 +23,14 @@ namespace BlackbirdSql.Core.Ctl.Config;
 /// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
-public abstract class PersistentSettings : IBPersistentSettings
+public abstract class PersistentSettings : IBsPersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
 	#region Fields
 	// ---------------------------------------------------------------------------------
 
-	protected static IBPersistentSettings _Instance = null;
+	protected static IBsPersistentSettings _Instance = null;
 	protected static Dictionary<string, object> _SettingsStore;
 
 	#endregion Fields
@@ -74,6 +74,14 @@ public abstract class PersistentSettings : IBPersistentSettings
 	// ---------------------------------------------------------------------------------
 	public static bool EnableDiagnostics => (bool)GetSetting("DdexGeneralEnableDiagnostics", true);
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a boolean indicating whether or not the extension's load statistics can
+	/// be written to the output window.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool EnableLoadStatistics => (bool)GetSetting("DdexGeneralEnableLoadStatistics", false);
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -218,7 +226,7 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// Gets the singleton PersistentSettings instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IBPersistentSettings Instance
+	public static IBsPersistentSettings Instance
 	{
 		get
 		{
@@ -272,7 +280,7 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
-	public abstract void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
+	public abstract void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
 
 
 	/// <summary>

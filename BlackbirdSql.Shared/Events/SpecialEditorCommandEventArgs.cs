@@ -6,7 +6,13 @@
 using System;
 using System.Runtime.InteropServices;
 
+
+
 namespace BlackbirdSql.Shared.Events;
+
+
+[ComVisible(false)]
+public delegate void SpecialEditorCommandEventHandler(object sender, SpecialEditorCommandEventArgs e);
 
 
 [ComVisible(false)]

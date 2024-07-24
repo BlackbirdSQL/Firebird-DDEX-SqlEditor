@@ -20,7 +20,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 /// The events manager can handle an ide event by hooking onto Controller.On[event]. 
 /// </remarks>
 // =========================================================================================================
-public interface IBsEventsManager : IBTaskHandlerClient, IDisposable
+public interface IBsEventsManager : IBsTaskHandlerClient, IDisposable
 {
 	IBsPackageController Controller { get; }
 	IBsAsyncPackage PackageInstance { get; }

@@ -15,9 +15,9 @@ using BlackbirdSql.Sys.Interfaces;
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
 
-public abstract class AbstractBoolConverter : BooleanConverter, IBAutomatorConverter, IDisposable
+public abstract class AbstractBoolConverter : BooleanConverter, IBsAutomatorConverter, IDisposable
 {
-	private IBSettingsModel _Model = null;
+	private IBsSettingsModel _Model = null;
 	private string _PropertyName;
 	private bool _IsAutomator = false;
 
@@ -130,7 +130,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomatorConve
 	private bool RegisterModel(ITypeDescriptorContext context, bool value)
 	{
 
-		if (context == null || context.Instance is not IBSettingsModel model)
+		if (context == null || context.Instance is not IBsSettingsModel model)
 			return false;
 
 		// The model instance may have changed on the same property between
@@ -139,7 +139,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomatorConve
 		if (_Model != null && object.ReferenceEquals(_Model, model))
 			return false;
 
-		IBSettingsModel prevModel = null;
+		IBsSettingsModel prevModel = null;
 
 		if (_Model != null)
 		{
@@ -170,7 +170,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomatorConve
 
 		_Dependents = new Dictionary<string, bool>(model.PropertyWrappers.Count);
 
-		foreach (IBModelPropertyWrapper property in model.PropertyWrappers)
+		foreach (IBsModelPropertyWrapper property in model.PropertyWrappers)
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{

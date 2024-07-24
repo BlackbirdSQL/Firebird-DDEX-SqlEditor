@@ -11,10 +11,10 @@ namespace BlackbirdSql.Core.Ctl;
 //
 /// <summary>
 /// The static constants base class for use by connection classes derived from AbstractPropertyAgent.
-/// PropertySet's are utilized by an <see cref="IBPropertyAgent"/> class when it is the initiating instance
+/// PropertySet's are utilized by an <see cref="IBsPropertyAgent"/> class when it is the initiating instance
 /// (Initiator), ie. the final descendent child class instance in the instance lineage. A class instance can
 /// simultaneousy be an Initiator and a sub-class instance.
-/// Each class in the IBPropertyAgent hierarchy must provide for it's own static private cumulative
+/// Each class in the IBsPropertyAgent hierarchy must provide for it's own static private cumulative
 /// PropertySet through the static <see cref="AbstractPropertyAgent.CreateAndPopulatePropertySet()"/>.
 /// Descendents are provided a replica of their parent's cumulative static private property set, to which
 /// they can then add their own custom properties.

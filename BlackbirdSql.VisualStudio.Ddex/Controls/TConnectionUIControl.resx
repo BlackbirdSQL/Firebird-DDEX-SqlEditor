@@ -204,6 +204,78 @@
   <data name="grbSettings.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
   </data>
+  <data name="&gt;&gt;cboCharset.Name" xml:space="preserve">
+    <value>cboCharset</value>
+  </data>
+  <data name="&gt;&gt;cboCharset.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboCharset.Parent" xml:space="preserve">
+    <value>grbSettings</value>
+  </data>
+  <data name="&gt;&gt;cboCharset.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;lblCharset.Name" xml:space="preserve">
+    <value>lblCharset</value>
+  </data>
+  <data name="&gt;&gt;lblCharset.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblCharset.Parent" xml:space="preserve">
+    <value>grbSettings</value>
+  </data>
+  <data name="&gt;&gt;lblCharset.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;lblDialect.Name" xml:space="preserve">
+    <value>lblDialect</value>
+  </data>
+  <data name="&gt;&gt;lblDialect.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblDialect.Parent" xml:space="preserve">
+    <value>grbSettings</value>
+  </data>
+  <data name="&gt;&gt;lblDialect.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;lblCurrentDisplayName.Name" xml:space="preserve">
+    <value>lblCurrentDisplayName</value>
+  </data>
+  <data name="&gt;&gt;lblCurrentDisplayName.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblCurrentDisplayName.Parent" xml:space="preserve">
+    <value>grbSettings</value>
+  </data>
+  <data name="&gt;&gt;lblCurrentDisplayName.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="grbSettings.Location" type="System.Drawing.Point, System.Drawing">
+    <value>230, 115</value>
+  </data>
+  <data name="grbSettings.Size" type="System.Drawing.Size, System.Drawing">
+    <value>180, 109</value>
+  </data>
+  <data name="grbSettings.TabIndex" type="System.Int32, mscorlib">
+    <value>25</value>
+  </data>
+  <data name="grbSettings.Text" xml:space="preserve">
+    <value>Database name and settings</value>
+  </data>
+  <data name="&gt;&gt;grbSettings.Name" xml:space="preserve">
+    <value>grbSettings</value>
+  </data>
+  <data name="&gt;&gt;grbSettings.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;grbSettings.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;grbSettings.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
   <data name="cboCharset.Items" xml:space="preserve">
     <value>NONE</value>
   </data>
@@ -354,6 +426,9 @@
   <data name="&gt;&gt;lblDialect.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
+  <metadata name="connectionUIControlToolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>150, 17</value>
+  </metadata>
   <data name="lblCurrentDisplayName.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
   </data>
@@ -381,9 +456,6 @@
   <data name="lblCurrentDisplayName.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
-  <metadata name="connectionUIControlToolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>150, 17</value>
-  </metadata>
   <data name="lblCurrentDisplayName.ToolTip" xml:space="preserve">
     <value>The Database Name of the registered connection that the current input of the Connection dialog matches.
 If the current input does not match any registered connection '*New Connection' will be displayed.</value>
@@ -399,30 +471,6 @@ If the current input does not match any registered connection '*New Connection' 
   </data>
   <data name="&gt;&gt;lblCurrentDisplayName.ZOrder" xml:space="preserve">
     <value>4</value>
-  </data>
-  <data name="grbSettings.Location" type="System.Drawing.Point, System.Drawing">
-    <value>230, 115</value>
-  </data>
-  <data name="grbSettings.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 109</value>
-  </data>
-  <data name="grbSettings.TabIndex" type="System.Int32, mscorlib">
-    <value>25</value>
-  </data>
-  <data name="grbSettings.Text" xml:space="preserve">
-    <value>Database name and settings</value>
-  </data>
-  <data name="&gt;&gt;grbSettings.Name" xml:space="preserve">
-    <value>grbSettings</value>
-  </data>
-  <data name="&gt;&gt;grbSettings.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;grbSettings.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;grbSettings.ZOrder" xml:space="preserve">
-    <value>6</value>
   </data>
   <data name="cboServerType.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Right</value>
@@ -480,6 +528,102 @@ If the current input does not match any registered connection '*New Connection' 
   </data>
   <data name="&gt;&gt;lblServerType.ZOrder" xml:space="preserve">
     <value>3</value>
+  </data>
+  <data name="&gt;&gt;lblRole.Name" xml:space="preserve">
+    <value>lblRole</value>
+  </data>
+  <data name="&gt;&gt;lblRole.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblRole.Parent" xml:space="preserve">
+    <value>grbLogin</value>
+  </data>
+  <data name="&gt;&gt;lblRole.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;txtRole.Name" xml:space="preserve">
+    <value>txtRole</value>
+  </data>
+  <data name="&gt;&gt;txtRole.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtRole.Parent" xml:space="preserve">
+    <value>grbLogin</value>
+  </data>
+  <data name="&gt;&gt;txtRole.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;lblPassword.Name" xml:space="preserve">
+    <value>lblPassword</value>
+  </data>
+  <data name="&gt;&gt;lblPassword.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblPassword.Parent" xml:space="preserve">
+    <value>grbLogin</value>
+  </data>
+  <data name="&gt;&gt;lblPassword.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;txtPassword.Name" xml:space="preserve">
+    <value>txtPassword</value>
+  </data>
+  <data name="&gt;&gt;txtPassword.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtPassword.Parent" xml:space="preserve">
+    <value>grbLogin</value>
+  </data>
+  <data name="&gt;&gt;txtPassword.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;lblUser.Name" xml:space="preserve">
+    <value>lblUser</value>
+  </data>
+  <data name="&gt;&gt;lblUser.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblUser.Parent" xml:space="preserve">
+    <value>grbLogin</value>
+  </data>
+  <data name="&gt;&gt;lblUser.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;txtUserName.Name" xml:space="preserve">
+    <value>txtUserName</value>
+  </data>
+  <data name="&gt;&gt;txtUserName.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtUserName.Parent" xml:space="preserve">
+    <value>grbLogin</value>
+  </data>
+  <data name="&gt;&gt;txtUserName.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="grbLogin.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 115</value>
+  </data>
+  <data name="grbLogin.Size" type="System.Drawing.Size, System.Drawing">
+    <value>220, 109</value>
+  </data>
+  <data name="grbLogin.TabIndex" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="grbLogin.Text" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="&gt;&gt;grbLogin.Name" xml:space="preserve">
+    <value>grbLogin</value>
+  </data>
+  <data name="&gt;&gt;grbLogin.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;grbLogin.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;grbLogin.ZOrder" xml:space="preserve">
+    <value>7</value>
   </data>
   <data name="lblRole.Location" type="System.Drawing.Point, System.Drawing">
     <value>8, 86</value>
@@ -619,30 +763,6 @@ If the current input does not match any registered connection '*New Connection' 
   <data name="&gt;&gt;txtUserName.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <data name="grbLogin.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 115</value>
-  </data>
-  <data name="grbLogin.Size" type="System.Drawing.Size, System.Drawing">
-    <value>220, 109</value>
-  </data>
-  <data name="grbLogin.TabIndex" type="System.Int32, mscorlib">
-    <value>24</value>
-  </data>
-  <data name="grbLogin.Text" xml:space="preserve">
-    <value>Login</value>
-  </data>
-  <data name="&gt;&gt;grbLogin.Name" xml:space="preserve">
-    <value>grbLogin</value>
-  </data>
-  <data name="&gt;&gt;grbLogin.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;grbLogin.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;grbLogin.ZOrder" xml:space="preserve">
-    <value>7</value>
-  </data>
   <data name="cmdGetFile.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Right</value>
   </data>
@@ -688,10 +808,11 @@ If the current input does not match any registered connection '*New Connection' 
   <data name="cmbDatabase.ToolTip" xml:space="preserve">
     <value>The dropdown list displays the Database Names of configured connections for the selected Server.
 Glyph prefix legend:
+ ◯ Session (non-persistent) connections.
  ⛭ Project Settings (App.Config) connections.
  ⛮ Entity Data Model (edmx) connections.
  ⧉ FlameRobin connections.
-Server Explorer connections and connections modified during a Session have no glyph.</value>
+Server Explorer connections have no glyph.</value>
   </data>
   <data name="&gt;&gt;cmbDatabase.Name" xml:space="preserve">
     <value>cmbDatabase</value>
@@ -849,13 +970,17 @@ Server Explorer connections and connections modified during a Session have no gl
   <data name="txtDatabase.TabIndex" type="System.Int32, mscorlib">
     <value>33</value>
   </data>
+  <metadata name="connectionUIControlToolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>150, 17</value>
+  </metadata>
   <data name="txtDatabase.ToolTip" xml:space="preserve">
     <value>The dropdown list displays the Database Names of configured connections for the selected Server.
 Glyph prefix legend:
+ ○ Session (non-persistent) connections.
  ⛭ Project Settings (App.Config) connections.
  ⛮ Entity Data Model (edmx) connections.
  ֎ FlameRobin connections.
-Server Explorer connections and connections modified during a Session have no glyph.</value>
+Server Explorer connections have no glyph.</value>
   </data>
   <data name="&gt;&gt;txtDatabase.Name" xml:space="preserve">
     <value>txtDatabase</value>

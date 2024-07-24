@@ -8,12 +8,10 @@ using BlackbirdSql.Shared.Model.IO;
 
 
 
-
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-// [CLSCompliant(false)]
-public class GridMemDataStorage : AbstractMemDataStorage, IBGridMemDataStorage, IBMemDataStorage, IBDataStorage, IDisposable
+public class GridMemDataStorage : AbstractMemDataStorage, IBsGridMemDataStorage, IBsMemDataStorage, IBsDataStorage, IDisposable
 {
 	private class ComparerWrapper : IComparer
 	{

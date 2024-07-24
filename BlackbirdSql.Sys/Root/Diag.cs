@@ -284,7 +284,7 @@ public static class Diag
 		try
 		{
 			if (enableTaskLog)
-				OutputPaneWriteLine(str, isException);
+				AsyncOutputPaneWriteLine(str, isException);
 		}
 		catch (Exception) { }
 
@@ -304,7 +304,7 @@ public static class Diag
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1,
-		bool expected = false)
+		int exceptionType = 0)
 #else
 	public static void Dug(Exception ex, string message = "",
 		string memberName = "[Release: MemberName Unavailable]",
@@ -332,7 +332,9 @@ public static class Diag
 			message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
 		}
 
-		string prefix = expected ? $"[EXPECTED {ex.GetType()}] " : $"[{ex.GetType()}] ";
+		string prefix = exceptionType == 1
+			? $"[DEBUG {ex.GetType()}] "
+			: (exceptionType == 2 ? $"[EXPECTED {ex.GetType()}] " : $"[{ex.GetType()}] ");
 
 		Dug(true, prefix + ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
 
@@ -597,8 +599,38 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Diagnostics method for outputting expected DEBUG build Exceptions but that will
-	/// be swallowed in release builds.
+	/// Diagnostics method for outputting unexpected Exceptions that will display on
+	/// DEBUG builds but be swallowed in release builds.
+	/// For example an object that is unavailable on shutdown but that could possibly
+	/// have been checked, or a ConnectionSource state that has not yet been
+	/// identified.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static void Debug(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static void Expected(Exception ex, string message = "",
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+#if DEBUG
+		Dug(ex, message, memberName, sourceFilePath, sourceLineNumber, 1);
+#endif
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for outputting expected Exceptions that will display on
+	/// DEBUG builds but be swallowed in release builds.
+	/// For example a connection that throws an exception due to a broken network
+	/// connection or a temporarily inaccessible tab for text updates. 
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
@@ -614,7 +646,7 @@ public static class Diag
 #endif
 	{
 #if DEBUG
-		Dug(ex, message, memberName, sourceFilePath, sourceLineNumber, true);
+		Dug(ex, message, memberName, sourceFilePath, sourceLineNumber, 2);
 #endif
 	}
 
@@ -969,13 +1001,13 @@ public static class Diag
 	/// bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool TaskHandlerProgress(IBTaskHandlerClient client, string text, bool completed = false)
+	public static bool TaskHandlerProgress(IBsTaskHandlerClient client, string text, bool completed = false)
 	{
 		// Fire and forget - Switch to threadpool.
 
-		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, completed),
+		Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, completed),
 			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
-			TaskScheduler.Default);
+			TaskScheduler.Default).Forget();
 
 		return true;
 	}
@@ -986,7 +1018,7 @@ public static class Diag
 	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static async Task<bool> TaskHandlerProgressAsync(IBTaskHandlerClient client, string text, bool completed = false)
+	public static async Task<bool> TaskHandlerProgressAsync(IBsTaskHandlerClient client, string text, bool completed = false)
 	{
 		bool enableDiagnosticsLog;
 		bool enableTaskLog;
@@ -997,7 +1029,7 @@ public static class Diag
 			enableTaskLog = EnableTaskLog;
 		}
 
-		await TaskScheduler.Default;
+		await Cmd.AwaitableAsync();
 
 		try
 		{
@@ -1157,7 +1189,7 @@ public static class Diag
 	/// </summary>
 	/// <param name="value">The text value to write.</param>
 	// ---------------------------------------------------------------------------------
-	public static void OutputPaneWriteLine(string value, bool isException)
+	public static void AsyncOutputPaneWriteLine(string value, bool isException)
 	{
 		_ = Task.Run(() => OutputPaneWriteLineAsync(value, isException));
 	}

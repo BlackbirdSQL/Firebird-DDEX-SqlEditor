@@ -8,7 +8,7 @@ using BlackbirdSql.Shared.Properties;
 
 namespace BlackbirdSql.Shared.Model.IO;
 
-public class QEDiskDataStorage : AbstractDiskDataStorage, IBQEStorage, IBDataStorage, IDisposable
+public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataStorage, IDisposable
 {
 	private bool _IsClosed = true;
 
@@ -56,7 +56,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBQEStorage, IBDataSto
 	{
 		if (!_IsClosed)
 		{
-			throw new InvalidOperationException(QEResources.ErrQEStorageAlreadyStoring);
+			throw new InvalidOperationException(Resources.ExStorageAlreadyStoring);
 		}
 		_IsClosed = false;
 
@@ -70,7 +70,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBQEStorage, IBDataSto
 		_DataStorageEnabled = false;
 	}
 
-	public override IBStorageView GetStorageView()
+	public override IBsStorageView GetStorageView()
 	{
 		// Tracer.Trace(GetType(), "QEDiskDataStorage.GetStorageView", "", null);
 		QEDiskStorageView qEDiskStorageView = new QEDiskStorageView(this);

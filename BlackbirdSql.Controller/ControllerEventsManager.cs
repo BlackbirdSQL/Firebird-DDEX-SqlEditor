@@ -330,12 +330,12 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		if (!ThreadHelper.CheckAccess())
 		{
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			bool result = Task.Run(async delegate
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 				ValidateSolutionImpl();
 				return true;
-			});
+			}).AwaiterResult();
 
 			return;
 		}

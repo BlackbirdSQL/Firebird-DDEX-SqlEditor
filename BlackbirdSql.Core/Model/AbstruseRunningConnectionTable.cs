@@ -421,7 +421,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		dataTable.Columns.Add("DataSourceLc", typeof(string));
 		dataTable.Columns.Add("Name", typeof(string));
 		dataTable.Columns.Add("DatabaseLc", typeof(string));
-		dataTable.Columns.Add(C_KeyExFullDisplayName, typeof(string));
+		dataTable.Columns.Add(C_KeyExAdornedQualifiedName, typeof(string));
+		dataTable.Columns.Add(C_KeyExAdornedDisplayName, typeof(string));
 
 		foreach (Describer describer in Csb.DescriberKeys)
 			dataTable.Columns.Add(describer.Name, describer.DataType);
@@ -1782,7 +1783,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		// unique connection url, which requires at a minimum DataSource, Database and
 		// UserID.
 
-		string connectionUrl = csa.DatasetMoniker;
+		string connectionUrl = csa.LiveDatasetMoniker;
 
 		// Sanity check.
 		if (connectionUrl == null)
@@ -2074,7 +2075,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				updated = UpdateDataColumn(row, describer.Name, csaValue, updated);
 			}
 
-			updated = UpdateDataColumn(row, C_KeyExFullDisplayName, csa?.FullDisplayName, updated);
+			updated = UpdateDataColumn(row, C_KeyExAdornedQualifiedName, csa?.AdornedQualifiedName, updated);
+			updated = UpdateDataColumn(row, C_KeyExAdornedDisplayName, csa?.AdornedDisplayName, updated);
 
 			return updated;
 		}

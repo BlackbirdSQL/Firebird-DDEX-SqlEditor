@@ -369,8 +369,11 @@ public class TObjectSelectorRoot : DataObjectSelector
 						strval = _Csa.Dataset;
 					retval = strval;
 					break;
-				case SysConstants.C_KeyExFullDisplayName:
-					retval = _Csa.FullDisplayName;
+				case SysConstants.C_KeyExAdornedQualifiedName:
+					retval = _Csa.AdornedQualifiedName;
+					break;
+				case SysConstants.C_KeyExAdornedDisplayName:
+					retval = _Csa.AdornedDisplayName;
 					break;
 				case SysConstants.C_KeyExClientVersion:
 					retval = NativeDb.ClientVersion;

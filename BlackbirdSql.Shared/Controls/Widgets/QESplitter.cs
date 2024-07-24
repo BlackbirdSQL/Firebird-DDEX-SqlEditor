@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QESplitter
 
 using System;
 using System.ComponentModel;
@@ -10,6 +8,8 @@ using System.Security;
 using System.Security.Permissions;
 using System.Windows.Forms;
 using BlackbirdSql.Shared.Events;
+
+
 
 namespace BlackbirdSql.Shared.Controls.Widgets;
 
@@ -145,7 +145,7 @@ public class QESplitter : Control, IMessageFilter
 		}
 	}
 
-	public event QESplitterMovedEventHandler SplitterMovedEvent
+	public event SplitterMovedEventHandler SplitterMovedEvent
 	{
 		add
 		{
@@ -252,9 +252,9 @@ public class QESplitter : Control, IMessageFilter
 		base.SetBoundsCore(x, y, width, height, specified);
 	}
 
-	protected virtual void OnSplitterMoved(QESplitterMovedEventArgs sevent)
+	protected virtual void OnSplitterMoved(SplitterMovedEventArgs sevent)
 	{
-		((QESplitterMovedEventHandler)Events[EVENT_MOVED])?.Invoke(this, sevent);
+		((SplitterMovedEventHandler)Events[EVENT_MOVED])?.Invoke(this, sevent);
 	}
 
 	private void DrawSplitBar(int mode, Point currentMousePoint)
@@ -285,12 +285,12 @@ public class QESplitter : Control, IMessageFilter
 	{
 		Rectangle rectangle = CalcSplitRectangle(currentMousePoint);
 		IntPtr handle = Parent.Handle;
-		IntPtr dCEx = Native.GetDCEx(handle, IntPtr.Zero, 1026);
+		IntPtr dCEx = Native.GetDCExManaged(handle, IntPtr.Zero, 1026);
 		IntPtr intPtr = CreateHalftoneHBRUSH();
 		IntPtr intPtr2 = Native.SelectObject(dCEx, intPtr);
 		Native.PatBlt(dCEx, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, 5898313);
 		Native.SelectObject(dCEx, intPtr2);
-		Native.DeleteObject(intPtr);
+		Native.DeleteObjectManaged(intPtr);
 		Native.ReleaseDC(handle, dCEx);
 	}
 
@@ -342,7 +342,7 @@ public class QESplitter : Control, IMessageFilter
 			Application.RemoveMessageFilter(this);
 			if (accept)
 			{
-				OnSplitterMoved(new QESplitterMovedEventArgs(horizontalSplitter ? captTracker.LastCapturedMousePos.Y - captTracker.DragOffset : captTracker.LastCapturedMousePos.X - captTracker.DragOffset, boundControl));
+				OnSplitterMoved(new SplitterMovedEventArgs(horizontalSplitter ? captTracker.LastCapturedMousePos.Y - captTracker.DragOffset : captTracker.LastCapturedMousePos.X - captTracker.DragOffset, boundControl));
 			}
 		}
 		finally
@@ -359,14 +359,14 @@ public class QESplitter : Control, IMessageFilter
 			array[i] = (short)(21845 << (i & 1));
 		}
 
-		IntPtr intPtr = Native.CreateBitmap(8, 8, 1, 1, array);
-		IntPtr result = Native.CreateBrushIndirect(new Native.LOGBRUSH
+		IntPtr intPtr = Native.CreateBitmapManaged(8, 8, 1, 1, array);
+		IntPtr result = Native.CreateBrushIndirectManaged(new Native.LOGBRUSHEx
 		{
 			lbColor = ColorTranslator.ToWin32(Color.Black),
 			lbStyle = 3,
 			lbHatch = intPtr
 		});
-		Native.DeleteObject(intPtr);
+		Native.DeleteObjectManaged(intPtr);
 		return result;
 	}
 }

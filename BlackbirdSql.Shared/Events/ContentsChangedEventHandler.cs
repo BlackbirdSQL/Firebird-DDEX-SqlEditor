@@ -4,7 +4,6 @@
 using System;
 
 
-
 namespace BlackbirdSql.Shared.Events;
 
 public delegate void ContentsChangedEventHandler(object sender, EventArgs e);

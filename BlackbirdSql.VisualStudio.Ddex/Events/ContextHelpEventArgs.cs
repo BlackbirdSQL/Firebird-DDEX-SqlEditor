@@ -13,6 +13,5 @@ public class ContextHelpEventArgs(EnDataConnectionDlgContext context, Point mous
 {
 	private readonly EnDataConnectionDlgContext _Context = context;
 
-
 	public EnDataConnectionDlgContext Context => _Context;
 }

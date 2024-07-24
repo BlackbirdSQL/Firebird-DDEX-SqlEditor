@@ -14,7 +14,6 @@ using Microsoft.SqlServer.Management.SqlParser.Parser;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Package;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -387,20 +386,20 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 		{
 			Images =
 			{
-				Resources.AsymmetricKey,
-				Resources.Certificate,
-				Resources.Column,
-				Resources.Credential,
-				Resources.Database,
-				Resources.Login,
-				Resources.ScalarValuedFunction,
-				Resources.Schema,
-				Resources.StoredProcedure,
-				Resources.Table,
-				Resources.TableValuedFunction,
-				Resources.User,
-				Resources.Variable,
-				Resources.View
+				Resources.IconAsymmetricKey,
+				Resources.IconCertificate,
+				Resources.IconColumn,
+				Resources.IconCredential,
+				Resources.IconDatabase,
+				Resources.IconLogin,
+				Resources.IconScalarValuedFunction,
+				Resources.IconSchema,
+				Resources.IconStoredProcedure,
+				Resources.IconTable,
+				Resources.IconTableValuedFunction,
+				Resources.IconUser,
+				Resources.IconVariable,
+				Resources.IconView
 			}
 		};
 	}
@@ -447,7 +446,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 		bool result = true;
 		bool maxSizeExceeded = req.Text.Length > Prefs.MaxScriptSize;
 
-		// IBMetadataProviderProvider metadataProviderProvider;
+		// IBsMetadataProviderProvider metadataProviderProvider;
 
 		/*
 		if (!source.IsDisconnectedMode && !source.IsServerSupported)
@@ -471,15 +470,10 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 		{
 			result = false;
 		}
-		else if (source.IsSqlCmdModeEnabled)
-		{
-			result = false;
-			req.Sink.AddError(req.FileName, Resources.IntellisenseDisabledForSqlCmdMode, default, Severity.Hint);
-		}
 		else if (maxSizeExceeded)
 		{
 			result = false;
-			req.Sink.AddError(req.FileName, Resources.FileTooBig, default, Severity.Hint);
+			req.Sink.AddError(req.FileName, Resources.ErrorFileTooBig, default, Severity.Hint);
 		}
 		return result;
 	}
@@ -782,7 +776,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 
 				// TODO: No ProviderProvider
 				/*
-				IBMetadataProviderProvider metadataProviderProvider = source.GetMetadataProviderProvider();
+				IBsMetadataProviderProvider metadataProviderProvider = source.GetMetadataProviderProvider();
 				if (metadataProviderProvider != null)
 				{
 					AuxilliaryDocData auxDocData = EditorExtensionPackage.Instance.GetAuxilliaryDocData(source.GetTextLines());

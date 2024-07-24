@@ -5,7 +5,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms.Design;
 using System.Windows.Threading;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;

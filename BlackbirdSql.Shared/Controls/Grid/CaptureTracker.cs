@@ -1,437 +1,436 @@
-﻿#region Assembly Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
-// C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLCommon\Microsoft.SqlServer.GridControl.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
+// Microsoft.SqlServer.Management.UI.Grid.CaptureTracker
 
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Shared.Enums;
 
-// namespace Microsoft.SqlServer.Management.UI.Grid
-namespace BlackbirdSql.Shared.Controls.Grid
+
+
+namespace BlackbirdSql.Shared.Controls.Grid;
+
+
+public sealed class CaptureTracker
 {
-	public sealed class CaptureTracker
+	public enum EnDragOperation
 	{
-		public enum EnDragOperation
+		None,
+		DragReady,
+		StartedDrag
+	}
+
+	private EnHitTestResult m_captureHitTest;
+
+	private Rectangle m_cellRect;
+
+	private Rectangle m_adjustedCellRect;
+
+	private long m_rowIndex;
+
+	private int m_columnIndex;
+
+	private bool m_wasOverButton;
+
+	private EnGridButtonArea m_buttonArea;
+
+	private int m_origColumnWidth;
+
+	private int m_lastColumnWidth;
+
+	private int m_mouseOffsetForColResize;
+
+	private int m_leftMostMergedColumnIndex;
+
+	private int m_minWidthDuringColResize;
+
+	private int m_totalGridLineAdjDuringResize;
+
+	private int m_lastColumnIndex;
+
+	private long m_lastRowIndex;
+
+	private bool m_buttonWasPushed;
+
+	private Point m_mouseCapturePoint;
+
+	private int m_selectionBlockIndex;
+
+	private EnDragOperation m_dragState;
+
+	private GridDragImageListOperation m_dragOper;
+
+	private int m_headerDragY;
+
+	private int m_colIndexToDragColAfter;
+
+	public static int NoColIndexToDragColAfter = -2;
+
+	private bool embContrlFocused;
+
+	private DateTime timeEvent = DateTime.MinValue;
+
+	private Timer hyperlinkSelTimer;
+
+	public EnHitTestResult CaptureHitTest
+	{
+		get
 		{
-			None,
-			DragReady,
-			StartedDrag
+			return m_captureHitTest;
 		}
-
-		private EnHitTestResult m_captureHitTest;
-
-		private Rectangle m_cellRect;
-
-		private Rectangle m_adjustedCellRect;
-
-		private long m_rowIndex;
-
-		private int m_columnIndex;
-
-		private bool m_wasOverButton;
-
-		private EnGridButtonArea m_buttonArea;
-
-		private int m_origColumnWidth;
-
-		private int m_lastColumnWidth;
-
-		private int m_mouseOffsetForColResize;
-
-		private int m_leftMostMergedColumnIndex;
-
-		private int m_minWidthDuringColResize;
-
-		private int m_totalGridLineAdjDuringResize;
-
-		private int m_lastColumnIndex;
-
-		private long m_lastRowIndex;
-
-		private bool m_buttonWasPushed;
-
-		private Point m_mouseCapturePoint;
-
-		private int m_selectionBlockIndex;
-
-		private EnDragOperation m_dragState;
-
-		private GridDragImageListOperation m_dragOper;
-
-		private int m_headerDragY;
-
-		private int m_colIndexToDragColAfter;
-
-		public static int NoColIndexToDragColAfter = -2;
-
-		private bool embContrlFocused;
-
-		private DateTime timeEvent = DateTime.MinValue;
-
-		private Timer hyperlinkSelTimer;
-
-		public EnHitTestResult CaptureHitTest
+		set
 		{
-			get
-			{
-				return m_captureHitTest;
-			}
-			set
-			{
-				m_captureHitTest = value;
-			}
+			m_captureHitTest = value;
 		}
+	}
 
-		public Rectangle CellRect
+	public Rectangle CellRect
+	{
+		get
 		{
-			get
-			{
-				return m_cellRect;
-			}
-			set
-			{
-				m_cellRect = value;
-			}
+			return m_cellRect;
 		}
-
-		public Rectangle AdjustedCellRect
+		set
 		{
-			get
-			{
-				return m_adjustedCellRect;
-			}
-			set
-			{
-				m_adjustedCellRect = value;
-			}
+			m_cellRect = value;
 		}
+	}
 
-		public long RowIndex
+	public Rectangle AdjustedCellRect
+	{
+		get
 		{
-			get
-			{
-				return m_rowIndex;
-			}
-			set
-			{
-				m_rowIndex = value;
-			}
+			return m_adjustedCellRect;
 		}
-
-		public int ColumnIndex
+		set
 		{
-			get
-			{
-				return m_columnIndex;
-			}
-			set
-			{
-				m_columnIndex = value;
-			}
+			m_adjustedCellRect = value;
 		}
+	}
 
-		public bool WasOverButton
+	public long RowIndex
+	{
+		get
 		{
-			get
-			{
-				return m_wasOverButton;
-			}
-			set
-			{
-				m_wasOverButton = value;
-			}
+			return m_rowIndex;
 		}
-
-		public EnGridButtonArea ButtonArea
+		set
 		{
-			get
-			{
-				return m_buttonArea;
-			}
-			set
-			{
-				m_buttonArea = value;
-			}
+			m_rowIndex = value;
 		}
+	}
 
-		public int OrigColumnWidth
+	public int ColumnIndex
+	{
+		get
 		{
-			get
-			{
-				return m_origColumnWidth;
-			}
-			set
-			{
-				m_origColumnWidth = value;
-			}
+			return m_columnIndex;
 		}
-
-		public int LastColumnWidth
+		set
 		{
-			get
-			{
-				return m_lastColumnWidth;
-			}
-			set
-			{
-				m_lastColumnWidth = value;
-			}
+			m_columnIndex = value;
 		}
+	}
 
-		public int MouseOffsetForColResize
+	public bool WasOverButton
+	{
+		get
 		{
-			get
-			{
-				return m_mouseOffsetForColResize;
-			}
-			set
-			{
-				m_mouseOffsetForColResize = value;
-			}
+			return m_wasOverButton;
 		}
-
-		public int LeftMostMergedColumnIndex
+		set
 		{
-			get
-			{
-				return m_leftMostMergedColumnIndex;
-			}
-			set
-			{
-				m_leftMostMergedColumnIndex = value;
-			}
+			m_wasOverButton = value;
 		}
+	}
 
-		public int MinWidthDuringColResize
+	public EnGridButtonArea ButtonArea
+	{
+		get
 		{
-			get
-			{
-				return m_minWidthDuringColResize;
-			}
-			set
-			{
-				m_minWidthDuringColResize = value;
-			}
+			return m_buttonArea;
 		}
-
-		public int TotalGridLineAdjDuringResize
+		set
 		{
-			get
-			{
-				return m_totalGridLineAdjDuringResize;
-			}
-			set
-			{
-				m_totalGridLineAdjDuringResize = value;
-			}
+			m_buttonArea = value;
 		}
+	}
 
-		public int LastColumnIndex
+	public int OrigColumnWidth
+	{
+		get
 		{
-			get
-			{
-				return m_lastColumnIndex;
-			}
-			set
-			{
-				m_lastColumnIndex = value;
-			}
+			return m_origColumnWidth;
 		}
-
-		public long LastRowIndex
+		set
 		{
-			get
-			{
-				return m_lastRowIndex;
-			}
-			set
-			{
-				m_lastRowIndex = value;
-			}
+			m_origColumnWidth = value;
 		}
+	}
 
-		public bool ButtonWasPushed
+	public int LastColumnWidth
+	{
+		get
 		{
-			get
-			{
-				return m_buttonWasPushed;
-			}
-			set
-			{
-				m_buttonWasPushed = value;
-			}
+			return m_lastColumnWidth;
 		}
-
-		public Point MouseCapturePoint
+		set
 		{
-			get
-			{
-				return m_mouseCapturePoint;
-			}
-			set
-			{
-				m_mouseCapturePoint = value;
-			}
+			m_lastColumnWidth = value;
 		}
+	}
 
-		public int SelectionBlockIndex
+	public int MouseOffsetForColResize
+	{
+		get
 		{
-			get
-			{
-				return m_selectionBlockIndex;
-			}
-			set
-			{
-				m_selectionBlockIndex = value;
-			}
+			return m_mouseOffsetForColResize;
 		}
-
-		public EnDragOperation DragState
+		set
 		{
-			get
-			{
-				return m_dragState;
-			}
-			set
-			{
-				m_dragState = value;
-			}
+			m_mouseOffsetForColResize = value;
 		}
+	}
 
-		public GridDragImageListOperation DragImageOperation
+	public int LeftMostMergedColumnIndex
+	{
+		get
 		{
-			get
+			return m_leftMostMergedColumnIndex;
+		}
+		set
+		{
+			m_leftMostMergedColumnIndex = value;
+		}
+	}
+
+	public int MinWidthDuringColResize
+	{
+		get
+		{
+			return m_minWidthDuringColResize;
+		}
+		set
+		{
+			m_minWidthDuringColResize = value;
+		}
+	}
+
+	public int TotalGridLineAdjDuringResize
+	{
+		get
+		{
+			return m_totalGridLineAdjDuringResize;
+		}
+		set
+		{
+			m_totalGridLineAdjDuringResize = value;
+		}
+	}
+
+	public int LastColumnIndex
+	{
+		get
+		{
+			return m_lastColumnIndex;
+		}
+		set
+		{
+			m_lastColumnIndex = value;
+		}
+	}
+
+	public long LastRowIndex
+	{
+		get
+		{
+			return m_lastRowIndex;
+		}
+		set
+		{
+			m_lastRowIndex = value;
+		}
+	}
+
+	public bool ButtonWasPushed
+	{
+		get
+		{
+			return m_buttonWasPushed;
+		}
+		set
+		{
+			m_buttonWasPushed = value;
+		}
+	}
+
+	public Point MouseCapturePoint
+	{
+		get
+		{
+			return m_mouseCapturePoint;
+		}
+		set
+		{
+			m_mouseCapturePoint = value;
+		}
+	}
+
+	public int SelectionBlockIndex
+	{
+		get
+		{
+			return m_selectionBlockIndex;
+		}
+		set
+		{
+			m_selectionBlockIndex = value;
+		}
+	}
+
+	public EnDragOperation DragState
+	{
+		get
+		{
+			return m_dragState;
+		}
+		set
+		{
+			m_dragState = value;
+		}
+	}
+
+	public GridDragImageListOperation DragImageOperation
+	{
+		get
+		{
+			return m_dragOper;
+		}
+		set
+		{
+			if (m_dragOper != null && m_dragOper != value)
 			{
-				return m_dragOper;
-			}
-			set
-			{
-				if (m_dragOper != null && m_dragOper != value)
+				try
 				{
-					try
-					{
-						m_dragOper.Dispose();
-					}
-					catch
-					{
-					}
-
-					m_dragOper = null;
+					m_dragOper.Dispose();
+				}
+				catch
+				{
 				}
 
-				m_dragOper = value;
+				m_dragOper = null;
 			}
-		}
 
-		public int HeaderDragY
-		{
-			get
-			{
-				return m_headerDragY;
-			}
-			set
-			{
-				m_headerDragY = value;
-			}
+			m_dragOper = value;
 		}
+	}
 
-		public int ColIndexToDragColAfter
+	public int HeaderDragY
+	{
+		get
 		{
-			get
-			{
-				return m_colIndexToDragColAfter;
-			}
-			set
-			{
-				m_colIndexToDragColAfter = value;
-			}
+			return m_headerDragY;
 		}
+		set
+		{
+			m_headerDragY = value;
+		}
+	}
 
-		public bool WasEmbeddedControlFocused
+	public int ColIndexToDragColAfter
+	{
+		get
 		{
-			get
-			{
-				return embContrlFocused;
-			}
-			set
-			{
-				embContrlFocused = value;
-			}
+			return m_colIndexToDragColAfter;
 		}
+		set
+		{
+			m_colIndexToDragColAfter = value;
+		}
+	}
 
-		public DateTime Time
+	public bool WasEmbeddedControlFocused
+	{
+		get
 		{
-			get
-			{
-				return timeEvent;
-			}
-			set
-			{
-				timeEvent = value;
-			}
+			return embContrlFocused;
 		}
+		set
+		{
+			embContrlFocused = value;
+		}
+	}
 
-		public Timer HyperLinkSelectionTimer
+	public DateTime Time
+	{
+		get
 		{
-			get
-			{
-				return hyperlinkSelTimer;
-			}
-			set
-			{
-				hyperlinkSelTimer = value;
-			}
+			return timeEvent;
 		}
+		set
+		{
+			timeEvent = value;
+		}
+	}
 
-		public void UpdateAdjustedRectHorizontally(int x, int width)
+	public Timer HyperLinkSelectionTimer
+	{
+		get
 		{
-			m_adjustedCellRect.X = x;
-			m_adjustedCellRect.Width = width;
+			return hyperlinkSelTimer;
 		}
+		set
+		{
+			hyperlinkSelTimer = value;
+		}
+	}
 
-		public void SetInfoFromHitTest(HitTestInfo htInfo)
-		{
-			m_rowIndex = htInfo.RowIndex;
-			m_columnIndex = htInfo.ColumnIndex;
-			m_cellRect = htInfo.AreaRectangle;
-			m_captureHitTest = htInfo.HitTestResult;
-		}
+	public void UpdateAdjustedRectHorizontally(int x, int width)
+	{
+		m_adjustedCellRect.X = x;
+		m_adjustedCellRect.Width = width;
+	}
 
-		public CaptureTracker()
-		{
-			Reset();
-		}
+	public void SetInfoFromHitTest(HitTestInfo htInfo)
+	{
+		m_rowIndex = htInfo.RowIndex;
+		m_columnIndex = htInfo.ColumnIndex;
+		m_cellRect = htInfo.AreaRectangle;
+		m_captureHitTest = htInfo.HitTestResult;
+	}
 
-		public void Reset()
-		{
-			m_captureHitTest = EnHitTestResult.Nothing;
-			m_cellRect = Rectangle.Empty;
-			m_adjustedCellRect = Rectangle.Empty;
-			m_rowIndex = -1L;
-			m_columnIndex = -1;
-			m_wasOverButton = false;
-			m_buttonArea = EnGridButtonArea.Background;
-			m_origColumnWidth = -1;
-			m_lastColumnWidth = -1;
-			m_leftMostMergedColumnIndex = -1;
-			m_minWidthDuringColResize = -1;
-			m_mouseOffsetForColResize = 0;
-			m_totalGridLineAdjDuringResize = 0;
-			m_lastColumnIndex = -1;
-			m_lastRowIndex = -1L;
-			m_buttonWasPushed = false;
-			m_mouseCapturePoint.X = -1;
-			m_mouseCapturePoint.Y = -1;
-			m_selectionBlockIndex = -1;
-			m_dragState = EnDragOperation.None;
-			DragImageOperation = null;
-			m_headerDragY = -1;
-			m_colIndexToDragColAfter = NoColIndexToDragColAfter;
-			embContrlFocused = false;
-			timeEvent = DateTime.MinValue;
-			hyperlinkSelTimer?.Stop();
-		}
+	public CaptureTracker()
+	{
+		Reset();
+	}
+
+	public void Reset()
+	{
+		m_captureHitTest = EnHitTestResult.Nothing;
+		m_cellRect = Rectangle.Empty;
+		m_adjustedCellRect = Rectangle.Empty;
+		m_rowIndex = -1L;
+		m_columnIndex = -1;
+		m_wasOverButton = false;
+		m_buttonArea = EnGridButtonArea.Background;
+		m_origColumnWidth = -1;
+		m_lastColumnWidth = -1;
+		m_leftMostMergedColumnIndex = -1;
+		m_minWidthDuringColResize = -1;
+		m_mouseOffsetForColResize = 0;
+		m_totalGridLineAdjDuringResize = 0;
+		m_lastColumnIndex = -1;
+		m_lastRowIndex = -1L;
+		m_buttonWasPushed = false;
+		m_mouseCapturePoint.X = -1;
+		m_mouseCapturePoint.Y = -1;
+		m_selectionBlockIndex = -1;
+		m_dragState = EnDragOperation.None;
+		DragImageOperation = null;
+		m_headerDragY = -1;
+		m_colIndexToDragColAfter = NoColIndexToDragColAfter;
+		embContrlFocused = false;
+		timeEvent = DateTime.MinValue;
+		hyperlinkSelTimer?.Stop();
 	}
 }

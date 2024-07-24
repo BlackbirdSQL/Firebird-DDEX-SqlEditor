@@ -3,38 +3,43 @@
 
 using System;
 
-namespace BlackbirdSql.Sys.Events
+
+
+namespace BlackbirdSql.Sys.Events;
+
+
+public delegate void CopyToClipboardEventHandler(object sender, CopyToClipboardEventArgs e);
+
+
+public sealed class CopyToClipboardEventArgs : EventArgs
 {
-	public sealed class CopyToClipboardEventArgs : EventArgs
+	private readonly string m_clipboardText;
+
+	private bool m_eventHandled;
+
+	public string ClipboardText => m_clipboardText;
+
+	public bool EventHandled
 	{
-		private readonly string m_clipboardText;
-
-		private bool m_eventHandled;
-
-		public string ClipboardText => m_clipboardText;
-
-		public bool EventHandled
+		get
 		{
-			get
-			{
-				return m_eventHandled;
-			}
-			set
-			{
-				m_eventHandled = value;
-			}
+			return m_eventHandled;
 		}
-
-		public CopyToClipboardEventArgs(string clipboardText)
+		set
 		{
-			m_clipboardText = clipboardText;
-			m_eventHandled = false;
+			m_eventHandled = value;
 		}
+	}
 
-		public CopyToClipboardEventArgs()
-		{
-			m_clipboardText = string.Empty;
-			m_eventHandled = false;
-		}
+	public CopyToClipboardEventArgs(string clipboardText)
+	{
+		m_clipboardText = clipboardText;
+		m_eventHandled = false;
+	}
+
+	public CopyToClipboardEventArgs()
+	{
+		m_clipboardText = string.Empty;
+		m_eventHandled = false;
 	}
 }

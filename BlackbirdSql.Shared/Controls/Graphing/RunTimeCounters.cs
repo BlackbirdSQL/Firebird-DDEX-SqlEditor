@@ -126,10 +126,10 @@ public class RunTimeCounters : ICustomTypeDescriptor
 	PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
 	{
 		PropertyDescriptor[] array = new PropertyDescriptor[counters.Count];
-		string perThreadCounterDescription = ControlsResources.PerThreadCounterDescription;
+		string perThreadCounterDescription = ControlsResources.Graphing_PerThreadCounterDescription;
 		if (counters.Count == 1)
 		{
-			PropertyValue propertyValue = ((!counters[0].BrickIdSpecified) ? new PropertyValue(ControlsResources.RuntimeCounterThreadAll, counters[0].Value) : new PropertyValue(string.Format(ControlsResources.RuntimeCounterThreadOnInstance, counters[0].Thread, counters[0].BrickId), counters[0].Value));
+			PropertyValue propertyValue = ((!counters[0].BrickIdSpecified) ? new PropertyValue(ControlsResources.Graphing_RuntimeCounterThreadAll, counters[0].Value) : new PropertyValue(string.Format(ControlsResources.Graphing_RuntimeCounterThreadOnInstance, counters[0].Thread, counters[0].BrickId), counters[0].Value));
 			propertyValue.SetDisplayNameAndDescription(propertyValue.Name, perThreadCounterDescription);
 			array[0] = propertyValue;
 		}
@@ -137,7 +137,7 @@ public class RunTimeCounters : ICustomTypeDescriptor
 		{
 			for (int i = 0; i < counters.Count; i++)
 			{
-				PropertyValue propertyValue2 = ((!counters[i].BrickIdSpecified) ? new PropertyValue(string.Format(ControlsResources.RuntimeCounterThread, counters[i].Thread), counters[i].Value) : new PropertyValue(string.Format(ControlsResources.RuntimeCounterThreadOnInstance, counters[i].Thread, counters[i].BrickId), counters[i].Value));
+				PropertyValue propertyValue2 = ((!counters[i].BrickIdSpecified) ? new PropertyValue(string.Format(ControlsResources.Graphing_RuntimeCounterThread, counters[i].Thread), counters[i].Value) : new PropertyValue(string.Format(ControlsResources.Graphing_RuntimeCounterThreadOnInstance, counters[i].Thread, counters[i].BrickId), counters[i].Value));
 				propertyValue2.SetDisplayNameAndDescription(propertyValue2.Name, perThreadCounterDescription);
 				array[i] = propertyValue2;
 			}

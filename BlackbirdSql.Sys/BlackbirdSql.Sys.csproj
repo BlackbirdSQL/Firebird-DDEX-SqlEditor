@@ -31,6 +31,7 @@
 		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
+		<Compile Include="Enums\EnEditorCreationFlags.cs" />
 		<Compile Include="Properties\AttributeResources.Designer.cs">
 		  <DesignTime>True</DesignTime>
 		  <AutoGen>True</AutoGen>
@@ -42,7 +43,6 @@
 		<Compile Include="Root\FormHost.cs" />
 		<Compile Include="Enums\EnLauncherPayloadLaunchState.cs" />
 		<Compile Include="Events\CopyToClipboardEventArgs.cs" />
-		<Compile Include="Events\CopyToClipboardEventHandler.cs" />
 		<Compile Include="Root\Cmd.cs" />
 		<Compile Include="Controls\AdvancedInformationDialog.cs" />
 		<Compile Include="Controls\AdvancedInformationDialog.Designer.cs">
@@ -89,7 +89,6 @@
 		<Compile Include="Enums\EnBlobSubType.cs" />
 		<Compile Include="Enums\EnConnectionSource.cs" />
 		<Compile Include="Enums\EnDbDataType.cs" />
-		<Compile Include="Enums\EnEngineType.cs" />
 		<Compile Include="Enums\EnLogComplianceLevel.cs" />
 		<Compile Include="Enums\EnModelObjectType.cs" />
 		<Compile Include="Enums\EnModelTargetType.cs" />
@@ -115,9 +114,8 @@
 		<Compile Include="Extensions\PublicKeyCollection.cs" />
 		<Compile Include="Extensions\PublicValueCollection.cs" />
 		<Compile Include="Extensions\HashHelpersEx.cs" />
-		<Compile Include="Interfaces\IBEnumerableDescribers.cs" />
-		<Compile Include="Interfaces\IBIconType.cs" />
-		<Compile Include="Interfaces\IBQueryManager.cs" />
+		<Compile Include="Interfaces\IBsEnumerableDescribers.cs" />
+		<Compile Include="Interfaces\IBsQueryManager.cs" />
 		<Compile Include="Interfaces\IBsNativeDbBatchParser.cs" />
 		<Compile Include="Model\NativeDbConnectionWrapperProxy.cs" />
 		<Compile Include="Properties\ControlsResources.Designer.cs">
@@ -143,12 +141,12 @@
 		<Compile Include="Events\PropagateSettingsEventArgs.cs" />
 		<Compile Include="GlobalSuppressions.cs" />
 		<Compile Include="Extensions\Index.cs" />
-		<Compile Include="Interfaces\IBModelPropertyWrapper.cs" />
-		<Compile Include="Interfaces\IBPersistentSettings.cs" />
-		<Compile Include="Interfaces\IBSettingsModel.cs" />
-		<Compile Include="Interfaces\IBSqlTraceTelemetryProvider.cs" />
-		<Compile Include="Interfaces\IBTaskHandlerClient.cs" />
-		<Compile Include="Interfaces\IBTrace.cs" />
+		<Compile Include="Interfaces\IBsModelPropertyWrapper.cs" />
+		<Compile Include="Interfaces\IBsPersistentSettings.cs" />
+		<Compile Include="Interfaces\IBsSettingsModel.cs" />
+		<Compile Include="Interfaces\IBsSqlTraceTelemetryProvider.cs" />
+		<Compile Include="Interfaces\IBsTaskHandlerClient.cs" />
+		<Compile Include="Interfaces\IBsTrace.cs" />
 		<Compile Include="Interfaces\SBsNativeDbCommand.cs" />
 		<Compile Include="Extensions\Range.cs" />
 		<Compile Include="Root\Reflect.cs" />

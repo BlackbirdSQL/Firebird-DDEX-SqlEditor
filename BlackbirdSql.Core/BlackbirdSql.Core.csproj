@@ -14,12 +14,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-		<NoWarn>1701;1702;</NoWarn>
+		<NoWarn>1701;1702;CS0660;CS0661;</NoWarn>
 		<DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-		<NoWarn>1701;1702;</NoWarn>
+		<NoWarn>1701;1702;CS0660;CS0661;</NoWarn>
 		<DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
@@ -28,18 +28,25 @@
 	</Target>
 
 	<ItemGroup>
+		<Compile Include="Controls\Config\AbstractTransientSettingsDialog.cs" />
+		<Compile Include="Controls\Config\AbstractTransientSettingsDialog.Designer.cs">
+			<DependentUpon>AbstractTransientSettingsDialog.cs</DependentUpon>
+		</Compile>
 		<Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
 		<Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
 		<Compile Include="Enums\EnRctKeyType.cs" />
-		<Compile Include="Interfaces\IBDataConnectionSupport.cs" />
-		<Compile Include="Interfaces\IBRctEventSink.cs" />
-		<Compile Include="Interfaces\IBDataConnectionDlgHandler.cs" />
+		<Compile Include="Events\ConnectionChangedEventArgs.cs" />
+		<Compile Include="Interfaces\IBsModelPropertyAgent.cs" />
+		<Compile Include="Interfaces\IBsDataConnectionPromptDialogHandler.cs" />
+		<Compile Include="Interfaces\IBsDataConnectionSupport.cs" />
+		<Compile Include="Interfaces\IBsRctEventSink.cs" />
+		<Compile Include="Interfaces\IBsDataConnectionDlgHandler.cs" />
 		<Compile Include="Controls\Config\AbstruseSettingsPage.cs" />
 		<Compile Include="Controls\Config\AbstractPersistentSettingsPage.cs" />
 		<Compile Include="Controls\Config\AbstractTransientSettingsPage.cs" />
-		<Compile Include="Interfaces\IBDataConnectionDlg.cs" />
-		<Compile Include="Interfaces\IBSettingsPage.cs" />
-		<Compile Include="Interfaces\IBEditorWindowPane.cs" />
+		<Compile Include="Interfaces\IBsDataConnectionDlg.cs" />
+		<Compile Include="Interfaces\IBsSettingsPage.cs" />
+		<Compile Include="Interfaces\IBsEditorWindowPane.cs" />
 		<Compile Include="AbstractPackageController.cs" />
 		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\AutomatorAttribute.cs" />
@@ -60,11 +67,11 @@
 		<Compile Include="Enums\EnScriptExecutionResult.cs" />
 		<Compile Include="Extensions\DbProviderFactoriesEx.cs" />
 		<Compile Include="Ctl\SqlStyleUriParser.cs" />
-		<Compile Include="Interfaces\IBDataConnectionProperties.cs" />
+		<Compile Include="Interfaces\IBsDataConnectionProperties.cs" />
 		<Compile Include="Model\AbstractRunningConnectionTable.cs" />
-		<Compile Include="Interfaces\IBAutomatorConverter.cs" />
-		<Compile Include="Interfaces\IBEditConverter.cs" />
-		<Compile Include="Interfaces\IBDataReaderHandler.cs" />
+		<Compile Include="Interfaces\IBsAutomatorConverter.cs" />
+		<Compile Include="Interfaces\IBsEditConverter.cs" />
+		<Compile Include="Interfaces\IBsDataReaderHandler.cs" />
 		<Compile Include="Model\RctEventSink.cs" />
 		<Compile Include="Interfaces\IBsDataViewSupport.cs" />
 		<Compile Include="Root\RdtManager.cs" />
@@ -73,7 +80,7 @@
 		<Compile Include="Model\RunningConnectionTable.cs" />
 		<Compile Include="Enums\EnSqlOutputFormat.cs" />
 		<Compile Include="Enums\EnSqlOutputMode.cs" />
-		<Compile Include="Interfaces\IBTransientSettings.cs" />
+		<Compile Include="Interfaces\IBsTransientSettings.cs" />
 		<Compile Include="Model\AbstractCsb.cs" />
 		<Compile Include="Model\Csb.cs" />
 		<Compile Include="Properties\AttributeResources.Designer.cs">
@@ -89,30 +96,22 @@
 			<AutoGen>True</AutoGen>
 			<DependentUpon>ControlsResources.resx</DependentUpon>
 		</Compile>
-		<Compile Include="Ctl\AbstractIconsCollection.cs" />
-		<Compile Include="Ctl\AbstractPropertyAgent.Accessors.cs" />
-		<Compile Include="Ctl\AbstractPropertyAgent.Events.cs" />
-		<Compile Include="Ctl\AbstractPropertyAgent.Methods.cs" />
-		<Compile Include="Ctl\CoreIconsCollection.cs" />
+		<Compile Include="Ctl\AbstractPropertyAgent.cs" />
 		<Compile Include="Ctl\CorePropertySet.cs" />
 		<Compile Include="Ctl\ComponentModel\DependsOnPropertyAttribute.cs" />
 		<Compile Include="Enums\EnCommandSet.cs" />
-		<Compile Include="Ctl\IconType.cs" />
 		<Compile Include="Ctl\PropertySet.cs" />
 		<Compile Include="Ctl\ComponentModel\ValueDependsOnCollectionAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\ValueDependsOnExternalPropertyAttribute.cs" />
 		<Compile Include="Root\ExtensionMembers.cs" />
 		<Compile Include="Extensions\XmlParser.cs" />
 		<Compile Include="GlobalSuppressions.cs" />
-		<Compile Include="Interfaces\IBDesignerExplorerServices.cs" />
-		<Compile Include="Interfaces\IBIconsCollection.cs" />
+		<Compile Include="Interfaces\IBsDesignerExplorerServices.cs" />
 		<Compile Include="Interfaces\IBSettingsModelPropertyWrapper.cs" />
-		<Compile Include="Interfaces\IBPropertyAgent.cs" />
+		<Compile Include="Interfaces\IBsPropertyAgent.cs" />
 		<Compile Include="Model\AbstractModelPropertyAgent.cs" />
-		<Compile Include="Model\ModelIconsCollection.cs" />
 		<Compile Include="Model\ModelPropertySet.cs" />
 		<Compile Include="Model\Moniker.cs" />
-		<Compile Include="Model\ConnectionPropertyAgent.cs" />
 		<Compile Include="Model\Config\AbstractSettingsModel.cs" />
 		<Compile Include="Controls\Config\AbstractSettingsPage.cs" />
 		<Compile Include="Enums\EnNativeSettingsType.cs" />
@@ -127,11 +126,13 @@
 		<Compile Include="Ctl\AbstractHostess.cs" />
 		<Compile Include="Ctl\Config\PersistentSettings.cs" />
 		<Compile Include="Ctl\Hostess.cs" />
-		<Compile Include="Root\StringUtils.cs" />
-		<Compile Include="Root\UnsafeNative.cs" />
+		<Compile Include="Root\Serialization.cs" />
 		<Compile Include="SystemData.cs" />
 	</ItemGroup>
 	<ItemGroup>
+		<EmbeddedResource Include="Controls\Config\AbstractTransientSettingsDialog.resx">
+			<DependentUpon>AbstractTransientSettingsDialog.cs</DependentUpon>
+		</EmbeddedResource>
 		<EmbeddedResource Include="Properties\AttributeResources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>

@@ -1,7 +1,6 @@
-// Warning: Some assembly references could not be resolved automatically. This might lead to incorrect decompilation of some parts,
-// for ex. property getter/setter access. To get optimal decompilation results, please manually add the missing references to the list of loaded assemblies.
 // Microsoft.VisualStudio.Shell.15.0, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Shell.ProvideEditorFactoryAttribute
+
 using System;
 using System.ComponentModel;
 using System.Globalization;
@@ -10,9 +9,12 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
+
 namespace BlackbirdSql.Shared.Ctl.ComponentModel;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+
+
 public sealed class VsProvideEditorFactoryAttribute(Type factoryType, short nameResourceID) : RegistrationAttribute
 {
 	private readonly Type _factoryType = factoryType ?? throw new ArgumentNullException("factoryType");
@@ -70,7 +72,7 @@ public sealed class VsProvideEditorFactoryAttribute(Type factoryType, short name
 
 	public override void Register(RegistrationContext context)
 	{
-		context.Log.WriteLine(string.Format(ControlsResources.Culture, ControlsResources.Reg_NotifyEditorFactory, FactoryType.Name));
+		context.Log.WriteLine(AttributeResources.RegNotifyEditorFactory.FmtRes(FactoryType.Name));
 		using Key key = context.CreateKey(EditorRegKey);
 		key.SetValue(string.Empty, DefaultName);
 		key.SetValue("DisplayName", string.Format(CultureInfo.InvariantCulture, "#{0}", NameResourceID));
@@ -90,7 +92,7 @@ public sealed class VsProvideEditorFactoryAttribute(Type factoryType, short name
 				ProvideViewAttribute provideViewAttribute = (ProvideViewAttribute)customAttributes[i];
 				if (provideViewAttribute.LogicalView != 0)
 				{
-					context.Log.WriteLine(string.Format(ControlsResources.Culture, ControlsResources.Reg_NotifyEditorView, converter.ConvertToString(provideViewAttribute.LogicalView)));
+					context.Log.WriteLine(AttributeResources.RegNotifyEditorView.FmtRes(converter.ConvertToString(provideViewAttribute.LogicalView)));
 					Guid guid = (Guid)converter.ConvertTo(provideViewAttribute.LogicalView, typeof(Guid));
 					string text = provideViewAttribute.PhysicalView;
 					text ??= string.Empty;

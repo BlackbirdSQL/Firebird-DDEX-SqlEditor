@@ -71,87 +71,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must specify a column delimiter..
-        /// </summary>
-        public static string ColumnDelimiterCannotBeEmpty {
-            get {
-                return ResourceManager.GetString("ColumnDelimiterCannotBeEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot instantiate EditorExtensionPackage from abstract ancestor.
-        /// </summary>
-        public static string ErrCannotInstantiateFromAbstractAncestor {
-            get {
-                return ResourceManager.GetString("ErrCannotInstantiateFromAbstractAncestor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution time-out value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidExecutionTimeout {
-            get {
-                return ResourceManager.GetString("ErrInvalidExecutionTimeout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Maximum characters displayed in each cell should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidMaxCharsPerCell {
-            get {
-                return ResourceManager.GetString("ErrInvalidMaxCharsPerCell", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Maximum characters per column should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidMaxCharsPerColumn {
-            get {
-                return ResourceManager.GetString("ErrInvalidMaxCharsPerColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to LOCK_TIMEOUT value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidSetLockTimeout {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetLockTimeout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to QUERY_GOVERNOR_COST_LIMIT value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidSetQueryGov {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetQueryGov", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ROWCOUNT value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidSetRowcount {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetRowcount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TEXTSIZE value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidSetTextsize {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetTextsize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to FB-SQL editor error message marker.
         /// </summary>
         public static string ErrorMarkerDescription {
@@ -170,92 +89,38 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to create an editor..
+        /// </summary>
+        public static string ExFailedToCreateEditor {
+            get {
+                return ResourceManager.GetString("ExFailedToCreateEditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to subscribe to Settings events.
         /// </summary>
-        public static string ExceptionFailedToSubscribeSettingsEvents {
+        public static string ExFailedToSubscribeSettingsEvents {
             get {
-                return ResourceManager.GetString("ExceptionFailedToSubscribeSettingsEvents", resourceCulture);
+                return ResourceManager.GetString("ExFailedToSubscribeSettingsEvents", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Value of &apos;{1}&apos; is not valid for &apos;{0}&apos;. &apos;{0}&apos; should be between {2} and {3}..
+        ///   Looks up a localized string similar to NewQuery.
         /// </summary>
-        public static string ExceptionInvalidBoundArgument {
+        public static string NewQueryBaseName {
             get {
-                return ResourceManager.GetString("ExceptionInvalidBoundArgument", resourceCulture);
+                return ResourceManager.GetString("NewQueryBaseName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Service for interface {0} unavailable..
+        ///   Looks up a localized string similar to FBSQL Results Window.
         /// </summary>
-        public static string ExceptionNoInterface {
+        public static string ResultsEditorFactory_Caption {
             get {
-                return ResourceManager.GetString("ExceptionNoInterface", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please select directory.
-        /// </summary>
-        public static string PleaseSelectDirectory {
-            get {
-                return ResourceManager.GetString("PleaseSelectDirectory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server Advanced Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlAdvancedQueryChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlAdvancedQueryChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server ANSI Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlAnsiQueryChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlAnsiQueryChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server General Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlGeneralQueryChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlGeneralQueryChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server General option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlGeneralResultsChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlGeneralResultsChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server Results to Grid option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlResultsToGridChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlResultsToGridChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server Results to Text option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlResultsToTextChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlResultsToTextChanges", resourceCulture);
+                return ResourceManager.GetString("ResultsEditorFactory_Caption", resourceCulture);
             }
         }
     }

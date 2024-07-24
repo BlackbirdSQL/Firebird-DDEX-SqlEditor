@@ -4,12 +4,12 @@
 using System;
 using BlackbirdSql.Shared.Interfaces;
 
-// using Microsoft.SqlServer.Management.UI.Grid;
-
-
 
 
 namespace BlackbirdSql.Shared.Events;
+
+
+public delegate void SetCellDataFromControlEventHandler(object sender, SetCellDataFromControlEventArgs e);
 
 
 public class SetCellDataFromControlEventArgs : EventArgs
@@ -18,7 +18,7 @@ public class SetCellDataFromControlEventArgs : EventArgs
 
 	private readonly int m_ColNum;
 
-	private readonly IBGridEmbeddedControl m_Control;
+	private readonly IBsGridEmbeddedControl m_Control;
 
 	private bool m_Valid;
 
@@ -26,7 +26,7 @@ public class SetCellDataFromControlEventArgs : EventArgs
 
 	public int ColumnIndex => m_ColNum;
 
-	public IBGridEmbeddedControl Control => m_Control;
+	public IBsGridEmbeddedControl Control => m_Control;
 
 	public bool Valid
 	{
@@ -40,7 +40,7 @@ public class SetCellDataFromControlEventArgs : EventArgs
 		}
 	}
 
-	public SetCellDataFromControlEventArgs(int nRow, int nCol, IBGridEmbeddedControl control)
+	public SetCellDataFromControlEventArgs(int nRow, int nCol, IBsGridEmbeddedControl control)
 	{
 		m_RowNum = nRow;
 		m_ColNum = nCol;

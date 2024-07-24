@@ -40,7 +40,7 @@ public static class SqlTracer
 		}
 	}
 
-	public static IBSqlTraceTelemetryProvider SqlTraceTelemetryProvider { get; set; }
+	public static IBsSqlTraceTelemetryProvider SqlTraceTelemetryProvider { get; set; }
 
 	private static EnWinEventTracingLevel TraceEventTypeToLevel(TraceEventType eventType)
 	{

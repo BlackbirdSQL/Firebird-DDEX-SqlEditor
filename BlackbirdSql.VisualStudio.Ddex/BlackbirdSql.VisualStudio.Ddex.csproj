@@ -91,6 +91,9 @@
       <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Content Include="Properties\license.txt" Pack="true" PackagePath="">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\blackbird-128x128.png">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -182,6 +185,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\DataTools\TConnectionPromptDialogHandler.cs" />
     <Compile Include="Controls\DataTools\TDataConnectionAdvancedDlg.Designer.cs">
       <DependentUpon>TDataConnectionAdvancedDlg.cs</DependentUpon>
     </Compile>
@@ -221,7 +225,7 @@
     <Compile Include="Ctl\DataTools\TDataProvider.cs" />
     <Compile Include="Ctl\DataTools\TDataSource.cs" />
     <Compile Include="Ctl\DataTools\TVsDataProvider.cs" />
-    <Compile Include="Interfaces\IBProviderObjectFactory.cs" />
+    <Compile Include="Interfaces\IBsProviderObjectFactory.cs" />
     <Compile Include="Ctl\TAbstractConnectionProperties.cs" />
     <Compile Include="Ctl\TObjectSelectorTable.cs" />
     <Compile Include="Model\Config\EquivalencySettingsModel.cs" />
@@ -516,14 +520,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Properties\license.txt" Pack="true" PackagePath="">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="$(SolutionDir)\Docs\CHANGELOG.md" Pack="true" PackagePath="" Link="Properties\CHANGELOG.md">
-    </Content>
-    <Content Include="$(SolutionDir)\Docs\GettingStartedGuide.md" Pack="true" PackagePath="" Link="Properties\GettingStartedGuide.md">
-    </Content>
-    <Content Include="$(SolutionDir)\Docs\README.md" Pack="true" PackagePath="" Link="Properties\README.md">
+    <Content Include="C:\Server\Dev\Projects2022\Blackbird\\Docs\GettingStartedGuide.md">
+      <Pack>true</Pack>
+      <PackagePath>
+      </PackagePath>
+      <Link>Properties\GettingStartedGuide.md</Link>
     </Content>
   </ItemGroup>
   <ItemGroup>

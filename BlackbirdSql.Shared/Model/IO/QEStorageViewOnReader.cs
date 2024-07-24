@@ -9,7 +9,7 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public sealed class QEStorageViewOnReader : AbstractStorageView, IBQEStorageView, IBStorageView, IDisposable
+public sealed class QEStorageViewOnReader : AbstractStorageView, IBsQEStorageView, IBsStorageView, IDisposable
 {
 	private readonly QEReaderDataStorage _QeReaderStorage;
 
@@ -55,7 +55,7 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBQEStorageView
 		_XmlFlags = new bool[num];
 		for (int i = 0; i < num; i++)
 		{
-			IBColumnInfo columnInfo = readerDataStorage.GetColumnInfo(i);
+			IBsColumnInfo columnInfo = readerDataStorage.GetColumnInfo(i);
 			_CharsGetFlags[i] = columnInfo.IsCharsField;
 			_BytesGetFlags[i] = columnInfo.IsBytesField;
 			_XmlFlags[i] = columnInfo.IsXml;
@@ -80,7 +80,7 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBQEStorageView
 	public override int ColumnCount => _QeReaderStorage.ColumnCount;
 
 
-	public override IBColumnInfo GetColumnInfo(int iCol)
+	public override IBsColumnInfo GetColumnInfo(int iCol)
 	{
 		return _QeReaderStorage.GetColumnInfo(iCol);
 	}

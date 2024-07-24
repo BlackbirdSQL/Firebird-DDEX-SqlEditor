@@ -199,7 +199,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 
 
 
-	public ResultsToTextOrFileBatchConsumer(IBQueryExecutionHandler resultsControl)
+	public ResultsToTextOrFileBatchConsumer(IBsQueryExecutionHandler resultsControl)
 		: base(resultsControl)
 	{
 		// Tracer.Trace(GetType(), "ResultsToTextOrFileBatchConsumer.ResultsToTextOrFileBatchConsumer", "", null);
@@ -575,7 +575,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 
 
 
-	public override async Task<bool> OnNewResultSetAsync(object sender, QESQLBatchNewResultSetEventArgs args)
+	public override async Task<bool> OnNewResultSetAsync(object sender, BatchNewResultSetEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "ResultsToTextOrFileBatchConsumer.OnNewResultSet", "", null);
 		Cleanup();
@@ -587,7 +587,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 
 		if (DiscardResults)
 		{
-			await HandleNewResultSetForDiscardAsync(args);
+			await RegisterNewResultSetForDiscardEventsAsync(args);
 			return false;
 		}
 		_ResultSet = args.ResultSet;

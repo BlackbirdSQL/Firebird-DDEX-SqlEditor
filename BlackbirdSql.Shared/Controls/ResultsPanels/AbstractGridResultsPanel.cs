@@ -79,7 +79,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		{
 			if (_FirstGridPanel == null)
 			{
-				InvalidOperationException ex = new(ControlsResources.MultiPanelGridContainerIsNotAvailable);
+				InvalidOperationException ex = new(ControlsResources.ExMultiPanelGridContainerIsNotAvailable);
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -177,7 +177,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		catch (Exception e)
 		{
 			Diag.Dug(e);
-			MessageCtl.ShowEx(ControlsResources.ErrUnableToPrintResults, e);
+			MessageCtl.ShowEx(ControlsResources.ExUnableToPrintResults, e);
 		}
 	}
 
@@ -199,7 +199,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		catch (Exception e)
 		{
 			Diag.Dug(e);
-			MessageCtl.ShowEx(ControlsResources.ErrUnableToPageSetup, e);
+			MessageCtl.ShowEx(ControlsResources.ExUnableToPageSetup, e);
 		}
 	}
 

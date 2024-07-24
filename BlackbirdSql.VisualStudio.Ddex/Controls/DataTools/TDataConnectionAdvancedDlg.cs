@@ -22,15 +22,15 @@ public partial class TDataConnectionAdvancedDlg : Form
 		public TiSpecializedPropertyGrid()
 		{
 			_contextMenu = new ContextMenuStrip();
-			_contextMenu.Items.AddRange(new ToolStripItem[6]
-			{
+			_contextMenu.Items.AddRange(
+			[
 				new ToolStripMenuItem(),
 				new ToolStripSeparator(),
 				new ToolStripMenuItem(),
 				new ToolStripMenuItem(),
 				new ToolStripSeparator(),
 				new ToolStripMenuItem()
-			});
+			]);
 			_contextMenu.Items[0].Text = ControlsResources.TDataConnectionAdvancedDlg_Reset;
 			_contextMenu.Items[0].Click += ResetProperty;
 			_contextMenu.Items[2].Text = ControlsResources.TDataConnectionAdvancedDlg_Add;

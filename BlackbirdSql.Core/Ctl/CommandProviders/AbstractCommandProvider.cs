@@ -133,7 +133,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				}
 			}, delegate
 			{
-				OnNewQuery();
+				OnNewQuery(Resources.NewQueryBaseName);
 			});
 			command = cmd;
 		}
@@ -492,7 +492,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	/// Open new SQL Query command event handler.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected void OnNewQuery()
+	protected void OnNewQuery(string baseName)
 	{
 		// Tracer.Trace(GetType(), "OnNewQuery()");
 
@@ -501,13 +501,13 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			if (RctManager.ShutdownState)
 				return;
 
-			IBDesignerExplorerServices service = ApcManager.EnsureService<IBDesignerExplorerServices>();
+			IBsDesignerExplorerServices service = ApcManager.EnsureService<IBsDesignerExplorerServices>();
 
 			Csb csa = RctManager.CloneRegistered(Site.ExplorerConnection.ConnectionNode);
 
 			// Tracer.Trace(GetType(), "OnNewQuery()", "csa.DatasetKey: {0}.", csa.DatasetKey);
 
-			service.NewQuery(csa.DatasetKey);
+			service.NewQuery(csa.DatasetKey, baseName, null);
 		}
 	}
 
@@ -529,7 +529,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.EditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
-			IBDesignerExplorerServices service = ApcManager.EnsureService<IBDesignerExplorerServices>();
+			IBsDesignerExplorerServices service = ApcManager.EnsureService<IBsDesignerExplorerServices>();
 
 			service.ViewCode(node, targetType);
 		}

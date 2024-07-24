@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.Data.Tools.Schema.Sql, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.Data.Tools.Schema.Sql, Version=162.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.Data.Tools.Schema.Common.SqlClient.DbCommandWrapper
 
 using System;
 using System.Data.Common;
@@ -12,11 +10,12 @@ using BlackbirdSql.Shared.Properties;
 
 namespace BlackbirdSql.Shared.Ctl;
 
+
 public sealed class DbCommandWrapper
 {
 	private readonly object _Command;
 
-	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
+	public event BatchStatementCompletedEventHandler StatementCompletedEvent;
 
 	public DbCommandWrapper(object command)
 	{
@@ -26,7 +25,7 @@ public sealed class DbCommandWrapper
 
 			if (!IsSupportedCommandType(command))
 			{
-				InvalidOperationException ex = new(ControlsResources.InvalidCommandType);
+				InvalidOperationException ex = new(Resources.ExInvalidCommandType);
 				throw ex;
 			}
 		}

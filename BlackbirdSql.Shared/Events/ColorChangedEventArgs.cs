@@ -1,7 +1,6 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLEditor\Microsoft.VisualStudio.Data.Tools.SqlEditor.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.ColorChangedEventHandler
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.ColorChangedEventArgs
 
 using System;
 using System.Drawing;
@@ -9,6 +8,9 @@ using System.Drawing;
 
 
 namespace BlackbirdSql.Shared.Events;
+
+
+public delegate void ColorChangedEventHandler(object sender, ColorChangedEventArgs e);
 
 
 public class ColorChangedEventArgs : EventArgs

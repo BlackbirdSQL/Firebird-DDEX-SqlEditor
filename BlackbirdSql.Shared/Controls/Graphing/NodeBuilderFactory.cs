@@ -28,6 +28,6 @@ public static class NodeBuilderFactory
 				return new LivePlanDataReaderNodeBuilder();
 			}
 		}
-		throw new ArgumentException(ControlsResources.UnknownExecutionPlanSource);
+		throw new ArgumentException(ControlsResources.ExUnknownExecutionPlanSource);
 	}
 }

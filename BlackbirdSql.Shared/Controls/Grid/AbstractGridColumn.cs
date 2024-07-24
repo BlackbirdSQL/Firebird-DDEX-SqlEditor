@@ -9,7 +9,9 @@ using BlackbirdSql.Shared.Interfaces;
 using Microsoft.Win32;
 
 
+
 namespace BlackbirdSql.Shared.Controls.Grid;
+
 
 public abstract class AbstractGridColumn : IDisposable
 {
@@ -195,26 +197,26 @@ public abstract class AbstractGridColumn : IDisposable
 		Dispose(disposing: true);
 	}
 
-	public virtual void DrawCell(Graphics g, Brush bkBrush, Brush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
+	public virtual void DrawCell(Graphics g, Brush bkBrush, Brush textBrush, Font textFont, Rectangle rect, IBsGridStorage storage, long nRowIndex)
 	{
 		DrawCell(g, bkBrush, (SolidBrush)textBrush, textFont, rect, storage, nRowIndex);
 	}
 
-	public virtual void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
+	public virtual void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBsGridStorage storage, long nRowIndex)
 	{
 	}
 
-	public virtual void PrintCell(Graphics g, Brush bkBrush, Brush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
+	public virtual void PrintCell(Graphics g, Brush bkBrush, Brush textBrush, Font textFont, Rectangle rect, IBsGridStorage storage, long nRowIndex)
 	{
 		PrintCell(g, bkBrush, (SolidBrush)textBrush, textFont, rect, storage, nRowIndex);
 	}
 
-	public virtual void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
+	public virtual void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBsGridStorage storage, long nRowIndex)
 	{
 		DrawCell(g, bkBrush, textBrush, textFont, rect, storage, nRowIndex);
 	}
 
-	public virtual void DrawDisabledCell(Graphics g, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
+	public virtual void DrawDisabledCell(Graphics g, Font textFont, Rectangle rect, IBsGridStorage storage, long nRowIndex)
 	{
 		DrawCell(g, SDisabledCellBKBrush, SDisabledCellForeBrush, textFont, rect, storage, nRowIndex);
 	}
@@ -227,17 +229,17 @@ public abstract class AbstractGridColumn : IDisposable
 	{
 	}
 
-	public virtual bool IsPointOverTextInCell(Point pt, Rectangle cellRect, IBGridStorage storage, long row, Graphics g, Font f)
+	public virtual bool IsPointOverTextInCell(Point pt, Rectangle cellRect, IBsGridStorage storage, long row, Graphics g, Font f)
 	{
 		return true;
 	}
 
-	public virtual AccessibleStates GetAccessibleState(long nRowIndex, IBGridStorage storage)
+	public virtual AccessibleStates GetAccessibleState(long nRowIndex, IBsGridStorage storage)
 	{
 		return AccessibleStates.None;
 	}
 
-	public virtual string GetAccessibleValue(long nRowIndex, IBGridStorage storage)
+	public virtual string GetAccessibleValue(long nRowIndex, IBsGridStorage storage)
 	{
 		return "";
 	}

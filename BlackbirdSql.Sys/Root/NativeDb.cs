@@ -196,7 +196,7 @@ public static class NativeDb
 		return DatabaseEngineSvc.CreateDbStatementWrapper_(owner, statement, statementIndex);
 	}
 
-	public static IBsNativeDbBatchParser CreateDbBatchParser(EnSqlExecutionType executionType, IBQueryManager qryMgr, string script)
+	public static IBsNativeDbBatchParser CreateDbBatchParser(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
 	{
 		return DatabaseEngineSvc.CreateDbBatchParser_(executionType, qryMgr, script);
 	}

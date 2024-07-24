@@ -1,24 +1,15 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.ShellBufferWriter
 
 using System;
 using System.Collections;
 using System.IO;
 using System.Text;
-using BlackbirdSql.Shared.Ctl;
-
-// using Microsoft.SqlServer.Management.QueryExecution;
-// using Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration;
-using Microsoft.VisualStudio.TextManager.Interop;
 using BlackbirdSql.Shared.Interfaces;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 
 
-
-
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane
 namespace BlackbirdSql.Shared.Ctl.IO;
 
 
@@ -27,7 +18,7 @@ public sealed class ShellBufferWriter : AbstractResultsWriter
 	private class Marker(int position, int length)
 	{
 
-		public Marker(int position, int length, int errorLine, IBTextSpan textSpan)
+		public Marker(int position, int length, int errorLine, IBsTextSpan textSpan)
 			: this(position, length)
 		{
 			this.errorLine = errorLine;
@@ -40,13 +31,13 @@ public sealed class ShellBufferWriter : AbstractResultsWriter
 		private readonly int length = length;
 
 		private readonly int errorLine = -1;
-		private readonly IBTextSpan textSpan = null;
+		private readonly IBsTextSpan textSpan = null;
 
 
 		public int Position => position;
 		public int Length => length;
 		public int ErrorLine => errorLine;
-		public IBTextSpan TextSpan => textSpan;
+		public IBsTextSpan TextSpan => textSpan;
 	}
 
 	public sealed class ShellBufferTextWriter(ShellBufferWriter owner) : TextWriter
@@ -166,7 +157,7 @@ public sealed class ShellBufferWriter : AbstractResultsWriter
 		}
 	}
 
-	public override void AppendError(string text, int line, IBTextSpan textSpan, bool noCRLF)
+	public override void AppendError(string text, int line, IBsTextSpan textSpan, bool noCRLF)
 	{
 		lock (this)
 		{

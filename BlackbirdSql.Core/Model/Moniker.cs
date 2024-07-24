@@ -76,7 +76,7 @@ public class Moniker
 
 		if (@nodeObj == null)
 		{
-			ArgumentNullException ex = new($"{explorerConnection.DerivedDisplayName()} Object is null");
+			ArgumentNullException ex = new($"{explorerConnection.SafeName()} Object is null");
 			Diag.Dug(ex);
 			return;
 		}
@@ -387,14 +387,14 @@ public class Moniker
 		UriBuilder urlb = new()
 		{
 			Scheme = NativeDb.Protocol,
-			Host = DataSource.ToLowerInvariant(),
+			Host = string.IsNullOrEmpty(DataSource) ? "nodatasource" : DataSource.ToLowerInvariant(),
 		};
 
 
 		// Append the serialized database path.
 
 		// Serialize the db path.
-		string str = StringUtils.Serialize64(Database.ToLowerInvariant());
+		string str = Serialization.Serialize64(string.IsNullOrEmpty(Database) ? "nodatabase" : Database.ToLowerInvariant());
 
 		// Tracer.Trace(GetType(), "BuildStorageDatabaseUrl()", "Serialized dbpath: {0}", str);
 
@@ -733,7 +733,7 @@ public class Moniker
 	// ---------------------------------------------------------------------------------
 	public string ToPath(string appDataPath)
 	{
-		string str = StringUtils.Serialize64(Database.ToLowerInvariant());
+		string str = Serialization.Serialize64(Database.ToLowerInvariant());
 		// string str = JsonConvert.SerializeObject(Database.ToLowerInvariant());
 
 		string moniker = SysConstants.DatasetKeyFormat.FmtRes(DataSource, str);

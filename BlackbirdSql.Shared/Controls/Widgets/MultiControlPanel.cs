@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Shared.Events;
 
+
+
 namespace BlackbirdSql.Shared.Controls.Widgets;
 
 
@@ -377,7 +379,7 @@ public sealed class MultiControlPanel : Panel
 
 
 
-	private void OnSplitterMoved(object sender, QESplitterMovedEventArgs e)
+	private void OnSplitterMoved(object sender, SplitterMovedEventArgs e)
 	{
 		int num = e.SplitPosition - e.BoundControl.Bounds.Top - e.BoundControl.Height;
 

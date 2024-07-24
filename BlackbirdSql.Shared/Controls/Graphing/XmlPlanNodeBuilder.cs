@@ -100,7 +100,7 @@ public sealed class XmlPlanNodeBuilder : INodeBuilder, IXmlBatchParser
 		}
 		if (showPlanXML == null)
 		{
-			throw new ArgumentException(ControlsResources.UnknownExecutionPlanSource);
+			throw new ArgumentException(ControlsResources.ExUnknownExecutionPlanSource);
 		}
 		return showPlanXML;
 	}

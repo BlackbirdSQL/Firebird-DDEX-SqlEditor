@@ -3,7 +3,6 @@ using System;
 using System.Data;
 using System.Security;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.Sys.Properties;
 
 
@@ -77,26 +76,22 @@ public static class SysConstants
 	public const string C_KeyPassword = "Password";
 
 	// Extended property descriptor keys
-	public const string C_KeyExIcon = "Icon";
 	public const string C_KeyExDataset = "Dataset";
 	public const string C_KeyExDatasetKey = "DatasetKey";
 	public const string C_KeyExConnectionKey = "ConnectionKey";
 	public const string C_KeyExDatasetId = "DatasetId";
 	public const string C_KeyExConnectionName = "ConnectionName";
 	public const string C_KeyExConnectionSource = "ConnectionSource";
-	public const string C_KeyExDisplayName = "DisplayName";
-	public const string C_KeyExFullDisplayName = "FullDisplayName";
+	public const string C_KeyExAdornedDisplayName = "AdornedDisplayName";
+	public const string C_KeyExAdornedQualifiedName = "AdornedQualifiedName";
 
 
 	// External (non-paramameter) property descriptor
-	public const string C_KeyExServerEngine = "ServerEngine";
 	public const string C_KeyExServerVersion = "ServerVersion";
 	public const string C_KeyExPersistPassword = "PersistPassword";
-	public const string C_KeyExAdministratorLogin = "AdministratorLogin";
-	public const string C_KeyExServerFullyQualifiedDomainName = "ServerFullyQualifiedDomainName";
-	public const string C_KeyExOtherParams = "OtherParams";
 	public const string C_KeyExEdmx = "edmx";
 	public const string C_KeyExEdmu = "edmu";
+	public const string C_KeyExCreationFlags = "CreationFlags";
 
 	// Internal (hidden) property keys
 	public const string C_KeyExInMemoryPassword = "InMemoryPassword";
@@ -183,7 +178,6 @@ public static class SysConstants
 
 
 	// Extended property defaults
-	public const IBIconType C_DefaultExIcon = null;
 	public const string C_DefaultExDataset = "";
 	public const string C_DefaultExDatasetKey = "";
 	public const string C_DefaultExConnectionKey = "";
@@ -192,12 +186,8 @@ public static class SysConstants
 	public const EnConnectionSource C_DefaultExConnectionSource = EnConnectionSource.None;
 
 	// External (non-paramameter) property defaults 
-	public const EnEngineType C_DefaultExServerEngine = EnEngineType.Unknown;
 	public const Version C_DefaultExServerVersion = null;
 	public const bool C_DefaultExPersistPassword = false;
-	public const string C_DefaultExAdministratorLogin = "";
-	public const string C_DefaultExServerFullyQualifiedDomainName = "localhost";
-	public const string C_DefaultExOtherParams = null;
 
 	// Internal (hidden) property defaults
 	public const SecureString C_DefaultExInMemoryPassword = null;
@@ -219,7 +209,6 @@ public static class SysConstants
 	public const int C_DefaultSetRowCount = 0;
 	public const EnBlobSubType C_DefaultSetBlobDisplay = EnBlobSubType.Text;
 	public const int C_DefaultExecutionTimeout = 0;
-	public const bool C_DefaultDefaultOleScripting = false;
 	public const bool C_DefaultSetCount = true;
 	public const bool C_DefaultSetPlanOnly = false;
 	public const bool C_DefaultSetPlan = false;

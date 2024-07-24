@@ -340,6 +340,23 @@ public static class NativeDbExtensionMembers
 		return NativeDb.DbConnectionSvc.GetVersion(@this);
 	}
 
+	/// <summary>
+	/// Parses and converts a server version string to it's Version format.
+	/// </summary>
+	public static bool OpenOrVerify(this IDbConnection @this)
+	{
+		return NativeDb.DbConnectionSvc.OpenOrVerifyConnection(@this);
+	}
+
+
+	/// <summary>
+	/// Parses and converts a server version string to it's Version format.
+	/// </summary>
+	public static async Task<bool> OpenOrVerifyAsync(this IDbConnection @this)
+	{
+		return await NativeDb.DbConnectionSvc.OpenOrVerifyConnectionAsync(@this);
+	}
+
 
 	internal static bool HasTransactions(this IDbTransaction @this)
 	{

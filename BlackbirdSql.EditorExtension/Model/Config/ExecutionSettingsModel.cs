@@ -25,7 +25,7 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for General Execution options
 /// </summary>
 // =========================================================================================================
-public class ExecutionSettingsModel(IBTransientSettings transientSettings)
+public class ExecutionSettingsModel(IBsTransientSettings transientSettings)
 	: AbstractSettingsModel<ExecutionSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
 {
 
@@ -124,14 +124,6 @@ public class ExecutionSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDescription("OptionDescriptionExecutionSetBlobDisplay")]
 	[DefaultValue((EnGlobalizedBlobSubType)SysConstants.C_DefaultSetBlobDisplay)]
 	public EnGlobalizedBlobSubType SetBlobDisplay { get; set; } = (EnGlobalizedBlobSubType)SysConstants.C_DefaultSetBlobDisplay;
-
-	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayExecutionDefaultOleScripting")]
-	[GlobalizedDescription("OptionDescriptionExecutionDefaultOleScripting")]
-	[Browsable(false)]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultDefaultOleScripting)]
-	public bool DefaultOleScripting { get; set; } = SysConstants.C_DefaultDefaultOleScripting;
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayExecutionTimeout")]

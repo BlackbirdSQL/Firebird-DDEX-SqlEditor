@@ -6,9 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using BlackbirdSql.Core;
-using BlackbirdSql.Sys.Model;
 using BlackbirdSql.Shared.Events;
+using BlackbirdSql.Sys.Model;
 
 
 
@@ -142,7 +141,7 @@ public class StatisticsSnapshot
 	public DateTime TimeOfExecution => _TimeOfExecution;
 
 
-	public void Load(QESQLQueryDataEventArgs args)
+	public void Load(QueryDataEventArgs args)
 	{
 		_SelectRowCount = args.TotalRowsSelected;
 		_StatementCount = args.StatementCount;

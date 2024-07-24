@@ -244,10 +244,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The dropdown list displays the Database Names of configured connections for the selected Server.
         ///Glyph prefix legend:
+        /// ⨠ Session (non-persistent) connections.
         /// ⛭ Project Settings (App.Config) connections.
         /// ⛮ Entity Data Model (edmx) connections.
         /// ⧉ FlameRobin connections.
-        ///Server Explorer connections and connections modified during a Session have no glyph.
+        ///Server Explorer connections have no glyph.
         ///.
         /// </summary>
         internal static string TConnectionUIControl_Database_ToolTip {

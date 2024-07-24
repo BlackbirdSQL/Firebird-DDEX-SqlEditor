@@ -575,7 +575,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 	}
 	private static async Task<DataTable> SqlCommandSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		await TaskScheduler.Default;
+		await Cmd.AwaitableAsync();
 
 		NotImplementedException exbb = new();
 		Diag.Dug(exbb);

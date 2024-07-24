@@ -9,8 +9,8 @@ using System.Security.Permissions;
 using System.Windows.Forms;
 using BlackbirdSql.Shared.Controls.Grid;
 using BlackbirdSql.Shared.Ctl.IO;
+using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
-using BlackbirdSql.Shared.Events;
 
 
 
@@ -416,7 +415,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 		if (!ShouldDistroyNativeControl())
 		{
 			using Control control = new Control();
-			IntPtr parent = GetParent(new HandleRef(control, control.Handle));
+			IntPtr parent = Native.GetParent(new HandleRef(control, control.Handle));
 			SetParent(new HandleRef(this, Handle), new HandleRef(this, parent));
 			_ParentedEditorWithParkingWindow = true;
 		}
@@ -440,7 +439,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 		if (_ParentedEditorWithParkingWindow)
 		{
 			_ParentedEditorWithParkingWindow = false;
-			if (IsWindow(_EditorHandle) && Handle != GetParent(_EditorHandle))
+			if (IsWindow(_EditorHandle) && Handle != Native.GetParent(_EditorHandle))
 			{
 				SetParent(new HandleRef(this, _EditorHandle), new HandleRef(this, Handle));
 			}
@@ -503,7 +502,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 				POINT[] array = new POINT[1];
 				___(currentView.GetPointOfLineColumn(piLine, piColumn, array));
 
-				if (Native.GetClientRect(currentView.GetWindowHandle(), out Native.UIRECT val)
+				if (Native.GetClientRect(currentView.GetWindowHandle(), out Native.UIRECTEx val)
 					&& (array[0].y < val.Top || array[0].x > val.Bottom || array[0].x < val.Left || array[0].y > val.Right))
 				{
 					array[0].x = 0;
@@ -552,7 +551,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 
 		if (_TextCmdTarget == null || _TextWindowPane == null || _VsTextManager == null)
 		{
-			Exception ex = new InvalidOperationException(ControlsResources.ErrCannotInitNewEditorInst);
+			Exception ex = new InvalidOperationException(ControlsResources.ExCannotInitNewEditorInst);
 			Diag.ThrowException(ex);
 		}
 	}
@@ -651,12 +650,6 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 	public static extern IntPtr SetParent(HandleRef hWnd, HandleRef hWndParent);
 
 	[DllImport("User32", CharSet = CharSet.Auto, ExactSpelling = true)]
-	public static extern IntPtr GetParent(HandleRef hWnd);
-
-	[DllImport("User32", CharSet = CharSet.Auto, ExactSpelling = true)]
-	public static extern IntPtr GetParent(IntPtr hWnd);
-
-	[DllImport("User32", CharSet = CharSet.Auto, ExactSpelling = true)]
 	public static extern bool IsWindow(IntPtr hWnd);
 
 	protected bool ShouldDistroyNativeControl()
@@ -724,7 +717,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 				Guid riidKey = VS.CLSID_PropDisableXmlEditorPropertyWindowIntegration;
 				___(vsUserData.SetData(ref riidKey, true));
 				riidKey = VS.CLSID_PropOverrideXmlEditorSaveAsFileFilter;
-				___(vsUserData.SetData(ref riidKey, ControlsResources.SaveAsXmlaFilterString));
+				___(vsUserData.SetData(ref riidKey, ControlsResources.ShellTextViewControl_SaveAsXmlaFilterString));
 			}
 		}
 

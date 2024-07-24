@@ -1,5 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.SplitViewSplitterStrip
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,7 +14,9 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
+
 namespace BlackbirdSql.Shared.Controls.Widgets;
+
 
 public class SplitViewSplitterStrip : ToolStrip
 {
@@ -735,7 +738,7 @@ public class SplitViewSplitterStrip : ToolStrip
 		{
 			if (_swapButton == null)
 			{
-				_swapButton = CreateButton("swapButton", ControlsResources.TabbedEditor_SwapButton, ControlsResources.swap_horz);
+				_swapButton = CreateButton("swapButton", ControlsResources.ToolStripButton_SwapButton, ControlsResources.ImgSwapHorz);
 				_swapButton.Margin = new Padding(4, 2, 4 + SecondaryPaneLastVisibleOrDefault.Height, 2);
 			}
 			return _swapButton;
@@ -748,7 +751,7 @@ public class SplitViewSplitterStrip : ToolStrip
 		{
 			if (_hSplitButton == null)
 			{
-				_hSplitButton = CreateButton("hsplitButton", ControlsResources.TabbedEditor_HorizontalSplit, ControlsResources.hsplit);
+				_hSplitButton = CreateButton("hsplitButton", ControlsResources.ToolStripButton_HorizontalSplit, ControlsResources.ImgHorizontalSplit);
 				_hSplitButton.Checked = _showSplitter && Orientation == Orientation.Horizontal;
 				_hSplitButton.Alignment = ToolStripItemAlignment.Right;
 			}
@@ -762,7 +765,7 @@ public class SplitViewSplitterStrip : ToolStrip
 		{
 			if (_vSplitButton == null)
 			{
-				_vSplitButton = CreateButton("vsplitButton", ControlsResources.TabbedEditor_VerticalSplit, ControlsResources.vsplit);
+				_vSplitButton = CreateButton("vsplitButton", ControlsResources.ToolStripButton_VerticalSplit, ControlsResources.ImgVerticalSplit);
 				_vSplitButton.Checked = _showSplitter && Orientation == Orientation.Vertical;
 				_vSplitButton.Alignment = ToolStripItemAlignment.Right;
 			}
@@ -776,7 +779,7 @@ public class SplitViewSplitterStrip : ToolStrip
 		{
 			if (_chevronButton == null)
 			{
-				_chevronButton = CreateButton("chevronButton", ControlsResources.TabbedEditor_CollapsePane, ControlsResources.horizontal_collapse);
+				_chevronButton = CreateButton("chevronButton", ControlsResources.ToolStripButton_CollapsePane, ControlsResources.ImgHorizontalCollapse);
 				_chevronButton.Checked = !_showSplitter;
 				_chevronButton.Alignment = ToolStripItemAlignment.Right;
 			}
@@ -884,7 +887,7 @@ public class SplitViewSplitterStrip : ToolStrip
 		try
 		{
 			Name = "_tabStrip";
-			Text = ControlsResources.TabbedEditor_SplitStrip;
+			Text = ControlsResources.ToolStrip_SplitStrip;
 			_lastOrientation = Orientation;
 			GripStyle = ToolStripGripStyle.Hidden;
 			CanOverflow = false;
@@ -1487,7 +1490,7 @@ public class SplitViewSplitterStrip : ToolStrip
 			UpdateMinimumSize();
 			UpdateChevronButton();
 			SizeF scaleFactor = ControlUtils.GetScaleFactor(this);
-			SwapButton.Image = ControlUtils.ScaleImage(Orientation == Orientation.Horizontal ? ControlsResources.swap_horz : ControlsResources.swap_vert, scaleFactor);
+			SwapButton.Image = ControlUtils.ScaleImage(Orientation == Orientation.Horizontal ? ControlsResources.ImgSwapHorz : ControlsResources.ImgSwapVert, scaleFactor);
 		}
 		UpdateOrientation();
 	}
@@ -1603,12 +1606,12 @@ public class SplitViewSplitterStrip : ToolStrip
 		SizeF scaleFactor = ControlUtils.GetScaleFactor(this);
 		if (ShowSplitter)
 		{
-			ChevronButton.Image = ControlUtils.ScaleImage(Orientation == Orientation.Horizontal ? ControlsResources.horizontal_collapse : ControlsResources.vertical_collapse, scaleFactor);
+			ChevronButton.Image = ControlUtils.ScaleImage(Orientation == Orientation.Horizontal ? ControlsResources.ImgHorizontalCollapse : ControlsResources.ImgVerticalCollapse, scaleFactor);
 			ChevronButton.Text = "-";
 		}
 		else
 		{
-			ChevronButton.Image = ControlUtils.ScaleImage(Orientation == Orientation.Horizontal ? ControlsResources.horizontal_expand : ControlsResources.vertical_expand, scaleFactor);
+			ChevronButton.Image = ControlUtils.ScaleImage(Orientation == Orientation.Horizontal ? ControlsResources.ImgHorizontalExpand : ControlsResources.ImgVerticalExpand, scaleFactor);
 			ChevronButton.Text = "+";
 		}
 	}

@@ -4,8 +4,8 @@
 using System;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Ctl.QueryExecution;
-using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Shared.Properties;
@@ -32,7 +32,6 @@ public abstract class AbstractCommand
 
 
 
-	private readonly bool _IsDwEditorConnection = false;
 	private IVsTextView _CodeEditorTextView = null;
 	private QueryManager _QryMgr = null;
 	private AuxilliaryDocData _AuxDocData = null;
@@ -51,14 +50,14 @@ public abstract class AbstractCommand
 			}
 
 
-			_CodeEditorTextView ??= ((IBEditorWindowPane)WindowPane).GetCodeEditorTextView();
+			_CodeEditorTextView ??= ((IBsEditorWindowPane)WindowPane).GetCodeEditorTextView();
 
 			if (_CodeEditorTextView != null)
 			{
 				IVsTextLines textLinesForTextView = GetTextLinesForTextView(_CodeEditorTextView);
 
 				if (textLinesForTextView != null)
-					_AuxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(textLinesForTextView);
+					_AuxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(textLinesForTextView);
 			}
 
 			if (_AuxDocData == null)
@@ -69,23 +68,49 @@ public abstract class AbstractCommand
 	}
 
 
-	protected AuxilliaryDocData StoredAuxDocData => _AuxDocData;
+
+	protected Csb StoredCsa
+	{
+		get
+		{
+			if (StoredAuxDocData.CommandCsa != null && StoredAuxDocData.CommandCsa.IsInvalidated)
+			{
+				StoredAuxDocData.CommandCsa = null;
+				StoredRctStamp = RctManager.Stamp;
+			}
+
+			return StoredAuxDocData.CommandCsa;
+		}
+		set
+		{
+			StoredAuxDocData.CommandCsa = value;
+		}
+	}
+
+	public long StoredRctStamp
+	{
+		get { return StoredAuxDocData.CommandRctStamp; }
+		set { StoredAuxDocData.CommandRctStamp = value; }
+	}
+
+	public string[] StoredDatabaseList
+	{
+		get { return StoredAuxDocData.CommandDatabaseList; }
+		set { StoredAuxDocData.CommandDatabaseList = value; }
+	}
+
+
+	protected AuxilliaryDocData StoredAuxDocData => _AuxDocData ?? AuxDocData;
 
 
 	public IBSqlEditorWindowPane WindowPane { get; set; }
-
-
-	/// <summary>
-	/// Always false.
-	/// </summary>
-	protected bool IsDwEditorConnection => _IsDwEditorConnection;
 
 
 	protected bool ExecutionLocked
 	{
 		get
 		{
-			return (QryMgr == null || StoredQryMgr.IsExecuting);
+			return (StoredQryMgr == null || StoredQryMgr.IsLocked);
 		}
 	}
 
@@ -93,39 +118,20 @@ public abstract class AbstractCommand
 	{
 		get
 		{
-			return (QryMgr == null || StoredQryMgr.IsCancelling || !StoredQryMgr.IsExecuting);
+			return (StoredQryMgr == null || StoredQryMgr.IsCancelling || !StoredQryMgr.IsExecuting);
 		}
 	}
-
-	protected bool StoredIsCancelling
-	{
-		get
-		{
-			return (StoredQryMgr != null && StoredQryMgr.IsCancelling);
-		}
-	}
-
-
-	protected bool StoredIsExecuting
-	{
-		get
-		{
-			return (StoredQryMgr == null || StoredQryMgr.IsExecuting);
-		}
-	}
-
-
 
 	protected QueryManager QryMgr
 	{
 		get
 		{
-			_QryMgr = AuxDocData?.QryMgr;
+			_QryMgr = StoredAuxDocData?.QryMgr;
 			return _QryMgr;
 		}
 	}
 
-	protected QueryManager StoredQryMgr => _QryMgr ??= StoredAuxDocData?.QryMgr;
+	protected QueryManager StoredQryMgr => _QryMgr ?? QryMgr;
 
 
 
@@ -135,13 +141,15 @@ public abstract class AbstractCommand
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
+
+
 	protected bool CanDisposeTransaction(string caption = null)
 	{
-		QueryManager qryMgr = _QryMgr ?? QryMgr;
+		QueryManager qryMgr = StoredQryMgr;
 
 		try
 		{
-			if (!qryMgr.GetUpdateTransactionsStatus())
+			if (!qryMgr.GetUpdateTransactionsStatus(true))
 				return true;
 		}
 		catch
@@ -150,7 +158,7 @@ public abstract class AbstractCommand
 		}
 
 
-		string message = ControlsResources.ErrTransactionsActive;
+		string message = Resources.ExTransactionsActive;
 
 		MessageCtl.ShowEx(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
 
@@ -160,23 +168,23 @@ public abstract class AbstractCommand
 
 
 
-public int QueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	public int QueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		return HandleQueryStatus(ref prgCmd, pCmdText);
+		return OnQueryStatus(ref prgCmd, pCmdText);
 	}
 
 
 
 	public int Exec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		return HandleExec(nCmdexecopt, pvaIn, pvaOut);
+		return OnExec(nCmdexecopt, pvaIn, pvaOut);
 	}
 
 
 
-	protected abstract int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText);
+	protected abstract int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText);
 
-	protected abstract int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
+	protected abstract int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 
 
 
@@ -189,6 +197,5 @@ public int QueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 
 		return ppBuffer;
 	}
-
 
 }

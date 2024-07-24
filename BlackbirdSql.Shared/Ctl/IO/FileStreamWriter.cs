@@ -1,12 +1,16 @@
 // Microsoft.SqlServer.DataStorage, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
 // Microsoft.SqlServer.Management.UI.Grid.FileStreamWriter
+
 using System;
 using System.Data.SqlTypes;
 using BlackbirdSql.Shared.Interfaces;
 
+
+
 namespace BlackbirdSql.Shared.Ctl.IO;
 
-public class FileStreamWriter : IBFileStreamWriter, IDisposable
+
+public class FileStreamWriter : IBsFileStreamWriter, IDisposable
 {
 	public const int DEFAULT_BUFFER_SIZE = 8192;
 

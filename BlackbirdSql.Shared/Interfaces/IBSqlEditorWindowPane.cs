@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBSqlEditorWindowPane : IBWindowPane
+public interface IBSqlEditorWindowPane : IBsWindowPane
 {
 	IVsTextLines DocData { get; }
 
@@ -73,6 +73,7 @@ public interface IBSqlEditorWindowPane : IBWindowPane
 
 	GridResultsPanel GridResultsPanel { get; }
 
+	string WindowBaseName { get; }
 
 	void AsyncExecuteQuery(EnSqlExecutionType executionType);
 
@@ -112,5 +113,5 @@ public interface IBSqlEditorWindowPane : IBWindowPane
 
 	DisplaySQLResultsControl EnsureDisplayResultsControl();
 
-	bool UpdateTabs(QESQLQueryDataEventArgs args);
+	bool UpdateTabsButtonText(QueryExecutionCompletedEventArgs args);
 }

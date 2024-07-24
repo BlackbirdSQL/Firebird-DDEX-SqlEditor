@@ -49,7 +49,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			string invariantName = providerFactoryClass.Assembly.GetName().Name;
 			// string invariantFullName = providerFactoryClass.Assembly.FullName;
 
-			Type providerObjectFactoryInterface = typeof(IBProviderObjectFactory);
+			Type providerObjectFactoryInterface = typeof(IBsProviderObjectFactory);
 			string providerObjectFactoryAssembly = providerObjectFactoryInterface.Assembly.FullName;
 
 			string dataSourceGuid = SystemData.DataSourceGuid.StartsWith("{")
@@ -107,7 +107,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			if (customAttribute == null)
 			{
 				Debug.Assert(condition: false);
-				ApplicationException ex = new("IBProviderObjectFactory doesn't have Guid attribute.");
+				ApplicationException ex = new("IBsProviderObjectFactory doesn't have Guid attribute.");
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -116,7 +116,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			if (customAttribute is not GuidAttribute guidAttribute)
 			{
 				Debug.Assert(condition: false);
-				ApplicationException ex = new("IBProviderObjectFactory's Guid attribute has the incorrect type.");
+				ApplicationException ex = new("IBsProviderObjectFactory's Guid attribute has the incorrect type.");
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -174,13 +174,13 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			? SystemData.ProviderGuid
 			: $"{{{SystemData.ProviderGuid}}}";
 
-		Type providerObjectFactoryInterface = typeof(IBProviderObjectFactory);
+		Type providerObjectFactoryInterface = typeof(IBsProviderObjectFactory);
 		Attribute customAttribute = Attribute.GetCustomAttribute(providerObjectFactoryInterface, typeof(GuidAttribute));
 
 		if (customAttribute == null)
 		{
 			Debug.Assert(condition: false);
-			ApplicationException ex = new("[BUG CHECK] IBProviderObjectFactory doesn't have Guid attribute.");
+			ApplicationException ex = new("[BUG CHECK] IBsProviderObjectFactory doesn't have Guid attribute.");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -188,7 +188,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 		if (customAttribute is not GuidAttribute guidAttribute)
 		{
 			Debug.Assert(condition: false);
-			ApplicationException ex = new("[BUG CHECK] IBProviderObjectFactory's Guid attribute has the incorrect type.");
+			ApplicationException ex = new("[BUG CHECK] IBsProviderObjectFactory's Guid attribute has the incorrect type.");
 			Diag.Dug(ex);
 			throw ex;
 		}

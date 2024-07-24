@@ -1,5 +1,7 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Package.DesignerServices.DatabaseChangesManager
+// Split into two for brevity.
+
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -12,7 +14,9 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
+
 namespace BlackbirdSql.Shared.Ctl;
+
 
 // =========================================================================================================
 //

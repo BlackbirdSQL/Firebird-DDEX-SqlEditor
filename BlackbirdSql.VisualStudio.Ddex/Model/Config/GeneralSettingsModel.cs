@@ -20,7 +20,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 //										GeneralSettingsModel Class
 //
 /// <summary>
-/// Option Model for General options
+/// Option Model for General options.
 /// </summary>
 // =========================================================================================================
 public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
@@ -31,7 +31,7 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 	// ---------------------------------------------------------------------------------
 
 
-	public GeneralSettingsModel(IBTransientSettings transientSettings)
+	public GeneralSettingsModel(IBsTransientSettings transientSettings)
 		: base(C_Package, C_Group, C_LivePrefix, transientSettings)
 	{
 
@@ -128,6 +128,13 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 	[TypeConverter(typeof(GlobalYesNoConverter))]
 	[DefaultValue(true)]
 	public bool EnableDiagnostics { get; set; } = true;
+
+	[GlobalizedCategory("OptionCategoryDiagnostics")]
+	[GlobalizedDisplayName("OptionDisplayGeneralEnableLoadStatistics")]
+	[GlobalizedDescription("OptionDescriptionGeneralEnableLoadStatistics")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(false)]
+	public bool EnableLoadStatistics { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryDiagnostics")]
 	[GlobalizedDisplayName("OptionDisplayGeneralEnableTaskLog")]

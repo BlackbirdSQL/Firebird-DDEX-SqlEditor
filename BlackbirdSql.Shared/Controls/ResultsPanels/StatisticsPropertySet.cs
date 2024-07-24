@@ -1,12 +1,15 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.StatisticsPanel
+// Previously integrated into StatisticsPanel. Implented to parameterize the structure.
 
 using System.Globalization;
 using System.Resources;
 using BlackbirdSql.Shared.Properties;
 
 
+
 namespace BlackbirdSql.Shared.Controls.ResultsPanels;
+
 
 public class StatisticsPropertySet
 {

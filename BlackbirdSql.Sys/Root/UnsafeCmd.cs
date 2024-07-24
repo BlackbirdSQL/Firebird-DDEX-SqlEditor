@@ -189,14 +189,10 @@ public abstract class UnsafeCmd
 					}
 				}
 			}
-#if DEBUG
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"Type: {link.Value.GetType().FullName}, Value: {link.Value}.");
+				Diag.Debug(ex, $"Type: {link.Value.GetType().FullName}, Value: {link.Value}.");
 			}
-#else
-			catch { }
-#endif
 
 
 			bool found = false;

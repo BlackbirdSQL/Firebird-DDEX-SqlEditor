@@ -1,12 +1,9 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorCloneQueryWindowCommand
 
 using System;
-using System.Data;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Shared.Model;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Utilities;
@@ -28,41 +25,29 @@ public class CommandCloneQueryWindow : AbstractCommand
 
 
 
-	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	protected override int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 
 		return VSConstants.S_OK;
 	}
 
-	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
-			DesignerExplorerServices.OpenNewMiscellaneousSqlFile();
 
-			AuxilliaryDocData auxDocData = AuxDocData;
+			IBsDesignerExplorerServices service = ApcManager.EnsureService<IBsDesignerExplorerServices>();
 
-			IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
+			string baseName = WindowPane.WindowBaseName;
 
-			if (lastFocusedSqlEditor == null)
-				return VSConstants.S_OK;
-
-			AuxilliaryDocData newAuxDocData = ((IBEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(lastFocusedSqlEditor.DocData);
-
-			if (newAuxDocData == null || QryMgr == null)
-				return VSConstants.S_OK;
-
-			AbstractConnectionStrategy connectionStrategy = newAuxDocData.QryMgr.Strategy;
-			connectionStrategy.SetConnectionInfo(StoredQryMgr.Strategy.ConnectionInfo);
-			IDbConnection connection = connectionStrategy.Connection;
-
-			if (StoredQryMgr.IsConnected && connection.State != ConnectionState.Open)
+			SqlTextSpan sqlTextSpan = WindowPane.GetSelectedCodeEditorTextSpan2();
+			if (sqlTextSpan.Text == null || sqlTextSpan.Text.Length == 0)
 			{
-				connection.Open();
+				sqlTextSpan = WindowPane.GetAllCodeEditorTextSpan2();
 			}
 
-			// auxDocData.IsVirtualWindow = auxDocData.IsVirtualWindow;
+			service.NewQuery(StoredQryMgr?.Strategy?.CurrentDatasetKey, baseName, sqlTextSpan.Text);
 		}
 
 		return VSConstants.S_OK;

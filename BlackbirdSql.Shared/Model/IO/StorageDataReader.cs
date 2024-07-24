@@ -453,7 +453,7 @@ public class StorageDataReader
 
 
 		object result;
-		IBColumnInfo columnInfo = _DataStorage.GetColumnInfo(i);
+		IBsColumnInfo columnInfo = _DataStorage.GetColumnInfo(i);
 
 		if (!columnInfo.IsBlobField)
 		{

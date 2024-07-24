@@ -1,21 +1,21 @@
-﻿#region Assembly Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
-// C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLCommon\Microsoft.SqlServer.GridControl.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
+// Microsoft.SqlServer.Management.UI.Grid.DrawManager
 
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.Win32;
+
 
 
 namespace BlackbirdSql.Shared.Controls.Grid;
 
+
 public static class DrawManager
 {
-	// Microsoft.SqlServer.Management.UI.Grid.DrawManager
 
 	[ThreadStatic]
 	private static Pen borderPen;
@@ -182,10 +182,10 @@ public static class DrawManager
 				if (intPtr != IntPtr.Zero)
 					num2 |= 0x80;
 
-				IntPtr dCEx = UnsafeNative.GetDCEx(m.HWnd, intPtr, num2);
+				IntPtr dCEx = Native.GetDCEx(m.HWnd, intPtr, num2);
 				if (dCEx != IntPtr.Zero)
 				{
-					Native.GetWindowRect(m.HWnd, out Native.RECT rect);
+					Native.GetWindowRect(m.HWnd, out Native.RECTEx rect);
 
 					rect.right -= rect.left;
 					rect.left = 0;
@@ -193,12 +193,12 @@ public static class DrawManager
 					rect.top = 0;
 					if (((uint)num & 0x100000u) != 0 || ((uint)num & 0x200000u) != 0)
 					{
-						m.Result = UnsafeNative.DefWindowProc(m.HWnd, m.Msg, m.WParam, m.LParam);
+						m.Result = Native.DefWindowProc(m.HWnd, m.Msg, m.WParam, m.LParam);
 					}
 
 					IntPtr handle = Native.CreatePen(0, 1, ColorTranslator.ToWin32(BorderColor));
 					IntPtr handle2 = Native.SelectObject(new HandleRef(null, dCEx), new HandleRef(null, handle));
-					Native.POINT pt = new();
+					POINT pt = new();
 					Native.MoveToEx(new HandleRef(null, dCEx), rect.left, rect.top, pt);
 					Native.LineTo(new HandleRef(null, dCEx), rect.left, rect.bottom - 1);
 					Native.LineTo(new HandleRef(null, dCEx), rect.right - 1, rect.bottom - 1);
@@ -206,7 +206,7 @@ public static class DrawManager
 					Native.LineTo(new HandleRef(null, dCEx), rect.left, rect.top);
 					Native.SelectObject(new HandleRef(null, dCEx), new HandleRef(null, handle2));
 					Native.DeleteObject(new HandleRef(null, handle));
-					UnsafeNative.ReleaseDC(m.HWnd, dCEx);
+					Native.ReleaseDC(m.HWnd, dCEx);
 					result = true;
 				}
 			}

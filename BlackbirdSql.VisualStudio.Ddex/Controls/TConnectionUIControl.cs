@@ -83,7 +83,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			cmbDatabase.DataSource = DataSources.Dependent;
 			cmbDatabase.ValueMember = "DatabaseLc";
-			cmbDatabase.DisplayMember = SysConstants.C_KeyExFullDisplayName;
+			cmbDatabase.DisplayMember = SysConstants.C_KeyExAdornedDisplayName;
 
 		}
 		catch (Exception ex)
@@ -204,7 +204,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		|| (string)DataSources.DependentRow["DatabaseLc"] == "";
 
 
-	IBDataConnectionDlg SessionDlg => Parent != null ? Parent.Parent as IBDataConnectionDlg : null;
+	IBsDataConnectionDlg SessionDlg => Parent != null ? Parent.Parent as IBsDataConnectionDlg : null;
 
 	#endregion Property accessors
 
@@ -302,7 +302,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			// Update the database name label.
 
-			@object = DataSources.DependentRow[SysConstants.C_KeyExFullDisplayName];
+			@object = DataSources.DependentRow[SysConstants.C_KeyExAdornedQualifiedName];
 
 			lblCurrentDisplayName.Text = !Cmd.IsNullValue(@object)
 				? (string)@object : ControlsResources.TConnectionUIControl_NewDatabaseConnection;
@@ -585,7 +585,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 		try
 		{
-			((IBDataConnectionProperties)Site).Csa.ConnectionString = restoreConnectionString;
+			((IBsDataConnectionProperties)Site).Csa.ConnectionString = restoreConnectionString;
 		}
 		finally
 		{
@@ -1014,7 +1014,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				}
 			}
 
-			object @object = DataSources.DependentRow[SysConstants.C_KeyExFullDisplayName];
+			object @object = DataSources.DependentRow[SysConstants.C_KeyExAdornedQualifiedName];
 
 			lblCurrentDisplayName.Text = !Cmd.IsNullValue(@object)
 				? (string)@object : ControlsResources.TConnectionUIControl_NewDatabaseConnection;
@@ -1293,7 +1293,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 		if (Site != null)
 		{
-			(Site as IBDataConnectionProperties).ConnectionSource = ConnectionSource;
+			(Site as IBsDataConnectionProperties).ConnectionSource = ConnectionSource;
 
 			_OriginalConnectionString = Site.ToString();
 

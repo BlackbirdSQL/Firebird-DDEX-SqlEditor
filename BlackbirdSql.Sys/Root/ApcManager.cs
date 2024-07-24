@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Interfaces;
@@ -31,14 +32,14 @@ public static class ApcManager
 {
 
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
-	public static string ActiveDocument
+	public static string ActiveDocumentExtension
 	{
 		get
 		{
-			if (IdeShutdownState)
+			if (IdeShutdownState || SolutionClosing)
 				return string.Empty;
 
-			EnvDTE.Document document = null;
+			EnvDTE.Document document;
 
 			try
 			{
@@ -47,17 +48,26 @@ public static class ApcManager
 			catch (InvalidCastException ex)
 			{
 				if (ex.HResult == VSConstants.E_NOINTERFACE)
-				{
 					ShutdownDte();
-					return string.Empty;
-				}
+
+				return string.Empty;
 			}
 			catch
 			{
 				return string.Empty;
 			}
 
-			return document == null ? string.Empty : document.FullName;
+			if (document == null)
+				return string.Empty;
+
+			try
+			{
+				return Path.GetExtension(document.FullName);
+			}
+			catch
+			{
+				return string.Empty;
+			}
 		}
 	}
 
@@ -68,7 +78,7 @@ public static class ApcManager
 	{
 		get
 		{
-			if (IdeShutdownState)
+			if (IdeShutdownState || SolutionClosing)
 				return null;
 
 			Project result = null;
@@ -103,7 +113,7 @@ public static class ApcManager
 	{
 		get
 		{
-			if (IdeShutdownState)
+			if (IdeShutdownState || SolutionClosing)
 				return null;
 
 			EnvDTE.Window window = null;

@@ -5,21 +5,17 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-using BlackbirdSql.Core;
 using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
-
-// using Microsoft.SqlServer.Management.UI.Grid;
-
 
 
 
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
+public class DlgGridControl : GridControl, IBsDlgGridControl, IBsGridControl
 {
 	private class PairOfObjects
 	{
@@ -38,9 +34,9 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 
 	private delegate int GetRowsNumberIntHandler();
 
-	private delegate IBDlgStorage GetDlgStorageIntHandler();
+	private delegate IBsDlgStorage GetDlgStorageIntHandler();
 
-	private delegate void SetDlgStorageIntHandler(IBDlgStorage newStorage);
+	private delegate void SetDlgStorageIntHandler(IBsDlgStorage newStorage);
 
 	private delegate void AddRowIntHandler(GridCellCollection row);
 
@@ -67,7 +63,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 	private delegate void OnDeleteRowHandler(int rowIndex);
 
 	// [CLSCompliant(false)]
-	protected IBDlgStorage m_Storage;
+	protected IBsDlgStorage m_Storage;
 
 	public BitArrayCollection m_cellDirtyBits = [];
 
@@ -85,7 +81,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 		{
 			if (InvokeRequired)
 			{
-				return (int)Invoke(new GetSelectedRowIntHandler(GetSelectedRowInt), new object[0]);
+				return (int)Invoke(new GetSelectedRowIntHandler(GetSelectedRowInt), []);
 			}
 			return GetSelectedRowInt();
 		}
@@ -110,7 +106,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 		{
 			if (InvokeRequired)
 			{
-				return (int[])Invoke(new GetSelectedRowsIntHandler(GetSelectedRowsInt), new object[0]);
+				return (int[])Invoke(new GetSelectedRowsIntHandler(GetSelectedRowsInt), []);
 			}
 			return GetSelectedRowsInt();
 		}
@@ -134,7 +130,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 		{
 			if (InvokeRequired)
 			{
-				return (int)Invoke(new GetRowsNumberIntHandler(GetRowCount), new object[0]);
+				return (int)Invoke(new GetRowsNumberIntHandler(GetRowCount), []);
 			}
 			return GetRowCount();
 		}
@@ -143,13 +139,13 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	// [CLSCompliant(false)]
-	public IBDlgStorage DlgStorage
+	public IBsDlgStorage DlgStorage
 	{
 		get
 		{
 			if (InvokeRequired)
 			{
-				return (IBDlgStorage)Invoke(new GetDlgStorageIntHandler(GetDlgStorageInt), new object[0]);
+				return (IBsDlgStorage)Invoke(new GetDlgStorageIntHandler(GetDlgStorageInt), []);
 			}
 			return GetDlgStorageInt();
 		}
@@ -200,7 +196,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 	}
 
 	// [CLSCompliant(false)]
-	public DlgGridControl(IBDlgStorage stg)
+	public DlgGridControl(IBsDlgStorage stg)
 	{
 		DlgStorage = stg;
 	}
@@ -213,7 +209,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 
 	protected override void DeleteColumnInternal(int nIndex)
 	{
-		if (m_Storage.Storage is IBGridMemDataStorage storage)
+		if (m_Storage.Storage is IBsGridMemDataStorage storage)
 		{
 			storage.DeleteColumn(m_Columns[nIndex].ColumnIndex);
 		}
@@ -225,7 +221,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 	{
 		base.InsertColumnInternal(nIndex, ci);
 		m_cellDirtyBits.Insert(nIndex, new BitArray(m_curBitArrayLen));
-		if (m_Storage.Storage is IBGridMemDataStorage storage)
+		if (m_Storage.Storage is IBsGridMemDataStorage storage)
 		{
 			storage.InsertColumn(nIndex, "");
 		}
@@ -351,7 +347,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 
 	public void GetSelectedCell(out int rowIndex, out int colIndex)
 	{
-		PairOfObjects pairOfObjects = !InvokeRequired ? GetSelectedCellInt() : Invoke(new GetSelectedCellIntHandler(GetSelectedCellInt), new object[0]) as PairOfObjects;
+		PairOfObjects pairOfObjects = !InvokeRequired ? GetSelectedCellInt() : Invoke(new GetSelectedCellIntHandler(GetSelectedCellInt), []) as PairOfObjects;
 		rowIndex = (int)pairOfObjects.object1;
 		colIndex = (int)pairOfObjects.object2;
 	}
@@ -473,12 +469,12 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 		return 0;
 	}
 
-	private IBDlgStorage GetDlgStorageInt()
+	private IBsDlgStorage GetDlgStorageInt()
 	{
 		return m_Storage;
 	}
 
-	private void SetDlgStorageInt(IBDlgStorage newStorage)
+	private void SetDlgStorageInt(IBsDlgStorage newStorage)
 	{
 		if (m_Storage is not null and IDisposable)
 		{
@@ -491,7 +487,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 
 	private void AddRowInt(GridCellCollection row)
 	{
-		IBMemDataStorage storage = m_Storage.Storage;
+		IBsMemDataStorage storage = m_Storage.Storage;
 		object[] gridCellArrFromCol = GetGridCellArrFromCol(row);
 		storage.AddRow(gridCellArrFromCol);
 		CheckBitArraysLength();
@@ -500,7 +496,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 
 	private void InsertRowInt(int nRowIndex, GridCellCollection row)
 	{
-		IBMemDataStorage storage = m_Storage.Storage;
+		IBsMemDataStorage storage = m_Storage.Storage;
 		object[] gridCellArrFromCol = GetGridCellArrFromCol(row);
 		storage.InsertRow(nRowIndex, gridCellArrFromCol);
 		CheckBitArraysLength();

@@ -1,10 +1,7 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorSqlDatabaseCommand
 
 using System;
-using System.Data;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Model;
@@ -35,19 +32,8 @@ public class CommandDatabaseSelect : AbstractCommand
 
 
 
-	/// <summary>
-	/// Records the last moniker created so that we can do a fast equivalency comparison
-	/// on the connection and use this static for the DatasetKey if they are equivalent.
-	/// This avoids repeatedly creating a new Moniker and going through the
-	/// registration process each time.
-	/// </summary>
-	private Csb _Csa = null;
 
-	public Csb Csa => _Csa;
-
-
-
-	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	protected override int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
@@ -57,42 +43,30 @@ public class CommandDatabaseSelect : AbstractCommand
 		return VSConstants.S_OK;
 	}
 
-	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (AuxDocData == null)
-		{
-			Exception ex = new("AuxilliaryDocData NOT FOUND");
-			Diag.Dug(ex);
+		if (ExecutionLocked)
 			return VSConstants.S_OK;
-		}
-
-		if (StoredQryMgr == null)
-		{
-			ArgumentNullException ex = new("QryMgr is null");
-			Diag.Dug(ex);
-			return VSConstants.S_OK;
-		}
-
 
 		if (pvaIn != IntPtr.Zero)
 		{
 			// SelectedValue changed, probably by user from dropdown.
 
-			if (!CanDisposeTransaction(ControlsResources.ErrChangeConnectionCaption))
+			if (!CanDisposeTransaction(Resources.ExChangeConnectionCaption))
 				return VSConstants.S_OK;
 
-			string selectedDisplayName = (string)Marshal.GetObjectForNativeVariant(pvaIn);
+			string selectedQualifiedName = (string)Marshal.GetObjectForNativeVariant(pvaIn);
 
-			// Tracer.Trace(GetType(), "HandleExec()", "pvaIn selectedDatasetKey: {0}", selectedDatasetKey);
+			// Tracer.Trace(GetType(), "OnExec()", "pvaIn selectedDatasetKey: {0}", selectedDatasetKey);
 
 			try
 			{
-				SetDatasetKeyDisplayMember(selectedDisplayName);
+				SetDatasetKeyDisplayMember(selectedQualifiedName);
 			}
 			catch (Exception ex)
 			{
 				Diag.Dug(ex);
-				QryMgr?.GetUpdateTransactionsStatus();
+				StoredQryMgr?.GetUpdateTransactionsStatus(true);
 				return VSConstants.S_OK;
 			}
 		}
@@ -100,46 +74,65 @@ public class CommandDatabaseSelect : AbstractCommand
 		{
 			// Check if underlying value changed. Drift detection.
 
-			IDbConnection connection = StoredQryMgr.Strategy.Connection;
-			object objDisplayName;
+			object objQualifiedName = string.Empty;
+			IBsConnectionInfo connInfo = StoredQryMgr.Strategy.ConnInfo;
 
-			if (connection == null /* || connection.State != ConnectionState.Open */ || string.IsNullOrEmpty(connection.Database))
+			if (connInfo == null /* || connection.State != ConnectionState.Open */ || string.IsNullOrEmpty(connInfo.Database))
 			{
-				// Tracer.Trace(GetType(), "HandleExec()", "pvaOut Current selection is empty.");
-				objDisplayName = string.Empty;
-				_Csa = null;
+				// Tracer.Trace(GetType(), "OnExec()", "pvaOut Current selection is empty.");
+				StoredCsa = null;
 			}
 			else
 			{
-				if (_Csa == null || _Csa.IsInvalidated)
+				if (StoredCsa == null)
 				{
 					if (RctManager.ShutdownState)
 					{
-						QryMgr?.GetUpdateTransactionsStatus();
+						StoredQryMgr?.GetUpdateTransactionsStatus(true);
 						return VSConstants.S_OK;
 					}
 
-					// Tracer.Trace(GetType(), "HandleExec()", "Invalidated Csb.DatasetKey: {0}.", _Csa == null ? "null" : _Csa.DatasetKey);
+					// Tracer.Trace(GetType(), "OnExec()", "_Csa invalidated.");
 
-					_Csa = RctManager.CloneVolatile(connection);
+					try
+					{
+						if (string.IsNullOrEmpty(connInfo?.Database))
+						{
+							// Tracer.Trace(GetType(), "OnExec()", "Live connection set to null Selection dead.");
+							StoredCsa = null;
+						}
+						else
+						{
+							// Tracer.Trace(GetType(), "OnExec()", "Live connection okay. Creating new _Csa");
 
-					// Tracer.Trace(GetType(), "HandleExec()", "Renewed Csb.DatasetKey: {0}.", _Csa == null ? "null" : _Csa.DatasetKey);
+							StoredCsa = RctManager.CloneVolatile(connInfo);
+
+							// Tracer.Trace(GetType(), "OnExec()", "Renewed Csb.DatasetKey: {0}.", _Csa == null ? "null" : _Csa.DatasetKey);
+						}
+					}
+					catch (Exception ex)
+					{
+						Diag.Dug(ex);
+						throw;
+					}
 				}
 
-				// Tracer.Trace(GetType(), "HandleExec()", "pvaOut Current selection DatasetKey: {0}.", _Csa == null ? "Csa is null" : _Csa.DatasetKey);
+				// Tracer.Trace(GetType(), "OnExec()", "pvaOut Current selection DatasetKey: {0}.", _Csa == null ? "Csa is null" : _Csa.DatasetKey);
 
-				objDisplayName = _Csa.FullDisplayName;
 			}
 
-			Marshal.GetNativeVariantForObject(objDisplayName, pvaOut);
+			if (StoredCsa != null)
+				objQualifiedName = StoredCsa.AdornedQualifiedName;
+
+			Marshal.GetNativeVariantForObject(objQualifiedName, pvaOut);
 		}
 
-		QryMgr?.GetUpdateTransactionsStatus();
+		StoredQryMgr?.GetUpdateTransactionsStatus(true);
 
 		return VSConstants.S_OK;
 	}
 
-	private void SetDatasetKeyDisplayMember(string selectedDisplayName)
+	private void SetDatasetKeyDisplayMember(string selectedQualifiedName)
 	{
 		IVsUserData vsUserData = StoredAuxDocData.VsUserData;
 
@@ -163,16 +156,14 @@ public class CommandDatabaseSelect : AbstractCommand
 		}
 
 
-		string connectionString;
-
-		if (csa == null || csa.FullDisplayName != selectedDisplayName)
+		if (csa == null || csa.AdornedQualifiedName != selectedQualifiedName)
 		{
 			if (RctManager.ShutdownState)
 				return;
 
 			try
 			{
-				csa = RctManager.CloneRegistered(selectedDisplayName, EnRctKeyType.DisplayName);
+				csa = RctManager.CloneRegistered(selectedQualifiedName, EnRctKeyType.AdornedQualifiedName);
 			}
 			catch (Exception ex)
 			{
@@ -180,22 +171,22 @@ public class CommandDatabaseSelect : AbstractCommand
 			}
 		}
 
-		connectionString = csa.ConnectionString;
+		string connectionUrl = csa.SafeDatasetMoniker;
 
-		if (string.IsNullOrWhiteSpace(connectionString))
+		if (string.IsNullOrWhiteSpace(connectionUrl))
 		{
-			ArgumentNullException ex = new("ConnectionString is null");
+			ArgumentNullException ex = new("ConnectionUrl is null");
 			Diag.Dug(ex);
 			throw ex;
 		}
 
 
-		AbstractConnectionStrategy connectionStrategy = StoredAuxDocData.QryMgr.Strategy;
+		ConnectionStrategy strategy = StoredAuxDocData.QryMgr.Strategy;
 
-		connectionStrategy.SetDatasetKeyOnConnection(selectedDisplayName, csa);
+		strategy.SetDatasetKeyOnConnection(selectedQualifiedName, csa);
 
 		Guid clsid = VS.CLSID_PropDatabaseChanged;
-		___(vsUserData.SetData(ref clsid, connectionString));
+		___(vsUserData.SetData(ref clsid, connectionUrl));
 
 		// Tracer.Trace(GetType(), "SetDatasetKeyDisplayMember()", "csa.ConnectionString: {0}", csa.ConnectionString);
 
@@ -204,7 +195,11 @@ public class CommandDatabaseSelect : AbstractCommand
 
 		csa.RefreshDriftDetectionState();
 
-		_Csa = csa;
+		if (!ReferenceEquals(StoredCsa, csa))
+		{
+			StoredRctStamp = RctManager.Stamp;
+			StoredCsa = csa;
+		}
 	}
 
 }

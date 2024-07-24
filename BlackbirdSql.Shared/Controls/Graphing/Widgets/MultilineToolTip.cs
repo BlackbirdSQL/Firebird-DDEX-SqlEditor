@@ -107,17 +107,6 @@ public class MultilineToolTip : ToolTip
 		}
 	}
 
-	private static class Native
-	{
-		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		public static extern IntPtr GetForegroundWindow();
-
-		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		public static extern IntPtr GetParent(IntPtr hWnd);
-
-		[DllImport("user32.DLL", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode, EntryPoint = "SystemParametersInfoW", ExactSpelling = true, SetLastError = true)]
-		public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, IntPtr pvParam, uint fWinIni);
-	}
 
 	private Font font;
 
@@ -147,7 +136,7 @@ public class MultilineToolTip : ToolTip
 				try
 				{
 					Marshal.WriteInt32(intPtr, Marshal.SizeOf(typeof(NONCLIENTMETRICS)));
-					Native.SystemParametersInfo(41u, (uint)Marshal.SizeOf(typeof(NONCLIENTMETRICS)), intPtr, 0u);
+					Native.SystemParametersInfoW(41u, (uint)Marshal.SizeOf(typeof(NONCLIENTMETRICS)), intPtr, 0u);
 					Marshal.PtrToStructure(intPtr, nONCLIENTMETRICS);
 				}
 				finally

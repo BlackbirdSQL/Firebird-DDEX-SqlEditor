@@ -19,7 +19,7 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for Pane context options
 /// </summary>
 // =========================================================================================================
-public class ContextSettingsModel(IBTransientSettings transientSettings)
+public class ContextSettingsModel(IBsTransientSettings transientSettings)
 	: AbstractSettingsModel<ContextSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
 {
 

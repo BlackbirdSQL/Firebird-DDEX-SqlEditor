@@ -88,4 +88,42 @@ public class DbConnectionService : SBsNativeDbConnection, IBsNativeDbConnection
 	}
 
 
+	public bool OpenOrVerifyConnection(IDbConnection @this)
+	{
+		FbConnection connection = (FbConnection)@this;
+
+		if (connection.State != ConnectionState.Open)
+		{
+			connection.Open();
+			return true;
+		}
+
+		FbDatabaseInfo info;
+
+		info = (FbDatabaseInfo)CreateDatabaseInfoObject(connection);
+		_ = info.GetDatabaseSizeInPages();
+
+		return true;
+	}
+
+
+
+	public async Task<bool> OpenOrVerifyConnectionAsync(IDbConnection @this)
+	{
+		FbConnection connection = (FbConnection)@this;
+
+		if (connection.State != ConnectionState.Open)
+		{
+			await connection.OpenAsync();
+			return true;
+		}
+
+		FbDatabaseInfo info;
+
+		info = (FbDatabaseInfo)CreateDatabaseInfoObject(connection);
+		_ = info.GetDatabaseSizeInPages();
+
+		return true;
+	}
+
 }

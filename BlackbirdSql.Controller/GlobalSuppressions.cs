@@ -6,5 +6,5 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter")]
-[assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
-[assembly: SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method")]
+// [assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
+// [assembly: SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method")]

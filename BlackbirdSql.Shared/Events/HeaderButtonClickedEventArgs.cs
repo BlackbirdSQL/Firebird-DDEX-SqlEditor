@@ -6,7 +6,12 @@ using System.Windows.Forms;
 using BlackbirdSql.Shared.Enums;
 
 
+
 namespace BlackbirdSql.Shared.Events;
+
+
+public delegate void HeaderButtonClickedEventHandler(object sender, HeaderButtonClickedEventArgs args);
+
 
 public class HeaderButtonClickedEventArgs : EventArgs
 {

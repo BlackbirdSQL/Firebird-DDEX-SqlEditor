@@ -43,7 +43,7 @@ internal abstract class AbstractXmlPlanParser : AbstractObjectParser
 			}
 			return;
 		}
-		throw new InvalidOperationException(ControlsResources.UnexpectedRunType);
+		throw new InvalidOperationException(ControlsResources.ExUnexpectedRunType);
 	}
 
 	public abstract Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context);

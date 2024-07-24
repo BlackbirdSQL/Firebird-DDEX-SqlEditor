@@ -17,7 +17,7 @@ namespace BlackbirdSql.Shared.Model.IO;
 
 public class SortView : IBSortView, IDisposable
 {
-	protected IBStorageView m_StorageView;
+	protected IBsStorageView m_StorageView;
 
 	protected IBSortingArray m_SortingArray;
 
@@ -35,12 +35,12 @@ public class SortView : IBSortView, IDisposable
 
 	protected SortView()
 	{
-		Exception ex = new(ControlsResources.SortViewDefaultConstructorCannotBeUsed);
+		Exception ex = new(Resources.ExSortViewDefaultConstructorCannotBeUsed);
 		Diag.Dug(ex);
 		throw ex;
 	}
 
-	public SortView(IBStorageView view)
+	public SortView(IBsStorageView view)
 	{
 		m_StorageView = view;
 		m_SortingArray = new SortingArray();
@@ -71,7 +71,7 @@ public class SortView : IBSortView, IDisposable
 	{
 		if (m_bKeepSortingData)
 		{
-			Exception ex = new(ControlsResources.AlreadySortingData);
+			Exception ex = new(Resources.ExAlreadySortingData);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -83,7 +83,7 @@ public class SortView : IBSortView, IDisposable
 	{
 		if (m_bKeepSortingData)
 		{
-			Exception ex = new(ControlsResources.AlreadySortingData);
+			Exception ex = new(Resources.ExAlreadySortingData);
 			Diag.Dug(ex);
 			throw ex;
 		}

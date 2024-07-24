@@ -6,7 +6,12 @@ using System.Drawing;
 using System.Windows.Forms;
 
 
+
 namespace BlackbirdSql.Shared.Events;
+
+
+public delegate void MouseButtonClickingEventHandler(object sender, MouseButtonClickingEventArgs args);
+
 
 public class MouseButtonClickingEventArgs : EventArgs
 {

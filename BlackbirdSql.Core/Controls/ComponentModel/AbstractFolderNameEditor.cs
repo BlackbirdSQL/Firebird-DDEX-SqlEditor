@@ -36,7 +36,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 
 		private FolderBrowserFolder _StartLocation;
 		private FolderBrowserStyles _PublicOptions = FolderBrowserStyles.RestrictToFilesystem;
-		private readonly UnsafeNative.EnBrowseInfos _PrivateOptions = UnsafeNative.EnBrowseInfos.NewDialogStyle;
+		private readonly Native.EnBrowseInfos _PrivateOptions = Native.EnBrowseInfos.NewDialogStyle;
 		private string _Title = string.Empty;
 		private string _DirectoryPath = string.Empty;
 		private string _InitialDirectory;
@@ -132,10 +132,10 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 			IntPtr pszPath = IntPtr.Zero;
 			IntPtr lpBrowserCallback = IntPtr.Zero;
 
-			IntPtr handle = owner?.Handle ?? UnsafeNative.GetActiveWindow();
+			IntPtr handle = owner?.Handle ?? Native.GetActiveWindow();
 
 			int flags = (int)_PublicOptions | (int)_PrivateOptions;
-			if ((flags & (int)UnsafeNative.EnBrowseInfos.NewDialogStyle) != 0)
+			if ((flags & (int)Native.EnBrowseInfos.NewDialogStyle) != 0)
 			{
 				Application.OleRequired();
 			}
@@ -149,13 +149,13 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 			else
 			{
 				_BrowserCallback = null;
-				UnsafeNative.Shell32.SHGetSpecialFolderLocation(handle, (int)_StartLocation, ref ppIdl);
+				Native.Shell32.SHGetSpecialFolderLocation(handle, (int)_StartLocation, ref ppIdl);
 
 				if (ppIdl == IntPtr.Zero)
 					return DialogResult.Cancel;
 			}
 
-			UnsafeNative.BROWSEINFO browseInfo = null;
+			Native.BROWSEINFOEx browseInfo = null;
 
 			// Tracer.Trace("Title: " + (string.IsNullOrWhiteSpace(_Title) ? "Select folder" : _Title));
 
@@ -175,7 +175,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 
 
 				// Call dialog SHBrowseForFolder
-				idListPtr = UnsafeNative.Shell32.SHBrowseForFolder(browseInfo);
+				idListPtr = Native.Shell32.SHBrowseForFolder(browseInfo);
 
 				// check if the user cancelled out of the dialog or not.
 				if (idListPtr == IntPtr.Zero)
@@ -184,7 +184,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 				// allocate ncessary memory buffer to receive the folder path.
 				pszPath = Marshal.AllocHGlobal(MAX_PATH);
 				// call shgetpathfromidlist to get folder path.
-				bool bret = UnsafeNative.Shell32.SHGetPathFromIDList(idListPtr, pszPath);
+				bool bret = Native.Shell32.SHGetPathFromIDList(idListPtr, pszPath);
 				// convert the returned native poiner to string.
 				_DirectoryPath = Marshal.PtrToStringAuto(pszPath);
 				DisplayName = Marshal.PtrToStringAuto(browseInfo.pszDisplayName);
@@ -277,7 +277,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 					if (htis == htic)
 						pos = count;
 				}
-				Native.SCROLLINFO si = new();
+				Native.SCROLLINFOEx si = new();
 				si.cbSize = Marshal.SizeOf(si);
 				si.fMask = Native.SIF_POS | Native.SIF_RANGE | Native.SIF_PAGE;
 				Native.GetScrollInfo(htree, Native.SB_VERT, si);

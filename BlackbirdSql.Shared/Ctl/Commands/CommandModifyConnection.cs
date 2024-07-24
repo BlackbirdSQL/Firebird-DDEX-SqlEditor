@@ -27,12 +27,11 @@ public class CommandModifyConnection : AbstractCommand
 
 
 
-	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	protected override int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (!ExecutionLocked && StoredQryMgr != null && StoredQryMgr.Strategy != null
-			&& StoredQryMgr.Strategy.Connection != null)
+		if (!ExecutionLocked && StoredQryMgr.Strategy != null)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -40,30 +39,15 @@ public class CommandModifyConnection : AbstractCommand
 		return VSConstants.S_OK;
 	}
 
-	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (ExecutionLocked || StoredQryMgr == null || StoredQryMgr.Strategy == null
-			&& StoredQryMgr.Strategy.Connection == null)
+		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
-		if (!CanDisposeTransaction(ControlsResources.ErrModifyConnectionCaption))
+		if (!CanDisposeTransaction(Resources.ExModifyConnectionCaption))
 			return VSConstants.S_OK;
 
-		IDbConnection newConnection = null;
-
-		try
-		{
-			newConnection = StoredQryMgr.Strategy.ModifyConnection(true);
-		}
-		finally
-		{
-			if (newConnection != null)
-			{
-				StoredQryMgr.IsConnecting = true;
-				StoredQryMgr.IsConnecting = false;
-			}
-			StoredQryMgr?.GetUpdateTransactionsStatus();
-		}
+		StoredQryMgr.ModifyConnection();
 
 		return VSConstants.S_OK;
 	}

@@ -248,11 +248,11 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 			ExpandableObjectWrapper expandableObjectWrapper2 = (ExpandableObjectWrapper)nodeToCompare[objectProperty];
 			if (ignoreDatabaseName)
 			{
-				if (!CompareObjectPropertyValue((PropertyValue)expandableObjectWrapper.Properties[ControlsResources.ObjectServer], (PropertyValue)expandableObjectWrapper2.Properties[ControlsResources.ObjectServer]))
+				if (!CompareObjectPropertyValue((PropertyValue)expandableObjectWrapper.Properties[ControlsResources.Graphing_ObjectServer], (PropertyValue)expandableObjectWrapper2.Properties[ControlsResources.ObjectServer]))
 				{
 					return false;
 				}
-				if (!CompareObjectPropertyValue((PropertyValue)expandableObjectWrapper.Properties[ControlsResources.ObjectSchema], (PropertyValue)expandableObjectWrapper2.Properties[ControlsResources.ObjectSchema]))
+				if (!CompareObjectPropertyValue((PropertyValue)expandableObjectWrapper.Properties[ControlsResources.Graphing_ObjectSchema], (PropertyValue)expandableObjectWrapper2.Properties[ControlsResources.ObjectSchema]))
 				{
 					return false;
 				}
@@ -260,7 +260,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 				{
 					return false;
 				}
-				if (!CompareObjectPropertyValue((PropertyValue)expandableObjectWrapper.Properties[ControlsResources.ObjectAlias], (PropertyValue)expandableObjectWrapper2.Properties[ControlsResources.ObjectAlias]))
+				if (!CompareObjectPropertyValue((PropertyValue)expandableObjectWrapper.Properties[ControlsResources.Graphing_ObjectAlias], (PropertyValue)expandableObjectWrapper2.Properties[ControlsResources.ObjectAlias]))
 				{
 					return false;
 				}

@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.EditorExtension.Ctl;
 
 
-public sealed class ToolbarCommandHandler<T> : IBToolbarCommandHandler where T : AbstractCommand, new()
+public sealed class ToolbarCommandHandler<T> : IBsToolbarCommandHandler where T : AbstractCommand, new()
 {
 
 	public ToolbarCommandHandler(Guid clsidCmdSet, uint cmdId)
@@ -27,7 +27,7 @@ public sealed class ToolbarCommandHandler<T> : IBToolbarCommandHandler where T :
 
 	public GuidId Clsid => _Clsid;
 
-	public int HandleQueryStatus(AbstractTabbedEditorWindowPane windowPane, ref OLECMD prgCmd, IntPtr pCmdText)
+	public int OnQueryStatus(AbstractTabbedEditorWindowPane windowPane, ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		if (windowPane is TabbedEditorWindowPane tabbedEditorWindowPane)
 		{
@@ -40,7 +40,7 @@ public sealed class ToolbarCommandHandler<T> : IBToolbarCommandHandler where T :
 		return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 	}
 
-	public int HandleExec(AbstractTabbedEditorWindowPane windowPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	public int OnExec(AbstractTabbedEditorWindowPane windowPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		if (windowPane is TabbedEditorWindowPane tabbedEditorWindowPane)
 		{

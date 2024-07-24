@@ -1,10 +1,12 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TextEditor
+
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using BlackbirdSql.Shared.Ctl;
-using BlackbirdSql.Core;
+using BlackbirdSql.Shared.Enums;
+using BlackbirdSql.Shared.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -12,13 +14,13 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
-using BlackbirdSql.Shared.Enums;
-using BlackbirdSql.Shared.Interfaces;
+
 
 
 namespace BlackbirdSql.Shared.Controls;
 
-public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEvents, IBTextEditor, IVsToolboxActiveUserHook, IVsToolboxUser, IDisposable
+
+public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEvents, IBsTextEditor, IVsToolboxActiveUserHook, IVsToolboxUser, IDisposable
 {
 	private readonly IVsHierarchy _Hierarchy;
 
@@ -40,7 +42,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	private TextEditorProxy _TextEditorProxy;
 
-	private readonly IBTabbedEditorService _TabbedEditorService;
+	private readonly IBsWindowPaneServiceProvider _TabbedEditorService;
 
 	private ServiceProvider _Services;
 
@@ -49,7 +51,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 
 
-	private IBTextEditorEvents TextEditorEvents
+	private IBsTextEditorEvents TextEditorEvents
 	{
 		get
 		{
@@ -142,7 +144,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			_TabbedEditorService = tabbedEditorServices.GetService(typeof(IBTabbedEditorService)) as IBTabbedEditorService;
+			_TabbedEditorService = tabbedEditorServices.GetService(typeof(IBsWindowPaneServiceProvider)) as IBsWindowPaneServiceProvider;
 			if (_TabbedEditorService != null)
 			{
 				_TabbedEditorService.TextEditor = TextEditorProxy;
@@ -370,13 +372,13 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		Dispose(disposing: false);
 	}
 
-	public void SetTextEditorEvents(IBTextEditorEvents events)
+	public void SetTextEditorEvents(IBsTextEditorEvents events)
 	{
 	}
 
 	public void SyncState()
 	{
-		IBTextEditorEvents textEditorEvents = TextEditorEvents;
+		IBsTextEditorEvents textEditorEvents = TextEditorEvents;
 		if (textEditorEvents != null)
 		{
 			textEditorEvents.OnActiveChanged(IsActive);

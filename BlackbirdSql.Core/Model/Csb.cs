@@ -82,7 +82,7 @@ public class Csb : AbstractCsb, ICloneable
 	}
 
 
-	public Csb(IBPropertyAgent ci, bool validateServerName = true) : base(ci, validateServerName)
+	public Csb(IBsPropertyAgent ci, bool validateServerName = true) : base(ci, validateServerName)
 	{
 		_Stamp = RctManager.Stamp;
 	}
@@ -306,6 +306,24 @@ public class Csb : AbstractCsb, ICloneable
 	/// fbsql://user_uc@server:port/Serilize64(databasepath_lc)/[Serilize64(newline_delimited_equivalencykeys)]/
 	/// </returns>
 	// ---------------------------------------------------------------------------------
+	public static string CreateConnectionUrl(IBsModelPropertyAgent connInfo)
+	{
+		return (new Csb(connInfo.ConnectionString, false)).SafeDatasetMoniker;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Creates a uniquely identifiable connection url. Connection urls are used for
+	/// uniquely naming connections and are unique to equivalent connections according
+	/// to describer equivalency.
+	/// </summary>
+	/// <returns>
+	/// The unique connection url in format:
+	/// fbsql://user_uc@server:port/Serilize64(databasepath_lc)/[Serilize64(newline_delimited_equivalencykeys)]/
+	/// </returns>
+	// ---------------------------------------------------------------------------------
 	public static string CreateConnectionUrl(IDbConnection connection)
 	{
 		return (new Csb(connection.ConnectionString, false)).SafeDatasetMoniker;
@@ -356,9 +374,38 @@ public class Csb : AbstractCsb, ICloneable
 	}
 
 
-	public static string GetDisplayName(string connectionString)
+	public static string GetServerExplorerName(string connectionString)
 	{
-		return new Csb(connectionString, false).DisplayName;
+		return new Csb(connectionString, false).ServerExplorerName;
+	}
+
+
+	/// <summary>
+	/// Determines if the connection properties object is sufficiently complete,
+	/// inclusive of password for connections other than Properties settings
+	/// connection strings, in order to establish a database connection.
+	/// </summary>
+	public static bool IsComplete(string connectionString)
+	{
+			try
+			{
+				Csb csa = new(connectionString, false);
+
+				foreach (Describer describer in Csb.MandatoryKeys)
+				{
+					object value = csa[describer.Key];
+
+					if (string.IsNullOrEmpty((string)value))
+						return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+			return true;
 	}
 
 
@@ -373,47 +420,15 @@ public class Csb : AbstractCsb, ICloneable
 	/// Parses a ConnectionInfo object.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected override void Parse(IBPropertyAgent ci)
+	protected override void Parse(IBsPropertyAgent ci)
 	{
-		// Tracer.Trace(GetType(), "Parse(IBPropertyAgent)");
+		// Tracer.Trace(GetType(), "Parse(IBsPropertyAgent)");
 
-		DatasetKey = (string)ci[C_KeyExDatasetKey];
-		ConnectionKey = (string)ci[C_KeyExConnectionKey];
-		ConnectionSource = (EnConnectionSource)ci[C_KeyExConnectionSource];
-		ConnectionName = (string)ci[C_KeyExConnectionName];
-		DatasetId = (string)ci[C_KeyExDatasetId];
-
-		DataSource = string.IsNullOrEmpty((string)ci[C_KeyDataSource]) ? "localhost" : (string)ci[C_KeyDataSource];
-		Port = Convert.ToInt32(ci[C_KeyPort]);
-		this[C_KeyServerType] = (EnServerType)ci[C_KeyServerType];
-		Database = (string)ci[C_KeyDatabase];
-		UserID = (string)(ci[C_KeyUserID] ?? string.Empty);
-		Password = (string)(ci[C_KeyPassword] ?? string.Empty);
-
-		Role = (string)ci[SysConstants.C_KeyRole];
-		Charset = (string)ci[SysConstants.C_KeyCharset];
-		Dialect = Convert.ToInt32(ci[SysConstants.C_KeyDialect]);
-		NoDatabaseTriggers = (bool)ci[SysConstants.C_KeyNoDatabaseTriggers];
-
-		PacketSize = Convert.ToInt32(ci[SysConstants.C_KeyPacketSize]);
-		ConnectionTimeout = Convert.ToInt32(ci[SysConstants.C_KeyConnectionTimeout]);
-		Pooling = (bool)ci[SysConstants.C_KeyPooling];
-		ConnectionLifeTime = Convert.ToInt32(ci[SysConstants.C_KeyConnectionLifeTime]);
-		MinPoolSize = Convert.ToInt32(ci[SysConstants.C_KeyMinPoolSize]);
-		MaxPoolSize = Convert.ToInt32(ci[SysConstants.C_KeyMaxPoolSize]);
-		FetchSize = Convert.ToInt32(ci[SysConstants.C_KeyFetchSize]);
-		IsolationLevel = (IsolationLevel)Convert.ToInt32(ci[SysConstants.C_KeyIsolationLevel]);
-		ReturnRecordsAffected = (bool)ci[SysConstants.C_KeyReturnRecordsAffected];
-		Enlist = (bool)ci[SysConstants.C_KeyEnlist];
-		ClientLibrary = (string)ci[SysConstants.C_KeyClientLibrary];
-		DbCachePages = Convert.ToInt32(ci[SysConstants.C_KeyDbCachePages]);
-		NoGarbageCollect = (bool)ci[SysConstants.C_KeyNoGarbageCollect];
-		Compression = (bool)ci[SysConstants.C_KeyCompression];
-		CryptKey = (byte[])ci[SysConstants.C_KeyCryptKey];
-		this[SysConstants.C_KeyWireCrypt] = (EnWireCrypt)Convert.ToInt32(ci[SysConstants.C_KeyWireCrypt]);
-		ApplicationName = (string)ci[SysConstants.C_KeyApplicationName];
-		CommandTimeout = Convert.ToInt32(ci[SysConstants.C_KeyCommandTimeout]);
-		ParallelWorkers = Convert.ToInt32(ci[SysConstants.C_KeyParallelWorkers]);
+		foreach (Describer describer in DescriberKeys)
+		{
+			if (ci.Contains(describer.Key))
+				this[describer.Key] = ci[describer.Key];
+		}
 	}
 
 

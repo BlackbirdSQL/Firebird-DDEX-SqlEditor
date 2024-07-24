@@ -91,7 +91,6 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 
 
 	// System Events
-	event InitializeDelegate OnInitializeEvent;
 	event AssemblyObsoleteDelegate OnAssemblyObsoleteEvent;
 	event BuildDoneDelegate OnBuildDoneEvent;
 
@@ -176,25 +175,20 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 	uint ToolboxCmdUICookie { get; }
 
 
-	abstract bool AdviseEvents();
-	Task<bool> AdviseEventsAsync();
-
-
+	abstract bool UiAdviseUnsafeEvents();
+	Task<bool> AdviseUnsafeEventsAsync();
+	void UiRegisterProjectEventHandlers();
 	bool EventRdtEnter(bool increment = true, bool force = false);
-
 	void EventRdtExit();
-
 	string CreateConnectionUrl(string connectionString);
-
 	TInterface EnsureService<TService, TInterface>() where TInterface : class;
-
 	TInterface GetService<TService, TInterface>() where TInterface : class;
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
-
 	string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root);
 	void InvalidateRctManager();
 	bool IsConnectionEquivalency(string connectionString1, string connectionString2);
 	bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2);
+	Task<bool> RegisterProjectEventHandlersAsync();
 	void ValidateSolution();
 
 

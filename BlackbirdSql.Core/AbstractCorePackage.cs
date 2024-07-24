@@ -1,10 +1,12 @@
 ﻿
 using System;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Data;
@@ -12,6 +14,7 @@ using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 
 
 
@@ -116,19 +119,31 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	// =========================================================================================================
 
 
-	protected const int C_ProgressTotal = 43;
+	protected const int C_ProgressTotal = 50;
 
 	protected static Package _Instance = null;
 	// private int _InitializationSeed = 0;
 
 	protected IBsPackageController _ApcInstance = null;
 	private IDisposable _DisposableWaitCursor;
+	protected bool _InitializedSettings = false;
+	private long _LoadStatisticsMainThreadStartTime = 0L;
+	private long _LoadStatisticsMainThreadEndTime = 0L;
+	private long _LoadStatisticsEndTime = 0L;
+	protected static Stopwatch _S_Stopwatch = new();
+
 	protected IVsSolution _VsSolution = null;
-	protected bool _Initialized = false;
 
 	protected IBsAsyncPackage.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
 	protected IBsAsyncPackage.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
 
+	protected enum _EnStatisticsStage
+	{
+		None,
+		MainThreadLoadStart,
+		MainThreadLoadEnd,
+		InitializationEnd
+	}
 	#endregion Fields and Constants
 
 
@@ -173,18 +188,12 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 		{
 			if (_VsSolution == null)
 			{
+				// If it's null there's an issue. Possibly we've come in too early
 
 				if (GetService(typeof(SVsSolution)) is not IVsSolution service)
 					Diag.ExceptionService(typeof(IVsSolution));
 				else
 					_VsSolution = service;
-
-				// If it's null there's an issue. Possibly we've come in too early
-				if (_VsSolution == null)
-				{
-					NullReferenceException ex = new("SVsSolution is null");
-					Diag.Dug(ex);
-				}
 			}
 			return _VsSolution;
 		}
@@ -329,7 +338,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
 
-		Progress(progress, "Finalizing Core initialization...");
+		ProgressAsync(progress, "Finalizing Core...").Forget();
 
 		// Sample format of FinalizeAsync in descendents
 		// if (cancellationToken.IsCancellationRequested)
@@ -339,7 +348,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 		// Sample add service call
 		// ServiceContainer.AddService(typeof(ICustomService), ServiceCreatorCallbackMethod, promote: true);
 
-		Progress(progress, "Finalizing Core initialization... Done.");
+		ProgressAsync(progress, "Finalizing Core... Done.").Forget();
 
 	}
 
@@ -362,11 +371,11 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 			return;
 
 
-		Progress(progress, "Initializing Core...");
+		ProgressAsync(progress, "Initializing Core...").Forget();
 
 		await base.InitializeAsync(cancellationToken, progress);
 
-		Progress(progress, "Initializing Core... Done.");
+		ProgressAsync(progress, "Initializing Core... Done.").Forget();
 
 	}
 
@@ -458,10 +467,47 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 
 
 
-	protected void Progress(IProgress<ServiceProgressData> progress, string message)
+	protected async Task ProgressAsync(IProgress<ServiceProgressData> progress, string message,
+		_EnStatisticsStage stage = _EnStatisticsStage.None, long elapsed = 0L)
 	{
+		switch (stage)
+		{
+			case _EnStatisticsStage.MainThreadLoadStart:
+				_LoadStatisticsMainThreadStartTime = elapsed;
+				break;
+			case _EnStatisticsStage.MainThreadLoadEnd:
+				_LoadStatisticsMainThreadEndTime = elapsed;
+				break;
+			case _EnStatisticsStage.InitializationEnd:
+				_LoadStatisticsEndTime = elapsed;
+				break;
+			default:
+				break;
+		}
+
+		// string thread = ThreadHelper.CheckAccess() ? "UI!!" : "Pool";
+		// Diag.DebugTrace($"Loading BlackbirdSql [{thread}:{++_InitializationSeed}/{C_ProgressTotal}]: {message}");
+
 		// ServiceProgressData progressData = new("Loading BlackbirdSql", message, _InitializationSeed++, C_ProgressTotal);
 		// progress.Report(progressData);
+
+		if (PersistentSettings.EnableLoadStatistics && _LoadStatisticsMainThreadStartTime != 0L
+			&& _LoadStatisticsMainThreadEndTime != 0L && _LoadStatisticsEndTime != 0L)
+		{
+			long asyncInitTime = _LoadStatisticsMainThreadStartTime;
+			long mainThreadSwitchTime = _LoadStatisticsMainThreadEndTime - _LoadStatisticsMainThreadStartTime;
+			long mainThreadInitTime = _LoadStatisticsEndTime - _LoadStatisticsMainThreadEndTime;
+			long totalTime = asyncInitTime + mainThreadInitTime;
+
+			_LoadStatisticsMainThreadStartTime = 0L;
+			_LoadStatisticsMainThreadEndTime = 0L;
+			_LoadStatisticsEndTime = 0L;
+
+			message = Resources.LoadTimeStatistics.FmtRes(asyncInitTime.FmtStats(true), mainThreadInitTime.FmtStats(true),
+				mainThreadSwitchTime.FmtStats(true), totalTime.FmtStats(true));
+
+			await Diag.OutputPaneWriteLineAsync(message, true);
+		}
 	}
 
 

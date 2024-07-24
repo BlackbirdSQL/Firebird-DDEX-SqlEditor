@@ -20,7 +20,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Model.QueryExecution;
 
 
-public sealed class QEResultSet : IDisposable, IBGridStorage
+public sealed class QEResultSet : IDisposable, IBsGridStorage
 {
 	public const int C_MaxCharsToStore = 10485760;
 
@@ -29,9 +29,9 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 	private static readonly string _SNameOfJSONColumn = "JSON_" + VS.IXMLDocumentGuid;
 
 
-	private IBQEStorage _QeStorage;
+	private IBsQEStorage _QeStorage;
 
-	private IBQEStorageView _QeStorageView;
+	private IBsQEStorageView _QeStorageView;
 
 	private StringCollection _ColumnNames;
 
@@ -212,7 +212,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 		if (_QeStorage != null)
 		{
-			Exception ex = new InvalidOperationException(QEResources.ErrQEResultSetAlreadyInited);
+			Exception ex = new InvalidOperationException(Resources.ExResultSetAlreadyInited);
 			Diag.ThrowException(ex);
 		}
 
@@ -373,13 +373,13 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		// Tracer.Trace(GetType(), "QEResultSet.StartConsumingDataWithoutStoring", "", null);
 		if (_QeStorage == null)
 		{
-			Exception ex = new InvalidOperationException(QEResources.ErrQEResultSetNotInited);
+			Exception ex = new InvalidOperationException(Resources.ExResultSetNotInitialized);
 			Diag.ThrowException(ex);
 		}
 
 		if (!_QeStorage.IsClosed())
 		{
-			Exception ex2 = new InvalidOperationException(QEResources.ErrQEResultSetAlreadyStoring);
+			Exception ex2 = new InvalidOperationException(Resources.ExResultSetAlreadyStoring);
 			Diag.ThrowException(ex2);
 		}
 
@@ -400,19 +400,19 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		// Tracer.Trace(GetType(), "QEResultSet.StartRetrievingData", "nMaxNumCharsToDisplay = {0}", nMaxNumCharsToDisplay);
 		if (_QeStorage == null)
 		{
-			Exception ex = new InvalidOperationException(QEResources.ErrQEResultSetNotInited);
+			Exception ex = new InvalidOperationException(Resources.ExResultSetNotInitialized);
 			Diag.ThrowException(ex);
 		}
 
 		if (!_QeStorage.IsClosed())
 		{
-			Exception ex2 = new InvalidOperationException(QEResources.ErrQEResultSetAlreadyStoring);
+			Exception ex2 = new InvalidOperationException(Resources.ExResultSetAlreadyStoring);
 			Diag.ThrowException(ex2);
 		}
 
 		_QeStorage.MaxCharsToStore = Math.Max(nMaxNumCharsToDisplay, C_MaxCharsToStore);
 		_QeStorage.MaxXmlCharsToStore = nMaxNumXmlCharsToDisplay;
-		_QeStorageView = (IBQEStorageView)_QeStorage.GetStorageView();
+		_QeStorageView = (IBsQEStorageView)_QeStorage.GetStorageView();
 		_QeStorageView.MaxNumBytesToDisplay = nMaxNumCharsToDisplay / 2;
 
 		await _QeStorage.StartStoringDataAsync(cancelToken);
@@ -512,13 +512,13 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		return EnGridCheckBoxState.None;
 	}
 
-	public void FillControlWithData(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
+	public void FillControlWithData(long nRowIndex, int nColIndex, IBsGridEmbeddedControl control)
 	{
 		Exception ex = new NotImplementedException();
 		Diag.ThrowException(ex);
 	}
 
-	public bool SetCellDataFromControl(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
+	public bool SetCellDataFromControl(long nRowIndex, int nColIndex, IBsGridEmbeddedControl control)
 	{
 		Exception ex = new NotImplementedException();
 		Diag.ThrowException(ex);

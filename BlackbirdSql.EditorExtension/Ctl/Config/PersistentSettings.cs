@@ -15,7 +15,7 @@ namespace BlackbirdSql.EditorExtension.Ctl.Config;
 //										PersistentSettings Class
 //
 /// <summary>
-/// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
+/// Consolidated single access point for daisy-chained packages settings models (IBsSettingsModel).
 /// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
 /// descendent tree from the top-level extension lib down to the Core.
 /// PersistentSettings can be either consumers or providers of options, or both.
@@ -100,7 +100,7 @@ public abstract class PersistentSettings : LanguageExtension.Ctl.Config.Persiste
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
-	public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
+	public override void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
 	{
 		base.RegisterSettingsEventHandlers(onSettingsSavedDelegate);
 
@@ -117,7 +117,7 @@ public abstract class PersistentSettings : LanguageExtension.Ctl.Config.Persiste
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, Resources.ExceptionFailedToSubscribeSettingsEvents);
+			Diag.Dug(ex, Resources.ExFailedToSubscribeSettingsEvents);
 		}
 	}
 

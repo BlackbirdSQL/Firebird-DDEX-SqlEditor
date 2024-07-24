@@ -93,10 +93,10 @@ internal class LsbParseManager
 			}
 			else
 			{
-				List<ParseResult> parseResults = new (1)
-				{
+				List<ParseResult> parseResults =
+				[
 					currentResult
-				};
+				];
 
 				object localfunc()
 				{
@@ -124,7 +124,7 @@ internal class LsbParseManager
 
 					return flag3;
 				}
-				IBMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
+				IBsMetadataProviderProvider metadataProviderProvider = _Source.GetMetadataProviderProvider();
 
 				if (metadataProviderProvider != null)
 				{

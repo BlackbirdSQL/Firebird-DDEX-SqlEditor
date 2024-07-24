@@ -333,6 +333,9 @@
   <data name="OptionDescriptionGeneralEnableDiagnostics" xml:space="preserve">
     <value>Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions.</value>
   </data>
+  <data name="OptionDescriptionGeneralEnableLoadStatistics" xml:space="preserve">
+    <value>Displays the extension's load statistics to the output window if enabled.</value>
+  </data>
   <data name="OptionDescriptionGeneralEnableTaskLog" xml:space="preserve">
     <value>Enables logging of tasks to the output window pane. This option should remain enabled.</value>
   </data>
@@ -479,6 +482,9 @@
   </data>
   <data name="OptionDisplayGeneralEnableDiagnostics" xml:space="preserve">
     <value>Enable diagnostics</value>
+  </data>
+  <data name="OptionDisplayGeneralEnableLoadStatistics" xml:space="preserve">
+    <value>Output load statistics</value>
   </data>
   <data name="OptionDisplayGeneralEnableTaskLog" xml:space="preserve">
     <value>Enable task logging</value>

@@ -33,7 +33,7 @@
 			</Menu>
 
 
-			<Menu guid="CommandSetGuid" id="CtlrIdResultsToToolbar" priority="0x0150" type="MenuController">
+			<Menu guid="CommandSetGuid" id="CtlrIdResultsToToolbar" priority="0x0180" type="MenuController">
 				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>TextIsAnchorCommand</CommandFlag>
@@ -212,7 +212,17 @@
 					<ButtonText>New Query</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdShowEstimatedPlan" priority="0x0130" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdCloneQuery" priority="0x0140" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+				<Icon guid="ImagesGuid" id="ImgCloneQuery" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				<Strings>
+					<ButtonText>Clone To New Query</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdShowEstimatedPlan" priority="0x0150" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgShowEstimatedPlan" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -222,7 +232,7 @@
 					<ButtonText>Show Estimated Execution Plan</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdToggleExecutionPlan" priority="0x0140" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdToggleExecutionPlan" priority="0x0160" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgToggleExecutionPlan" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -232,7 +242,7 @@
 					<ButtonText>Include Actual Execution Plan on next Execution</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0150" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0170" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgToggleClientStatistics" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -273,7 +283,7 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
-					<ButtonText>Results As File</ButtonText>
+					<ButtonText>Results To File</ButtonText>
 					<CommandName>ResultsAsFile</CommandName>
 				</Strings>
 			</Button>
@@ -506,7 +516,7 @@
 
 		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
 		<Bitmaps>
-			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgExecuteQueryNoResult, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgAccept, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgModifyConnection, ImgCancel, ImgToggleTTS2, ImgToggleTTS, ImgExecuteQueryBatch" />
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgExecuteQueryNoResult, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgCloneQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgAccept, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgModifyConnection, ImgCancel, ImgToggleTTS2, ImgToggleTTS, ImgExecuteQueryBatch, ImgCopyQuery, ImgNewQuery" />
 		</Bitmaps>
 	</Commands>
 
@@ -732,7 +742,7 @@
 			<IDSymbol name="ImgCancelQuery" value="3" />
 			<IDSymbol name="ImgConnect" value="4" />
 			<IDSymbol name="ImgDisconnect" value="5" />
-			<IDSymbol name="ImgNewQuery" value="6" />
+			<IDSymbol name="ImgCloneQuery" value="6" />
 			<IDSymbol name="ImgResultsAsGrid" value="7" />
 			<IDSymbol name="ImgResultsAsText" value="8" />
 			<IDSymbol name="ImgDownGlygh" value="9"/>
@@ -754,6 +764,8 @@
 			<IDSymbol name="ImgToggleTTS2" value="25" />
 			<IDSymbol name="ImgToggleTTS" value="26" />
 			<IDSymbol name="ImgExecuteQueryBatch" value="27" />
+			<IDSymbol name="ImgCopyQuery" value="28" />
+			<IDSymbol name="ImgNewQuery" value="29" />
 		</GuidSymbol>
 
 	</Symbols>

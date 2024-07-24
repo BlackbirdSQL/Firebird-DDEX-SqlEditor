@@ -31,7 +31,7 @@ namespace BlackbirdSql.Core.Controls.Config;
 /// </summary>
 // =========================================================================================================
 [ComVisible(true)]
-public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
+public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 {
 
 	// ---------------------------------------------------------------------------------
@@ -228,9 +228,9 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 	}
 
 
-	public event IBSettingsPage.EditControlFocusEventHandler EditControlGotFocusEvent;
-	public event IBSettingsPage.EditControlFocusEventHandler EditControlLostFocusEvent;
-	public event IBSettingsPage.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
+	public event IBsSettingsPage.EditControlFocusEventHandler EditControlGotFocusEvent;
+	public event IBsSettingsPage.EditControlFocusEventHandler EditControlLostFocusEvent;
+	public event IBsSettingsPage.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
 
 	#endregion Property Accessors
 
@@ -712,11 +712,11 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		if (e.NewSelection != null && e.NewSelection.PropertyDescriptor != null
 			&& e.NewSelection.PropertyDescriptor.Converter != null)
 		{
-			if (e.NewSelection.PropertyDescriptor.Converter is IBEditConverter)
+			if (e.NewSelection.PropertyDescriptor.Converter is IBsEditConverter)
 			{
 				_ValidFocusCell = true;
 			}
-			else if (e.NewSelection.PropertyDescriptor.Converter is IBAutomatorConverter)
+			else if (e.NewSelection.PropertyDescriptor.Converter is IBsAutomatorConverter)
 			{
 				_ValidMouseEventCell = true;
 			}

@@ -86,14 +86,5 @@ namespace BlackbirdSql.Sys.Properties {
                 return ResourceManager.GetString("ExceptionDuplicateSingletonInstances", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Events already enabled..
-        /// </summary>
-        internal static string ExceptionEventsAlreadyEnabled {
-            get {
-                return ResourceManager.GetString("ExceptionEventsAlreadyEnabled", resourceCulture);
-            }
-        }
     }
 }

@@ -10,7 +10,6 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
@@ -25,6 +24,9 @@ namespace BlackbirdSql.Core.Ctl.Config;
 [SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 
 
+// =========================================================================================================
+//											Native Class
+//
 //
 // Summary:
 //     Wraps an instance property member with public getter and setters from a Community.VisualStudio.Toolkit.AbstractSettingsModel`1,
@@ -50,13 +52,14 @@ namespace BlackbirdSql.Core.Ctl.Config;
 //     hit using reflection happens once, and subsequent load and saves of the value
 //     are therefore as performant as possible. This is the technique used by Jon Skeet
 //     in Google's Protocol Buffers.
+// =========================================================================================================
 public class PropertyWrapper : IBSettingsModelPropertyWrapper
 {
-	public sealed class OrderComparer : IComparer<IBModelPropertyWrapper>
+	public sealed class OrderComparer : IComparer<IBsModelPropertyWrapper>
 	{
 		public static readonly OrderComparer Default = new OrderComparer();
 
-		public int Compare(IBModelPropertyWrapper x, IBModelPropertyWrapper y)
+		public int Compare(IBsModelPropertyWrapper x, IBsModelPropertyWrapper y)
 		{
 			return x.DisplayOrder - y.DisplayOrder;
 		}
@@ -560,7 +563,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		return false;
 	}
 
-	public virtual bool Save<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBTransientSettings transientSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	public virtual bool Save<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBsTransientSettings transientSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
 	{
 		string collectionName = OverrideCollectionName ?? baseOptionModel.CollectionName;
 		object obj = null;
@@ -634,7 +637,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		return false;
 	}
 
-	public virtual bool Load<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBTransientSettings transientSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	public virtual bool Load<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBsTransientSettings transientSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
 	{
 		object obj = null;
 
@@ -869,7 +872,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 					throw ex;
 				}
 
-				return StringUtils.SerializeBinary64(propertyValue);
+				return Serialization.SerializeBinary64(propertyValue);
 			default:
 				{
 					Type type = NativeStorageType.GetDotNetTypeX();
@@ -1046,7 +1049,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 					throw ex;
 				}
 
-				return StringUtils.DeserializeBinary64((string)settingsStoreValue, type);
+				return Serialization.DeserializeBinary64((string)settingsStoreValue, type);
 			default:
 				if (Converter != null)
 				{

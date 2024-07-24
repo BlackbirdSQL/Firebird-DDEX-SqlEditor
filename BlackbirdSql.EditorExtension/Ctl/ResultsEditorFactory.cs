@@ -4,8 +4,8 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using BlackbirdSql.EditorExtension.Properties;
 using BlackbirdSql.Shared.Controls;
-using BlackbirdSql.Shared.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -64,7 +64,7 @@ public sealed class ResultsEditorFactory : AbstruseEditorFactory
 			hresult = VSConstants.S_OK;
 
 			ResultWindowPane resultWindowPane = CreateResultsWindowPane();
-			caption = SharedResx.SqlResultsEditorFactory_Caption;
+			caption = Resources.ResultsEditorFactory_Caption;
 			pDocView = Marshal.GetIUnknownForObject(resultWindowPane);
 
 
@@ -85,7 +85,7 @@ public sealed class ResultsEditorFactory : AbstruseEditorFactory
 		{
 			if (ex is NullReferenceException || ex is ApplicationException || ex is ArgumentException || ex is InvalidOperationException)
 			{
-				MessageCtl.ShowEx(SharedResx.BaseEditorFactory_FailedToCreateEditor, ex);
+				MessageCtl.ShowEx(Resources.ExFailedToCreateEditor, ex);
 				return VSConstants.E_FAIL;
 			}
 

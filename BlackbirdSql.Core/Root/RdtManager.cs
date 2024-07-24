@@ -263,7 +263,7 @@ public sealed class RdtManager : AbstractRdtManager
 		if (codeWindow == null && !TryGetCodeWindow(mkDocument, out codeWindow))
 			return;
 
-		IVsTextView ppView = ((IBEditorWindowPane)codeWindow).GetCodeEditorTextView();
+		IVsTextView ppView = ((IBsEditorWindowPane)codeWindow).GetCodeEditorTextView();
 
 		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModelSvc)
 			return;
@@ -289,6 +289,16 @@ public sealed class RdtManager : AbstractRdtManager
 	public static object GetDocDataFromCookie(uint cookie) =>
 		Instance.GetDocDataFromCookieImpl(cookie);
 
+
+	public static void ShowFrame(uint cookie)
+	{
+		string mkDocument = Instance.RdtSvc4.GetDocumentMoniker(cookie);
+
+		if (string.IsNullOrEmpty(mkDocument))
+			return;
+
+		Instance.ShowFrameImpl(mkDocument);
+	}
 
 
 	public static bool TryGetCodeWindow(string mkDocument, out IVsCodeWindow codeWindow)

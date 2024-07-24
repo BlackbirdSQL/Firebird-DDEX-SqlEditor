@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Design;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
+using Microsoft.VisualStudio.Threading;
 using VSLangProj;
 
 
@@ -66,13 +67,13 @@ public abstract class AbstrusePackageController : IBsPackageController
 		{
 			// Fire and forget
 
-			_ = Task.Factory.StartNew(
+			Task.Factory.StartNew(
 				async () =>
 				{
 					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 					Initialize();
 				},
-				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default).Forget();
 		}
 		else
 		{
@@ -179,7 +180,6 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 	// System Events Delegates
-	protected IBsPackageController.InitializeDelegate _OnInitializeEvent;
 	private IBsPackageController.AssemblyObsoleteDelegate _OnAssemblyObsoleteEvent;
 	private IBsPackageController.BuildDoneDelegate _OnBuildDoneEvent;
 
@@ -428,15 +428,6 @@ public abstract class AbstrusePackageController : IBsPackageController
 		remove { _OnBeforeSaveAsyncEvent -= value; }
 	}
 
-	/// <summary>
-	/// Accessor to the <see cref="OnInitialize"/> event.
-	/// </summary>
-	event IBsPackageController.InitializeDelegate IBsPackageController.OnInitializeEvent
-	{
-		add { _OnInitializeEvent += value; }
-		remove { _OnInitializeEvent -= value; }
-	}
-
 
 	/// <summary>
 	/// Accessor to the <see cref="DynamicTypeService.AssemblyObsolete"/> event.
@@ -670,7 +661,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
-	private void AddProjectEventHandlers(Project project)
+	protected void AddProjectEventHandlers(Project project)
 	{
 		// Tracer.Trace(GetType(), "AddProjectEventHandlers()", "CALLING ReindexEntityFrameworkAssemblies() for project: {0}.", project.Name);
 
@@ -726,7 +717,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// Enables solution and running document table event handling
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract bool AdviseEvents();
+	public abstract bool UiAdviseUnsafeEvents();
 
 
 
@@ -735,7 +726,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// Asynchronously enables solution and running document table event handling
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract Task<bool> AdviseEventsAsync();
+	public abstract Task<bool> AdviseUnsafeEventsAsync();
 
 
 
@@ -744,8 +735,6 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// Enables UI thread event handling
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected abstract bool AdviseUnsafeEvents();
-
 
 
 	public abstract string CreateConnectionUrl(string connectionString);
@@ -763,7 +752,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 		{
 			// Tracer.Trace(GetType(), "EventProjectEnter()", "_EventProjectCardinal: {0}, increment: {1}.", _EventProjectCardinal, increment);
 
-			if ((_EventProjectCardinal != 0 && !force) || SolutionObject == null)
+			if (_EventRdtCardinal < 0 || (_EventProjectCardinal > 0 && !force) || SolutionObject == null)
 				return false;
 
 			if (increment)
@@ -899,53 +888,10 @@ public abstract class AbstrusePackageController : IBsPackageController
 	protected abstract void InternalShutdownDte();
 
 
-	protected void RegisterProjectEventHandlers()
-	{
-		if (!EventProjectRegistrationEnter())
-			return;
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			// Fire and forget async
-
-			_ = Task.Factory.StartNew(
-				async () =>
-				{
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-					try
-					{
-						List<Project> projects = UnsafeCmd.RecursiveGetDesignTimeProjects();
-
-						// Tracer.Trace(GetType(), "AdviseEvents()", "Adding event handlers for {0} EF projects", projects.Count);
-						foreach (Project project in projects)
-							AddProjectEventHandlers(project);
-					}
-					finally
-					{
-						EventProjectRegistrationExit();
-					}
-				},
-				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
-		}
-		else
-		{
-			try
-			{
-				List<Project> projects = UnsafeCmd.RecursiveGetDesignTimeProjects();
-
-				// Tracer.Trace(GetType(), "AdviseEvents()", "Adding event handlers for {0} EF projects", projects.Count);
-				foreach (Project project in projects)
-					AddProjectEventHandlers(project);
-			}
-			finally
-			{
-				EventProjectRegistrationExit();
-			}
-		}
-	}
+	public abstract void UiRegisterProjectEventHandlers();
 
 
+	public abstract Task<bool> RegisterProjectEventHandlersAsync();
 
 	public static void ShutdownDte()
 	{
@@ -1211,9 +1157,9 @@ public abstract class AbstrusePackageController : IBsPackageController
 			{
 				await Task.Delay(50);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS4014
 				ThreadHelper.JoinableTaskFactory.RunAsync(() => OnAfterLoadProjectAsync(project));
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning restore CS4014
 
 				return;
 			}
@@ -1322,9 +1268,9 @@ public abstract class AbstrusePackageController : IBsPackageController
 			{
 				await Task.Delay(50);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS4014
 				ThreadHelper.JoinableTaskFactory.RunAsync(() => OnAfterOpenProjectAsync(project, fAdded));
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning restore CS4014
 
 				return;
 			}
@@ -1441,7 +1387,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Tracer.Trace(GetType(), "OnLoadSolutionOptions()");
 
-		RegisterProjectEventHandlers();
+		UiRegisterProjectEventHandlers();
 
 
 		if (_SolutionLoaded)

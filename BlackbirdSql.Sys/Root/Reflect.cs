@@ -908,33 +908,53 @@ public abstract class Reflect
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	public static object InvokeMethod(object containerClassInstance, string method,
-		BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
+		BindingFlags bindingFlags = BindingFlags.Default, object[] args = null,
+		bool throwExeption = false)
 	{
 		// Tracer.Trace(typeof(Reflect), "InvokeMethod(object)", "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
 
+		MethodInfo methodInfo;
+
 		try
 		{
 			args ??= [];
 
 			Type typeClassInstance = containerClassInstance.GetType();
-			MethodInfo methodInfo = typeClassInstance.GetMethod(method, bindingFlags);
-
-
-			if (methodInfo == null)
-			{
-				COMException ex = new($"Could not find method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
-				Diag.Dug(ex);
-				return null;
-			}
-
-			return methodInfo.Invoke(containerClassInstance, args);
-
+			methodInfo = typeClassInstance.GetMethod(method, bindingFlags);
 		}
 		catch (Exception ex)
 		{
+			if (throwExeption)
+				throw;
+
+			Diag.Dug(ex, $"Could not find method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
+			return null;
+		}
+
+
+		if (methodInfo == null)
+		{
+			COMException ex = new($"Could not find method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
+
+			if (throwExeption)
+				throw (ex);
+
+			Diag.Dug(ex);
+			return null;
+		}
+
+		try
+		{ 
+			return methodInfo.Invoke(containerClassInstance, args);
+		}
+		catch (Exception ex)
+		{
+			if (throwExeption)
+				throw;
+
 			Diag.Dug(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
 		}
 

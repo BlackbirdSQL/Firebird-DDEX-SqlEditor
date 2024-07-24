@@ -115,24 +115,6 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name of the connection containing server name and login.
-        /// </summary>
-        internal static string PropertyWindowConnInfoDescription {
-            get {
-                return ResourceManager.GetString("PropertyWindowConnInfoDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connection name.
-        /// </summary>
-        internal static string PropertyWindowConnInfoDisplayName {
-            get {
-                return ResourceManager.GetString("PropertyWindowConnInfoDisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Current connection parameters.
         /// </summary>
         internal static string PropertyWindowCurrentConnectionParameters {
@@ -304,24 +286,6 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Tracing ID for the current session (Microsoft Azure SQL Database only).
-        /// </summary>
-        internal static string PropertyWindowSessionIDDescription {
-            get {
-                return ResourceManager.GetString("PropertyWindowSessionIDDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Session Tracing ID.
-        /// </summary>
-        internal static string PropertyWindowSessionIDDisplayName {
-            get {
-                return ResourceManager.GetString("PropertyWindowSessionIDDisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The date and time when the command was started.
         /// </summary>
         internal static string PropertyWindowStartTimeDescription {
@@ -399,6 +363,24 @@ namespace BlackbirdSql.Shared.Properties {
         internal static string QeQueryOptionsText {
             get {
                 return ResourceManager.GetString("QeQueryOptionsText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Editor Factory:   {0}.
+        /// </summary>
+        internal static string RegNotifyEditorFactory {
+            get {
+                return ResourceManager.GetString("RegNotifyEditorFactory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logical View:     {0}.
+        /// </summary>
+        internal static string RegNotifyEditorView {
+            get {
+                return ResourceManager.GetString("RegNotifyEditorView", resourceCulture);
             }
         }
         

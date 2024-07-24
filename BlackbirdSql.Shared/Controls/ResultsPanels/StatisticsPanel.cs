@@ -148,11 +148,11 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		}
 		catch (Exception ex)
 		{
-#if DEBUG
-			Diag.Dug(ex);
-#endif
+			Diag.Expected(ex);
 
 			MessageCtl.ShowEx(ex, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Hand, null);
+
+			return;
 		}
 
 		if (_FirstGridPanel.HostedControlsCount == 0)
@@ -209,11 +209,11 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				break;
 			case EnStatisticSpecialAction.ClientProcessingTimeAction:
 				result = cellValue = longres = (long)snapshotData["ExecutionTime"] - (long)snapshotData["NetworkServerTime"];
-				stringValue = longres.FmtSqlStats();
+				stringValue = longres.FmtStats();
 				break;
 			case EnStatisticSpecialAction.ElapsedTimeFormat:
 				result = cellValue = longres = (long)snapshotData[sn.Name];
-				stringValue = longres.FmtSqlStats();
+				stringValue = longres.FmtStats();
 				break;
 			case EnStatisticSpecialAction.DateTimeFormat:
 				result = cellValue = longres = (long)snapshotData[sn.Name];
@@ -250,7 +250,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				stringValue = value.ToString(CultureInfo.InvariantCulture);
 				break;
 			case EnStatisticSpecialAction.ElapsedTimeFormat:
-				stringValue = ((long)value).FmtSqlStats();
+				stringValue = ((long)value).FmtStats();
 				break;
 			case EnStatisticSpecialAction.DateTimeFormat:
 				stringValue = "";

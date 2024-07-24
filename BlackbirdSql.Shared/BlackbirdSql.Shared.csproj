@@ -14,15 +14,16 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-		<NoWarn>1701;1702;CS0618;</NoWarn>
+		<NoWarn>1701;1702;CS0618;CS0660;CS0661</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-		<NoWarn>1701;1702;CS0618;</NoWarn>
+		<NoWarn>1701;1702;CS0618;CS0660;CS0661</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<Compile Include="Ctl\AbstractDesignerServices.cs" />
+		<Compile Include="Events\QueryExecutionStartedEventArgs.cs" />
 		<Compile Include="Enums\EnCasingStyle.cs" />
 		<Compile Include="Ctl\Config\TransientSettings.cs" />
 		<Compile Include="Ctl\Commands\CommandNewQuery.cs" />
@@ -31,19 +32,24 @@
 		<Compile Include="Enums\EnDeadlockPriority.cs" />
 		<Compile Include="Enums\EnLanguageService.cs" />
 		<Compile Include="Events\BeforeOpenDocumentEventArgs.cs" />
-		<Compile Include="Interfaces\IBEditorTransientSettings.cs" />
+		<Compile Include="Enums\EnQueryStatusFlags.cs" />
+		<Compile Include="Interfaces\IBsConnectionInfo.cs" />
+		<Compile Include="Interfaces\IBsEditorTransientSettings.cs" />
 		<Compile Include="Controls\Dialogs\FileEncodingDialog.Designer.cs">
 			<DependentUpon>FileEncodingDialog.cs</DependentUpon>
 		</Compile>
 		<Compile Include="Ctl\Commands\CommandTransactionCommit.cs" />
 		<Compile Include="Ctl\Commands\CommandTransactionRollback.cs" />
 		<Compile Include="Ctl\Commands\CommandToggleTTS.cs" />
-		<Compile Include="Properties\SqlResources.Designer.cs">
+		<Compile Include="Interfaces\IBsConnectionInfoPropertyAgent.cs" />
+		<Compile Include="Model\ConnectionInfoPropertyAgent.cs" />
+		<Compile Include="Events\QueryStatusChangedEventArgs.cs" />
+		<Compile Include="Properties\SqlCmdResources.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
-			<DependentUpon>SqlResources.resx</DependentUpon>
+			<DependentUpon>SqlCmdResources.resx</DependentUpon>
 		</Compile>
-		<Compile Include="Interfaces\IBWindowPane.cs" />
+		<Compile Include="Interfaces\IBsWindowPane.cs" />
 		<Compile Include="Controls\ResultsPanels\StatisticsPropertySet.cs" />
 		<Compile Include="Root\VS.cs" />
 		<None Include="Controls\Graphing\ActualPlanDataReaderNodeBuilder.cs" />
@@ -263,17 +269,14 @@
 		<None Include="Controls\Graphing\XmlPlanNodeBuilder.cs" />
 		<None Include="Controls\Graphing\Parsers\AbstractXmlPlanParser.cs" />
 		<None Include="Controls\Graphing\Parsers\XmlPlanParserFactory.cs" />
-		<Compile Include="Events\QESQLQueryDataEventArgs.cs" />
-		<Compile Include="Events\QESQLQueryDataEventHandler.cs" />
-		<Compile Include="Events\QESQLStatementCompletedEventArgs.cs" />
-		<Compile Include="Events\QESQLBatchSpecialActionEventHandler.cs" />
-		<Compile Include="Events\QESQLStatementCompletedEventHandler.cs" />
+		<Compile Include="Events\QueryDataEventArgs.cs" />
+		<Compile Include="Events\BatchStatementCompletedEventArgs.cs" />
 		<Compile Include="Properties\AttributeResources.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
 			<DependentUpon>AttributeResources.resx</DependentUpon>
 		</Compile>
-		<Compile Include="Interfaces\IBObjectWithSite.cs" />
+		<Compile Include="Interfaces\IBsObjectWithSite.cs" />
 		<None Include="Controls\Graphing\Interfaces\IRenderable.cs" />
 		<None Include="Controls\Graphing\DescriptionControl.cs" />
 		<None Include="Controls\ResultsPanels\ExecutionPlanControl.cs" />
@@ -282,7 +285,7 @@
 		<None Include="Controls\Graphing\GraphPanel.cs" />
 		<None Include="Controls\Graphing\NodeDisplay.cs" />
 		<None Include="Controls\Graphing\Widgets\MultilineToolTip.cs" />
-		<Compile Include="Events\QESQLBatchSpecialActionEventArgs.cs" />
+		<Compile Include="Events\BatchSpecialActionEventArgs.cs" />
 		<Compile Include="Properties\Resources.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -320,47 +323,31 @@
 		<Compile Include="Enums\EnTextBitmapLayout.cs" />
 		<Compile Include="Events\BitmapCellAccessibilityInfoNeededEventArgs.cs" />
 		<Compile Include="Events\ColumnReorderRequestedEventArgs.cs" />
-		<Compile Include="Events\ColumnReorderRequestedEventHandler.cs" />
 		<Compile Include="Events\ColumnsReorderedEventArgs.cs" />
-		<Compile Include="Events\ColumnsReorderedEventHandler.cs" />
 		<Compile Include="Events\ColumnWidthChangedEventArgs.cs" />
-		<Compile Include="Events\ColumnWidthChangedEventHandler.cs" />
 		<Compile Include="Events\ContentsChangedEventHandler.cs" />
 		<Compile Include="Events\CustomizeCellGDIObjectsEventArgs.cs" />
-		<Compile Include="Events\CustomizeCellGDIObjectsEventHandler.cs" />
 		<Compile Include="Events\EmbeddedControlContentsChangedEventArgs.cs" />
-		<Compile Include="Events\EmbeddedControlContentsChangedEventHandler.cs" />
 		<Compile Include="Events\FillControlWithDataEventArgs.cs" />
-		<Compile Include="Events\FillControlWithDataEventHandler.cs" />
 		<Compile Include="Events\GridSpecialEventArgs.cs" />
-		<Compile Include="Events\GridSpecialEventHandler.cs" />
 		<Compile Include="Events\HeaderButtonClickedEventArgs.cs" />
-		<Compile Include="Events\HeaderButtonClickedEventHandler.cs" />
 		<Compile Include="Events\KeyPressedOnCellEventArgs.cs" />
-		<Compile Include="Events\KeyPressedOnCellEventHandler.cs" />
 		<Compile Include="Events\LangServiceEventArgs.cs" />
 		<Compile Include="Events\MouseButtonClickedEventArgs.cs" />
-		<Compile Include="Events\MouseButtonClickedEventHandler.cs" />
 		<Compile Include="Events\MouseButtonClickingEventArgs.cs" />
-		<Compile Include="Events\MouseButtonClickingEventHandler.cs" />
 		<Compile Include="Events\MouseButtonDoubleClickedEventArgs.cs" />
-		<Compile Include="Events\MouseButtonDoubleClickedEventHandler.cs" />
 		<Compile Include="Events\NewLangSvcEventHandler.cs" />
 		<Compile Include="Events\ResultControlEventArgs.cs" />
 		<Compile Include="Events\SelectionChangedEventArgs.cs" />
-		<Compile Include="Events\SelectionChangedEventHandler.cs" />
 		<Compile Include="Events\SetCellDataFromControlEventArgs.cs" />
-		<Compile Include="Events\SetCellDataFromControlEventHandler.cs" />
 		<Compile Include="Events\StandardKeyProcessingEventArgs.cs" />
-		<Compile Include="Events\StandardKeyProcessingEventHandler.cs" />
 		<Compile Include="Ctl\IO\FileStreamReader.cs" />
 		<Compile Include="Ctl\IO\FileStreamWrapper.cs" />
 		<Compile Include="Ctl\IO\FileStreamWriter.cs" />
-		<Compile Include="Interfaces\IBFileStreamReader.cs" />
-		<Compile Include="Interfaces\IBFileStreamWrapper.cs" />
+		<Compile Include="Interfaces\IBsFileStreamReader.cs" />
+		<Compile Include="Interfaces\IBsFileStreamWrapper.cs" />
 		<Compile Include="Events\StorageNotifyDelegate.cs" />
 		<Compile Include="Events\TooltipDataNeededEventArgs.cs" />
-		<Compile Include="Events\TooltipDataNeededEventHandler.cs" />
 		<Compile Include="Controls\Dialogs\FileEncodingDialog.cs" />
 		<Compile Include="Controls\Grid\BlockOfCells.cs" />
 		<Compile Include="Controls\Grid\ButtonInfo.cs" />
@@ -403,29 +390,29 @@
 		<Compile Include="Model\IO\StorageDataReader.cs" />
 		<Compile Include="Model\IO\StorageDataEntity.cs" />
 		<Compile Include="Model\IO\AbstractStorageView.cs" />
-		<Compile Include="Interfaces\IBColumnInfo.cs" />
-		<Compile Include="Interfaces\IBDataStorage.cs" />
-		<Compile Include="Interfaces\IBDlgGridControl.cs" />
-		<Compile Include="Interfaces\IBGridMemDataStorage.cs" />
-		<Compile Include="Interfaces\IBDlgStorage.cs" />
-		<Compile Include="Interfaces\IBGridControl.cs" />
-		<Compile Include="Interfaces\IBGridEmbeddedControl.cs" />
-		<Compile Include="Interfaces\IBGridEmbeddedControlManagement.cs" />
-		<Compile Include="Interfaces\IBGridEmbeddedControlManagement2.cs" />
-		<Compile Include="Interfaces\IBGridEmbeddedSpinControl.cs" />
-		<Compile Include="Interfaces\IBGridStorage.cs" />
-		<Compile Include="Interfaces\IBMemDataStorage.cs" />
-		<Compile Include="Interfaces\IBPropertyWindowQueryManagerInitialize.cs" />
+		<Compile Include="Interfaces\IBsColumnInfo.cs" />
+		<Compile Include="Interfaces\IBsDataStorage.cs" />
+		<Compile Include="Interfaces\IBsDlgGridControl.cs" />
+		<Compile Include="Interfaces\IBsGridMemDataStorage.cs" />
+		<Compile Include="Interfaces\IBsDlgStorage.cs" />
+		<Compile Include="Interfaces\IBsGridControl.cs" />
+		<Compile Include="Interfaces\IBsGridEmbeddedControl.cs" />
+		<Compile Include="Interfaces\IBsGridEmbeddedControlManagement.cs" />
+		<Compile Include="Interfaces\IBsGridEmbeddedControlManagement2.cs" />
+		<Compile Include="Interfaces\IBsGridEmbeddedSpinControl.cs" />
+		<Compile Include="Interfaces\IBsGridStorage.cs" />
+		<Compile Include="Interfaces\IBsMemDataStorage.cs" />
+		<Compile Include="Interfaces\IBsPropertyWindowQueryManagerInitialize.cs" />
 		<Compile Include="Interfaces\IBSortView.cs" />
-		<Compile Include="Interfaces\IBStatusBarContributer.cs" />
-		<Compile Include="Interfaces\IBStorageView.cs" />
+		<Compile Include="Interfaces\IBsStatusBarContributer.cs" />
+		<Compile Include="Interfaces\IBsStorageView.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
 		<Compile Include="Controls\PropertiesWindow\DisconnectedPropertiesWindow.cs" />
 		<Compile Include="Controls\PropertiesWindow\PropertiesWindowManager.cs" />
 		<Compile Include="Controls\PropertiesWindow\ConnectedPropertiesWindow.cs" />
-		<Compile Include="Controls\Widgets\QEStatusBarManager.cs" />
+		<Compile Include="Controls\Widgets\StatusBarManager.cs" />
 		<Compile Include="Controls\Widgets\MultiControlPanel.cs" />
 		<Compile Include="Controls\Widgets\QESplitter.cs" />
 		<Compile Include="Controls\ResultsPanels\AbstractGridResultsPanel.cs" />
@@ -487,7 +474,6 @@
 		<Compile Include="Ctl\Commands\CommandToggleExecutionPlan.cs" />
 		<Compile Include="Ctl\Commands\CommandToggleIntellisense.cs" />
 		<Compile Include="Ctl\Commands\CommandToggleResultsPane.cs" />
-		<Compile Include="Ctl\Commands\CommandToggleSqlCmdMode.cs" />
 		<Compile Include="Ctl\ConnectionPointCookie.cs" />
 		<Compile Include="Ctl\DbCommandWrapper.cs" />
 		<Compile Include="Ctl\FindTargetAdapter.cs" />
@@ -510,95 +496,64 @@
 		<Compile Include="Enums\EnStatusBarPosition.cs" />
 		<Compile Include="Enums\EnTabViewMode.cs" />
 		<Compile Include="Events\ColorChangedEventArgs.cs" />
-		<Compile Include="Events\ColorChangedEventHandler.cs" />
 		<Compile Include="Events\FontChangedEventArgs.cs" />
-		<Compile Include="Events\FontChangedEventHandler.cs" />
 		<Compile Include="Events\HandleChangeEventHandler.cs" />
 		<Compile Include="Events\SpecialEditorCommandEventArgs.cs" />
-		<Compile Include="Events\SpecialEditorCommandEventHandler.cs" />
 		<Compile Include="Events\TabActivationEventArgs.cs" />
 		<Compile Include="Events\ToolboxEventArgs.cs" />
-		<Compile Include="Events\VerifyConnectionDelegate.cs" />
-		<Compile Include="Properties\ExceptionsResources.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>ExceptionsResources.resx</DependentUpon>
-		</Compile>
 		<Compile Include="GlobalSuppressions.cs" />
-		<Compile Include="Interfaces\IBEditorPackage.cs" />
-		<Compile Include="Interfaces\IBMenuCommandTextChanges.cs" />
+		<Compile Include="Interfaces\IBsEditorPackage.cs" />
+		<Compile Include="Interfaces\IBsMenuCommandTextChanges.cs" />
 		<Compile Include="Interfaces\IBSortingArray.cs" />
-		<Compile Include="Interfaces\IBErrorTaskFactory.cs" />
-		<Compile Include="Interfaces\IBExtendedCommandHandler.cs" />
+		<Compile Include="Interfaces\IBsErrorTaskFactory.cs" />
+		<Compile Include="Interfaces\IBsExtendedCommandHandler.cs" />
 		<Compile Include="Interfaces\IBSqlEditorWindowPane.cs" />
-		<Compile Include="Interfaces\IBTabbedEditorService.cs" />
-		<Compile Include="Interfaces\IBToolbarCommandHandler.cs" />
-		<Compile Include="Interfaces\IBTextEditor.cs" />
-		<Compile Include="Interfaces\IBTextEditorEvents.cs" />
-		<Compile Include="Interfaces\IBTextSpan.cs" />
-		<Compile Include="Interfaces\IBVsFindTarget3.cs" />
+		<Compile Include="Interfaces\IBsWindowPaneServiceProvider.cs" />
+		<Compile Include="Interfaces\IBsToolbarCommandHandler.cs" />
+		<Compile Include="Interfaces\IBsTextEditor.cs" />
+		<Compile Include="Interfaces\IBsTextEditorEvents.cs" />
+		<Compile Include="Interfaces\IBsTextSpan.cs" />
+		<Compile Include="Interfaces\IBsVsFindTarget3.cs" />
 		<Compile Include="Model\AbstractFontAndColorProvider.cs" />
 		<Compile Include="Model\AuxilliaryDocData.cs" />
 		<Compile Include="Model\AbstractConnectionStrategy.cs" />
 		<Compile Include="Model\ConnectionStrategyFactory.cs" />
 		<Compile Include="Model\IO\AbstractDiskDataStorage.cs" />
 		<Compile Include="Model\IO\DiskStorageView.cs" />
-		<Compile Include="Enums\EnErrorAction.cs" />
-		<Compile Include="Enums\EnOutputDestination.cs" />
 		<Compile Include="Enums\EnPaneSelection.cs" />
 		<Compile Include="Enums\EnParseMode.cs" />
 		<Compile Include="Enums\EnQEOLESQLOutputCategory.cs" />
-		<Compile Include="Enums\EnSqlSpecialActions.cs" />
+		<Compile Include="Enums\EnSpecialActions.cs" />
 		<Compile Include="Enums\EnQESQLScriptProcessingMessageType.cs" />
-		<Compile Include="Enums\EnXmlStatus.cs" />
 		<Compile Include="Events\AdjustSelectionForButtonClickEventArgs.cs" />
-		<Compile Include="Events\AdjustSelectionForButtonClickEventHandler.cs" />
 		<Compile Include="Events\MoreRowsAvailableEventArgs.cs" />
-		<Compile Include="Events\MoreRowsAvailableEventHandler.cs" />
-		<Compile Include="Events\QEOLESQLErrorMessageEventArgs.cs" />
-		<Compile Include="Events\QEOLESQLErrorMessageEventHandler.cs" />
-		<Compile Include="Events\QESplitterMovedEventArgs.cs" />
-		<Compile Include="Events\QESplitterMovedEventHandler.cs" />
-		<Compile Include="Events\QESQLBatchErrorMessageEventArgs.cs" />
-		<Compile Include="Events\QESQLBatchErrorMessageEventHandler.cs" />
-		<Compile Include="Events\QESQLBatchExecutedEventArgs.cs" />
-		<Compile Include="Events\QESQLBatchExecutionCompletedEventHandler.cs" />
-		<Compile Include="Events\QESQLBatchMessageEventArgs.cs" />
-		<Compile Include="Events\QESQLBatchMessageEventHandler.cs" />
-		<Compile Include="Events\QESQLBatchNewResultSetEventArgs.cs" />
-		<Compile Include="Events\QESQLBatchNewResultSetEventHandler.cs" />
-		<Compile Include="Events\QeSqlCmdMessageFromAppEventArgs.cs" />
-		<Compile Include="Events\QeSqlCmdMessageFromAppEventHandler.cs" />
-		<Compile Include="Events\QeSqlCmdNewConnectionOpenedEventArgs.cs" />
-		<Compile Include="Events\QeSqlCmdNewConnectionOpenedEventHandler.cs" />
-		<Compile Include="Events\QESQLBatchExecutionStartEventArgs.cs" />
-		<Compile Include="Events\QESQLBatchExecutionStartEventHandler.cs" />
-		<Compile Include="Events\ScriptExecutionCompletedEventArgs.cs" />
-		<Compile Include="Events\ScriptExecutionCompletedEventHandler.cs" />
+		<Compile Include="Events\ErrorMessageEventArgs.cs" />
+		<Compile Include="Events\SplitterMovedEventArgs.cs" />
+		<Compile Include="Events\BatchErrorMessageEventArgs.cs" />
+		<Compile Include="Events\BatchExecutionCompletedEventArgs.cs" />
+		<Compile Include="Events\BatchMessageEventArgs.cs" />
+		<Compile Include="Events\BatchNewResultSetEventArgs.cs" />
+		<Compile Include="Events\BatchExecutionStartEventArgs.cs" />
+		<Compile Include="Events\QueryExecutionCompletedEventArgs.cs" />
 		<Compile Include="Model\FontAndColorProviderExecutionPlan.cs" />
 		<Compile Include="Model\FontAndColorProviderGridResults.cs" />
 		<Compile Include="Model\FontAndColorProviderTextResults.cs" />
-		<Compile Include="Interfaces\IBBatchExecutionHandler.cs" />
-		<Compile Include="Interfaces\IBCommandExecuter.cs" />
-		<Compile Include="Interfaces\IBDiskDataStorage.cs" />
-		<Compile Include="Interfaces\IBFileStreamWriter.cs" />
-		<Compile Include="Interfaces\IBGridControl2.cs" />
-		<Compile Include="Interfaces\IBQESQLBatchConsumer.cs" />
-		<Compile Include="Interfaces\IBQEStorage.cs" />
-		<Compile Include="Interfaces\IBQEStorageView.cs" />
-		<Compile Include="Interfaces\IBExecutionHandler.cs" />
-		<Compile Include="Interfaces\IBConnectionStrategy.cs" />
-		<Compile Include="Interfaces\IBQueryExecutionHandler.cs" />
+		<Compile Include="Interfaces\IBsBatchExecutionHandler.cs" />
+		<Compile Include="Interfaces\IBsCommandExecuter.cs" />
+		<Compile Include="Interfaces\IBsDiskDataStorage.cs" />
+		<Compile Include="Interfaces\IBsFileStreamWriter.cs" />
+		<Compile Include="Interfaces\IBsGridControl2.cs" />
+		<Compile Include="Interfaces\IBsQESQLBatchConsumer.cs" />
+		<Compile Include="Interfaces\IBsQEStorage.cs" />
+		<Compile Include="Interfaces\IBsQEStorageView.cs" />
+		<Compile Include="Interfaces\IBsExecutionHandler.cs" />
+		<Compile Include="Interfaces\IBsConnectionStrategyFactory.cs" />
+		<Compile Include="Interfaces\IBsQueryExecutionHandler.cs" />
 		<Compile Include="Model\Parsers\ManagedBatchParser.cs" />
 		<Compile Include="Ctl\Commands\OLECMDTEXT.cs" />
 		<Compile Include="Model\IO\QEDiskDataStorage.cs" />
 		<Compile Include="Ctl\QueryExecution\QESQLExec.cs" />
 		<Compile Include="Model\IO\QEReaderDataStorage.cs" />
-		<Compile Include="Properties\QEResources.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>QEResources.resx</DependentUpon>
-		</Compile>
 		<Compile Include="Model\QueryExecution\QEResultSet.cs" />
 		<Compile Include="Ctl\QueryExecution\QESQLBatch.cs" />
 		<Compile Include="Model\QueryExecution\AbstractQESQLBatchConsumer.cs" />
@@ -613,12 +568,6 @@
 		<Compile Include="Model\ConnectionStrategy.cs" />
 		<Compile Include="Root\Native.cs" />
 		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
-		<Compile Include="Properties\SharedResx.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>SharedResx.resx</DependentUpon>
-		</Compile>
-		<Compile Include="Root\SafeNative.cs" />
 		<Compile Include="LibraryData.cs" />
 	</ItemGroup>
 
@@ -636,25 +585,13 @@
 		<EmbeddedResource Include="Controls\Dialogs\FileEncodingDialog.resx">
 			<DependentUpon>FileEncodingDialog.cs</DependentUpon>
 		</EmbeddedResource>
-		<EmbeddedResource Include="Properties\ExceptionsResources.resx">
+		<EmbeddedResource Include="Properties\SqlCmdResources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>ExceptionsResources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Properties\SqlResources.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>SqlResources.Designer.cs</LastGenOutput>
+			<LastGenOutput>SqlCmdResources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 		<EmbeddedResource Include="Properties\Resources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Properties\QEResources.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>QEResources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Properties\SharedResx.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>SharedResx.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 	</ItemGroup>
 

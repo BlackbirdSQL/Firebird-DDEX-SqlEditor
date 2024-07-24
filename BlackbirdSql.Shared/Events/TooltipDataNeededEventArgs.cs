@@ -5,7 +5,12 @@ using System;
 using BlackbirdSql.Shared.Enums;
 
 
+
 namespace BlackbirdSql.Shared.Events;
+
+
+public delegate void TooltipDataNeededEventHandler(object sender, TooltipDataNeededEventArgs a);
+
 
 public class TooltipDataNeededEventArgs : EventArgs
 {

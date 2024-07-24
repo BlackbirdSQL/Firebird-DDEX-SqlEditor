@@ -7,7 +7,9 @@ using BlackbirdSql.Shared.Ctl;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
+
 namespace BlackbirdSql.Shared.Controls.Widgets;
+
 
 public class BarBackgroundRenderer : ToolStripProfessionalRenderer
 {

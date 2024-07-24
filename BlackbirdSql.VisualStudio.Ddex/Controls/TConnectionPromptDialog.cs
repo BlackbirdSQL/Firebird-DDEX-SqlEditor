@@ -36,15 +36,20 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 	{
 		// Tracer.Trace(typeof(TConnectionPromptDialog), ".ctor");
 
+		RctManager.SessionConnectionSourceActive = true;
+
 		try
 		{
 			InitializeComponent();
 		}
 		catch (Exception ex)
 		{
+			RctManager.SessionConnectionSourceActive = false;
+
 			Diag.Dug(ex);
 			throw;
 		}
+
 
 		int width = savePasswordCheckBox.PreferredSize.Width;
 		if (savePasswordCheckBox.Width < width)
@@ -228,11 +233,17 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 	protected override void OnFormClosing(FormClosingEventArgs e)
 	{
 		if (e.Cancel)
+		{
+			RctManager.SessionConnectionSourceActive = false;
 			return;
+		}
 
 		if (DialogResult == DialogResult.OK)
 			base.OnFormClosing(e);
+
+		RctManager.SessionConnectionSourceActive = false;
 	}
+
 
 
 	protected override void OnFontChanged(EventArgs e)

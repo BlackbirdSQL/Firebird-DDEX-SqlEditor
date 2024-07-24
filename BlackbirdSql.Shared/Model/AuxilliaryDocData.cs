@@ -1,11 +1,15 @@
-﻿
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.AuxiliaryDocData
+
 using System;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Ctl.Config;
 using BlackbirdSql.Shared.Ctl.QueryExecution;
+using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Properties;
@@ -61,8 +65,15 @@ public sealed class AuxilliaryDocData
 			if (disposing)
 			{
 				_StrategyFactory?.Dispose();
-				_QryMgr?.Dispose();
-				_QryMgr = null;
+
+				if (_QryMgr != null)
+				{
+					_QryMgr.StatusChangedEvent -= OnQueryManagerStatusChanged;
+					_QryMgr.ExecutionStartedEvent -= OnQueryExecutionStarted;
+					_QryMgr.ExecutionCompletedEvent -= OnQueryExecutionCompleted;
+					_QryMgr.Dispose();
+					_QryMgr = null;
+				}
 			}
 		}
 	}
@@ -82,6 +93,16 @@ public sealed class AuxilliaryDocData
 	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
+	/// <summary>
+	/// Records the last moniker created so that we can do a fast equivalency comparison
+	/// on the connection and use this static for the DatasetKey if they are equivalent.
+	/// This avoids repeatedly creating a new Moniker and going through the
+	/// registration process each time.
+	/// </summary>
+	private Csb _CommandCsa = null;
+	private string[] _CommandDatabaseList = null;
+	private long _CommandRctStamp = -1;
+
 	private string _ConnectionUrlAtExecutionStart;
 	private readonly object _DocData;
 	private uint _DocCookie;
@@ -89,7 +110,7 @@ public sealed class AuxilliaryDocData
 	private bool? _IntellisenseEnabled;
 	private readonly string _OriginalDocumentMoniker;
 	private QueryManager _QryMgr;
-	private IBConnectionStrategy _StrategyFactory;
+	private IBsConnectionStrategyFactory _StrategyFactory;
 
 
 	#endregion Fields
@@ -103,7 +124,7 @@ public sealed class AuxilliaryDocData
 	// =========================================================================================================
 
 
-	public IBConnectionStrategy StrategyFactory
+	public IBsConnectionStrategyFactory StrategyFactory
 	{
 		get
 		{
@@ -124,9 +145,24 @@ public sealed class AuxilliaryDocData
 				_StrategyFactory?.Dispose();
 				_StrategyFactory = value;
 
-				QryMgr.Strategy = _StrategyFactory.CreateConnectionStrategy();
+				if (_QryMgr != null)
+					_QryMgr.Strategy = _StrategyFactory.CreateConnectionStrategy();
 			}
 		}
+	}
+
+
+	public Csb CommandCsa
+	{
+		get { return _CommandCsa; }
+		set { _CommandCsa = value; }
+	}
+
+
+	public string[] CommandDatabaseList
+	{
+		get { return _CommandDatabaseList; }
+		set { _CommandDatabaseList = value; }
 	}
 
 
@@ -216,7 +252,7 @@ public sealed class AuxilliaryDocData
 	public bool IsVirtualWindow { get; set; }
 
 
-	public IBEditorTransientSettings LiveSettings => QryMgr.LiveSettings;
+	public IBsEditorTransientSettings LiveSettings => QryMgr.LiveSettings;
 
 	public string OriginalDocumentMoniker => _OriginalDocumentMoniker;
 
@@ -231,8 +267,8 @@ public sealed class AuxilliaryDocData
 				{
 					_QryMgr = new QueryManager(this, StrategyFactory.CreateConnectionStrategy());
 					_QryMgr.StatusChangedEvent += OnQueryManagerStatusChanged;
-					_QryMgr.ScriptExecutionStartedEvent += OnScriptExecutionStarted;
-					_QryMgr.ScriptExecutionCompletedEvent += OnScriptExecutionCompleted;
+					_QryMgr.ExecutionStartedEvent += OnQueryExecutionStarted;
+					_QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
 				}
 
 				return _QryMgr;
@@ -250,9 +286,9 @@ public sealed class AuxilliaryDocData
 		set
 		{
 			// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SqlOutputMode", "value = {0}", value);
-			if (QryMgr.IsExecuting)
+			if (QryMgr.IsLocked)
 			{
-				InvalidOperationException ex = new(ControlsResources.SqlExecutionModeChangeFailed);
+				InvalidOperationException ex = new(Resources.ExSqlExecutionModeChangeFailed);
 				Diag.ThrowException(ex);
 			}
 
@@ -261,6 +297,25 @@ public sealed class AuxilliaryDocData
 				LiveSettings.EditorResultsOutputMode = value;
 				SqlExecutionModeChangedEvent?.Invoke(this, new(value));
 			}
+		}
+	}
+
+
+	public long CommandRctStamp
+	{
+		get
+		{
+			return _CommandRctStamp;
+		}
+		set
+		{
+			if (_CommandRctStamp == value)
+				return;
+
+			_CommandCsa = null;
+			_CommandDatabaseList = null;
+
+			_CommandRctStamp = value;
 		}
 	}
 
@@ -381,18 +436,25 @@ public sealed class AuxilliaryDocData
 
 	public void CommitTransactions()
 	{
-		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsExecuting
-			|| !QryMgr.GetUpdateTransactionsStatus())
+		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked
+			|| !QryMgr.GetUpdateTransactionsStatus(true))
 		{
 			return;
 		}
 
-		bool result = QryMgr.Strategy.CommitTransactions();
+		bool result = QryMgr.CommitTransactions();
 
 		if (!result)
 			return;
 
 		if (DocData is not IVsPersistDocData2 persistData)
+			return;
+
+		// Only clear dirty flag on queries not on disk.
+
+		string moniker = RdtManager.GetDocumentMoniker(DocCookie);
+
+		if (moniker == null || !moniker.StartsWith(Path.GetTempPath(), StringComparison.InvariantCultureIgnoreCase))
 			return;
 
 		persistData.SetDocDataDirty(0);
@@ -433,28 +495,13 @@ public sealed class AuxilliaryDocData
 
 	public void RollbackTransactions()
 	{
-		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsExecuting
-			|| !QryMgr.GetUpdateTransactionsStatus())
+		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked
+			|| !QryMgr.GetUpdateTransactionsStatus(true))
 		{
 			return;
 		}
 
-		QryMgr.Strategy.RollbackTransactions();
-	}
-
-
-
-	private void SetOLESqlModeOnDocData(bool on)
-	{
-		lock (_LockLocal)
-		{
-			IVsUserData vsUserData = VsUserData;
-			if (vsUserData != null)
-			{
-				Guid riidKey = VS.CLSID_PropOleSql;
-				___(vsUserData.SetData(ref riidKey, on));
-			}
-		}
+		QryMgr.RollbackTransactions();
 	}
 
 
@@ -493,7 +540,7 @@ public sealed class AuxilliaryDocData
 
 
 
-	public void UpdateLiveSettingsState(IBEditorTransientSettings liveSettings)
+	public void UpdateLiveSettingsState(IBsEditorTransientSettings liveSettings)
 	{
 		QryMgr.LiveSettingsApplied = false;
 		LiveSettingsChangedEvent?.Invoke(this, new(liveSettings));
@@ -511,57 +558,42 @@ public sealed class AuxilliaryDocData
 	// =========================================================================================================
 
 
-	private void OnQueryManagerStatusChanged(object sender, QueryManager.StatusChangedEventArgs args)
+	private void OnQueryManagerStatusChanged(object sender, QueryStatusChangedEventArgs args)
 	{
 		lock (_LockLocal)
 		{
-			if (args.Change == QueryManager.EnStatusType.ExecutionOptionsWithOleSqlChanged)
+			if (args.StatusFlag != EnQueryStatusFlags.Connected)
+				return;
+
+
+			IVsUserData vsUserData = VsUserData;
+			if (QryMgr.IsConnected)
 			{
-				SetOLESqlModeOnDocData(QryMgr.IsWithOleSQLScripting);
+				IDbConnection connection = QryMgr.Strategy.Connection;
+
+				if (connection.State != ConnectionState.Open)
+					return;
+
+				if (connection is DbConnection dbConnection)
+				{
+					string serverVersion = dbConnection.ServerVersion;
+					Guid riidKey = VS.CLSID_PropSqlVersion;
+					vsUserData.SetData(ref riidKey, serverVersion);
+				}
 			}
 			else
 			{
-				if (args.Change != QueryManager.EnStatusType.Connected)
-				{
-					return;
-				}
-
-				IVsUserData vsUserData = VsUserData;
-				if (QryMgr.IsConnected)
-				{
-					IDbConnection connection = QryMgr.Strategy.Connection;
-					if (connection.State != ConnectionState.Open)
-					{
-						return;
-					}
-
-					if (connection is DbConnection dbConnection)
-					{
-						string serverVersion = dbConnection.ServerVersion;
-						Guid riidKey = VS.CLSID_PropSqlVersion;
-						vsUserData.SetData(ref riidKey, serverVersion);
-
-						if (QryMgr.Strategy is ConnectionStrategy connectionStrategy
-							&& connectionStrategy.IsDwConnection)
-						{
-							IntellisenseEnabled = false;
-						}
-					}
-				}
-				else
-				{
-					Guid riidKey = VS.CLSID_PropSqlVersion;
-					vsUserData.SetData(ref riidKey, string.Empty);
-				}
-
-				return;
+				Guid riidKey = VS.CLSID_PropSqlVersion;
+				vsUserData.SetData(ref riidKey, string.Empty);
 			}
+
+			return;
 		}
 	}
 
 
 
-	private void OnScriptExecutionCompleted(object sender, ScriptExecutionCompletedEventArgs args)
+	private void OnQueryExecutionCompleted(object sender, QueryExecutionCompletedEventArgs args)
 	{
 		string connectionUrl = null;
 		IDbConnection connection = QryMgr.Strategy.Connection;
@@ -569,17 +601,15 @@ public sealed class AuxilliaryDocData
 		if (connection != null)
 			connectionUrl = Csb.CreateConnectionUrl(connection);
 
-		bool flag = false;
-		if (connectionUrl != null && _ConnectionUrlAtExecutionStart == null || connectionUrl == null && _ConnectionUrlAtExecutionStart != null)
+		EnNullEquality nullEquality = Cmd.NullEquality(_ConnectionUrlAtExecutionStart, connectionUrl);
+
+		if (nullEquality == EnNullEquality.NotNulls)
 		{
-			flag = true;
-		}
-		else if (connectionUrl != null && !connectionUrl.Equals(_ConnectionUrlAtExecutionStart, StringComparison.Ordinal))
-		{
-			flag = true;
+			nullEquality = connectionUrl.Equals(_ConnectionUrlAtExecutionStart, StringComparison.Ordinal)
+				? EnNullEquality.Equal : EnNullEquality.UnEqual;
 		}
 
-		if (flag)
+		if (nullEquality == EnNullEquality.UnEqual)
 		{
 			IVsUserData vsUserData = VsUserData;
 			if (vsUserData != null)
@@ -593,12 +623,10 @@ public sealed class AuxilliaryDocData
 	}
 
 
-	private bool OnScriptExecutionStarted(object sender, QueryManager.ScriptExecutionStartedEventArgs args)
+	private bool OnQueryExecutionStarted(object sender, QueryExecutionStartedEventArgs args)
 	{
-		IDbConnection connection = QryMgr.Strategy.Connection;
-
-		if (connection != null)
-			_ConnectionUrlAtExecutionStart = Csb.CreateConnectionUrl(connection);
+		if (args.Connection != null)
+			_ConnectionUrlAtExecutionStart = Csb.CreateConnectionUrl(args.Connection);
 		else
 			_ConnectionUrlAtExecutionStart = null;
 
@@ -616,9 +644,9 @@ public sealed class AuxilliaryDocData
 	// =========================================================================================================
 
 
-	public class LiveSettingsChangedEventArgs(IBEditorTransientSettings liveSettings) : EventArgs
+	public class LiveSettingsChangedEventArgs(IBsEditorTransientSettings liveSettings) : EventArgs
 	{
-		public IBEditorTransientSettings LiveSettings { get; private set; } = liveSettings;
+		public IBsEditorTransientSettings LiveSettings { get; private set; } = liveSettings;
 	}
 
 
