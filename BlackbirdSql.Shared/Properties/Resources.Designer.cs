@@ -477,7 +477,8 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Query Information: Inactive connection &apos;{0}&apos; closed. ConnectionLifetime: {1} seconds..
+        ///   Looks up a localized string similar to Query Information: Inactive connection &apos;{0}&apos; closed.
+        ///                   ConnectionLifetime: {1} seconds..
         /// </summary>
         internal static string InfoConnectionAutoClosed {
             get {

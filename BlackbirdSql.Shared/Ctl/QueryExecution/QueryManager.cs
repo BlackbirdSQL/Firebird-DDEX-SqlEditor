@@ -559,7 +559,7 @@ public sealed class QueryManager : IBsQueryManager
 
 		try
 		{
-			Strategy.DisposeTransaction(true);
+			// Strategy.DisposeTransaction(true);
 			Strategy.CloseConnection();
 			Strategy.ResetConnection();
 			GetUpdateTransactionsStatus(true);
@@ -695,7 +695,7 @@ public sealed class QueryManager : IBsQueryManager
 									_KeepAliveConnectionStartTimeEpoch = long.MinValue;
 									connected = false;
 
-									Disconnect();
+									Strategy.CloseConnection();
 									RefreshToolbar();
 
 									_ = Diag.OutputPaneWriteLineAsync(Resources.InfoConnectionAutoClosed.FmtRes(Strategy.ConnInfo.DatasetKey, connectionLifeTime), true);

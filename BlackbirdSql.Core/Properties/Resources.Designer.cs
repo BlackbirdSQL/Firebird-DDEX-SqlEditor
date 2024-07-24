@@ -538,7 +538,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Load statistics: Async initialization: {0}ms, MainTread initializations: {1}ms
+        ///   Looks up a localized string similar to Load statistics: Async initialization: {0}ms, MainThread initializations: {1}ms
         ///                 SwitchToMainThread: {2}ms
         ///                 Total time (excl. SwitchToMainThread): {3}ms..
         /// </summary>

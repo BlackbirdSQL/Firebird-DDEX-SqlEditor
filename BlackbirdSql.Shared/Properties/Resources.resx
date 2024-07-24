@@ -258,7 +258,8 @@ Statement #{0} ({1} row(s) selected, {2} in total)
     <value>View has to be set before executing double click event.</value>
   </data>
   <data name="InfoConnectionAutoClosed" xml:space="preserve">
-    <value>Query Information: Inactive connection '{0}' closed. ConnectionLifetime: {1} seconds.</value>
+    <value>Query Information: Inactive connection '{0}' closed.
+                   ConnectionLifetime: {1} seconds.</value>
   </data>
   <data name="InfoDisconnectingFromSvr" xml:space="preserve">
     <value>Disconnecting connection from {0}...</value>

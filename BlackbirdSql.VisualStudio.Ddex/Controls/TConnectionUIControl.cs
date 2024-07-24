@@ -861,7 +861,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				}
 
 				// Tracer.Trace(GetType(), "OnAccept()", "ValidateSiteProperties(): success: {0}, addInternally: {1}, modifyInternally: {2}\nrestoreConnectionString: {3}.",
-				// 	success, addInternally, modifyInternally, restoreConnectionString);
+				 //	success, addInternally, modifyInternally, restoreConnectionString);
 
 
 				// This only applies if the ConnectionSource is SqlEditor.

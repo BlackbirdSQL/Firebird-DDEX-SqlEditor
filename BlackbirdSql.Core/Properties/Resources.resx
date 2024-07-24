@@ -277,7 +277,7 @@
     <value>Retry number {0}. Ignoring Exception: {1}</value>
   </data>
   <data name="LoadTimeStatistics" xml:space="preserve">
-    <value>Load statistics: Async initialization: {0}ms, MainTread initializations: {1}ms
+    <value>Load statistics: Async initialization: {0}ms, MainThread initializations: {1}ms
                  SwitchToMainThread: {2}ms
                  Total time (excl. SwitchToMainThread): {3}ms.</value>
   </data>

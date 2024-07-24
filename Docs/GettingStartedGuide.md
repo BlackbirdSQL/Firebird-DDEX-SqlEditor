@@ -3,7 +3,7 @@
 ### Configuring the App.Config
 * __Using BlackbirdSql's Solution Validation Utility__: On older versions of the `FirebirdSql.Data.FirebirdClient` and `EntityFramework.Firebird` packages your `App.config` will not be updated with the correct settings after adding the packages.</br>
 You can run the `BlackbirdSql Solution Validation` utility from the context menu of any Firebird node in Server Explorer to update your solution projects' App.config files to the correct settings applicable to each project.
-* __HRESULT reference error:__ As of BlackbirdSql release 13.1.0.1 the Firebird and EntityFramework6 assemblies are shipped with the extension. This is to ensure that design time models and wizards are guaranteed to work even if your projects' referenced versions of the EntityFramework versions differ.</br>
+* __HRESULT reference error:__ As of BlackbirdSql release 13.1.0.2 the Firebird and EntityFramework6 assemblies are shipped with the extension. This is to ensure that design time models and wizards are guaranteed to work even if your projects' referenced versions of the EntityFramework versions differ.</br>
 Your projects' referenced versions will still be used at runtime, however you may receive an `HRESULT` error after the upgrade.</br>
 If rebuilding your projects and then restarting the IDE does not resolve the issue it may be necessary to perform a once-off deletion of the `.vs` folder and then a rebuild for the new system to work correctly at design time.
 </br>

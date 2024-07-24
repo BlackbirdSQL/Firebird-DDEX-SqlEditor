@@ -2,6 +2,31 @@
 
 ## Change log
 
+### v13.1.0.2 Overhaul of connection strategy & bug fixes
+
+#### New / Enhancements
+- Extension load time statistics: Introduced a new user option that will send a notification to the output window of the load time statistics of the BlackbirdSql extension. Enabling the option has no performance overhead. The total load time averages under 15ms.
+- Improved efficiency of `IOleCommandTarget` `QueryStatus` and `Exec` message responses. Toolbar commands for a query window now access common non-volatile status variables instead of rebuilding their environments for each successive message on each command. A global drift detection stamp in the Running Connection Table determines if the environments for each query window are invalidated. This dramatically reduces the processing and memory requirements of the SQL Editor and Language modules which previously used the same mechanism as the Microsoft SqlServer extensions.
+- Implemented the `Clone To New Query` toolbar command as is available in the SqlServer SqlEditor extension. The command button is placed immediately to the right of the `New Query` command.
+- Enabled the `New Query` toolbar command for Queries that have no active connection selected.
+- Session connections now display the Large circle glyph (unicode `\u25EF`). Session connections are non-presistent connections that have been created during a session or are modified persistent connections that are no longer in their original persistent form.
+- Session connections that use Entity Data Model or Project Settings connections, and that have no stored password, will invoke the `IVsDataConnectionPromptDialog` password prompt before attempting to connect. After entering a password the connection converts to a Session connection.
+- Introduced a low overhead keepalive task. Connections with active transactions will remain active irrelevant of the ConnectionLifetime setting and the FirebirdClient internal timeouts. Connections with no active transactions and that have their ConnectionLifetime set will be closed if there is no activity after the specified timeout. Broken connections are force closed and disposed and any active transactions discarded. A status change notification will be sent to the Output window in all these cases.
+- Before the detailed error message window is displayed, the IDE will now automatically activate the window of a longer running query that was previously hidden if it produces an SQL error.
+- Enhanced the SqlEditor status bar Query Status label information.
+- Removed unused types that were a hangover of the SqlServer SqlEditor port. The graphics types/classes for the ExecutionPlan visualizer remain for possible future implementation but are set to a `Build Action` of `None`.
+- General code and type naming cleanup.
+#### Fixes
+- Improved the handling of database connections that are frozen due to a broken database network connection. Opening a connection is now performed asynchronously. The connection strategy service will attempt to rollback active transactions and close the connection, then attempt to dispose of the connection and any active transaction objects, and finally release transaction and connection objects. This should prevent lockouts of a query window after a network failure.
+- Removed Debug commands from query context menus.
+- Resolved bug that intermittently caused a query to freeze on completion when tab captions were incprrectly updated without switching to the main thread.
+- Resolved issue where tab captions were not updated after an SQL batch script was cancelled or had failed.
+- Fixed bug where a project event was was allowed to be entered before project event handlers had been initialized.
+- Fixed bug where Path.GetExtension() threw an exception if the ActiveDocument name could not be parsed.
+- Fixed bug where a connection lifetime timeout caused the IDE to hang.
+- Fixed bug where modifying an EDM connection in SqlEditor did not convert it to a Session connection.
+- Fixed typo of MainTread to MainThread on the extension load statistics notification.
+
 
 ### v13.1.0.1 Overhaul of connection strategy.
 
