@@ -35,7 +35,7 @@ static class ExtensionData
 	public const string VsixProduct = "BlackbirdSql.VisualStudio.Ddex";
 	public const string VsixName = "BlackbirdSql DDEX and SqlEditor for Firebird";
 	public const string VsixDescription = "The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the \"look and feel\" of Microsoft's SqlServer extensions";
-	public const string VsixVersion = "13.1.0.0";
+	public const string VsixVersion = "13.1.0.1";
 
 
 	public const string PackageControllerServiceName = "SBsPackageController";
