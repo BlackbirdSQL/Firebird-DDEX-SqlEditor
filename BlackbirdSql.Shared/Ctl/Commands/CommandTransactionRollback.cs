@@ -15,7 +15,7 @@ public class CommandTransactionRollback : AbstractCommand
 	{
 	}
 
-	public CommandTransactionRollback(IBSqlEditorWindowPane editorWindow)
+	public CommandTransactionRollback(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

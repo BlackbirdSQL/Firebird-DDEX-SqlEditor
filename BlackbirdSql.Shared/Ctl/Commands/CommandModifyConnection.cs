@@ -21,7 +21,7 @@ public class CommandModifyConnection : AbstractCommand
 	{
 	}
 
-	public CommandModifyConnection(IBSqlEditorWindowPane windowPane) : base(windowPane)
+	public CommandModifyConnection(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
 	{
 	}
 

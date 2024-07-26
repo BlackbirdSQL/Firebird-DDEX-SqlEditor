@@ -16,7 +16,7 @@ public class CommandToggleTTS : AbstractCommand
 	{
 	}
 
-	public CommandToggleTTS(IBSqlEditorWindowPane editorWindow)
+	public CommandToggleTTS(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

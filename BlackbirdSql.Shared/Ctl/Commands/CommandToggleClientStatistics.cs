@@ -17,7 +17,7 @@ public class CommandToggleClientStatistics : AbstractCommand
 	{
 	}
 
-	public CommandToggleClientStatistics(IBSqlEditorWindowPane editorWindow)
+	public CommandToggleClientStatistics(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

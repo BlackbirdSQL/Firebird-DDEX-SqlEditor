@@ -114,7 +114,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 		return qEStorageViewOnReader;
 	}
 
-	public IBSortView GetSortView()
+	public IBsSortView GetSortView()
 	{
 		Exception ex = new NotImplementedException();
 		Diag.ThrowException(ex);

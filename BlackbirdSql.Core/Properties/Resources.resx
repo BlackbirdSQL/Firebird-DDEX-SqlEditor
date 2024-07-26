@@ -297,7 +297,7 @@
     <value>[{0}] {1}</value>
   </data>
   <data name="RunningConnectionTableGlyphFormat" xml:space="preserve">
-    <value>{0} {1}</value>
+    <value>{0}  {1}</value>
   </data>
   <data name="RunningConnectionTableProjectDatasetId" xml:space="preserve">
     <value>[{0}] {1}</value>

@@ -17,7 +17,7 @@ public class CommandToggleIntellisense : AbstractCommand
 	{
 	}
 
-	public CommandToggleIntellisense(IBSqlEditorWindowPane editorWindow)
+	public CommandToggleIntellisense(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

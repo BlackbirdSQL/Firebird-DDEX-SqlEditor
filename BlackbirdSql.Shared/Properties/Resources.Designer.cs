@@ -532,6 +532,15 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}   {1}.
+        /// </summary>
+        internal static string QueryCaptionGlyphFormat {
+            get {
+                return ResourceManager.GetString("QueryCaptionGlyphFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save Results.
         /// </summary>
         internal static string SaveResults {

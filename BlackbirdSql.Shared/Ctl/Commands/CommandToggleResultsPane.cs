@@ -18,7 +18,7 @@ public class CommandToggleResultsPane : AbstractCommand
 	{
 	}
 
-	public CommandToggleResultsPane(IBSqlEditorWindowPane editorWindow)
+	public CommandToggleResultsPane(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

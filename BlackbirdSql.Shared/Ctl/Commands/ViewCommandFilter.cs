@@ -17,7 +17,7 @@ namespace BlackbirdSql.Shared.Ctl.Commands;
 public class ViewCommandFilter : AbstractViewCommandFilter
 {
 
-	public ViewCommandFilter(IBSqlEditorWindowPane windowPane)
+	public ViewCommandFilter(IBsTabbedEditorWindowPane windowPane)
 	{
 		WindowPane = windowPane;
 	}
@@ -25,11 +25,11 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 
 
 
-	private IBSqlEditorWindowPane WindowPane { get; set; }
+	private IBsTabbedEditorWindowPane WindowPane { get; set; }
 
 
 
-	private AbstractCommand CreateCommand(IBSqlEditorWindowPane window, EnCommandSet cmdId)
+	private AbstractCommand CreateCommand(IBsTabbedEditorWindowPane window, EnCommandSet cmdId)
 	{
 		AbstractCommand command = null;
 

@@ -223,7 +223,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 
 
 	/*
-	protected void ExecuteQuery(IBSqlEditorWindowPane editorPane)
+	protected void ExecuteQuery(IBsSqlEditorWindowPane editorPane)
 	{
 		// Tracer.Trace(GetType(), "OnExec()", "ExecutionType: {0}.", executionType);
 
@@ -235,7 +235,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 
 
 
-	private async Task<bool> ExecuteQueryAsync(IBSqlEditorWindowPane editorPane, int delay)
+	private async Task<bool> ExecuteQueryAsync(IBsSqlEditorWindowPane editorPane, int delay)
 	{
 		// Tracer.Trace(GetType(), "ExecuteQueryAsync()");
 

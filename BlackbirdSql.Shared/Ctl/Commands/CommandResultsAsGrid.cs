@@ -18,7 +18,7 @@ public class CommandResultsAsGrid : AbstractCommand
 	{
 	}
 
-	public CommandResultsAsGrid(IBSqlEditorWindowPane editorWindow)
+	public CommandResultsAsGrid(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

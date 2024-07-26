@@ -53,12 +53,6 @@ public static class SysConstants
 	public const string C_KeyCommandTimeout = "CommandTimeout";
 	public const string C_KeyParallelWorkers = "ParallelWorkers";
 
-	// Extended property descriptor keys
-	public const string C_KeyExObjectType = "ObjectType";
-	public const string C_KeyExExplorerTreeName = "ExplorerTreeName";
-	public const string C_KeyExObjectName = "ObjectName";
-	public const string C_KeyExTargetType = "TargetType";
-	public const string C_KeyExIsUnique = "IsUnique";
 
 	public const string C_KeyExClientVersion = "ClientVersion";
 	public const string C_KeyExMemoryUsage = "MemoryUsage";
@@ -162,12 +156,6 @@ public static class SysConstants
 	public const int C_DefaultCommandTimeout = 0;
 	public const int C_DefaultParallelWorkers = 0;
 
-	// Extended property defaults
-	public const EnModelObjectType C_DefaultExObjectType = EnModelObjectType.Unknown;
-	public const string C_DefaultExExplorerTreeName = "";
-	public const string C_DefaultExObjectName = "";
-	public const EnModelTargetType C_DefaultExTargetType = EnModelTargetType.Unknown;
-	public const bool C_DefaultExIsUnique = false;
 
 	// External (non-paramameter) property defaults 
 	public const Version C_DefaultExClientVersion = null;

@@ -17,7 +17,7 @@ public class CommandConnect : AbstractCommand
 	{
 	}
 
-	public CommandConnect(IBSqlEditorWindowPane windowPane) : base(windowPane)
+	public CommandConnect(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
 	{
 	}
 

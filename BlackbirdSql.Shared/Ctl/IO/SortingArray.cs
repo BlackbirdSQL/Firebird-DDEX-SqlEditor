@@ -11,7 +11,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Ctl.IO;
 
 
-public class SortingArray : IBSortingArray
+public class SortingArray : IBsSortingArray
 {
 	protected const int C_IncrementalBufferSize = 100;
 

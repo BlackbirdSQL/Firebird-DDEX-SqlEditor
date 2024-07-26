@@ -229,7 +229,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 #pragma warning restore CS8632 // The annotation for nullable reference types warning.
 	*/
 
-	public IBSqlEditorWindowPane LastFocusedSqlEditor { get; set; }
+	public IBsTabbedEditorWindowPane LastFocusedSqlEditor { get; set; }
 
 
 
@@ -462,17 +462,17 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 			// Accessing the stack and pop.
-			string explorerMoniker = RdtManager.InflightMonikerStack;
+			string inflightMoniker = RdtManager.InflightMonikerStack;
 
-			// Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()", "explorerMoniker: {0}, documentMoniker: {1}.", explorerMoniker, documentMoniker);
+			// Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()", "inflightMoniker: {0}, documentMoniker: {1}.", inflightMoniker, documentMoniker);
 
-			AuxilliaryDocData auxDocData = new AuxilliaryDocData(documentMoniker, explorerMoniker, docData);
+			AuxilliaryDocData auxDocData = new AuxilliaryDocData(documentMoniker, inflightMoniker, docData);
 			// hierarchy.GetSite(out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP);
 
-			if (explorerMoniker != null && RdtManager.InflightMonikerCsbTable.TryGetValue(explorerMoniker, out object csaObject))
+			if (inflightMoniker != null && RdtManager.InflightMonikerCsbTable.TryGetValue(inflightMoniker, out object csaObject))
 			{
 				auxDocData.UserDataCsb = (System.Data.Common.DbConnectionStringBuilder)csaObject;
-				RdtManager.InflightMonikerCsbTable[explorerMoniker] = null;
+				RdtManager.InflightMonikerCsbTable[inflightMoniker] = null;
 			}
 
 			// No point looking because This will always be null for us
@@ -705,8 +705,8 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 			if (_AuxilliaryDocDataTable.TryGetValue(docData, out AuxilliaryDocData auxDocData))
 			{
-				if (auxDocData.ExplorerMoniker != null)
-					RdtManager.InflightMonikerCsbTable.Remove(auxDocData.ExplorerMoniker);
+				if (auxDocData.InflightMoniker != null)
+					RdtManager.InflightMonikerCsbTable.Remove(auxDocData.InflightMoniker);
 
 				if (_CurrentDocData != null && ReferenceEquals(docData, _CurrentDocData))
 				{
@@ -877,7 +877,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 		{
 			DesignerExplorerServices.OpenNewMiscellaneousSqlFile(Resources.NewQueryBaseName, string.Empty);
-			IBSqlEditorWindowPane lastFocusedSqlEditor = LastFocusedSqlEditor;
+			IBsTabbedEditorWindowPane lastFocusedSqlEditor = LastFocusedSqlEditor;
 			if (lastFocusedSqlEditor != null)
 			{
 				new CommandNewQuery(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);

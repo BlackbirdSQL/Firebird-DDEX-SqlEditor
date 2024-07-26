@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
@@ -40,7 +41,7 @@ using Microsoft.VisualStudio.Threading;
 namespace BlackbirdSql.Shared.Controls;
 
 
-public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEditorWindowPane, IBsEditorWindowPane, IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
+public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedEditorWindowPane, IBsEditorWindowPane, IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 {
 	public TabbedEditorWindowPane(System.IServiceProvider provider, Package package, object docData, string fileName, bool autoExecute, string editorId = "")
 	: base(provider, package, docData, Guid.Empty, 0u)
@@ -52,6 +53,52 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 		VSFindTargetAdapter = new FindTargetAdapter(this);
 	}
+
+
+
+
+
+
+	protected override void Initialize()
+	{
+		if (ApcManager.SolutionClosing)
+			return;
+
+		TabbedEditorUiCtl.SuspendLayout();
+		TabbedEditorUiCtl.SplitViewContainer.SuspendLayout();
+
+		try
+		{
+			base.Initialize();
+			_ViewFilter = CreateViewFilter();
+			SplitViewContainer splitViewContainer = TabbedEditorUiCtl.SplitViewContainer;
+			splitViewContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_TextView, EnSplitterBarButtonDisplayStyle.Text, ControlsResources.ToolStripButton_Sql_Button_Text, ControlsResources.ImgTSQL);
+			splitViewContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.Text, ControlsResources.ToolStripButton_ResultsGrid_Button_Text, ControlsResources.ImgResults);
+			splitViewContainer.SplittersVisible = false;
+			splitViewContainer.IsSplitterVisible = false;
+			splitViewContainer.SwapButtons();
+			splitViewContainer.PathStripVisibleInSplitMode = false;
+			TabbedEditorUiCtl.TabActivatedEvent += TabActivatedHandler;
+			AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+			if (auxDocData != null && auxDocData.QryMgr != null)
+			{
+				auxDocData.QryMgr.StatusChangedEvent += OnUpdateTooltipAndWindowCaption;
+				auxDocData.QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
+			}
+
+			UpdateWindowCaption();
+			UpdateToolTip();
+		}
+		finally
+		{
+			TabbedEditorUiCtl.SplitViewContainer.ResumeLayout(performLayout: false);
+			TabbedEditorUiCtl.ResumeLayout(performLayout: false);
+		}
+
+		TabbedEditorUiCtl.PerformLayout();
+	}
+
+
 
 	private DisplaySQLResultsControl _ResultsControl;
 
@@ -79,24 +126,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 	public TabbedEditorUIControl TabbedEditorUiCtl => (TabbedEditorUIControl)TabbedEditorControl;
 
-	public string DocumentMoniker
-	{
-		get
-		{
-			Diag.ThrowIfNotOnUIThread();
-
-			string result = null;
-
-			if (GetService(typeof(SVsWindowFrame)) is IVsWindowFrame vsWindowFrame)
-			{
-				vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar);
-				result = pvar as string;
-			}
-
-			return result;
-		}
-	}
-
+	public string DocumentMoniker => GetDocumentMoniker();
 
 	public bool IsResultsGridTabVisible => GetSqlEditorResultsTab().IsVisible;
 
@@ -366,11 +396,11 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			string text = Path.GetFileNameWithoutExtension(DocumentMoniker);
-
 			IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
 			if (vsWindowFrame == null)
-				return text;
+				return null;
+
+			string text = Path.GetFileNameWithoutExtension(GetDocumentMoniker(vsWindowFrame));
 
 			___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out object pHierarchy));
 			if (pHierarchy is not IVsHierarchy vsHierarchy)
@@ -392,45 +422,21 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 
 
-
-	protected override void Initialize()
+	private string GetDocumentMoniker(IVsWindowFrame frame = null)
 	{
-		if (ApcManager.SolutionClosing)
-			return;
+		Diag.ThrowIfNotOnUIThread();
 
-		TabbedEditorUiCtl.SuspendLayout();
-		TabbedEditorUiCtl.SplitViewContainer.SuspendLayout();
+		frame ??= GetService(typeof(SVsWindowFrame)) as IVsWindowFrame;
 
-		try
-		{
-			base.Initialize();
-			_ViewFilter = CreateViewFilter();
-			SplitViewContainer splitViewContainer = TabbedEditorUiCtl.SplitViewContainer;
-			splitViewContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_TextView, EnSplitterBarButtonDisplayStyle.Text, ControlsResources.ToolStripButton_Sql_Button_Text, ControlsResources.ImgTSQL);
-			splitViewContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.Text, ControlsResources.ToolStripButton_ResultsGrid_Button_Text, ControlsResources.ImgResults);
-			splitViewContainer.SplittersVisible = false;
-			splitViewContainer.IsSplitterVisible = false;
-			splitViewContainer.SwapButtons();
-			splitViewContainer.PathStripVisibleInSplitMode = false;
-			TabbedEditorUiCtl.TabActivatedEvent += TabActivatedHandler;
-			AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
-			if (auxDocData != null && auxDocData.QryMgr != null)
-			{
-				auxDocData.QryMgr.StatusChangedEvent += OnUpdateTooltipAndWindowCaption;
-				auxDocData.QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
-			}
+		if (frame == null)
+			return null;
 
-			UpdateWindowCaption();
-			UpdateToolTip();
-		}
-		finally
-		{
-			TabbedEditorUiCtl.SplitViewContainer.ResumeLayout(performLayout: false);
-			TabbedEditorUiCtl.ResumeLayout(performLayout: false);
-		}
+		frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar);
 
-		TabbedEditorUiCtl.PerformLayout();
+		return pvar as string;
 	}
+
+
 
 	private void TabActivatedHandler(object sender, EventArgs args)
 	{
@@ -746,7 +752,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		return resultsUpdated && statsUpdated && messagesUpdated;
 	}
 
-	private bool UpdateSplitViewContainerButtonText(SplitViewContainer splitViewContainer, 
+	private bool UpdateSplitViewContainerButtonText(SplitViewContainer splitViewContainer,
 		Guid clsidResultsTab, Guid clsidMessagesTab, Guid clsidStatisticsTab,
 		string resultsButtonText, string messagesButtonText, string statsButtonText,
 		ref bool resultsUpdated, ref bool messagesUpdated, ref bool statsUpdated, ref Exception expected)
@@ -833,6 +839,16 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			{
 				_AutoExecute = false;
 				AsyncAutoExecuteQuery();
+			}
+			else
+			{
+				Task.Factory.StartNew(
+					async () =>
+					{
+						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+						UpdateWindowCaption();
+					},
+					default, TaskCreationOptions.PreferFairness, TaskScheduler.Default).Forget();
 			}
 		}
 	}
@@ -1069,7 +1085,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 	}
 	*/
 
-		public SqlEditorMessageTab GetSqlTextPlanTab()
+	public SqlEditorMessageTab GetSqlTextPlanTab()
 	{
 		Guid guidSqlTextPlanTabLogicalView = new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid);
 		return GetSqlEditorTab<SqlEditorMessageTab>(guidSqlTextPlanTabLogicalView);
@@ -1427,7 +1443,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 		// if (args.Change == QueryManager.EnStatusType.Connection || args.Change == QueryManager.EnStatusType.Connected)
 		// {
-			UpdateToolTip();
+		UpdateToolTip();
 		// }
 
 
@@ -1441,24 +1457,31 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		Diag.ThrowIfNotOnUIThread();
 
 		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
-		if (vsWindowFrame != null)
+		if (vsWindowFrame == null)
+			return;
+
+		___(vsWindowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_EditorCaption, ""));
+		string text = GetAdditionalTooltipOrWindowCaption(toolTip: false);
+		string text2 = " - ";
+		if (string.IsNullOrEmpty(text))
 		{
-			___(vsWindowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_EditorCaption, ""));
-			string text = GetAdditionalTooltipOrWindowCaption(toolTip: false);
-			string text2 = " - ";
-			if (string.IsNullOrEmpty(text))
-			{
-				text2 = string.Empty;
-				text = " ";
-			}
-
-			if (PersistentSettings.EditorStatusTabTextIncludeFileName)
-			{
-				text = "%2" + text2 + text;
-			}
-
-			___(vsWindowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, text));
+			text2 = string.Empty;
+			text = " ";
 		}
+
+		if (PersistentSettings.EditorStatusTabTextIncludeFileName)
+		{
+			text = "%2" + text2 + text;
+		}
+
+		string moniker = GetDocumentMoniker(vsWindowFrame);
+
+		if (moniker != null && moniker.StartsWith(Path.GetTempPath(), StringComparison.InvariantCultureIgnoreCase))
+		{
+			text = Resources.QueryCaptionGlyphFormat.FmtRes(SystemData.C_SessionFileGlyph, text);
+		}
+
+		___(vsWindowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, text));
 	}
 
 	private void UpdateToolTip()
@@ -1499,7 +1522,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			if (auxDocData.StrategyFactory.Mode == EnEditorMode.CustomProject)
 			{
 				// Never happen - projects not supported in Firebird port.
-				text = DocumentMoniker + text2 + text;
+				text = GetDocumentMoniker(vsWindowFrame) + text2 + text;
 			}
 			else if (auxDocData.StrategyFactory.Mode == EnEditorMode.CustomOnline)
 			{
@@ -1510,7 +1533,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		}
 		else
 		{
-			text = DocumentMoniker;
+			text = GetDocumentMoniker(vsWindowFrame);
 		}
 
 		vsHierarchy.SetProperty(itemid, (int)__VSHPROPID4.VSHPROPID_DescriptiveName, text);

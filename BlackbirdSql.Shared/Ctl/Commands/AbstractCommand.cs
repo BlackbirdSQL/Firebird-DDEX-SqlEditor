@@ -25,7 +25,7 @@ public abstract class AbstractCommand
 	{
 	}
 
-	public AbstractCommand(IBSqlEditorWindowPane windowPane)
+	public AbstractCommand(IBsTabbedEditorWindowPane windowPane)
 	{
 		WindowPane = windowPane;
 	}
@@ -103,7 +103,7 @@ public abstract class AbstractCommand
 	protected AuxilliaryDocData StoredAuxDocData => _AuxDocData ?? AuxDocData;
 
 
-	public IBSqlEditorWindowPane WindowPane { get; set; }
+	public IBsTabbedEditorWindowPane WindowPane { get; set; }
 
 
 	protected bool ExecutionLocked

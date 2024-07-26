@@ -70,7 +70,7 @@ public class TabbedEditorUIControl : AbstractTabbedEditorUIControl
 
 		_StatusBar.Height += 4;
 
-		_StatusBarMgr.Initialize(_StatusBar, rowCountValid: true, (IBSqlEditorWindowPane)TabbedEditorPane);
+		_StatusBarMgr.Initialize(_StatusBar, rowCountValid: true, (IBsTabbedEditorWindowPane)TabbedEditorPane);
 
 		return _StatusBar;
 	}

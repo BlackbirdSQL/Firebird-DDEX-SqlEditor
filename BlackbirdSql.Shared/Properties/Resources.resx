@@ -276,6 +276,9 @@ Statement #{0} ({1} row(s) selected, {2} in total)
   <data name="QueryBeginningBatchExec" xml:space="preserve">
     <value>Beginning execution loop</value>
   </data>
+  <data name="QueryCaptionGlyphFormat" xml:space="preserve">
+    <value>{0}   {1}</value>
+  </data>
   <data name="SaveResults" xml:space="preserve">
     <value>Save Results</value>
   </data>

@@ -20,7 +20,7 @@ public class CommandDisconnectAllQueries : AbstractCommand
 	{
 	}
 
-	public CommandDisconnectAllQueries(IBSqlEditorWindowPane windowPane) : base(windowPane)
+	public CommandDisconnectAllQueries(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
 	{
 	}
 

@@ -26,7 +26,7 @@ public abstract class AbstractMemDataStorage : IBsMemDataStorage, IBsDataStorage
 		return new MemStorageView(this);
 	}
 
-	public IBSortView GetSortView()
+	public IBsSortView GetSortView()
 	{
 		return new SortView(GetStorageView());
 	}

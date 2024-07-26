@@ -15,11 +15,11 @@ using BlackbirdSql.Shared.Events;
 
 namespace BlackbirdSql.Shared.Model.IO;
 
-public class SortView : IBSortView, IDisposable
+public class SortView : IBsSortView, IDisposable
 {
 	protected IBsStorageView m_StorageView;
 
-	protected IBSortingArray m_SortingArray;
+	protected IBsSortingArray m_SortingArray;
 
 	protected ArrayList m_SortingKeys;
 

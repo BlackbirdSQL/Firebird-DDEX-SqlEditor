@@ -95,7 +95,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 		return new DiskStorageView(this);
 	}
 
-	public IBSortView GetSortView()
+	public IBsSortView GetSortView()
 	{
 		return new SortView(GetStorageView());
 	}

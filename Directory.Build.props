@@ -24,8 +24,8 @@
 		<ApplicationIcon>$(SolutionDir)Resources\blackbirdsql.ico</ApplicationIcon>
 	</PropertyGroup>
 	<PropertyGroup>
-		<Version>13.1.0.2</Version>
-		<VersionPrefix>13.1.0.2</VersionPrefix>
+		<Version>13.1.0.3</Version>
+		<VersionPrefix>13.1.0.3</VersionPrefix>
 		<VersionSuffix>release</VersionSuffix>
 	</PropertyGroup>
 	<!-- Provider -->

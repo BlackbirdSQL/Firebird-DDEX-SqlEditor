@@ -120,7 +120,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			identifierArray = new List<string>(identifierList);
 
 
-		string mkDocument = Moniker.BuildDocumentMoniker(node, ref identifierArray, targetType, false);
+		string mkDocument = Moniker.BuildDocumentMoniker(node, ref identifierArray, targetType);
 
 
 		if (RctManager.ShutdownState)
@@ -135,7 +135,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		if (csa != null) 
 			csa[SysConstants.C_KeyExCreationFlags] = creationFlags;
 
-		OpenMiscellaneousSqlFile(mkDocument, node, targetType, csa, null);
+		OpenMiscellaneousVirtualFile(mkDocument, node, targetType, csa, null);
 
 		// bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(mkDocument, node, targetType, csa);
 
@@ -148,7 +148,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 
 
-	private static bool OpenMiscellaneousSqlFile(string explorerMoniker, IVsDataExplorerNode node,
+	private static bool OpenMiscellaneousVirtualFile(string moniker, IVsDataExplorerNode node,
 		EnModelTargetType targetType, Csb csa, string initialScript)
 	{
 		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "ExplorerMoniker: {0}.", explorerMoniker);
@@ -157,14 +157,14 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		uint documentCookie = 0;
 
-		if (RdtManager.InflightMonikerCsbTable.ContainsKey(explorerMoniker))
+		if (RdtManager.InflightMonikerCsbTable.ContainsKey(moniker))
 		{
 			foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBsEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
 			{
-				if (pair.Value.ExplorerMoniker == null)
+				if (pair.Value.InflightMoniker == null)
 					continue;
 
-				if (explorerMoniker.Equals(pair.Value.ExplorerMoniker))
+				if (moniker.Equals(pair.Value.InflightMoniker))
 				{
 					documentCookie = pair.Value.DocCookie;
 					break;
@@ -172,7 +172,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			}
 
 			if (documentCookie == 0)
-				RdtManager.InflightMonikerCsbTable.Remove(explorerMoniker);
+				RdtManager.InflightMonikerCsbTable.Remove(moniker);
 		}
 
 		if (documentCookie != 0)
@@ -206,9 +206,14 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "Created directory: {0} for explorerMoniker: {1}.", tempDirectory, explorerMoniker);
 
-		string filename = Path.GetFileNameWithoutExtension(explorerMoniker);
 
-		string tempFilename = tempDirectory + "\\" + filename + NativeDb.Extension;
+		string filename = Path.GetFileName(moniker);
+
+		if (filename.EndsWith(NativeDb.Extension, StringComparison.OrdinalIgnoreCase))
+			filename = filename.TrimSuffix(NativeDb.Extension, StringComparison.OrdinalIgnoreCase);
+
+
+		string tempFilename = Path.Combine(tempDirectory, filename + NativeDb.Extension);
 
 
 		if (tempFilename == null)
@@ -217,7 +222,6 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			return false;
 		}
 
-		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "Writing to temp file: {0}.", tempFilename);
 
 		StreamWriter streamWriter = null;
 		try
@@ -232,8 +236,8 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			streamWriter.Close();
 			streamWriter = null;
 
-			RdtManager.InflightMonikerStack = explorerMoniker;
-			RdtManager.InflightMonikerCsbTable.Add(explorerMoniker, csa);
+			RdtManager.InflightMonikerStack = moniker;
+			RdtManager.InflightMonikerCsbTable.Add(moniker, csa);
 
 			OpenAsMiscellaneousFile(tempFilename, filename + NativeDb.Extension, new Guid(SystemData.EditorFactoryGuid),
 				string.Empty, VSConstants.LOGVIEWID_Primary);
@@ -241,7 +245,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		catch
 		{
 			_ = RdtManager.InflightMonikerStack;
-			RdtManager.InflightMonikerCsbTable.Remove(explorerMoniker);
+			RdtManager.InflightMonikerCsbTable.Remove(moniker);
 		}
 		finally
 		{
@@ -252,9 +256,9 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBsEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
 		{
-			if (explorerMoniker.Equals(pair.Value.ExplorerMoniker) && pair.Value.DocCookie == 0)
+			if (moniker.Equals(pair.Value.InflightMoniker) && pair.Value.DocCookie == 0)
 			{
-				pair.Value.DocCookie = RdtManager.GetRdtCookie(pair.Value.OriginalDocumentMoniker);
+				pair.Value.DocCookie = RdtManager.GetRdtCookie(pair.Value.InternalDocumentMoniker);
 				break;
 			}
 		}
@@ -300,7 +304,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 
 	private static void OpenNewQueryEditor(string datasetKey, string baseName, Guid editorFactory,
-		string initialScript, bool executeQuery, string physicalViewName = null)
+		string initialScript, bool executeQuery, bool isClone, string physicalViewName = null)
 	{
 		if (editorFactory == Guid.Empty)
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
@@ -319,18 +323,14 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenNewQueryEditor()", "csa.DataSource: {0}, csa.Database: {1}", csa.DataSource, csa.Database);
 
-		string mkDocument = Moniker.BuildDocumentMoniker(csa?.DataSource, csa?.Database, elementType, ref identifierArray, targetType, true);
+		string mkDocument = Moniker.BuildDocumentMoniker(csa?.DataSource, csa?.Database, elementType, ref identifierArray, targetType, true, isClone);
 
 		RaiseBeforeOpenDocument(mkDocument, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
 		if (csa != null)
 			csa[SysConstants.C_KeyExCreationFlags] = EnEditorCreationFlags.CreateConnection;
 
-		OpenMiscellaneousSqlFile(mkDocument, null, targetType, csa, initialScript);
-
-		// bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(mkDocument, null, targetType, csa);
-
-		// ExecuteDocumentLoadedCallback(documentLoadedCallback, csa, editorAlreadyOpened);
+		OpenMiscellaneousVirtualFile(mkDocument, null, targetType, csa, initialScript);
 
 		return;
 
@@ -348,8 +348,22 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
 
-		OpenNewQueryEditor(datasetKey, baseName, clsidEditorFactory, initialScript, false);
+		OpenNewQueryEditor(datasetKey, baseName, clsidEditorFactory, initialScript, false, false);
 		
+	}
+
+	public void CloneQuery(string datasetKey, string baseName, string initialScript)
+	{
+		// Sanity check.
+		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
+
+		Diag.ThrowIfNotOnUIThread();
+
+
+		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
+
+		OpenNewQueryEditor(datasetKey, baseName, clsidEditorFactory, initialScript, false, true);
+
 	}
 
 
@@ -429,7 +443,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		if (alreadyLoaded)
 			return;
 
-		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBsEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
+		IBsTabbedEditorWindowPane lastFocusedSqlEditor = ((IBsEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
 
 		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
 

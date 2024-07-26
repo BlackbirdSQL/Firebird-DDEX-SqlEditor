@@ -42,10 +42,10 @@ public sealed class AuxilliaryDocData
 	/// <summary>
 	/// Default .ctor.
 	/// </summary>
-	public AuxilliaryDocData(string documentMoniker, string explorerMoniker, object docData)
+	public AuxilliaryDocData(string documentMoniker, string inflightMoniker, object docData)
 	{
-		_OriginalDocumentMoniker = documentMoniker;
-		_ExplorerMoniker = explorerMoniker;
+		_InternalDocumentMoniker = documentMoniker;
+		_InflightMoniker = inflightMoniker;
 		_DocData = docData;
 	}
 
@@ -106,9 +106,9 @@ public sealed class AuxilliaryDocData
 	private string _ConnectionUrlAtExecutionStart;
 	private readonly object _DocData;
 	private uint _DocCookie;
-	private string _ExplorerMoniker;
+	private string _InflightMoniker;
 	private bool? _IntellisenseEnabled;
-	private readonly string _OriginalDocumentMoniker;
+	private readonly string _InternalDocumentMoniker;
 	private QueryManager _QryMgr;
 	private IBsConnectionStrategyFactory _StrategyFactory;
 
@@ -201,10 +201,10 @@ public sealed class AuxilliaryDocData
 	}
 
 
-	public string ExplorerMoniker
+	public string InflightMoniker
 	{
-		get { return _ExplorerMoniker; }
-		set { _ExplorerMoniker = value; }
+		get { return _InflightMoniker; }
+		set { _InflightMoniker = value; }
 	}
 
 
@@ -254,7 +254,7 @@ public sealed class AuxilliaryDocData
 
 	public IBsEditorTransientSettings LiveSettings => QryMgr.LiveSettings;
 
-	public string OriginalDocumentMoniker => _OriginalDocumentMoniker;
+	public string InternalDocumentMoniker => _InternalDocumentMoniker;
 
 
 	public QueryManager QryMgr

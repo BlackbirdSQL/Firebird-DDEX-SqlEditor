@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.Shared.Ctl.Commands;
 
 
-public class CommandQuerySettings(IBSqlEditorWindowPane editorWindow)
+public class CommandQuerySettings(IBsTabbedEditorWindowPane editorWindow)
 
 	: AbstractCommand(editorWindow)
 {

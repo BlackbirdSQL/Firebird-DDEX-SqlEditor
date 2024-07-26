@@ -21,7 +21,7 @@ public class CommandDatabaseList : AbstractCommand
 		// Tracer.Trace();
 	}
 
-	public CommandDatabaseList(IBSqlEditorWindowPane windowPane) : base(windowPane)
+	public CommandDatabaseList(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
 	{
 		// Tracer.Trace();
 	}

@@ -18,7 +18,7 @@ public class CommandExecuteQuery : AbstractCommand
 		// Tracer.Trace();
 	}
 
-	public CommandExecuteQuery(IBSqlEditorWindowPane windowPane) : base(windowPane)
+	public CommandExecuteQuery(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
 	{
 		// Tracer.Trace();
 	}

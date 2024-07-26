@@ -343,7 +343,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		// Get the proposed prefix is the proposedConnectionName stripped of any unique suffix.
 		// We're going to brute force this instead of a regex.
 
-		string proposedConnectionNamePrefix = GetUniqueIdentifierPrefix(proposedConnectionName);
+		string proposedConnectionNamePrefix = Cmd.GetUniqueIdentifierPrefix(proposedConnectionName);
 
 		// Establish a unique DatasetKey using i as the suffix.
 		// This loop will execute at least once.
@@ -395,7 +395,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		// Get the proposed prefix is the proposedDatasetId stripped of any unique suffix.
 		// We're going to brute force this instead of a regex.
 
-		string proposedDatasetIdPrefix = GetUniqueIdentifierPrefix(proposedDatasetId);
+		string proposedDatasetIdPrefix = Cmd.GetUniqueIdentifierPrefix(proposedDatasetId);
 
 		// Tracer.Trace(GetType(), "GetUniqueDatasetId()", "dataSource: {0}, proposedDatasetId: {1}, connectionIndex: {2}, proposedDatasetIdPrefix: {3}.",
 		//	dataSource, proposedDatasetId, connectionIndex, proposedDatasetIdPrefix);
@@ -434,37 +434,6 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		return (uniqueDatasetKey, uniqueDatasetId);
 	}
-
-
-	/// <summary>
-	/// Gets the prefix of an identifier stripped of any unique suffix in the for '_999'.
-	/// We're going to brute force this instead of a regex.
-	/// </summary>
-	private string GetUniqueIdentifierPrefix(string identifier)
-	{
-		string prefix = identifier;
-		string suffix;
-		// pos has to be past first char and before last char
-		int pos = identifier.IndexOf('_');
-
-		if (pos > 0 && pos < identifier.Length - 1)
-		{
-			for (int i = 1; i < 1000; i++)
-			{
-				suffix = "_" + i;
-
-				if (identifier.EndsWith(suffix))
-				{
-					prefix = identifier.TrimSuffix(suffix);
-					break;
-				}
-			}
-
-		}
-
-		return prefix;
-	}
-
 
 
 

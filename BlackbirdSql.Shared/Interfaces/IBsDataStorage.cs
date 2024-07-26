@@ -12,7 +12,7 @@ public interface IBsDataStorage : IDisposable
 {
 	IBsStorageView GetStorageView();
 
-	IBSortView GetSortView();
+	IBsSortView GetSortView();
 
 	long RowCount { get; }
 

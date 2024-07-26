@@ -229,7 +229,7 @@ public sealed class StatusBarManager : IDisposable
 
 	private DateTime ExecutionStartTime { get; set; }
 
-	private IBSqlEditorWindowPane EditorWindowPane { get; set; }
+	private IBsTabbedEditorWindowPane EditorWindowPane { get; set; }
 
 	private QueryManager QryMgr
 	{
@@ -267,7 +267,7 @@ public sealed class StatusBarManager : IDisposable
 
 
 
-	public void Initialize(StatusStrip statusStrip, bool rowCountValid, IBSqlEditorWindowPane editorWindowPane)
+	public void Initialize(StatusStrip statusStrip, bool rowCountValid, IBsTabbedEditorWindowPane editorWindowPane)
 	{
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Expected O, but got Unknown

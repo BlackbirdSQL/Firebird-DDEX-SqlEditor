@@ -12,6 +12,7 @@ namespace BlackbirdSql.Core.Interfaces;
 [Guid(SystemData.DesignerExplorerServicesGuid)]
 public interface IBsDesignerExplorerServices
 {
+	void CloneQuery(string datasetKey, string baseName, string initialScript);
 	void NewQuery(string datasetKey, string baseName, string initialScript);
 
 	void ViewCode(IVsDataExplorerNode node, EnModelTargetType targetType);

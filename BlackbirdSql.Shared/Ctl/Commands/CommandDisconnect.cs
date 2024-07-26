@@ -19,7 +19,7 @@ public class CommandDisconnect : AbstractCommand
 	{
 	}
 
-	public CommandDisconnect(IBSqlEditorWindowPane windowPane) : base(windowPane)
+	public CommandDisconnect(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
 	{
 	}
 

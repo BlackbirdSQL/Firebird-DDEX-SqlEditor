@@ -1,6 +1,18 @@
-# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird
+﻿# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird
 
 ## Change log
+
+
+### v13.1.0.3 Improved query moniker naming and caption glygh adornment.
+
+#### New / Enhancements
+- Session connections are now adorned with the clearer Large Solid Circle glyph ⬤ (unicode `\u2B24`).
+- Query window captions of non-persistent (Session) queries (ie. queries that are not saved disk file queries) are now also adorned with a Session glyph, the Small Solid Circle ● (unicode `\u25CF`), to distinguish them from persistent queries. Session queries are disposed of whenever a solution is closed.
+- Cloned queries are now always suffixed with a numeric `_999` unique identifier and adorned with a Session glyph. If it's parent is a persistent query and also has a suffix, an attempt will first be made to use the parent's suffixed moniker file name in the moniker for the new cloned Session query.
+#### Fixes
+- Fixed bug introduced with the batch script processing feature where DDL, Procedure and Function scripts did not have the necessary `SET TERM` wrappers. Affected scripts now use the `GO` terminator.
+- In some cases, non-persistent query moniker file names were being duplicated. This made it difficult to distinguish between non-persistent (Session) query windows. Query windows launched from a Server Explorer node, and which are by default non-persistent (Session) queries, will still maintain their original, potentially non-unique, name.
+
 
 ### v13.1.0.2 Overhaul of connection strategy & bug fixes
 

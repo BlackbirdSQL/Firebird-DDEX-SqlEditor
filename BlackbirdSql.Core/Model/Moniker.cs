@@ -34,42 +34,87 @@ public class Moniker
 	// -----------------------------------------------------------------------------------------------------
 
 
-	public Moniker(IVsDataExplorerNode node, EnModelTargetType targetType, bool isUnique = false)
+	public Moniker(IVsDataExplorerNode node, EnModelTargetType targetType)
 	{
-		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
 		_TargetType = targetType;
+		_IsUnique = ObjectType == EnModelObjectType.Database;
 
-		Extract(node);
+		IVsDataObject @nodeObj = node.Object;
+
+		if (@nodeObj == null)
+		{
+			ArgumentNullException ex = new($"{node.Name} Object is null");
+			Diag.Dug(ex);
+			return;
+		}
+
+		EnModelObjectType objType = node.ModelObjectType();
+
+		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)", "Node type for node '{0}' is {1}.", node.Name, objType.ToString());
+
+		IVsDataObject @dbObj;
+
+		if (objType == EnModelObjectType.Database)
+			@dbObj = @nodeObj;
+		else
+			@dbObj = node.ExplorerConnection.ConnectionNode.Object;
+
+
+		if (@dbObj != null && @nodeObj != null && @dbObj.Properties != null)
+		{
+			_DataSource = (string)@dbObj.Properties[SysConstants.C_KeyDataSource];
+			_Database = (string)@dbObj.Properties[SysConstants.C_KeyDatabase];
+
+			_ObjectType = objType;
+
+			_ObjectName = "";
+
+			object[] identifier = [.. @nodeObj.Identifier];
+
+			if (identifier != null && identifier.Length > 0)
+			{
+				_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
+				for (int i = 1; i < identifier.Length; i++)
+				{
+					_ObjectName += SystemData.C_CompositeSeparator
+						+ (identifier[i] != null ? identifier[i].ToString() : "");
+				}
+				_ObjectName = _ObjectName.Trim(SystemData.C_CompositeSeparator);
+			}
+		}
 	}
+
 
 
 	public Moniker(string server, string database, EnModelObjectType objectType,
-			IList<string> identifierList, EnModelTargetType targetType, bool isUnique = false)
+			IList<string> identifierList, EnModelTargetType targetType, bool isUnique, bool isClone)
 	{
 		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
 		_TargetType = targetType;
+		_IsClone = isClone;
 
-		Initialize(server, database, objectType, [.. identifierList], targetType);
+		_DataSource = server;
+		_Database = database;
+
+		_ObjectType = objectType;
+		_ObjectName = "";
+
+		if (identifierList != null && identifierList.Count > 0)
+		{
+			_ObjectName = identifierList[0] ?? "";
+
+			for (int i = 1; i < identifierList.Count; i++)
+			{
+				_ObjectName += SystemData.C_CompositeSeparator
+					+ (identifierList[i] ?? "");
+			}
+		}
 	}
 
 
-	public Moniker(IVsDataExplorerConnection explorerConnection, EnModelTargetType targetType, bool isUnique = false)
+	public Moniker(IVsDataExplorerConnection explorerConnection, EnModelTargetType targetType)
 	{
-		Extract(explorerConnection, targetType, isUnique);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Extracts moniker information from a Server Explorer connection.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private void Extract(IVsDataExplorerConnection explorerConnection, EnModelTargetType targetType, bool isUnique = false)
-	{
-		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerConnection)");
-
-		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
+		_IsUnique = ObjectType == EnModelObjectType.Database;
 		_TargetType = targetType;
 
 		IVsDataObject @nodeObj = explorerConnection.ConnectionNode.Object;
@@ -104,7 +149,6 @@ public class Moniker
 
 		IVsDataObject @dbObj = @nodeObj;
 
-		_ExplorerTreeName = explorerConnection.DisplayName;
 
 		if (@dbObj != null && @nodeObj != null)
 		{
@@ -114,87 +158,6 @@ public class Moniker
 			_ObjectType = objType;
 			_ObjectName = objectName;
 		}
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Extracts moniker information from a Server Explorer node.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private void Extract(IVsDataExplorerNode node)
-	{
-		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)");
-
-		IVsDataObject @nodeObj = node.Object;
-
-		if (@nodeObj == null)
-		{
-			ArgumentNullException ex = new($"{node.Name} Object is null");
-			Diag.Dug(ex);
-			return;
-		}
-
-		EnModelObjectType objType = node.ModelObjectType();
-
-		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)", "Node type for node '{0}' is {1}.", node.Name, objType.ToString());
-
-		IVsDataObject @dbObj;
-
-		if (objType == EnModelObjectType.Database)
-			@dbObj = @nodeObj;
-		else
-			@dbObj = node.ExplorerConnection.ConnectionNode.Object;
-
-		_ExplorerTreeName = node.ExplorerConnection.DisplayName;
-
-
-		if (@dbObj != null && @nodeObj != null && @dbObj.Properties != null)
-		{
-			_DataSource = (string)@dbObj.Properties[SysConstants.C_KeyDataSource];
-			_Database = (string)@dbObj.Properties[SysConstants.C_KeyDatabase];
-
-			_ObjectType = objType;
-
-			_ObjectName = "";
-
-			object[] identifier = [.. @nodeObj.Identifier];
-
-			if (identifier != null && identifier.Length > 0)
-			{
-				_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
-				for (int i = 1; i < identifier.Length; i++)
-				{
-					_ObjectName += SystemData.C_CompositeSeparator
-						+ (identifier[i] != null ? identifier[i].ToString() : "");
-				}
-				_ObjectName = _ObjectName.Trim(SystemData.C_CompositeSeparator);
-			}
-		}
-	}
-
-
-
-	private void Initialize(string server, string database, EnModelObjectType objectType, object[] identifier, EnModelTargetType targetType)
-	{
-		_DataSource = server;
-		_Database = database;
-
-		_ObjectType = objectType;
-		_ObjectName = "";
-
-		if (identifier != null && identifier.Length > 0)
-		{
-			_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
-			for (int i = 1; i < identifier.Length; i++)
-			{
-				_ObjectName += SystemData.C_CompositeSeparator
-					+ (identifier[i] != null ? identifier[i].ToString() : "");
-			}
-		}
-
-		_TargetType = targetType;
 	}
 
 
@@ -223,12 +186,12 @@ public class Moniker
 
 	private string _Database = null;
 	private string _DataSource = null;
-	private string _ExplorerTreeName = SysConstants.C_DefaultExExplorerTreeName;
-	private bool _IsUnique = SysConstants.C_DefaultExIsUnique;
 	private string _DocumentMoniker = null;
-	private string _ObjectName = SysConstants.C_DefaultExObjectName;
-	private EnModelObjectType _ObjectType = SysConstants.C_DefaultExObjectType;
-	private EnModelTargetType _TargetType = SysConstants.C_DefaultExTargetType;
+	private readonly bool _IsClone = false;
+	private readonly bool _IsUnique = false;
+	private readonly string _ObjectName = "";
+	private readonly EnModelObjectType _ObjectType = EnModelObjectType.Unknown;
+	private readonly EnModelTargetType _TargetType = EnModelTargetType.Unknown;
 	private long _UniqueId;
 
 
@@ -263,41 +226,6 @@ public class Moniker
 	private string DataSource => _DataSource ??= (string)Csb.Describers[SysConstants.C_KeyDataSource].DefaultValue;
 
 
-	/// <summary>
-	/// The display name of the explorer connection tree.
-	/// </summary>
-	private string ExplorerTreeName => _ExplorerTreeName;
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets a full identifier for a node including it's root node
-	/// identifier and type.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public string[] FullIdentifier
-	{
-		get
-		{
-			// Tracer.Trace(GetType(), "GetFullIdentifier()");
-
-			string[] nodeIdentifier = Identifier;
-			string[] identifier = new string[nodeIdentifier.Length + 2];
-
-			identifier[0] = ExplorerTreeName;
-			identifier[1] = ObjectType.ToString();
-
-			for (int i = 0; i < nodeIdentifier.Length; i++)
-			{
-				identifier[i + 2] = nodeIdentifier[i];
-			}
-
-			return identifier;
-		}
-	}
-
-
-
 	public string[] Identifier => ObjectName.Split(SystemData.C_CompositeSeparator);
 
 
@@ -305,10 +233,8 @@ public class Moniker
 	/// For document monikers, true if reopening a document opens it into a new window,
 	/// otherwise for false the same window is used.
 	/// </summary>
-	private bool IsUnique => _IsUnique;
 
-
-	public string DocumentMoniker => _DocumentMoniker ??= BuildDocumentMoniker(true, true);
+	public string DocumentMoniker => _DocumentMoniker ??= BuildDocumentMoniker(true);
 
 
 
@@ -419,12 +345,13 @@ public class Moniker
 
 
 
-	private string BuildDocumentMoniker(bool includeExtension, bool canBeUnique)
+	/// <summary>
+	/// Builds the uniquely identifiable document moniker. If the moniker required must
+	/// be unique, it's uniqueness is established against the moniker filename, not the
+	/// full moniker.
+	/// </summary>
+	private string BuildDocumentMoniker(bool includeExtension)
 	{
-		// Imitates ...
-		// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-		// Microsoft.VisualStudio.Data.Tools.Package.DesignerServices.DatabaseChangesManager.OpenOnlineEditorImpl()
-
 		StringBuilder stringBuilder = new(DatabaseMoniker);
 
 		if (ObjectType != EnModelObjectType.Unknown)
@@ -447,34 +374,54 @@ public class Moniker
 
 		}
 
-		string filename = stringBuilder.ToString();
-		string fullname = filename;
+		string filenameNoExtension = stringBuilder.ToString();
+		string filename = filenameNoExtension;
 		string extension = "";
 
 		if (includeExtension && ObjectType != EnModelObjectType.Unknown && Identifier != null)
 		{
 			extension = NativeDb.Extension;
-			fullname += extension;
+			filename = string.Format(CultureInfo.InvariantCulture, "{0}{1}", filename, extension);
 		}
 
-		string result = fullname;
+		string result = filename;
 
-
-		if (IsUnique && canBeUnique)
+		if (_IsUnique)
 		{
+			string testname = Path.GetFileName(filenameNoExtension);
+			string basename = Cmd.GetUniqueIdentifierPrefix(testname);
+
+			// Test if a clone's parent has a suffix. If it does see if we can use the parent's
+			// name for the clone.
+			if (_IsClone && basename != testname)
+			{
+				testname = string.Format(CultureInfo.InvariantCulture, "{0}{1}", testname, extension);
+
+				if (!RdtManager.IsInflightMonikerFilenameRegistered(testname))
+					return filename;
+			}
+
+			testname = string.Format(CultureInfo.InvariantCulture, "{0}{1}", basename, extension);
+			filenameNoExtension = Path.Combine(Path.GetDirectoryName(filename), basename);
+
 			for (int i = 2; i < 1000; i++)
 			{
-				if (!RdtManager.IsInflightMonikerRegistered(fullname))
-					break;
+				if (!_IsClone || i != 2)
+				{
+					if (!RdtManager.IsInflightMonikerFilenameRegistered(testname))
+						break;
+				}
 
 				if (i > 100)
 					_UniqueId = DateTime.Now.Ticks;
 				else
 					_UniqueId = i;
 
-				fullname = string.Format(CultureInfo.InvariantCulture, "{0}_{1}{2}", filename, _UniqueId, extension);
+				testname = string.Format(CultureInfo.InvariantCulture, "{0}_{1}{2}", basename, _UniqueId, extension);
+				filename = string.Format(CultureInfo.InvariantCulture, "{0}_{1}{2}", filenameNoExtension, _UniqueId, extension);
 			}
-			result = fullname;
+
+			result = filename;
 		}
 
 		// Tracer.Trace(GetType(), "BuildDocumentMoniker()", "Result DocumentMoniker: {0}", result);
@@ -485,23 +432,23 @@ public class Moniker
 
 
 	public static string BuildDocumentMoniker(IVsDataExplorerNode node,
-	ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique)
+		ref IList<string> identifierArray, EnModelTargetType targetType)
 	{
-		Moniker moniker = new(node, targetType, isUnique);
+		Moniker moniker = new(node, targetType);
 		identifierArray = moniker.Identifier;
 
-		return moniker.BuildDocumentMoniker(true, true);
+		return moniker.BuildDocumentMoniker(true);
 	}
 
 
 
 	public static string BuildDocumentMoniker(string server, string database, EnModelObjectType elementType,
-	ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique)
+	ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique, bool isClone)
 	{
-		Moniker moniker = new(server, database, elementType, identifierArray, targetType, isUnique);
+		Moniker moniker = new(server, database, elementType, identifierArray, targetType, isUnique, isClone);
 		identifierArray = moniker.Identifier;
 
-		return moniker.BuildDocumentMoniker(true, true);
+		return moniker.BuildDocumentMoniker(true);
 	}
 
 
@@ -571,7 +518,7 @@ public class Moniker
 				src = $"{str} {active}\n"
 					+ $"{GetTriggerEventType((long)obj.Properties["TRIGGER_TYPE"])} POSITION {(short)obj.Properties["PRIORITY"]}\n"
 					+ src;
-				return src;
+				return WrapScriptWithTerminators(src);
 			case EnModelObjectType.Table:
 				src = $"SELECT * FROM {src.ToUpperInvariant()}";
 				return src;
@@ -630,7 +577,7 @@ public class Moniker
 				else
 					src = $"{strout}AS{str}\n-- End of parameter declarations\n{src}";
 
-				return src;
+				return WrapScriptWithTerminators(src);
 			case EnModelObjectType.Function:
 				nodes = node.GetChildren(false);
 
@@ -667,7 +614,7 @@ public class Moniker
 
 				src = $"{str}AS\n{src}";
 
-				return src;
+				return WrapScriptWithTerminators(src);
 			default:
 				return src;
 		}
@@ -791,6 +738,11 @@ public class Moniker
 		};
 	}
 
+
+	private static string WrapScriptWithTerminators(string script)
+	{
+		return $"SET TERM GO ;\n{script}\nGO\nSET TERM ; GO";
+	}
 	#endregion Methods
 
 }

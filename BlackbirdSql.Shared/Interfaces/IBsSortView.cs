@@ -10,7 +10,7 @@ namespace BlackbirdSql.Shared.Interfaces;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 
 
-public interface IBSortView : IDisposable
+public interface IBsSortView : IDisposable
 {
 	event StorageNotifyDelegate StorageNotify;
 

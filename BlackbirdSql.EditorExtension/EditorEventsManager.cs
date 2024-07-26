@@ -530,10 +530,10 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		// If we don't kickstart, dirty state title updates take +- 120 seconds to resume. This is a strange anomaly.
 
 		// Break the link between auxdocdata and the explorer moniker, if it exists, because this is now a disk file.
-		if (auxDocData.ExplorerMoniker != null)
+		if (auxDocData.InflightMoniker != null)
 		{
-			RdtManager.InflightMonikerCsbTable.Remove(auxDocData.ExplorerMoniker);
-			auxDocData.ExplorerMoniker = null;
+			RdtManager.InflightMonikerCsbTable.Remove(auxDocData.InflightMoniker);
+			auxDocData.InflightMoniker = null;
 		}
 
 

@@ -19,7 +19,7 @@ public class CommandTransactionCommit : AbstractCommand
 	{
 	}
 
-	public CommandTransactionCommit(IBSqlEditorWindowPane editorWindow)
+	public CommandTransactionCommit(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

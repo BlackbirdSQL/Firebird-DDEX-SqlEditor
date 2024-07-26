@@ -18,7 +18,7 @@ public class CommandResultsAsFile : AbstractCommand
 	{
 	}
 
-	public CommandResultsAsFile(IBSqlEditorWindowPane editorWindow)
+	public CommandResultsAsFile(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

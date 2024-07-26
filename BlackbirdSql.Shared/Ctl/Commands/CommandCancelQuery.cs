@@ -15,7 +15,7 @@ public class CommandCancelQuery : AbstractCommand
 	{
 	}
 
-	public CommandCancelQuery(IBSqlEditorWindowPane windowPane) : base(windowPane)
+	public CommandCancelQuery(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
 	{
 	}
 

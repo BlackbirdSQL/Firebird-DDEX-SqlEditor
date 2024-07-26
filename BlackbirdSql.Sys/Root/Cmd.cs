@@ -243,6 +243,28 @@ public abstract class Cmd
 
 
 
+	/// <summary>
+	/// Gets the prefix of an identifier stripped of any unique suffix in the for '_999'.
+	/// We're going to brute force this instead of a regex.
+	/// </summary>
+	public static string GetUniqueIdentifierPrefix(string identifier)
+	{
+		if (identifier == null || identifier.Length < 3)
+			return identifier;
+
+		int i;
+		char c = '\0';
+
+		for (i = identifier.Length - 1; i > 0 && Char.IsDigit(c = identifier[i]); i--) ;
+
+		if (i < 1 || i == identifier.Length - 1 || c != '_')
+			return identifier;
+
+		return identifier[..i];
+	}
+
+
+
 	// IsCriticalException
 	public static bool IsCriticalException(Exception ex)
 	{

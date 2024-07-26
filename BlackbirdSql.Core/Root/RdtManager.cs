@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Interfaces;
@@ -205,6 +206,20 @@ public sealed class RdtManager : AbstractRdtManager
 			return false;
 
 		return _InflightMonikerCsbTable.ContainsKey(mkDocument);
+	}
+
+	public static bool IsInflightMonikerFilenameRegistered(string filename)
+	{
+		if (_InflightMonikerCsbTable == null)
+			return false;
+
+		foreach (KeyValuePair<string, object> pair in _InflightMonikerCsbTable)
+		{
+			if (Path.GetFileName(pair.Key) == filename)
+				return true;
+		}
+
+		return false;
 	}
 
 

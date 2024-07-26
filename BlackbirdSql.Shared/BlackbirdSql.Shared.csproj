@@ -403,7 +403,7 @@
 		<Compile Include="Interfaces\IBsGridStorage.cs" />
 		<Compile Include="Interfaces\IBsMemDataStorage.cs" />
 		<Compile Include="Interfaces\IBsPropertyWindowQueryManagerInitialize.cs" />
-		<Compile Include="Interfaces\IBSortView.cs" />
+		<Compile Include="Interfaces\IBsSortView.cs" />
 		<Compile Include="Interfaces\IBsStatusBarContributer.cs" />
 		<Compile Include="Interfaces\IBsStorageView.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
@@ -504,10 +504,10 @@
 		<Compile Include="GlobalSuppressions.cs" />
 		<Compile Include="Interfaces\IBsEditorPackage.cs" />
 		<Compile Include="Interfaces\IBsMenuCommandTextChanges.cs" />
-		<Compile Include="Interfaces\IBSortingArray.cs" />
+		<Compile Include="Interfaces\IBsSortingArray.cs" />
 		<Compile Include="Interfaces\IBsErrorTaskFactory.cs" />
 		<Compile Include="Interfaces\IBsExtendedCommandHandler.cs" />
-		<Compile Include="Interfaces\IBSqlEditorWindowPane.cs" />
+		<Compile Include="Interfaces\IBsTabbedEditorWindowPane.cs" />
 		<Compile Include="Interfaces\IBsWindowPaneServiceProvider.cs" />
 		<Compile Include="Interfaces\IBsToolbarCommandHandler.cs" />
 		<Compile Include="Interfaces\IBsTextEditor.cs" />

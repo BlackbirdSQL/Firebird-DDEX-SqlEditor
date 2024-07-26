@@ -18,7 +18,7 @@ public class CommandResultsAsText : AbstractCommand
 	{
 	}
 
-	public CommandResultsAsText(IBSqlEditorWindowPane editorWindow)
+	public CommandResultsAsText(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

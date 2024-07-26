@@ -35,7 +35,7 @@ namespace BlackbirdSql.Shared.Controls.ResultsPanels;
 public class DisplaySQLResultsControl : IBsQueryExecutionHandler, IBsExecutionHandler, IDisposable
 {
 
-	public DisplaySQLResultsControl(ResultWindowPane resultsGridPanel, ResultWindowPane messagePanel, ResultWindowPane textResultsPanel, ResultWindowPane statisticsPanel, /* ResultWindowPane executionPlanPanel,*/ ResultWindowPane textPlanPanel, ResultWindowPane spatialPane, IBSqlEditorWindowPane editorPane)
+	public DisplaySQLResultsControl(ResultWindowPane resultsGridPanel, ResultWindowPane messagePanel, ResultWindowPane textResultsPanel, ResultWindowPane statisticsPanel, /* ResultWindowPane executionPlanPanel,*/ ResultWindowPane textPlanPanel, ResultWindowPane spatialPane, IBsTabbedEditorWindowPane editorPane)
 	{
 		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.DisplaySQLResultsControl", "", null);
 		if (resultsGridPanel == null || messagePanel == null)
@@ -271,7 +271,7 @@ public class DisplaySQLResultsControl : IBsQueryExecutionHandler, IBsExecutionHa
 
 	private bool CouldNotShowSomeGridResults => _GridCount > C_MaxGridResultSets;
 
-	public IBSqlEditorWindowPane SqlEditorPane { get; set; }
+	public IBsTabbedEditorWindowPane SqlEditorPane { get; set; }
 
 	private bool ShouldDiscardResults
 	{

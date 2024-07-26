@@ -20,7 +20,7 @@ public class CommandShowEstimatedPlan : AbstractCommand
 	{
 	}
 
-	public CommandShowEstimatedPlan(IBSqlEditorWindowPane editorWindow)
+	public CommandShowEstimatedPlan(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

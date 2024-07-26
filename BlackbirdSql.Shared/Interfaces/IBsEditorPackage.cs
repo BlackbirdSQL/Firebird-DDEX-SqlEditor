@@ -11,7 +11,7 @@ public interface IBsEditorPackage
 {
 	Dictionary<object, AuxilliaryDocData> AuxilliaryDocDataTable { get; }
 
-	IBSqlEditorWindowPane LastFocusedSqlEditor { get; set; }
+	IBsTabbedEditorWindowPane LastFocusedSqlEditor { get; set; }
 
 	AuxilliaryDocData GetAuxilliaryDocData(object docData);
 

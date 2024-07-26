@@ -354,7 +354,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			char glyph = '\0';
 
 			if (ConnectionSource == EnConnectionSource.Session)
-				glyph = RctManager.SessionGlyph;
+				glyph = RctManager.SessionDatasetGlyph;
 			else if (ConnectionSource == EnConnectionSource.Application)
 				glyph = RctManager.ProjectDatasetGlyph;
 			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
@@ -390,7 +390,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			char glyph = '\0';
 
 			if (ConnectionSource == EnConnectionSource.Session)
-				glyph = RctManager.SessionGlyph;
+				glyph = RctManager.SessionDatasetGlyph;
 			else if (ConnectionSource == EnConnectionSource.Application)
 				glyph = RctManager.ProjectDatasetGlyph;
 			else if (ConnectionSource == EnConnectionSource.EntityDataModel)

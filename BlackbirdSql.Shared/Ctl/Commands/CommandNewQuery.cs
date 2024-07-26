@@ -19,7 +19,7 @@ public class CommandNewQuery : AbstractCommand
 	{
 	}
 
-	public CommandNewQuery(IBSqlEditorWindowPane windowPane) : base(windowPane)
+	public CommandNewQuery(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
 	{
 	}
 

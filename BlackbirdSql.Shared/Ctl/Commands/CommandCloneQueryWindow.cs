@@ -19,7 +19,7 @@ public class CommandCloneQueryWindow : AbstractCommand
 	{
 	}
 
-	public CommandCloneQueryWindow(IBSqlEditorWindowPane windowPane) : base(windowPane)
+	public CommandCloneQueryWindow(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
 	{
 	}
 
@@ -47,7 +47,7 @@ public class CommandCloneQueryWindow : AbstractCommand
 				sqlTextSpan = WindowPane.GetAllCodeEditorTextSpan2();
 			}
 
-			service.NewQuery(StoredQryMgr?.Strategy?.CurrentDatasetKey, baseName, sqlTextSpan.Text);
+			service.CloneQuery(StoredQryMgr?.Strategy?.CurrentDatasetKey, baseName, sqlTextSpan.Text);
 		}
 
 		return VSConstants.S_OK;

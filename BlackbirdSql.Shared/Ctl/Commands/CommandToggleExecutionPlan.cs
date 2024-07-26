@@ -17,7 +17,7 @@ public class CommandToggleExecutionPlan : AbstractCommand
 	{
 	}
 
-	public CommandToggleExecutionPlan(IBSqlEditorWindowPane editorWindow)
+	public CommandToggleExecutionPlan(IBsTabbedEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}

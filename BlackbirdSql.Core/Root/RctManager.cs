@@ -222,7 +222,7 @@ public sealed class RctManager : RunningConnectionTable
 	/// The glyph used to identify temporary Session connections.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static char SessionGlyph => SystemData.C_SessionGlyph;
+	public static char SessionDatasetGlyph => SystemData.C_SessionDatasetGlyph;
 
 
 	// ---------------------------------------------------------------------------------
