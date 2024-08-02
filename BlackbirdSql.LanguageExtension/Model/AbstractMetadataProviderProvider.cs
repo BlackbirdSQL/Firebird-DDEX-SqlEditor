@@ -290,7 +290,7 @@ public abstract class AbstractMetadataProviderProvider : IBsMetadataProviderProv
 
 	public IBinder Binder { get; protected set; }
 
-	public abstract string DatabaseName { get; }
+	public abstract string Moniker { get; }
 
 	public ManualResetEvent BuildEvent => _MetadataBuildingEvent;
 

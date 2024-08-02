@@ -2,9 +2,12 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.AuxiliaryDocData
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.IO;
+using System.Windows.Forms;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Ctl.Config;
@@ -15,6 +18,7 @@ using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Properties;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -42,8 +46,9 @@ public sealed class AuxilliaryDocData
 	/// <summary>
 	/// Default .ctor.
 	/// </summary>
-	public AuxilliaryDocData(string documentMoniker, string inflightMoniker, object docData)
+	public AuxilliaryDocData(uint cookie, string documentMoniker, string inflightMoniker, object docData)
 	{
+		_DocCookie = cookie;
 		_InternalDocumentMoniker = documentMoniker;
 		_InflightMoniker = inflightMoniker;
 		_DocData = docData;
@@ -64,13 +69,19 @@ public sealed class AuxilliaryDocData
 		{
 			if (disposing)
 			{
-				_StrategyFactory?.Dispose();
+				// _StrategyFactory?.Dispose();
 
 				if (_QryMgr != null)
 				{
 					_QryMgr.StatusChangedEvent -= OnQueryManagerStatusChanged;
 					_QryMgr.ExecutionStartedEvent -= OnQueryExecutionStarted;
 					_QryMgr.ExecutionCompletedEvent -= OnQueryExecutionCompleted;
+					_QryMgr.NotifyConnectionStateEvent -= OnNotifyConnectionState;
+					_QryMgr.InvalidateToolbarEvent -= OnInvalidateToolbar;
+					_QryMgr.ShowWindowFrameEvent -= OnShowWindowFrame;
+
+					NotifyConnectionStateEvent -= _QryMgr.OnNotifyConnectionState;
+
 					_QryMgr.Dispose();
 					_QryMgr = null;
 				}
@@ -99,19 +110,20 @@ public sealed class AuxilliaryDocData
 	/// This avoids repeatedly creating a new Moniker and going through the
 	/// registration process each time.
 	/// </summary>
-	private Csb _CommandCsa = null;
 	private string[] _CommandDatabaseList = null;
 	private long _CommandRctStamp = -1;
+	private string _CommandSelectedName = null;
 
 	private string _ConnectionUrlAtExecutionStart;
 	private readonly object _DocData;
 	private uint _DocCookie;
 	private string _InflightMoniker;
 	private bool? _IntellisenseEnabled;
-	private readonly string _InternalDocumentMoniker;
+	private string _InternalDocumentMoniker;
 	private QueryManager _QryMgr;
-	private IBsConnectionStrategyFactory _StrategyFactory;
+	// private IBsConnectionStrategyFactory _StrategyFactory;
 
+	private NotifyConnectionStateEventHandler _NotifyConnectionStateEvent = null;
 
 	#endregion Fields
 
@@ -124,6 +136,9 @@ public sealed class AuxilliaryDocData
 	// =========================================================================================================
 
 
+	public object MetadataProviderProvider { get; }
+
+	/*
 	public IBsConnectionStrategyFactory StrategyFactory
 	{
 		get
@@ -146,18 +161,14 @@ public sealed class AuxilliaryDocData
 				_StrategyFactory = value;
 
 				if (_QryMgr != null)
+				{
 					_QryMgr.Strategy = _StrategyFactory.CreateConnectionStrategy();
+					_QryMgr.Strategy.InitializeKeepAlive(_QryMgr.OnInvalidateToolbar, _QryMgr.OnQueryIsLocked);
+				}
 			}
 		}
 	}
-
-
-	public Csb CommandCsa
-	{
-		get { return _CommandCsa; }
-		set { _CommandCsa = value; }
-	}
-
+	*/
 
 	public string[] CommandDatabaseList
 	{
@@ -201,11 +212,7 @@ public sealed class AuxilliaryDocData
 	}
 
 
-	public string InflightMoniker
-	{
-		get { return _InflightMoniker; }
-		set { _InflightMoniker = value; }
-	}
+	public string InflightMoniker => _InflightMoniker;
 
 
 	public bool HasActualPlan
@@ -246,36 +253,84 @@ public sealed class AuxilliaryDocData
 	}
 
 
+	public bool IsOnline => false;
+
+
+	public EnEditorMode Mode => EnEditorMode.Standard;
+
+
 	/// <summary>
 	/// True if underlying document is virtual else false. (Was IsQueryWindow)
 	/// </summary>
-	public bool IsVirtualWindow { get; set; }
+	public bool IsVirtualWindow
+	{
+		get
+		{
+			return _InflightMoniker != null;
+		}
+		set
+		{
+			if (value)
+				Diag.ThrowException(new ArgumentException(Resources.ExArgumentOnlyFalse.FmtRes(nameof(IsVirtualWindow))));
+
+			if (_InflightMoniker == null)
+				return;
+
+			RdtManager.InflightMonikerCsbTable.Remove(_InflightMoniker);
+
+			_InflightMoniker = null;
+		}
+	}
 
 
 	public IBsEditorTransientSettings LiveSettings => QryMgr.LiveSettings;
 
-	public string InternalDocumentMoniker => _InternalDocumentMoniker;
+	public string InternalMoniker
+	{
+		get { return _InternalDocumentMoniker; }
+		set { _InternalDocumentMoniker = value; }
+	}
 
 
 	public QueryManager QryMgr
 	{
-		get
-		{
-			lock (_LockLocal)
-			{
-				if (_QryMgr == null)
-				{
-					_QryMgr = new QueryManager(this, StrategyFactory.CreateConnectionStrategy());
-					_QryMgr.StatusChangedEvent += OnQueryManagerStatusChanged;
-					_QryMgr.ExecutionStartedEvent += OnQueryExecutionStarted;
-					_QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
-				}
-
-				return _QryMgr;
-			}
-		}
+		get { lock (_LockLocal) return _QryMgr; }
 	}
 
+
+	public QueryManager CreateQueryManager(Csb csb, EnEditorCreationFlags creationFlags)
+	{
+		ConnectionStrategy strategy = new();
+
+		if ((creationFlags & EnEditorCreationFlags.CreateConnection) > 0)
+		{
+			try
+			{
+				ModelCsb mdlCsb = new ModelCsb(csb);
+				mdlCsb.CreateDataConnection();
+				strategy.LiveMdlCsb = mdlCsb;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+		}
+
+		_QryMgr = new QueryManager(strategy);
+		_QryMgr.StatusChangedEvent += OnQueryManagerStatusChanged;
+		_QryMgr.ExecutionStartedEvent += OnQueryExecutionStarted;
+		_QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
+		_QryMgr.NotifyConnectionStateEvent += OnNotifyConnectionState;
+		_QryMgr.InvalidateToolbarEvent += OnInvalidateToolbar;
+		_QryMgr.ShowWindowFrameEvent += OnShowWindowFrame;
+
+		NotifyConnectionStateEvent += QryMgr.OnNotifyConnectionState;
+
+		strategy.InitializeKeepAlive(OnInvalidateToolbar, OnNotifyConnectionState);
+
+		return _QryMgr;
+	}
 
 	public EnSqlOutputMode SqlOutputMode
 	{
@@ -312,15 +367,29 @@ public sealed class AuxilliaryDocData
 			if (_CommandRctStamp == value)
 				return;
 
-			_CommandCsa = null;
 			_CommandDatabaseList = null;
-
 			_CommandRctStamp = value;
 		}
 	}
 
+	public string CommandSelectedName
+	{
+		get
+		{
+			return _CommandSelectedName;
+		}
+		set
+		{
+			if (_CommandSelectedName == value)
+				return;
 
-	public bool SuppressSavePrompt => IsVirtualWindow && !PersistentSettings.EditorPromptToSave;
+			_CommandDatabaseList = null;
+			_CommandSelectedName = value;
+		}
+	}
+
+
+	public bool SuppressSavePrompt => IsVirtualWindow || !PersistentSettings.EditorPromptSave;
 
 
 	public bool TtsEnabled
@@ -334,64 +403,6 @@ public sealed class AuxilliaryDocData
 		{
 			lock (_LockLocal)
 				QryMgr.LiveSettings.TtsEnabled = value;
-		}
-	}
-
-
-	public DbConnectionStringBuilder UserDataCsb
-	{
-		get
-		{
-			IVsUserData vsUserData = VsUserData;
-
-			if (vsUserData == null)
-			{
-				ArgumentNullException ex = new("IVsUserData is null");
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			DbConnectionStringBuilder csb = null;
-
-			Guid clsid = new(LibraryData.UserDataCsbGuid);
-
-			try
-			{
-				vsUserData.GetData(ref clsid, out object objData);
-
-				if (objData != null)
-					csb = objData as DbConnectionStringBuilder;
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
-
-			return csb;
-		}
-
-		set
-		{
-			IVsUserData vsUserData = VsUserData;
-
-			if (vsUserData != null)
-			{
-				Guid clsid = new(LibraryData.UserDataCsbGuid);
-				try
-				{
-					vsUserData.SetData(ref clsid, value);
-				}
-				catch (Exception ex)
-				{
-					Diag.Dug(ex);
-				}
-			}
-			else
-			{
-				ArgumentNullException ex = new("IVsUserData is null");
-				Diag.Dug(ex);
-				throw ex;
-			}
 		}
 	}
 
@@ -415,6 +426,12 @@ public sealed class AuxilliaryDocData
 	public event EventHandler<SqlExecutionModeChangedEventArgs> SqlExecutionModeChangedEvent;
 	public event EventHandler<LiveSettingsChangedEventArgs> LiveSettingsChangedEvent;
 
+	public event NotifyConnectionStateEventHandler NotifyConnectionStateEvent
+	{
+		add { _NotifyConnectionStateEvent += value; }
+		remove { _NotifyConnectionStateEvent -= value; }
+	}
+
 
 	#endregion Property Accessors
 
@@ -434,30 +451,56 @@ public sealed class AuxilliaryDocData
 
 
 
-	public void CommitTransactions()
+	public void CommitTransactions(bool validate)
 	{
-		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked
-			|| !QryMgr.GetUpdateTransactionsStatus(true))
-		{
+		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked)
 			return;
-		}
 
-		bool result = QryMgr.CommitTransactions();
+		bool result = QryMgr.CommitTransactions(validate);
 
 		if (!result)
 			return;
 
-		if (DocData is not IVsPersistDocData2 persistData)
+		if (!validate || DocData is not IVsPersistDocData2 persistData)
 			return;
 
 		// Only clear dirty flag on queries not on disk.
 
-		string moniker = RdtManager.GetDocumentMoniker(DocCookie);
+		if (DocCookie == 0)
+			return;
+
+		string moniker = RdtManager.GetDocumentMoniker(_DocCookie);
 
 		if (moniker == null || !moniker.StartsWith(Path.GetTempPath(), StringComparison.InvariantCultureIgnoreCase))
 			return;
 
 		persistData.SetDocDataDirty(0);
+	}
+
+
+	public IBsErrorTaskFactory GetErrorTaskFactory() => null;
+
+
+
+	private static string GetShortenedMonikerPath(string path, int maxLength)
+	{
+		string[] parts = path.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar]);
+
+		int i = parts.Length - 1;
+		string result;
+
+		result = parts[^1];
+
+		while (i > 0 && parts[i - 1].Length + result.Length + 1 <= maxLength)
+		{
+			i--;
+			result = Path.Combine(parts[i], result);
+		}
+
+		if (i > 0)
+			result = Path.Combine(".", result);
+
+		return result;
 	}
 
 
@@ -493,15 +536,203 @@ public sealed class AuxilliaryDocData
 
 
 
+	public bool RequestDeactivateQuery()
+	{
+		// Tracer.Trace(GetType(), "RequestDeactivateQuery()");
+
+		if (QryMgr == null)
+			return true;
+
+		bool inAutomation = UnsafeCmd.IsInAutomationFunction();
+		DialogResult dialogResult = DialogResult.Yes;
+
+		if (QryMgr.IsExecuting)
+		{
+			if (!inAutomation)
+			{
+				ShowWindowFrame();
+				dialogResult = MessageCtl.ShowEx(Resources.MsgAbortExecutionAndClose,
+					Resources.MsgQueryAbort_IsExecutingCaption,
+					MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+			}
+
+
+			if (dialogResult == DialogResult.No)
+				return true;
+
+			if (QryMgr.IsExecuting)
+				QryMgr.Cancel(true);
+			RollbackTransactions();
+		}
+		else if (QryMgr.HasTransactions)
+		{
+			dialogResult = DialogResult.No;
+
+			if (!inAutomation)
+			{
+				ShowWindowFrame();
+
+				dialogResult = MessageCtl.ShowEx(Resources.MsgQueryAbort_UncommittedTransactions,
+					Resources.MsgQueryAbort_UncommittedTransactionsCaption,
+					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+			}
+
+			switch (dialogResult)
+			{
+				case DialogResult.Cancel:
+					return false;
+
+				case DialogResult.Yes:
+
+					CommitTransactions(false);
+					break;
+
+				case DialogResult.No:
+
+					RollbackTransactions();
+					break;
+			}
+		}
+
+		return true;
+	}
+
+
+	public static bool ShowAbortExecutionsCloseAllDialog(Dictionary<AuxilliaryDocData, string> docs)
+	{
+		DialogResult dialogResult = DialogResult.Yes;
+		bool inAutomation = UnsafeCmd.IsInAutomationFunction();
+
+		if (!inAutomation)
+		{
+
+			string names = string.Empty;
+
+			List<string> sortList = [];
+			List<string> savedList = [];
+
+			foreach (KeyValuePair<AuxilliaryDocData, string> pair in docs)
+			{
+				string str;
+
+				if (pair.Key.IsVirtualWindow)
+				{
+					sortList.Add(pair.Value);
+				}
+				else
+				{
+					str = GetShortenedMonikerPath(pair.Value, 50);
+					savedList.Add(str);
+				}
+			}
+
+			sortList.Sort(StringComparer.InvariantCultureIgnoreCase);
+			savedList.Sort(StringComparer.InvariantCultureIgnoreCase);
+
+			foreach (string str in savedList)
+				sortList.Add(str);
+
+
+			foreach (string name in sortList)
+				names += (names != string.Empty ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.FmtRes(name);
+
+			dialogResult = MessageCtl.ShowEx(Resources.MsgQueryAbort_IsExecutingList.FmtRes(names),
+				Resources.MsgQueryAbort_IsExecutingCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+		}
+
+		if (dialogResult == DialogResult.No)
+			return false;
+
+		foreach (AuxilliaryDocData auxDocData in docs.Keys)
+		{
+			if (auxDocData.QryMgr.IsExecuting)
+				auxDocData.QryMgr.Cancel(true);
+			auxDocData.RollbackTransactions();
+		}
+
+		return true;
+
+	}
+
+
+
+	public static bool ShowDeactivateTtsCloseAllDialog(Dictionary<AuxilliaryDocData, string> docs)
+	{
+		DialogResult dialogResult = DialogResult.No;
+		bool inAutomation = UnsafeCmd.IsInAutomationFunction();
+
+		if (!inAutomation)
+		{
+
+			string names = string.Empty;
+
+			List<string> sortList = [];
+			List<string> savedList = [];
+
+			foreach (KeyValuePair<AuxilliaryDocData, string> pair in docs)
+			{
+				string str;
+
+				if (pair.Key.IsVirtualWindow)
+				{
+					sortList.Add(pair.Value);
+				}
+				else
+				{
+					str = GetShortenedMonikerPath(pair.Value, 50);
+					savedList.Add(str);
+				}
+			}
+
+			sortList.Sort(StringComparer.InvariantCultureIgnoreCase);
+			savedList.Sort(StringComparer.InvariantCultureIgnoreCase);
+
+			foreach (string str in savedList)
+				sortList.Add(str);
+
+
+			foreach (string name in sortList)
+				names += (names != string.Empty ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.FmtRes(name);
+
+			dialogResult = MessageCtl.ShowEx(Resources.MsgQueryAbort_UncommittedTransactionsList.FmtRes(names),
+				Resources.MsgQueryAbort_UncommittedTransactionsCaption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+		}
+
+		switch (dialogResult)
+		{
+			case DialogResult.Cancel:
+				return false;
+
+			case DialogResult.Yes:
+
+				foreach (AuxilliaryDocData auxDocData in docs.Keys)
+					auxDocData.CommitTransactions(false);
+
+				break;
+
+			case DialogResult.No:
+
+				foreach (AuxilliaryDocData auxDocData in docs.Keys)
+					auxDocData.RollbackTransactions();
+
+				break;
+		}
+
+		return true;
+	}
+
+
+
+
 	public void RollbackTransactions()
 	{
 		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked
-			|| !QryMgr.GetUpdateTransactionsStatus(true))
+			|| !QryMgr.GetUpdatedTransactionsStatus(true))
 		{
 			return;
 		}
 
-		QryMgr.RollbackTransactions();
+		QryMgr.RollbackTransactions(false);
 	}
 
 
@@ -540,6 +771,33 @@ public sealed class AuxilliaryDocData
 
 
 
+	public void ShowWindowFrame()
+	{
+		if (DocCookie == 0)
+			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and wait.
+
+			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+				RdtManager.ShowFrame(_DocCookie);
+
+				return true;
+			});
+
+		}
+		else
+		{
+			RdtManager.ShowFrame(_DocCookie);
+		}
+	}
+
+
+
 	public void UpdateLiveSettingsState(IBsEditorTransientSettings liveSettings)
 	{
 		QryMgr.LiveSettingsApplied = false;
@@ -556,6 +814,81 @@ public sealed class AuxilliaryDocData
 	// =========================================================================================================
 	#region Event Handling - AuxilliaryDocData
 	// =========================================================================================================
+
+
+	public void OnInvalidateToolbar(object sender, EventArgs args)
+	{
+		if (DocCookie != 0)
+			RdtManager.InvalidateToolbar(_DocCookie);
+	}
+
+
+
+	public bool OnNotifyConnectionState(object sender, NotifyConnectionStateEventArgs args)
+	{
+		if (args.State > EnNotifyConnectionState.NotifyEnumEndMarker)
+		{
+			return _NotifyConnectionStateEvent?.Invoke(sender, args) ?? true;
+		}
+
+
+		string name;
+
+		if (IsVirtualWindow)
+		{
+			name = Path.GetFileName(InflightMoniker);
+			name = Resources.QueryGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, name);
+		}
+		else
+		{
+			name = RdtManager.GetDocumentMoniker(DocCookie);
+			name = GetShortenedMonikerPath(name, 80);
+		}
+
+		string prefix;
+		string indent = new string(' ', 4);
+		string datasetKey = QryMgr?.Strategy?.MdlCsb?.DatasetKey;
+
+		if (datasetKey == null)
+			return true;
+
+
+		string msg;
+		string ttsMsg = args.TtsDiscarded ? Resources.WarnQueryTtsDiscarded.FmtRes(indent) : string.Empty;
+
+
+		switch (args.State)
+		{
+			case EnNotifyConnectionState.NotifyAutoClosed:
+				prefix = Resources.InfoQueryPrefix.FmtRes(indent);
+				msg = Resources.InfoQueryConnectionAutoClosed.FmtRes(prefix, indent,
+					datasetKey, QryMgr.Strategy.MdlCsb.ConnectionLifeTime, name);
+				break;
+			case EnNotifyConnectionState.NotifyBroken:
+				prefix = Resources.WarnQueryPrefix.FmtRes(indent);
+				msg = Resources.WarnQueryConnectionBroken.FmtRes(prefix, indent,
+					datasetKey, ttsMsg, name);
+				break;
+			case EnNotifyConnectionState.NotifyDead:
+				prefix = Resources.WarnQueryPrefix.FmtRes(indent);
+				msg = Resources.WarnQueryConnectionDead.FmtRes(prefix, indent,
+					datasetKey, ttsMsg, name);
+				break;
+			case EnNotifyConnectionState.NotifyReset:
+				prefix = Resources.WarnQueryPrefix.FmtRes(indent);
+				msg = Resources.WarnQueryConnectionReset.FmtRes(prefix, indent,
+					datasetKey, ttsMsg, name);
+				break;
+			default:
+				return true;
+		}
+
+
+		Diag.AsyncOutputPaneWriteLine(msg, true);
+
+		return true;
+	}
+
 
 
 	private void OnQueryManagerStatusChanged(object sender, QueryStatusChangedEventArgs args)
@@ -595,6 +928,9 @@ public sealed class AuxilliaryDocData
 
 	private void OnQueryExecutionCompleted(object sender, QueryExecutionCompletedEventArgs args)
 	{
+		if (args.SyncCancel)
+			return;
+
 		string connectionUrl = null;
 		IDbConnection connection = QryMgr.Strategy.Connection;
 
@@ -632,6 +968,10 @@ public sealed class AuxilliaryDocData
 
 		return true;
 	}
+
+
+
+	public void OnShowWindowFrame(object sender, EventArgs args) => ShowWindowFrame();
 
 
 	#endregion Event Handling

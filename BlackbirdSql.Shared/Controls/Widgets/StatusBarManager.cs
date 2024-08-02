@@ -283,7 +283,7 @@ public sealed class StatusBarManager : IDisposable
 		((ToolStripStatusLabel)(object)_GeneralPanel).Spring = true;
 		_StatusStrip.RenderMode = ToolStripRenderMode.Professional;
 		_StatusStrip.Renderer = new EditorStatusStripRenderer(_StatusStrip);
-		_ = QryMgr.Strategy.ConnInfo;
+		_ = QryMgr.Strategy.MdlCsb;
 		IDbConnection connection = QryMgr.Strategy.Connection;
 
 		if (connection != null && connection.State == ConnectionState.Open)
@@ -382,7 +382,7 @@ public sealed class StatusBarManager : IDisposable
 
 	private void ResetDatasetId()
 	{
-		string datasetId = QryMgr.Strategy.DatasetId;
+		string datasetId = QryMgr.Strategy.LiveAdornedTitle;
 		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetId ?? string.Empty;
 	}
 
@@ -392,9 +392,9 @@ public sealed class StatusBarManager : IDisposable
 	{
 		AbstractConnectionStrategy strategy = QryMgr.Strategy;
 		string displayUserName = strategy.DisplayUserName;
-		string datasetId = strategy.DatasetId;
+		string datasetId = strategy.LiveAdornedTitle;
 		string text = strategy.DisplayServerName;
-		Version serverVersion = strategy.GetServerVersion();
+		Version serverVersion = strategy.ServerVersion;
 
 		if (serverVersion != null)
 		{
@@ -571,7 +571,7 @@ public sealed class StatusBarManager : IDisposable
 	{
 		// Tracer.Trace(GetType(), "StatusBarManager.TransitionIntoOfflineMode", "", null);
 		AbstractConnectionStrategy strategy = QryMgr.Strategy;
-		if (strategy != null && strategy.ConnInfo != null)
+		if (strategy != null && strategy.MdlCsb != null)
 		{
 			ResetPanelsForOnlineMode();
 			SetKnownState(EnQeStatusBarKnownStates.Disconnected);
@@ -590,7 +590,7 @@ public sealed class StatusBarManager : IDisposable
 	{
 		AbstractConnectionStrategy strategy = QryMgr.Strategy;
 
-		if (strategy.ConnInfo != null)
+		if (strategy.MdlCsb != null)
 		{
 			ResetPanelsForOnlineMode();
 			if (useNewConnectionOpenedState)
@@ -674,6 +674,9 @@ public sealed class StatusBarManager : IDisposable
 	private void OnQueryExecutionCompleted(object sender, QueryExecutionCompletedEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "OnQueryExecutionCompleted()", "args.ExecResult: {0}.", args.ExecutionResult);
+
+		if (args.SyncCancel)
+			return;
 
 		void updateAction()
 		{

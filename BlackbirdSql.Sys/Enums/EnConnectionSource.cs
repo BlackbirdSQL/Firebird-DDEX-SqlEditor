@@ -3,7 +3,7 @@
 public enum EnConnectionSource
 {
 	Undefined = -1,
-	None = 0,
+	Unknown = 0,
 	ServerExplorer,
 	Session,
 	EntityDataModel,

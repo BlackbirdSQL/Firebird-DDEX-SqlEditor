@@ -32,7 +32,7 @@ public interface IBsNativeDbConnection
 	int GetPacketSize(DbConnection @this);
 	Task<DataTable> GetSchemaAsync(DbConnection @this, string collectionName,
 		string[] restrictions, CancellationToken cancellationToken);
-	Version GetVersion(IDbConnection @this);
+	Version ParseServerVersion(IDbConnection @this);
 	bool OpenOrVerifyConnection(IDbConnection @this);
 	Task<bool> OpenOrVerifyConnectionAsync(IDbConnection @this);
 }

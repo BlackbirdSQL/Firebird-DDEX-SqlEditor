@@ -1460,6 +1460,8 @@ public class DisplaySQLResultsControl : IBsQueryExecutionHandler, IBsExecutionHa
 	{
 		// Tracer.Trace(GetType(), "OnQueryExecutionCompletedImpl()", "ExecResult = {0}", args.ExecutionResult);
 
+		if (args.SyncCancel)
+			return;
 		/*
 		if (_ExecutionPlanPage != null && !_ExecutionPlanPane.Contains(_ExecutionPlanPage))
 		{
@@ -1668,7 +1670,7 @@ public class DisplaySQLResultsControl : IBsQueryExecutionHandler, IBsExecutionHa
 			{
 				try
 				{
-					_TextMessagesPage.ResultsWriter.AppendNormal(_QryMgr.GetUpdateTransactionsStatus(true)
+					_TextMessagesPage.ResultsWriter.AppendNormal(_QryMgr.GetUpdatedTransactionsStatus(true)
 						? ControlsResources.MsgQueryCancelledRollback :ControlsResources.MsgQueryCancelled);
 				}
 				catch (Exception ex)

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -143,10 +142,10 @@ public class TConnectionUIProperties : TConnectionProperties
 				// with an "edmx" property.
 				if (ConnectionSource == EnConnectionSource.EntityDataModel)
 				{
-					ConnectionStringBuilder.Remove(SysConstants.C_KeyExEdmx);
-					ConnectionStringBuilder[SysConstants.C_KeyExEdmu] = true;
+					ConnectionStringBuilder.Remove(CoreConstants.C_KeyExEdmx);
+					ConnectionStringBuilder[CoreConstants.C_KeyExEdmu] = true;
 
-					NativeDb.ReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
+					NativeDb.AsyncReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
 				}
 
 

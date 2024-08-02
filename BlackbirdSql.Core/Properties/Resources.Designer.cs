@@ -538,9 +538,10 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Load statistics: Async initialization: {0}ms, MainThread initializations: {1}ms
-        ///                 SwitchToMainThread: {2}ms
-        ///                 Total time (excl. SwitchToMainThread): {3}ms..
+        ///   Looks up a localized string similar to Extension load statistics:
+        ///      Async initialization: {0}ms, MainThread initializations: {1}ms
+        ///      SwitchToMainThread: {2}ms
+        ///      Total time (excl. SwitchToMainThread): {3}ms..
         /// </summary>
         public static string LoadTimeStatistics {
             get {
@@ -567,6 +568,51 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [{0}] {1}.
+        /// </summary>
+        public static string RctEdmDatasetFormat {
+            get {
+                return ResourceManager.GetString("RctEdmDatasetFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}  {1}.
+        /// </summary>
+        public static string RctGlyphFormat {
+            get {
+                return ResourceManager.GetString("RctGlyphFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  {0}   {1}.
+        /// </summary>
+        public static string RctGlyphFormat2 {
+            get {
+                return ResourceManager.GetString("RctGlyphFormat2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}] {1}.
+        /// </summary>
+        public static string RctProjectDatasetIdFormat {
+            get {
+                return ResourceManager.GetString("RctProjectDatasetIdFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}.
+        /// </summary>
+        public static string RctUtilityDatasetIdFormat {
+            get {
+                return ResourceManager.GetString("RctUtilityDatasetIdFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove failed. Property {0} does not exist..
         /// </summary>
         public static string Remove_Failed_Property_NotFound {
@@ -581,42 +627,6 @@ namespace BlackbirdSql.Core.Properties {
         public static string RetryOnException {
             get {
                 return ResourceManager.GetString("RetryOnException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [{0}] {1}.
-        /// </summary>
-        public static string RunningConnectionTableEdmDataset {
-            get {
-                return ResourceManager.GetString("RunningConnectionTableEdmDataset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}  {1}.
-        /// </summary>
-        public static string RunningConnectionTableGlyphFormat {
-            get {
-                return ResourceManager.GetString("RunningConnectionTableGlyphFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [{0}] {1}.
-        /// </summary>
-        public static string RunningConnectionTableProjectDatasetId {
-            get {
-                return ResourceManager.GetString("RunningConnectionTableProjectDatasetId", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}.
-        /// </summary>
-        public static string RunningConnectionTableUtilityDatasetId {
-            get {
-                return ResourceManager.GetString("RunningConnectionTableUtilityDatasetId", resourceCulture);
             }
         }
         

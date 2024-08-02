@@ -12,8 +12,14 @@ namespace BlackbirdSql.Shared.Events;
 public delegate void BatchExecutionCompletedEventHandler(object sender, BatchExecutionCompletedEventArgs args);
 
 
-public class BatchExecutionCompletedEventArgs(EnScriptExecutionResult res, QESQLBatch batch, EnSqlExecutionType executionType)
-	: QueryExecutionCompletedEventArgs(res, executionType)
+public class BatchExecutionCompletedEventArgs : QueryExecutionCompletedEventArgs
 {
-	public QESQLBatch Batch { get; private set; } = batch;
+	public BatchExecutionCompletedEventArgs(EnScriptExecutionResult res, bool syncCancel,
+			QESQLBatch batch, EnSqlExecutionType executionType)
+		: base(res, syncCancel, executionType)
+	{
+		Batch = batch;
+	}
+
+	public QESQLBatch Batch { get; private set; }
 }

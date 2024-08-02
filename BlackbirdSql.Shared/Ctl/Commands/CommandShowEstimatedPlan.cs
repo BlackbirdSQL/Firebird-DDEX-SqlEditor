@@ -41,8 +41,7 @@ public class CommandShowEstimatedPlan : AbstractCommand
 			return VSConstants.S_OK;
 
 
-		if (StoredQryMgr != null && StoredQryMgr.Strategy != null)
-			StoredQryMgr.Strategy.DisposeTransaction(true);
+		StoredStrategy?.DisposeTransaction(true);
 
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "OnExec", "calling ISqlEditorWindowPane.OnExec");
 		WindowPane.AsyncExecuteQuery(EnSqlExecutionType.PlanOnly);

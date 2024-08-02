@@ -8,9 +8,11 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Shared.Controls.Tabs;
 using BlackbirdSql.Shared.Ctl;
+using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Shared.Model;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -154,12 +156,22 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
+
+	public AuxilliaryDocData AuxDocData =>
+		((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+
+	protected QueryManager QryMgr => AuxDocData?.QryMgr;
+
 	public static ToolbarCommandMapper ToolbarManager =>
 		_ToolbarManager ??= new ToolbarCommandMapper();
 
 
 
 	public virtual IVsTextLines DocData => _DocData;
+
+
+	public string DocumentMoniker => GetDocumentMoniker(Frame);
+
 
 	public bool IsToolboxInitialized => ApcManager.IsToolboxInitialized;
 
@@ -237,7 +249,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	protected override void OnCreate()
 	{
-		RdtManager.RegisterDocumentLockHolder(0u, GetPrimaryDocCookie(), this, out _LockHolderCookie);
+		RdtManager.RegisterDocumentLockHolder(0u, PrimaryCookie, this, out _LockHolderCookie);
 	}
 
 
@@ -329,7 +341,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			if (TryGetDocDataFromCookie(editableDocument, out var docData))
 			{
 				bool isDirty = IsDirty(docData);
-				bool isPrimary = editableDocument == designerService.GetPrimaryDocCookie();
+				bool isPrimary = editableDocument == designerService.PrimaryCookie;
 				bool validEnumerableDocument = false;
 
 				switch (requestedDocumentsFlag)
@@ -572,11 +584,11 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		if (VsShellUtilities.IsInAutomationFunction(this))
 			saveFlags = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
 
-		int hresult = 0;
+		int hresult = VSConstants.S_OK;
 
 		if (saveFlags != (uint)__FRAMECLOSE.FRAMECLOSE_NoSave)
 		{
-			if ((IVsWindowFrame)GetService(typeof(SVsWindowFrame)) == null)
+			if (Frame == null)
 				return VSConstants.S_OK;
 
 			uint saveOpts;
@@ -596,7 +608,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 					break;
 			}
 
-			uint primaryDocCookie = GetPrimaryDocCookie();
+			uint primaryDocCookie = PrimaryCookie;
 
 			hresult = RdtManager.SaveDocuments(saveOpts, null, uint.MaxValue, primaryDocCookie);
 
@@ -618,7 +630,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	protected virtual IEnumerable<uint> GetEditableDocumentsForTab()
 	{
-		uint primaryDocCookie = GetPrimaryDocCookie();
+		uint primaryDocCookie = PrimaryCookie;
 
 		if (primaryDocCookie != 0)
 			yield return primaryDocCookie;
@@ -626,21 +638,18 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	private static uint GetFrameDocument(IVsWindowFrame frame)
+
+	public uint PrimaryCookie
 	{
-		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocCookie, out var pvar));
+		get
+		{
+			IVsWindowFrame frame = Frame;
 
-		return (uint)(int)pvar;
-	}
+			if (frame == null)
+				return 0u;
 
-
-
-	public uint GetPrimaryDocCookie()
-	{
-		if (Frame == null)
-			return 0u;
-
-		return GetFrameDocument(Frame);
+			return GetPrimaryCookie(frame);
+		}
 	}
 
 
@@ -652,6 +661,16 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 			_TabbedEditorUI.TabActivatedEvent -= OnTabActivated;
 	}
 
+
+	protected uint GetPrimaryCookie(IVsWindowFrame frame)
+	{
+		if (frame == null)
+			return 0u;
+
+		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocCookie, out var pvar));
+
+		return (uint)(int)pvar;
+	}
 
 
 	private static bool TryGetDocDataFromCookie(uint cookie, out object docData)
@@ -903,6 +922,16 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	}
 
 
+	protected string GetDocumentMoniker(IVsWindowFrame frame)
+	{
+		if (frame == null)
+			return null;
+
+		frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar);
+
+		return pvar as string;
+	}
+
 
 	int IVsMultiViewDocumentView.IsLogicalViewActive(ref Guid rguidLogicalView, out int pIsActive)
 	{
@@ -919,7 +948,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 
 
-	protected virtual int HandleCloseEditorOrDesigner()
+	protected virtual int HandleCloseEditorOrDesigner(AuxilliaryDocData auxDocData)
 	{
 		// Tracer.Trace(GetType(), "HandleCloseEditorOrDesigner()");
 
@@ -932,7 +961,6 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	{
 		// Tracer.Trace(GetType(), "OnClose()");
 
-		int hresult = 0;
 		IEnumerable<uint> enumerable = null;
 
 		if ((frameSaveOptions & (uint)__FRAMECLOSE.FRAMECLOSE_NoSave) > 0)
@@ -943,64 +971,75 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				frameSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave;
 		}
 
-		bool keepDocAlive = false;
-		uint primaryDocCookie = GetPrimaryDocCookie();
+		AuxilliaryDocData auxDocData = null;
 
-		if ((frameSaveOptions & (uint)__FRAMECLOSE.FRAMECLOSE_NoSave) == 0)
+		if ((frameSaveOptions & (uint)__FRAMECLOSE.FRAMECLOSE_NoSave) > 0)
 		{
-			List<uint> saveDocCookieList = [];
+			auxDocData = AuxDocData;
 
-			enumerable ??= EnumerateOpenedDocuments(this, EnDocumentsFlag.DirtyExceptPrimary);
-			List<uint> docCookieList = new List<uint>(enumerable) { primaryDocCookie };
-
-
-
-			foreach (uint docCookie in docCookieList)
+			if (!((auxDocData?.QryMgr?.HasTransactions) ?? false))
 			{
-				if (RdtManager.ShouldKeepDocDataAliveOnClose(docCookie))
-					keepDocAlive = true;
-				else
-					saveDocCookieList.Add(docCookie);
+				return VSConstants.S_FALSE;
 			}
 
+			frameSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave;
+		}
 
-			if (keepDocAlive)
+
+
+		bool keepDocAlive = false;
+		uint primaryCookie = PrimaryCookie;
+		List<uint> saveCookieList = [];
+
+		enumerable ??= EnumerateOpenedDocuments(this, EnDocumentsFlag.DirtyExceptPrimary);
+		List<uint> cookieList = new List<uint>(enumerable) { primaryCookie };
+
+		foreach (uint cookie in cookieList)
+		{
+			if (RdtManager.ShouldKeepDocDataAliveOnClose(cookie))
+				keepDocAlive = true;
+			else
+				saveCookieList.Add(cookie);
+		}
+
+
+		int hresult = VSConstants.S_FALSE;
+
+		if (keepDocAlive)
+		{
+			if (saveCookieList.Count == 0)
 			{
-				if (saveDocCookieList.Count == 0)
-				{
-					hresult = VSConstants.S_OK;
-				}
-				else
-				{
-					_OverrideSaveDocCookieList = saveDocCookieList;
-
-					try
-					{
-						hresult = SaveFiles(ref frameSaveOptions);
-					}
-					finally
-					{
-						_OverrideSaveDocCookieList = null;
-					}
-				}
+				hresult = VSConstants.S_OK;
 			}
 			else
 			{
-				hresult = SaveFiles(ref frameSaveOptions);
-			}
+				_OverrideSaveDocCookieList = saveCookieList;
 
+				try
+				{
+					hresult = SaveFiles(ref frameSaveOptions);
+				}
+				finally
+				{
+					_OverrideSaveDocCookieList = null;
+				}
+			}
 		}
+		else
+		{
+			hresult = SaveFiles(ref frameSaveOptions);
+		}
+
+
+		if (!__(hresult))
+			return hresult;
+
+		hresult = HandleCloseEditorOrDesigner(auxDocData ?? AuxDocData);
 
 		if (__(hresult))
-		{
-			hresult = HandleCloseEditorOrDesigner();
-
-			if (__(hresult))
-				_IsClosing = true;
-		}
+			_IsClosing = true;
 
 		return hresult;
-
 	}
 
 

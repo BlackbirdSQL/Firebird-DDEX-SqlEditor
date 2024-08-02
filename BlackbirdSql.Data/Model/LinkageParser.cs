@@ -90,9 +90,25 @@ public class LinkageParser : AbstractLinkageParser
 	private LinkageParser(IVsDataExplorerConnection root, LinkageParser rhs) : base(root, rhs)
 	{
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection, LinkageParser)");
-		_TaskHandler = new(_InstanceRoot);
+		_TaskHandler = new(_ConnectionString);
 	}
 
+
+
+	protected override bool Dispose(bool disposing)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "Dispose(bool)");
+
+		lock (_LockGlobal)
+		{
+			if (!base.Dispose(disposing))
+				return false;
+
+			_TaskHandler = null;
+
+			return true;
+		}
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -121,20 +137,17 @@ public class LinkageParser : AbstractLinkageParser
 
 		LinkageParser parser;
 
-		lock (_LockGlobal)
+		parser = (LinkageParser)GetInstanceImpl(root);
+
+
+		if (parser == null)
 		{
-			parser = (LinkageParser)GetInstanceImpl(root);
+			LinkageParser rhs = (LinkageParser)FindEquivalentParser(root);
 
-
-			if (parser == null)
-			{
-				LinkageParser rhs = (LinkageParser)FindEquivalentParser(root);
-
-				if (rhs != null)
-					parser = new(root, rhs);
-				else if (canCreate)
-					parser = new(root);
-			}
+			if (rhs != null)
+				parser = new(root, rhs);
+			else if (canCreate)
+				parser = new(root);
 		}
 
 		return parser;
@@ -375,6 +388,7 @@ public class LinkageParser : AbstractLinkageParser
 
 	private static string _LockedLoadedConnectionString = null;
 	private AdvancedMessageBox _MessageBoxDlg = null;
+	private LinkageParserTaskHandler _TaskHandler = null;
 
 	/// <summary>
 	/// The async process state, 0 = No async process, 1 = Async launch queued, 2 = Async Active.
@@ -385,8 +399,6 @@ public class LinkageParser : AbstractLinkageParser
 	/// The async launcher task if it exists.
 	/// </summary>
 	private Task<bool> _AsyncPayloadLauncher;
-
-	private readonly LinkageParserTaskHandler _TaskHandler = null;
 
 
 	#endregion Fields
@@ -557,8 +569,11 @@ public class LinkageParser : AbstractLinkageParser
 		if (parser == null)
 			return null;
 
-		if (!parser.Loading && !parser.Loaded && parser._Enabled && !NativeDb.OnDemandLinkage)
+		if (!parser.Loading && !parser.Loaded /* && parser._TaskHandler != null */
+			&& parser._Enabled && !NativeDb.OnDemandLinkage)
+		{
 			parser.AsyncExecute(delay, multiplier);
+		}
 
 		return parser;
 
@@ -1095,8 +1110,12 @@ public class LinkageParser : AbstractLinkageParser
 		{
 			if (connection != null)
 			{
-				await connection.CloseAsync();
-				connection.Dispose();
+				try
+				{
+					await connection.CloseAsync();
+					connection.Dispose();
+				}
+				catch { }
 			}
 
 		}

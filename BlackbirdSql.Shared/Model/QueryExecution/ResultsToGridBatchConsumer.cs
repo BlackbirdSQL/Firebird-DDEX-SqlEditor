@@ -4,8 +4,6 @@ using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Exceptions;
 using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Sys;
-using Microsoft.VisualStudio.Threading;
 
 
 

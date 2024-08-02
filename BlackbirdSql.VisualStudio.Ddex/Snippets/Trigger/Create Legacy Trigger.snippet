@@ -44,13 +44,16 @@
 				</Literal>
 			</Declarations>
 			<Code Language="SQL_FIREBIRD">
-				<![CDATA[CREATE TRIGGER $TriggerName$ FOR $TableName$ ACTIVE
+				<![CDATA[SET TERM GO ;
+CREATE TRIGGER $TriggerName$ FOR $TableName$ ACTIVE
 BEFORE $mutation$ POSITION $priority$
 AS
 BEGIN
 	IF (NEW.$ColumnName$ IS NULL) THEN
 		NEW.$ColumnName$ = GEN_ID($SequenceName$, 1);
 END
+GO
+SET TERM ; GO
 ]]>
 			</Code>
 		</Snippet>

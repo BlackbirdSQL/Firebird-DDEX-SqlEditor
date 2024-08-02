@@ -1,24 +1,15 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows;
-using System.Xml;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys.Ctl;
-using Microsoft.Data.ConnectionUI;
 
 
 namespace BlackbirdSql.Core.Interfaces;
 
 // =========================================================================================================
 //
-//									IBsPropertyAgent Interface
+//											IBsCsb Interface
 //
 // =========================================================================================================
-public interface IBsPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataConnectionProperties,
-	IComparable<IBsPropertyAgent>, IEquatable<IBsPropertyAgent>, INotifyPropertyChanged,
-	INotifyDataErrorInfo, IWeakEventListener
+public interface IBsCsb : IDisposable, ICloneable
 
 {
 
@@ -27,9 +18,9 @@ public interface IBsPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataCon
 	// ---------------------------------------------------------------------------------
 
 
-	IBsPropertyAgent Copy();
+	IBsCsb Copy();
 
-	void CopyTo(IBsPropertyAgent lhs);
+	void CopyTo(IBsCsb lhs);
 
 
 	#endregion Constructors & Destructors
@@ -39,23 +30,29 @@ public interface IBsPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataCon
 
 
 	// =========================================================================================================
-	#region Property Accessors - IBsPropertyAgent
+	#region Property Accessors - IBsCsb
 	// =========================================================================================================
 
-
+	string AdornedDisplayName { get; }
+	string AdornedTitle { get; }
+	string AdornedQualifiedName { get; }
+	string AdornedQualifiedTitle { get; }
+	int ConnectionLifeTime { get; set; }
+	string ConnectionString { get; set; }
+	int CommandTimeout { get; set; }
 	string DatasetKey { get; }
 	string DataSource { get; set; }
 	string Database { get; set; }
-
-	/// <summary>
-	/// The unique id of an IBsPropertyAgent base class.
-	/// </summary>
+	string DisplayName { get; }
 	long Id { get; }
-
+	bool IsCompleteMandatory { get; }
 	bool IsCompletePublic { get; }
-
+	bool IsInvalidated { get; }
+	string Moniker { get; }
+	string UnsafeMoniker { get; }
 	string UserID { get; set; }
-	IDictionary<string, string> ValidationErrors { get; }
+
+	// IDictionary<string, string> ValidationErrors { get; }
 
 
 	#endregion Property Accessors
@@ -65,21 +62,13 @@ public interface IBsPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataCon
 
 
 	// =========================================================================================================
-	#region Methods - IBsPropertyAgent
+	#region Methods - IBsCsb
 	// =========================================================================================================
 
 
-	void Add(string name, string parameter, Type propertyType, object defaultValue = null,
-		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false);
-
-
-
-	public void Add(string name, Type propertyType, object defaultValue = null,
-		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false);
-
-
-	bool AreEquivalent(IBsPropertyAgent other);
 	void Clear();
+
+	/*
 	void ClearAllErrors();
 	bool CloseConnection();
 	object GetProperty(string name);
@@ -90,11 +79,12 @@ public interface IBsPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataCon
 	bool IsParameter(string propertyNameName);
 	bool Isset(string property);
 	void LoadFromStream(XmlReader reader);
-	void Parse(Csb csb);
-	void PopulateConnectionStringBuilder(Csb csb, bool secure);
-	void ResetConnectionInfo();
-	void SaveToStream(XmlWriter writer, bool unsecured);
+	*/
+	// void PopulateConnectionStringBuilder(Csb csb, bool secure);
+	// void ResetConnectionInfo();
+	// void SaveToStream(XmlWriter writer, bool unsecured);
 
+	void RefreshDriftDetectionState();
 
 	#endregion Methods
 

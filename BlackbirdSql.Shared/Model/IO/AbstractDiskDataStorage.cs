@@ -1,5 +1,6 @@
 // Microsoft.SqlServer.DataStorage, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
 // Microsoft.SqlServer.Management.UI.Grid.DiskDataStorage
+
 using System;
 using System.Collections;
 using System.Data;
@@ -13,8 +14,6 @@ using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Properties;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Interfaces;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
 
 namespace BlackbirdSql.Shared.Model.IO;
@@ -88,7 +87,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 
 	public StorageDataEntity DiskDataEntity => _DiskDataEntity;
 
-	public event StorageNotifyDelegate StorageNotify;
+	public event StorageNotifyDelegate StorageNotifyEventAsync;
 
 	public virtual IBsStorageView GetStorageView()
 	{
@@ -200,8 +199,6 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 		if (_DataStorageEnabled)
 			throw new Exception(Resources.ExAlreadyStoringData);
 
-		await Cmd.AwaitableAsync();
-
 		_DataStorageEnabled = true;
 
 
@@ -223,7 +220,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 
 		_AsyncWorkerTask = Task.Factory.StartNew(payloadAsync, default, creationOptions, TaskScheduler.Default).Unwrap();
 
-		return true;
+		return await Cmd.AwaitableAsync(true);
 
 	}
 
@@ -570,11 +567,16 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 			}
 			_FsWriter.FlushBuffer();
 			Interlocked.Increment(ref _RowCount);
-			OnStorageNotify(_RowCount, storedAllData: false);
+
+
+			await OnStorageNotifyAsync(_RowCount, false, cancelToken);
 		}
 		_DataStorageEnabled = false;
 
-		OnStorageNotify(_RowCount, storedAllData: true);
+		if (cancelToken.IsCancellationRequested)
+			return false;
+
+		await OnStorageNotifyAsync(_RowCount, true, cancelToken);
 
 		return !cancelToken.IsCancellationRequested;
 	}
@@ -611,8 +613,8 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 		return !_DataStorageEnabled;
 	}
 
-	protected virtual void OnStorageNotify(long rowCount, bool storedAllData)
+	protected virtual async Task<bool> OnStorageNotifyAsync(long rowCount, bool storedAllData, CancellationToken cancelToken)
 	{
-		StorageNotify?.Invoke(rowCount, storedAllData);
+		return await (StorageNotifyEventAsync?.Invoke(rowCount, storedAllData, cancelToken) ?? Cmd.AwaitableAsync(false));
 	}
 }

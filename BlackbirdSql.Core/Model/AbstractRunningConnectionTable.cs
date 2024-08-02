@@ -1,18 +1,11 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Threading;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Interfaces;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.Package;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using static BlackbirdSql.Sys.SysConstants;
+
+using static BlackbirdSql.CoreConstants;
+using static BlackbirdSql.SysConstants;
 
 
 
@@ -197,7 +190,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		bool rNewRctConnection = true;
 
 		// These are the 5 values in the tuple to be returned except .
-		outStoredConnectionSource = EnConnectionSource.None;
+		outStoredConnectionSource = EnConnectionSource.Unknown;
 		outUniqueConnectionName = null;
 		outUniqueDatasetId = null;
 		outChangedTargetDatasetKey = null;
@@ -471,7 +464,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		Csb csa = new(connectionString);
 		// Csb csaOriginal = (Csb)csa.Clone();
 
-		string connectionUrl = csa.SafeDatasetMoniker;
+		string connectionUrl = csa.Moniker;
 
 		// Tracer.Trace(GetType(), "InternalUpdateRegisteredConnection()", "Update connection string: {0}", connectionString);
 
@@ -504,7 +497,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		// Firstly establish if we may update the stored connection.
 		EnConnectionSource rowConnectionSource = (EnConnectionSource)(int)row[C_KeyExConnectionSource];
 
-		if (source <= EnConnectionSource.None)
+		if (source <= EnConnectionSource.Unknown)
 			source = EnConnectionSource.Session;
 
 		bool canTakeOwnerShip = forceOwnership || VerifyUpdateRights(source, rowConnectionSource);
@@ -637,7 +630,17 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			// session superceded keys cannot be used by another unique connection.
 
 
-			bool rowUpdated = UpdateDataRowFromCsa(row, csa);
+			bool rowUpdated = false;
+
+			try
+			{
+				rowUpdated = UpdateDataRowFromCsa(row, csa);
+			}
+			catch (Exception ex)
+			{
+				Diag.DebugDug(ex);
+				return null;
+			}
 
 			connectionString = csa.ConnectionString;
 
@@ -692,7 +695,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	private static bool VerifyUpdateRights(EnConnectionSource updater,
 		EnConnectionSource owner)
 	{
-		if (owner <= EnConnectionSource.None || updater <= owner)
+		if (owner <= EnConnectionSource.Unknown || updater <= owner)
 			return true;
 
 		return false;
@@ -719,14 +722,14 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// Returns false if an event has already been entered else true if it is safe to enter.
 	/// </returns>
 	// -------------------------------------------------------------------------------------------
-	protected bool EventEnter(bool increment = true, bool force = false)
+	protected bool EventEnter(bool test = false, bool force = false)
 	{
 		lock (_LockObject)
 		{
 			if (_EventCardinal != 0 && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 				_EventCardinal++;
 		}
 

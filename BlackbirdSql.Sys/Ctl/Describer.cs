@@ -85,6 +85,22 @@ public class Describer
 	}
 
 
+	public Describer(bool isInternalStore, string name, string connectionParameterKey, Type propertyType,
+			object defaultValue = null, bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true,
+			bool isMandatory = false)
+		: this(name, connectionParameterKey, propertyType, defaultValue, isConnectionProperty, isAdvanced, isPublic,
+			isMandatory, isInternalStore)
+	{
+	}
+
+
+	public Describer(bool isInternalStore, string name, Type propertyType, object defaultValue = null,
+			bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
+		: this(name, null, propertyType, defaultValue, isConnectionProperty, isAdvanced, isPublic, isMandatory, isInternalStore)
+	{
+	}
+
+
 
 
 	private string _ConnectionParameterKey = null;

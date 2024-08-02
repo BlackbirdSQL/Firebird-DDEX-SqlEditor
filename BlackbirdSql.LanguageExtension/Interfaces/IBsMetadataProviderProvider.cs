@@ -18,7 +18,7 @@ public interface IBsMetadataProviderProvider : IDisposable
 
 	ManualResetEvent BuildEvent { get; }
 
-	string DatabaseName { get; }
+	string Moniker { get; }
 
 	IBsBinderQueue BinderQueue { get; }
 

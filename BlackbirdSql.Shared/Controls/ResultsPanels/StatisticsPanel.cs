@@ -109,7 +109,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	protected override void WndProc(ref Message m)
 	{
-		if (m.Msg == Sys.Native.WM_CONTEXTMENU)
+		if (m.Msg == Native.WM_CONTEXTMENU)
 		{
 			if (FocusedGrid != null && VS.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, FocusedGrid))
 			{
@@ -341,7 +341,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 
 	/// <summary>
-	/// This has all changed for the Firebird port and is now automated using the values
+	/// This has all changed for the FB-SQL port and is now automated using the values
 	/// in StatisticsPropertySet
 	/// </summary>
 	private void PopulateGrid(StatisticsDlgGridControl gridControl, StatisticsSnapshotCollection snapshots)

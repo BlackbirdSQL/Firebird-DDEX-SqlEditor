@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using EnvDTE;
+using EnvDTE90;
 using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -82,6 +83,7 @@ public abstract class UnsafeCmd
 	}
 
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets a list of all open misc project items and a Value tuple of document cookie
@@ -89,9 +91,9 @@ public abstract class UnsafeCmd
 	/// prefix else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IDictionary<ProjectItem, (uint, string)> GetOpenMiscProjectItems(IVsHierarchy hierarchy, string[] extensions, string prefix = null)
+	public static IDictionary<ProjectItem, object> GetOpenMiscProjectItems(IVsHierarchy hierarchy, string[] extensions, string prefix = null)
 	{
-		Dictionary<ProjectItem, (uint, string)> projectItems = [];
+		Dictionary<ProjectItem, object> projectItems = [];
 
 		RunningDocumentTable rdt = new((IServiceProvider)ApcManager.PackageInstance);
 
@@ -131,8 +133,9 @@ public abstract class UnsafeCmd
 			if (!found)
 				continue;
 
-			projectItems.Add(projectItem, (docInfo.DocCookie, docInfo.Moniker));
+			projectItems.Add(projectItem, docInfo.DocData);
 		}
+
 
 		return projectItems;
 	}
@@ -254,7 +257,7 @@ public abstract class UnsafeCmd
 		IVsExtensibility3 extensibility = VS.GetExtensibility();
 
 		if (extensibility == null)
-			return true;
+			return false;
 
 		___(extensibility.IsInAutomationFunction(out int pfInAutoFunc));
 

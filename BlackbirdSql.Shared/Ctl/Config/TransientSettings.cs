@@ -89,10 +89,10 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 		set { this["EditorGeneralEnableIntellisense"] = value; }
 	}
 
-	public new bool EditorPromptToSave
+	public new bool EditorPromptSave
 	{
-		get { return (bool)this["EditorGeneralPromptToSave"]; }
-		set { this["EditorGeneralPromptToSave"] = value; }
+		get { return (bool)this["EditorGeneralPromptSave"]; }
+		set { this["EditorGeneralPromptSave"] = value; }
 	}
 
 	public new bool EditorExecuteQueryOnOpen

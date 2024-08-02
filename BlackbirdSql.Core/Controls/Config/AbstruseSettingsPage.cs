@@ -293,14 +293,14 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	/// enters aN event handler to prevent recursion.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool EventEnter(bool increment = true, bool force = false)
+	private bool EventEnter(bool test = false, bool force = false)
 	{
 		lock (_LockObject)
 		{
 			if (_EventCardinal != 0 && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 				_EventCardinal++;
 		}
 
@@ -494,7 +494,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 		if (_Window == null)
 			return;
 
-		if (!EventEnter(false) || !_ValidFocusCell)
+		if (!EventEnter(true) || !_ValidFocusCell)
 			return;
 
 
@@ -511,7 +511,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 			EditControlFocusEventArgs args;
 
-			EventEnter(true, true);
+			EventEnter(false, true);
 
 			try
 			{
@@ -671,7 +671,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 		AutomatorPropertyValueChangedEventArgs evt = null;
 
 
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -740,7 +740,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 			if (_Window == null)
 				return;
 
-			EventEnter(true, true);
+			EventEnter(false, true);
 
 			try
 			{

@@ -226,6 +226,8 @@ public class StorageDataReader
 	public async Task<bool> ReadAsync(CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "ReadAsync()", "ASYNC ReadAsync()");
+		if (cancelToken.IsCancellationRequested)
+			return false;
 
 		if (_TableReader != null)
 		{

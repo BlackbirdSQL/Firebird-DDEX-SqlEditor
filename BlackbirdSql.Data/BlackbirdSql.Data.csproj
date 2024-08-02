@@ -42,7 +42,6 @@
 	  <Compile Include="Model\BinaryEncoding.cs" />
 	  <Compile Include="Model\Charset.cs" />
 	  <Compile Include="Model\DbBatchParser.cs" />
-	  <Compile Include="Model\DbConnectionWrapper.cs" />
 	  <Compile Include="Model\IscCodes.cs" />
 	  <Compile Include="Model\DbStatementWrapper.cs" />
 	  <Compile Include="Model\DbTypeHelper.cs" />

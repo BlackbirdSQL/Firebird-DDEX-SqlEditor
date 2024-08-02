@@ -8,5 +8,6 @@ public enum EnRctKeyType
 	DatasetKey,
 	ConnectionUrl,
 	ConnectionString,
-	AdornedQualifiedName
+	AdornedQualifiedName,
+	AdornedQualifiedTitle
 }

@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Extensions;
@@ -19,10 +18,10 @@ using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.RpcContracts.Commands;
 using Microsoft.VisualStudio.Shell;
 
-using static BlackbirdSql.Sys.SysConstants;
+using static BlackbirdSql.CoreConstants;
+using static BlackbirdSql.SysConstants;
 
 
 
@@ -155,6 +154,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	private bool _HasLocal = false;
 	protected static IBsRunningConnectionTable _Instance;
 	protected int _LoadDataCardinal = 0;
+	protected static readonly object _LockGlobal = new();
 	protected readonly object _LockObject = new();
 	private int _LoadingSyncCardinal = 0;
 	private int _LoadingAsyncCardinal = 0;
@@ -422,6 +422,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		dataTable.Columns.Add("Name", typeof(string));
 		dataTable.Columns.Add("DatabaseLc", typeof(string));
 		dataTable.Columns.Add(C_KeyExAdornedQualifiedName, typeof(string));
+		dataTable.Columns.Add(C_KeyExAdornedQualifiedTitle, typeof(string));
 		dataTable.Columns.Add(C_KeyExAdornedDisplayName, typeof(string));
 
 		foreach (Describer describer in Csb.DescriberKeys)
@@ -750,7 +751,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 
 			// Check again.
-			if (cancellationToken.IsCancellationRequested || ApcManager.Dte == null)
+			if (cancellationToken.IsCancellationRequested || ApcManager.SolutionClosing)
 			{
 				result = false;
 			}
@@ -813,10 +814,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			lock (_LockObject)
 			{
 				if (probject == null && _LoadingSyncCardinal == 0)
-				{
 					_InternalLoaded = true;
-					RctManager.ExternalEventExit();
-				}
 			}
 		}
 
@@ -840,7 +838,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		_AsyncPayloadLauncherTokenSource?.Cancel();
 
-		if (ApcManager.Dte == null)
+		if (ApcManager.SolutionClosing)
 			return false;
 
 		// We must be on the ui thread here
@@ -911,13 +909,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (InternalLoading)
 			return false;
 
-		if (_InternalDatabases != null)
-			return true;
+		// if (_InternalDatabases != null)
+		//	return true;
 
 
 		bool result = false;
-
-		RctManager.ExternalEventEnter();
 
 		_LoadingSyncCardinal++;
 
@@ -956,7 +952,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				if (ThreadHelper.CheckAccess() || _LoadingAsyncCardinal == 0)
 				{
 					_InternalLoaded = true;
-					RctManager.ExternalEventExit();
 				}
 			}
 		}
@@ -979,7 +974,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "InternalLoadConnectionsSync()");
 
-		_InternalConnectionsTable = CreateDataTable();
+		_InternalConnectionsTable ??= CreateDataTable();
 
 
 		BeginLoadData(true);
@@ -987,7 +982,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		try
 		{
 
-			InternalLoadServerExplorerConnections();
+			if (RctManager.ExternalEventEnter(true))
+				InternalLoadServerExplorerConnections();
 
 			if (_Instance == null)
 				return false;
@@ -1083,33 +1079,42 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "InternalLoadServerExplorerConnections()");
 
-		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
+		RctManager.ExternalEventEnter(false, true);
 
-		string connectionName;
-		Guid clsidProvider = new(SystemData.ProviderGuid);
-
-
-		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
+		try
 		{
-			if (!(clsidProvider == pair.Value.Provider))
-				continue;
+			IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
+
+			string connectionName;
+			Guid clsidProvider = new(SystemData.ProviderGuid);
 
 
-			connectionName = pair.Value.ConnectionNode.Name;
-
-
-			if (connectionName.Equals("Database", StringComparison.OrdinalIgnoreCase))
-				connectionName = pair.Key;
-
-			try
+			foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
 			{
-				InternalLoadServerExplorerConnection(connectionName, pair.Value.DecryptedConnectionString());
+				if (!(clsidProvider == pair.Value.Provider))
+					continue;
+
+
+				connectionName = pair.Value.ConnectionNode.Name;
+
+
+				if (connectionName.Equals("Database", StringComparison.OrdinalIgnoreCase))
+					connectionName = pair.Key;
+
+				try
+				{
+					InternalLoadServerExplorerConnection(connectionName, pair.Value.DecryptedConnectionString());
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw;
+				}
 			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw;
-			}
+		}
+		finally
+		{
+			RctManager.ExternalEventExit();
 		}
 
 	}
@@ -1297,7 +1302,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 					}
 
-					datasetId = Resources.RunningConnectionTableUtilityDatasetId.FmtRes(datasetId);
+					datasetId = Resources.RctUtilityDatasetIdFormat.FmtRes(datasetId);
 
 
 					// The datasetId may not be unique at this juncture and already registered.
@@ -1328,6 +1333,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	}
 
+	protected void InternalReset()
+	{
+		_InternalLoaded = false;
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -1500,7 +1509,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				foreach (XmlNode connectionNode in xmlNodes)
 				{
 					arr = connectionNode.Attributes["name"].Value.Split('.');
-					datasetId = Resources.RunningConnectionTableProjectDatasetId.FmtRes(projectName, arr[^1]);
+					datasetId = Resources.RctProjectDatasetIdFormat.FmtRes(projectName, arr[^1]);
 
 					csa = new(connectionNode.Attributes["connectionString"].Value);
 
@@ -1533,7 +1542,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			foreach (XmlNode connectionNode in xmlNodes)
 			{
 				name = connectionNode.Attributes["name"].Value;
-				datasetId = Resources.RunningConnectionTableEdmDataset.FmtRes(projectName, name);
+				datasetId = Resources.RctEdmDatasetFormat.FmtRes(projectName, name);
 
 				csb = new()
 				{
@@ -1710,7 +1719,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (_Instance == null)
 			return false;
 
-		if (source <= EnConnectionSource.None)
+		if (source <= EnConnectionSource.Unknown)
 			source = EnConnectionSource.Session;
 
 		BeginLoadData(true);
@@ -2030,7 +2039,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		if (isConnectionUrl)
 		{
-			DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[SysConstants.C_KeyExConnectionUrl])).ToArray();
+			DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExConnectionUrl])).ToArray();
 
 			value = rows.Length > 0 ? rows[0] : null;
 		}
@@ -2076,6 +2085,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 
 			updated = UpdateDataColumn(row, C_KeyExAdornedQualifiedName, csa?.AdornedQualifiedName, updated);
+			updated = UpdateDataColumn(row, C_KeyExAdornedQualifiedTitle, csa?.AdornedQualifiedTitle, updated);
 			updated = UpdateDataColumn(row, C_KeyExAdornedDisplayName, csa?.AdornedDisplayName, updated);
 
 			return updated;

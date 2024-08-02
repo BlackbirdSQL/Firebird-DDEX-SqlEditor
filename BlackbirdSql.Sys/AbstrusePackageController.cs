@@ -197,6 +197,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 	private IBsPackageController.AfterCloseSolutionDelegate _OnAfterCloseSolutionEvent;
 	private IBsPackageController.AfterLoadProjectDelegate _OnAfterLoadProjectEvent;
+	private IBsPackageController.AfterMergeSolutionDelegate _OnAfterMergeSolutionEvent;
 	private IBsPackageController.AfterOpenProjectDelegate _OnAfterOpenProjectEvent;
 	private IBsPackageController.AfterOpenSolutionDelegate _OnAfterOpenSolutionEvent;
 	private IBsPackageController.BeforeCloseProjectDelegate _OnBeforeCloseProjectEvent;
@@ -257,6 +258,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	public abstract Projects SolutionProjects { get; }
 	public abstract IVsTaskStatusCenterService StatusCenterService { get; }
 	public abstract uint ToolboxCmdUICookie { get; }
+	protected abstract IVsSolution VsSolution { get; }
 
 
 	#endregion Property Accessors
@@ -356,6 +358,16 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		add { _OnAfterLastDocumentUnlockEvent += value; }
 		remove { _OnAfterLastDocumentUnlockEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSolutionEvents2.OnAfterMergeSolution"/> and 3 event.
+	/// </summary>
+	event IBsPackageController.AfterMergeSolutionDelegate IBsPackageController.OnAfterMergeSolutionEvent
+	{
+		add { _OnAfterMergeSolutionEvent += value; }
+		remove { _OnAfterMergeSolutionEvent -= value; }
 	}
 
 
@@ -665,7 +677,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Tracer.Trace(GetType(), "AddProjectEventHandlers()", "CALLING ReindexEntityFrameworkAssemblies() for project: {0}.", project.Name);
 
-		if (!project.IsEditable())
+		if (ApcManager.SolutionClosing || ApcManager.SolutionObject == null || !project.IsEditable())
 			return;
 
 		VSProject projectObject = project.Object as VSProject;
@@ -738,6 +750,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 	public abstract string CreateConnectionUrl(string connectionString);
+	public abstract string GetConnectionQualifiedName(string connectionString);
 	public abstract string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root);
 	public abstract void InvalidateRctManager();
 	public abstract bool IsConnectionEquivalency(string connectionString1, string connectionString2);
@@ -746,16 +759,22 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	private bool EventProjectEnter(bool increment = true, bool force = false)
+	private bool EventProjectEnter(bool test = false, bool force = false)
 	{
 		lock (_LockObject)
 		{
 			// Tracer.Trace(GetType(), "EventProjectEnter()", "_EventProjectCardinal: {0}, increment: {1}.", _EventProjectCardinal, increment);
 
-			if (_EventRdtCardinal < 0 || (_EventProjectCardinal > 0 && !force) || SolutionObject == null)
+			if (_EventProjectCardinal < 0 || (_EventProjectCardinal > 0 && !force))
+				return false;
+		}
+
+		if (SolutionObject == null)
 				return false;
 
-			if (increment)
+		lock (_LockObject)
+		{
+			if (!test)
 				_EventProjectCardinal++;
 		}
 
@@ -781,16 +800,22 @@ public abstract class AbstrusePackageController : IBsPackageController
 	}
 
 
-	protected bool EventProjectRegistrationEnter(bool increment = true)
+	protected bool EventProjectRegistrationEnter(bool test = false)
 	{
 		lock (_LockObject)
 		{
 			// Tracer.Trace(GetType(), "EventProjectRegisterEnter()", "_EventProjectCardinal: {0}, increment: {1}.", _EventProjectCardinal, increment);
 
-			if (_EventProjectCardinal != -2 || SolutionObject == null)
+			if (_EventProjectCardinal != -2)
 				return false;
+		}
 
-			if (increment)
+		if (SolutionObject == null)
+			return false;
+
+		lock (_LockObject)
+		{
+			if (!test)
 				_EventProjectCardinal++;
 		}
 
@@ -832,14 +857,14 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// an Rdt event handler to prevent recursion
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool EventRdtEnter(bool increment = true, bool force = false)
+	public bool EventRdtEnter(bool test = false, bool force = false)
 	{
 		lock (_LockObject)
 		{
 			if ((_EventRdtCardinal > 0 || IdeShutdownState) && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 				_EventRdtCardinal++;
 		}
 
@@ -892,6 +917,48 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 	public abstract Task<bool> RegisterProjectEventHandlersAsync();
+
+
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
+	private void RemoveProjectEventHandlers(IVsHierarchy pRealHierarchy)
+	{
+		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0)
+			return;
+
+		try
+		{
+			Project project = pRealHierarchy.ToEditableProject();
+
+			if (project == null)
+				return;
+
+			VSProject projectObject = project.Object as VSProject;
+
+			if (_ProjectReferencesEvents.Remove(projectObject))
+			{
+				ReferencesEvents referenceEvents = projectObject.Events.ReferencesEvents;
+
+				referenceEvents.ReferenceAdded -= _ReferenceAddedEventHandler;
+				referenceEvents.ReferenceRemoved -= _ReferenceRemovedEventHandler;
+				referenceEvents.ReferenceChanged -= _ReferenceChangedEventHandler;
+			}
+
+			if (_ProjectBuildManagerEvents.Remove(projectObject))
+			{
+				BuildManagerEvents buildManagerEvents = projectObject.Events.BuildManagerEvents;
+
+				buildManagerEvents.DesignTimeOutputDeleted -= _DesignTimeOutputDeletedEventHandler;
+				buildManagerEvents.DesignTimeOutputDirty -= _DesignTimeOutputDirtyEventHandler;
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+	}
+
+
 
 	public static void ShutdownDte()
 	{
@@ -958,12 +1025,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	protected void OnProjectItemAdded(ProjectItem projectItem)
 	{
-		// Tracer.Trace(typeof(AbstrusePackageController), "OnProjectItemAdded()", projectItem.ContainingProject.Name);
-
 		if (_OnProjectItemAddedEvent == null || !projectItem.ContainingProject.IsEditable())
-		{
 			return;
-		}
 
 		_OnProjectItemAddedEvent.Invoke(projectItem);
 	}
@@ -1073,7 +1136,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// ---------------------------------------------------------------------------------
 	public int OnAfterCloseSolution(object pUnkReserved)
 	{
-		// Tracer.Trace(typeof(AbstrusePackageController), "OnAfterCloseSolution()");
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnAfterCloseSolution()", "pUnkReserved: {0}.", pUnkReserved);
 
 		_SolutionLoaded = false;
 		_ProjectReferencesEvents = null;
@@ -1114,7 +1177,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 				{
 					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-					if (EventProjectEnter(true, true))
+					if (EventProjectEnter(false, true))
 					{
 						try
 						{
@@ -1176,7 +1239,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
-		if (EventProjectEnter(true, true))
+		if (EventProjectEnter(false, true))
 		{
 			try
 			{
@@ -1190,6 +1253,11 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 		_OnAfterLoadProjectEvent?.Invoke(project);
 	}
+
+
+
+	public int OnAfterMergeSolution(object pUnkReserved) =>
+		_OnAfterMergeSolutionEvent?.Invoke(pUnkReserved) ?? VSConstants.E_NOTIMPL;
 
 
 
@@ -1224,7 +1292,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 				{
 					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-					if (EventProjectEnter(true, true))
+					if (EventProjectEnter(false, true))
 					{
 						try
 						{
@@ -1285,7 +1353,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 		// to continue recycling
 		_RefOpenCnt = 0;
 
-		if (EventProjectEnter(true, true))
+		if (EventProjectEnter(false, true))
 		{
 			try
 			{
@@ -1324,7 +1392,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
 	{
-		// Tracer.Trace(typeof(AbstrusePackageController), "OnBeforeCloseProject()", "Guid: {0}.", pHierarchy.ProjectKind());
+		// Tracer.Trace(typeof(AbstrusePackageController), "OnBeforeCloseProject()", "Guid: {0}.", pHierarchy.Kind());
 
 		if (!pHierarchy.IsDesignTimeProject())
 			return VSConstants.S_OK;
@@ -1333,16 +1401,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 		_OnBeforeCloseProjectEvent?.Invoke(pHierarchy, fRemoved);
 
-		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0)
-			return VSConstants.S_OK;
-
-		Project project = pHierarchy.ToEditableProject();
-
-		if (project == null)
-			return VSConstants.S_OK;
-
-		_ProjectReferencesEvents.Remove(project.Object as VSProject);
-		_ProjectBuildManagerEvents.Remove(project.Object as VSProject);
+		RemoveProjectEventHandlers(pHierarchy);
 
 		return VSConstants.S_OK;
 	}
@@ -1356,9 +1415,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// <see cref="IVsSolutionEvents3.OnBeforeCloseSolution"/>
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public int OnBeforeCloseSolution(object pUnkReserved) => 
+	public int OnBeforeCloseSolution(object pUnkReserved) =>
 		_OnBeforeCloseSolutionEvent?.Invoke(pUnkReserved) ?? VSConstants.E_NOTIMPL;
-
 
 
 
@@ -1367,16 +1425,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Tracer.Trace(typeof(AbstrusePackageController), "OnBeforeUnloadProject()");
 
-		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0)
-			return VSConstants.S_OK;
-
-		Project project = pRealHierarchy.ToEditableProject();
-
-		if (project == null)
-			return VSConstants.S_OK;
-
-		_ProjectReferencesEvents.Remove(project.Object as VSProject);
-		_ProjectBuildManagerEvents.Remove(project.Object as VSProject);
+		RemoveProjectEventHandlers(pRealHierarchy);
 
 		return VSConstants.S_OK;
 	}
@@ -1440,12 +1489,13 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
-
-
 	// Unhandled events follow
 
 	int IVsSolutionEvents3.OnAfterClosingChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
-	public int OnAfterMergeSolution(object pUnkReserved) => VSConstants.E_NOTIMPL;
+
+
+
+
 	int IVsSolutionEvents3.OnAfterOpeningChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
 	int IVsSolutionEvents3.OnBeforeClosingChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
 	int IVsSolutionEvents3.OnBeforeOpeningChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;

@@ -54,6 +54,7 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 
 	// Solution Event Delegates
 	delegate int AfterLoadProjectDelegate(Project project);
+	delegate int AfterMergeSolutionDelegate(object pUnkReserved);
 	delegate int AfterOpenProjectDelegate(Project project, int fAdded);
 	delegate int AfterOpenSolutionDelegate(object pUnkReserved, int fNewSolution);
 	delegate void LoadSolutionOptionsDelegate(Stream stream);
@@ -103,6 +104,7 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 	event SaveSolutionOptionsDelegate OnSaveSolutionOptionsEvent;
 
 	event AfterCloseSolutionDelegate OnAfterCloseSolutionEvent;
+	event AfterMergeSolutionDelegate OnAfterMergeSolutionEvent;
 	event BeforeCloseProjectDelegate OnBeforeCloseProjectEvent;
 	event BeforeCloseSolutionDelegate OnBeforeCloseSolutionEvent;
 	event QueryCloseProjectDelegate OnQueryCloseProjectEvent;
@@ -178,9 +180,10 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 	abstract bool UiAdviseUnsafeEvents();
 	Task<bool> AdviseUnsafeEventsAsync();
 	void UiRegisterProjectEventHandlers();
-	bool EventRdtEnter(bool increment = true, bool force = false);
+	bool EventRdtEnter(bool test = false, bool force = false);
 	void EventRdtExit();
 	string CreateConnectionUrl(string connectionString);
+	string GetConnectionQualifiedName(string connectionString);
 	TInterface EnsureService<TService, TInterface>() where TInterface : class;
 	TInterface GetService<TService, TInterface>() where TInterface : class;
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;

@@ -31,7 +31,7 @@ public class SortView : IBsSortView, IDisposable
 
 	protected Thread m_sortingThread;
 
-	public event StorageNotifyDelegate StorageNotify;
+	public event StorageNotifyDelegate StorageNotifyEventAsync;
 
 	protected SortView()
 	{
@@ -112,7 +112,8 @@ public class SortView : IBsSortView, IDisposable
 			if (GetNextRowNumber())
 			{
 				InsertNextRow();
-				StorageNotify?.Invoke(m_SortingArray.RowCount, false);
+
+				StorageNotifyEventAsync?.Invoke(m_SortingArray.RowCount, false, default).AwaiterResult();
 			}
 			else
 			{
@@ -126,7 +127,8 @@ public class SortView : IBsSortView, IDisposable
 		}
 
 		m_bKeepSortingData = false;
-		StorageNotify?.Invoke(m_SortingArray.RowCount, true);
+
+		StorageNotifyEventAsync?.Invoke(m_SortingArray.RowCount, true, default).AwaiterResult();
 	}
 
 	public virtual bool GetNextRowNumber()

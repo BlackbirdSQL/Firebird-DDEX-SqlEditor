@@ -1,28 +1,28 @@
 ﻿
+using System;
 using System.Data;
 using System.Data.Common;
+using Microsoft.Data.ConnectionUI;
 
 namespace BlackbirdSql.Core.Interfaces;
 
 
 // =========================================================================================================
 //
-//									IBsModelPropertyAgent Interface
+//									IBsConnectionCsb Interface
 //
 // =========================================================================================================
-public interface IBsModelPropertyAgent : IBsPropertyAgent
+public interface IBsConnectionCsb : IDataConnectionProperties, IBsCsb
 {
-	int CommandTimeout { get; set; }
-	int ConnectionLifeTime { get; set; }
-	string ConnectionString { get; }
-	IDbConnection DataConnection { get; }
-	IDbTransaction DataTransaction { get; }
+	DbConnection DataConnection { get; }
+	DbTransaction DataTransaction { get; }
 	bool HasTransactions { get; }
-	string Moniker { get; }
+	public Version ServerVersion { get; set; }
 	ConnectionState State { get; }
 
 
-	void BeginTransaction(IsolationLevel isolationLevel);
+	bool BeginTransaction(IsolationLevel isolationLevel);
+	bool CloseConnection();
 	DbCommand CreateCommand(string cmd = null);
 	void DisposeConnection();
 	void DisposeTransaction(bool force);

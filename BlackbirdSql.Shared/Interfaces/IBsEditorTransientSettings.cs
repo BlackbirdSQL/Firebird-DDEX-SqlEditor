@@ -27,7 +27,7 @@ public interface IBsEditorTransientSettings
 
 	bool EditorEnableIntellisense { get; set; }
 	bool EditorExecuteQueryOnOpen { get; set; }
-	bool EditorPromptToSave { get; set; }
+	bool EditorPromptSave { get; set; }
 	EnLanguageService EditorLanguageService { get; set; }
 
 

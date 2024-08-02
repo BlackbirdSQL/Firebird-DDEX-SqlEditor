@@ -21,6 +21,9 @@ static class PackageData
 
 	public const string Extension = ".fbsql";
 
+	public const char DoubleQuote = '"';
+	public const char OpenSquareBracket = '[';
+
 
 
 	// ---------------------------------------------------------------------------------------------------------

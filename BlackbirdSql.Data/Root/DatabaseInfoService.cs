@@ -219,12 +219,6 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 	}
 
 
-	public string GetServerVersion(DbConnection @this)
-	{
-		return ((FbConnection)@this).ServerVersion;
-	}
-
-
 	public long GetUpdateCount(NativeDatabaseInfoProxy @this)
 	{
 		return ((FbDatabaseInfo)@this.NativeObject).GetUpdateCount();

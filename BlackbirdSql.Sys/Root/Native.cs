@@ -51,6 +51,8 @@ public abstract class Native
 
 	// Windows messages
 	public const int WM_CREATE = 1;
+	public const int WM_DESTROY = 2;
+
 	public const int WM_MOVE = 3;
 	public const int WM_SIZE = 5;
 	public const int WM_ACTIVATE = 6;
@@ -73,6 +75,7 @@ public abstract class Native
 	public const int WM_STYLECHANGED = 125;
 	public const int WM_SETICON = 128;
 	public const int WM_NCCREATE = 129;
+	public const int WM_NCDESTROY = 130;
 	public const int WM_NCPAINT = 133;
 	public const int WM_NCACTIVATE = 134;
 	public const int WM_KEYFIRST = 256;
@@ -84,7 +87,12 @@ public abstract class Native
 	public const int WM_QUERYUISTATE = 297;
 	public const int WM_CTLCOLORBTN = 309;
 	public const int WM_PARENTNOTIFY = 528;
+	public const int WM_POWERBROADCAST = 536;
 	public const int WM_PRINTCLIENT = 792;
+	public const int WM_USER = 1024;
+	public const int WM_GETDLGID = 7690;
+
+	public const int PBT_APMSUSPEND = 4;
 
 
 	#endregion Constants and Static Fields

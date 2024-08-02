@@ -108,6 +108,8 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	{
 		bool result = false;
 
+		// Tracer.Trace(GetType(), "PopulateSettingsEventArgs()", "Package: {0}, Group: {1}.", e.Package, e.Group);
+
 		if (e.Package == null || e.Package != "Ddex")
 			result = base.PopulateSettingsEventArgs(ref e);
 
@@ -126,7 +128,8 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 				result = true;
 			}
 
-			if (e.Group == null || e.Group == "Equivalency")
+			// Equivalency only on startup.
+			if (e.Package == null && e.Group == null /* || e.Group == "Equivalency" */)
 			{
 				e.AddRange(EquivalencySettingsModel.Instance);
 				result = true;
@@ -154,6 +157,8 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	// ---------------------------------------------------------------------------------
 	public override void OnSettingsSaved(object sender)
 	{
+		// Tracer.Trace(GetType(), "OnSettingsSaved()", "sender: {0}", sender?.GetType().ToString() ?? "Null");
+
 		IBsSettingsModel model = (IBsSettingsModel)sender;
 
 		PropagateSettingsEventArgs e = new(model.GetPackage(), model.GetGroup());

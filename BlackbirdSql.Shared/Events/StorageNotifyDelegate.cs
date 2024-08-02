@@ -5,7 +5,10 @@
 
 // namespace Microsoft.SqlServer.Management.UI.Grid
 
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace BlackbirdSql.Shared.Events
 {
-	public delegate void StorageNotifyDelegate(long storageRowCount, bool storedAllData);
+	public delegate Task<bool> StorageNotifyDelegate(long storageRowCount, bool storedAllData, CancellationToken cancelToken);
 }

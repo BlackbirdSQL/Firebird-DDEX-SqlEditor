@@ -33,7 +33,7 @@ namespace BlackbirdSql.Core.Model;
 /// If anything happens in the SE's table, we will know about it in <see cref="RctEventSink"/>.
 /// </summary>
 // =========================================================================================================
-internal class RctEventSink : IBsRctEventSink
+internal class RctEventSink : IDisposable
 {
 
 
@@ -91,7 +91,7 @@ internal class RctEventSink : IBsRctEventSink
 	// =========================================================================================================
 
 
-	private static readonly object _LockClass = new();
+	private static readonly object _LockGlobal = new();
 
 	private static int _EventCardinal = 0;
 
@@ -100,7 +100,7 @@ internal class RctEventSink : IBsRctEventSink
 	private string _ConnectionString = null;
 	private bool _ConnectionEventsAttached = false;
 
-	private static IDictionary<IVsDataExplorerConnection, IBsRctEventSink> _RctEventSinks = null;
+	private static IDictionary<IVsDataExplorerConnection, RctEventSink> _RctEventSinks = null;
 
 
 	#endregion Fields
@@ -115,9 +115,6 @@ internal class RctEventSink : IBsRctEventSink
 
 
 	private EnConnectionSource ConnectionSource => RctManager.ConnectionSource;
-
-	public bool Initialized => _Initialized;
-
 
 
 	#endregion Property Accessors
@@ -142,9 +139,9 @@ internal class RctEventSink : IBsRctEventSink
 			return;
 
 
-		if (_RctEventSinks != null && _RctEventSinks.TryGetValue(e.Node.ExplorerConnection, out IBsRctEventSink eventSink))
+		if (_RctEventSinks != null && _RctEventSinks.TryGetValue(e.Node.ExplorerConnection, out RctEventSink eventSink))
 		{
-			if (!eventSink.Initialized)
+			if (!((RctEventSink)eventSink)._Initialized)
 			{
 				Tracer.Warning(typeof(RctEventSink), "AdviseServerExplorerEvents()", "Events already advised for node {0}.", e.Node.ExplorerConnection.SafeName());
 				return;
@@ -175,7 +172,7 @@ internal class RctEventSink : IBsRctEventSink
 
 		// Tracer.Trace(typeof(RctEventSink), "InitializeServerExplorerModel()", root.SafeName());
 
-		_RctEventSinks ??= new Dictionary<IVsDataExplorerConnection, IBsRctEventSink>();
+		_RctEventSinks ??= new Dictionary<IVsDataExplorerConnection, RctEventSink>();
 		_RctEventSinks[root] = new RctEventSink(root, true);
 
 		try
@@ -240,9 +237,9 @@ internal class RctEventSink : IBsRctEventSink
 			throw;
 		}
 
-		if (!Initialized)
+		if (!_Initialized)
 		{
-			_RctEventSinks ??= new Dictionary<IVsDataExplorerConnection, IBsRctEventSink>();
+			_RctEventSinks ??= new Dictionary<IVsDataExplorerConnection, RctEventSink>();
 			_RctEventSinks[_Root] = this;
 		}
 	}
@@ -272,7 +269,7 @@ internal class RctEventSink : IBsRctEventSink
 	// ---------------------------------------------------------------------------------
 	private void UnadviseServerExplorerEvents()
 	{
-		IBsRctEventSink rctEventSink = null;
+		RctEventSink rctEventSink = null;
 
 		if (_RctEventSinks == null || !_RctEventSinks.TryGetValue(_Root, out rctEventSink))
 		{
@@ -311,17 +308,18 @@ internal class RctEventSink : IBsRctEventSink
 	/// Returns false if an event has already been entered else true if it is safe to enter.
 	/// </returns>
 	// -------------------------------------------------------------------------------------------
-	public static bool EventEnter()
+	public static bool EventEnter(bool test = false, bool force = false)
 	{
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
-			if (_EventCardinal > 0)
+			if (_EventCardinal != 0 && !force)
 				return false;
 
-			_EventCardinal++;
-		}
+			if (!test)
+				_EventCardinal++;
 
-		return true;
+			return true;
+		}
 	}
 
 
@@ -334,7 +332,7 @@ internal class RctEventSink : IBsRctEventSink
 	// ---------------------------------------------------------------------------------------
 	public static void EventExit()
 	{
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			if (_EventCardinal == 0)
 				Diag.Dug(new InvalidOperationException(Resources.ExEventsAlreadyEnabled));
@@ -342,8 +340,6 @@ internal class RctEventSink : IBsRctEventSink
 				_EventCardinal--;
 		}
 	}
-
-
 
 
 
@@ -367,18 +363,20 @@ internal class RctEventSink : IBsRctEventSink
 		if (!EventEnter())
 			return;
 
-#if DEBUG
-		IVsDataExplorerConnection root = site.ExplorerConnection();
-
-		if (!ReferenceEquals(root, _Root))
-		{
-			Diag.ThrowException(new ArgumentException(
-				$"The root node passed in the event arguments does not match stored root node object for {_Root.SafeName()}."));
-		}
-#endif
 
 		try
 		{
+#if DEBUG
+			IVsDataExplorerConnection root = site.ExplorerConnection();
+
+			if (!ReferenceEquals(root, _Root))
+			{
+				Diag.ThrowException(new ArgumentException(
+					$"The root node passed in the event arguments does not match stored root node object for {_Root.SafeName()}."));
+			}
+#endif
+
+
 			if (e.NewState != DataConnectionState.Open || e.OldState == DataConnectionState.Open)
 				return;
 
@@ -427,22 +425,24 @@ internal class RctEventSink : IBsRctEventSink
 		//	"\n=============================================================================================================");
 		// Diag.Trace(typeof(RctEventSink), "OnNodeChanged()", e, ConnectionSource, ThreadHelper.CheckAccess(), _Initialized);
 
-		IVsDataExplorerConnection root = e.Node.ExplorerConnection;
-
-#if DEBUG
-		if (!ReferenceEquals(root, _Root))
-		{
-			Diag.ThrowException(new ArgumentException(
-				$"The root node passed in the event arguments does not match stored root node object for {_Root.SafeName()}."));
-		}
-#endif
 
 		try
 		{
+			IVsDataExplorerConnection root = e.Node.ExplorerConnection;
+
+#if DEBUG
+			if (!ReferenceEquals(root, _Root))
+			{
+				Diag.ThrowException(new ArgumentException(
+					$"The root node passed in the event arguments does not match stored root node object for {_Root.SafeName()}."));
+			}
+#endif
+
 			// -------------------------
 			// Handle the linkage parser
 			// -------------------------
 
+			EnConnectionSource connectionSource = EnConnectionSource.Undefined;
 
 			// Couple of caveats when refreshing.
 			// We need to delete the LinkageParser if it exists but only if it's not loading.
@@ -459,13 +459,10 @@ internal class RctEventSink : IBsRctEventSink
 					if (parser.Loaded && !parser.IsLockedLoaded
 						&& Csb.AreEquivalent(root.DecryptedConnectionString(), parser.ConnectionString, Csb.DescriberKeys))
 					{
+						connectionSource = ConnectionSource;
 
-						if (ConnectionSource != EnConnectionSource.EntityDataModel)
+						if (connectionSource != EnConnectionSource.EntityDataModel)
 							root.DisposeLinkageParser(true);
-					}
-					else
-					{
-						// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "\nIsRefreshing. parser not loaded or IsLocked loaded or not equivalent. DOING NOTHING");
 					}
 				}
 				else
@@ -474,7 +471,9 @@ internal class RctEventSink : IBsRctEventSink
 
 					// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "\nParser == null. IsEdmConnectionSource. If not IsEdm then Calling AsyncEnsureLinkageLoading().");
 
-					if (ConnectionSource != EnConnectionSource.EntityDataModel)
+					connectionSource = ConnectionSource;
+
+					if (connectionSource != EnConnectionSource.EntityDataModel)
 						root.AsyncEnsureLinkageLoading(10, 10);
 				}
 			}
@@ -487,9 +486,13 @@ internal class RctEventSink : IBsRctEventSink
 			}
 			else
 			{
-				if (!_Initialized && ConnectionSource == EnConnectionSource.ServerExplorer)
-					root.AsyncEnsureLinkageLoading();
-			 
+				if (!_Initialized)
+				{
+					connectionSource = ConnectionSource;
+
+					if (connectionSource == EnConnectionSource.ServerExplorer)
+						root.AsyncEnsureLinkageLoading();
+				}
 				// Tracer.Trace(typeof(RctEventSink), "OnNodeChanged()", "\nNot IsRefreshing or (IsExpanding or !HasBeenExpanded). DOING NOTHING.");
 			}
 
@@ -509,13 +512,15 @@ internal class RctEventSink : IBsRctEventSink
 				return;
 			}
 
-
+			if (!RctManager.IsRegistered(root))
+				return;
 
 			Csb csa = new(root.DecryptedConnectionString());
 
 			// If the ConnectionString contains any UIHierarchyMarshaler or DataSources ToolWindow identifiers we skip the
 			// DatasetKey check because the Connection is earmarked for repair.
-			if (!csa.ContainsKey(SysConstants.C_KeyExEdmx) && !csa.ContainsKey(SysConstants.C_KeyExEdmu) && csa.ContainsKey(SysConstants.C_KeyExDatasetKey))
+			if (!csa.ContainsKey(CoreConstants.C_KeyExEdmx) && !csa.ContainsKey(CoreConstants.C_KeyExEdmu)
+					&& csa.ContainsKey(CoreConstants.C_KeyExDatasetKey))
 			{
 				// Check if node.Object exists before accessing it otherwise the root node will be initialized
 				// with a call to TObjectSelectorRoot.SelectObjects.
@@ -531,14 +536,16 @@ internal class RctEventSink : IBsRctEventSink
 			}
 			else
 			{
-				if (ConnectionSource != EnConnectionSource.EntityDataModel)
+				if (connectionSource == EnConnectionSource.Undefined)
+					connectionSource = ConnectionSource;
+
+				if (connectionSource != EnConnectionSource.EntityDataModel)
 					return;
 			}
 
 			// Tracer.Trace(typeof(RctEventSink), "OnNodeChanged()", "Calling ValidateAndUpdateExplorerConnectionRename(). DisplayName ISSUE");
 
-			RctManager.ValidateAndUpdateExplorerConnectionRename(root,
-				root.DisplayName, csa);
+			RctManager.ValidateAndUpdateExplorerConnectionRename(root, root.DisplayName, csa);
 		}
 		catch (Exception ex)
 		{
@@ -568,18 +575,18 @@ internal class RctEventSink : IBsRctEventSink
 		if (!EventEnter())
 			return;
 
-		IVsDataExplorerConnection root = e.Node.ExplorerConnection;
-
-#if DEBUG
-		if (!ReferenceEquals(root, _Root))
-		{
-			Diag.ThrowException(new ArgumentException(
-				$"The root node passed in the event arguments does not match stored root node object for {_Root.SafeName()}."));
-		}
-#endif
-
 		try
 		{
+			IVsDataExplorerConnection root = e.Node.ExplorerConnection;
+
+#if DEBUG
+			if (!ReferenceEquals(root, _Root))
+			{
+				Diag.ThrowException(new ArgumentException(
+					$"The root node passed in the event arguments does not match stored root node object for {_Root.SafeName()}."));
+			}
+#endif
+
 			if (!e.Node.HasBeenExpanded || root.Connection == null
 				|| root.Connection.State != DataConnectionState.Open)
 			{

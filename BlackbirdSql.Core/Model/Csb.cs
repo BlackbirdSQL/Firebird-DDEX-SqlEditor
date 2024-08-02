@@ -3,15 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Globalization;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services;
 
-using static BlackbirdSql.Sys.SysConstants;
+using static BlackbirdSql.CoreConstants;
+using static BlackbirdSql.SysConstants;
 
 
 
@@ -46,7 +47,7 @@ namespace BlackbirdSql.Core.Model;
 /// redundant properties will be updated if connection properties or a connection string are provided.
 /// </remarks>
 // =========================================================================================================
-public class Csb : AbstractCsb, ICloneable
+public class Csb : AbstractCsb, IBsCsb
 {
 
 
@@ -82,7 +83,7 @@ public class Csb : AbstractCsb, ICloneable
 	}
 
 
-	public Csb(IBsPropertyAgent ci, bool validateServerName = true) : base(ci, validateServerName)
+	public Csb(IBsCsb rhs, bool validateServerName = true) : base((DbConnectionStringBuilder)rhs, validateServerName)
 	{
 		_Stamp = RctManager.Stamp;
 	}
@@ -107,6 +108,25 @@ public class Csb : AbstractCsb, ICloneable
 	}
 
 
+	public virtual void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+
+	protected virtual bool Dispose(bool disposing)
+	{
+		if (_Disposed || !disposing)
+			return false;
+
+		_Disposed = true;
+
+		return true;
+	}
+
+
+
 	public object Clone()
 	{
 		Csb clone = [];
@@ -125,6 +145,26 @@ public class Csb : AbstractCsb, ICloneable
 	}
 
 
+	public virtual IBsCsb Copy()
+	{
+		return new Csb(ConnectionString, false);
+	}
+
+
+	public void CopyTo(IBsCsb lhs)
+	{
+		lhs.ConnectionString = ConnectionString;
+
+		if (lhs is not Csb csa)
+			return;
+
+		csa._Moniker = _Moniker;
+		csa._UnsafeMoniker = _UnsafeMoniker;
+		csa._Stamp = _Stamp;
+	}
+
+
+
 	#endregion Constructors / Destructors
 
 
@@ -135,6 +175,7 @@ public class Csb : AbstractCsb, ICloneable
 	// =========================================================================================================
 
 
+	private bool _Disposed = false;
 	private long _Stamp = -1;
 
 
@@ -214,6 +255,68 @@ public class Csb : AbstractCsb, ICloneable
 	/// are therefore functionally equivalent.
 	/// </summary>
 	public static IEnumerable<Describer> WeakEquivalencyKeys => Describers.WeakEquivalencyKeys;
+
+
+
+	/// <summary>
+	/// Determines if the connection properties object is sufficiently complete,
+	/// inclusive of password for connections other than Properties settings
+	/// connection strings, in order to establish a database connection.
+	/// </summary>
+	public virtual bool IsCompleteMandatory
+	{
+		get
+		{
+			try
+			{
+				foreach (Describer describer in MandatoryKeys)
+				{
+					object value = this[describer.Key];
+
+					if (string.IsNullOrEmpty((string)value))
+						return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+			return true;
+		}
+	}
+
+
+
+	/// <summary>
+	/// Determines if the connection properties object is sufficiently complete,
+	/// excluding password, for connections other than Properties settings
+	/// connection strings, in order to establish a database connection.
+	/// </summary>
+	public bool IsCompletePublic
+	{
+		get
+		{
+			try
+			{
+				foreach (Describer describer in PublicMandatoryKeys)
+				{
+					object value = this[describer.Key];
+
+					if (string.IsNullOrEmpty((string)value))
+						return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+			return true;
+		}
+	}
 
 
 	/// <summary>
@@ -306,9 +409,9 @@ public class Csb : AbstractCsb, ICloneable
 	/// fbsql://user_uc@server:port/Serilize64(databasepath_lc)/[Serilize64(newline_delimited_equivalencykeys)]/
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static string CreateConnectionUrl(IBsModelPropertyAgent connInfo)
+	public static string CreateConnectionUrl(IBsCsb mdlCsb)
 	{
-		return (new Csb(connInfo.ConnectionString, false)).SafeDatasetMoniker;
+		return mdlCsb.Moniker;
 	}
 
 
@@ -326,7 +429,7 @@ public class Csb : AbstractCsb, ICloneable
 	// ---------------------------------------------------------------------------------
 	public static string CreateConnectionUrl(IDbConnection connection)
 	{
-		return (new Csb(connection.ConnectionString, false)).SafeDatasetMoniker;
+		return (new Csb(connection, false)).Moniker;
 	}
 
 
@@ -343,7 +446,7 @@ public class Csb : AbstractCsb, ICloneable
 	// ---------------------------------------------------------------------------------
 	public static string CreateConnectionUrl(IVsDataConnection site)
 	{
-		return (new Csb(site.DecryptedConnectionString(), false)).SafeDatasetMoniker;
+		return (new Csb(site.DecryptedConnectionString(), false)).Moniker;
 	}
 
 
@@ -364,8 +467,18 @@ public class Csb : AbstractCsb, ICloneable
 		if (string.IsNullOrWhiteSpace(connectionString))
 			return connectionString;
 
-		return new Csb(connectionString, false).SafeDatasetMoniker;
+		return new Csb(connectionString, false).Moniker;
 	}
+
+
+	public static string GetQualifiedName(string connectionString)
+	{
+		if (string.IsNullOrWhiteSpace(connectionString))
+			return connectionString;
+
+		return new Csb(connectionString, false).QualifiedName;
+	}
+
 
 
 	public override int GetHashCode()
@@ -374,38 +487,24 @@ public class Csb : AbstractCsb, ICloneable
 	}
 
 
-	public static string GetServerExplorerName(string connectionString)
-	{
-		return new Csb(connectionString, false).ServerExplorerName;
-	}
-
 
 	/// <summary>
 	/// Determines if the connection properties object is sufficiently complete,
 	/// inclusive of password for connections other than Properties settings
 	/// connection strings, in order to establish a database connection.
 	/// </summary>
-	public static bool IsComplete(string connectionString)
+	public static bool GetIsComplete(string connectionString)
 	{
-			try
-			{
-				Csb csa = new(connectionString, false);
+		Csb csa = new(connectionString, false);
 
-				foreach (Describer describer in Csb.MandatoryKeys)
-				{
-					object value = csa[describer.Key];
+		return csa.IsCompleteMandatory;
+	}
 
-					if (string.IsNullOrEmpty((string)value))
-						return false;
-				}
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw;
-			}
 
-			return true;
+
+	public static string GetServerExplorerName(string connectionString)
+	{
+		return new Csb(connectionString, false).ServerExplorerName;
 	}
 
 
@@ -413,23 +512,6 @@ public class Csb : AbstractCsb, ICloneable
 	public static bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2)
 		=> AreEquivalent(connectionString1, connectionString2, WeakEquivalencyKeys);
 
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Parses a ConnectionInfo object.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected override void Parse(IBsPropertyAgent ci)
-	{
-		// Tracer.Trace(GetType(), "Parse(IBsPropertyAgent)");
-
-		foreach (Describer describer in DescriberKeys)
-		{
-			if (ci.Contains(describer.Key))
-				this[describer.Key] = ci[describer.Key];
-		}
-	}
 
 
 
@@ -444,6 +526,27 @@ public class Csb : AbstractCsb, ICloneable
 		_Stamp = RctManager.Stamp;
 	}
 
+
+
+	public string ToDisplayString()
+	{
+		string connectionString = ConnectionString;
+
+		if (string.IsNullOrEmpty(connectionString))
+			return string.Empty;
+
+		if (!ContainsKey(C_KeyPassword))
+			return connectionString;
+
+		DbConnectionStringBuilder csb = new()
+		{
+			ConnectionString = connectionString,
+		};
+
+		csb[C_KeyPassword] = "*****";
+
+		return csb.ConnectionString;
+	}
 
 
 

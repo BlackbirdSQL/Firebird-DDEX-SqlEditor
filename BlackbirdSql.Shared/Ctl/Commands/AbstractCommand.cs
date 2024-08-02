@@ -69,28 +69,21 @@ public abstract class AbstractCommand
 
 
 
-	protected Csb StoredCsa
-	{
-		get
-		{
-			if (StoredAuxDocData.CommandCsa != null && StoredAuxDocData.CommandCsa.IsInvalidated)
-			{
-				StoredAuxDocData.CommandCsa = null;
-				StoredRctStamp = RctManager.Stamp;
-			}
+	protected IBsModelCsb StoredMdlCsb => StoredStrategy?.MdlCsb;
+	protected IBsModelCsb StoredLiveMdlCsb => StoredStrategy?.LiveMdlCsb;
 
-			return StoredAuxDocData.CommandCsa;
-		}
-		set
-		{
-			StoredAuxDocData.CommandCsa = value;
-		}
-	}
+	protected ConnectionStrategy StoredStrategy => StoredQryMgr?.Strategy;
 
 	public long StoredRctStamp
 	{
 		get { return StoredAuxDocData.CommandRctStamp; }
 		set { StoredAuxDocData.CommandRctStamp = value; }
+	}
+
+	public string StoredSelectedName
+	{
+		get { return StoredAuxDocData.CommandSelectedName; }
+		set { StoredAuxDocData.CommandSelectedName = value; }
 	}
 
 	public string[] StoredDatabaseList
@@ -134,6 +127,7 @@ public abstract class AbstractCommand
 	protected QueryManager StoredQryMgr => _QryMgr ?? QryMgr;
 
 
+	protected bool HasTransactions => StoredQryMgr?.HasTransactions ?? false;
 
 
 	/// <summary>
@@ -149,7 +143,7 @@ public abstract class AbstractCommand
 
 		try
 		{
-			if (!qryMgr.GetUpdateTransactionsStatus(true))
+			if (!qryMgr.GetUpdatedTransactionsStatus(true))
 				return true;
 		}
 		catch

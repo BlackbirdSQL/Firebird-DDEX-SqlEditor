@@ -36,7 +36,7 @@ public class CommandCancelQuery : AbstractCommand
 		if (CancellationLocked)
 			return VSConstants.S_OK;
 
-		StoredQryMgr?.Cancel(synchronous: false);
+		StoredQryMgr?.Cancel(false);
 
 		return VSConstants.S_OK;
 	}

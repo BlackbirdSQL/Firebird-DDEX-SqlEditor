@@ -216,9 +216,6 @@
   <data name="PropertyWindowTotalRowsReturnedDisplayName" xml:space="preserve">
     <value>Rows returned</value>
   </data>
-  <data name="QeQueryOptionsText" xml:space="preserve">
-    <value>Text</value>
-  </data>
   <data name="RegNotifyEditorFactory" xml:space="preserve">
     <value>Editor Factory:   {0}</value>
   </data>
@@ -429,83 +426,5 @@
   </data>
   <data name="StatisticsPanelStatWriteCount" xml:space="preserve">
     <value>Server page writes</value>
-  </data>
-  <data name="ToolOptionExecutionTimeDescription" xml:space="preserve">
-    <value>Select type of time display to include on the status bar.</value>
-  </data>
-  <data name="ToolOptionExecutionTimeDisplayName" xml:space="preserve">
-    <value>Display Execution Time</value>
-  </data>
-  <data name="ToolOptionGeneralCategory" xml:space="preserve">
-    <value>General</value>
-  </data>
-  <data name="ToolOptionIncludeDBNameDisplayName" xml:space="preserve">
-    <value>Include database name</value>
-  </data>
-  <data name="ToolOptionIncludeFileNameDisplayName" xml:space="preserve">
-    <value>Include file name</value>
-  </data>
-  <data name="ToolOptionIncludeLoginNameDisplayName" xml:space="preserve">
-    <value>Include login name</value>
-  </data>
-  <data name="ToolOptionIncludeRowCountDisplayName" xml:space="preserve">
-    <value>Include row count</value>
-  </data>
-  <data name="ToolOptionIncludeServerNameDisplayName" xml:space="preserve">
-    <value>Include server name</value>
-  </data>
-  <data name="ToolOptionPromptToSaveDescription" xml:space="preserve">
-    <value>Prompt to save unsaved SQL query windows on close.</value>
-  </data>
-  <data name="ToolOptionPromptToSaveDisplayName" xml:space="preserve">
-    <value>Prompt to save</value>
-  </data>
-  <data name="ToolOptionShowTimeOptionElapsed" xml:space="preserve">
-    <value>Elapsed</value>
-  </data>
-  <data name="ToolOptionShowTimeOptionEnd" xml:space="preserve">
-    <value>End</value>
-  </data>
-  <data name="ToolOptionShowTimeOptionNone" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="ToolOptionStatusBarCategory" xml:space="preserve">
-    <value>Status Bar Content</value>
-  </data>
-  <data name="ToolOptionStatusBarColorCategory" xml:space="preserve">
-    <value>Status Bar Color</value>
-  </data>
-  <data name="ToolOptionStatusBarDefaultColorDescription" xml:space="preserve">
-    <value>The background color of the status bar for single server connections</value>
-  </data>
-  <data name="ToolOptionStatusBarDefaultColorDisplayName" xml:space="preserve">
-    <value>Background color</value>
-  </data>
-  <data name="ToolOptionStatusBarIncludeDBNameDescription" xml:space="preserve">
-    <value>Include the database name on the status bar.</value>
-  </data>
-  <data name="ToolOptionStatusBarIncludeLoginNameDescription" xml:space="preserve">
-    <value>Include login name on the status bar.</value>
-  </data>
-  <data name="ToolOptionStatusBarIncludeRowCountDescription" xml:space="preserve">
-    <value>Include count of returned rows on the status bar.</value>
-  </data>
-  <data name="ToolOptionStatusBarIncludeServerNameDescription" xml:space="preserve">
-    <value>Include server name on the status bar.</value>
-  </data>
-  <data name="ToolOptionTabTextCategory" xml:space="preserve">
-    <value>Tab Text</value>
-  </data>
-  <data name="ToolOptionTabTextIncludeDatabaseNameDescription" xml:space="preserve">
-    <value>Include the name of the current connected database in the tab text.</value>
-  </data>
-  <data name="ToolOptionTabTextIncludeFileNameDescription" xml:space="preserve">
-    <value>Include the name of the script file in the tab text.</value>
-  </data>
-  <data name="ToolOptionTabTextIncludeLoginNameDescription" xml:space="preserve">
-    <value>Include the name of the login for the connection in the tab text.</value>
-  </data>
-  <data name="ToolOptionTabTextIncludeServerNameDescription" xml:space="preserve">
-    <value>Include the name of the connected server in the tab text.</value>
   </data>
 </root>

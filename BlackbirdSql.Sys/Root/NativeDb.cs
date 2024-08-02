@@ -8,11 +8,12 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading.Tasks;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Design;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -24,7 +25,7 @@ namespace BlackbirdSql;
 
 
 // =========================================================================================================
-//											DbNativeServices Class
+//											DbNative Class
 //
 /// <summary>
 /// Central class for database specific class native services.
@@ -32,6 +33,13 @@ namespace BlackbirdSql;
 // =========================================================================================================
 public static class NativeDb
 {
+
+	// ----------------------
+	#region Fields - DbNative
+	// ----------------------
+
+
+	public static object _LockGlobal = new();
 
 	private static IBsNativeDatabaseEngine _DatabaseEngineSvc = null;
 	private static IBsNativeProviderSchemaFactory _ProviderSchemaFactorySvc = null;
@@ -46,7 +54,18 @@ public static class NativeDb
 	private static bool _OnDemandLinkage = false;
 	private static int _LinkageTimeout = 120;
 
+	private static int _EventReindexingCardinal = 0;
 
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - DbNative
+	// =========================================================================================================
 
 
 	public static Type CsbType
@@ -156,6 +175,71 @@ public static class NativeDb
 	public static string RootObjectTypeName => DatabaseEngineSvc.RootObjectTypeName_;
 
 
+	#endregion Property accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - DbNative
+	// =========================================================================================================
+
+
+	public static void AsyncReindexEntityFrameworkAssemblies(Project project = null)
+	{
+		// If it's a solution reindex (project == null), lock entry so that only
+		// other solution reindex requests can enter.
+		if (project == null)
+		{
+			if (!EventReindexingEnter(false, true))
+				return;
+		}
+		else
+		{
+			if (!EventReindexingEnter(true))
+				return;
+		}
+
+
+		// Get in behind everyone else so that we're last.
+
+		_ = Task.Factory.StartNew(
+				async () =>
+				{
+					// If it's a solution reindex, unlock. If other solution reindex's
+					// are behind us they'll lock us out when we call EventReindexingEnter()
+					// again after checking for SolutionClosing and swithching to the main
+					// thread..
+					// This is perfect code logic because it means only the last solution
+					// reindex will get through. Everything else will be discarded. Even
+					// requests ahead of it.
+					if (project == null)
+						EventReindexingExit();
+
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+					if (!EventReindexingEnter())
+						return;
+
+					try
+					{
+						ReindexEntityFrameworkAssemblies(project);
+					}
+					catch (Exception ex)
+					{
+						Diag.ThrowException(ex);
+					}
+					finally
+					{
+						EventReindexingExit();
+					}
+				},
+				default, TaskCreationOptions.None, TaskScheduler.Default);
+	}
+
+
+
 	public static DbConnection CastToNativeConnection(object connection)
 	{
 		return DatabaseEngineSvc.CastToNativeConnection_(connection);
@@ -182,15 +266,6 @@ public static class NativeDb
 
 
 
-
-	public static IBsNativeDbConnectionWrapper CreateDbConnectionWrapper(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null)
-	{
-		return DatabaseEngineSvc.CreateDbConnectionWrapper_(connection, sqlConnectionCreatedObserver);
-	}
-
-
-
-
 	public static IBsNativeDbStatementWrapper CreateDbStatementWrapper(IBsNativeDbBatchParser owner, object statement, int statementIndex)
 	{
 		return DatabaseEngineSvc.CreateDbStatementWrapper_(owner, statement, statementIndex);
@@ -203,6 +278,13 @@ public static class NativeDb
 
 
 
+	public static string GetDecoratedDdlSource(IVsDataExplorerNode node, EnModelTargetType targetType)
+	{
+		return DatabaseEngineSvc.GetDecoratedDdlSource_(node, targetType);
+	}
+
+
+
 	// -----------------------------------------------------------------------------------------------------
 	/// <summary>
 	/// Registers all versions of the native db EntityFramework implementation with the
@@ -210,8 +292,8 @@ public static class NativeDb
 	/// If the project argument is supplied, only that project is targeted.
 	/// </summary>
 	// -----------------------------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check.")]
-	public static List<Project> ReindexEntityFrameworkAssemblies(Project project = null)
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller has checked.")]
+	private static List<Project> ReindexEntityFrameworkAssemblies(Project project = null)
 	{
 		// Tracer.Trace(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()");
 
@@ -228,8 +310,8 @@ public static class NativeDb
 
 		ITypeResolutionService typeResolutionService;
 
-		Type providerServicesType = DatabaseEngineSvc.ProviderServicesType_;
-		string typeKey = DatabaseEngineSvc.ProviderServicesTypeFullName_;
+		Type providerServicesType = DatabaseEngineSvc.EFProviderServicesType_;
+		string typeKey = DatabaseEngineSvc.EFProviderServicesTypeFullName_;
 
 		Dictionary<string, Type> typeCache;
 		VSProject projectObject;
@@ -261,23 +343,25 @@ public static class NativeDb
 
 			typeCache = (Dictionary<string, Type>)Reflect.GetFieldValue(typeResolutionService, "_typeCache");
 
+			key = typeKey.FmtRes("1.0.0.0");
+
 			if (typeCache == null)
 			{
 				typeCache = new Dictionary<string, Type>(127);
 				Reflect.SetFieldValue(typeResolutionService, "_typeCache", typeCache);
 			}
-			else if (typeCache.ContainsKey(typeKey))
+			else if (typeCache.ContainsKey(key))
 			{
 				continue;
 			}
 
 			// Tracer.Trace(typeof(Cmd), "ReindexEntityFrameworkAssemblies()", "Reindexing EntityFrameworkAssemblies for project: {0}.", proj.Name);
 
-			typeCache[typeKey] = providerServicesType;
+			typeCache[key] = providerServicesType;
 
 			foreach (string version in DatabaseEngineSvc.EntityFrameworkVersions_)
 			{
-				key = typeKey.Replace("_version_", version);
+				key = typeKey.FmtRes(version);
 
 				typeCache[key] = providerServicesType;
 			}
@@ -361,9 +445,7 @@ public static class NativeDb
 	public static string GetErrorMessage(object error) => DatabaseEngineSvc.GetErrorMessage_(error);
 	public static int GetErrorNumber(object error) => DatabaseEngineSvc.GetErrorNumber_(error);
 	public static int GetObjectTypeIdentifierLength(string typeName) => DatabaseEngineSvc.GetObjectTypeIdentifierLength_(typeName);
-	public static IList<object> GetInfoMessageEventArgsErrors(DbInfoMessageEventArgs e) => DatabaseEngineSvc.GetInfoMessageEventArgsErrors_(e);
-
-	public static Version GetServerVersion(IDbConnection connection) => connection.GetVersion();
+	public static Version ParseServerVersion(IDbConnection connection) => connection.ParseServerVersion();
 	public static ICollection<object> GetErrorEnumerator(IList<object> errors) => DatabaseEngineSvc.GetErrorEnumerator_(errors);
 
 
@@ -375,5 +457,70 @@ public static class NativeDb
 	public static void OpenConnection(DbConnection connection) => DatabaseEngineSvc.OpenConnection_(connection);
 
 	public static void UnlockLoadedParser() => DatabaseEngineSvc.UnlockLoadedParser_();
+
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Events and Event handling - DbNative
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Increments the <see cref="_EventReindexingCardinal"/> counter when execution
+	/// enters a Reindexing event handler to prevent recursion.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static bool EventReindexingEnter(bool test = false, bool force = false)
+	{
+		lock (_LockGlobal)
+		{
+			// Tracer.Trace(GetType(), "EventProjectEnter()", "_EventProjectCardinal: {0}, increment: {1}.", _EventProjectCardinal, increment);
+
+			if (_EventReindexingCardinal > 0 && !force)
+				return false;
+		}
+
+		if (ApcManager.SolutionClosing)
+			return false;
+
+		lock (_LockGlobal)
+		{
+			if (!test)
+				_EventReindexingCardinal++;
+		}
+
+		return true;
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Decrements the <see cref="_EventReindexingCardinal"/> counter that was previously
+	/// incremented by <see cref="EventReindexingEnter"/>.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static void EventReindexingExit()
+	{
+		lock (_LockGlobal)
+		{
+			if (_EventReindexingCardinal <= 0)
+			{
+				ApplicationException ex = new($"Attempt to exit Reindexing event when not in a Reindexing event. _EventReindexingCardinal: {_EventReindexingCardinal}");
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			_EventReindexingCardinal--;
+		}
+	}
+
+
+	#endregion Events and Event handling
 
 }

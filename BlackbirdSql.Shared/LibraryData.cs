@@ -1,6 +1,7 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
+using System;
 using BlackbirdSql.Shared.Model;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -33,13 +34,6 @@ public static class LibraryData
 	public const string EditorPaneGuid = "ADE35F8D-9953-4E4C-9190-A0DDE7075840";
 	public const string SqlResultsEditorFactoryGuid = "31AD6A1B-B7A2-4B16-AADA-28ADEADF7F2E";
 
-	/// <summary>
-	/// Unique guid key for saving the DbConnectionStringBuilder object parsed from the
-	/// ServerExplorer node into IVsUserData. This connection info is added to the FlameRobin list if
-	/// it does not exist. Note that the csb will include the parameter 'DatasetKey' which is the string
-	/// used in the toolbar dropdown list.
-	/// </summary>
-	public const string UserDataCsbGuid = "EDD5003E-0797-40FF-8ACF-F93ED2A6C059";
 
 	/// <summary>
 	/// Cross-reference in <see cref="IVsTextLines"/> of a document's <see cref="AuxilliaryDocData"/>.
@@ -55,6 +49,5 @@ public static class LibraryData
 	public const string SqlTextPlanTabLogicalViewGuid = "200E716C-607B-4729-8D8C-C857A6F0FDF3";
 	public const string SqlStatisticsTabLogicalViewGuid = "C7601C1A-F370-4560-83B3-07DE8331EA8F";
 	public const string SqlTextResultsTabLogicalViewGuid = "2C5E6F49-4D0D-44E2-B6C1-DAF685928BD9";
-
 
 };

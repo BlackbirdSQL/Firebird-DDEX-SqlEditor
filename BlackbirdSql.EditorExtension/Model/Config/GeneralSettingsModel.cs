@@ -92,11 +92,11 @@ public class GeneralSettingsModel(IBsTransientSettings transientSettings)
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayGeneralPromptToSave")]
-	[GlobalizedDescription("OptionDescriptionGeneralPromptToSave")]
+	[GlobalizedDisplayName("OptionDisplayGeneralPromptSave")]
+	[GlobalizedDescription("OptionDescriptionGeneralPromptSave")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[DefaultValue(false)]
-	public bool PromptToSave { get; set; } = false;
+	[DefaultValue(true)]
+	public bool PromptSave { get; set; } = true;
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]

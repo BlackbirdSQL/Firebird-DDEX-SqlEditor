@@ -65,7 +65,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 	private QEResultSet _ResultSet;
 	private int _ColumnCount = -1;
 	private readonly StringBuilder _RowBuilder = new StringBuilder(C_InitialRowBuilderCapacity);
-	private readonly MoreRowsAvailableEventHandler _MoreRowsAvailableHandler;
+	private readonly MoreRowsAvailableEventHandler _MoreRowsAvailableEventAsync;
 	private static readonly Hashtable _TypeToCharNumHashTable;
 	private static readonly Hashtable _NumericsTypesHashTable;
 	private StringCollection _ColumnsFormatCollection = [];
@@ -203,7 +203,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 		: base(resultsControl)
 	{
 		// Tracer.Trace(GetType(), "ResultsToTextOrFileBatchConsumer.ResultsToTextOrFileBatchConsumer", "", null);
-		_MoreRowsAvailableHandler = OnMoreRowsAvailable;
+		_MoreRowsAvailableEventAsync = OnMoreRowsAvailableAsync;
 	}
 
 
@@ -387,11 +387,11 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 		// Tracer.Trace(GetType(), "HookupWithEvents()", "bSubscribe = {0}", bSubscribe);
 		if (bSubscribe)
 		{
-			_ResultSet.MoreRowsAvailableEvent += _MoreRowsAvailableHandler;
+			_ResultSet.MoreRowsAvailableEventAsync += _MoreRowsAvailableEventAsync;
 		}
 		else
 		{
-			_ResultSet.MoreRowsAvailableEvent -= _MoreRowsAvailableHandler;
+			_ResultSet.MoreRowsAvailableEventAsync -= _MoreRowsAvailableEventAsync;
 		}
 	}
 
@@ -514,11 +514,14 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 	// =========================================================================================================
 
 
-	private void OnMoreRowsAvailable(object sender, MoreRowsAvailableEventArgs a)
+	private async Task<bool> OnMoreRowsAvailableAsync(object sender, MoreRowsAvailableEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "OnMoreRowsAvailable()", "_ColumnCount: {0}, _MaxColSizes.Count: {1}", _ColumnCount, _MaxColSizes.Count);
 
-		if (a.AllRows)
+		if (args.CancelToken.IsCancellationRequested)
+			return await Cmd.AwaitableAsync(false);
+
+		if (args.AllRows)
 		{
 			CreateColumnWidthsAndFormatStrings();
 
@@ -531,10 +534,10 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 			_Results.Clear();
 			_MaxColSizes.Clear();
 
-			return;
+			return await Cmd.AwaitableAsync(false);
 		}
 
-		long iRow = a.NewRowsNumber - 1;
+		long iRow = args.NewRowsNumber - 1;
 
 		string value;
 		string[] row = new string[_ColumnCount];
@@ -566,11 +569,15 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 				_MaxColSizes[i] = len;
 		}
 
-		bool flush = a.NewRowsNumber > C_NumFirstRowsToFlush && a.NewRowsNumber % C_NewRowsFlushFreq == 0L || a.AllRows || a.NewRowsNumber == C_NumFirstRowsToFlush;
+		bool flush = args.NewRowsNumber > C_NumFirstRowsToFlush
+			&& args.NewRowsNumber % C_NewRowsFlushFreq == 0L || args.AllRows
+			|| args.NewRowsNumber == C_NumFirstRowsToFlush;
 
 		_Results.Add(new KeyValuePair<string[], bool>(row, flush));
 
 		// Tracer.Trace(GetType(), "OnMoreRowsAvailable", "Row string: {0}", _RowBuilder.ToString());
+
+		return !args.CancelToken.IsCancellationRequested;
 	}
 
 

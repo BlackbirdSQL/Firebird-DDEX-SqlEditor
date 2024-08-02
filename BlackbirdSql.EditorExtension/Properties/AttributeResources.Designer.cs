@@ -1711,9 +1711,9 @@ namespace BlackbirdSql.EditorExtension.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Prompt to save unsaved SQL query windows on close..
         /// </summary>
-        internal static string OptionDescriptionGeneralPromptToSave {
+        internal static string OptionDescriptionGeneralPromptSave {
             get {
-                return ResourceManager.GetString("OptionDescriptionGeneralPromptToSave", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionGeneralPromptSave", resourceCulture);
             }
         }
         
@@ -2260,9 +2260,9 @@ namespace BlackbirdSql.EditorExtension.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Prompt to save.
         /// </summary>
-        internal static string OptionDisplayGeneralPromptToSave {
+        internal static string OptionDisplayGeneralPromptSave {
             get {
-                return ResourceManager.GetString("OptionDisplayGeneralPromptToSave", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayGeneralPromptSave", resourceCulture);
             }
         }
         

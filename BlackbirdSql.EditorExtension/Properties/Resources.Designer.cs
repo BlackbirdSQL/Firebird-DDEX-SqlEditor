@@ -116,6 +116,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} {1}.
+        /// </summary>
+        public static string QueryGlyphFormat {
+            get {
+                return ResourceManager.GetString("QueryGlyphFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FBSQL Results Window.
         /// </summary>
         public static string ResultsEditorFactory_Caption {

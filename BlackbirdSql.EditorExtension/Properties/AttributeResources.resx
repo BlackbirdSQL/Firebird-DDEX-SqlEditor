@@ -697,7 +697,7 @@
   <data name="OptionDescriptionGeneralLanguageService" xml:space="preserve">
     <value>The mandated language service the editor must use. Requires IDE restart.</value>
   </data>
-  <data name="OptionDescriptionGeneralPromptToSave" xml:space="preserve">
+  <data name="OptionDescriptionGeneralPromptSave" xml:space="preserve">
     <value>Prompt to save unsaved SQL query windows on close.</value>
   </data>
   <data name="OptionDescriptionResultsDirectory" xml:space="preserve">
@@ -880,7 +880,7 @@
   <data name="OptionDisplayGeneralLanguageService" xml:space="preserve">
     <value>Language Service</value>
   </data>
-  <data name="OptionDisplayGeneralPromptToSave" xml:space="preserve">
+  <data name="OptionDisplayGeneralPromptSave" xml:space="preserve">
     <value>Prompt to save</value>
   </data>
   <data name="OptionDisplayResultsDirectory" xml:space="preserve">

@@ -11,7 +11,6 @@ using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model.Parsers;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 

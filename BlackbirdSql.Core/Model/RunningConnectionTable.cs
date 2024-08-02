@@ -98,7 +98,7 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 					|| hybridKey.ToLowerInvariant().Contains(";data source="))
 				{
 					Csb csa = new(hybridKey, false);
-					hybridKey = csa.SafeDatasetMoniker;
+					hybridKey = csa.Moniker;
 					keyType = EnRctKeyType.ConnectionUrl;
 				}
 			}
@@ -147,7 +147,7 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 				_InternalConnectionsTable.AcceptChanges();
 
 				_InternalConnectionsTable.DefaultView.ApplyDefaultSort = false;
-				_InternalConnectionsTable.DefaultView.Sort = "Orderer,DataSource,AdornedQualifiedName ASC";
+				_InternalConnectionsTable.DefaultView.Sort = "Orderer,DataSource,AdornedQualifiedTitle ASC";
 				_InternalConnectionsTable.AcceptChanges();
 
 				_InternalDatabases = _InternalConnectionsTable.DefaultView.ToTable(false);
@@ -212,10 +212,32 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 			object adornedQualifiedName;
 
 			return InternalDatabases.Select()
-					.Where(x => (adornedQualifiedName = x[SysConstants.C_KeyExAdornedQualifiedName]) != DBNull.Value
+					.Where(x => (adornedQualifiedName = x[CoreConstants.C_KeyExAdornedQualifiedName]) != DBNull.Value
 						&& !string.IsNullOrWhiteSpace((string)adornedQualifiedName))
-					.OrderBy(x => (string)x[SysConstants.C_KeyExAdornedQualifiedName])
-					.Select(x => (string)x[SysConstants.C_KeyExAdornedQualifiedName]);
+					.OrderBy(x => (string)x[CoreConstants.C_KeyExAdornedQualifiedName])
+					.Select(x => (string)x[CoreConstants.C_KeyExAdornedQualifiedName]);
+		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a strings enumerable of the Rct's registered DatasetKeys'
+	/// AdornedQualifiedTitle's.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected IEnumerable<string> InternalAdornedQualifiedTitles
+	{
+		get
+		{
+			object adornedQualifiedTitle;
+
+			return InternalDatabases.Select()
+					.Where(x => (adornedQualifiedTitle = x[CoreConstants.C_KeyExAdornedQualifiedTitle]) != DBNull.Value
+						&& !string.IsNullOrWhiteSpace((string)adornedQualifiedTitle))
+					.OrderBy(x => (string)x[CoreConstants.C_KeyExAdornedQualifiedTitle])
+					.Select(x => (string)x[CoreConstants.C_KeyExAdornedQualifiedTitle]);
 		}
 	}
 
@@ -241,7 +263,7 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 		if (_Instance == null)
 			return;
 
-		DataRow[] rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[SysConstants.C_KeyExDatasetKey])).ToArray();
+		DataRow[] rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[CoreConstants.C_KeyExDatasetKey])).ToArray();
 
 		if (rows.Length == 0)
 		{
@@ -284,13 +306,14 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 		if (keyType == EnRctKeyType.ConnectionString)
 		{
 			Csb csa = new(hybridKey, false);
-			hybridKey = csa.SafeDatasetMoniker;
+			hybridKey = csa.Moniker;
 			keyType = EnRctKeyType.ConnectionUrl;
 		}
 
+
 		if (keyType == EnRctKeyType.ConnectionUrl)
 		{
-			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[SysConstants.C_KeyExConnectionUrl])).ToArray();
+			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExConnectionUrl])).ToArray();
 
 			value = rows.Length > 0 ? rows[0] : null;
 
@@ -299,7 +322,16 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 		}
 		else if (keyType == EnRctKeyType.AdornedQualifiedName)
 		{
-			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[SysConstants.C_KeyExAdornedQualifiedName])).ToArray();
+			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExAdornedQualifiedName])).ToArray();
+
+			value = rows.Length > 0 ? rows[0] : null;
+
+			// if (value == null)
+			//	Tracer.Trace(GetType(), "TryGetHybridRowValue()", "FAILED Final hybridKey: {0}", hybridKey);
+		}
+		else if (keyType == EnRctKeyType.AdornedQualifiedTitle)
+		{
+			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExAdornedQualifiedTitle])).ToArray();
 
 			value = rows.Length > 0 ? rows[0] : null;
 

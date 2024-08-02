@@ -80,7 +80,6 @@
 		<Compile Include="Interfaces\IBsPackageController.cs" />
 		<Compile Include="Interfaces\IBsNativeDbLinkageParser.cs" />
 		<Compile Include="Interfaces\IBsNativeProviderSchemaFactory.cs" />
-		<Compile Include="Interfaces\IBsNativeDbConnectionWrapper.cs" />
 		<Compile Include="Ctl\Diagnostics\LogObject.cs" />
 		<Compile Include="Ctl\Diagnostics\SqlEtwProvider.cs" />
 		<Compile Include="Ctl\Diagnostics\SqlTracer.cs" />
@@ -104,7 +103,6 @@
 		<Compile Include="Events\AutomationVerbEventHandler.cs" />
 		<Compile Include="Events\AutomatorPropertyValueChangedEventArgs.cs" />
 		<Compile Include="Events\EditControlFocusEventArgs.cs" />
-		<Compile Include="Events\DbInfoMessageEventArgs.cs" />
 		<Compile Include="Events\StatementExecutionEventArgs.cs" />
 		<Compile Include="Extensions\ErmBindingSource.cs" />
 		<Compile Include="Root\ExtensionMembers.cs" />
@@ -117,14 +115,12 @@
 		<Compile Include="Interfaces\IBsEnumerableDescribers.cs" />
 		<Compile Include="Interfaces\IBsQueryManager.cs" />
 		<Compile Include="Interfaces\IBsNativeDbBatchParser.cs" />
-		<Compile Include="Model\NativeDbConnectionWrapperProxy.cs" />
 		<Compile Include="Properties\ControlsResources.Designer.cs">
 			<DependentUpon>ControlsResources.resx</DependentUpon>
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
 		</Compile>
 		<Compile Include="Interfaces\SBsNativeProviderSchemaFactory.cs" />
-		<Compile Include="Interfaces\SBsNativeDbConnectionWrapper.cs" />
 		<Compile Include="Root\SysConstants.cs" />
 		<Compile Include="Model\NativeDatabaseInfoProxy.cs" />
 		<Compile Include="Model\NativeDbBatchParserProxy.cs" />

@@ -186,8 +186,9 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 						break;
 					case VSConstants.VSStd97CmdID.GotoDefn:
 					case VSConstants.VSStd97CmdID.FindReferences:
+						prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
+						/*
 						auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(WindowPane.DocData);
-
 						if (auxDocData != null && (auxDocData.StrategyFactory.IsOnline || auxDocData.StrategyFactory is ConnectionStrategyFactory))
 						{
 							prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
@@ -196,7 +197,7 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 						{
 							prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 						}
-
+						*/
 						hresult = VSConstants.S_OK;
 						break;
 					case VSConstants.VSStd97CmdID.ShowProperties:

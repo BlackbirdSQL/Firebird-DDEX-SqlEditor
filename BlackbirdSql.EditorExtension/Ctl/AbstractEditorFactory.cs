@@ -3,19 +3,14 @@
 
 using System;
 using System.Data;
-using System.Data.Common;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
 using BlackbirdSql.EditorExtension.Properties;
 using BlackbirdSql.Shared.Controls;
-using BlackbirdSql.Shared.Ctl.Commands;
 using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
@@ -60,7 +55,6 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 		IVsHierarchy hierarchy, uint itemId, IntPtr pExistingDocData, out IntPtr pDocView,
 		out IntPtr pDocData, out string caption, out Guid cmdUIGuid, out int hresult)
 	{
-
 		pDocView = IntPtr.Zero;
 		pDocData = IntPtr.Zero;
 		caption = "";
@@ -187,6 +181,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				IVsUserData vsUserData2 = (IVsUserData)vsTextLines2;
 				Guid clsidDetectLang = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
 				___(vsUserData2.SetData(ref clsidDetectLang, false));
+
 			}
 			catch (Exception ex)
 			{
@@ -204,9 +199,6 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				Cursor.Current = current;
 			}
 		}
-
-		// if (autoExecute && editorPane != null)
-		//	ExecuteQuery(editorPane);
 
 		return VSConstants.S_OK;
 	}

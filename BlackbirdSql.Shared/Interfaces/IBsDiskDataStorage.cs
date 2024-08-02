@@ -10,7 +10,7 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 public interface IBsDiskDataStorage : IBsDataStorage, IDisposable
 {
-	event StorageNotifyDelegate StorageNotify;
+	event StorageNotifyDelegate StorageNotifyEventAsync;
 
 	Task<bool> InitStorageAsync(IDataReader reader, CancellationToken cancelToken);
 

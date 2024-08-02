@@ -253,6 +253,9 @@ public abstract class AbstractPackageController : AbstrusePackageController
 	{
 		get
 		{
+			if (!ThreadHelper.CheckAccess())
+				return false;
+
 			try
 			{
 				if (!__(VsSolution.GetProperty((int)__VSPROPID.VSPROPID_SOLUTIONCLOSING, out object pvar)) || object.Equals(pvar, true))
@@ -333,7 +336,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 	}
 
 
-	protected IVsSolution VsSolution => _PackageInstance.VsSolution;
+	protected override IVsSolution VsSolution => _PackageInstance.VsSolution;
 
 
 	#endregion Property Accessors
@@ -349,6 +352,8 @@ public abstract class AbstractPackageController : AbstrusePackageController
 
 
 	public override string CreateConnectionUrl(string connectionString) => Csb.CreateConnectionUrl(connectionString);
+
+	public override string GetConnectionQualifiedName(string connectionString) => Csb.GetQualifiedName(connectionString);
 
 
 
@@ -391,7 +396,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 	public override string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root)
 	{
 		Csb csa = RctManager.CloneRegistered(root);
-		return csa == null ? SysConstants.C_DefaultExDatasetKey : csa.DatasetKey;
+		return csa == null ? CoreConstants.C_DefaultExDatasetKey : csa.DatasetKey;
 	}
 
 

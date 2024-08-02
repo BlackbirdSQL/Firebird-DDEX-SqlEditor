@@ -544,7 +544,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 			IList<string> identifierList = moniker.Identifier.ToArray();
 			EnModelObjectType objectType = moniker.ObjectType;
-			string script = Moniker.GetDecoratedDdlSource(node, targetType);
+			string script = node.GetDecoratedDdlSource(targetType);
 
 			Csb csa = RctManager.CloneRegistered(node);
 

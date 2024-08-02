@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Shared.Controls.Tabs;
 using BlackbirdSql.Shared.Enums;
+using BlackbirdSql.Shared.Model;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
@@ -14,11 +15,17 @@ public interface IBsWindowPaneServiceProvider
 {
 	AbstractEditorTab ActiveTab { get; }
 
+	AuxilliaryDocData AuxDocData { get; }
+
+	string DocumentMoniker { get; }
+
 	AbstractTabbedEditorUIControl TabbedEditorControl { get; }
 
 	IVsWindowFrame TabFrame { get; }
 
 	Guid InitialLogicalView { get; }
+
+	uint PrimaryCookie { get; }
 
 	IBsTextEditor TextEditor { get; set; }
 
@@ -26,7 +33,6 @@ public interface IBsWindowPaneServiceProvider
 
 	IEnumerable<uint> GetEditableDocuments();
 
-	uint GetPrimaryDocCookie();
 
 	bool IsTabVisible(Guid logicalView);
 

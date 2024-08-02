@@ -8,6 +8,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
 using Microsoft.VisualStudio;
@@ -93,7 +94,7 @@ public abstract class AbstractRdtManager : IDisposable
 	protected static int _InflightMonikerSeed = -1;
 
 	protected static Dictionary<int, string> _InflightMonikers = null;
-	protected static Dictionary<string, object> _InflightMonikerCsbTable = null;
+	protected static Dictionary<string, Csb> _InflightMonikerCsbTable = null;
 
 
 	private readonly Dictionary<uint, int> _KeepAliveDocCookies = [];
@@ -796,7 +797,14 @@ public abstract class AbstractRdtManager : IDisposable
 	protected bool CloseOpenDocument(string fileName)
 	{
 		CloseFrame(fileName, out var _);
-		return GetRdtCookieImpl(fileName) == 0;
+
+		try
+		{
+			return GetRdtCookieImpl(fileName) == 0;
+		}
+		catch { }
+
+		return true;
 	}
 
 	protected void CloseFrame(string mkDocument, out int foundAndClosed)
@@ -920,14 +928,7 @@ public abstract class AbstractRdtManager : IDisposable
 		if (RdtSvc4 == null)
 			return pdwCookie;
 
-		try
-		{
-			pdwCookie = RdtSvc4.GetDocumentCookie(mkDocument);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
+		pdwCookie = RdtSvc4.GetDocumentCookie(mkDocument);
 
 		return pdwCookie;
 	}
@@ -974,7 +975,11 @@ public abstract class AbstractRdtManager : IDisposable
 	{
 		if (!string.IsNullOrEmpty(mkDocument))
 		{
-			return GetRdtCookieImpl(mkDocument) != 0;
+			try
+			{
+				return GetRdtCookieImpl(mkDocument) != 0;
+			}
+			catch { }
 		}
 
 		return false;

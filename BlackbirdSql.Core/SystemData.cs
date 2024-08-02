@@ -29,7 +29,11 @@ public static class SystemData
 	public const string C_UIContextName = "BlackbirdSql UIContext Autoload";
 
 	// Glyphs for Rct connection sources.
-	public const char C_SessionFileGlyph = '\u25cf'; // Small solid circle
+	public const char C_SessionTitleGlyph = '\u25cf'; // Small solid circle
+	public const char C_EdmTitleGlyph = '\u26ee'; // Gear with handles
+	public const char C_ProjectTitleGlyph = '\u26ed'; // Gear without hub
+	public const char C_UtilityTitleGlyph = '\u29c9'; // 2 joined squares
+
 	public const char C_SessionDatasetGlyph = '\u2b24'; // Solid circle
 	public const char C_EdmDatasetGlyph = '\u26ee'; // Gear with handles
 	public const char C_ProjectDatasetGlyph = '\u26ed'; // Gear without hub

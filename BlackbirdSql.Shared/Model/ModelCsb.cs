@@ -5,15 +5,10 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using BlackbirdSql.Core.Events;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys.Ctl;
-
-using static BlackbirdSql.Shared.Ctl.QueryExecution.QueryManager;
 
 
 
@@ -22,37 +17,31 @@ namespace BlackbirdSql.Shared.Model;
 
 // =========================================================================================================
 //
-//									ConnectionInfoPropertyAgent Class
+//											ModelCsb Class
 //
 /// <summary>
-/// PropertyAgent class for supporting query connections.
+/// Csb class for supporting the SqlEditor query model.
 /// </summary>
 // =========================================================================================================
-public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnectionInfo
+public class ModelCsb : ConnectionCsb, IBsModelCsb
 {
 
-	// -------------------------------------------------------------
-	#region Constructors / Destructors - ConnectionInfoPropertyAgent
-	// -------------------------------------------------------------
+	// ------------------------------------------
+	#region Constructors / Destructors - ModelCsb
+	// ------------------------------------------
 
 
-	/// <summary>
-	/// Universal .ctor.
-	/// </summary>
-	public ConnectionInfoPropertyAgent(IBsConnectionInfo lhs, bool generateNewId) : base(lhs, generateNewId)
+	public ModelCsb(string connectionString) : base(connectionString)
 	{
-
 	}
 
-
-
-	public ConnectionInfoPropertyAgent() : base(null, true)
+	public ModelCsb(IBsCsb lhs) : base(lhs)
 	{
 	}
 
 
 
-	public ConnectionInfoPropertyAgent(IBsConnectionInfo lhs) : base(lhs, true)
+	public ModelCsb() : base()
 	{
 	}
 
@@ -73,17 +62,9 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 
 
 
-	public override IBsPropertyAgent Copy()
+	public override IBsCsb Copy()
 	{
-		return new ConnectionInfoPropertyAgent(this, true);
-	}
-
-
-
-	protected static new void CreateAndPopulatePropertySet(DescriberDictionary describers = null)
-	{
-		// Just pass any request down. This class uses it's parent's descriptor.
-		AbstractModelPropertyAgent.CreateAndPopulatePropertySet(describers);
+		return new ModelCsb(this);
 	}
 
 
@@ -93,7 +74,7 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 
 
 	// =========================================================================================================
-	#region Fields - ConnectionInfoPropertyAgent
+	#region Fields - ModelCsb
 	// =========================================================================================================
 
 	private long _ConnectionId = 0;
@@ -105,12 +86,11 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 
 
 	// =========================================================================================================
-	#region Property Accessors - ConnectionInfoPropertyAgent
+	#region Property Accessors - ModelCsb
 	// =========================================================================================================
 
 
 	public long ConnectionId => _ConnectionId;
-
 
 
 	// ---------------------------------------------------------------------------------
@@ -121,24 +101,29 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 	/// the connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public IDbConnection LiveConnection
+	public DbConnection LiveConnection
 	{
 		get
 		{
 			lock (_LockObject)
 			{
-				if (_DataConnection == null)
+				DbConnection connection = DataConnection;
+
+				if (connection == null)
 					return null;
 
 				// We have to ensure the connection hasn't changed.
 
+				if (!IsInvalidated)
+					return connection;
+
 				// Get the connection string of the current connection adorned with the additional Csa properties
 				// so that we don't get a negative equivalency because of missing stripped Csa properties in the
 				// connection's connection string.
-				string connectionString = RctManager.AdornConnectionStringFromRegistration(_DataConnection);
+				string connectionString = RctManager.AdornConnectionStringFromRegistration(connection);
 
 				if (connectionString == null)
-					return _DataConnection;
+					return connection;
 
 				Csb csaCurrent = new(connectionString, false);
 				Csb csaRegistered = RctManager.CloneRegistered(this);
@@ -147,7 +132,7 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 				if (Csb.AreEquivalent(csaRegistered, csaCurrent, Csb.DescriberKeys))
 				{
 					// Nothing's changed.
-					return _DataConnection;
+					return connection;
 				}
 
 				// Tracer.Trace(GetType(), "get_Connection()", "Connections are not equivalent: \nCurrent: {0}\nRegistered: {1}",
@@ -158,22 +143,12 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 					// The connection is the same but it's adornments have changed.
 					lock (_LockObject)
 					{
-						EventUpdateEnter(true, true);
+						ConnectionString = csaRegistered.ConnectionString;
 
-						try
-						{
-							Parse(csaRegistered.ConnectionString);
-						}
-						finally
-						{
-							EventUpdateExit();
-						}
-
-						// Tracer.Trace(GetType(), "get_LiveConnection()", "Parsed with new connection. IsComplete? {0}.", IsComplete);
-
+						RaisePropertyChanged(null);
 						RefreshDataConnection();
 
-						return _DataConnection;
+						return connection;
 					}
 				}
 
@@ -200,7 +175,7 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 
 
 	// =========================================================================================================
-	#region Methods - ConnectionInfoPropertyAgent
+	#region Methods - ModelCsb
 	// =========================================================================================================
 
 
@@ -216,21 +191,27 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 	{
 		// Tracer.Trace(GetType(), "CreateDataConnection()");
 
-		IDbConnection newConnection = (DbConnection)NativeDb.CreateDbConnection(Csa.ConnectionString);
+
+		DbConnection connection = DataConnection;
+		DbConnection newConnection = null;
 
 		try
 		{
-			_ConnectionChangedEvent?.Invoke(this, new(newConnection, _DataConnection));
+			newConnection = (DbConnection)NativeDb.CreateDbConnection(ConnectionString);
+			_ConnectionChangedEvent?.Invoke(this, new(newConnection, connection));
 		}
 		catch (Exception ex)
 		{
 			Diag.Debug(ex);
 		}
 
-		if (_DataConnection != null)
+		if (newConnection == null)
+			return;
+
+		if (connection != null)
 			DisposeConnection();
 
-		_DataConnection = newConnection;
+		DataConnection = newConnection;
 		_ConnectionId++;
 	}
 
@@ -249,12 +230,14 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 	{
 		// Tracer.Trace(GetType(), "CreateDataConnection()");
 
-		if (_DataConnection == null)
+		DbConnection connection = DataConnection;
+
+		if (connection == null)
 			Diag.ThrowException(new InvalidOperationException("Connection is null"));
 
 		try
 		{
-			_DataConnection.OpenOrVerify();
+			connection.OpenOrVerify();
 		}
 		catch (Exception ex)
 		{
@@ -272,7 +255,7 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 
 		Exception exd = null;
 
-		if (_DataConnection.State != ConnectionState.Open)
+		if (connection.State != ConnectionState.Open)
 		{
 			try
 			{
@@ -309,18 +292,20 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 	{
 		// Tracer.Trace(GetType(), "CreateDataConnection()");
 
-		if (_DataConnection == null)
+		DbConnection connection = DataConnection;
+
+		if (connection == null)
 			Diag.ThrowException(new InvalidOperationException("Connection is null"));
 
 		bool result = false;
 
 		try
 		{
-			result = await _DataConnection.OpenOrVerifyAsync();
+			result = await connection.OpenOrVerifyAsync();
 		}
 		catch (Exception ex)
 		{
-			_ConnectionChangedEvent?.Invoke(this, new(null, _DataConnection));
+			_ConnectionChangedEvent?.Invoke(this, new(null, connection));
 
 			DisposeConnection();
 
@@ -329,7 +314,7 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 		}
 
 
-		if (_DataConnection.State != ConnectionState.Open)
+		if (connection.State != ConnectionState.Open)
 		{
 			_ConnectionChangedEvent?.Invoke(this, new(null, null));
 
@@ -359,10 +344,12 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 
 		CloseConnection();
 
-		if (_DataConnection == null)
+		DbConnection connection = DataConnection;
+
+		if (connection == null)
 			return false;
 
-		_DataConnection.ConnectionString = Csa.ConnectionString;
+		connection.ConnectionString = ConnectionString;
 
 		// Tracer.Trace(GetType(), "RefreshDataConnection()", "Connection refreshed with connectiongstring: {0}.", Csa.ConnectionString);
 
@@ -377,7 +364,7 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 
 
 	// =========================================================================================================
-	#region Event Handling - ConnectionInfoPropertyAgent
+	#region Event Handling - ModelCsb
 	// =========================================================================================================
 
 
@@ -388,7 +375,7 @@ public class ConnectionInfoPropertyAgent : AbstractModelPropertyAgent, IBsConnec
 
 
 	// =========================================================================================================
-	#region Sub-Classes - ConnectionInfoPropertyAgent
+	#region Sub-Classes - ModelCsb
 	// =========================================================================================================
 
 

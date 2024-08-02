@@ -4,11 +4,12 @@
 
 using System;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Extensions;
@@ -17,6 +18,7 @@ using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
 
 
 
@@ -43,7 +45,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		RctManager.ConnectionDialogActive = true;
+		RctManager.EventConnectionDialogEnter(false, true);
 
 
 		try
@@ -83,7 +85,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			cmbDatabase.DataSource = DataSources.Dependent;
 			cmbDatabase.ValueMember = "DatabaseLc";
-			cmbDatabase.DisplayMember = SysConstants.C_KeyExAdornedDisplayName;
+			cmbDatabase.DisplayMember = CoreConstants.C_KeyExAdornedDisplayName;
 
 		}
 		catch (Exception ex)
@@ -100,7 +102,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 	protected override void Dispose(bool disposing)
 	{
-		RctManager.ConnectionDialogActive = false;
+		RctManager.EventConnectionDialogExit();
 
 		if (disposing && (components != null))
 		{
@@ -228,7 +230,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 		AddEventHandlers();
 
-		EventInputEnter(true, true);
+		EventInputEnter(false, true);
 
 		try
 		{
@@ -302,7 +304,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			// Update the database name label.
 
-			@object = DataSources.DependentRow[SysConstants.C_KeyExAdornedQualifiedName];
+			@object = DataSources.DependentRow[CoreConstants.C_KeyExAdornedQualifiedName];
 
 			lblCurrentDisplayName.Text = !Cmd.IsNullValue(@object)
 				? (string)@object : ControlsResources.TConnectionUIControl_NewDatabaseConnection;
@@ -316,7 +318,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			// update the keys and database name label which will come from our
 			// dependent's cursor position.
 
-			EventPropertyEnter(true, true);
+			EventPropertyEnter(false, true);
 
 
 			try
@@ -336,29 +338,29 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				}
 
 
-				@object = DataSources.DependentRow[SysConstants.C_KeyExDatasetKey];
+				@object = DataSources.DependentRow[CoreConstants.C_KeyExDatasetKey];
 				if (!Cmd.IsNullValue(@object) && (string)@object != string.Empty)
-					Site[SysConstants.C_KeyExDatasetKey] = (string)@object;
+					Site[CoreConstants.C_KeyExDatasetKey] = (string)@object;
 				else
-					Site.Remove(SysConstants.C_KeyExDatasetKey);
+					Site.Remove(CoreConstants.C_KeyExDatasetKey);
 
-				@object = DataSources.DependentRow[SysConstants.C_KeyExConnectionKey];
+				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionKey];
 				if (!Cmd.IsNullValue(@object) && (string)@object != string.Empty)
-					Site[SysConstants.C_KeyExConnectionKey] = (string)@object;
+					Site[CoreConstants.C_KeyExConnectionKey] = (string)@object;
 				else
-					Site.Remove(SysConstants.C_KeyExConnectionKey);
+					Site.Remove(CoreConstants.C_KeyExConnectionKey);
 
-				@object = DataSources.DependentRow[SysConstants.C_KeyExDataset];
+				@object = DataSources.DependentRow[CoreConstants.C_KeyExDataset];
 				if (!Cmd.IsNullValue(@object) && (string)@object != string.Empty)
-					Site[SysConstants.C_KeyExDataset] = (string)@object;
+					Site[CoreConstants.C_KeyExDataset] = (string)@object;
 				else
-					Site.Remove(SysConstants.C_KeyExDataset);
+					Site.Remove(CoreConstants.C_KeyExDataset);
 
-				@object = DataSources.DependentRow[SysConstants.C_KeyExConnectionSource];
-				if (!Cmd.IsNullValue(@object) && (EnConnectionSource)(int)@object > EnConnectionSource.None)
-					Site[SysConstants.C_KeyExConnectionSource] = (int)@object;
+				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionSource];
+				if (!Cmd.IsNullValue(@object) && (EnConnectionSource)(int)@object > EnConnectionSource.Unknown)
+					Site[CoreConstants.C_KeyExConnectionSource] = (int)@object;
 				else
-					Site.Remove(SysConstants.C_KeyExConnectionSource);
+					Site.Remove(CoreConstants.C_KeyExConnectionSource);
 
 				Site.ValidateKeys();
 
@@ -424,14 +426,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// enters a Cursor event handler to prevent recursion.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool EventCursorEnter(bool increment = true, bool force = false)
+	private bool EventCursorEnter(bool test = false, bool force = false)
 	{
 		lock (_LockLocal)
 		{
 			if (_EventCursorCardinal != 0 && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 				_EventCursorCardinal++;
 		}
 
@@ -468,14 +470,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// enters an Input event handler to prevent recursion.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool EventInputEnter(bool increment = true, bool force = false)
+	private bool EventInputEnter(bool test = false, bool force = false)
 	{
 		lock (_LockLocal)
 		{
 			if (_EventInputCardinal != 0 && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 				_EventInputCardinal++;
 		}
 
@@ -512,14 +514,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// enters a Property event handler to prevent recursion.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool EventPropertyEnter(bool increment = true, bool force = false)
+	private bool EventPropertyEnter(bool test = false, bool force = false)
 	{
 		lock (_LockLocal)
 		{
 			if (_EventPropertyCardinal != 0 && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 				_EventPropertyCardinal++;
 		}
 
@@ -580,8 +582,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// </summary>
 	private void RestoreSiteProperties(string restoreConnectionString)
 	{
-		EventInputEnter(true, true);
-		EventPropertyEnter(true, true);
+		EventInputEnter(false, true);
+		EventPropertyEnter(false, true);
 
 		try
 		{
@@ -611,7 +613,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		}
 
 		if (!enableCursorEvents)
-			EventCursorEnter(true, true);
+			EventCursorEnter(false, true);
 
 		try
 		{
@@ -650,7 +652,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			// Try to move the Dependent combo table to it's correct position.
 
 			if (connectionUrl != null)
-				dbPosition = DataSources.FindDependent(SysConstants.C_KeyExConnectionUrl, connectionUrl);
+				dbPosition = DataSources.FindDependent(CoreConstants.C_KeyExConnectionUrl, connectionUrl);
 
 			if (dbPosition == -1)
 				dbPosition = 0;
@@ -710,15 +712,15 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		if (!InvalidDependent)
 			return;
 
-		EventPropertyEnter(true, true);
+		EventPropertyEnter(false, true);
 
 		// Tracer.Trace(GetType(), "InvalidateSiteProperties()");
 
 		try
 		{
-			Site.Remove(SysConstants.C_KeyExDatasetKey);
-			Site.Remove(SysConstants.C_KeyExConnectionKey);
-			Site.Remove(SysConstants.C_KeyExDataset);
+			Site.Remove(CoreConstants.C_KeyExDatasetKey);
+			Site.Remove(CoreConstants.C_KeyExConnectionKey);
+			Site.Remove(CoreConstants.C_KeyExDataset);
 
 			if (removeProposed)
 			{
@@ -726,7 +728,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				Site.Remove(SysConstants.C_KeyExDatasetId);
 			}
 
-			Site[SysConstants.C_KeyExConnectionSource] = ConnectionSource;
+			Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
 
 			lblCurrentDisplayName.Text = ControlsResources.TConnectionUIControl_NewDatabaseConnection;
 
@@ -739,7 +741,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				connectionSource = EnConnectionSource.ServerExplorer;
 			}
 
-			Site[SysConstants.C_KeyExConnectionSource] = connectionSource;
+			Site[CoreConstants.C_KeyExConnectionSource] = connectionSource;
 		}
 		catch (Exception ex)
 		{
@@ -794,9 +796,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		IDbConnection connection = null;
 
 
-		EventCursorEnter(true, true);
-		EventInputEnter(true, true);
-		EventPropertyEnter(true, true);
+		EventCursorEnter(false, true);
+		EventInputEnter(false, true);
+		EventPropertyEnter(false, true);
 
 		try
 		{
@@ -881,7 +883,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 				// If a new unique SE connection is going to be created in a Session set the connection source.
 				if (ConnectionSource == EnConnectionSource.Session && addInternally)
-					site[SysConstants.C_KeyExConnectionKey] = site[SysConstants.C_KeyExDatasetKey];
+					site[CoreConstants.C_KeyExConnectionKey] = site[CoreConstants.C_KeyExDatasetKey];
 
 				_HandleNewInternally = addInternally;
 				_HandleModifyInternally = modifyInternally;
@@ -912,7 +914,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		// event. Disable it.
 
 		if (ConnectionSource == EnConnectionSource.ServerExplorer)
-			RctManager.ExternalEventEnter();
+			RctManager.ExternalEventEnter(false, true);
 
 		// Tracer.Trace(GetType(), "OnAccept()", "Completed. Site.ToString(): {0}.", Site.ToString());
 	}
@@ -958,8 +960,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			return;
 		}
 
-		EventInputEnter(true, true);
-		EventPropertyEnter(true, true);
+		EventInputEnter(false, true);
+		EventPropertyEnter(false, true);
 
 		try
 		{
@@ -1014,7 +1016,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				}
 			}
 
-			object @object = DataSources.DependentRow[SysConstants.C_KeyExAdornedQualifiedName];
+			object @object = DataSources.DependentRow[CoreConstants.C_KeyExAdornedQualifiedName];
 
 			lblCurrentDisplayName.Text = !Cmd.IsNullValue(@object)
 				? (string)@object : ControlsResources.TConnectionUIControl_NewDatabaseConnection;
@@ -1045,7 +1047,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			// will already be set.
 			if (ConnectionSource == EnConnectionSource.EntityDataModel)
 			{
-				@object = DataSources.DependentRow[SysConstants.C_KeyExConnectionString];
+				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionString];
 				_OriginalConnectionString = !Cmd.IsNullValue(@object)
 					? (string)@object : null;
 			}
@@ -1091,8 +1093,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			return;
 		}
 
-		EventInputEnter(true, true);
-		EventPropertyEnter(true, true);
+		EventInputEnter(false, true);
+		EventPropertyEnter(false, true);
 
 		try
 		{
@@ -1117,7 +1119,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					}
 				}
 
-				Site[SysConstants.C_KeyExConnectionSource] = ConnectionSource;
+				Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
 
 				DataSources.Position = 0;
 			}
@@ -1182,7 +1184,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		// Disable property property events because we're going to invoke
 		// OnPropertyChanged afterwards.
 
-		EventPropertyEnter(true, true);
+		EventPropertyEnter(false, true);
 
 		try
 		{
@@ -1302,10 +1304,10 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			_InsertMode = _OriginalConnectionString == null;
 
-			EnConnectionSource storedConnectionSource = Site.ContainsKey(SysConstants.C_KeyExConnectionSource)
-				? (EnConnectionSource)Site[SysConstants.C_KeyExConnectionSource] : EnConnectionSource.Undefined;
+			EnConnectionSource storedConnectionSource = Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
+				? (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] : EnConnectionSource.Undefined;
 
-			EventPropertyEnter(true, true);
+			EventPropertyEnter(false, true);
 
 			try
 			{
@@ -1313,12 +1315,12 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				{
 					foreach (Describer describer in Csb.AdvancedKeys)
 					{
-						if (!describer.IsConnectionParameter && describer.Key != SysConstants.C_KeyExConnectionSource)
+						if (!describer.IsConnectionParameter && describer.Key != CoreConstants.C_KeyExConnectionSource)
 							Site.Remove(describer.Key);
 					}
 
-					if (storedConnectionSource <= EnConnectionSource.None)
-						Site[SysConstants.C_KeyExConnectionSource] = ConnectionSource;
+					if (storedConnectionSource <= EnConnectionSource.Unknown)
+						Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
 				}
 				else
 				{
@@ -1328,14 +1330,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 						string connectionKey = Site.FindConnectionKey();
 
 						if (connectionKey != null)
-							Site[SysConstants.C_KeyExConnectionKey] = connectionKey;
+							Site[CoreConstants.C_KeyExConnectionKey] = connectionKey;
 						else
-							Site.Remove(SysConstants.C_KeyExConnectionKey);
+							Site.Remove(CoreConstants.C_KeyExConnectionKey);
 					}
 
 
-					if (!Site.ContainsKey(SysConstants.C_KeyExConnectionSource)
-						|| (EnConnectionSource)Site[SysConstants.C_KeyExConnectionSource] <= EnConnectionSource.None)
+					if (!Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
+						|| (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] <= EnConnectionSource.Unknown)
 					{
 						EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.EntityDataModel
 							? EnConnectionSource.ServerExplorer : ConnectionSource;
@@ -1346,7 +1348,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 							connectionSource = EnConnectionSource.ServerExplorer;
 						}
 
-						Site[SysConstants.C_KeyExConnectionSource] = connectionSource;
+						Site[CoreConstants.C_KeyExConnectionSource] = connectionSource;
 					}
 
 				}
@@ -1442,14 +1444,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		if (Site == null || !InvalidDependent)
 			return;
 
-		EventPropertyEnter(true, true);
+		EventPropertyEnter(false, true);
 
 		try
 		{
 			if (SessionDlg.UpdateServerExplorer)
-				Site[SysConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
+				Site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
 			else
-				Site[SysConstants.C_KeyExConnectionSource] = ConnectionSource;
+				Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
 		}
 		finally
 		{

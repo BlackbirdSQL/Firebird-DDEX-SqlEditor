@@ -39,11 +39,14 @@
 				</Literal>
 			</Declarations>
 			<Code Language="SQL_FIREBIRD">
-				<![CDATA[CREATE TABLE $Tablename$
+				<![CDATA[SET TERM GO ;
+CREATE TABLE $Tablename$
 (
     $column1$ $datatype1$,
     $column2$ $datatype2$
 );
+GO
+SET TERM ; GO
 ]]>
 			</Code>
 		</Snippet>

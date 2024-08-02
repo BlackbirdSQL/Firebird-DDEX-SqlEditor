@@ -117,6 +117,15 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; may only be set to false..
+        /// </summary>
+        internal static string ExArgumentOnlyFalse {
+            get {
+                return ResourceManager.GetString("ExArgumentOnlyFalse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid argument: buffer size should be a positive number..
         /// </summary>
         internal static string ExBufferSizeShouldBePositive {
@@ -387,15 +396,6 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The query is currently executing. Do you want to cancel the query?.
-        /// </summary>
-        internal static string ExScriptIsStillBeingExecuted {
-            get {
-                return ResourceManager.GetString("ExScriptIsStillBeingExecuted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SortView default constructor cannot be used..
         /// </summary>
         internal static string ExSortViewDefaultConstructorCannotBeUsed {
@@ -477,16 +477,6 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Query Information: Inactive connection &apos;{0}&apos; closed.
-        ///                   ConnectionLifetime: {1} seconds..
-        /// </summary>
-        internal static string InfoConnectionAutoClosed {
-            get {
-                return ResourceManager.GetString("InfoConnectionAutoClosed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Disconnecting connection from {0}....
         /// </summary>
         internal static string InfoDisconnectingFromSvr {
@@ -501,6 +491,93 @@ namespace BlackbirdSql.Shared.Properties {
         internal static string InfoDisconnectingFromSvrAsUser {
             get {
                 return ResourceManager.GetString("InfoDisconnectingFromSvrAsUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}Idle connection &apos;{2}&apos; closed.
+        ///{1}ConnectionLifetime: {3} seconds.
+        ///{1}Query: {4}..
+        /// </summary>
+        internal static string InfoQueryConnectionAutoClosed {
+            get {
+                return ResourceManager.GetString("InfoQueryConnectionAutoClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///Query notification:
+        ///{0}.
+        /// </summary>
+        internal static string InfoQueryPrefix {
+            get {
+                return ResourceManager.GetString("InfoQueryPrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The query is currently executing. Do you wish to abort execution?.
+        /// </summary>
+        internal static string MsgAbortExecutionAndClose {
+            get {
+                return ResourceManager.GetString("MsgAbortExecutionAndClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution in progress.
+        /// </summary>
+        internal static string MsgQueryAbort_IsExecutingCaption {
+            get {
+                return ResourceManager.GetString("MsgQueryAbort_IsExecutingCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are queries that are currently executing. Do you wish to abort execution?
+        ///{0}.
+        /// </summary>
+        internal static string MsgQueryAbort_IsExecutingList {
+            get {
+                return ResourceManager.GetString("MsgQueryAbort_IsExecutingList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to       {0}.
+        /// </summary>
+        internal static string MsgQueryAbort_NameIndent {
+            get {
+                return ResourceManager.GetString("MsgQueryAbort_NameIndent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are uncommitted transactions. Do you wish to commit these transactions before closing?.
+        /// </summary>
+        internal static string MsgQueryAbort_UncommittedTransactions {
+            get {
+                return ResourceManager.GetString("MsgQueryAbort_UncommittedTransactions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uncommited transactions.
+        /// </summary>
+        internal static string MsgQueryAbort_UncommittedTransactionsCaption {
+            get {
+                return ResourceManager.GetString("MsgQueryAbort_UncommittedTransactionsCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are uncommitted transactions. Do you wish to commit these transactions before closing?
+        ///{0}.
+        /// </summary>
+        internal static string MsgQueryAbort_UncommittedTransactionsList {
+            get {
+                return ResourceManager.GetString("MsgQueryAbort_UncommittedTransactionsList", resourceCulture);
             }
         }
         
@@ -537,6 +614,15 @@ namespace BlackbirdSql.Shared.Properties {
         internal static string QueryCaptionGlyphFormat {
             get {
                 return ResourceManager.GetString("QueryCaptionGlyphFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} {1}.
+        /// </summary>
+        internal static string QueryGlyphFormat {
+            get {
+                return ResourceManager.GetString("QueryGlyphFormat", resourceCulture);
             }
         }
         
@@ -622,8 +708,9 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}Broken connection &apos;{1}&apos; has been reset.
-        ///{2}This is possibly due to a network error..
+        ///   Looks up a localized string similar to {0}Broken connection &apos;{2}&apos; has been reset.
+        ///{1}This is possibly due to a network error.
+        ///{3}{1}Query: {4}..
         /// </summary>
         internal static string WarnQueryConnectionBroken {
             get {
@@ -632,8 +719,9 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}Dead connection &apos;{1}&apos; has been reset.
-        ///{2}This is possibly due to a network error..
+        ///   Looks up a localized string similar to {0}Dead connection &apos;{2}&apos; has been reset.
+        ///{1}This is possibly due to a network error.
+        ///{3}{1}Query: {4}..
         /// </summary>
         internal static string WarnQueryConnectionDead {
             get {
@@ -642,8 +730,9 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}Connection &apos;{1}&apos; has been reset.
-        ///{2}This is possibly due to a network error..
+        ///   Looks up a localized string similar to {0}Connection &apos;{2}&apos; has been reset.
+        ///{1}This is possibly due to a network error.
+        ///{3}{1}Query: {4}..
         /// </summary>
         internal static string WarnQueryConnectionReset {
             get {
@@ -652,7 +741,9 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Query Warning: .
+        ///   Looks up a localized string similar to 
+        ///Query Warning:
+        ///{0}.
         /// </summary>
         internal static string WarnQueryPrefix {
             get {
@@ -661,11 +752,12 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}There were active transactions that were discarded..
+        ///   Looks up a localized string similar to {0}There were active transactions that were discarded.
+        ///.
         /// </summary>
-        internal static string WarnQueryTransactionsDiscarded {
+        internal static string WarnQueryTtsDiscarded {
             get {
-                return ResourceManager.GetString("WarnQueryTransactionsDiscarded", resourceCulture);
+                return ResourceManager.GetString("WarnQueryTtsDiscarded", resourceCulture);
             }
         }
         
@@ -675,15 +767,6 @@ namespace BlackbirdSql.Shared.Properties {
         internal static string WarnScriptingNoParam {
             get {
                 return ResourceManager.GetString("WarnScriptingNoParam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There are uncommitted transactions. Do you wish to commit these transactions before closing the window?.
-        /// </summary>
-        internal static string WarnUncommittedTransactions {
-            get {
-                return ResourceManager.GetString("WarnUncommittedTransactions", resourceCulture);
             }
         }
     }

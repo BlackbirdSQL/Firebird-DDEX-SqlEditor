@@ -3093,6 +3093,12 @@ All files (*.*)
   <data name="StatusBar_ServerNameAndBuild" xml:space="preserve">
     <value>{0} ({1}.{2})</value>
   </data>
+  <data name="Strategy_ConnectionPromptConfigure" xml:space="preserve">
+    <value>Configure Query Connection</value>
+  </data>
+  <data name="Strategy_ConnectionPromptModify" xml:space="preserve">
+    <value>Modify Query Connection</value>
+  </data>
   <data name="TabbedEditorWindowPane_ConnectionStateNotConnected" xml:space="preserve">
     <value>not connected</value>
   </data>

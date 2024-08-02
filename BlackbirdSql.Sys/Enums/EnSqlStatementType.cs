@@ -1,8 +1,4 @@
-﻿#region Assembly FirebirdSql.Data.FirebirdClient, Version=10.0.0.0, Culture=neutral, PublicKeyToken=3750abcc3150b00c
-// C:\Users\GregChristos\.nuget\packages\firebirdsql.data.firebirdclient\10.0.0\lib\net48\FirebirdSql.Data.FirebirdClient.dll
-// Decompiled with ICSharpCode.Decompiler 8.1.1.7464
-#endregion
-
+﻿
 using System;
 
 

@@ -41,7 +41,6 @@ public interface IBsNativeDatabaseInfo
 	long GetReadIdxCount(NativeDatabaseInfoProxy @this);
 	long GetReads(NativeDatabaseInfoProxy @this);
 	long GetReadSeqCount(NativeDatabaseInfoProxy @this);
-	string GetServerVersion(DbConnection @this);
 	long GetUpdateCount(NativeDatabaseInfoProxy @this);
 	long GetWrites(NativeDatabaseInfoProxy @this);
 }

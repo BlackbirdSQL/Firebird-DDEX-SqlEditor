@@ -11,7 +11,6 @@ using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model.QueryExecution;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys;
 
 
 
@@ -24,7 +23,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	private QEResultSet _QeResultSet;
 
-	private MoreRowsAvailableEventHandler _MoreRowsAvailableHandler;
+	private MoreRowsAvailableEventHandler _MoreRowsAvailableEventAsync;
 
 	private double m_controlToWindowRatio = 1.0;
 
@@ -63,7 +62,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		_QeResultSet = resultSet;
 		_PrintColumnHeaders = printColumnHeaders;
 		_NumberOfCharsToShow = numberOfCharsToShow;
-		_MoreRowsAvailableHandler = OnMoreRowsAvailableFromStorage;
+		_MoreRowsAvailableEventAsync = OnMoreRowsAvailableFromStorageAsync;
 	}
 
 	public void Initialize(IBsGridControl2 grid)
@@ -71,7 +70,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.Initialize", "", null);
 		_GridCtl = grid;
 		_QeResultSet.InGridMode = true;
-		_QeResultSet.MoreRowsAvailableEvent += _MoreRowsAvailableHandler;
+		_QeResultSet.MoreRowsAvailableEventAsync += _MoreRowsAvailableEventAsync;
 		((ISupportInitialize)_GridCtl).BeginInit();
 		_GridCtl.SelectionType = EnGridSelectionType.CellBlocks;
 		_GridCtl.GridStorage = _QeResultSet;
@@ -120,8 +119,8 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.Dispose", "", null);
 		if (_QeResultSet != null)
 		{
-			_QeResultSet.MoreRowsAvailableEvent -= _MoreRowsAvailableHandler;
-			_MoreRowsAvailableHandler = null;
+			_QeResultSet.MoreRowsAvailableEventAsync -= _MoreRowsAvailableEventAsync;
+			_MoreRowsAvailableEventAsync = null;
 			_QeResultSet.Dispose();
 			_QeResultSet = null;
 		}
@@ -147,23 +146,31 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		_GridCtl.InitialColumnResize();
 	}
 
-	private void OnMoreRowsAvailableFromStorage(object sender, MoreRowsAvailableEventArgs a)
+	private async Task<bool> OnMoreRowsAvailableFromStorageAsync(object sender, MoreRowsAvailableEventArgs args)
 	{
-		if (a.NewRowsNumber == C_NumOfFirstRowsToInitialResizeColumns || a.AllRows)
+		if (args.CancelToken.IsCancellationRequested)
+			return await Cmd.AwaitableAsync(false);
+
+		if (args.NewRowsNumber == C_NumOfFirstRowsToInitialResizeColumns || args.AllRows)
 		{
 			_GridCtl.UpdateGrid();
 			_GridCtl.InitialColumnResize();
 		}
 
-		if (a.NewRowsNumber > C_NumOfFirstRowsToNotifyAbout && a.NewRowsNumber % C_NewRowsNotificationFreq == 0L || a.AllRows || a.NewRowsNumber == C_NumOfFirstRowsToNotifyAbout)
+		if (args.NewRowsNumber > C_NumOfFirstRowsToNotifyAbout
+			&& args.NewRowsNumber % C_NewRowsNotificationFreq == 0L || args.AllRows
+			|| args.NewRowsNumber == C_NumOfFirstRowsToNotifyAbout)
 		{
 			_GridCtl.UpdateGrid();
+
 			if (!m_bGridHasRows)
 			{
 				SelectFirstCellInTheGrid();
 				m_bGridHasRows = true;
 			}
 		}
+
+		return await Cmd.AwaitableAsync(true);
 	}
 
 	private void SelectFirstCellInTheGrid()

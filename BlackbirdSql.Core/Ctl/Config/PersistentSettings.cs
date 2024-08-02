@@ -322,6 +322,10 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	/// </summary>
 	public virtual void PropagateSettings(PropagateSettingsEventArgs e)
 	{
+		foreach (MutablePair<string, object> pair in e.Arguments)
+			this[pair.Key] = pair.Value;
+
+
 		PropagateEquivalencyKeys(e);
 		PropagateDiagnosticsSettings(e);
 	}
@@ -329,13 +333,16 @@ public abstract class PersistentSettings : IBsPersistentSettings
 
 	private void PropagateEquivalencyKeys(PropagateSettingsEventArgs e)
 	{
-		if ((e.Package == null || e.Package == "Ddex") && (e.Group == null || e.Group == "Equivalency"))
+		// Equivalency keys only on startup.
+
+		// if ((e.Package == null || e.Package == "Ddex") && (e.Group == null || e.Group == "Equivalency"))
+
+		if (e.Package == null && e.Group == null)
 		{
-			List<string> equivalencyKeys = [];
+				List<string> equivalencyKeys = [];
 
 			foreach (MutablePair<string, object> pair in e.Arguments)
 			{
-				this[pair.Key] = pair.Value;
 				if (pair.Key.StartsWith("DdexEquivalency") && (bool)pair.Value)
 					equivalencyKeys.Add(pair.Key[15..]);
 			}

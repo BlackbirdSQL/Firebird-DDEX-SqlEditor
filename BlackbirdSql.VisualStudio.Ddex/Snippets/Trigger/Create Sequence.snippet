@@ -29,9 +29,12 @@
 				</Literal>
 			</Declarations>
 			<Code Language="SQL_FIREBIRD">
-				<![CDATA[CREATE SEQUENCE $SequenceName$
+				<![CDATA[SET TERM GO ;
+CREATE SEQUENCE $SequenceName$
 	START WITH $startvalue$
 	INCREMENT $increment$;
+GO
+SET TERM ; GO
 ]]>
 			</Code>
 		</Snippet>

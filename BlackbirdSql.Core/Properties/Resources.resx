@@ -277,9 +277,10 @@
     <value>Retry number {0}. Ignoring Exception: {1}</value>
   </data>
   <data name="LoadTimeStatistics" xml:space="preserve">
-    <value>Load statistics: Async initialization: {0}ms, MainThread initializations: {1}ms
-                 SwitchToMainThread: {2}ms
-                 Total time (excl. SwitchToMainThread): {3}ms.</value>
+    <value>Extension load statistics:
+      Async initialization: {0}ms, MainThread initializations: {1}ms
+      SwitchToMainThread: {2}ms
+      Total time (excl. SwitchToMainThread): {3}ms.</value>
   </data>
   <data name="NewQueryBaseName" xml:space="preserve">
     <value>NewQuery</value>
@@ -287,23 +288,26 @@
   <data name="Properties_NotExtensible" xml:space="preserve">
     <value>The properties are not extensible.</value>
   </data>
+  <data name="RctEdmDatasetFormat" xml:space="preserve">
+    <value>[{0}] {1}</value>
+  </data>
+  <data name="RctGlyphFormat" xml:space="preserve">
+    <value>{0}  {1}</value>
+  </data>
+  <data name="RctGlyphFormat2" xml:space="preserve">
+    <value> {0}   {1}</value>
+  </data>
+  <data name="RctProjectDatasetIdFormat" xml:space="preserve">
+    <value>[{0}] {1}</value>
+  </data>
+  <data name="RctUtilityDatasetIdFormat" xml:space="preserve">
+    <value>{0}</value>
+  </data>
   <data name="Remove_Failed_Property_NotFound" xml:space="preserve">
     <value>Remove failed. Property {0} does not exist.</value>
   </data>
   <data name="RetryOnException" xml:space="preserve">
     <value>Retry number {0}. Delaying {1} ms before next retry. Exception: {2}</value>
-  </data>
-  <data name="RunningConnectionTableEdmDataset" xml:space="preserve">
-    <value>[{0}] {1}</value>
-  </data>
-  <data name="RunningConnectionTableGlyphFormat" xml:space="preserve">
-    <value>{0}  {1}</value>
-  </data>
-  <data name="RunningConnectionTableProjectDatasetId" xml:space="preserve">
-    <value>[{0}] {1}</value>
-  </data>
-  <data name="RunningConnectionTableUtilityDatasetId" xml:space="preserve">
-    <value>{0}</value>
   </data>
   <data name="TextBoxRequiredFieldToolTip" xml:space="preserve">
     <value>This field cannot be empty</value>

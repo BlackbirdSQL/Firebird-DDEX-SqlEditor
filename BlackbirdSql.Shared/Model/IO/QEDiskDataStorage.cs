@@ -33,10 +33,10 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataS
 		{
 			Diag.Dug(e);
 			long rowCount = RowCount;
+
 			if (rowCount > 0)
-			{
-				OnStorageNotify(rowCount, storedAllData: true);
-			}
+				await OnStorageNotifyAsync(rowCount, true, cancelToken);
+
 			throw;
 		}
 		finally

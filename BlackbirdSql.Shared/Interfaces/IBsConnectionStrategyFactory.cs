@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces.ISqlEditorStrategy
 
 using System;
+using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Model;
 

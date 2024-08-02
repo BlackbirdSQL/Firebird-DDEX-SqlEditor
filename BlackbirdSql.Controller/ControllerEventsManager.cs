@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using BlackbirdSql.Controller.Ctl.Config;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Extensions;
+using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
 using Microsoft.VisualStudio;
@@ -91,6 +92,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		Controller.OnLoadSolutionOptionsEvent -= OnLoadSolutionOptions;
 		Controller.OnAfterOpenProjectEvent -= OnAfterOpenProject;
 		Controller.OnAfterCloseSolutionEvent -= OnAfterCloseSolution;
+		Controller.OnBeforeDocumentWindowShowEvent -= OnBeforeDocumentWindowShow;
 		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
 
 		Controller.OnBuildDoneEvent -= OnBuildDone;
@@ -127,6 +129,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		Controller.OnLoadSolutionOptionsEvent += OnLoadSolutionOptions;
 		Controller.OnAfterOpenProjectEvent += OnAfterOpenProject;
 		Controller.OnAfterCloseSolutionEvent += OnAfterCloseSolution;
+		Controller.OnBeforeDocumentWindowShowEvent += OnBeforeDocumentWindowShow;
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 
 		Controller.OnBuildDoneEvent += OnBuildDone;
@@ -166,7 +169,6 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	private CancellationToken _ValidationToken;
 	private Task<bool> _ValidationTask;
 
-	private static int _EventReindexingCardinal = 0;
 	private static int _EventValidationCardinal = 0;
 
 
@@ -193,40 +195,6 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// =========================================================================================================
 	#region Methods - ControllerEventsManager
 	// =========================================================================================================
-
-
-	private void AsyncReindexEntityFrameworkAssemblies(Project project = null)
-	{
-		if (ApcManager.SolutionClosing)
-			return;
-
-		if (!EventReindexingEnter())
-			return;
-
-
-		// Get in behind everyone else so that we're last.
-
-		_ = Task.Factory.StartNew(
-				async () =>
-				{
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-					try
-					{
-						NativeDb.ReindexEntityFrameworkAssemblies(project);
-					}
-					catch (Exception ex)
-					{
-						Diag.ThrowException(ex);
-					}
-					finally
-					{
-						EventReindexingExit();
-					}
-				},
-				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
-	}
-
 
 
 	private void CloseOpenProjectModels(IVsHierarchy hierarchy)
@@ -333,8 +301,13 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			bool result = Task.Run(async delegate
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				if (ApcManager.SolutionClosing)
+					return true;
+
 				ValidateSolutionImpl();
+
 				return true;
+
 			}).AwaiterResult();
 
 			return;
@@ -562,7 +535,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// On main thread
 
-		Solution solution = ((Solution)ApcManager.SolutionObject);
+		Solution solution = ApcManager.SolutionObject;
 
 		if (solution == null || ApcManager.SolutionProjects == null && ApcManager.SolutionProjects.Count == 0)
 		{
@@ -748,7 +721,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// <param name="item"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
 	// ---------------------------------------------------------------------------------
-	bool ValidateSolutionRecursiveProjectItemEdmx(ProjectItem item)
+	private bool ValidateSolutionRecursiveProjectItemEdmx(ProjectItem item)
 	{
 		if (_TaskHandler != null && _TaskHandler.UserCancellation.IsCancellationRequested)
 			return false;
@@ -919,48 +892,6 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// =========================================================================================================
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Increments the <see cref="_EventReindexingCardinal"/> counter when execution
-	/// enters a Reindexing event handler to prevent recursion.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public bool EventReindexingEnter()
-	{
-		lock (_LockObject)
-		{
-			if (_EventReindexingCardinal > 0 || ApcManager.SolutionClosing)
-				return false;
-
-			_EventReindexingCardinal++;
-		}
-
-		return true;
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Decrements the <see cref="_EventReindexingCardinal"/> counter that was previously
-	/// incremented by <see cref="EventReindexingEnter"/>.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public void EventReindexingExit()
-	{
-		lock (_LockObject)
-		{
-			if (_EventReindexingCardinal <= 0)
-			{
-				ApplicationException ex = new($"Attempt to exit Reindexing event when not in a Reindexing event. _EventReindexingCardinal: {_EventReindexingCardinal}");
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			_EventReindexingCardinal--;
-		}
-	}
-
-
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -968,14 +899,20 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// enters a Validation event to prevent recursion.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool EventValidationEnter(bool increment = true)
+	private bool EventValidationEnter(bool test = false)
 	{
 		lock (_LockObject)
 		{
-			if (_EventValidationCardinal > 0 || ApcManager.SolutionClosing)
+			if (_EventValidationCardinal > 0)
 				return false;
+		}
 
-			if (increment)
+		if (ApcManager.SolutionClosing)
+			return false;
+
+		lock (_LockObject)
+		{
+			if (!test)
 				_EventValidationCardinal++;
 		}
 
@@ -989,7 +926,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// incremented by <see cref="EventValidationEnter"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public void EventValidationExit()
+	private void EventValidationExit()
 	{
 		lock (_LockObject)
 		{
@@ -1014,11 +951,11 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		// Check for loading here otherwise an exception will be thrown.
 		if (!RctManager.Loading)
 		{
-			RctManager.Delete();
+			RctManager.Reset();
 			RctManager.LoadConfiguredConnections();
 		}
 
-		AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyncReindexEntityFrameworkAssemblies();
 	}
 
 
@@ -1054,7 +991,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (!PersistentSettings.IncludeAppConnections || !project.IsEditable())
 			return VSConstants.S_OK;
 
-		AsyncReindexEntityFrameworkAssemblies(project);
+		NativeDb.AsyncReindexEntityFrameworkAssemblies(project);
 
 		RctManager.AsyncLoadApplicationConnections(project);
 
@@ -1067,9 +1004,55 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnAssemblyObsolete()");
 
-		AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyncReindexEntityFrameworkAssemblies();
 	}
 	*/
+
+
+	private int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		if (!fFirstShow.AsBool())
+			return VSConstants.S_OK;
+
+		RunningDocumentInfo docInfo;
+
+		try
+		{
+			docInfo = RdtManager.GetDocumentInfo(docCookie);
+
+			if (string.IsNullOrEmpty(docInfo.Moniker))
+				return VSConstants.S_OK;
+
+			string ext = Path.GetExtension(docInfo.Moniker);
+
+			if (!ext.Equals(".edmx", StringComparison.CurrentCultureIgnoreCase))
+				return VSConstants.S_OK;
+		}
+		catch
+		{
+			return VSConstants.S_OK;
+		}
+
+		Project project;
+
+		try
+		{
+			project = docInfo.Hierarchy?.ToProject();
+		}
+		catch
+		{
+			return VSConstants.S_OK;
+		}
+
+		if (project == null)
+			return VSConstants.S_OK;
+
+		NativeDb.AsyncReindexEntityFrameworkAssemblies(project);
+
+		return VSConstants.S_OK;
+	}
 
 
 
@@ -1077,7 +1060,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnBuildDone()");
 
-		AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyncReindexEntityFrameworkAssemblies();
 	}
 
 
@@ -1088,7 +1071,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (removing.AsBool())
 			return VSConstants.S_OK;
 
-		Controller.EventRdtEnter(true, true);
+		Controller.EventRdtEnter(false, true);
 
 		try
 		{
@@ -1109,7 +1092,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnDesignTimeOutputDeleted()", "bstrOutputMoniker: {0}.", bstrOutputMoniker);
 
-		AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyncReindexEntityFrameworkAssemblies();
 	}
 
 
@@ -1118,7 +1101,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnDesignTimeOutputDirty()", "bstrOutputMoniker: {0}.", bstrOutputMoniker);
 
-		AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyncReindexEntityFrameworkAssemblies();
 	}
 	*/
 
@@ -1127,7 +1110,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnProjectInitialized()", "Project: {0}.", project.Name);
 
-		AsyncReindexEntityFrameworkAssemblies(project);
+		NativeDb.AsyncReindexEntityFrameworkAssemblies(project);
 	}
 
 
@@ -1136,7 +1119,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnProjectItemAdded()", "Added Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);
 
-		AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
+		NativeDb.AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
 	}
 
 
@@ -1145,7 +1128,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnProjectItemRemoved()", "Removed Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);
 
-		AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
+		NativeDb.AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
 	}
 
 
@@ -1154,7 +1137,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnProjectItemRenamed()", "Renamed Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);
 
-		AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
+		NativeDb.AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
 	}
 
 
@@ -1168,7 +1151,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnReferenceAdded()", "Project: {0}, Reference: {1}.", reference.ContainingProject?.Name, reference.Name);
 
-		AsyncReindexEntityFrameworkAssemblies(reference.ContainingProject);
+		NativeDb.AsyncReindexEntityFrameworkAssemblies(reference.ContainingProject);
 	}
 
 
@@ -1183,7 +1166,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnReferenceChanged()", "Project: {0}.", reference.ContainingProject?.Name);
 
-		AsyncReindexEntityFrameworkAssemblies(reference.ContainingProject);
+		NativeDb.AsyncReindexEntityFrameworkAssemblies(reference.ContainingProject);
 	}
 
 
@@ -1198,7 +1181,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnReferenceRemoved()", "Project: {0}.", reference.ContainingProject?.Name);
 
-		AsyncReindexEntityFrameworkAssemblies(reference.ContainingProject);
+		NativeDb.AsyncReindexEntityFrameworkAssemblies(reference.ContainingProject);
 	}
 	*/
 

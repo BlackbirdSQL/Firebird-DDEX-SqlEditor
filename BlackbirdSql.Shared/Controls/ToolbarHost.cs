@@ -107,7 +107,7 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 
 	protected override void WndProc(ref Message m)
 	{
-		if (m.Msg == Sys.Native.WM_SETFOCUS && Parent != null)
+		if (m.Msg == Native.WM_SETFOCUS && Parent != null)
 		{
 			Control control = Parent;
 			while (control != null && control is not ContainerControl)

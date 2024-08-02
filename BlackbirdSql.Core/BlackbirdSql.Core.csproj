@@ -36,10 +36,11 @@
 		<Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
 		<Compile Include="Enums\EnRctKeyType.cs" />
 		<Compile Include="Events\ConnectionChangedEventArgs.cs" />
-		<Compile Include="Interfaces\IBsModelPropertyAgent.cs" />
+		<Compile Include="Interfaces\IBsCsb.cs" />
+		<Compile Include="Interfaces\IBsConnectionCsb.cs" />
+		<Compile Include="Model\ConnectionCsb.cs" />
 		<Compile Include="Interfaces\IBsDataConnectionPromptDialogHandler.cs" />
 		<Compile Include="Interfaces\IBsDataConnectionSupport.cs" />
-		<Compile Include="Interfaces\IBsRctEventSink.cs" />
 		<Compile Include="Interfaces\IBsDataConnectionDlgHandler.cs" />
 		<Compile Include="Controls\Config\AbstruseSettingsPage.cs" />
 		<Compile Include="Controls\Config\AbstractPersistentSettingsPage.cs" />
@@ -74,6 +75,7 @@
 		<Compile Include="Interfaces\IBsDataReaderHandler.cs" />
 		<Compile Include="Model\RctEventSink.cs" />
 		<Compile Include="Interfaces\IBsDataViewSupport.cs" />
+		<Compile Include="Root\CoreConstants.cs" />
 		<Compile Include="Root\RdtManager.cs" />
 		<Compile Include="Model\AbstruseRunningConnectionTable.cs" />
 		<Compile Include="Root\RctManager.cs" />
@@ -96,11 +98,8 @@
 			<AutoGen>True</AutoGen>
 			<DependentUpon>ControlsResources.resx</DependentUpon>
 		</Compile>
-		<Compile Include="Ctl\AbstractPropertyAgent.cs" />
-		<Compile Include="Ctl\CorePropertySet.cs" />
 		<Compile Include="Ctl\ComponentModel\DependsOnPropertyAttribute.cs" />
 		<Compile Include="Enums\EnCommandSet.cs" />
-		<Compile Include="Ctl\PropertySet.cs" />
 		<Compile Include="Ctl\ComponentModel\ValueDependsOnCollectionAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\ValueDependsOnExternalPropertyAttribute.cs" />
 		<Compile Include="Root\ExtensionMembers.cs" />
@@ -108,9 +107,6 @@
 		<Compile Include="GlobalSuppressions.cs" />
 		<Compile Include="Interfaces\IBsDesignerExplorerServices.cs" />
 		<Compile Include="Interfaces\IBSettingsModelPropertyWrapper.cs" />
-		<Compile Include="Interfaces\IBsPropertyAgent.cs" />
-		<Compile Include="Model\AbstractModelPropertyAgent.cs" />
-		<Compile Include="Model\ModelPropertySet.cs" />
 		<Compile Include="Model\Moniker.cs" />
 		<Compile Include="Model\Config\AbstractSettingsModel.cs" />
 		<Compile Include="Controls\Config\AbstractSettingsPage.cs" />

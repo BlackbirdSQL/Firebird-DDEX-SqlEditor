@@ -85,7 +85,7 @@ public static class ApcManager
 
 			try
 			{
-				object activeSolutionProjects = Dte.ActiveSolutionProjects;
+				object activeSolutionProjects = Dte?.ActiveSolutionProjects;
 
 				if (activeSolutionProjects != null && activeSolutionProjects is Array array && array.Length > 0)
 				{
@@ -155,7 +155,7 @@ public static class ApcManager
 				if (kind == null)
 					return string.Empty;
 
-				return kind;
+				return kind.ToUpper();
 			}
 			catch
 			{
@@ -255,6 +255,9 @@ public static class ApcManager
 
 	public static IVsMonitorSelection SelectionMonitor => Instance?.SelectionMonitor;
 
+	/// <summary>
+	/// Only functions if on main thread. Always returns false IfNotOnUIThread.
+	/// </summary>
 	public static bool SolutionClosing => IdeShutdownState || Instance.SolutionClosing;
 
 	public static bool SolutionValidating => Instance != null && Instance.SolutionValidating;
@@ -262,6 +265,9 @@ public static class ApcManager
 
 	public static string CreateConnectionUrl(string connectionString)
 		=> Instance?.CreateConnectionUrl(connectionString);
+
+	public static string GetConnectionQualifiedName(string connectionString)
+		=> Instance?.GetConnectionQualifiedName(connectionString);
 
 	public static TInterface EnsureService<TService, TInterface>() where TInterface : class
 		=> Instance?.EnsureService<TService, TInterface>();

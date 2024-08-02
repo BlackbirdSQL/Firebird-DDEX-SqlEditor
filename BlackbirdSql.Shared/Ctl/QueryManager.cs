@@ -4,7 +4,6 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Enums;
@@ -19,8 +18,6 @@ using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
 
@@ -47,21 +44,24 @@ public sealed class QueryManager : IBsQueryManager
 	/// <summary>
 	/// Default .ctor.
 	/// </summary>
-	public QueryManager(AuxilliaryDocData owner, ConnectionStrategy strategy)
+	public QueryManager(ConnectionStrategy strategy)
 	{
-		_Owner = owner;
 		_SqlExec = new QESQLExec(this);
-		Strategy = strategy;
+
+		_Strategy = strategy;
+		_Strategy.ConnectionChangedEvent += OnConnectionChanged;
+		_Strategy.DatabaseChangedEvent += OnDatabaseChanged;
+
+		SetStateForConnection(DataConnection);
+
+		bool open = DataConnectionState == ConnectionState.Open;
+
+		EnQueryStatusFlags status = open
+			? EnQueryStatusFlags.Connected : EnQueryStatusFlags.Connection;
+
+		RaiseStatusChanged(status, open, true);
+
 		RegisterSqlExecWithEvenHandlers();
-
-		_KeepAliveCancelTokenSource = new();
-
-		CancellationToken cancelToken = _KeepAliveCancelTokenSource.Token;
-
-		// Fire and forget.
-		Task.Factory.StartNew(() => KeepAliveMonitoringAsync(cancelToken),
-			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
-			TaskScheduler.Default).Forget();
 	}
 
 
@@ -78,10 +78,6 @@ public sealed class QueryManager : IBsQueryManager
 	{
 		lock (_LockLocal)
 		{
-			_KeepAliveCancelTokenSource?.Cancel();
-			_KeepAliveCancelTokenSource?.Dispose();
-			_KeepAliveCancelTokenSource = null;
-
 			ExecutionStartedEvent = null;
 			ExecutionCompletedEvent = null;
 			BatchStatementCompletedEvent = null;
@@ -92,7 +88,7 @@ public sealed class QueryManager : IBsQueryManager
 			{
 				if (IsExecuting)
 				{
-					Cancel(synchronous: true);
+					Cancel(true);
 				}
 			}
 			catch (Exception ex)
@@ -108,6 +104,7 @@ public sealed class QueryManager : IBsQueryManager
 			}
 
 			Strategy?.Dispose();
+			_Strategy = null;
 		}
 	}
 
@@ -130,23 +127,18 @@ public sealed class QueryManager : IBsQueryManager
 	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
-	private int _ConnectionValidationCardinal = 0;
 	private QESQLExec.GetCurrentWorkingDirectoryPath _CurrentWorkingDirectoryPath;
 	private int _EventExecutingCardinal = 0;
 
-	private long _KeepAliveConnectionStartTimeEpoch = long.MinValue;
 
 	private TransientSettings _LiveSettings;
 	private bool _LiveSettingsApplied;
-	private readonly AuxilliaryDocData _Owner = null;
 	private long _RowsAffected;
 	private int _StatementCount;
 	private QESQLExec _SqlExec;
 	private uint _Status;
 	private ConnectionStrategy _Strategy;
 	private TimeSpan _SyncCancelTimeout = new TimeSpan(0, 0, 30);
-
-	private CancellationTokenSource _KeepAliveCancelTokenSource = null;
 
 
 	#endregion Fields & Constants
@@ -208,15 +200,12 @@ public sealed class QueryManager : IBsQueryManager
 	public bool IsExecuting => GetStatusFlag(EnQueryStatusFlags.Executing);
 
 
-	public bool IsLocked => !EventLockEnter(false);
+	public bool IsLocked => !EventLockEnter(true);
 
 
 	public bool IsWithActualPlan => LiveSettings.WithActualPlan;
 
 	public bool IsWithClientStats => LiveSettings.WithClientStats;
-
-
-	public AuxilliaryDocData Owner => _Owner;
 
 
 	public TransientSettings LiveSettings
@@ -277,43 +266,13 @@ public sealed class QueryManager : IBsQueryManager
 			lock (_LockLocal)
 				return _Strategy;
 		}
-		set
-		{
-			lock (_LockLocal)
-			{
-				bool newConnection = !ReferenceEquals(value, _Strategy);
-
-				if (!newConnection)
-					return;
-
-				if (_Strategy != null)
-				{
-					_Strategy.ConnectionChangedEvent -= OnConnectionChanged;
-					_Strategy.DatabaseChangedEvent -= OnDatabaseChanged;
-					_Strategy.Dispose();
-				}
-
-				_Strategy = value;
-				_Strategy.ConnectionChangedEvent += OnConnectionChanged;
-				_Strategy.DatabaseChangedEvent += OnDatabaseChanged;
-
-				SetStateForConnection(DataConnection);
-
-				bool open = DataConnectionState == ConnectionState.Open;
-
-				EnQueryStatusFlags status = open
-					? EnQueryStatusFlags.Connected : EnQueryStatusFlags.Connection;
-
-				RaiseStatusChanged(status, open, true);
-			}
-		}
 	}
+
 
 
 	public IDbTransaction Transaction => Strategy?.Transaction;
 
 	public IsolationLevel TtsIsolationLevel => LiveSettings.EditorExecutionIsolationLevel;
-
 
 
 	public event QueryStatusChangedEventHandler StatusChangedEvent;
@@ -326,6 +285,10 @@ public sealed class QueryManager : IBsQueryManager
 	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
 	public event QueryDataEventHandler BatchDataLoadedEvent;
 	public event QueryDataEventHandler BatchScriptParsedEvent;
+
+	public event EventHandler InvalidateToolbarEvent;
+	public event NotifyConnectionStateEventHandler NotifyConnectionStateEvent;
+	public event EventHandler ShowWindowFrameEvent;
 
 
 	#endregion Property Accessors
@@ -342,6 +305,7 @@ public sealed class QueryManager : IBsQueryManager
 	/// <summary>
 	/// <see cref="ErrorHandler.Succeeded"/> token.
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 	private bool __(int hr) => ErrorHandler.Succeeded(hr);
 
 
@@ -378,11 +342,17 @@ public sealed class QueryManager : IBsQueryManager
 	{
 		IDbConnection connection;
 
+		if (_SqlExec.SyncCancel)
+		{
+			RaiseExecutionCompleted(EnScriptExecutionResult.Halted, true, executionType,
+				LiveSettings.EditorResultsOutputMode, LiveSettings.WithClientStats);
+			EventExecutingExit();
+			return false;
+		}
 
 		SetStatusFlag(false, EnQueryStatusFlags.Executing);
 		SetStatusFlag(true, EnQueryStatusFlags.Connecting);
-		RefreshToolbar();
-
+		RaiseInvalidateToolbar();
 		try
 		{
 			connection = await Strategy.EnsureVerifiedOpenConnectionAsync();
@@ -395,21 +365,21 @@ public sealed class QueryManager : IBsQueryManager
 			SetStatusFlag(true, EnQueryStatusFlags.Executing);
 
 			IsCancelling = true;
-			RefreshToolbar();
-			ShowWindowFrame();
+			RaiseInvalidateToolbar();
+			RaiseShowWindowFrame();
 
 			MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 
-			RaiseExecutionCompleted(EnScriptExecutionResult.Failure, executionType, LiveSettings.EditorResultsOutputMode, LiveSettings.WithClientStats);
+			RaiseExecutionCompleted(EnScriptExecutionResult.Failure, _SqlExec.SyncCancel, executionType, LiveSettings.EditorResultsOutputMode, LiveSettings.WithClientStats);
 			EventExecutingExit();
 			return false;
 		}
 
 		SetStatusFlag(false, EnQueryStatusFlags.Connecting);
 
-		if (connection == null)
+		if (connection == null || _SqlExec.SyncCancel)
 		{
-			RaiseExecutionCompleted(EnScriptExecutionResult.Cancel, executionType, LiveSettings.EditorResultsOutputMode, LiveSettings.WithClientStats);
+			RaiseExecutionCompleted(EnScriptExecutionResult.Cancel, _SqlExec.SyncCancel, executionType, LiveSettings.EditorResultsOutputMode, LiveSettings.WithClientStats);
 			EventExecutingExit();
 			return false;
 		}
@@ -434,24 +404,18 @@ public sealed class QueryManager : IBsQueryManager
 		//	executionType,  LiveSettings.ExecutionType, liveSettings.ExecutionType);
 
 
-		if (liveSettings.WithClientStats && liveSettings.ExecutionType != EnSqlExecutionType.PlanOnly)
-		{
-			Strategy.ResetAndEnableConnectionStatistics();
-		}
-
-
 		try
 		{
 			if (!await RaiseExecutionStartedAsync(textSpan.Text, executionType, connection))
 			{
-				RaiseExecutionCompleted(EnScriptExecutionResult.Halted, executionType, liveSettings.EditorResultsOutputMode, liveSettings.WithClientStats);
+				RaiseExecutionCompleted(EnScriptExecutionResult.Halted, _SqlExec.SyncCancel, executionType, liveSettings.EditorResultsOutputMode, liveSettings.WithClientStats);
 				EventExecutingExit();
 				return false;
 			}
 		}
 		catch (Exception ex)
 		{
-			RaiseExecutionCompleted(EnScriptExecutionResult.Failure, executionType, liveSettings.EditorResultsOutputMode, liveSettings.WithClientStats);
+			RaiseExecutionCompleted(EnScriptExecutionResult.Failure, _SqlExec.SyncCancel, executionType, liveSettings.EditorResultsOutputMode, liveSettings.WithClientStats);
 			EventExecutingExit();
 			Diag.Dug(ex);
 			throw;
@@ -469,7 +433,7 @@ public sealed class QueryManager : IBsQueryManager
 		}
 		catch
 		{
-			RaiseExecutionCompleted(EnScriptExecutionResult.Failure, executionType, liveSettings.EditorResultsOutputMode, liveSettings.WithClientStats);
+			RaiseExecutionCompleted(EnScriptExecutionResult.Failure, _SqlExec.SyncCancel, executionType, liveSettings.EditorResultsOutputMode, liveSettings.WithClientStats);
 			EventExecutingExit();
 			throw;
 		}
@@ -490,37 +454,35 @@ public sealed class QueryManager : IBsQueryManager
 		if (!IsExecuting)
 			return;
 
-		QueryExecutionCompletedEventHandler executionCompletedHandler = null;
+		// QueryExecutionCompletedEventHandler executionCompletedHandler = null;
+
+		IsCancelling = true;
+
 		try
 		{
-			lock (_LockLocal)
-			{
-				IsCancelling = true;
-
-				try
-				{
-					_SqlExec.Cancel(_SyncCancelTimeout);
-				}
-				finally
-				{
-					if (synchronous)
-					{
-						// IsExecuting = false;
-						UnRegisterSqlExecWithEventHandlers();
-						_SqlExec = new QESQLExec(this);
-						RegisterSqlExecWithEvenHandlers();
-						executionCompletedHandler = ExecutionCompletedEvent;
-					}
-				}
-			}
+			_SqlExec.Cancel(synchronous, _SyncCancelTimeout);
 		}
 		finally
 		{
+			/*
+			if (synchronous)
+			{
+				// IsExecuting = false;
+				UnRegisterSqlExecWithEventHandlers();
+				_SqlExec = new QESQLExec(this);
+				RegisterSqlExecWithEvenHandlers();
+				executionCompletedHandler = ExecutionCompletedEvent;
+			}
+			*/
+
 			IsCancelling = false;
+
+			/*
 			if (executionCompletedHandler != null && synchronous)
 			{
-				executionCompletedHandler(this, new QueryExecutionCompletedEventArgs(EnScriptExecutionResult.Cancel));
+				executionCompletedHandler(this, new QueryExecutionCompletedEventArgs(EnScriptExecutionResult.Cancel, false));
 			}
+			*/
 		}
 	}
 
@@ -529,7 +491,7 @@ public sealed class QueryManager : IBsQueryManager
 
 
 
-	public bool CommitTransactions()
+	public bool CommitTransactions(bool validate)
 	{
 		if (!IsConnected || !EventLockEnter())
 			return false;
@@ -539,11 +501,12 @@ public sealed class QueryManager : IBsQueryManager
 
 		try
 		{
-			result = Strategy.CommitTransactions();
+			result = Strategy.CommitTransactions(validate);
 		}
 		finally
 		{
-			SetStatusFlag(false, EnQueryStatusFlags.Connecting, false);
+			if (validate)
+				SetStatusFlag(false, EnQueryStatusFlags.Connecting, false);
 			EventLockExit();
 		}
 
@@ -562,7 +525,7 @@ public sealed class QueryManager : IBsQueryManager
 			// Strategy.DisposeTransaction(true);
 			Strategy.CloseConnection();
 			Strategy.ResetConnection();
-			GetUpdateTransactionsStatus(true);
+			GetUpdatedTransactionsStatus(true);
 		}
 		finally
 		{
@@ -578,7 +541,7 @@ public sealed class QueryManager : IBsQueryManager
 
 		IsConnecting = true;
 
-		long stamp = Strategy.ConnectionStamp;
+		long stamp = Strategy.RctStamp;
 
 		// Fire and forget
 
@@ -592,12 +555,12 @@ public sealed class QueryManager : IBsQueryManager
 				catch (Exception ex)
 				{
 					IsConnecting = true;
-					ShowWindowFrame();
+					RaiseShowWindowFrame();
 					MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				}
 				finally
 				{
-					SetStatusFlag(false, EnQueryStatusFlags.Connecting, stamp != Strategy.ConnectionStamp);
+					SetStatusFlag(false, EnQueryStatusFlags.Connecting, stamp != Strategy.RctStamp);
 					EventLockExit();
 				}
 			},
@@ -616,150 +579,21 @@ public sealed class QueryManager : IBsQueryManager
 
 
 
-	public bool GetUpdateTransactionsStatus(bool supressExceptions)
+	public bool GetUpdatedTransactionsStatus(bool supressExceptions)
 	{
-		if (!EventLockEnter(true, true))
+		if (!EventLockEnter(false, true))
 			return false;
 
 		try
 		{
-			return Strategy.GetUpdateTransactionsStatus(supressExceptions);
+			return Strategy.GetUpdatedTransactionsStatus(supressExceptions);
 		}
-		finally {
+		finally
+		{
 			EventLockExit();
 		}
 	}
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Low overhead asynchronous connection keep alive and monitoring task.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private async Task KeepAliveMonitoringAsync(CancellationToken cancelToken)
-	{
-		await Cmd.AwaitableAsync();
-
-
-		while (_KeepAliveCancelTokenSource != null && !cancelToken.IsCancellationRequested)
-		{
-			bool connected = GetStatusFlag(EnQueryStatusFlags.Connected);
-
-			if (connected && !IsLocked)
-			{
-
-				_ConnectionValidationCardinal++;
-
-				bool hadTransactions = Strategy?.HadTransactions ?? false;
-
-				if (DataConnection == null)
-				{
-					_ConnectionValidationCardinal = 0;
-					_KeepAliveConnectionStartTimeEpoch = long.MinValue;
-
-					// ConnectionChangedEventArgs args = new(null, null);
-					// OnConnectionChanged(this, args);
-
-					RefreshToolbar();
-
-					string prefix = Resources.WarnQueryPrefix;
-					string indent = new string(' ', prefix.Length);
-					string msg = Resources.WarnQueryConnectionDead.FmtRes(prefix, Strategy.ConnInfo.DatasetKey, indent);
-
-					if (hadTransactions)
-						msg += "\n" + Resources.WarnQueryTransactionsDiscarded.FmtRes(indent);
-
-
-					_ = Diag.OutputPaneWriteLineAsync(msg, true);
-				}
-				else if ((_ConnectionValidationCardinal % LibraryData.C_ConnectionValidationModulus) == 0)
-				{
-					_ConnectionValidationCardinal = 0;
-
-					if (!hadTransactions)
-					{
-						int connectionLifeTime = Strategy.ConnInfo.ConnectionLifeTime;
-
-						if (connectionLifeTime > 0)
-						{
-							if (_KeepAliveConnectionStartTimeEpoch == long.MinValue)
-							{
-								_KeepAliveConnectionStartTimeEpoch = DateTime.Now.UnixMilliseconds();
-							}
-							else
-							{
-								long currentTimeEpoch = DateTime.Now.UnixMilliseconds();
-
-								if (currentTimeEpoch - _KeepAliveConnectionStartTimeEpoch > (connectionLifeTime * 1000))
-								{
-									_KeepAliveConnectionStartTimeEpoch = long.MinValue;
-									connected = false;
-
-									Strategy.CloseConnection();
-									RefreshToolbar();
-
-									_ = Diag.OutputPaneWriteLineAsync(Resources.InfoConnectionAutoClosed.FmtRes(Strategy.ConnInfo.DatasetKey, connectionLifeTime), true);
-								}
-
-							}
-						}
-						else
-						{
-							_KeepAliveConnectionStartTimeEpoch = long.MinValue;
-						}
-					}
-					else
-					{
-						_KeepAliveConnectionStartTimeEpoch = long.MinValue;
-					}
-
-
-					if (connected)
-					{
-						long connectionId = Strategy.ConnInfo.ConnectionId;
-						// IDbConnection connection = Connection;
-
-						try
-						{
-							_ = await Strategy.ConnInfo.OpenOrVerifyConnectionAsync();
-						}
-						catch { }
-
-
-						if (_KeepAliveCancelTokenSource == null || cancelToken.IsCancellationRequested || ApcManager.SolutionClosing)
-							break;
-
-
-						if (DataConnection == null && Strategy.ConnInfo != null
-								&& connectionId == Strategy.ConnInfo.ConnectionId)
-						{
-							RaiseStatusChanged(EnQueryStatusFlags.Connected, false, false);
-							// RefreshToolbar();
-
-							string prefix = Resources.WarnQueryPrefix;
-							string indent = new string(' ', prefix.Length);
-							string msg = Resources.WarnQueryConnectionReset.FmtRes(prefix, Strategy.ConnInfo.DatasetKey, indent);
-
-							if (hadTransactions)
-								msg += "\n" + Resources.WarnQueryTransactionsDiscarded.FmtRes(indent);
-
-
-							_ = Diag.OutputPaneWriteLineAsync(msg, true);
-						}
-					}
-				}
-			}
-			else
-			{
-				if (!connected || IsExecuting)
-					_KeepAliveConnectionStartTimeEpoch = long.MinValue;
-
-				_ConnectionValidationCardinal = 0;
-			}
-
-			Thread.Sleep(100);
-		}
-	}
 
 
 
@@ -770,7 +604,7 @@ public sealed class QueryManager : IBsQueryManager
 
 		IsConnecting = true;
 
-		long stamp = Strategy.ConnectionStamp;
+		long stamp = Strategy.ConnectionId;
 
 		try
 		{
@@ -782,75 +616,12 @@ public sealed class QueryManager : IBsQueryManager
 		}
 		finally
 		{
-			SetStatusFlag(false, EnQueryStatusFlags.Connecting, stamp != Strategy.ConnectionStamp);
+			SetStatusFlag(false, EnQueryStatusFlags.Connecting, stamp != Strategy.RctStamp);
 			EventLockExit();
 		}
 
 		return false;
 	}
-
-
-
-	private void RefreshToolbar()
-	{
-		uint cookie = Owner.DocCookie;
-
-		if (cookie == 0)
-			return;
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			// Fire and wait.
-
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-				IVsWindowFrame frame = RdtManager.GetWindowFrame(cookie);
-
-				if (frame == null)
-					return false;
-
-				if (!__(frame.GetProperty((int)__VSFPROPID.VSFPROPID_ToolbarHost, out object pToolbar)))
-					return false;
-
-				if (pToolbar == null)
-					return false;
-
-				if (pToolbar is not IVsToolWindowToolbarHost toolbarHost)
-					return false;
-
-				toolbarHost.ForceUpdateUI();
-
-				Application.DoEvents();
-
-				return true;
-			});
-
-		}
-		else
-		{
-			IVsWindowFrame frame = RdtManager.GetWindowFrame(cookie);
-
-			if (frame == null)
-				return;
-
-			if (!__(frame.GetProperty((int)__VSFPROPID.VSFPROPID_ToolbarHost, out object pToolbar)))
-				return;
-
-			if (pToolbar is not IVsToolWindowToolbarHost toolbarHost)
-				return;
-
-			toolbarHost.ForceUpdateUI();
-
-			Application.DoEvents();
-		}
-	}
-
-
-
-
-
 
 
 
@@ -870,7 +641,7 @@ public sealed class QueryManager : IBsQueryManager
 
 
 
-	public bool RollbackTransactions()
+	public bool RollbackTransactions(bool validate)
 	{
 		if (!IsConnected || !EventLockEnter())
 			return false;
@@ -880,7 +651,7 @@ public sealed class QueryManager : IBsQueryManager
 
 		try
 		{
-			result = Strategy.RollbackTransactions();
+			result = Strategy.RollbackTransactions(validate);
 		}
 		finally
 		{
@@ -933,39 +704,15 @@ public sealed class QueryManager : IBsQueryManager
 			if (enable)
 				_Status |= (uint)statusFlag;
 			else
-			_Status &= (uint)~statusFlag;
-
-			RaiseStatusChanged(statusFlag, enable, newConnection);
+				_Status &= (uint)~statusFlag;
 		}
+
+		RaiseStatusChanged(statusFlag, enable, newConnection);
+
 	}
 
 
 
-	public void ShowWindowFrame()
-	{
-		uint cookie = Owner.DocCookie;
-		if (cookie == 0)
-			return;
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			// Fire and wait.
-
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-				RdtManager.ShowFrame(cookie);
-
-				return true;
-			});
-
-		}
-		else
-		{
-			RdtManager.ShowFrame(cookie);
-		}
-	}
 
 
 
@@ -1001,24 +748,24 @@ public sealed class QueryManager : IBsQueryManager
 	/// execution status flag on query execution.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool EventExecutingEnter(bool increment = true, bool force = false)
+	public bool EventExecutingEnter(bool test = false, bool force = false)
 	{
 		lock (_LockLocal)
 		{
-			if (increment && !force)
-				_KeepAliveConnectionStartTimeEpoch = long.MinValue;
+			if (!test && !force)
+				Strategy.ResetKeepAliveTimeEpoch();
 
 			if (_EventExecutingCardinal != 0 && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 			{
 				_EventExecutingCardinal++;
 
 				if (_EventExecutingCardinal == 1)
 				{
 					SetStatusFlag(true, EnQueryStatusFlags.Executing);
-					RefreshToolbar();
+					RaiseInvalidateToolbar();
 				}
 			}
 		}
@@ -1061,12 +808,12 @@ public sealed class QueryManager : IBsQueryManager
 	/// involves the database.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool EventLockEnter(bool increment = true, bool force = false)
+	public bool EventLockEnter(bool test = false, bool force = false)
 	{
 		lock (_LockLocal)
 		{
-			if (increment && !force)
-				_KeepAliveConnectionStartTimeEpoch = long.MinValue;
+			if (!test && !force)
+				Strategy.ResetKeepAliveTimeEpoch();
 
 			if (Strategy == null)
 				return false;
@@ -1074,12 +821,12 @@ public sealed class QueryManager : IBsQueryManager
 			if (_EventExecutingCardinal != 0 && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 			{
 				_EventExecutingCardinal++;
 
 				if (!force && _EventExecutingCardinal == 1)
-					RefreshToolbar();
+					RaiseInvalidateToolbar();
 			}
 		}
 
@@ -1181,17 +928,13 @@ public sealed class QueryManager : IBsQueryManager
 				switch (currentState)
 				{
 					case ConnectionState.Broken:
-						string prefix = Resources.WarnQueryPrefix;
-						string indent = new string(' ', prefix.Length);
-						string msg = Resources.WarnQueryConnectionBroken.FmtRes(prefix, Strategy.ConnInfo.DatasetKey, indent);
-						if (Strategy?.HadTransactions ?? false)
-							msg += "\n" + Resources.WarnQueryTransactionsDiscarded.FmtRes(indent);
-
-						Diag.AsyncOutputPaneWriteLine(msg, true);
+						RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyBroken, Strategy?.HadTransactions ?? false);
 
 						IsConnected = false;
 						LiveSettingsApplied = false;
+
 						break;
+
 					case ConnectionState.Closed:
 						IsConnected = false;
 						LiveSettingsApplied = false;
@@ -1200,6 +943,7 @@ public sealed class QueryManager : IBsQueryManager
 						//	IsExecuting = false;
 
 						break;
+
 					case ConnectionState.Open:
 						if (originalState == ConnectionState.Closed || originalState == ConnectionState.Connecting)
 						{
@@ -1263,6 +1007,29 @@ public sealed class QueryManager : IBsQueryManager
 	}
 
 
+	public bool OnNotifyConnectionState(object sender, EventArgs args)
+	{
+		NotifyConnectionStateEventArgs stateArgs = args as NotifyConnectionStateEventArgs;
+
+		if (!IsConnected && stateArgs.State == EnNotifyConnectionState.ConfirmedOpen)
+		{
+			SetStatusFlag(true, EnQueryStatusFlags.Connected, false);
+			IsConnecting = true;
+			SetStatusFlag(false, EnQueryStatusFlags.Connecting, false);
+			GetUpdatedTransactionsStatus(true);
+			RaiseInvalidateToolbar();
+		}
+		else if (IsConnected && stateArgs.State == EnNotifyConnectionState.ConfirmedClosed)
+		{
+			IsConnected = false;
+			RaiseInvalidateToolbar();
+		}
+
+
+		// else if (stateArgs.State == EnNotifyConnectionState.RequestIsUnlocked) is always honored.
+
+		return !IsLocked;
+	}
 
 
 
@@ -1273,20 +1040,16 @@ public sealed class QueryManager : IBsQueryManager
 
 
 
-	private void RaiseStatusChanged(EnQueryStatusFlags statusFlag, bool enabled, bool newConnection) =>
-		StatusChangedEvent?.Invoke(this, new(statusFlag, enabled, newConnection));
 
 
-
-
-	private void RaiseExecutionCompleted(EnScriptExecutionResult executionResult,
+	private void RaiseExecutionCompleted(EnScriptExecutionResult executionResult, bool syncCancel,
 			EnSqlExecutionType executionType, EnSqlOutputMode outputMode, bool withClientStats)
 	{
 		QueryExecutionEndTime = DateTime.Now;
 
 		// Tracer.Trace(GetType(), "RaiseExecutionCompleted()");
 
-		QueryExecutionCompletedEventArgs args = new(executionResult, executionType, outputMode, withClientStats);
+		QueryExecutionCompletedEventArgs args = new(executionResult, syncCancel, executionType, outputMode, withClientStats);
 
 		try
 		{
@@ -1305,8 +1068,12 @@ public sealed class QueryManager : IBsQueryManager
 	}
 
 
+
 	private async Task<bool> RaiseExecutionStartedAsync(string queryText, EnSqlExecutionType executionType, IDbConnection connection)
 	{
+		if (_SqlExec.SyncCancel)
+			return false;
+
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		_RowsAffected = 0L;
@@ -1320,6 +1087,33 @@ public sealed class QueryManager : IBsQueryManager
 
 		return ExecutionStartedEvent?.Invoke(this, args) ?? true;
 	}
+
+
+
+	private void RaiseInvalidateToolbar() =>
+		InvalidateToolbarEvent?.Invoke(this, new());
+
+
+
+	private void RaiseNotifyConnectionState(EnNotifyConnectionState state, bool ttsDiscarded)
+	{
+		NotifyConnectionStateEvent?.Invoke(this, new NotifyConnectionStateEventArgs(state, ttsDiscarded));
+	}
+
+
+
+	public void RaiseShowWindowFrame()
+	{
+		if (_SqlExec.SyncCancel)
+			return;
+
+		ShowWindowFrameEvent?.Invoke(this, new());
+	}
+
+
+
+	private void RaiseStatusChanged(EnQueryStatusFlags statusFlag, bool enabled, bool newConnection) =>
+		StatusChangedEvent?.Invoke(this, new(statusFlag, enabled, newConnection));
 
 
 	#endregion Event Handling

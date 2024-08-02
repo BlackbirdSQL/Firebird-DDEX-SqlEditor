@@ -24,9 +24,10 @@ public interface IBsQueryManager : IDisposable
 	IDbTransaction Transaction { get; }
 
 	void BeginTransaction();
-	bool CommitTransactions();
+	bool CommitTransactions(bool validate);
 	void CloseConnection();
 	void DisposeTransaction(bool force);
-	bool RollbackTransactions();
-	void ShowWindowFrame();
+	bool OnNotifyConnectionState(object sender, EventArgs args);
+	bool RollbackTransactions(bool validate);
+	void RaiseShowWindowFrame();
 }

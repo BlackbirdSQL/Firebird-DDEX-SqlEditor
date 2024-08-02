@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Model;
@@ -152,8 +151,7 @@ public class TObjectSelectorRoot : DataObjectSelector
 			if (_Csa == null || _Csa.IsInvalidated)
 			{
 
-				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject,
-					RctManager.ConnectionSource);
+				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject);
 			}
 
 			DataTable schema = CreateSchema(connection, typeName, parameters);
@@ -265,7 +263,7 @@ public class TObjectSelectorRoot : DataObjectSelector
 
 		Describer[] describers = typeName == "Database"
 			? [.. Csb.Describers.DescriberKeys]
-			: [Csb.Describers[SysConstants.C_KeyExDatasetKey], Csb.Describers[SysConstants.C_KeyExConnectionKey]];
+			: [Csb.Describers[CoreConstants.C_KeyExDatasetKey], Csb.Describers[CoreConstants.C_KeyExConnectionKey]];
 
 
 		foreach (Describer describer in describers)
@@ -345,19 +343,19 @@ public class TObjectSelectorRoot : DataObjectSelector
 		{
 			switch (name)
 			{
-				case SysConstants.C_KeyExDatasetKey:
+				case CoreConstants.C_KeyExDatasetKey:
 					retval = _Csa.DatasetKey;
 					break;
-				case SysConstants.C_KeyExConnectionKey:
+				case CoreConstants.C_KeyExConnectionKey:
 					retval = _Csa.ConnectionKey;
 					break;
-				case SysConstants.C_KeyExConnectionSource:
+				case CoreConstants.C_KeyExConnectionSource:
 					retval = EnConnectionSource.ServerExplorer;
 					break;
 				case SysConstants.C_KeyDataSource:
 					retval = connection.DataSource;
 					break;
-				case SysConstants.C_KeyExDataset:
+				case CoreConstants.C_KeyExDataset:
 					retval = _Csa.Dataset;
 					break;
 				case SysConstants.C_KeyDatabase:
@@ -369,18 +367,21 @@ public class TObjectSelectorRoot : DataObjectSelector
 						strval = _Csa.Dataset;
 					retval = strval;
 					break;
-				case SysConstants.C_KeyExAdornedQualifiedName:
+				case CoreConstants.C_KeyExAdornedQualifiedName:
 					retval = _Csa.AdornedQualifiedName;
 					break;
-				case SysConstants.C_KeyExAdornedDisplayName:
+				case CoreConstants.C_KeyExAdornedQualifiedTitle:
+					retval = _Csa.AdornedQualifiedTitle;
+					break;
+				case CoreConstants.C_KeyExAdornedDisplayName:
 					retval = _Csa.AdornedDisplayName;
 					break;
-				case SysConstants.C_KeyExClientVersion:
+				case CoreConstants.C_KeyExClientVersion:
 					retval = NativeDb.ClientVersion;
 					break;
-				case SysConstants.C_KeyExMemoryUsage:
+				case CoreConstants.C_KeyExMemoryUsage:
 					errval = -1;
-					retval = SysConstants.C_DefaultExMemoryUsage;
+					retval = CoreConstants.C_DefaultExMemoryUsage;
 					if ((connection.State & ConnectionState.Open) > 0)
 					{
 						NativeDatabaseInfoProxy info = new(connection);
@@ -388,9 +389,9 @@ public class TObjectSelectorRoot : DataObjectSelector
 						retval = strval;
 					}
 					break;
-				case SysConstants.C_KeyExActiveUsers:
+				case CoreConstants.C_KeyExActiveUsers:
 					errval = -1;
-					retval = SysConstants.C_DefaultExActiveUsers;
+					retval = CoreConstants.C_DefaultExActiveUsers;
 					if ((connection.State & ConnectionState.Open) != 0)
 					{
 						NativeDatabaseInfoProxy info = new(connection);

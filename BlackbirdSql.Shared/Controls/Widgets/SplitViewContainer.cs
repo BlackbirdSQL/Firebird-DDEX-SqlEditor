@@ -148,7 +148,7 @@ public class SplitViewContainer : Control, IServiceProvider
 			if (showSplitter == SplitterBar.ShowSplitter)
 				return;
 
-			EventEnter(true, true);
+			EventEnter(false, true);
 			_SplitContainer.Layout -= SplitContainer_Layout;
 
 			try
@@ -210,7 +210,7 @@ public class SplitViewContainer : Control, IServiceProvider
 		{
 			if (_orientation != value)
 			{
-				EventEnter(true, true);
+				EventEnter(false, true);
 
 				try
 				{
@@ -263,7 +263,7 @@ public class SplitViewContainer : Control, IServiceProvider
 		{
 			if (value != null && _panelTop != value)
 			{
-				EventEnter(true, true);
+				EventEnter(false, true);
 
 				try
 				{
@@ -305,7 +305,7 @@ public class SplitViewContainer : Control, IServiceProvider
 		{
 			if (value != null && _panelBottom != value)
 			{
-				EventEnter(true, true);
+				EventEnter(false, true);
 
 				try
 				{
@@ -400,7 +400,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	private void UpdateLayout()
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -440,7 +440,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	public void CustomizeSplitterBarButton(Guid buttonTagGuid, EnSplitterBarButtonDisplayStyle displayStyle, string buttonText, Image buttonImage, string toolTipText = null)
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -484,7 +484,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	public void CustomizeSplitterBarButtonText(Guid buttonTagGuid, string buttonText, string toolTipText = null)
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -689,7 +689,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	private void LoadPathItems()
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -745,7 +745,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	private void SizePanel(int distance, bool pathBarPresent)
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -907,7 +907,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	public void SwapButtonsNoSuspendResume()
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -932,7 +932,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	public void SwapButtons()
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -953,7 +953,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	public void SwapPanelsNoSuspendResume()
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -982,7 +982,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	public void SwapPanels()
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -1013,7 +1013,7 @@ public class SplitViewContainer : Control, IServiceProvider
 	{
 		bool isSplitterVisible = IsSplitterVisible;
 
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -1043,7 +1043,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	private void ShowView(ToolStripButton designOrXamlButton)
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -1169,7 +1169,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	private void UpdateSplitter()
 	{
-		EventEnter(true, true);
+		EventEnter(false, true);
 
 		try
 		{
@@ -1215,14 +1215,14 @@ public class SplitViewContainer : Control, IServiceProvider
 	/// Returns false if an event has already been entered else true if it is safe to enter.
 	/// </returns>
 	// -------------------------------------------------------------------------------------------
-	public bool EventEnter(bool increment = true, bool force = false)
+	public bool EventEnter(bool test = false, bool force = false)
 	{
 		lock (_LockLocal)
 		{
 			if (_EventCardinal != 0 && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 				_EventCardinal++;
 		}
 

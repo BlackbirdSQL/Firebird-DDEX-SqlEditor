@@ -1,14 +1,16 @@
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
+using System.Security.Cryptography;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Ctl.ComponentModel;
 using BlackbirdSql.Sys.Enums;
 
-using static BlackbirdSql.Sys.SysConstants;
+using static BlackbirdSql.SysConstants;
 
 
 
@@ -37,7 +39,8 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	public NativeDbCsbProxy(string connectionString)
 		: this()
 	{
-		ConnectionString = connectionString;
+		if (connectionString != null)
+			ConnectionString = connectionString;
 	}
 
 
@@ -66,8 +69,8 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	// A protected 'this' object lock
 	protected readonly object _LockObject = new();
 
-	private static DescriberDictionary _Describers = null;
-
+	protected static DescriberDictionary _Describers = null;
+	private Dictionary<string, object> _InternalStore = null;
 
 	#endregion Fields
 
@@ -106,7 +109,13 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	}
 
 
+	[Browsable(false)]
+	public int InternalCount => _InternalStore?.Count ?? 0;
+
 	public static DescriberDictionary Describers => _Describers ??= NativeDb.Describers;
+
+	private Dictionary<string, object> InternalStore => _InternalStore ??= [];
+
 
 
 	[GlobalizedCategory("PropertyCategorySecurity")]
@@ -293,7 +302,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	[GlobalizedCategory("PropertyCategoryPooling")]
 	[GlobalizedDisplayName("PropertyDisplayEnlist")]
 	[GlobalizedDescription("PropertyDescriptionEnlist")]
-	[DefaultValue(C_DefaultPooling)]
+	[DefaultValue(C_DefaultEnlist)]
 	public bool Enlist
 	{
 		get { return (bool)GetValue(C_KeyEnlist); }
@@ -418,12 +427,23 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	public new void Add(string keyword, object value)
 	{
 		string key = keyword;
-		Describer describer = Describers[keyword];
-
-		if (describer != null)
-			key = describer.Key;
 
 		this[key] = value;
+	}
+
+
+	public override void Clear()
+	{
+		_InternalStore = null;
+		base.Clear();
+	}
+
+
+	private bool ContainsInternalKey(string keyword)
+	{
+		// Tracer.Trace(GetType(), "ContainsInternalKey()", "key: {0}", keyword);
+
+		return _InternalStore != null && _InternalStore.ContainsKey(keyword);
 	}
 
 
@@ -431,7 +451,10 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	public override bool ContainsKey(string keyword)
 	{
 		// Tracer.Trace(GetType(), "ContainsKey()", "key: {0}", keyword);
-		if (base.ContainsKey(keyword))
+
+		if (ContainsInternalKey(keyword))
+			return true;
+		else if (base.ContainsKey(keyword))
 			return true;
 
 		IList<string> synonyms = Describers.GetSynonyms(keyword);
@@ -446,17 +469,37 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	}
 
 
+
+	private (bool, object) GetInternalValue(string key)
+	{
+		if (_InternalStore != null && _InternalStore.TryGetValue(key, out object value))
+		{
+			return (true, value);
+		}
+
+		return (false, null);
+	}
+
+
+
 	protected object GetValue(string synonym)
 	{
+		if (synonym == null)
+			Diag.ThrowException(new ArgumentNullException(nameof(synonym)));
+
+		(bool found, object value) = GetInternalValue(synonym);
+
+		if (found)
+			return value;
+
 		Describer describer = Describers.GetSynonymDescriber(synonym);
-
-		if (describer == null)
-			Diag.ThrowException(new ArgumentException(nameof(synonym)), "Describer does not exist");
-
 		string storageKey = describer.ConnectionStringKey;
 
-		if (!TryGetValue(storageKey, out object value))
+
+		if (describer.IsInternalStore || !TryGetValue(storageKey, out value))
+		{
 			return describer.DefaultValue;
+		}
 
 		Type propertyType = describer.PropertyType;
 
@@ -513,17 +556,30 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	}
 
 
+
 	public override bool Remove(string keyword)
 	{
-		if (base.Remove(keyword))
+		if (RemoveInternalStore(keyword))
+		{
+			RaisePropertyChanged(keyword);
 			return true;
+		}
+
+		if (base.Remove(keyword))
+		{
+			RaisePropertyChanged(keyword);
+			return true;
+		}
 
 		IList<string> synonyms = Describers.GetSynonyms(keyword);
 
 		foreach (string synonym in synonyms)
 		{
 			if (base.Remove(synonym))
+			{
+				RaisePropertyChanged(synonym);
 				return true;
+			}
 		}
 
 		return false;
@@ -573,21 +629,70 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 			else
 				storedValue = value;
 		}
+		else if (propertyType == typeof(Version))
+		{
+			storedValue = value.ToString();
+		}
 		else
 		{
 			storedValue = value;
 		}
 
 		if (storedValue == null || storedValue.Equals(describer.DefaultValue))
-			Remove(storageKey);
+		{
+			if (describer.IsInternalStore)
+			{
+				if (RemoveInternalStore(storageKey))
+					RaisePropertyChanged(storageKey);
+			}
+			else
+			{
+				if (Remove(storageKey))
+					RaisePropertyChanged(storageKey);
+			}
+		}
 		else
-			base[storageKey] = storedValue;
+		{
+			RaisePropertyChanged(storageKey);
+			if (describer.IsInternalStore)
+				InternalStore[storageKey] = storedValue;
+			else
+				base[storageKey] = storedValue;
+		}
+	}
+
+
+	private bool RemoveInternalStore(string key)
+	{
+		if (_InternalStore != null && _InternalStore.Remove(key))
+		{
+			if (_InternalStore.Count == 0)
+				_InternalStore = null;
+			return true;
+		}
+
+		return false;
+	}
+
+
+
+	private bool TryGetInternalValue(string keyword, out object value)
+	{
+		if (_InternalStore != null && _InternalStore.TryGetValue(keyword, out value))
+			return true;
+
+		value = null;
+
+		return false;
 	}
 
 
 
 	public override bool TryGetValue(string keyword, out object value)
 	{
+		if (TryGetInternalValue(keyword, out value))
+			return true;
+
 		if (base.TryGetValue(keyword, out value))
 			return true;
 
@@ -606,5 +711,21 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 	#endregion Methods
 
+
+
+
+
+	// =====================================================================================================
+	#region Sub-types - NativeDbCsbProxy
+	// =====================================================================================================
+
+
+	protected virtual void RaisePropertyChanged(string propertyName)
+	{
+	}
+
+
+
+	#endregion Sub-types
 
 }

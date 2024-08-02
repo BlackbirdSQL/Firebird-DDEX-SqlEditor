@@ -12,7 +12,6 @@ using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys;
 
 
 
@@ -143,15 +142,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsPropertyWi
 		{
 			ValidateStoredConnection();
 
-			if (_Csa == null)
-				return string.Empty;
-
-			Csb csa = new(_Csa.ConnectionString);
-
-			if (csa.ContainsKey(SysConstants.C_KeyPassword))
-				csa.Password = "********";
-
-			return csa.ConnectionString;
+			return _Csa?.ToDisplayString() ?? string.Empty;
 		}
 	}
 
@@ -163,7 +154,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsPropertyWi
 	{
 		get
 		{
-			if (QryMgr == null || !QryMgr.QueryExecutionStartTime.HasValue)
+			if (!(QryMgr?.QueryExecutionStartTime.HasValue ?? false))
 			{
 				return string.Empty;
 			}

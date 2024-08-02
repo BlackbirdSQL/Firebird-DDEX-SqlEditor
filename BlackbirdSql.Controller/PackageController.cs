@@ -208,7 +208,7 @@ public sealed class PackageController : AbstractPackageController
 
 	public override async Task<bool> RegisterProjectEventHandlersAsync()
 	{
-		if (!EventProjectRegistrationEnter(false))
+		if (!EventProjectRegistrationEnter(true))
 			return false;
 
 
@@ -216,11 +216,8 @@ public sealed class PackageController : AbstractPackageController
 		{
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			lock (_LockObject)
-			{
-				if (!EventProjectRegistrationEnter(false))
-					return false;
-			}
+			if (!EventProjectRegistrationEnter(true))
+				return false;
 		}
 
 		return RegisterProjectEventHandlersImpl();
@@ -267,7 +264,6 @@ public sealed class PackageController : AbstractPackageController
 
 
 		// Ensure UI thread call is made for unsafe events.
-		// Fire and wait.
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -283,7 +279,7 @@ public sealed class PackageController : AbstractPackageController
 
 	public override void UiRegisterProjectEventHandlers()
 	{
-		if (!EventProjectRegistrationEnter(false))
+		if (!EventProjectRegistrationEnter(true))
 			return;
 
 		if (!ThreadHelper.CheckAccess())

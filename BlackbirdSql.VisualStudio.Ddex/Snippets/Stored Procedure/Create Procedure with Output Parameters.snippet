@@ -64,7 +64,8 @@
 				</Literal>
 			</Declarations>
 			<Code Language="SQL_FIREBIRD">
-				<![CDATA[CREATE PROCEDURE $storedprocname$
+				<![CDATA[SET TERM GO ;
+CREATE PROCEDURE $storedprocname$
 (
     $Param1$ $datatype1$ NOT NULL,
     $Param2$ $datatype2$ NOT NULL DEFAULT $DefValue2$,
@@ -81,6 +82,8 @@ BEGIN
 	INTO :$OutParam1$, :$OutParam2$;
 	SUSPEND;
 END
+GO
+SET TERM ; GO
 ]]>
 			</Code>
 		</Snippet>

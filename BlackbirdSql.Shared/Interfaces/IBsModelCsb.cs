@@ -1,17 +1,19 @@
-﻿
-using System.Data;
+﻿using System.Data.Common;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Events;
+using BlackbirdSql.Core.Interfaces;
+
+
 
 namespace BlackbirdSql.Shared.Interfaces;
 
 
 // =========================================================================================================
 //
-//									IBsConnectionInfoPropertyAgent Interface
+//										IBsModelCsb Interface
 //
 // =========================================================================================================
-public interface IBsConnectionInfoPropertyAgent
+public interface IBsModelCsb : IBsConnectionCsb
 {
 	long ConnectionId { get; }
 
@@ -23,7 +25,7 @@ public interface IBsConnectionInfoPropertyAgent
 	/// reopening. Returns null if no connection exists. If a Close() fails, disposes of
 	/// the connection.
 	/// </summary>
-	IDbConnection LiveConnection { get; }
+	DbConnection LiveConnection { get; }
 
 
 	event ConnectionChangedDelegate ConnectionChangedEvent;

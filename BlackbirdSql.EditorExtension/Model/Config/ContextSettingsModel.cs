@@ -5,7 +5,6 @@ using System.ComponentModel;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
-using BlackbirdSql.Sys;
 
 
 

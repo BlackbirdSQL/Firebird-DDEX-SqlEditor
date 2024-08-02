@@ -44,9 +44,9 @@ public class CommandDisconnectAllQueries : AbstractCommand
 
 			if (qryMgr != null && qryMgr.IsConnected)
 			{
-				if (qryMgr.IsExecuting)
+				if (qryMgr.IsExecuting || qryMgr.HasTransactions)
 				{
-					Cmd.ShouldStopCloseDialog(value, GetType());
+					value.RequestDeactivateQuery();
 				}
 				else
 				{

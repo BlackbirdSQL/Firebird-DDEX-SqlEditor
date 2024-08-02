@@ -79,12 +79,12 @@ public class DbConnectionService : SBsNativeDbConnection, IBsNativeDbConnection
 	/// <summary>
 	/// Parses and converts a server version string to it's Version format.
 	/// </summary>
-	public Version GetVersion(IDbConnection @this)
+	public Version ParseServerVersion(IDbConnection @this)
 	{
 		if (@this is not FbConnection connection)
 			return new();
 
-		return connection.GetVersion();
+		return FbServerProperties.ParseServerVersion(connection.ServerVersion);
 	}
 
 

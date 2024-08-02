@@ -17,7 +17,6 @@ namespace BlackbirdSql.Shared.Interfaces;
 public interface IBsTabbedEditorWindowPane : IBsWindowPane
 {
 	IVsTextLines DocData { get; }
-	string DocumentMoniker { get; }
 	string FileName { get; }
 	bool IsResultsGridTabVisible { get; }
 	bool IsResultsGridButtonVisible { get; set; }

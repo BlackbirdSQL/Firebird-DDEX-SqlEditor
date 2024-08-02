@@ -103,7 +103,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	protected override void WndProc(ref Message m)
 	{
-		if (m.Msg == Sys.Native.WM_CONTEXTMENU)
+		if (m.Msg == Native.WM_CONTEXTMENU)
 		{
 			if (FocusedGrid != null && VS.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var x, out var y, (Control)(object)FocusedGrid))
 			{

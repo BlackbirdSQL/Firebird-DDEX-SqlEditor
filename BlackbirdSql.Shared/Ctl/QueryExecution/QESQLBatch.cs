@@ -16,12 +16,8 @@ using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model.QueryExecution;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 
 
@@ -232,9 +228,6 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 
-		IBsBatchExecutionHandler batchExecutionHandler = _QryMgr.Strategy.CreateBatchExecutionHandler();
-		batchExecutionHandler?.Register(conn, _SqlStatement, this);
-
 		lock (_LockLocal)
 			_ExecutionState = EnBatchState.Executing;
 
@@ -326,8 +319,6 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		}
 		finally
 		{
-			batchExecutionHandler?.UnRegister(conn, _SqlStatement, this);
-
 			if (CheckCancelled(cancelToken))
 			{
 				lock (_LockLocal)
@@ -351,7 +342,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			HandleSqlMessages(ex.GetErrors(), true);
 
 			_QryMgr.IsCancelling = true;
-			_QryMgr.ShowWindowFrame();
+			_QryMgr.RaiseShowWindowFrame();
 
 			MessageCtl.ShowEx(ex, ex.Message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return;
@@ -372,7 +363,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			HandleSqlMessages(ex.GetErrors(), true);
 
 			_QryMgr.IsCancelling = true;
-			_QryMgr.ShowWindowFrame();
+			_QryMgr.RaiseShowWindowFrame();
 
 			MessageCtl.ShowEx(ex, ex.Message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
@@ -782,7 +773,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 		if ((_SpecialActions & EnSpecialActions.ExecutionPlansMask) != 0
-			&& SpecialActionEvent != null
+			&& !cancelToken.IsCancellationRequested && SpecialActionEvent != null
 			&& IsExecutionPlanResultSet(dataReader, out EnSpecialActions batchSpecialAction)
 			&& (_SpecialActions & batchSpecialAction) != 0)
 		{
@@ -932,13 +923,6 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	#region Event Handling - QESQLBatch
 	// =========================================================================================================
 
-
-	public void OnSqlInfoMessage(object sender, DbInfoMessageEventArgs e)
-	{
-		// Tracer.Trace(GetType(), "QESQLBatch.OnSqlInfoMessage", "", null);
-		IList<object> errors = NativeDb.GetInfoMessageEventArgsErrors(e);
-		HandleSqlMessages(errors, false);
-	}
 
 	public void OnSqlStatementCompleted(object sender, BatchStatementCompletedEventArgs e)
 	{

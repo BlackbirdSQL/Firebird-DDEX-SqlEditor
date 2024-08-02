@@ -16,7 +16,8 @@ using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Model;
 using Microsoft.VisualStudio.Data.Services;
 
-using static BlackbirdSql.Sys.SysConstants;
+using static BlackbirdSql.CoreConstants;
+using static BlackbirdSql.SysConstants;
 
 
 
@@ -57,25 +58,39 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 	public AbstractCsb() : base()
 	{
+		_Id = _Seed++;
 	}
 
 	public AbstractCsb(string connectionString, bool validateServerName) : base(connectionString)
 	{
+		_Id = _Seed++;
+
 		if (validateServerName)
 			ValidateServerName();
 	}
 
 
 
-	public AbstractCsb(IDbConnection connection, bool validateServerName) : base(connection.ConnectionString)
+	public AbstractCsb(IDbConnection connection, bool validateServerName) : base(connection?.ConnectionString)
 	{
+		_Id = _Seed++;
+
 		if (validateServerName)
 			ValidateServerName();
 	}
 
-	public AbstractCsb(IBsPropertyAgent ci, bool validateServerName) : base()
+	public AbstractCsb(DbConnectionStringBuilder rhs, bool validateServerName) : base(rhs?.ConnectionString)
 	{
-		Parse(ci);
+		_Id = _Seed++;
+
+		if (rhs == null)
+			return;
+
+		if (rhs is AbstractCsb csb)
+		{
+			_Moniker = csb._Moniker;
+			_UnsafeMoniker = csb._UnsafeMoniker;
+		}
 
 		if (validateServerName)
 			ValidateServerName();
@@ -84,6 +99,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 	protected AbstractCsb(IVsDataExplorerNode node, bool validateServerName) : base()
 	{
+		_Id = _Seed++;
+
 		Extract(node);
 		if (validateServerName)
 			ValidateServerName();
@@ -96,9 +113,47 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	public AbstractCsb(string server, int port, string database, string user,
 				string password, string charset) : base()
 	{
+		_Id = _Seed++;
+
 		Initialize(server, port, C_DefaultServerType, database, user, password,
 			C_DefaultRole, charset, C_DefaultDialect, C_DefaultNoDatabaseTriggers);
 		ValidateServerName();
+	}
+
+
+	static AbstractCsb()
+	{
+		// Extension specific describers.
+
+		try
+		{
+			Describers.AddRange(
+			[
+				new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey),
+				new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey),
+				new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId),
+				new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset),
+
+				new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName),
+				new Describer(C_KeyExConnectionSource, typeof(EnConnectionSource), C_DefaultExConnectionSource),
+
+				new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, false, false),
+				new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, false, false),
+				new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, false, false),
+
+				new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion),
+				new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, false, false, false),
+				new Describer(C_KeyExEdmx, typeof(bool)),
+				new Describer(C_KeyExEdmu, typeof(bool)),
+				new Describer(C_KeyExCreationFlags, typeof(EnEditorCreationFlags))
+			]);
+		}
+		catch (Exception ex)
+		{
+			Diag.DebugDug(ex);
+		}
+
+		// Diag.DebugTrace("Added core describers");
 	}
 
 
@@ -107,7 +162,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	{
 		DataSource = server;
 		Port = port;
-		ServerType = (EnServerType)serverType;
+		ServerType = serverType;
 		Database = database;
 		UserID = user;
 		Password = password;
@@ -138,8 +193,10 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	// =====================================================================================================
 
 
-	private string _SafeDatasetMoniker = null;
-	private string _UnsafeDatasetMoniker = null;
+	private readonly long _Id = -1L;
+	protected string _Moniker = null;
+	private static long _Seed = 0L;
+	protected string _UnsafeMoniker = null;
 
 
 	#endregion Fields
@@ -151,6 +208,9 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	// =====================================================================================================
 	#region Property accessors - AbstractCsb
 	// =====================================================================================================
+
+
+	public static new DescriberDictionary Describers => NativeDbCsbProxy.Describers;
 
 
 	/// <summary>
@@ -214,7 +274,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	[GlobalizedDescription("PropertyDescriptionConnectionKey")]
 	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExConnectionKey)]
-	public string ConnectionKey 
+	public string ConnectionKey
 	{
 		get { return (string)GetValue(C_KeyExConnectionKey); }
 		set { SetValue(C_KeyExConnectionKey, value); }
@@ -267,6 +327,12 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		set { SetValue(C_KeyExClientVersion, value); }
 	}
 
+
+	[Browsable(false)]
+	public long Id => _Id;
+
+
+
 	/// <summary>
 	/// The server memory usage.
 	/// </summary>
@@ -275,7 +341,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	[GlobalizedDisplayName("PropertyDisplayMemoryUsage")]
 	[GlobalizedDescription("PropertyDescriptionMemoryUsage")]
 	[ReadOnly(true)]
-	[DefaultValue("")]
+	[DefaultValue(C_DefaultExMemoryUsage)]
 	public string MemoryUsage
 	{
 		get { return (string)GetValue(C_KeyExMemoryUsage); }
@@ -291,7 +357,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	[GlobalizedDisplayName("PropertyDisplayActiveUsers")]
 	[GlobalizedDescription("PropertyDescriptionActiveUsers")]
 	[ReadOnly(true)]
-	[DefaultValue(0)]
+	[DefaultValue(C_DefaultExActiveUsers)]
 	public int ActiveUsers
 	{
 		get { return (int)GetValue(C_KeyExActiveUsers); }
@@ -302,7 +368,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// <summary>
 	/// The closest estimate to the SE display name.
 	/// </summary>
-	[Browsable (false)]
+	[Browsable(false)]
 	public string ServerExplorerName
 	{
 		get
@@ -365,11 +431,44 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			string retval = DisplayName;
 
 			if (glyph != '\0')
-				retval = Resources.RunningConnectionTableGlyphFormat.FmtRes(glyph, retval);
+				retval = Resources.RctGlyphFormat.FmtRes(glyph, retval);
 
 			return retval;
 		}
 	}
+
+
+
+	/// <summary>
+	/// The DisplayName adorned with the ConnectionSource glyph
+	/// for use in titles and captions
+	/// </summary>
+	[Browsable(false)]
+	public string AdornedTitle
+	{
+		get
+		{
+
+			char glyph = '\0';
+
+			if (ConnectionSource == EnConnectionSource.Session)
+				glyph = RctManager.SessionTitleGlyph;
+			else if (ConnectionSource == EnConnectionSource.Application)
+				glyph = RctManager.ProjectTitleGlyph;
+			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
+				glyph = RctManager.EdmTitleGlyph;
+			else if (ConnectionSource == EnConnectionSource.ExternalUtility)
+				glyph = RctManager.UtilityTitleGlyph;
+
+			string retval = DisplayName;
+
+			if (glyph != '\0')
+				retval = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+
+			return retval;
+		}
+	}
+
 
 
 	/// <summary>
@@ -399,11 +498,53 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				glyph = RctManager.UtilityDatasetGlyph;
 
 			if (glyph != '\0')
-				retval = Resources.RunningConnectionTableGlyphFormat.FmtRes(glyph, retval);
+				retval = Resources.RctGlyphFormat.FmtRes(glyph, retval);
 
 			return retval;
 		}
 	}
+
+
+	[Browsable(false)]
+	public string AdornedQualifiedTitle
+	{
+		get
+		{
+			string retval = QualifiedName;
+
+			char glyph = '\0';
+			string format = null;
+
+			switch (ConnectionSource)
+			{
+				case EnConnectionSource.Session:
+					glyph = RctManager.SessionTitleGlyph;
+					format = Resources.RctGlyphFormat2.FmtRes(glyph, retval);
+					break;
+				case EnConnectionSource.Application:
+					glyph = RctManager.ProjectTitleGlyph;
+					format = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+					break;
+				case EnConnectionSource.EntityDataModel:
+					glyph = RctManager.EdmTitleGlyph;
+					format = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+					break;
+				case EnConnectionSource.ExternalUtility:
+					glyph = RctManager.UtilityTitleGlyph;
+					format = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+					break;
+				default:
+					break;
+			}
+
+			if (glyph != '\0')
+				retval = format.FmtRes(glyph, retval);
+
+			return retval;
+		}
+	}
+
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -422,8 +563,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	{
 		get
 		{
-			_SafeDatasetMoniker = BuildUniqueConnectionUrl(true);
-			return _SafeDatasetMoniker;
+			_Moniker = BuildUniqueConnectionUrl(true);
+			return _Moniker;
 		}
 	}
 
@@ -440,7 +581,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	[Browsable(false)]
-	public string SafeDatasetMoniker => _SafeDatasetMoniker ??= BuildUniqueConnectionUrl(true);
+	public string Moniker => _Moniker ??= BuildUniqueConnectionUrl(true);
 
 
 	// ---------------------------------------------------------------------------------
@@ -455,7 +596,11 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	[Browsable(false)]
-	public string UnsafeDatasetMoniker => _UnsafeDatasetMoniker ??= BuildUniqueConnectionUrl(false);
+	public string UnsafeMoniker
+	{
+		get { return _UnsafeMoniker ??= BuildUniqueConnectionUrl(false); }
+		set { _UnsafeMoniker = value; }
+	}
 
 
 	#endregion Property accessors
@@ -521,6 +666,9 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 			foreach (Describer describer in enumerator)
 			{
+				if (describer.Name == "ServerVersion")
+					continue;
+
 				value1 = csa1[describer.Name];
 				value2 = csa2[describer.Name];
 
@@ -528,7 +676,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				{
 					// Tracer.Trace(typeof(AbstractCsb), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)",
 					//	"Connection parameter '{0}' mismatch: '{1}' : '{2}.",
-					//	describer.Name, value1 != null ? value1.ToString() : "null", value2 != null ? value2.ToString() : "null");
+					//	describer.Name, value1?.ToString() ?? "null", value2?.ToString() ?? "null");
+
 					return false;
 				}
 			}
@@ -551,6 +700,9 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				if (describer != null)
 					continue;
 
+				if (describer.Name == C_KeyExServerVersion)
+					continue;
+
 				if (!csa2.ContainsKey(pair.Key))
 					return false;
 
@@ -566,6 +718,9 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				describer = Describers[pair.Key];
 
 				if (describer != null)
+					continue;
+
+				if (describer.Name == C_KeyExServerVersion)
 					continue;
 
 				if (!csa1.ContainsKey(pair.Key))
@@ -866,14 +1021,6 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		}
 
 	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------
-	protected abstract void Parse(IBsPropertyAgent ci);
-
-
 
 
 

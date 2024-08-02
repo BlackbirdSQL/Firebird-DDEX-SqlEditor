@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Windows.Forms;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
@@ -125,7 +127,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// to null but leave the entry intact.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static Dictionary<string, object> InflightMonikerCsbTable => _InflightMonikerCsbTable ??= [];
+	public static Dictionary<string, Csb> InflightMonikerCsbTable => _InflightMonikerCsbTable ??= [];
 
 
 	public static IEnumerable<RunningDocumentInfo> Enumerator => Instance.Rdt;
@@ -213,7 +215,7 @@ public sealed class RdtManager : AbstractRdtManager
 		if (_InflightMonikerCsbTable == null)
 			return false;
 
-		foreach (KeyValuePair<string, object> pair in _InflightMonikerCsbTable)
+		foreach (KeyValuePair<string, Csb> pair in _InflightMonikerCsbTable)
 		{
 			if (Path.GetFileName(pair.Key) == filename)
 				return true;
@@ -235,6 +237,64 @@ public sealed class RdtManager : AbstractRdtManager
 
 	public static int NotifyDocumentChanged(uint dwCookie, uint grfDocChanged)
 		=> Instance.RdtSvc.NotifyDocumentChanged(dwCookie, grfDocChanged);
+
+
+
+	public static void InvalidateToolbar(uint dwCookie)
+	{
+		if (dwCookie == 0)
+			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and wait.
+
+			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+				IVsWindowFrame frame = GetWindowFrame(dwCookie);
+
+				if (frame == null)
+					return false;
+
+				if (!__(frame.GetProperty((int)__VSFPROPID.VSFPROPID_ToolbarHost, out object pToolbar)))
+					return false;
+
+				if (pToolbar == null)
+					return false;
+
+				if (pToolbar is not IVsToolWindowToolbarHost toolbarHost)
+					return false;
+
+				toolbarHost.ForceUpdateUI();
+
+				Application.DoEvents();
+
+				return true;
+			});
+
+		}
+		else
+		{
+			IVsWindowFrame frame = GetWindowFrame(dwCookie);
+
+			if (frame == null)
+				return;
+
+			if (!__(frame.GetProperty((int)__VSFPROPID.VSFPROPID_ToolbarHost, out object pToolbar)))
+				return;
+
+			if (pToolbar is not IVsToolWindowToolbarHost toolbarHost)
+				return;
+
+			toolbarHost.ForceUpdateUI();
+
+			Application.DoEvents();
+		}
+	}
+
+
 
 
 	public static int RegisterAndLockDocument(uint grfRDTLockType, string pszMkDocument,

@@ -31,7 +31,7 @@ public class CommandModifyConnection : AbstractCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (!ExecutionLocked && StoredQryMgr.Strategy != null)
+		if (!ExecutionLocked && StoredStrategy != null)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}

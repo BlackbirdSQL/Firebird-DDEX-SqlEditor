@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Data.Ctl;
 using BlackbirdSql.Data.Properties;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Data.Services;
@@ -65,6 +66,8 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
 		// Callers must EnsureLoaded().
+		if (rhs._LinkStage != EnLinkStage.Completed)
+			Diag.ThrowException(new ApplicationException($"Attempt to clone an unloaded parser. ConnectionString: {rhs._ConnectionString}."));
 
 		_IsIntransient = rhs._IsIntransient;
 		_ConnectionString = rhs._ConnectionString;
@@ -87,14 +90,19 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
+		lock (_LockGlobal)
+		{
+			if (_Instances?.ContainsKey(root) ?? false)
+				Diag.ThrowException(new ApplicationException($"Attempt to create a duplicate parser for explorer node."));
+
+			_Instances ??= [];
+			_Instances.Add(root, this);
+
+			_InstanceRoot = root;
+		}
+
+
 		bool rhsValid = rhs != null && rhs.Loaded;
-
-		_Instances ??= [];
-		_Instances.Add(root, this);
-
-
-		_InstanceRoot = root;
-
 
 		if (!rhsValid)
 		{
@@ -142,11 +150,16 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			throw ex;
 		}
 
-		// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
+		IBsNativeDbLinkageParser parser;
 
-		if (_Instances == null || !_Instances.TryGetValue(root, out IBsNativeDbLinkageParser parser))
+		// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
+		lock (_LockGlobal)
 		{
-			parser = null;
+
+			if (_Instances == null || !_Instances.TryGetValue(root, out parser))
+			{
+				parser = null;
+			}
 		}
 
 		return (AbstractLinkageParser)parser;
@@ -155,7 +168,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	~AbstractLinkageParser()
 	{
-		Dispose(true);
+		Dispose();
 	}
 
 
@@ -180,27 +193,35 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "isValidTransient: {0}.", isValidTransient);
 
-		if (_InstanceRoot == null || _Instances == null)
-			return false;
+		lock (_LockGlobal)
+		{
+			if (_Disposed)
+				return false;
 
-		ApcManager.InvalidateRctManager();
+			_Disposed = true;
 
-		Disable();
+			if (_InstanceRoot == null || _Instances == null)
+				return false;
+		
+			ApcManager.InvalidateRctManager();
 
-		if (disposing)
-			InvalidateEquivalentParsers(_ConnectionString);
+			Disable();
 
-		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "DISPOSING OF PARSER. isValidTransient: {0}.", isValidTransient);
+			if (disposing)
+				InvalidateEquivalentParsers(_ConnectionString);
 
-		_Instances.Remove(_InstanceRoot);
+			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "DISPOSING OF PARSER. isValidTransient: {0}.", isValidTransient);
 
-		if (_Instances.Count == 0)
-			_Instances = null;
+			_Instances.Remove(_InstanceRoot);
 
-		_InstanceRoot = null;
-		_ConnectionString = null;
+			if (_Instances.Count == 0)
+				_Instances = null;
 
-		return true;
+			_InstanceRoot = null;
+			_ConnectionString = null;
+
+			return true;
+		}
 	}
 
 
@@ -281,15 +302,30 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// =========================================================================================================
 
 
-	private static IBsNativeProviderSchemaFactory _SchemaFactory = null;
-
 	/// <summary>
 	/// The working db connection associated with this LinkageParser
 	/// </summary>
 	protected string _ConnectionString = null;
 
-	protected static IBsNativeDbLinkageParser _TransientInstance = null;
-	protected string[] _TransientRestrictions = null;
+
+	private readonly string _ConnectionUrl = null;
+	protected bool _Disabling = false;
+	private bool _Disposed = false;
+
+
+	/// <summary>
+	/// Parser status inidicator that is set to false if the user cancels async
+	/// operations in the IDE task handler.
+	/// </summary>
+	protected bool _Enabled = true;
+
+
+	/// <summary>
+	/// Per connection LinkageParser instances xref.
+	/// _Instances must be accessed within _LockGlobal code logic.
+	/// </summary>
+	private static Dictionary<IVsDataExplorerConnection, IBsNativeDbLinkageParser> _Instances = null;
+
 
 	/// <summary>
 	/// The SE db connection associated with this LinkageParser. This object may be
@@ -302,16 +338,9 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	protected IVsDataExplorerConnection _InstanceRoot = null;
 
 
-	protected string _ConnectionUrl = null;
-
-
-	/// <summary>
-	/// Parser status inidicator that is set to false if the user cancels async
-	/// operations in the IDE task handler.
-	/// </summary>
-	protected bool _Enabled = true;
-
-	protected bool _Disabling = false;
+	private static IBsNativeProviderSchemaFactory _SchemaFactory = null;
+	protected static IBsNativeDbLinkageParser _TransientInstance = null;
+	protected string[] _TransientRestrictions = null;
 
 
 	/// <summary>
@@ -330,12 +359,6 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	protected long _TotalElapsed = 0;
 
-	/// <summary>
-	/// Per connection LinkageParser instances xref.
-	/// _Instances must be accessed within _LockGlobal code logic.
-	/// </summary>
-	private static Dictionary<IVsDataExplorerConnection, IBsNativeDbLinkageParser> _Instances = null;
-
 
 	/// <summary>
 	/// The tracked linkage build process stage.
@@ -347,15 +370,12 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </remarks>
 	protected EnLinkStage _LinkStage = EnLinkStage.Start;
 
+
 	/// <summary>
 	/// The intermediate full SELECT of the system generator table.
 	/// </summary>
 	private DataTable _RawGenerators = null;
 
-	/// <summary>
-	/// The intermediate full SELECT of the system trigger table.
-	/// </summary>
-	private DataTable _RawTriggers = null;
 
 	/// <summary>
 	/// The intermediate full SELECT of the system trigger table dependencies.
@@ -365,6 +385,12 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// SELECT statements is up to +- 80% faster than a combined statement.
 	/// </remarks>
 	private DataTable _RawTriggerDependencies = null;
+
+
+	/// <summary>
+	/// The intermediate full SELECT of the system trigger table.
+	/// </summary>
+	private DataTable _RawTriggers = null;
 
 
 	/// <summary>
@@ -952,32 +978,36 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
 
-		if (_Instances == null)
+		lock (_LockGlobal)
 		{
-			// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Not found. _Instances is null.");
+
+			if (_Instances == null)
+			{
+				// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Not found. _Instances is null.");
+				return null;
+			}
+
+			// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Searching instances. Count: {0}.", _Instances.Count);
+
+
+			foreach (KeyValuePair<IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
+			{
+				AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
+
+				if (!parser._Enabled || parser._IsIntransient)
+					continue;
+
+				if (ApcManager.IsWeakConnectionEquivalency(connectionString, parser.ConnectionString))
+				{
+					if (!mustBeLoaded || parser.Loaded)
+						return parser;
+				}
+			}
+
+			// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found in instances. Count: {0}", _Instances.Count);
+
 			return null;
 		}
-
-		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Searching instances. Count: {0}.", _Instances.Count);
-
-
-		foreach (KeyValuePair< IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
-		{
-			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
-
-			if (!parser._Enabled || parser._IsIntransient)
-				continue;
-
-			if (ApcManager.IsWeakConnectionEquivalency(connectionString, parser.ConnectionString))
-			{
-				if (!mustBeLoaded || parser.Loaded)
-					return parser;
-			}
-		}
-
-		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found in instances. Count: {0}", _Instances.Count);
-
-		return null;
 	}
 
 
@@ -988,25 +1018,30 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		string connectionUrl = null;
 
-		if (_Instances == null)
-			return null;
+		lock (_LockGlobal)
+		{
+			if (_Instances == null)
+				return null;
+		}
 
 		connectionUrl ??= ApcManager.CreateConnectionUrl(connectionString);
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "Searching instances. connectionUrl: {0}.", connectionUrl);
 
-
-		foreach (KeyValuePair< IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
+		lock (_LockGlobal)
 		{
-			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
+			foreach (KeyValuePair<IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
+			{
+				AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
 
-			if (!parser._Enabled || parser._IsIntransient)
-				continue;
+				if (!parser._Enabled || parser._IsIntransient)
+					continue;
 
-			// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "Comparing instance. parser._ConnectionUrl: {0}.", parser._ConnectionUrl);
+				// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "Comparing instance. parser._ConnectionUrl: {0}.", parser._ConnectionUrl);
 
-			if (connectionUrl.Equals(parser._ConnectionUrl))
-				return parser;
+				if (connectionUrl.Equals(parser._ConnectionUrl))
+					return parser;
+			}
 		}
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "No parser found in instances. Count: {0}", _Instances.Count);
@@ -1197,26 +1232,26 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Not found. _Instances is null.");
 				return;
 			}
+
+
+			// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Searching instances. Count: {0}.", _Instances.Count);
+
+			int i = -1;
+
+			foreach (KeyValuePair<IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
+			{
+				i++;
+				AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
+
+				if (!parser._Enabled)
+					continue;
+
+				if (ApcManager.IsWeakConnectionEquivalency(connectionString, parser.ConnectionString))
+					parser._IsIntransient = true;
+			}
+
+			return;
 		}
-
-
-		// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Searching instances. Count: {0}.", _Instances.Count);
-
-		int i = -1;
-
-		foreach (KeyValuePair< IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
-		{
-			i++;
-			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
-
-			if (!parser._Enabled)
-				continue;
-
-			if (ApcManager.IsWeakConnectionEquivalency(connectionString, parser.ConnectionString))
-				parser._IsIntransient = true;
-		}
-
-		return;
 	}
 
 

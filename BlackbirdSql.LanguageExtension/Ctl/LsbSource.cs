@@ -37,7 +37,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 		_SqlLanguageService = (LsbLanguageService)service;
 		_IntelliSenseEnabled = service.Prefs.EnableIntellisense;
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+		AuxilliaryDocData auxDocData = AuxDocData;
 
 		if (auxDocData != null)
 		{
@@ -79,63 +79,45 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	private readonly LsbLanguageService _SqlLanguageService;
 
+
+
+	private AuxilliaryDocData AuxDocData
+	{
+		get
+		{
+			IVsTextLines docData = GetTextLines();
+			return ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(docData);
+		}
+	}
+
+
 	public ITextUndoTransaction CurrentCommitUndoTransaction { get; set; }
 
 	private LsbMetadataProviderProvider MetadataProviderProviderInstance { get; set; } = null;
 
 	public bool IsServerSupported => _IsServerSupported;
 
-	public bool IsDisconnectedMode
-	{
-		get
-		{
-			bool flag = false;
-			AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-			if (auxDocData != null)
-				flag = auxDocData.QryMgr.IsConnected;
-
-			return !flag;
-		}
-	}
-
+	public bool IsDisconnectedMode => !((AuxDocData?.QryMgr?.IsConnected) ?? true);
 
 
 	/// <summary>
 	/// The current DatsetKey
 	/// </summary>
-	public string DatabaseName
+	public string Moniker
 	{
 		get
 		{
-			string name = null;
+			string moniker = null;
 			IBsMetadataProviderProvider metadataProviderProvider = GetMetadataProviderProvider();
 
 			if (metadataProviderProvider != null && metadataProviderProvider is LsbMetadataProviderProvider)
 			{
-				AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-				if (auxDocData != null)
-				{
-					IDbConnection connection = auxDocData.QryMgr.Strategy.Connection;
-
-					// TODO: Use datasetKey
-					if (connection != null)
-						name = connection.Database;
-				}
+				moniker = metadataProviderProvider.Moniker;
 			}
 
-			if (name == null)
-			{
-				if (metadataProviderProvider != null)
-				{
-					// TODO: Use datasetKey
-					name = metadataProviderProvider.DatabaseName;
-				}
-				else // if (!IsDisconnectedMode)
-				{
-					name = GetDatabaseNameFromConnectionInfo(ConnInfo);
-				}
-			}
-			return name;
+			moniker ??= MdlCsb?.Moniker;
+
+			return moniker;
 		}
 	}
 
@@ -161,20 +143,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		}
 	}
 
-	public IBsConnectionInfo ConnInfo
-	{
-		get
-		{
-			IBsConnectionInfo result = null;
-
-			AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
-
-			if (auxDocData != null)
-				result = auxDocData.QryMgr.Strategy.ConnInfo;
-
-			return result;
-		}
-	}
+	public IBsModelCsb MdlCsb => AuxDocData?.QryMgr?.Strategy?.MdlCsb;
 
 
 
@@ -192,13 +161,13 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		if (auxDocData != null && auxDocData.IntellisenseEnabled.AsBool())
 		{
 			// TODO: MetadataProviderProvider always null atm.
-			metadataProviderProvider = (IBsMetadataProviderProvider)auxDocData.StrategyFactory.MetadataProviderProvider;
+			metadataProviderProvider = (IBsMetadataProviderProvider)auxDocData.MetadataProviderProvider;
 			metadataProviderProvider ??= MetadataProviderProviderInstance;
 
 			if (metadataProviderProvider == null && auxDocData.QryMgr.IsConnected)
 			{
-				IBsConnectionInfo ci = auxDocData.QryMgr.Strategy.ConnInfo;
-				if (ci != null && !string.IsNullOrEmpty(GetDatabaseNameFromConnectionInfo(ci)))
+				IBsCsb csb = auxDocData.QryMgr.Strategy.MdlCsb;
+				if (csb?.IsCompleteMandatory ?? false)
 				{
 					MetadataProviderProviderInstance = LsbMetadataProviderProvider.Cache.Instance.Acquire(auxDocData.QryMgr);
 					metadataProviderProvider = MetadataProviderProviderInstance;
@@ -209,24 +178,15 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		return metadataProviderProvider;
 	}
 
-	public string GetDatabaseNameFromConnectionInfo(IBsConnectionInfo ci)
-	{
-		string result = null;
-
-		if (ci != null)
-			result = ci.DatasetKey;
-
-		return result;
-	}
 
 	private void OnBatchExecutionCompleted(object sender, BatchExecutionCompletedEventArgs args)
 	{
-		AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+		IBsModelCsb mdlCsb = MdlCsb;
 
 		if (GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
-			&& auxDocData != null && LsbMetadataProviderProvider.CheckForDatabaseChangesAfterQueryExecution)
+			&& mdlCsb != null && LsbMetadataProviderProvider.CheckForDatabaseChangesAfterQueryExecution)
 		{
-			smoMetadataProviderProvider.AsyncAddDatabaseToDriftDetectionSet(auxDocData.QryMgr.Strategy.Connection.Database);
+			smoMetadataProviderProvider.AsyncAddDatabaseToDriftDetectionSet(mdlCsb.Moniker);
 		}
 	}
 
@@ -239,11 +199,6 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		}
 	}
 
-	private AuxilliaryDocData GetAuxilliaryDocData()
-	{
-		IVsTextLines docData = GetTextLines();
-		return ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(docData);
-	}
 
 	public bool ExecuteParseRequest(string text)
 	{
@@ -280,7 +235,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		else
 		{
 			_ = IsDisconnectedMode;
-			auxDocData = GetAuxilliaryDocData();
+			auxDocData = AuxDocData;
 		}
 
 		ParseOptions parseOptions;
@@ -301,7 +256,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		{
 			parseOptions = new ParseOptions(auxDocData.QryMgr.LiveSettings.EditorContextBatchSeparator);
 		}
-		return _ParseManager.ExecuteParseRequest(text, parseOptions, binder, DatabaseName);
+		return _ParseManager.ExecuteParseRequest(text, parseOptions, binder, Moniker);
 	}
 
 
@@ -409,10 +364,12 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	public static bool IsExplicitFilteringRequired(string textTypedSofar)
 	{
-		if (string.IsNullOrEmpty(textTypedSofar) || textTypedSofar[0] == Shared.Cmd.OpenSquareBracket || textTypedSofar[0] == Shared.Cmd.DoubleQuote || char.IsLetter(textTypedSofar[0]))
+		if (string.IsNullOrEmpty(textTypedSofar) || textTypedSofar[0] == PackageData.OpenSquareBracket
+			|| textTypedSofar[0] == PackageData.DoubleQuote || char.IsLetter(textTypedSofar[0]))
 		{
 			return false;
 		}
+
 		return true;
 	}
 
@@ -475,7 +432,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 		if (auxDocData != null)
 		{
-			IBsErrorTaskFactory errorTaskFactory = auxDocData.StrategyFactory.GetErrorTaskFactory();
+			IBsErrorTaskFactory errorTaskFactory = auxDocData.GetErrorTaskFactory();
 
 			if (errorTaskFactory != null)
 				return errorTaskFactory.CreateErrorTaskItem(span, markerType, filename, GetTextLines());
@@ -490,7 +447,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 		if (auxDocData != null)
 		{
-			IBsErrorTaskFactory errorTaskFactory = auxDocData.StrategyFactory.GetErrorTaskFactory();
+			IBsErrorTaskFactory errorTaskFactory = auxDocData.GetErrorTaskFactory();
 
 			if (errorTaskFactory != null)
 			{
@@ -516,7 +473,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		{
 			base.Dispose();
 			ReleaseSmoMetadataProviderProvider();
-			AuxilliaryDocData auxDocData = GetAuxilliaryDocData();
+			AuxilliaryDocData auxDocData = AuxDocData;
 			if (auxDocData != null)
 			{
 				auxDocData.QryMgr.BatchExecutionCompletedEvent -= OnBatchExecutionCompleted;

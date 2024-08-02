@@ -10,15 +10,11 @@ using BlackbirdSql.Data.Model;
 using BlackbirdSql.Data.Model.Schema;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 using EntityFramework.Firebird;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
 using Microsoft.VisualStudio.Data.Services;
-
-using static BlackbirdSql.Data.DataConstants;
-using static BlackbirdSql.Sys.SysConstants;
 
 
 
@@ -39,130 +35,37 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	{
 	}
 
+
+
+
 	private static IBsNativeDatabaseEngine _Instance = null;
-
 	public static IBsNativeDatabaseEngine EnsureInstance() => _Instance ??= new DatabaseEngineService();
-
-
 	public string AssemblyQualifiedName_ => typeof(FirebirdClientFactory).AssemblyQualifiedName;
-
 	public Assembly ClientFactoryAssembly_ => typeof(FirebirdClientFactory).Assembly;
-
 	public string ClientVersion_ => $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
-
 	public Type ClientFactoryType_ => typeof(FirebirdClientFactory);
-
-	public Type ProviderServicesType_ => typeof(FbProviderServices);
-
-	public string ProviderServicesTypeFullName_ => "EntityFramework.Firebird.FbProviderServices, EntityFramework.Firebird, Version=_version_, Culture=neutral, PublicKeyToken=42d22d092898e5f8";
-
-	public string[] EntityFrameworkVersions_ =>
-		[
-			"6.0.0.0", "6.1.0.0", "6.2.0.1", "6.3.0.0", "6.4.0.0", "6.5.0.0", "6.6.0.0", "6.7.0.0",
-			"7.0.0.0", "7.1.0.0", "7.1.1.0", "7.5.0.0", "7.10.0.0", "7.10.1.0",
-			"8.0.0.0", "8.0.1.0", "8.5.0.0", "8.5.1.0", "8.5.1.1", "8.5.2.0", "8.5.3.0", "8.5.4.0",
-			"9.0.0.0", "9.0.1.0", "9.0.2.0", "9.1.0.0", "9.1.1.0",
-			"10.0.0.0", "10.0.1.0"
-		];
-
-
 	public Type ConnectionType_ => typeof(FbConnection);
+	public string DataProviderName_ => LibraryData.DataProviderName;
+	public string DbEngineName_ => LibraryData.DbEngineName;
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Describer collection of uniform properties used by the FbConnectionStringBuilder
-	/// wrapper, Csb, as well as PropertyAgent and it's descendent SqlEditor
-	/// ConnectionInfo and Dispatcher connection classes, and also the SE root nodes,
-	/// Root and Database.
+	/// replacement, Csb.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public DescriberDictionary Describers_ => new(
-		[
-			new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey),
-			new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey),
-			new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId),
-			new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset),
-			new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName),
-			new Describer(C_KeyExConnectionSource, typeof(EnConnectionSource), C_DefaultExConnectionSource),
+	public DescriberDictionary Describers_ => new(LibraryData.Describers, LibraryData.DescriberSynonyms);
 
-			new Describer(C_KeyDataSource, C_KeyDbDataSource, typeof(string), C_DefaultDataSource, true, false, true, true), // *
-			new Describer(C_KeyPort, C_KeyDbPort, typeof(int), C_DefaultPort, true, false), // *
-			new Describer(C_KeyServerType, C_KeyDbServerType, typeof(EnServerType), C_DefaultServerType, true, false), // *
-			new Describer(C_KeyDatabase, C_KeyDbDatabase, typeof(string), C_DefaultDatabase, true, false, true, true), // *
-			new Describer(C_KeyUserID, C_KeyDbUserID, typeof(string), C_DefaultUserID, true, false, true, true), // *
-			new Describer(C_KeyPassword, C_KeyDbPassword, typeof(string), C_DefaultPassword, true, false, false, true),
 
-			new Describer(C_KeyRole, C_KeyDbRole, typeof(string), C_DefaultRole, true, false), // *
-			new Describer(C_KeyDialect, C_KeyDbDialect, typeof(int), C_DefaultDialect, true, false), // *
-			new Describer(C_KeyCharset, C_KeyDbCharset, typeof(string), C_DefaultCharset, true, false), // *
-			new Describer(C_KeyNoDatabaseTriggers, C_KeyDbNoDatabaseTriggers, typeof(bool), C_DefaultNoDatabaseTriggers, true), // *
-			new Describer(C_KeyPacketSize, C_KeyDbPacketSize, typeof(int), C_DefaultPacketSize, true),
-			new Describer(C_KeyConnectionTimeout, C_KeyDbConnectionTimeout, typeof(int), C_DefaultConnectionTimeout, true),
-			new Describer(C_KeyPooling, C_KeyDbPooling, typeof(bool), C_DefaultPooling, true),
-			new Describer(C_KeyConnectionLifeTime, C_KeyDbConnectionLifeTime, typeof(int), C_DefaultConnectionLifeTime, true),
-			new Describer(C_KeyMinPoolSize, C_KeyDbMinPoolSize, typeof(int), C_DefaultMinPoolSize, true),
-			new Describer(C_KeyMaxPoolSize, C_KeyDbMaxPoolSize, typeof(int), C_DefaultMaxPoolSize, true),
-			new Describer(C_KeyFetchSize, C_KeyDbFetchSize, typeof(int), C_DefaultFetchSize, true),
-			new Describer(C_KeyIsolationLevel, C_KeyDbIsolationLevel, typeof(IsolationLevel), C_DefaultIsolationLevel, true),
-			new Describer(C_KeyReturnRecordsAffected, C_KeyDbReturnRecordsAffected, typeof(bool), C_DefaultReturnRecordsAffected, true),
-			new Describer(C_KeyEnlist, C_KeyDbEnlist, typeof(bool), C_DefaultEnlist, true),
-			new Describer(C_KeyClientLibrary, C_KeyDbClientLibrary, typeof(string), C_DefaultClientLibrary, true),
-			new Describer(C_KeyDbCachePages, C_KeyDbDbCachePages, typeof(int), C_DefaultDbCachePages, true),
-			new Describer(C_KeyNoGarbageCollect, C_KeyDbNoGarbageCollect, typeof(bool), C_DefaultNoGarbageCollect, true),
-			new Describer(C_KeyCompression, C_KeyDbCompression, typeof(bool), C_DefaultCompression, true),
-			new Describer(C_KeyCryptKey, C_KeyDbCryptKey, typeof(byte[]), C_DefaultCryptKey, true),
-			new Describer(C_KeyWireCrypt, C_KeyDbWireCrypt, typeof(EnWireCrypt), C_DefaultWireCrypt, true),
-			new Describer(C_KeyApplicationName, C_KeyDbApplicationName, typeof(string), C_DefaultApplicationName, true),
-			new Describer(C_KeyCommandTimeout, C_KeyDbCommandTimeout, typeof(int), C_DefaultCommandTimeout, true),
-			new Describer(C_KeyParallelWorkers, C_KeyDbParallelWorkers, typeof(int), C_DefaultParallelWorkers, true),
-
-			new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, false, false),
-			new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, false, false),
-			new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, false, false),
-
-			new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion),
-			new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, false, false, false),
-			new Describer(C_KeyExEdmx, typeof(bool)),
-			new Describer(C_KeyExEdmu, typeof(bool)),
-			new Describer(C_KeyExCreationFlags, typeof(EnEditorCreationFlags))
-		],
-		[
-			Pair("server", C_KeyDataSource),
-			Pair("host", C_KeyDataSource),
-			Pair("uid", C_KeyUserID),
-			Pair("user", C_KeyUserID),
-			Pair("username", C_KeyUserID),
-			Pair("user name", C_KeyUserID),
-			Pair("userpassword", C_KeyPassword),
-			Pair("user password", C_KeyPassword),
-			Pair("no triggers", C_KeyNoDatabaseTriggers),
-			Pair("nodbtriggers", C_KeyNoDatabaseTriggers),
-			Pair("no dbtriggers", C_KeyNoDatabaseTriggers),
-			Pair("no database triggers", C_KeyNoDatabaseTriggers),
-			Pair("timeout", C_KeyConnectionTimeout),
-			Pair("db cache pages", C_KeyDbCachePages),
-			Pair("cachepages", C_KeyDbCachePages),
-			Pair("pagebuffers", C_KeyDbCachePages),
-			Pair("page buffers", C_KeyDbCachePages),
-			Pair("wire compression", C_KeyCompression),
-			Pair("app", C_KeyApplicationName),
-			Pair("parallel", C_KeyParallelWorkers)
-		]
-	);
-
-	public string Invariant_ => LibraryData.Invariant;
-	public string ProviderFactoryName_ => LibraryData.ProviderFactoryName;
-	public string ProviderFactoryClassName_ => LibraryData.ProviderFactoryClassName;
-	public string ProviderFactoryDescription_ => LibraryData.ProviderFactoryDescription;
-
+	public string EFConnectionFactory_ => LibraryData.EFConnectionFactory;
 	public string EFProvider_ => LibraryData.EFProvider;
 	public string EFProviderServices_ => LibraryData.EFProviderServices;
-	public string EFConnectionFactory_ => LibraryData.EFConnectionFactory;
+	public Type EFProviderServicesType_ => typeof(FbProviderServices);
+	public string EFProviderServicesTypeFullName_ => LibraryData.EFProviderServicesTypeFullName;
+	public string[] EntityFrameworkVersions_ => LibraryData.EntityFrameworkVersions;
+	public string Extension_ => LibraryData.Extension;
 
-	public string DataProviderName_ => LibraryData.DataProviderName;
-	public string DbEngineName_ => LibraryData.DbEngineName;
-
-	public string SqlLanguageName_ => LibraryData.SqlLanguageName;
 
 	/// <summary>
 	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).
@@ -170,14 +73,18 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	public string ExternalUtilityConfigurationPath_ => LibraryData.ExternalUtilityConfigurationPath;
 
 
+	public string Invariant_ => LibraryData.Invariant;
 	public string Protocol_ => LibraryData.Protocol;
+	public string ProviderFactoryName_ => LibraryData.ProviderFactoryName;
+	public string ProviderFactoryClassName_ => LibraryData.ProviderFactoryClassName;
+	public string ProviderFactoryDescription_ => LibraryData.ProviderFactoryDescription;
+	public string RootObjectTypeName_ => DslObjectTypes.Root;
 	public string Scheme_ => LibraryData.Scheme;
-	public string Extension_ => LibraryData.Extension;
-
+	public string SqlLanguageName_ => LibraryData.SqlLanguageName;
 	public string XmlActualPlanColumn_ => LibraryData.XmlActualPlanColumn;
 	public string XmlEstimatedPlanColumn_ => LibraryData.XmlEstimatedPlanColumn;
 
-	public string RootObjectTypeName_ => DslObjectTypes.Root;
+
 
 
 
@@ -213,12 +120,6 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		return new FbConnection(connectionString);
 	}
 
-	public IBsNativeDbConnectionWrapper CreateDbConnectionWrapper_(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null)
-	{
-		return new DbConnectionWrapper(connection, sqlConnectionCreatedObserver);
-	}
-
-
 	public IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
 	{
 		return new DbBatchParser(executionType, qryMgr, script);
@@ -249,6 +150,211 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		return LinkageParser.DisposeInstance(root, disposing);
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Decorates a DDL raw script to it's executable form.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public string GetDecoratedDdlSource_(IVsDataExplorerNode node, EnModelTargetType targetType)
+	{
+		// Tracer.Trace(typeof(Moniker), "GetDecoratedDdlSource()");
+
+		IVsDataObject obj = node.Object;
+
+		if (obj == null)
+			return "Node has no object";
+
+		string prop = GetNodeScriptProperty(obj).ToUpper();
+		string src = ((string)obj.Properties[prop]).Replace("\r\n", "\n").Replace("\r", "\n");
+
+		string dirtysrc = "";
+
+		while (src != dirtysrc)
+		{
+			dirtysrc = src;
+			src = dirtysrc.Replace("\n\n\n", "\n\n");
+		}
+
+
+		switch (node.NodeBaseType())
+		{
+			case EnModelObjectType.Function:
+				return GetDecoratedDdlSourceFunction(src, node, obj, targetType);
+			case EnModelObjectType.StoredProcedure:
+				return GetDecoratedDdlSourceProcedure(src, node, obj, targetType);
+			case EnModelObjectType.Table:
+				return GetDecoratedDdlSourceTable(src);
+			case EnModelObjectType.Trigger:
+				return GetDecoratedDdlSourceTrigger(src, obj, targetType);
+			case EnModelObjectType.View:
+				return GetDecoratedDdlSourceView(src, node, obj, targetType);
+			default:
+				return src;
+		}
+	}
+
+
+
+	private static string GetDecoratedDdlSourceFunction(string src, IVsDataExplorerNode node,
+		IVsDataObject obj, EnModelTargetType targetType)
+	{
+		int direction;
+		string flddef;
+		string script = "";
+		string strout = "";
+
+		IVsDataExplorerChildNodeCollection nodes = node.GetChildren(false);
+
+
+		foreach (IVsDataExplorerNode child in nodes)
+		{
+			if (child.Object == null)
+				continue;
+
+			if (child.Object.Type.Name != "FunctionParameter" && child.Object.Type.Name != "FunctionReturnValue")
+				continue;
+
+			direction = (short)child.Object.Properties["ORDINAL_POSITION"] == 0 ? 1 : 0;
+
+			flddef = (direction == 0 ? child.Object.Properties["ARGUMENT_NAME"] + " " : "")
+					+ NativeDb.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+					child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
+					child.Object.Properties["NUMERIC_SCALE"]);
+
+			if (direction == 0) // In
+				script += (script != "" ? ",\n\t" : "\n\t(") + flddef;
+
+			if (direction > 0) // Out
+				strout += (strout != "" ? ",\n\t" : "") + flddef;
+		}
+
+		if (script != "")
+			script += ")";
+
+		if (strout != "")
+			strout = $"\nRETURNS {strout}";
+
+		if (strout != "")
+			script += strout;
+
+		if (targetType == EnModelTargetType.AlterScript)
+			script = $"ALTER FUNCTION {obj.Properties["FUNCTION_NAME"]}{script}\n";
+		else
+			script = $"CREATE FUNCTION {obj.Properties["FUNCTION_NAME"]}{script}\n";
+
+		src = $"{script}AS\n{src}";
+
+		return WrapScriptWithTerminators(src);
+	}
+
+
+
+	private static string GetDecoratedDdlSourceProcedure(string src, IVsDataExplorerNode node,
+		IVsDataObject obj, EnModelTargetType targetType)
+	{
+		int direction;
+		string flddef;
+		string script = "";
+		string strout = "";
+
+		IVsDataExplorerChildNodeCollection nodes = node.GetChildren(false);
+
+
+		foreach (IVsDataExplorerNode child in nodes)
+		{
+			if (child.Object == null || child.Object.Type.Name != "StoredProcedureParameter")
+				continue;
+			direction = Convert.ToInt32(child.Object.Properties["PARAMETER_DIRECTION"]);
+
+			flddef = child.Object.Properties["PARAMETER_NAME"] + " "
+					+ NativeDb.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+					child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
+					child.Object.Properties["NUMERIC_SCALE"]);
+
+			if (direction == 0 || direction == 3) // In
+			{
+				if (targetType == EnModelTargetType.AlterScript)
+					script += (script != "" ? ",\n\t" : "\n\t(") + flddef;
+				else
+					script += (script != "" ? "\n" : "\n-- The following input parameters need to be initialized after the BEGIN statement\n")
+						+ "DECLARE VARIABLE " + flddef + ";";
+			}
+			if (direction > 0) // Out
+				strout += (strout != "" ? ",\n\t" : "\n\t(") + flddef;
+		}
+		if (script != "" && targetType == EnModelTargetType.AlterScript)
+			script += ")";
+		if (strout != "")
+			strout = $"\nRETURNS{strout})";
+
+		if (strout != "" && targetType == EnModelTargetType.AlterScript)
+			script += strout;
+
+		if (targetType == EnModelTargetType.AlterScript)
+			script = $"ALTER PROCEDURE {obj.Properties["PROCEDURE_NAME"]}{script}\n";
+		else
+			strout = $"EXECUTE BLOCK{strout}\n";
+
+		if (targetType == EnModelTargetType.AlterScript)
+			src = $"{script}AS\n{src}";
+		else
+			src = $"{strout}AS{script}\n-- End of parameter declarations\n{src}";
+
+		return WrapScriptWithTerminators(src);
+	}
+
+
+
+	private static string GetDecoratedDdlSourceTable(string src)
+	{
+		src = $"SELECT * FROM {src.ToUpperInvariant()}";
+		return src;
+	}
+
+
+
+	private static string GetDecoratedDdlSourceTrigger(string src, IVsDataObject obj,
+		EnModelTargetType targetType)
+	{
+		string script;
+		string active = (bool)obj.Properties["IS_INACTIVE"] ? "INACTIVE" : "ACTIVE";
+
+		if (targetType == EnModelTargetType.AlterScript)
+			script = $"ALTER TRIGGER {obj.Properties["TRIGGER_NAME"]}";
+		else
+			script = $"CREATE TRIGGER {obj.Properties["TRIGGER_NAME"]} FOR {obj.Properties["TABLE_NAME"]}";
+
+		src = $"{script} {active}\n"
+			+ $"{GetTriggerEventType((long)obj.Properties["TRIGGER_TYPE"])} POSITION {(short)obj.Properties["PRIORITY"]}\n"
+			+ src;
+		return WrapScriptWithTerminators(src);
+	}
+
+
+
+	private static string GetDecoratedDdlSourceView(string src, IVsDataExplorerNode node,
+		IVsDataObject obj, EnModelTargetType targetType)
+	{
+		if (targetType != EnModelTargetType.AlterScript)
+			return src;
+
+		string script = "";
+		IVsDataExplorerChildNodeCollection nodes = node.GetChildren(false);
+
+		foreach (IVsDataExplorerNode child in nodes)
+			script += (script != "" ? ",\n\t" : "\n\t(") + child.Object.Properties["COLUMN_NAME"];
+
+		if (script != "")
+			script += ")";
+
+		src = $"ALTER VIEW {obj.Properties["VIEW_NAME"]}{script}\nAS\n{src}";
+		return src;
+	}
+
+
+
 	public byte GetErrorClass_(object error)
 	{
 		return ((FbError)error).Class;
@@ -275,21 +381,56 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	public IBsNativeDbLinkageParser GetLinkageParserInstance_(IVsDataExplorerConnection root) => LinkageParser.GetInstance(root);
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the Source script of a node if it exists else null.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static string GetNodeScriptProperty(IVsDataObject obj)
+	{
+		if (obj != null)
+			return GetNodeScriptProperty(obj.Type.Name);
+
+		return null;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the Source script of a node if it exists else null.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static string GetNodeScriptProperty(string type)
+	{
+		if (type.EndsWith("Column") || type.EndsWith("Trigger")
+			 || type == "Index" || type == "ForeignKey")
+		{
+			return "Expression";
+		}
+		else if (type == "Table")
+		{
+			return "Table_Name";
+		}
+		else if (type == "View")
+		{
+			return "Definition";
+		}
+		else if (type == "StoredProcedure" || type == "Function")
+		{
+			return "Source";
+		}
+
+		return type;
+	}
+
+
 	public int GetObjectTypeIdentifierLength_(string typeName)
 	{
 		return DslObjectTypes.GetIdentifierLength(typeName);
 	}
 
-
-	public IList<object> GetInfoMessageEventArgsErrors_(DbInfoMessageEventArgs e)
-	{
-		if (e.InternalEventArgs is not FbInfoMessageEventArgs fbe)
-			return [];
-
-		IList<object> objects = [.. fbe.Errors];
-
-		return objects;
-	}
 
 	public ICollection<object> GetErrorEnumerator_(IList<object> errors)
 	{
@@ -298,6 +439,39 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 		return errors;
 	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
+	private static string GetTriggerEventType(long eventType)
+	{
+		return eventType switch
+		{
+			1 => "BEFORE INSERT",
+			2 => "AFTER INSERT",
+			3 => "BEFORE UPDATE",
+			4 => "AFTER UPDATE",
+			5 => "BEFORE DELETE",
+			6 => "AFTER DELETE",
+			17 => "BEFORE INSERT OR UPDATE",
+			18 => "AFTER INSERT OR UPDATE",
+			25 => "BEFORE INSERT OR DELETE",
+			26 => "AFTER INSERT OR DELETE",
+			27 => "BEFORE UPDATE OR DELETE",
+			28 => "AFTER UPDATE OR DELETE",
+			113 => "BEFORE INSERT OR UPDATE OR DELETE",
+			114 => "AFTER INSERT OR UPDATE OR DELETE",
+			8192 => "ON CONNECT",
+			8193 => "ON DISCONNECT",
+			8194 => "ON TRANSACTION BEGIN",
+			8195 => "ON TRANSACTION COMMIT",
+			8196 => "ON TRANSACTION ROLLBACK",
+			_ => "",
+		};
+	}
+
+
 
 	public bool HasTransactions_(IDbTransaction @this)
 	{
@@ -331,18 +505,8 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 	public void OpenConnection_(DbConnection connection) => ((FbConnection)connection).Open();
 
+
 	public void UnlockLoadedParser_() => LinkageParser.UnlockLoadedParser();
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts a key and value to a KeyValuePair<string, string>.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static KeyValuePair<string, string> Pair(string key, string value)
-	{
-		return new KeyValuePair<string, string>(key, value);
-	}
 
 
 
@@ -390,5 +554,9 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	}
 
 
+	private static string WrapScriptWithTerminators(string script)
+	{
+		return $"SET TERM GO ;\n{script}\nGO\nSET TERM ; GO";
+	}
 
 }

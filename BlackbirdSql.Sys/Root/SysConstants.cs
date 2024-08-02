@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Data;
 using System.Security;
 using BlackbirdSql.Sys.Enums;
@@ -7,14 +6,14 @@ using BlackbirdSql.Sys.Properties;
 
 
 
-namespace BlackbirdSql.Sys;
+namespace BlackbirdSql;
 
 
 // =========================================================================================================
 //											SysConstants Class
 //
 /// <summary>
-/// Core db constants class.
+/// Built-in db constants class.
 /// </summary>
 // =========================================================================================================
 public static class SysConstants
@@ -29,6 +28,12 @@ public static class SysConstants
 	// ---------------------------------------------------------------------------------
 
 	// Built-in property descriptor keys
+	public const string C_KeyDataSource = "DataSource";
+	public const string C_KeyPort = "Port";
+	public const string C_KeyServerType = "ServerType";
+	public const string C_KeyDatabase = "Database";
+	public const string C_KeyUserID = "UserID";
+	public const string C_KeyPassword = "Password";
 	public const string C_KeyRole = "Role";
 	public const string C_KeyDialect = "Dialect";
 	public const string C_KeyCharset = "Charset";
@@ -54,46 +59,10 @@ public static class SysConstants
 	public const string C_KeyParallelWorkers = "ParallelWorkers";
 
 
-	public const string C_KeyExClientVersion = "ClientVersion";
-	public const string C_KeyExMemoryUsage = "MemoryUsage";
-	public const string C_KeyExActiveUsers = "ActiveUsers";
-
-
-
-
-	// Built-in property descriptor keys
-	public const string C_KeyDataSource = "DataSource";
-	public const string C_KeyPort = "Port";
-	public const string C_KeyServerType = "ServerType";
-	public const string C_KeyDatabase = "Database";
-	public const string C_KeyUserID = "UserID";
-	public const string C_KeyPassword = "Password";
-
 	// Extended property descriptor keys
-	public const string C_KeyExDataset = "Dataset";
-	public const string C_KeyExDatasetKey = "DatasetKey";
-	public const string C_KeyExConnectionKey = "ConnectionKey";
 	public const string C_KeyExDatasetId = "DatasetId";
 	public const string C_KeyExConnectionName = "ConnectionName";
-	public const string C_KeyExConnectionSource = "ConnectionSource";
-	public const string C_KeyExAdornedDisplayName = "AdornedDisplayName";
-	public const string C_KeyExAdornedQualifiedName = "AdornedQualifiedName";
 
-
-	// External (non-paramameter) property descriptor
-	public const string C_KeyExServerVersion = "ServerVersion";
-	public const string C_KeyExPersistPassword = "PersistPassword";
-	public const string C_KeyExEdmx = "edmx";
-	public const string C_KeyExEdmu = "edmu";
-	public const string C_KeyExCreationFlags = "CreationFlags";
-
-	// Internal (hidden) property keys
-	public const string C_KeyExInMemoryPassword = "InMemoryPassword";
-
-
-	// Other connection constants.
-	public const string C_KeyExConnectionUrl = "ConnectionUrl";
-	public const string C_KeyExConnectionString = "ConnectionString";
 
 	#endregion DbConnectionString Property Names
 
@@ -129,9 +98,6 @@ public static class SysConstants
 	public const string C_DefaultDatabase = "";
 	public const string C_DefaultUserID = "";
 	public const string C_DefaultPassword = "";
-
-
-	// Built-in property defaults
 	public const string C_DefaultRole = "";
 	public const int C_DefaultDialect = 3;
 	public const string C_DefaultCharset = "UTF8";
@@ -157,28 +123,9 @@ public static class SysConstants
 	public const int C_DefaultParallelWorkers = 0;
 
 
-	// External (non-paramameter) property defaults 
-	public const Version C_DefaultExClientVersion = null;
-	public const string C_DefaultExMemoryUsage = null;
-	public const int C_DefaultExActiveUsers = int.MinValue;
-
-
-
-
 	// Extended property defaults
-	public const string C_DefaultExDataset = "";
-	public const string C_DefaultExDatasetKey = "";
-	public const string C_DefaultExConnectionKey = "";
 	public const string C_DefaultExDatasetId = "";
 	public const string C_DefaultExConnectionName = "";
-	public const EnConnectionSource C_DefaultExConnectionSource = EnConnectionSource.None;
-
-	// External (non-paramameter) property defaults 
-	public const Version C_DefaultExServerVersion = null;
-	public const bool C_DefaultExPersistPassword = false;
-
-	// Internal (hidden) property defaults
-	public const SecureString C_DefaultExInMemoryPassword = null;
 
 
 	#endregion DbConnectionString Property Default Values
@@ -188,7 +135,7 @@ public static class SysConstants
 
 
 	// ---------------------------------------------------------------------------------
-	#region Model Engine Miscellanoeus values and defaults - SysConstants
+	#region Model Engine Miscellaneous keys and defaults - SysConstants
 	// ---------------------------------------------------------------------------------
 
 
@@ -216,7 +163,6 @@ public static class SysConstants
 	public const char C_DefaultTextDelimiter = '\0';
 
 
-	#endregion Model Engine Miscellanoeus values and defaults
-
+	#endregion Model Engine Miscellaneous keys and defaults
 
 }

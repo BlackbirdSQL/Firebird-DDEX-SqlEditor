@@ -973,7 +973,7 @@ public static class Diag
 
 					EnConnectionSource objectConnectionSource = (EnConnectionSource)(int)(node.Object.Properties != null
 						&& node.Object.Properties.ContainsKey("ConnectionSource")
-						? node.Object.Properties["ConnectionSource"] : EnConnectionSource.None);
+						? node.Object.Properties["ConnectionSource"] : EnConnectionSource.Unknown);
 
 					str += $"\n\tObject.Name: {node.Object.Name}, Object.DatasetKey: {datasetKey}, Object.ConnectionSource: {objectConnectionSource}, Object.ConnectionKey: {connectionKey}, Object.Type: {node.Object.Type.Name}, Object.IsDeleted: {node.Object.IsDeleted}.";
 				}
@@ -1029,8 +1029,6 @@ public static class Diag
 			enableTaskLog = EnableTaskLog;
 		}
 
-		await Cmd.AwaitableAsync();
-
 		try
 		{
 			// Switch to main thread
@@ -1047,13 +1045,15 @@ public static class Diag
 
 				// Check again since joining UI thread.
 				taskHandler = client.GetTaskHandler();
+			}
 
-				if (!enableTaskLog && taskHandler == null)
-					return false;
+			if (!enableTaskLog && taskHandler == null)
+				return await Cmd.AwaitableAsync(false);
 
+			string[] arr = text.Split('\n');
 
-				string[] arr = text.Split('\n');
-
+			lock (_LockGlobal)
+			{
 				if (enableTaskLog)
 				{
 					string[] log = new string[arr.Length];
@@ -1081,10 +1081,13 @@ public static class Diag
 
 				// Check again.
 				taskHandler = client.GetTaskHandler();
+			}
 
-				if (taskHandler == null)
-					return enableTaskLog;
+			if (taskHandler == null)
+				return await Cmd.AwaitableAsync(enableTaskLog);
 
+			lock (_LockGlobal)
+			{
 				for (int i = 0; i < arr.Length; i++)
 				{
 					progressData.ProgressText = arr[i];
@@ -1105,7 +1108,7 @@ public static class Diag
 			throw ex;
 		}
 
-		return true;
+		return await Cmd.AwaitableAsync(true);
 	}
 
 

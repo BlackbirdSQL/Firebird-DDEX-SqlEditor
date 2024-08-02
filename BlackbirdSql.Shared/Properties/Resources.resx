@@ -137,6 +137,9 @@ Statement #{0} ({1} row(s) selected, {2} in total)
   <data name="ExAlreadyStoringData" xml:space="preserve">
     <value>Invalid calling sequence: already storing data.</value>
   </data>
+  <data name="ExArgumentOnlyFalse" xml:space="preserve">
+    <value>'{0}' may only be set to false.</value>
+  </data>
   <data name="ExBufferSizeShouldBePositive" xml:space="preserve">
     <value>Invalid argument: buffer size should be a positive number.</value>
   </data>
@@ -227,9 +230,6 @@ Statement #{0} ({1} row(s) selected, {2} in total)
   <data name="ExScriptingParseFailure" xml:space="preserve">
     <value>An error was encountered while parsing with message: {0}.</value>
   </data>
-  <data name="ExScriptIsStillBeingExecuted" xml:space="preserve">
-    <value>The query is currently executing. Do you want to cancel the query?</value>
-  </data>
   <data name="ExSortViewDefaultConstructorCannotBeUsed" xml:space="preserve">
     <value>SortView default constructor cannot be used.</value>
   </data>
@@ -257,15 +257,44 @@ Statement #{0} ({1} row(s) selected, {2} in total)
   <data name="ExViewHasToBeSetBeforeExecutingDoubleClickEvent" xml:space="preserve">
     <value>View has to be set before executing double click event.</value>
   </data>
-  <data name="InfoConnectionAutoClosed" xml:space="preserve">
-    <value>Query Information: Inactive connection '{0}' closed.
-                   ConnectionLifetime: {1} seconds.</value>
-  </data>
   <data name="InfoDisconnectingFromSvr" xml:space="preserve">
     <value>Disconnecting connection from {0}...</value>
   </data>
   <data name="InfoDisconnectingFromSvrAsUser" xml:space="preserve">
     <value>Disconnecting connection from {0} as {1}...</value>
+  </data>
+  <data name="InfoQueryConnectionAutoClosed" xml:space="preserve">
+    <value>{0}Idle connection '{2}' closed.
+{1}ConnectionLifetime: {3} seconds.
+{1}Query: {4}.</value>
+  </data>
+  <data name="InfoQueryPrefix" xml:space="preserve">
+    <value>
+Query notification:
+{0}</value>
+  </data>
+  <data name="MsgAbortExecutionAndClose" xml:space="preserve">
+    <value>The query is currently executing. Do you wish to abort execution?</value>
+  </data>
+  <data name="MsgQueryAbort_IsExecutingCaption" xml:space="preserve">
+    <value>Execution in progress</value>
+  </data>
+  <data name="MsgQueryAbort_IsExecutingList" xml:space="preserve">
+    <value>There are queries that are currently executing. Do you wish to abort execution?
+{0}</value>
+  </data>
+  <data name="MsgQueryAbort_NameIndent" xml:space="preserve">
+    <value>      {0}</value>
+  </data>
+  <data name="MsgQueryAbort_UncommittedTransactions" xml:space="preserve">
+    <value>There are uncommitted transactions. Do you wish to commit these transactions before closing?</value>
+  </data>
+  <data name="MsgQueryAbort_UncommittedTransactionsCaption" xml:space="preserve">
+    <value>Uncommited transactions</value>
+  </data>
+  <data name="MsgQueryAbort_UncommittedTransactionsList" xml:space="preserve">
+    <value>There are uncommitted transactions. Do you wish to commit these transactions before closing?
+{0}</value>
   </data>
   <data name="NewQueryBaseName" xml:space="preserve">
     <value>NewQuery</value>
@@ -278,6 +307,9 @@ Statement #{0} ({1} row(s) selected, {2} in total)
   </data>
   <data name="QueryCaptionGlyphFormat" xml:space="preserve">
     <value>{0}   {1}</value>
+  </data>
+  <data name="QueryGlyphFormat" xml:space="preserve">
+    <value>{0} {1}</value>
   </data>
   <data name="SaveResults" xml:space="preserve">
     <value>Save Results</value>
@@ -307,27 +339,30 @@ Statement #{0} ({1} row(s) selected, {2} in total)
     <value>** An error was encountered during execution of batch. Continuing.</value>
   </data>
   <data name="WarnQueryConnectionBroken" xml:space="preserve">
-    <value>{0}Broken connection '{1}' has been reset.
-{2}This is possibly due to a network error.</value>
+    <value>{0}Broken connection '{2}' has been reset.
+{1}This is possibly due to a network error.
+{3}{1}Query: {4}.</value>
   </data>
   <data name="WarnQueryConnectionDead" xml:space="preserve">
-    <value>{0}Dead connection '{1}' has been reset.
-{2}This is possibly due to a network error.</value>
+    <value>{0}Dead connection '{2}' has been reset.
+{1}This is possibly due to a network error.
+{3}{1}Query: {4}.</value>
   </data>
   <data name="WarnQueryConnectionReset" xml:space="preserve">
-    <value>{0}Connection '{1}' has been reset.
-{2}This is possibly due to a network error.</value>
+    <value>{0}Connection '{2}' has been reset.
+{1}This is possibly due to a network error.
+{3}{1}Query: {4}.</value>
   </data>
   <data name="WarnQueryPrefix" xml:space="preserve">
-    <value>Query Warning: </value>
+    <value>
+Query Warning:
+{0}</value>
   </data>
-  <data name="WarnQueryTransactionsDiscarded" xml:space="preserve">
-    <value>{0}There were active transactions that were discarded.</value>
+  <data name="WarnQueryTtsDiscarded" xml:space="preserve">
+    <value>{0}There were active transactions that were discarded.
+</value>
   </data>
   <data name="WarnScriptingNoParam" xml:space="preserve">
     <value>Scripting warning.</value>
-  </data>
-  <data name="WarnUncommittedTransactions" xml:space="preserve">
-    <value>There are uncommitted transactions. Do you wish to commit these transactions before closing the window?</value>
   </data>
 </root>

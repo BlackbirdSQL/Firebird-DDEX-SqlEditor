@@ -35,8 +35,8 @@ public interface IBsNativeDatabaseEngine
 	Assembly ClientFactoryAssembly_ { get; }
 	string ClientVersion_ { get; }
 	Type ClientFactoryType_ { get; }
-	Type ProviderServicesType_ { get; }
-	string ProviderServicesTypeFullName_ { get; }
+	Type EFProviderServicesType_ { get; }
+	string EFProviderServicesTypeFullName_ { get; }
 	string[] EntityFrameworkVersions_ { get; }
 	Type ConnectionType_ { get; }
 	DescriberDictionary Describers_ { get; }
@@ -74,29 +74,26 @@ public interface IBsNativeDatabaseEngine
 	IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script);
 	DbCommand CreateDbCommand_(string cmdText = null);
 	IDbConnection CreateDbConnection_(string connectionString);
-	IBsNativeDbConnectionWrapper CreateDbConnectionWrapper_(IDbConnection connection, Action<DbConnection> sqlConnectionCreatedObserver = null);
 	IBsNativeDbStatementWrapper CreateDbStatementWrapper_(IBsNativeDbBatchParser owner, object statement, int index);
 	bool DisposeLinkageParserInstance_(IVsDataExplorerConnection root, bool disposing);
 	byte GetErrorClass_(object error);
 	int GetErrorLineNumber_(object error);
 	string GetErrorMessage_(object error);
 	int GetErrorNumber_(object error);
-	int GetObjectTypeIdentifierLength_(string typeName);
-	IList<object> GetInfoMessageEventArgsErrors_(DbInfoMessageEventArgs e);
+	string GetDecoratedDdlSource_(IVsDataExplorerNode node, EnModelTargetType targetType);
 	ICollection<object> GetErrorEnumerator_(IList<object> errors);
 	IBsNativeDbLinkageParser GetLinkageParserInstance_(IVsDataExplorerConnection root);
+	int GetObjectTypeIdentifierLength_(string typeName);
 	bool HasTransactions_(IDbTransaction @this);
-
 	bool IsSupportedCommandType_(object command);
 	bool IsSupportedConnection_(IDbConnection connection);
 	bool LockLoadedParser_(string originalString, string updatedString);
 	void OpenConnection_(DbConnection connection);
-	bool TransactionCompleted_(IDbTransaction transacttion);
-	void UnlockLoadedParser_();
-
 	Task<bool> ReaderCloseAsync_(IDataReader @this, CancellationToken cancelToken);
 	Task<DataTable> ReaderGetSchemaTableAsync_(IDataReader @this, CancellationToken cancelToken);
 	Task<bool> ReaderNextResultAsync_(IDataReader @this, CancellationToken cancelToken);
 	Task<bool> ReaderReadAsync_(IDataReader @this, CancellationToken cancelToken);
+	bool TransactionCompleted_(IDbTransaction transacttion);
+	void UnlockLoadedParser_();
 
 }

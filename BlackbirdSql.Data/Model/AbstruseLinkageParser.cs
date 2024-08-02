@@ -8,7 +8,9 @@ using BlackbirdSql.Sys.Interfaces;
 using C5;
 
 
+
 namespace BlackbirdSql.Data.Model;
+
 
 // =========================================================================================================
 //										AbstruseLinkageParser Class
@@ -35,6 +37,8 @@ public abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDisposa
 		// Tracer.Trace(typeof(AbstruseLinkageParser), $"StaticId:[{"0000"}] AbstruseLinkageParser(FbConnection)");
 		_Id = ++_IdSeed;
 	}
+
+
 
 
 
@@ -98,6 +102,8 @@ public abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDisposa
 	// =========================================================================================================
 
 
+	public long Id => _Id;
+
 	public abstract string ConnectionString { get; }
 
 	/// <summary>
@@ -120,8 +126,8 @@ public abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDisposa
 	// =========================================================================================================
 
 
-	private static int _IdSeed = -1;
-	protected int _Id = -1;
+	private static long _IdSeed = -1;
+	private readonly long _Id = -1;
 
 
 

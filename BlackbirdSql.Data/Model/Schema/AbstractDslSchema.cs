@@ -291,7 +291,7 @@ internal abstract class AbstractDslSchema
 	/// <param name="connection">an open connection, which is used to determine the version number of the connected database server</param>
 	private void SetMajorVersionNumber(FbConnection connection)
 	{
-		var serverVersion = FbServerProperties.ParseServerVersion(connection.ServerVersion);
+		Version serverVersion = FbServerProperties.ParseServerVersion(connection.ServerVersion);
 		MajorVersionNumber = serverVersion.Major;
 	}
 	#endregion

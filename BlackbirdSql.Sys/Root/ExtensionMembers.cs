@@ -14,7 +14,6 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Data.Services;
@@ -499,6 +498,7 @@ public static partial class ExtensionMembers
 		IBsNativeDbException exceptionSvc = ApcManager.GetService<SBsNativeDbException, IBsNativeDbException>();
 		return exceptionSvc.HasSqlException(@this);
 	}
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>

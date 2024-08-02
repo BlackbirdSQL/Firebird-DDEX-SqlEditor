@@ -64,10 +64,6 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 
 	private bool _WithEncoding;
 
-	// private const int C_WM_DESTROY = 2;
-
-	// private const int C_WM_NCDESTROY = 130;
-
 	protected override CreateParams CreateParams
 	{
 		[SecuritySafeCritical]

@@ -30,9 +30,6 @@ public abstract class PersistentSettings : LanguageExtension.Ctl.Config.Persiste
 	#region Fields
 	// ---------------------------------------------------------------------------------
 
-	// Editor GeneralSettingsModel
-	// static bool _PromptToSaveKey = false;
-
 
 	#endregion Fields
 

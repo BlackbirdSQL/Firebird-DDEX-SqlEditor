@@ -29,9 +29,12 @@
 				</Literal>
 			</Declarations>
 			<Code Language="SQL_FIREBIRD">
-				<![CDATA[CREATE USER $UserName$
+				<![CDATA[SET TERM GO ;
+CREATE USER $UserName$
 	PASSWORD '$Password$'
 	GRANT $RoleName$ ROLE;
+GO
+SET TERM ; GO
 ]]>
 			</Code>
 		</Snippet>

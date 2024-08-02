@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
@@ -48,158 +49,78 @@ public class CommandDatabaseSelect : AbstractCommand
 		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
+
 		if (pvaIn != IntPtr.Zero)
-		{
-			// SelectedValue changed, probably by user from dropdown.
+			return OnExecSet(pvaIn);
 
-			if (!CanDisposeTransaction(Resources.ExChangeConnectionCaption))
-				return VSConstants.S_OK;
-
-			string selectedQualifiedName = (string)Marshal.GetObjectForNativeVariant(pvaIn);
-
-			// Tracer.Trace(GetType(), "OnExec()", "pvaIn selectedDatasetKey: {0}", selectedDatasetKey);
-
-			try
-			{
-				SetDatasetKeyDisplayMember(selectedQualifiedName);
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				StoredQryMgr?.GetUpdateTransactionsStatus(true);
-				return VSConstants.S_OK;
-			}
-		}
-		else if (pvaOut != IntPtr.Zero)
-		{
-			// Check if underlying value changed. Drift detection.
-
-			object objQualifiedName = string.Empty;
-			IBsConnectionInfo connInfo = StoredQryMgr.Strategy.ConnInfo;
-
-			if (connInfo == null /* || connection.State != ConnectionState.Open */ || string.IsNullOrEmpty(connInfo.Database))
-			{
-				// Tracer.Trace(GetType(), "OnExec()", "pvaOut Current selection is empty.");
-				StoredCsa = null;
-			}
-			else
-			{
-				if (StoredCsa == null)
-				{
-					if (RctManager.ShutdownState)
-					{
-						StoredQryMgr?.GetUpdateTransactionsStatus(true);
-						return VSConstants.S_OK;
-					}
-
-					// Tracer.Trace(GetType(), "OnExec()", "_Csa invalidated.");
-
-					try
-					{
-						if (string.IsNullOrEmpty(connInfo?.Database))
-						{
-							// Tracer.Trace(GetType(), "OnExec()", "Live connection set to null Selection dead.");
-							StoredCsa = null;
-						}
-						else
-						{
-							// Tracer.Trace(GetType(), "OnExec()", "Live connection okay. Creating new _Csa");
-
-							StoredCsa = RctManager.CloneVolatile(connInfo);
-
-							// Tracer.Trace(GetType(), "OnExec()", "Renewed Csb.DatasetKey: {0}.", _Csa == null ? "null" : _Csa.DatasetKey);
-						}
-					}
-					catch (Exception ex)
-					{
-						Diag.Dug(ex);
-						throw;
-					}
-				}
-
-				// Tracer.Trace(GetType(), "OnExec()", "pvaOut Current selection DatasetKey: {0}.", _Csa == null ? "Csa is null" : _Csa.DatasetKey);
-
-			}
-
-			if (StoredCsa != null)
-				objQualifiedName = StoredCsa.AdornedQualifiedName;
-
-			Marshal.GetNativeVariantForObject(objQualifiedName, pvaOut);
-		}
-
-		StoredQryMgr?.GetUpdateTransactionsStatus(true);
+		if (pvaOut != IntPtr.Zero)
+			return OnExecGet(pvaOut);
 
 		return VSConstants.S_OK;
 	}
 
-	private void SetDatasetKeyDisplayMember(string selectedQualifiedName)
+
+	private int OnExecGet(IntPtr pvaOut)
 	{
+		object objQualifiedName = StoredLiveMdlCsb?.AdornedQualifiedTitle ?? string.Empty;
+
+		StoredSelectedName = (string)objQualifiedName;
+
+		Marshal.GetNativeVariantForObject(objQualifiedName, pvaOut);
+
+		return VSConstants.S_OK;
+	}
+
+
+
+	private int OnExecSet(IntPtr pvaIn)
+	{
+		// SelectedValue changed, probably by user from dropdown.
+
+		if (!CanDisposeTransaction(Resources.ExChangeConnectionCaption))
+			return VSConstants.S_OK;
+
+		string selectedQualifiedName = (string)Marshal.GetObjectForNativeVariant(pvaIn);
+
+		try
+		{
+			SetDatasetKeyDisplayMember(selectedQualifiedName);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return VSConstants.S_OK;
+		}
+
+		StoredSelectedName = selectedQualifiedName;
+
+		return VSConstants.S_OK;
+	}
+
+
+	private bool SetDatasetKeyDisplayMember(string selectedQualifiedName)
+	{
+		IBsModelCsb mdlCsb = StoredMdlCsb;
+
+		if (mdlCsb == null || mdlCsb.IsInvalidated || mdlCsb.AdornedQualifiedTitle != selectedQualifiedName)
+		{
+			if (!(StoredStrategy?.SetDatasetKeyOnConnection(selectedQualifiedName, mdlCsb) ?? false))
+				return false;
+		}
+
+		string moniker = StoredMdlCsb.Moniker;
+
 		IVsUserData vsUserData = StoredAuxDocData.VsUserData;
-
-		if (vsUserData == null)
-		{
-			ArgumentNullException ex = new("IVsUserData is null");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		RctManager.Invalidate();
-
-		Csb csa = (Csb)StoredAuxDocData.UserDataCsb;
-
-		if (csa != null && csa.DatasetKey == null)
-		{
-			// csa.RegisterDataset();
-			Exception ex = new Exception("Csb from docData.GetUserDataCsb() has no DatasetKey.");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-
-		if (csa == null || csa.AdornedQualifiedName != selectedQualifiedName)
-		{
-			if (RctManager.ShutdownState)
-				return;
-
-			try
-			{
-				csa = RctManager.CloneRegistered(selectedQualifiedName, EnRctKeyType.AdornedQualifiedName);
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
-		}
-
-		string connectionUrl = csa.SafeDatasetMoniker;
-
-		if (string.IsNullOrWhiteSpace(connectionUrl))
-		{
-			ArgumentNullException ex = new("ConnectionUrl is null");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-
-		ConnectionStrategy strategy = StoredAuxDocData.QryMgr.Strategy;
-
-		strategy.SetDatasetKeyOnConnection(selectedQualifiedName, csa);
+		Diag.ThrowIfInstanceNull(vsUserData, typeof(IVsUserData));
 
 		Guid clsid = VS.CLSID_PropDatabaseChanged;
-		___(vsUserData.SetData(ref clsid, connectionUrl));
+		___(vsUserData.SetData(ref clsid, moniker));
 
 		// Tracer.Trace(GetType(), "SetDatasetKeyDisplayMember()", "csa.ConnectionString: {0}", csa.ConnectionString);
 
-		Guid clsid2 = new(LibraryData.UserDataCsbGuid);
-		___(vsUserData.SetData(ref clsid2, (object)csa));
+		StoredRctStamp = RctManager.Stamp;
 
-		csa.RefreshDriftDetectionState();
-
-		if (!ReferenceEquals(StoredCsa, csa))
-		{
-			StoredRctStamp = RctManager.Stamp;
-			StoredCsa = csa;
-		}
+		return true;
 	}
 
 }

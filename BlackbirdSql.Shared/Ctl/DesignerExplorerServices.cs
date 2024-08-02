@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
@@ -17,7 +18,6 @@ using BlackbirdSql.Shared.Ctl.Config;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
@@ -133,7 +133,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		EnEditorCreationFlags creationFlags = autoExecute ? EnEditorCreationFlags.CreateAndExecute : EnEditorCreationFlags.CreateConnection;
 
 		if (csa != null) 
-			csa[SysConstants.C_KeyExCreationFlags] = creationFlags;
+			csa[CoreConstants.C_KeyExCreationFlags] = creationFlags;
 
 		OpenMiscellaneousVirtualFile(mkDocument, node, targetType, csa, null);
 
@@ -161,7 +161,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		{
 			foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBsEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
 			{
-				if (pair.Value.InflightMoniker == null)
+				if (!pair.Value.IsVirtualWindow)
 					continue;
 
 				if (moniker.Equals(pair.Value.InflightMoniker))
@@ -204,8 +204,6 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 		Directory.CreateDirectory(tempDirectory);
 
-		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "Created directory: {0} for explorerMoniker: {1}.", tempDirectory, explorerMoniker);
-
 
 		string filename = Path.GetFileName(moniker);
 
@@ -215,6 +213,9 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		string tempFilename = Path.Combine(tempDirectory, filename + NativeDb.Extension);
 
+		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousVirtialFile()", "filename: {0}, tempFilename: {1}, moniker: {2}.",
+		//	filename, tempFilename, moniker);
+
 
 		if (tempFilename == null)
 		{
@@ -222,12 +223,11 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			return false;
 		}
 
-
 		StreamWriter streamWriter = null;
 		try
 		{
 			initialScript ??= node != null
-				? Moniker.GetDecoratedDdlSource(node, targetType)
+				? node.GetDecoratedDdlSource(targetType)
 				: string.Empty;
 
 			streamWriter = new StreamWriter(tempFilename);
@@ -252,15 +252,6 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			streamWriter?.Close();
 			File.Delete(tempFilename);
 			Directory.Delete(tempDirectory);
-		}
-
-		foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBsEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
-		{
-			if (moniker.Equals(pair.Value.InflightMoniker) && pair.Value.DocCookie == 0)
-			{
-				pair.Value.DocCookie = RdtManager.GetRdtCookie(pair.Value.InternalDocumentMoniker);
-				break;
-			}
 		}
 
 		return true;
@@ -328,7 +319,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		RaiseBeforeOpenDocument(mkDocument, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
 		if (csa != null)
-			csa[SysConstants.C_KeyExCreationFlags] = EnEditorCreationFlags.CreateConnection;
+			csa[CoreConstants.C_KeyExCreationFlags] = EnEditorCreationFlags.CreateConnection;
 
 		OpenMiscellaneousVirtualFile(mkDocument, null, targetType, csa, initialScript);
 

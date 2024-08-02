@@ -5,28 +5,44 @@
 #endregion
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 
 
 namespace BlackbirdSql.Shared.Events;
 
 
-public delegate void MoreRowsAvailableEventHandler(object sender, MoreRowsAvailableEventArgs a);
+public delegate Task<bool> MoreRowsAvailableEventHandler(object sender, MoreRowsAvailableEventArgs a);
 
 
 public class MoreRowsAvailableEventArgs : EventArgs
 {
+	public MoreRowsAvailableEventArgs()
+	{
+	}
+
+	public MoreRowsAvailableEventArgs(CancellationToken cancelToken)
+	{
+		_CancelToken = cancelToken;
+	}
+
+	private CancellationToken _CancelToken;
+
 	private bool _allRows;
 
 	private long _newRowsNum;
 
 	public bool AllRows => _allRows;
 
+	public CancellationToken CancelToken => _CancelToken;
+
 	public long NewRowsNumber => _newRowsNum;
 
-	public void SetEventInfo(bool allRows, long newRows)
+	public void SetEventInfo(bool allRows, long newRows, CancellationToken cancelToken)
 	{
 		_allRows = allRows;
 		_newRowsNum = newRows;
+		_CancelToken = cancelToken;
 	}
 }

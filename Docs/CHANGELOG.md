@@ -2,8 +2,25 @@
 
 ## Change log
 
+### v14.0.0.0 Critical update addressing IDE freeze.
 
-### v13.1.0.3 Improved query moniker naming and caption glygh adornment.
+#### New / Enhancements
+- Added SQL snippet for a `SET TERM GO ;` `Surround with...` wrapper.
+- The `Prompt to save` user option is now enabled by default. If the option is enabled, then on closing the user will, [1] be prompted to save any dirty persistent (saved) queries, [2] be prompted to cancel any running queries, and [3] be prompted to commit, rollback or cancel the closing process if there are any active transactions pending. If the option is disabled, running queries are cancelled, any changes lost and pending transactions automatically rolled back.
+- Disposed of the entire `ConnectionInfo` / `PropertyAgent` class family in favor of inheriting directly from the `Csb` class, which already incorporates 95% of the functionality. Added the `ConnectionCsb`class, which introduces data connection functionality into the Csb, and it's descendent `ModelCsb` class, which handles the connection model for BlackbirdSql SqlEditor queries. This eliminates most of the excess redundant code from the original MS SqlServer port.
+#### Fixes
+- Fixed multiple issues with the handling of dirty documents, active transactions and running queries when the IDE is shut down, solutions merged, and solutions or projects closed.
+- Fixed a critical intermittent deadlock caused by unreleased locks during thread switching which caused the IDE to hang.
+- Fixed bug where EventProjectEnter() was using _EventRdtCardinal instead of _EventProjectCardinal, causing an `Attempt to exit project event when not in a project event` exception message.
+- Fixed issue where `User Options` were not being propogated after a save and were only taking affect on IDE restart. Dynamic propogation of user settings have not been taking place since the inclusion of the `Connection Equivalency Keys` page in the DDEX  section over a year ago. Changes to the connection equivalency keys must only take affect after a restart, and this conditional logic was inverted. 
+- Addressed a number of issues related to the identification of the `ConnectionSource` / `Connection Owner`.
+- Fixed a long-time bug that caused a Server Explorer connection node to intermittently hang when expanded. This occured because the node's LinkageParser TaskHandler was attempting to access the Running Connection Table entry of the node before it had been registered.
+
+__Important note on query TTS behavior:__ Whenever a BlackbirdSql SqlEditor query with active transactions is closed, the user will be prompted to commit, rollback or cancel if the `Prompt to save` user option is enabled, otherwise pending active transactions will automatically be rolled back.
+
+
+
+### v13.1.0.3 Improved query moniker naming and caption glyph adornment.
 
 #### New / Enhancements
 - Session connections are now adorned with the clearer Large Solid Circle glyph ⬤ (unicode `\u2B24`).
@@ -12,6 +29,7 @@
 #### Fixes
 - Fixed bug introduced with the batch script processing feature where DDL, Procedure and Function scripts did not have the necessary `SET TERM` wrappers. Affected scripts now use the `GO` terminator.
 - In some cases, non-persistent query moniker file names were being duplicated. This made it difficult to distinguish between non-persistent (Session) query windows. Query windows launched from a Server Explorer node, and which are by default non-persistent (Session) queries, will still maintain their original, potentially non-unique, name.
+
 
 
 ### v13.1.0.2 Overhaul of connection strategy & bug fixes
@@ -287,7 +305,7 @@ Fixed issue where DSRefBuilder used an empty Site.
 Fixed issue with opening and then cancelling an IVsDataConnectionDialog in a custom context.
 
 ### v9.1.0.91-prelease
-Upgraded the FirebirdClient to 10.0.0.0.
+Upgraded the FirebirdClient to v10.0.0.0.
 
 ### v9.1.0.90-prelease
 Centralized connection management and implemented outstanding connection features.

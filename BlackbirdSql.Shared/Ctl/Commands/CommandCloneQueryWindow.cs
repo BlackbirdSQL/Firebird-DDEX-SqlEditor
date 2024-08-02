@@ -47,7 +47,7 @@ public class CommandCloneQueryWindow : AbstractCommand
 				sqlTextSpan = WindowPane.GetAllCodeEditorTextSpan2();
 			}
 
-			service.CloneQuery(StoredQryMgr?.Strategy?.CurrentDatasetKey, baseName, sqlTextSpan.Text);
+			service.CloneQuery(StoredStrategy?.CurrentDatasetKey, baseName, sqlTextSpan.Text);
 		}
 
 		return VSConstants.S_OK;

@@ -39,12 +39,12 @@ public class CommandToggleTTS : AbstractCommand
 		if (ExecutionLocked || !CanDisposeTransaction(Resources.ExDisableTtsCaption))
 			return VSConstants.S_OK;
 
-		if (StoredAuxDocData.TtsEnabled && StoredQryMgr != null && StoredQryMgr.Strategy != null)
-			StoredQryMgr.Strategy.DisposeTransaction(true);
+		if (StoredAuxDocData.TtsEnabled)
+			StoredStrategy?.DisposeTransaction(true);
 
 		StoredAuxDocData.TtsEnabled = !StoredAuxDocData.TtsEnabled;
 
-		StoredQryMgr.GetUpdateTransactionsStatus(true);
+		StoredQryMgr.GetUpdatedTransactionsStatus(true);
 
 
 		return VSConstants.S_OK;

@@ -27,6 +27,12 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	{
 	}
 
+	public DescriberDictionary(Describer[] describers) : base(StringComparer.OrdinalIgnoreCase)
+	{
+		AddRange(describers);
+	}
+
+
 	public DescriberDictionary(Describer[] describers, KeyValuePair<string, string>[] synonyms) : base(StringComparer.OrdinalIgnoreCase)
 	{
 		AddRange(describers);
@@ -47,12 +53,25 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	private IDictionary<string, Describer> _Synonyms;
 
 
+
+
+	/// <summary>
+	/// Returns an enumerable of all describer keys in the <see cref="DescriberDictionary"/>
+	/// including Internal store keys.
+	/// A <see cref="Describer"/> is a detailed class equivalent of a descriptor. The database engine's
+	/// <see cref="DescriberDictionary"/> is defined in the native database
+	/// <see cref="IBsNativeDatabaseEngine"/> service.
+	/// </summary>
+	public IEnumerable<Describer> Describers => new EnumerableDescribers(this);
+
+
 	/// <summary>
 	/// Returns an enumerable of all connection describers of parameters that appear in the 'Advanced'
 	/// dialog of a connection dialog.
 	/// See the <seealso cref="DescriberKeys"/> enumerable for further information.
 	/// </summary>
 	public IEnumerable<Describer> AdvancedKeys => new EnumerableAdvanced(this);
+
 
 	/// <summary>
 	/// Returns an enumerable of all connection describers that are valid connection parameters
@@ -61,13 +80,24 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	/// </summary>
 	public IEnumerable<Describer> ConnectionKeys => new EnumerableConnection(this);
 
+
 	/// <summary>
-	/// Returns an enumerable of all connection key describers in the <see cref="DescriberDictionary"/>.
+	/// Returns an enumerable of all describer keys in the <see cref="DescriberDictionary"/>
+	/// excluding Internal store keys.
 	/// A <see cref="Describer"/> is a detailed class equivalent of a descriptor. The database engine's
 	/// <see cref="DescriberDictionary"/> is defined in the native database
 	/// <see cref="IBsNativeDatabaseEngine"/> service.
 	/// </summary>
-	public IEnumerable<Describer> DescriberKeys => new EnumerableDescribers(this);
+	public IEnumerable<Describer> DescriberKeys => new EnumerableKeys(this);
+
+
+	/// <summary>
+	/// Returns an enumerable of all internal store describers in the <see cref="DescriberDictionary"/>.
+	/// A <see cref="Describer"/> is a detailed class equivalent of a descriptor. The database engine's
+	/// <see cref="DescriberDictionary"/> is defined in the native database
+	/// <see cref="IBsNativeDatabaseEngine"/> service.
+	/// </summary>
+	public IEnumerable<Describer> InternalKeys => new EnumerableInternal(this);
 
 	/// <summary>
 	/// Returns a <see cref="Describer"/> enumerable of all equivalency connection parameters as defined in the User
@@ -237,6 +267,15 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 
+	public Describer GetDescriber(string key)
+	{
+		if (TryGetValue(key, out Describer value))
+			return value;
+
+		return default;
+	}
+
+
 	/// <summary>
 	/// Gets a describer array given a desciber name array.
 	/// </summary>
@@ -337,7 +376,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 		Describer describer = this[name];
 
-		if (describer == null)
+		if (describer == null || describer.IsInternalStore)
 			return list;
 
 		string lcname = describer.Name.ToLowerInvariant();
@@ -503,6 +542,45 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 
+
+
+	public class EnumerableKeys(DescriberDictionary owner)
+	: IBsEnumerableDescribers<EnumeratorKeys>
+	{
+		private readonly DescriberDictionary _Owner = owner;
+
+		// public IEnumerable<Describer> DescriberEnumerator => _Owner;
+
+		public IEnumerator<Describer> GetEnumerator()
+		{
+			return new EnumeratorKeys(_Owner.Values);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return new EnumeratorKeys(_Owner.Values);
+		}
+	}
+
+
+
+	public class EnumerableInternal(DescriberDictionary owner)
+		: IBsEnumerableDescribers<EnumeratorInternal>
+	{
+		private readonly DescriberDictionary _Owner = owner;
+
+		// public IEnumerable<Describer> DescriberEnumerator => _Owner;
+
+		public IEnumerator<Describer> GetEnumerator()
+		{
+			return new EnumeratorInternal(_Owner.Values);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return new EnumeratorAdvanced(_Owner.Values);
+		}
+	}
 	public class EnumerableAdvanced(DescriberDictionary owner)
 	: IBsEnumerableDescribers<EnumeratorAdvanced>
 	{
@@ -637,6 +715,26 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	}
 
 
+	public class EnumeratorKeys(PublicValueCollection<string, Describer> values)
+	: EnumeratorDescribers(values)
+	{
+		public override bool IsValid(Describer describer)
+		{
+			return !describer.IsInternalStore;
+		}
+	}
+
+
+	public class EnumeratorInternal(PublicValueCollection<string, Describer> values)
+		: EnumeratorDescribers(values)
+	{
+		public override bool IsValid(Describer describer)
+		{
+			return describer.IsInternalStore;
+		}
+	}
+
+
 
 	public class EnumeratorAdvanced(PublicValueCollection<string, Describer> values)
 		: EnumeratorDescribers(values)
@@ -645,7 +743,6 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 		{
 			return describer.IsAdvanced && !describer.IsInternalStore;
 		}
-
 	}
 
 	public class EnumeratorConnection(PublicValueCollection<string, Describer> values)

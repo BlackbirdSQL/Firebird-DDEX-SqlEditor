@@ -3,11 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
 using BlackbirdSql.EditorExtension.Events;
+using BlackbirdSql.EditorExtension.Properties;
 using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Sys.Interfaces;
@@ -89,10 +89,8 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		Controller.OnBeforeDocumentWindowShowEvent -= OnBeforeDocumentWindowShow;
 		Controller.OnBeforeLastDocumentUnlockEvent -= OnBeforeLastDocumentUnlock;
 		Controller.OnElementValueChangedEvent -= OnElementValueChanged;
-		// Controller.OnBeforeCloseProjectEvent -= OnBeforeCloseProject;
 		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
 		Controller.OnSelectionChangedEvent -= OnSelectionChanged;
-		// Controller.OnNewQueryRequestedEvent -= OnNewQueryRequested;
 	}
 
 
@@ -111,17 +109,16 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		Controller.OnBeforeDocumentWindowShowEvent += OnBeforeDocumentWindowShow;
 		Controller.OnBeforeLastDocumentUnlockEvent += OnBeforeLastDocumentUnlock;
 		Controller.OnElementValueChangedEvent += OnElementValueChanged;
-		// Controller.OnBeforeCloseProjectEvent += OnBeforeCloseProject;
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 		Controller.OnSelectionChangedEvent += OnSelectionChanged;
-		// Controller.OnNewQueryRequestedEvent += OnNewQueryRequested;
-
+		
 
 		if (!ThreadHelper.CheckAccess())
 		{
 			// Fire and forget.
 
 			Task.Run(InitializeUnsafeAsync).Forget();
+
 			return;
 		}
 
@@ -153,10 +150,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 		Guid rclsidCommitOffCmdUI = VS.UICONTEXT_PublishingPreviewCommitOff;
 		___(SelectionMonitor.GetCmdUIContextCookie(ref rclsidCommitOffCmdUI, out _PublishingPreviewCommitOffCookie));
-
-		// rguidCmdUI = new(ServiceData.PreviewCommitOffGuid);
-		// ___(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _PreviewCommitOffCookie));
-
 
 		Guid rclsidServerExplorerCmdUI = VSConstants.StandardToolWindows.ServerExplorer;
 		___(SelectionMonitor.GetCmdUIContextCookie(ref rclsidServerExplorerCmdUI, out _ServerExplorerCookie));
@@ -352,21 +345,47 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	/// Cleans up any SE sql editor documents that may have been left dangling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private int CleanupTemporarySqlItems(IVsHierarchy projectHierarchy)
+	private bool CleanupTemporarySqlItems(IVsHierarchy projectHierarchy, bool force)
 	{
-		IDictionary<ProjectItem, (uint, string)> tempSqlItems = UnsafeCmd.GetOpenMiscProjectItems(projectHierarchy, [NativeDb.Extension], Path.GetTempPath());
+		IDictionary<ProjectItem, object> tempSqlItems = UnsafeCmd.GetOpenMiscProjectItems(projectHierarchy, [NativeDb.Extension], Path.GetTempPath());
 
 		// Tracer.Trace(GetType(), "CleanupTemporarySqlItems()", "Count: {0}.", tempSqlItems.Count);
 
-		foreach (KeyValuePair<ProjectItem, (uint, string)> pair in tempSqlItems)
+		bool result = false;
+		AuxilliaryDocData auxDocData;
+		ProjectItem item;
+
+		foreach (KeyValuePair<ProjectItem, object> pair in tempSqlItems)
 		{
 			// Tracer.Trace(GetType(), "CleanupTemporarySqlItems()", "Deleting project item: {0}.", projectItem.Name);
 
-			// RdtManager.HandsOffDocument(pair.Value.Item1, pair.Value.Item2);
+			item = pair.Key;
+
+			if (!force)
+			{
+				auxDocData = EditorPackage.GetAuxilliaryDocData(pair.Value);
+
+				if (auxDocData?.QryMgr?.GetUpdatedTransactionsStatus(true) ?? false)
+				{
+					// Fire and forget
+
+					Task.Factory.StartNew(
+						async () =>
+						{
+							await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+							RdtManager.InvalidateToolbar(auxDocData.DocCookie);
+						},
+						default, TaskCreationOptions.PreferFairness, TaskScheduler.Default).Forget();
+
+					continue;
+				}
+			}
+
 
 			try
 			{
-				pair.Key.Delete();
+				item.Delete();
+				result = true;
 			}
 			catch (Exception ex)
 			{
@@ -379,7 +398,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		}
 
 
-		return VSConstants.S_OK;
+		return result;
 	}
 
 
@@ -414,31 +433,96 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Cleans up any SE sql editor documents that may have been left dangling.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private bool QueryAbortClose(IVsHierarchy hierarchy)
+	private bool RequestAbortExecutionsCloseAll(IVsHierarchy hierarchy)
 	{
+		lock (EditorPackage.LockLocal)
+		{
+			if (!EditorPackage.HasAuxillaryDocData)
+				return true;
+		}
+
+		string name;
+		Dictionary<AuxilliaryDocData, string> docs = [];
 
 		foreach (RunningDocumentInfo item in RdtManager.Enumerator)
 		{
-			if (item.Hierarchy == hierarchy && !string.IsNullOrWhiteSpace(item.Moniker)
-				&& Path.GetExtension(item.Moniker).Equals(NativeDb.Extension, StringComparison.OrdinalIgnoreCase)
-				&& item.DocData != null)
+			try
 			{
-				AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(item.DocData);
-
-				if (auxDocData != null && Shared.Cmd.ShouldStopCloseDialog(auxDocData, GetType()))
+				if (item.Hierarchy == hierarchy && !string.IsNullOrWhiteSpace(item.Moniker)
+					&& Path.GetExtension(item.Moniker).Equals(NativeDb.Extension, StringComparison.OrdinalIgnoreCase)
+					&& item.DocData != null)
 				{
-					return true;
+					AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(item.DocData);
+
+					if (auxDocData == null || auxDocData.QryMgr == null)
+						continue;
+
+					if (auxDocData.QryMgr.IsExecuting)
+					{
+						if (auxDocData.IsVirtualWindow)
+						{
+							name = Path.GetFileName(auxDocData.InflightMoniker);
+							name = Resources.QueryGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, name);
+						}
+						else
+						{
+							name = item.Moniker;
+						}
+						docs.Add(auxDocData, name);
+					}
 				}
 			}
+			catch { }
 		}
 
+		return docs.Count == 0 || AuxilliaryDocData.ShowAbortExecutionsCloseAllDialog(docs);
+	}
 
-		return false;
+
+
+	private bool RequestDeactivateTtsCloseAll(IVsHierarchy hierarchy)
+	{
+		lock (EditorPackage.LockLocal)
+		{
+			if (!EditorPackage.HasAuxillaryDocData)
+				return true;
+		}
+
+		string name;
+		Dictionary<AuxilliaryDocData, string> docs = [];
+
+		foreach (RunningDocumentInfo item in RdtManager.Enumerator)
+		{
+			try
+			{
+				if (item.Hierarchy == hierarchy && !string.IsNullOrWhiteSpace(item.Moniker)
+					&& Path.GetExtension(item.Moniker).Equals(NativeDb.Extension, StringComparison.OrdinalIgnoreCase)
+					&& item.DocData != null)
+				{
+					AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(item.DocData);
+
+					if (auxDocData == null || auxDocData.QryMgr == null)
+						continue;
+
+					if (auxDocData.QryMgr.GetUpdatedTransactionsStatus(true))
+					{
+						if (auxDocData.IsVirtualWindow)
+						{
+							name = Path.GetFileName(auxDocData.InflightMoniker);
+							name = Resources.QueryGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, name);
+						}
+						else
+						{
+							name = item.Moniker;
+						}
+						docs.Add(auxDocData, name);
+					}
+				}
+			}
+			catch { }
+		}
+
+		return docs.Count == 0 || AuxilliaryDocData.ShowDeactivateTtsCloseAllDialog(docs);
 	}
 
 
@@ -499,42 +583,49 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	// =========================================================================================================
 
 
-	public int OnAfterAttributeChangeEx(uint docCookie, uint grfAttribs, IVsHierarchy pHierOld,
+	private int OnAfterAttributeChangeEx(uint docCookie, uint grfAttribs, IVsHierarchy pHierOld,
 		uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew,
 		string pszMkDocumentNew)
 	{
-		if (ApcManager.IdeShutdownState || !Controller.EventRdtEnter(false))
+		if (ApcManager.IdeShutdownState || !Controller.EventRdtEnter(true))
 			return VSConstants.S_OK;
 
-		AuxilliaryDocData auxDocData = null;
 		object docData = RdtManager.GetDocDataFromCookie(docCookie);
 
-		if (docData != null)
-		{
-			auxDocData = EditorPackage.GetAuxilliaryDocData(docData);
+		if (docData == null)
+			return VSConstants.S_OK;
 
-			// If no auxdocdata, it's not ours, exit.
-			if (auxDocData == null)
-				return VSConstants.S_OK;
 
-			// Set the auxdocdata cookie if it was never set. 
-			if (auxDocData.DocCookie != docCookie)
-				auxDocData.DocCookie = docCookie;
-		}
+		AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(docData);
+
+		// If no auxdocdata, it's not ours, exit.
+		if (auxDocData == null)
+			return VSConstants.S_OK;
+
+
+		// Set the auxdocdata cookie if it was never set. 
+		if (auxDocData.DocCookie == 0)
+			auxDocData.DocCookie = docCookie;
+
 
 		// If it's not a name change, exit.
 		if ((grfAttribs & (uint)__VSRDTATTRIB.RDTA_MkDocument) == 0)
 			return VSConstants.S_OK;
 
+
+		if (auxDocData.InternalMoniker == null || pszMkDocumentNew == null
+			|| !pszMkDocumentNew.Equals(auxDocData.InternalMoniker))
+		{
+			auxDocData.InternalMoniker = pszMkDocumentNew;
+		}
+
+
 		// The following code corrects the Intellisense target and kickstarts dirty state title update after a save (moniker rename).
 		// If we don't kickstart, dirty state title updates take +- 120 seconds to resume. This is a strange anomaly.
 
 		// Break the link between auxdocdata and the explorer moniker, if it exists, because this is now a disk file.
-		if (auxDocData.InflightMoniker != null)
-		{
-			RdtManager.InflightMonikerCsbTable.Remove(auxDocData.InflightMoniker);
-			auxDocData.InflightMoniker = null;
-		}
+		if (auxDocData.IsVirtualWindow)
+			auxDocData.IsVirtualWindow = false;
 
 
 		// If no intellisense, no need to fix targeting.
@@ -563,7 +654,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
+	private int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
 	{
 		// Tracer.Trace(GetType(), "OnAfterDocumentWindowHide()");
 
@@ -591,18 +682,18 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-	public IVsTask OnAfterSaveAsync(uint cookie, uint flags)
+	private IVsTask OnAfterSaveAsync(uint cookie, uint flags)
 	{
 		// Tracer.Trace(GetType(), "OnAfterSaveAsync()", "DocCookie: {0}.", cookie);
 
-		RunningDocumentInfo documentInfo = RdtManager.GetDocumentInfo(cookie);
+		RunningDocumentInfo docInfo = RdtManager.GetDocumentInfo(cookie);
 
-		if (!documentInfo.IsDocumentInitialized || documentInfo.DocData == null)
+		if (!docInfo.IsDocumentInitialized || docInfo.DocData == null)
 			return null;
 
-		documentInfo.Sync();
+		docInfo.Sync();
 
-		AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(documentInfo.DocData);
+		AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(docInfo.DocData);
 
 		if (auxDocData == null)
 			return null;
@@ -610,26 +701,20 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		if (auxDocData.DocCookie != cookie)
 			auxDocData.DocCookie = cookie;
 
-		if (!auxDocData.IsVirtualWindow)
-			return null;
-
-		auxDocData.IsVirtualWindow = false;
-
 
 		return null;
 	}
 
 
 
-	public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
+	private int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		RunningDocumentInfo documentInfo = RdtManager.GetDocumentInfo(docCookie);
+		RunningDocumentInfo docInfo = RdtManager.GetDocumentInfo(docCookie);
 
-		if (!documentInfo.IsDocumentInitialized)
+		if (!docInfo.IsDocumentInitialized)
 			return VSConstants.S_OK;
-
 
 		if (!__(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar)))
 			return VSConstants.S_OK;
@@ -642,19 +727,19 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-	public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
+	private int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
 	{
-		Controller.EventRdtEnter(true, true);
+		Controller.EventRdtEnter(false, true);
 
 		try
 		{
 			if (dwReadLocksRemaining == 0 && dwEditLocksRemaining == 0)
 			{
-				RunningDocumentInfo documentInfo = RdtManager.GetDocumentInfo(docCookie);
+				RunningDocumentInfo docInfo = RdtManager.GetDocumentInfo(docCookie);
 
-				if (documentInfo.IsDocumentInitialized && EditorPackage.AuxilliaryDocDataExists(documentInfo.DocData))
+				if (docInfo.IsDocumentInitialized && EditorPackage.AuxilliaryDocDataExists(docInfo.DocData))
 				{
-					EditorPackage.RemoveAuxilliaryDocData(documentInfo.DocData);
+					EditorPackage.RemoveAuxilliaryDocData(docInfo.DocData);
 				}
 			}
 			else if (dwEditLocksRemaining == 1 && RdtManager.ShouldKeepDocDataAliveOnClose(docCookie))
@@ -681,24 +766,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-	/*
-	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
-	{
-		// This event is fired after the misc project's items are no longer available. ?????????
-
-		// Tracer.Trace(GetType(), "OnBeforeCloseProject()");
-
-		if (fRemoved.AsBool() || !pHierarchy.IsMiscellaneous())
-			return VSConstants.S_OK;
-
-		CleanupTemporarySqlItems(pHierarchy as IVsUIHierarchy);
-
-		return VSConstants.S_OK;
-	}
-	*/
-
-
-	public int OnElementValueChanged(uint elementid, object oldValue, object newValue)
+	private int OnElementValueChanged(uint elementid, object oldValue, object newValue)
 	{
 		switch ((VSConstants.VSSELELEMID)elementid)
 		{
@@ -744,18 +812,13 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-	public int OnQueryCloseProject(IVsHierarchy hierarchy, int removing, ref int cancel)
+	private int OnQueryCloseProject(IVsHierarchy hierarchy, int removing, ref int cancel)
 	{
-		// Tracer.Trace(GetType(), "OnQueryCloseProject()");
+		// Tracer.Trace(GetType(), "OnQueryCloseProject()", "IVsProject: {0}.", hierarchy.Kind());
 
-		bool hasAuxDocData;
-
-		lock (EditorPackage.LockLocal)
-			hasAuxDocData = EditorPackage.AuxilliaryDocDataTable.Count > 0;
-
-		if (hasAuxDocData && QueryAbortClose(hierarchy))
+		if (!RequestAbortExecutionsCloseAll(hierarchy) || !RequestDeactivateTtsCloseAll(hierarchy))
 		{
-			cancel = 1;
+			cancel = true.AsInt();
 			return VSConstants.S_OK;
 		}
 
@@ -763,11 +826,11 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		if (!hierarchy.IsMiscellaneous())
 			return VSConstants.S_OK;
 
-		Controller.EventRdtEnter(true, true);
+		Controller.EventRdtEnter(false, true);
 
 		try
 		{
-			CleanupTemporarySqlItems(hierarchy);
+			CleanupTemporarySqlItems(hierarchy, true);
 		}
 		finally
 		{
@@ -780,8 +843,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-
-	public int OnSelectionChanged(IVsHierarchy pHierOld, uint itemidOld, IVsMultiItemSelect pMisOld, ISelectionContainer pScOld,
+	private int OnSelectionChanged(IVsHierarchy pHierOld, uint itemidOld, IVsMultiItemSelect pMisOld, ISelectionContainer pScOld,
 		IVsHierarchy pHierNew, uint itemidNew, IVsMultiItemSelect pMisNew, ISelectionContainer pScNew)
 	{
 		CurrentSelectionContainer = pScNew;
@@ -789,21 +851,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 		return VSConstants.S_OK;
 	}
-
-
-
-	/*
-	/// <summary>
-	/// This roadblocks because key services in DataTools.Interop are protected.
-	/// </summary>
-	private int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType)
-	{
-		// This roadbloacks atm because of protection modifiers. TBC
-		// new QueryDesignerDocument(site).Show(nodeSystemType);
-		// host.QueryDesignerProviderTelemetry(qualityMetricProvider);
-		return VSConstants.S_OK;
-	}
-	*/
 
 
 	#endregion Events and Event handling

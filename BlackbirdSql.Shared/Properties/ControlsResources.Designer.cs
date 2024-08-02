@@ -2676,6 +2676,24 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configure Query Connection.
+        /// </summary>
+        internal static string Strategy_ConnectionPromptConfigure {
+            get {
+                return ResourceManager.GetString("Strategy_ConnectionPromptConfigure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modify Query Connection.
+        /// </summary>
+        internal static string Strategy_ConnectionPromptModify {
+            get {
+                return ResourceManager.GetString("Strategy_ConnectionPromptModify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to not connected.
         /// </summary>
         internal static string TabbedEditorWindowPane_ConnectionStateNotConnected {

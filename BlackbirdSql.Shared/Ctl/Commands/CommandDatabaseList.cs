@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Shared.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -41,22 +42,18 @@ public class CommandDatabaseList : AbstractCommand
 			{
 				// Tracer.Trace(typeof(CommandDatabaseList), "get_DatabaseList", "Rebuilding list. Csb.DatasetKey: {0}.", _Csa == null ? "null" : _Csa.DatasetKey);
 
-				string nodeDisplayMember = StoredCsa?.AdornedQualifiedName;
+				string nodeDisplayMember = StoredLiveMdlCsb?.AdornedQualifiedTitle;
 
 				List<string> list = [];
 
 				bool hasSelectedMember = false;
 
-				foreach (string qualifiedName in RctManager.AdornedQualifiedNames)
+				foreach (string qualifiedName in RctManager.AdornedQualifiedTitles)
 				{
-					if (nodeDisplayMember != null && nodeDisplayMember.Equals(qualifiedName))
-					{
+					if (nodeDisplayMember?.Equals(qualifiedName) ?? false)
 						hasSelectedMember = true;
-					}
 					else
-					{
 						list.Add(qualifiedName);
-					}
 				}
 
 				list.Sort(StringComparer.InvariantCulture);
@@ -93,20 +90,6 @@ public class CommandDatabaseList : AbstractCommand
 			return VSConstants.S_OK;
 
 
-		IBsConnectionInfo connInfo = StoredQryMgr.Strategy.ConnInfo;
-
-		if (StoredRctStamp != RctManager.Stamp || StoredCsa == null || connInfo == null
-			|| string.IsNullOrEmpty(connInfo.Database))
-		{
-			StoredRctStamp = RctManager.Stamp;
-		}
-
-		if (StoredCsa == null && connInfo != null && !string.IsNullOrEmpty(connInfo.Database))
-		{
-			StoredCsa = RctManager.CloneVolatile(connInfo);
-		}
-
-		// qryMgrForEditor.Strategy.GetAvailableDatabases();
 		if (DatabaseList.Length > 0)
 			Marshal.GetNativeVariantForObject((object)StoredDatabaseList, pvaOut);
 

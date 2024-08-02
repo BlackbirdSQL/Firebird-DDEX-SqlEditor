@@ -44,7 +44,8 @@
         </Literal>
       </Declarations>
       <Code Language="SQL_FIREBIRD">
-        <![CDATA[CREATE FUNCTION $FunctionName$
+        <![CDATA[SET TERM GO ;
+CREATE FUNCTION $FunctionName$
 (
 	$Param1$ $Datatype_Param1$,
 	$Param2$ $Datatype_Param2$
@@ -54,6 +55,8 @@ AS
 BEGIN
 	RETURN :$Param1$ + :$Param2$
 END;
+GO
+SET TERM ; GO
 ]]>
       </Code>
     </Snippet>

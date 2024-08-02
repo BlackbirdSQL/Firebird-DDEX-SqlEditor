@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.Sys.Model;
 using Microsoft.VisualStudio.Data.Services;
@@ -57,6 +58,10 @@ public static class NativeDbExtensionMembers
 		return NativeDb.DbConnectionSvc.GetDataSource(@this);
 	}
 
+	public static string GetDecoratedDdlSource(this IVsDataExplorerNode @this, EnModelTargetType targetType)
+	{
+		return NativeDb.GetDecoratedDdlSource(@this, targetType);
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -249,11 +254,6 @@ public static class NativeDbExtensionMembers
 	}
 
 
-	public static string GetServerVersion(this DbConnection @this)
-	{
-		return NativeDb.DatabaseInfoSvc.GetServerVersion(@this);
-	}
-
 
 
 	public static long GetUpdateCount(this NativeDatabaseInfoProxy @this)
@@ -335,9 +335,9 @@ public static class NativeDbExtensionMembers
 	/// <summary>
 	/// Parses and converts a server version string to it's Version format.
 	/// </summary>
-	public static Version GetVersion(this IDbConnection @this)
+	public static Version ParseServerVersion(this IDbConnection @this)
 	{
-		return NativeDb.DbConnectionSvc.GetVersion(@this);
+		return NativeDb.DbConnectionSvc.ParseServerVersion(@this);
 	}
 
 	/// <summary>

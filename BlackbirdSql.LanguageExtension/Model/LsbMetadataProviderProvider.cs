@@ -32,13 +32,13 @@ namespace BlackbirdSql.LanguageExtension.Model;
 /// </summary>
 public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 {
-	protected LsbMetadataProviderProvider(IBsConnectionInfo ci, string cacheKey)
+	protected LsbMetadataProviderProvider(IBsModelCsb ci, string cacheKey)
 	{
 		IsInitialized = false;
 		_ = IsInitialized;
 		CacheKey = cacheKey;
 		DatabaseEngineType = EnServerType.Default;
-		ConnInfo = (IBsConnectionInfo)ci.Copy();
+		MdlCsb = ci.Copy();
 
 		base.BuildEvent.Reset();
 		new InitializeMetadataProviderDelegate(Initialize).BeginInvoke(null, null);
@@ -89,7 +89,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				{
 					if (_CacheTable == null || !_CacheTable.TryGetValue(qryMgrKey, out value))
 					{
-						value = new LsbMetadataProviderProvider(qryMgr.Strategy.ConnInfo, qryMgrKey);
+						value = new LsbMetadataProviderProvider(qryMgr.Strategy.LiveMdlCsb, qryMgrKey);
 						CacheTable.Add(qryMgrKey, value);
 					}
 
@@ -127,9 +127,9 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 			string text = null;
 
-			if (qryMgr.Strategy is ConnectionStrategy { ConnInfo: IBsConnectionInfo ci })
+			if (qryMgr.Strategy is ConnectionStrategy { MdlCsb: IBsCsb csb })
 			{
-				text = ci.DatasetKey;
+				text = csb.DatasetKey;
 			}
 
 			return text;
@@ -152,7 +152,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 
 
-	private IBsConnectionInfo ConnInfo { get; set; }
+	private IBsCsb MdlCsb { get; set; }
 
 	private DbConnection DriftDetectionConnection { get; set; }
 
@@ -168,17 +168,17 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	private string CacheKey { get; set; }
 
-	public override string DatabaseName => null;
+	public override string Moniker => MdlCsb?.Moniker;
 
 	public bool IsCloudConnection => DatabaseEngineType == EnServerType.Default;
 
 	protected override bool AssertInDestructor => false;
 
-	public void AsyncAddDatabaseToDriftDetectionSet(string databaseName)
+	public void AsyncAddDatabaseToDriftDetectionSet(string moniker)
 	{
 		_DatabasesToCheckForDrift ??= [];
 
-		ThreadingTools.ApplyChangeOptimistically(ref _DatabasesToCheckForDrift, (databases) => databases.Add(databaseName));
+		ThreadingTools.ApplyChangeOptimistically(ref _DatabasesToCheckForDrift, (databases) => databases.Add(moniker));
 	}
 
 
@@ -199,7 +199,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 			try
 			{
-				ConnectionManager.PopulateConnectionStringBuilder(csb, ConnInfo);
+				ConnectionManager.PopulateConnectionStringBuilder(csb, MdlCsb);
 
 				csb.Pooling = false;
 				connection = NativeDb.CreateDbConnection(csb.ToString());
@@ -248,7 +248,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 			ServerConnection.Open();
 
 			// ConnectionHelperUtils.SetLockAndCommandTimeout(ServerConnection.SqlConnectionObject);
-			ServerVersion = NativeDb.GetServerVersion(ServerConnection);
+			ServerVersion = ServerConnection.ParseServerVersion();
 			DatabaseEngineType = metadataConnectionStringBuilder.IsServerConnection ? EnServerType.Default : EnServerType.Embedded;
 		}
 	}
@@ -442,10 +442,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	private Csb GetMetadataConnectionStringBuilder()
 	{
-		IBsConnectionInfo ci = ConnInfo;
-		Csb csb = [];
-		ci.PopulateConnectionStringBuilder(csb, false);
-
+		Csb csb = new(MdlCsb.ConnectionString, false);
 		return csb;
 	}
 
@@ -455,8 +452,8 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		{
 			DisposeDriftDetectionConnection();
 			DisposeMetadataConnection();
-			ConnInfo?.Dispose();
-			ConnInfo = null;
+			MdlCsb?.Dispose();
+			MdlCsb = null;
 		}
 	}
 

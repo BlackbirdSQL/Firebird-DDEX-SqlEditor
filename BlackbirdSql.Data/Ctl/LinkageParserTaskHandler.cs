@@ -40,10 +40,13 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	/// Instance() static to create or retrieve a parser for a connection or Site.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public LinkageParserTaskHandler(IVsDataExplorerConnection root)
+	public LinkageParserTaskHandler(string connectionString)
 	{
+
 		// Tracer.Trace(GetType(), "LinkageParserTaskHandle.LinkageParserTaskHandle");
-		_DatasetKey = ApcManager.GetRegisterConnectionDatasetKey(root);
+
+		_ConnectionString = connectionString;
+		// _DatasetKey = ApcManager.GetRegisterConnectionDatasetKey(root);
 	}
 
 
@@ -58,18 +61,18 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	// =========================================================================================================
 
 
-	private readonly string _DatasetKey;
+	private string _DatasetKey = null;
 	/// <summary>
 	/// Handle to the ITaskHandler ProgressData.
 	/// </summary>
 	protected TaskProgressData _ProgressData = default;
 
-
+	private readonly string _ConnectionString = null;
 
 	/// <summary>
 	/// Handle to the IDE ITaskHandler.
 	/// </summary>
-	protected ITaskHandler _TaskHandler = null;
+	private ITaskHandler _TaskHandler = null;
 
 	protected string _TaskHandlerTaskName = "Parsing";
 
@@ -84,6 +87,19 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	#region Property accessors - LinkageParserTaskHandler
 	// =========================================================================================================
 
+
+	private string DatasetKey
+	{
+		get
+		{
+			if (_DatasetKey != null)
+				return _DatasetKey;
+
+			_DatasetKey = ApcManager.GetConnectionQualifiedName(_ConnectionString);
+
+			return _DatasetKey;
+		}
+	}
 
 	
 	/// <summary>
@@ -133,7 +149,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	public void PreRegister(bool canBeCancelled)
 	{
 		TaskHandlerOptions options = default;
-		options.Title = Resources.LinkageParserTaskHandlerTitle.FmtRes(_DatasetKey);
+		options.Title = Resources.LinkageParserTaskHandlerTitle.FmtRes(DatasetKey);
 		options.ActionsAfterCompletion = CompletionActions.None;
 
 		_ProgressData = default;
@@ -292,7 +308,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	public bool Status(EnLinkStage stage, long totalElapsed, bool enabled, bool asyncActive)
 	{
 		// string async;
-		string catalog = _DatasetKey;
+		string catalog = DatasetKey;
 
 		bool clear = false;
 		string text;

@@ -349,7 +349,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 			bool flag = false;
 			if (IsHandleCreated)
 			{
-				Sys.Native.SCROLLINFOEx sCROLLINFO = new Sys.Native.SCROLLINFOEx(bInitWithAllMask: true);
+				Native.SCROLLINFOEx sCROLLINFO = new (bInitWithAllMask: true);
 				Native.GetScrollInfo(Handle, 0, sCROLLINFO);
 				flag = sCROLLINFO.nMax > sCROLLINFO.nPage;
 			}

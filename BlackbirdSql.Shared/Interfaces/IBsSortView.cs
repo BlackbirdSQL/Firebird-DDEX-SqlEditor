@@ -12,7 +12,7 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 public interface IBsSortView : IDisposable
 {
-	event StorageNotifyDelegate StorageNotify;
+	event StorageNotifyDelegate StorageNotifyEventAsync;
 
 	void ResetSortKeys();
 

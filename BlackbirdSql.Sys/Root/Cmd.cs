@@ -86,6 +86,10 @@ public abstract class Cmd
 	}
 
 
+
+	/// <summary>
+	/// Warning suppression. Returns true if on the main thread else false.
+	/// </summary>
 	public static async Task<bool> AwaitableAsync()
 	{
 		if (!ThreadHelper.CheckAccess())
@@ -95,6 +99,21 @@ public abstract class Cmd
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		return true;
+	}
+
+
+	/// <summary>
+	/// Warning suppression. Returns the boolean passed.
+	/// </summary>
+	public static async Task<bool> AwaitableAsync(bool result)
+	{
+		if (!ThreadHelper.CheckAccess())
+			return result;
+
+		// Warning suppression.
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		return result;
 	}
 
 

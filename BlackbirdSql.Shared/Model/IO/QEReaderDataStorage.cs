@@ -73,7 +73,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 		}
 	}
 
-	public event StorageNotifyDelegate StorageNotify;
+	public event StorageNotifyDelegate StorageNotifyEventAsync;
 
 	public QEReaderDataStorage()
 	{
@@ -210,10 +210,11 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 		// Tracer.Trace(GetType(), "QEReaderDataStorage.ConsumeDataWithoutStoring", "", null);
 		_IsClosed = false;
 
-		while (_DataStorageEnabled && await _StorageReader.ReadAsync(cancelToken));
+		while (_DataStorageEnabled && !cancelToken.IsCancellationRequested
+			&& await _StorageReader.ReadAsync(cancelToken));
 
 		_DataStorageEnabled = false;
-		OnStorageNotify(-1L, bStoredAllData: true);
+		await OnStorageNotifyAsync(-1L, true, cancelToken);
 		_IsClosed = true;
 
 		return !cancelToken.IsCancellationRequested;
@@ -225,10 +226,11 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 		try
 		{
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
-			while (_DataStorageEnabled && await _StorageReader.ReadAsync(cancelToken))
+			while (_DataStorageEnabled && !cancelToken.IsCancellationRequested
+				&& await _StorageReader.ReadAsync(cancelToken))
 			{
 				Interlocked.Increment(ref _RowCount);
-				OnStorageNotify(_RowCount, bStoredAllData: false);
+				await OnStorageNotifyAsync(_RowCount, false, cancelToken);
 			}
 		}
 		catch (Exception ex)
@@ -237,14 +239,14 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 		}
 
 		_DataStorageEnabled = false;
-		OnStorageNotify(_RowCount, bStoredAllData: true);
+		await OnStorageNotifyAsync(_RowCount, true, cancelToken);
 		_IsClosed = true;
 
 		return !cancelToken.IsCancellationRequested;
 	}
 
-	private void OnStorageNotify(long i64RowsInStorage, bool bStoredAllData)
+	private async Task<bool> OnStorageNotifyAsync(long i64RowsInStorage, bool bStoredAllData, CancellationToken cancelToken)
 	{
-		StorageNotify?.Invoke(i64RowsInStorage, bStoredAllData);
+		return await StorageNotifyEventAsync?.Invoke(i64RowsInStorage, bStoredAllData, cancelToken);
 	}
 }

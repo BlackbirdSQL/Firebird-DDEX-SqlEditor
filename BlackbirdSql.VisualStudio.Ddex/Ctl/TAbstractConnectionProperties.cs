@@ -8,7 +8,6 @@ using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
@@ -269,10 +268,10 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 					// identified with an "edmu" property.
 					if (ConnectionSource == EnConnectionSource.EntityDataModel)
 					{
-						ConnectionStringBuilder[SysConstants.C_KeyExEdmx] = true;
-						ConnectionStringBuilder.Remove(SysConstants.C_KeyExEdmu);
+						ConnectionStringBuilder[CoreConstants.C_KeyExEdmx] = true;
+						ConnectionStringBuilder.Remove(CoreConstants.C_KeyExEdmu);
 
-						NativeDb.ReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
+						NativeDb.AsyncReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
 					}
 				}
 

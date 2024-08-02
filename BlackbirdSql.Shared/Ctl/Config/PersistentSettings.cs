@@ -6,12 +6,11 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Resources;
-using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys;
-using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Enums;
+using BlackbirdSql.Shared.Properties;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Events;
 
 
 
@@ -94,7 +93,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static bool EditorExecuteQueryOnOpen => (bool)GetSetting("EditorGeneralExecuteQueryOnOpen", true);
 	public static EnLanguageService EditorLanguageService => (EnLanguageService)GetSetting("EditorGeneralLanguageService",
 		EnLanguageService.SSDT);
-	public static bool EditorPromptToSave => (bool)GetSetting("EditorGeneralPromptToSave", false);
+	public static bool EditorPromptSave => (bool)GetSetting("EditorGeneralPromptSave", true);
 
 
 

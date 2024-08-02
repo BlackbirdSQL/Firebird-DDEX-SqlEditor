@@ -39,7 +39,7 @@ public class CommandNewQuery : AbstractCommand
 
 			IBsDesignerExplorerServices service = ApcManager.EnsureService<IBsDesignerExplorerServices>();
 
-			service.NewQuery(StoredQryMgr?.Strategy?.CurrentDatasetKey, Resources.NewQueryBaseName, null);
+			service.NewQuery(StoredStrategy?.CurrentDatasetKey, Resources.NewQueryBaseName, null);
 		}
 
 		return VSConstants.S_OK;

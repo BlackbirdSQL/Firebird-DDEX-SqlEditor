@@ -43,7 +43,7 @@ public class CommandTransactionCommit : AbstractCommand
 		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
-		StoredAuxDocData?.CommitTransactions();
+		StoredAuxDocData?.CommitTransactions(true);
 
 		return VSConstants.S_OK;
 	}

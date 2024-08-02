@@ -24,7 +24,7 @@ namespace BlackbirdSql.Shared.Interfaces
 
 		int MaxXmlCharsToStore { get; set; }
 
-		event StorageNotifyDelegate StorageNotify;
+		event StorageNotifyDelegate StorageNotifyEventAsync;
 
 		Task<bool> InitStorageAsync(IDataReader reader, CancellationToken cancelToken);
 

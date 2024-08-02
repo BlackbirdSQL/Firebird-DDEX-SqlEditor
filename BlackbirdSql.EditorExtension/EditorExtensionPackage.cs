@@ -23,19 +23,20 @@ using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Ctl.Commands;
 using BlackbirdSql.Shared.Ctl.ComponentModel;
-using BlackbirdSql.Shared.Ctl.Config;
 using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
+using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
+
 using OleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 
@@ -224,23 +225,18 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	/*
 	[Import]
-#pragma warning disable CS8632 // The annotation for nullable reference types warning.
 	private JoinableTaskContext? JoinableTaskContext { get; set; }
-#pragma warning restore CS8632 // The annotation for nullable reference types warning.
 	*/
-
-	public IBsTabbedEditorWindowPane LastFocusedSqlEditor { get; set; }
-
-
-
 
 	public Dictionary<object, AuxilliaryDocData> AuxilliaryDocDataTable => _AuxilliaryDocDataTable ??= [];
 
-
 	public bool EnableSpatialResultsTab { get; set; }
 
-
 	public override IBsEventsManager EventsManager => _EventsManager;
+
+	public bool HasAuxillaryDocData => (_AuxilliaryDocDataTable?.Count ?? 0) > 0;
+
+	public IBsTabbedEditorWindowPane LastFocusedSqlEditor { get; set; }
 
 	public object LockLocal => _LockLocal;
 
@@ -267,7 +263,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 		await base.InitializeAsync(cancellationToken, progress);
 
-		ProgressAsync(progress, "InitialIzing Editor. Proffering services...").Forget();
+		ProgressAsync(progress, "Initializing Editor. Proffering services...").Forget();
 
 		if (await GetServiceAsync(typeof(IProfferService)) is not IProfferService profferSvc)
 			throw Diag.ExceptionService(typeof(IProfferService));
@@ -278,23 +274,23 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		Guid rguidService = PackageData.CLSID_FontAndColorService;
 		___(profferSvc.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
 
-		ProgressAsync(progress, "InitialIzing Editor. Proffering services... Done.").Forget();
+		ProgressAsync(progress, "Initializing Editor. Proffering services... Done.").Forget();
 
-		ProgressAsync(progress, "InitialIzing Editor. Registering Designer Explorer services...").Forget();
+		ProgressAsync(progress, "Initializing Editor. Registering Designer Explorer services...").Forget();
 
 		ServiceContainer.AddService(typeof(IBsDesignerExplorerServices), ServicesCreatorCallbackAsync, promote: true);
 		// ServiceContainer.AddService(typeof(IBDesignerOnlineServices), ServicesCreatorCallbackAsync, promote: true);
 		// Services.AddService(typeof(ISqlEditorStrategyProvider), ServicesCreatorCallbackAsync, promote: true);
 
-		ProgressAsync(progress, "InitialIzing Editor. Registering Designer Explorer services... Done.").Forget();
+		ProgressAsync(progress, "Initializing Editor. Registering Designer Explorer services... Done.").Forget();
 
-		ProgressAsync(progress, "InitialIzing Editor. Initializing Tabbed Toolbar manager...").Forget();
+		ProgressAsync(progress, "Initializing Editor. Initializing Tabbed Toolbar manager...").Forget();
 
 		InitializeTabbedEditorToolbarHandlerManager();
 
-		ProgressAsync(progress, "InitialIzing  Editor. Initializing Tabbed Toolbar manager... Done.").Forget();
+		ProgressAsync(progress, "Initializing  Editor. Initializing Tabbed Toolbar manager... Done.").Forget();
 
-		ProgressAsync(progress, "InitialIzing Editor ... Done.").Forget();
+		ProgressAsync(progress, "Initializing Editor ... Done.").Forget();
 
 	}
 
@@ -316,6 +312,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 		ProgressAsync(progress, "Finalizing Editor...").Forget();
+
 
 		ProgressAsync(progress, "Finalizing Editor. Registering Editor factories...").Forget();
 
@@ -460,20 +457,37 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 			if (AuxilliaryDocDataExists(docData))
 				return false;
 
-
 			// Accessing the stack and pop.
 			string inflightMoniker = RdtManager.InflightMonikerStack;
 
-			// Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()", "inflightMoniker: {0}, documentMoniker: {1}.", inflightMoniker, documentMoniker);
 
-			AuxilliaryDocData auxDocData = new AuxilliaryDocData(documentMoniker, inflightMoniker, docData);
-			// hierarchy.GetSite(out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP);
+			Csb csb = null;
 
-			if (inflightMoniker != null && RdtManager.InflightMonikerCsbTable.TryGetValue(inflightMoniker, out object csaObject))
+			if (inflightMoniker != null && RdtManager.InflightMonikerCsbTable.TryGetValue(inflightMoniker, out csb))
 			{
-				auxDocData.UserDataCsb = (System.Data.Common.DbConnectionStringBuilder)csaObject;
 				RdtManager.InflightMonikerCsbTable[inflightMoniker] = null;
 			}
+
+
+			uint cookie = 0;
+
+			if (inflightMoniker == null && !string.IsNullOrEmpty(documentMoniker))
+			{
+				try
+				{
+					cookie = RdtManager.GetRdtCookie(documentMoniker);
+				}
+				catch { }
+			}
+
+
+			//Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()", "fileCookie: {0}, monikerCookie: {1}, filePath: {2}, inflightMoniker: {3}, documentMoniker: {4}.",
+			//	fileCookie, cookie, filePath, inflightMoniker, documentMoniker);
+
+
+
+			AuxilliaryDocData auxDocData = new AuxilliaryDocData(cookie, documentMoniker, inflightMoniker, docData);
+
 
 			// No point looking because This will always be null for us
 
@@ -485,15 +499,17 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 			EnEditorCreationFlags creationFlags = EnEditorCreationFlags.None;
 
-			if (auxDocData.UserDataCsb is Csb csa && csa.ContainsKey(SysConstants.C_KeyExCreationFlags))
+			if (csb?.ContainsKey(CoreConstants.C_KeyExCreationFlags) ?? false)
 			{
-				creationFlags = (EnEditorCreationFlags)csa[SysConstants.C_KeyExCreationFlags];
-				csa.Remove(SysConstants.C_KeyExCreationFlags);
+				creationFlags = (EnEditorCreationFlags)csb[CoreConstants.C_KeyExCreationFlags];
+				csb.Remove(CoreConstants.C_KeyExCreationFlags);
 			}
 
 
-			auxDocData.StrategyFactory = new ConnectionStrategyFactory(auxDocData.UserDataCsb, creationFlags);
-			_ = auxDocData.QryMgr;
+			// auxDocData.StrategyFactory = new ConnectionStrategyFactory(auxDocData.UserDataCsb, creationFlags);
+
+			auxDocData.CreateQueryManager(csb, creationFlags);
+
 
 			AuxilliaryDocDataTable.Add(docData, auxDocData);
 
@@ -593,14 +609,6 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 		vsTextMarker = null;
 		return VSConstants.E_INVALIDARG;
-	}
-
-
-
-	public bool HasAnyAuxillaryDocData()
-	{
-		lock (_LockLocal)
-			return _AuxilliaryDocDataTable != null && _AuxilliaryDocDataTable.Count > 0;
 	}
 
 
@@ -705,8 +713,8 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 			if (_AuxilliaryDocDataTable.TryGetValue(docData, out AuxilliaryDocData auxDocData))
 			{
-				if (auxDocData.InflightMoniker != null)
-					RdtManager.InflightMonikerCsbTable.Remove(auxDocData.InflightMoniker);
+				if (auxDocData.IsVirtualWindow)
+					auxDocData.IsVirtualWindow = false;
 
 				if (_CurrentDocData != null && ReferenceEquals(docData, _CurrentDocData))
 				{
@@ -769,14 +777,14 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		uint[] pitemidOpen = new uint[1];
 		IVsUIHierarchy pHierCaller = null;
 
-		RunningDocumentInfo documentInfo;
+		RunningDocumentInfo docInfo;
 
 		lock (RdtManager.LockGlobal)
-			documentInfo = RdtManager.GetDocumentInfo(docCookie);
+			docInfo = RdtManager.GetDocumentInfo(docCookie);
 
-		string mkDocument = documentInfo.Moniker;
+		string mkDocument = docInfo.Moniker;
 
-		if (!documentInfo.IsDocumentInitialized)
+		if (!docInfo.IsDocumentInitialized)
 		{
 			Diag.Dug(new COMException($"Document for moniker {mkDocument} using document cookie {docCookie} is not initialized."));
 			tabbedEditorService = null;
@@ -844,10 +852,8 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	int IVsBroadcastMessageEvents.OnBroadcastMessage(uint message, IntPtr wParam, IntPtr lParam)
 	{
-		if (message == 536)
-		{
+		if (message == Native.WM_POWERBROADCAST)
 			OnPowerBroadcast(wParam, lParam);
-		}
 
 		return VSConstants.S_OK;
 	}
@@ -878,11 +884,9 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		{
 			DesignerExplorerServices.OpenNewMiscellaneousSqlFile(Resources.NewQueryBaseName, string.Empty);
 			IBsTabbedEditorWindowPane lastFocusedSqlEditor = LastFocusedSqlEditor;
+
 			if (lastFocusedSqlEditor != null)
-			{
 				new CommandNewQuery(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
-				GetAuxilliaryDocData(lastFocusedSqlEditor.DocData).IsVirtualWindow = true;
-			}
 		}
 	}
 
@@ -890,17 +894,17 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	private void OnPowerBroadcast(IntPtr wParam, IntPtr lParam)
 	{
-		if ((int)wParam != 4 || _AuxilliaryDocDataTable == null)
+		// Tracer.Trace(GetType(), "OnPowerBroadcast()");
+
+		if ((int)wParam != Native.PBT_APMSUSPEND || _AuxilliaryDocDataTable == null
+			|| _AuxilliaryDocDataTable.Count == 0)
 		{
 			return;
 		}
 
 		foreach (AuxilliaryDocData value in _AuxilliaryDocDataTable.Values)
 		{
-			QueryManager qryMgr = value.QryMgr;
-
-			if (qryMgr != null && qryMgr.IsConnected)
-				qryMgr.Strategy.CloseConnection();
+			value?.QryMgr?.Strategy?.CloseConnection();
 		}
 	}
 

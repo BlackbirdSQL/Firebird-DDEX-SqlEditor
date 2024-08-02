@@ -27,8 +27,6 @@ public abstract class PersistentSettings : Shared.Ctl.Config.PersistentSettings
 	#region Fields
 	// ---------------------------------------------------------------------------------
 
-	// Editor GeneralSettingsModel
-	// static bool _PromptToSaveKey = false;
 
 
 	#endregion Fields

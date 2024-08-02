@@ -13,11 +13,12 @@ public delegate void QueryExecutionCompletedEventHandler(object sender, QueryExe
 
 public class QueryExecutionCompletedEventArgs : EventArgs
 {
-	public QueryExecutionCompletedEventArgs(EnScriptExecutionResult executionResult,
+	public QueryExecutionCompletedEventArgs(EnScriptExecutionResult executionResult, bool syncCancel,
 		EnSqlExecutionType executionType, EnSqlOutputMode outputMode, bool withClientStats,
 		long totalRowsSelected, int statementCount, int errorCount, int messageCount)
 	{
 		_ExecutionResult = executionResult;
+		_SyncCancel = syncCancel;
 		_ExecutionType = executionType;
 		_OutputMode = outputMode;
 		_WithClientStats = withClientStats;
@@ -28,23 +29,26 @@ public class QueryExecutionCompletedEventArgs : EventArgs
 	}
 
 
-	public QueryExecutionCompletedEventArgs(EnScriptExecutionResult executionResult,
+	public QueryExecutionCompletedEventArgs(EnScriptExecutionResult executionResult, bool syncCancel,
 			EnSqlExecutionType executionType, EnSqlOutputMode outputMode, bool withClientStats)
-		: this(executionResult, executionType, outputMode, withClientStats, 0L, 0, 0, 0)
+		: this(executionResult, syncCancel, executionType, outputMode, withClientStats, 0L, 0, 0, 0)
 	{
 	}
 
-	public QueryExecutionCompletedEventArgs(EnScriptExecutionResult executionResult, EnSqlExecutionType executionType)
-	: this(executionResult, executionType, EnSqlOutputMode.ToGrid, false, 0L, 0, 0, 0)
+	public QueryExecutionCompletedEventArgs(EnScriptExecutionResult executionResult, bool syncCancel,
+			EnSqlExecutionType executionType)
+		: this(executionResult, syncCancel, executionType, EnSqlOutputMode.ToGrid, false, 0L, 0, 0, 0)
 	{
 	}
 
-	public QueryExecutionCompletedEventArgs(EnScriptExecutionResult executionResult)
-	: this(executionResult, EnSqlExecutionType.QueryOnly, EnSqlOutputMode.ToGrid, false, 0L, 0, 0, 0)
+	public QueryExecutionCompletedEventArgs(EnScriptExecutionResult executionResult, bool syncCancel)
+		: this(executionResult, syncCancel, EnSqlExecutionType.QueryOnly, EnSqlOutputMode.ToGrid,
+			  false, 0L, 0, 0, 0)
 	{
 	}
 
 	private readonly EnScriptExecutionResult _ExecutionResult;
+	private readonly bool _SyncCancel;
 	private readonly EnSqlExecutionType _ExecutionType;
 	private readonly EnSqlOutputMode _OutputMode;
 	private readonly bool _WithClientStats;
@@ -57,6 +61,7 @@ public class QueryExecutionCompletedEventArgs : EventArgs
 
 
 	public EnScriptExecutionResult ExecutionResult => _ExecutionResult;
+	public bool SyncCancel => _SyncCancel;
 	public EnSqlExecutionType ExecutionType => _ExecutionType;
 	public EnSqlOutputMode OutputMode => _OutputMode;
 	public long TotalRowsSelected => _TotalRowsSelected;

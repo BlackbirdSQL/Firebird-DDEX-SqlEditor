@@ -7,13 +7,14 @@ using System.Data.Common;
 using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Events;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Ctl.Config;
+using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
@@ -54,10 +55,17 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 
 
-	protected virtual void Dispose(bool disposing)
+	protected virtual bool Dispose(bool disposing)
 	{
+		if (!disposing || _Disposed)
+			return false;
+
+		_Disposed = true;
+
 		lock (_LockObject)
-			ConnInfo = null;
+			LiveMdlCsb = null;
+
+		return true;
 	}
 
 
@@ -76,9 +84,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	private int _EventCardinal = 0;
 
-	protected IBsConnectionInfo _ConnInfo;
+	private IBsModelCsb _MdlCsb;
+	private bool _Disposed = false;
 	private bool? _HasTransactions;
-	protected long _ConnectionStamp = -1;
+	protected long _RctStamp = long.MinValue;
 	private int _TransactionCardinal = 0;
 
 	private static readonly Color _SDefaultColor = SystemColors.Control;
@@ -98,46 +107,70 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	// =========================================================================================================
 
 
-	public IDbConnection Connection => _ConnInfo?.DataConnection;
+	public virtual string AdornedDisplayName =>
+		MdlCsb?.AdornedDisplayName ?? string.Empty;
 
-	public long ConnectionStamp => _ConnectionStamp;
+	public virtual string AdornedTitle =>
+		MdlCsb?.AdornedTitle ?? string.Empty;
 
-	public IBsConnectionInfo ConnInfo
+	public DbConnection Connection => _MdlCsb?.DataConnection;
+
+	public long ConnectionId => _MdlCsb?.ConnectionId ?? long.MinValue;
+
+	public long RctStamp => _RctStamp;
+
+	public virtual string LiveAdornedDisplayName =>
+		LiveMdlCsb?.AdornedDisplayName ?? string.Empty;
+
+	public virtual string LiveAdornedTitle =>
+		LiveMdlCsb?.AdornedTitle ?? string.Empty;
+
+	public IBsModelCsb LiveMdlCsb
 	{
 		get
 		{
 			lock (_LockObject)
-				return _ConnInfo;
+			{
+				if (_MdlCsb == null || !RaiseNotifyConnectionState(EnNotifyConnectionState.RequestIsUnlocked, false) || HasTransactions)
+					return _MdlCsb;
+
+				if (_MdlCsb.IsInvalidated)
+				{
+					Csb csb = RctManager.CloneRegistered(_MdlCsb);
+					LiveMdlCsb = new ModelCsb(csb);
+				}
+				return _MdlCsb;
+			}
 		}
 		set
 		{
 			lock (_LockObject)
 			{
-				_ConnectionStamp = RctManager.Stamp;
+				_RctStamp = RctManager.Stamp;
 
-				if (ReferenceEquals(_ConnInfo, value))
+				if (ReferenceEquals(_MdlCsb, value))
 					return;
 
 
-				IBsConnectionInfo previousConnInfo = _ConnInfo;
+				IBsModelCsb previousMdlCsb = _MdlCsb;
 
-				if (previousConnInfo != null)
-					previousConnInfo.ConnectionChangedEvent -= OnPropertyAgentConnectionChanged;
+				if (previousMdlCsb != null)
+					previousMdlCsb.ConnectionChangedEvent -= OnPropertyAgentConnectionChanged;
 
-				_ConnInfo = value;
+				_MdlCsb = value;
 
-				ConnectionChangedEventArgs args = new(_ConnInfo?.DataConnection, previousConnInfo?.DataConnection);
+				ConnectionChangedEventArgs args = new(_MdlCsb?.DataConnection, previousMdlCsb?.DataConnection);
 
 				OnPropertyAgentConnectionChanged(this, args);
 
-				if (_ConnInfo != null)
-					_ConnInfo.ConnectionChangedEvent += OnPropertyAgentConnectionChanged;
+				if (_MdlCsb != null)
+					_MdlCsb.ConnectionChangedEvent += OnPropertyAgentConnectionChanged;
 
-				EventEnter(true, true);
+				EventEnter(false, true);
 
 				try
 				{
-					previousConnInfo?.Dispose();
+					previousMdlCsb?.Dispose();
 				}
 				finally
 				{
@@ -147,56 +180,18 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 	}
 
-	public virtual string DatasetId
-	{
-		get
-		{
-			lock (_LockObject)
-			{
-				if (ConnInfo != null)
-				{
-					Csb csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(ConnInfo);
+	public IBsModelCsb MdlCsb => _MdlCsb;
 
-					return csa == null
-						? SysConstants.C_DefaultExDatasetId
-						: (string.IsNullOrWhiteSpace(csa.DatasetId)
-							? csa.Dataset : csa.DatasetId);
-				}
-
-				return string.Empty;
-			}
-		}
-	}
+	public virtual string DatasetDisplayName =>
+		MdlCsb?.DisplayName ?? string.Empty;
 
 
-	public virtual string DisplayServerName
-	{
-		get
-		{
-			IBsConnectionInfo connectionInfo = ConnInfo;
-			if (connectionInfo != null && !string.IsNullOrEmpty(connectionInfo.DataSource))
-			{
-				return connectionInfo.DataSource;
-			}
-
-			return string.Empty;
-		}
-	}
+	public virtual string DisplayServerName =>
+		MdlCsb?.DataSource ?? string.Empty;
 
 
-	public virtual string DisplayUserName
-	{
-		get
-		{
-			string value = string.Empty;
-			IBsConnectionInfo connectionInfo = ConnInfo;
-
-			if (connectionInfo != null)
-				value = connectionInfo.UserID;
-
-			return value;
-		}
-	}
+	public virtual string DisplayUserName =>
+		MdlCsb?.UserID ?? string.Empty;
 
 
 	/// <summary>
@@ -223,7 +218,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	/// <summary>
 	/// HasTransactions OnQueryStatus() requests piggyback off of previous
-	/// <see cref="GetUpdateTransactionsStatus()"/> calls.
+	/// <see cref="GetUpdatedTransactionsStatus()"/> calls.
 	/// This reduces the number of IDbTransaction.HasTransactions() requests.
 	/// </summary>
 	public bool HasTransactions
@@ -242,7 +237,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			if (!_HasTransactions.HasValue
 				|| (_TransactionCardinal % LibraryData.C_ConnectionValidationModulus) == 0)
 			{
-				GetUpdateTransactionsStatus(true);
+				GetUpdatedTransactionsStatus(true);
 			}
 
 			return _HasTransactions.Value;
@@ -250,7 +245,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	}
 
 
-	public string CurrentDatasetKey => _ConnInfo?.DatasetKey;
+	public string CurrentDatasetKey => _MdlCsb?.DatasetKey;
 
 
 	public IDbConnection LiveConnection
@@ -259,28 +254,26 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
-				if (Connection == null || _ConnectionStamp == RctManager.Stamp)
+				if (Connection == null || _RctStamp == RctManager.Stamp)
 				{
-					_ConnectionStamp = RctManager.Stamp;
+					_RctStamp = RctManager.Stamp;
 					return Connection;
 				}
 
-				IDbConnection connection = _ConnInfo.LiveConnection;
+				IDbConnection connection = _MdlCsb.LiveConnection;
 
 				if (connection != null)
 				{
-					_ConnectionStamp = RctManager.Stamp;
+					_RctStamp = RctManager.Stamp;
 					return connection;
 				}
 
 				// If we're here it's a reset.
 
-				Csb csaRegistered = RctManager.CloneRegistered(_ConnInfo);
+				Csb csaRegistered = RctManager.CloneRegistered(_MdlCsb);
 
-				ConnInfo = (IBsConnectionInfo)new ConnectionInfoPropertyAgent();
-
-				_ConnInfo.Parse(csaRegistered.ConnectionString);
-				_ConnInfo.CreateDataConnection();
+				LiveMdlCsb = new ModelCsb(csaRegistered);
+				_MdlCsb.CreateDataConnection();
 
 				return Connection;
 			}
@@ -288,17 +281,18 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	}
 
 
-	public object LockObject => _LockObject;
+	public Version ServerVersion => _MdlCsb?.ServerVersion ?? new ();
+
 
 	public virtual Color StatusBarColor
 	{
 		get
 		{
-			IBsConnectionInfo connectionInfo = ConnInfo;
+			IBsModelCsb modelCsb = MdlCsb;
 			Color result = PersistentSettings.EditorStatusBarBackgroundColor;
-			if (connectionInfo != null && UseCustomColor(connectionInfo))
+			if (modelCsb != null && UseCustomColor(modelCsb))
 			{
-				result = GetCustomColor(connectionInfo);
+				result = GetCustomColor(modelCsb);
 			}
 
 			return result;
@@ -306,7 +300,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	}
 
 
-	public IDbTransaction Transaction => _ConnInfo?.DataTransaction;
+	public IDbTransaction Transaction => _MdlCsb?.DataTransaction;
 
 
 	public bool TtsActive => Transaction != null;
@@ -346,37 +340,37 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	/// does not exist or is not publicly complete, calls the connection dialog.
 	/// </summary>
 	/// <param name="ci">
-	/// Outputs the new ConnInfo or null if ConnInfo is unchanged or the request was
+	/// Outputs the new MdlCsb or null if MdlCsb is unchanged or the request was
 	/// cancelled.
 	/// </param>
 	/// <returns>True is processing may continue else false.</returns>
 	// ---------------------------------------------------------------------------------
-	private bool AcquireValidConnectionInfo(out IBsConnectionInfo ci)
+	private bool AcquireValidConnectionInfo(out IBsModelCsb mdlCsb)
 	{
-		bool isComplete = ConnInfo != null && ConnInfo.IsComplete;
+		bool isComplete = MdlCsb?.IsComplete ?? false;
 
 		if (isComplete)
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "ConnInfo is not null");
-			ci = null;
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "MdlCsb is not null");
+			mdlCsb = null;
 			return true;
 		}
 
-		bool isCompletePublic = ConnInfo != null && ConnInfo.IsCompletePublic;
+		bool isCompletePublic = MdlCsb != null && MdlCsb.IsCompletePublic;
 
 		if (isCompletePublic)
 		{
-			ci = PromptForCompleteConnection();
+			mdlCsb = PromptForCompleteConnection();
 		}
 		else
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "ConnInfo is null. Prompting");
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "MdlCsb is null. Prompting");
 
-			ci = PromptForConnection();
+			mdlCsb = PromptForConnection();
 		}
 
 
-		if (ci == null)
+		if (mdlCsb == null)
 			return false;
 
 
@@ -392,14 +386,14 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	/// does not exist or is not publicly complete, calls the connection dialog.
 	/// </summary>
 	/// <param name="ci">
-	/// Outputs the new ConnInfo or null if ConnInfo is unchanged or the request was
+	/// Outputs the new MdlCsb or null if MdlCsb is unchanged or the request was
 	/// cancelled.
 	/// </param>
 	/// <returns>True is processing may continue else false.</returns>
 	// ---------------------------------------------------------------------------------
-	private async Task<IBsConnectionInfo> AcquireValidConnectionInfoAsync()
+	private async Task<IBsModelCsb> AcquireValidConnectionInfoAsync()
 	{
-		bool isComplete = ConnInfo != null && ConnInfo.IsComplete;
+		bool isComplete = MdlCsb != null && MdlCsb.IsComplete;
 
 		if (isComplete)
 			return null;
@@ -407,33 +401,30 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 
-		bool isCompletePublic = ConnInfo != null && ConnInfo.IsCompletePublic;
-		IBsConnectionInfo ci;
+		bool isCompletePublic = MdlCsb?.IsCompletePublic ?? false;
+		IBsModelCsb mdlCsb;
 
 		if (isCompletePublic)
-			ci = PromptForCompleteConnection();
+			mdlCsb = PromptForCompleteConnection();
 		else
-			ci = PromptForConnection();
+			mdlCsb = PromptForConnection();
 
-		return ci;
+		return mdlCsb;
 	}
 
 
 
-	public void BeginTransaction(IsolationLevel isolationLevel) => _ConnInfo.BeginTransaction(isolationLevel);
+	public void BeginTransaction(IsolationLevel isolationLevel) => _MdlCsb.BeginTransaction(isolationLevel);
 
 
-	public bool CloseConnection() => _ConnInfo == null || _ConnInfo.CloseConnection();
+	public bool CloseConnection() => _MdlCsb == null || _MdlCsb.CloseConnection();
 
 
-	public abstract bool CommitTransactions();
+	public abstract bool CommitTransactions(bool validate);
 
 
 
-	public abstract IBsBatchExecutionHandler CreateBatchExecutionHandler();
-
-
-	public void DisposeTransaction(bool force) => _ConnInfo?.DisposeTransaction(force);
+	public void DisposeTransaction(bool force) => _MdlCsb?.DisposeTransaction(force);
 
 
 
@@ -449,15 +440,15 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	// ---------------------------------------------------------------------------------
 	public IDbConnection EnsureVerifiedOpenConnection()
 	{
-		if (ConnInfo != null && ConnInfo.IsComplete)
+		if (MdlCsb != null && MdlCsb.IsComplete)
 		{
 			try
 			{
 				lock (_LockObject)
 				{
 					if (Connection == null)
-						ConnInfo.CreateDataConnection();
-					ConnInfo.OpenOrVerifyConnection();
+						MdlCsb.CreateDataConnection();
+					MdlCsb.OpenOrVerifyConnection();
 				}
 			}
 			catch (Exception ex)
@@ -472,20 +463,20 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
 
-		if (!AcquireValidConnectionInfo(out IBsConnectionInfo ci))
+		if (!AcquireValidConnectionInfo(out IBsModelCsb mdlCsb))
 			return null;
 
 
-		if (ci != null)
+		if (mdlCsb != null)
 		{
-			// We have a new ConnInfo.
+			// We have a new MdlCsb.
 
 			lock (_LockObject)
 			{
-				ConnInfo = ci;
+				LiveMdlCsb = mdlCsb;
 
-				_ConnInfo.CreateDataConnection();
-				_ConnInfo.OpenOrVerifyConnection();
+				_MdlCsb.CreateDataConnection();
+				_MdlCsb.OpenOrVerifyConnection();
 			}
 
 		}
@@ -505,17 +496,17 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	// ---------------------------------------------------------------------------------
 	public async Task<IDbConnection> EnsureVerifiedOpenConnectionAsync()
 	{
-		if (ConnInfo != null && ConnInfo.IsComplete)
+		if (MdlCsb != null && MdlCsb.IsComplete)
 		{
 			try
 			{
 				lock (_LockObject)
 				{
 					if (Connection == null)
-						ConnInfo.CreateDataConnection();
+						MdlCsb.CreateDataConnection();
 				}
 
-				_ = await ConnInfo.OpenOrVerifyConnectionAsync();
+				_ = await MdlCsb.OpenOrVerifyConnectionAsync();
 			}
 			catch (Exception ex)
 			{
@@ -529,7 +520,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
 
-		IBsConnectionInfo ci = await AcquireValidConnectionInfoAsync();
+		IBsModelCsb mdlCsb = await AcquireValidConnectionInfoAsync();
 
 		if (ThreadHelper.CheckAccess())
 		{
@@ -537,27 +528,29 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 
 
-		if (ci == null)
+		if (mdlCsb == null)
 			return null;
 
 
-		// We have a new ConnInfo.
+		// We have a new MdlCsb.
 
 		lock (_LockObject)
 		{
-			ConnInfo = ci;
+			LiveMdlCsb = mdlCsb;
 
-			_ConnInfo.CreateDataConnection();
+			_MdlCsb.CreateDataConnection();
 		}
 
-		_ = await _ConnInfo.OpenOrVerifyConnectionAsync();
+		_ = await _MdlCsb.OpenOrVerifyConnectionAsync();
+
+		RaiseInvalidateToolbar();
 
 		return Connection;
 	}
 
 
 
-	private static Color GetCustomColor(IBsConnectionInfo ci)
+	private static Color GetCustomColor(IBsModelCsb ci)
 	{
 		Color result = _SDefaultColor;
 		/*
@@ -606,7 +599,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				stringBuilder.Append(".");
 			}
 
-			stringBuilder.Append(DatasetId);
+			stringBuilder.Append(DatasetDisplayName);
 		}
 
 		if ((PersistentSettings.EditorStatusTabTextIncludeLoginName || ignoreSettings) && !string.IsNullOrEmpty(DisplayUserName))
@@ -635,8 +628,8 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		int result = 0;
 
-		if (ConnInfo != null)
-			return ConnInfo.CommandTimeout;
+		if (MdlCsb != null)
+			return MdlCsb.CommandTimeout;
 
 		return result;
 	}
@@ -650,11 +643,9 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 
 
-	public abstract Version GetServerVersion();
 
 
-
-	public bool GetUpdateTransactionsStatus(bool suppressExceptions)
+	public bool GetUpdatedTransactionsStatus(bool suppressExceptions)
 	{
 		bool hasTransactions = false;
 
@@ -662,7 +653,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		try
 		{
-			hasTransactions = _ConnInfo != null && _ConnInfo.HasTransactions;
+			hasTransactions = _MdlCsb != null && _MdlCsb.HasTransactions;
 		}
 		catch
 		{
@@ -684,15 +675,15 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		lock (_LockObject)
 		{
-			IBsConnectionInfo ci = PromptForConnection();
+			IBsModelCsb mdlCsb = PromptForConnection();
 
-			if (ci == null)
+			if (mdlCsb == null)
 				return false;
 
-			ConnInfo = ci;
+			LiveMdlCsb = mdlCsb;
 
-			_ConnInfo.CreateDataConnection();
-			_ConnInfo.OpenOrVerifyConnection();
+			_MdlCsb.CreateDataConnection();
+			_MdlCsb.OpenOrVerifyConnection();
 
 			return true;
 		}
@@ -700,13 +691,13 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 
 
-	private IBsConnectionInfo PromptForCompleteConnection()
+	private IBsModelCsb PromptForCompleteConnection()
 	{
 		Diag.ThrowIfNotOnUIThread();
 
 		// Tracer.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()");
 
-		if (_ConnInfo == null)
+		if (_MdlCsb == null)
 			return null;
 
 
@@ -723,18 +714,17 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				{
 					string connectionString = connectionDialogHandler.CompleteConnectionString;
 
-					if (Csb.IsComplete(connectionString))
+					if (Csb.GetIsComplete(connectionString))
 					{
 						// Tracer.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()", "ConnectionString result: {0}.", connectionString);
 						connectionString = RctManager.AdornConnectionStringFromRegistration(connectionString);
 
 						RctManager.UpdateRegisteredConnection(connectionString, EnConnectionSource.Session, true);
 
-						IBsConnectionInfo ci = (IBsConnectionInfo)new ConnectionInfoPropertyAgent();
+						Csb csb = RctManager.CloneRegistered(connectionString, EnRctKeyType.ConnectionString);
 
-						ci.Parse(connectionString);
+						return new ModelCsb(csb);
 
-						return ci;
 					}
 				}
 			}
@@ -750,7 +740,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 
 
-	private IBsConnectionInfo PromptForConnection()
+	private IBsModelCsb PromptForConnection()
 	{
 		Diag.ThrowIfNotOnUIThread();
 
@@ -764,20 +754,20 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			{
 				connectionDialogHandler.AddSources(new Guid(VS.AdoDotNetTechnologyGuid));
 
-				if (ConnInfo != null)
+				if (MdlCsb != null)
 				{
 					if (RctManager.ShutdownState)
 						return null;
 
-					string connectionString = RctManager.AdornConnectionStringFromRegistration(ConnInfo.ConnectionString);
+					string connectionString = RctManager.AdornConnectionStringFromRegistration(MdlCsb.ConnectionString);
 
-					connectionDialogHandler.Title = "Modify SqlEditor Connection";
+					connectionDialogHandler.Title = ControlsResources.Strategy_ConnectionPromptModify;
 					if (!string.IsNullOrEmpty(connectionString))
 						connectionDialogHandler.EncryptedConnectionString = DataProtection.EncryptString(connectionString);
 				}
 				else
 				{
-					connectionDialogHandler.Title = "Configure SqlEditor Connection";
+					connectionDialogHandler.Title = ControlsResources.Strategy_ConnectionPromptConfigure;
 				}
 
 				if (connectionDialogHandler.ShowDialog())
@@ -787,10 +777,8 @@ public abstract class AbstractConnectionStrategy : IDisposable
 					if (RctManager.ShutdownState)
 						return null;
 
-					IBsConnectionInfo ci = (IBsConnectionInfo)new ConnectionInfoPropertyAgent();
-					ci.Parse(connectionString);
-
-					return ci;
+					Csb csb = RctManager.CloneRegistered(connectionString, EnRctKeyType.ConnectionString);
+					return new ModelCsb(csb);
 				}
 			}
 			catch (Exception ex)
@@ -804,29 +792,26 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	}
 
 
-	public abstract void ResetAndEnableConnectionStatistics();
-
-
 
 	public virtual void ResetConnection()
 	{
 		lock (_LockObject)
 		{
-			_ConnectionStamp = -1;
-			ConnInfo = null;
+			_RctStamp = long.MinValue;
+			LiveMdlCsb = null;
 		}
 	}
 
 
 
-	public abstract bool RollbackTransactions();
+	public abstract bool RollbackTransactions(bool validate);
 
 
 
 	protected abstract void UpdateStateForCurrentConnection(ConnectionState currentState, ConnectionState previousState);
 
 
-	private static bool UseCustomColor(IBsConnectionInfo ci)
+	private static bool UseCustomColor(IBsModelCsb ci)
 	{
 		return false;
 		/*
@@ -870,14 +855,14 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	/// Returns false if an event has already been entered else true if it is safe to enter.
 	/// </returns>
 	// -------------------------------------------------------------------------------------------
-	public bool EventEnter(bool increment = true, bool force = false)
+	public bool EventEnter(bool test = false, bool force = false)
 	{
 		lock (_LockObject)
 		{
 			if (_EventCardinal != 0 && !force)
 				return false;
 
-			if (increment)
+			if (!test)
 				_EventCardinal++;
 		}
 
@@ -944,6 +929,9 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 
 
+	protected abstract void RaiseInvalidateToolbar();
+
+
 	#endregion Event Handling
 
 
@@ -957,6 +945,8 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	public delegate void DatabaseChangedDelegate(object sender, EventArgs args);
 
+
+	protected abstract bool RaiseNotifyConnectionState(EnNotifyConnectionState state, bool ttsDiscarded);
 
 	#endregion Sub-Classes
 

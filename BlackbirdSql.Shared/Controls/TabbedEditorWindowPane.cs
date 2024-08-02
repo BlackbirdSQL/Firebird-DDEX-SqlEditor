@@ -79,11 +79,13 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 			splitViewContainer.SwapButtons();
 			splitViewContainer.PathStripVisibleInSplitMode = false;
 			TabbedEditorUiCtl.TabActivatedEvent += TabActivatedHandler;
-			AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
-			if (auxDocData != null && auxDocData.QryMgr != null)
+
+			QueryManager qryMgr = QryMgr;
+
+			if (qryMgr != null)
 			{
-				auxDocData.QryMgr.StatusChangedEvent += OnUpdateTooltipAndWindowCaption;
-				auxDocData.QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
+				qryMgr.StatusChangedEvent += OnUpdateTooltipAndWindowCaption;
+				qryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
 			}
 
 			UpdateWindowCaption();
@@ -113,6 +115,9 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 	private PropertiesWindowManager _ProperyWindowManager;
 
+
+
+
 	private FindTargetAdapter VSFindTargetAdapter { get; set; }
 
 
@@ -126,7 +131,6 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 	public TabbedEditorUIControl TabbedEditorUiCtl => (TabbedEditorUIControl)TabbedEditorControl;
 
-	public string DocumentMoniker => GetDocumentMoniker();
 
 	public bool IsResultsGridTabVisible => GetSqlEditorResultsTab().IsVisible;
 
@@ -396,17 +400,17 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
-			if (vsWindowFrame == null)
+			IVsWindowFrame frame = Frame;
+			if (frame == null)
 				return null;
 
-			string text = Path.GetFileNameWithoutExtension(GetDocumentMoniker(vsWindowFrame));
+			string text = Path.GetFileNameWithoutExtension(GetDocumentMoniker(frame));
 
-			___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out object pHierarchy));
+			___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out object pHierarchy));
 			if (pHierarchy is not IVsHierarchy vsHierarchy)
 				return text;
 
-			___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out object pItemId));
+			___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out object pItemId));
 			if ((int)pItemId < 0)
 				return text;
 
@@ -418,22 +422,6 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 			return text;
 		}
-	}
-
-
-
-	private string GetDocumentMoniker(IVsWindowFrame frame = null)
-	{
-		Diag.ThrowIfNotOnUIThread();
-
-		frame ??= GetService(typeof(SVsWindowFrame)) as IVsWindowFrame;
-
-		if (frame == null)
-			return null;
-
-		frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar);
-
-		return pvar as string;
 	}
 
 
@@ -501,7 +489,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 
 
-		AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+		AuxilliaryDocData auxDocData = AuxDocData;
 
 		if (auxDocData == null)
 			return false;
@@ -644,7 +632,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 	public override bool UpdateTabsButtonText(QueryExecutionCompletedEventArgs args)
 	{
-		if (!base.UpdateTabsButtonText(args))
+		if (args.SyncCancel || !base.UpdateTabsButtonText(args))
 			return false;
 
 		if (!ThreadHelper.CheckAccess())
@@ -660,7 +648,13 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 	private async Task<bool> UpdateTabsButtonTextAsync(QueryExecutionCompletedEventArgs args)
 	{
+		if (args.SyncCancel)
+			return true;
+
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		if (ApcManager.SolutionClosing)
+			return true;
 
 		return UpdateTabsButtonTextImpl(args);
 	}
@@ -798,33 +792,34 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 	}
 
-	protected override int HandleCloseEditorOrDesigner()
+
+
+	protected override int HandleCloseEditorOrDesigner(AuxilliaryDocData auxDocData)
 	{
 		// Tracer.Trace(GetType(), "HandleCloseEditorOrDesigner()");
 
-		int result = 0;
+		if (!auxDocData.RequestDeactivateQuery())
+			return VSConstants.OLE_E_PROMPTSAVECANCELLED;
 
-		if (Cmd.ShouldStopCloseDialog(((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData), GetType()))
-		{
-			result = VSConstants.OLE_E_PROMPTSAVECANCELLED;
-		}
-
-		return result;
+		return VSConstants.S_OK;
 	}
+
+
 
 	protected override int SaveFiles(ref uint pgrfSaveOptions)
 	{
 		// Tracer.Trace(GetType(), "SaveFiles()");
 
-		AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
-
-		if (pgrfSaveOptions == (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave && auxDocData.SuppressSavePrompt)
+		if (pgrfSaveOptions == (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave)
 		{
-			pgrfSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
+			if (AuxDocData.SuppressSavePrompt)
+				pgrfSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
 		}
 
 		return base.SaveFiles(ref pgrfSaveOptions);
 	}
+
+
 
 	protected override void OnShow(int fShow)
 	{
@@ -835,9 +830,40 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 			SetupUI();
 			_IsFirstTimeToShow = false;
 
+			IVsWindowFrame frame = Frame;
+			AuxilliaryDocData auxDocData = AuxDocData;
+			uint cookie = 0;
+			uint auxDocDataCookie = auxDocData.DocCookie;
+			string moniker = GetDocumentMoniker(frame);
+			string auxDocDataMoniker = auxDocData.InternalMoniker;
+
+			// Tracer.Trace(GetType(), "OnShow()",
+			//	"PrimaryCookie: {0}, AuxDocData.DocCookie: {1}, DocumentMoniker: {2}, AuxDocData.InternalMoniker: {3}.",
+			//	GetPrimaryCookie(frame), auxDocDataCookie, moniker, auxDocDataMoniker);
+
+
+			if (auxDocDataCookie == 0)
+			{
+				cookie = GetPrimaryCookie(frame);
+
+				if (cookie == 0)
+					Diag.ThrowException(new ApplicationException($"Failed to get Primary DocCookie for {moniker}."));
+
+				auxDocData.DocCookie = cookie;
+			}
+
+			if (string.IsNullOrEmpty(moniker))
+			{
+				Diag.ThrowException(new ApplicationException($"DocumentMoniker is null for document cookie {(cookie == 0 ? GetPrimaryCookie(frame) : cookie)}."));
+			}
+
+			if (string.IsNullOrEmpty(auxDocDataMoniker) || !moniker.Equals(auxDocDataMoniker))
+			{
+				auxDocData.InternalMoniker = moniker;
+			}
+
 			if (_AutoExecute)
 			{
-				_AutoExecute = false;
 				AsyncAutoExecuteQuery();
 			}
 			else
@@ -852,6 +878,8 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 			}
 		}
 	}
+
+
 
 	public override int OnExec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
@@ -886,7 +914,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 		/* No extended command handlers
 		 * 
-		AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+		AuxilliaryDocData auxDocData = AuxDocData;
 
 		if (auxDocData != null && auxDocData.StrategyFactory != null)
 		{
@@ -901,6 +929,8 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 		return base.OnExec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 	}
+
+
 
 	public override int OnQueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
@@ -937,7 +967,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 		/* No extended command handlers
 		 * 
-		AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+		AuxilliaryDocData auxDocData = AuxDocData;
 
 		if (auxDocData != null && auxDocData.StrategyFactory != null)
 		{
@@ -952,12 +982,16 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 		return base.OnQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 	}
 
+
+
 	public string GetSelectedCodeEditorText()
 	{
 		IVsTextView codeEditorTextView = GetCodeEditorTextView();
 		___(codeEditorTextView.GetSelectedText(out string pbstrText));
 		return pbstrText;
 	}
+
+
 
 	public string GetAllCodeEditorText()
 	{
@@ -1139,8 +1173,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 			if (sqlTextSpan != null && !string.IsNullOrEmpty(sqlTextSpan.Text))
 			{
-				AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
-				QueryManager qryMgr = auxDocData.QryMgr;
+				QueryManager qryMgr = QryMgr;
 
 				// Tracer.Trace(GetType(), "AsyncExecuteQuery", "calling QryMgr.AsyncExecute()");
 
@@ -1159,10 +1192,15 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 	{
 		// Tracer.Trace(GetType(), "OnExec()", "ExecutionType: {0}.", executionType);
 
+		if (!_AutoExecute)
+			return;
+
+		_AutoExecute = false;
+
 		// ----------------------------------------------------------------------------------- //
 		// ******************** Execution Point (0) - AbstractEditorFactory.ExecuteQuery() ******************** //
 		// ----------------------------------------------------------------------------------- //
-		_ = Task.Run(() => AutoExecuteQueryAsync(5));
+		_ = Task.Run(() => AutoExecuteQueryAsync(0));
 	}
 
 
@@ -1173,9 +1211,11 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 		// Give editor time to breath.
 		if (delay > 0)
-			System.Threading.Thread.Sleep(delay);
+			Thread.Sleep(delay);
 
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		UpdateWindowCaption();
 
 		AsyncExecuteQuery(EnSqlExecutionType.QueryOnly);
 
@@ -1209,11 +1249,12 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 			_ResultsControl?.Dispose();
 			_ResultsControl = null;
 
-			AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
-			if (auxDocData != null && auxDocData.QryMgr != null)
+			QueryManager qryMgr = QryMgr;
+
+			if (qryMgr != null)
 			{
-				auxDocData.QryMgr.StatusChangedEvent -= OnUpdateTooltipAndWindowCaption;
-				auxDocData.QryMgr.ExecutionCompletedEvent -= OnQueryExecutionCompleted;
+				qryMgr.StatusChangedEvent -= OnUpdateTooltipAndWindowCaption;
+				qryMgr.ExecutionCompletedEvent -= OnQueryExecutionCompleted;
 			}
 
 			_ProperyWindowManager?.Dispose();
@@ -1296,7 +1337,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 	public void CustomizeTabsForResultsSetting(bool isParseOnly)
 	{
 		EnsureTabs(false);
-		AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+		AuxilliaryDocData auxDocData = AuxDocData;
 		EnSqlOutputMode sqlExecutionMode = auxDocData.SqlOutputMode;
 		AbstractEditorTab sqlEditorResultsTab = GetSqlEditorResultsTab();
 		GetSqlEditorMessageTab();
@@ -1376,20 +1417,19 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 	private void SetupUI()
 	{
-		AuxilliaryDocData auxDocData;
-
 		try
 		{
 			TabbedEditorUiCtl.SuspendLayout();
 
+			AuxilliaryDocData auxDocData;
+
 			try
 			{
-				auxDocData =
-					((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData)
+				auxDocData = AuxDocData
 					?? throw new NullReferenceException("(AuxilliaryDocData)auxDocData");
 
-				if (auxDocData.StrategyFactory == null)
-					throw new NullReferenceException("auxDocData.StrategyFactory");
+				// if (auxDocData.StrategyFactory == null)
+				//	throw new NullReferenceException("auxDocData.StrategyFactory");
 			}
 			catch (Exception ex)
 			{
@@ -1401,7 +1441,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 			uint menuId;
 
 
-			switch (auxDocData.StrategyFactory.Mode)
+			switch (auxDocData.Mode)
 			{
 				case EnEditorMode.CustomOnline:
 					menuId = (uint)EnCommandSet.ToolbarIdOnlineWindow;
@@ -1456,11 +1496,11 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
-		if (vsWindowFrame == null)
+		IVsWindowFrame frame = Frame;
+		if (frame == null)
 			return;
 
-		___(vsWindowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_EditorCaption, ""));
+		___(frame.SetProperty((int)__VSFPROPID.VSFPROPID_EditorCaption, ""));
 		string text = GetAdditionalTooltipOrWindowCaption(toolTip: false);
 		string text2 = " - ";
 		if (string.IsNullOrEmpty(text))
@@ -1474,43 +1514,42 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 			text = "%2" + text2 + text;
 		}
 
-		string moniker = GetDocumentMoniker(vsWindowFrame);
+		string moniker = GetDocumentMoniker(frame);
 
 		if (moniker != null && moniker.StartsWith(Path.GetTempPath(), StringComparison.InvariantCultureIgnoreCase))
 		{
-			text = Resources.QueryCaptionGlyphFormat.FmtRes(SystemData.C_SessionFileGlyph, text);
+			text = Resources.QueryCaptionGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, text);
 		}
 
-		___(vsWindowFrame.SetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, text));
+		___(frame.SetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, text));
 	}
 
 	private void UpdateToolTip()
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
-		if (vsWindowFrame == null)
+		IVsWindowFrame frame = Frame;
+		if (frame == null)
 			return;
 
-		___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out object pHierarchy));
+		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out object pHierarchy));
 		if (pHierarchy is not IVsHierarchy vsHierarchy)
 			return;
 
-		___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out object pItemId));
+		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out object pItemId));
 		if ((int)pItemId < 0)
 			return;
 		uint itemid = Convert.ToUInt32(pItemId, CultureInfo.InvariantCulture);
 
 		// vsHierarchy.SetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ShowOnlyItemCaption, true);
 
-		AuxilliaryDocData auxDocData = null; // ((IBEditorsPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
+		AuxilliaryDocData auxDocData = null; // AuxDocData;
 
 		string text;
 
-		// There are no Database projects for the Firebird port so this will never execute
-		if (auxDocData != null && auxDocData.StrategyFactory != null
-			&& (auxDocData.StrategyFactory.Mode == EnEditorMode.CustomOnline
-			|| auxDocData.StrategyFactory.Mode == EnEditorMode.CustomProject))
+		// There are no Database projects for the FB-SQL port so this will never execute
+		if (auxDocData != null && (auxDocData.Mode == EnEditorMode.CustomOnline
+			|| auxDocData.Mode == EnEditorMode.CustomProject))
 		{
 			text = GetAdditionalTooltipOrWindowCaption(toolTip: true);
 			string text2 = Environment.NewLine;
@@ -1519,12 +1558,12 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 				text2 = string.Empty;
 			}
 
-			if (auxDocData.StrategyFactory.Mode == EnEditorMode.CustomProject)
+			if (auxDocData.Mode == EnEditorMode.CustomProject)
 			{
-				// Never happen - projects not supported in Firebird port.
-				text = GetDocumentMoniker(vsWindowFrame) + text2 + text;
+				// Never happen - projects not supported in FB-SQL port.
+				text = GetDocumentMoniker(frame) + text2 + text;
 			}
-			else if (auxDocData.StrategyFactory.Mode == EnEditorMode.CustomOnline)
+			else if (auxDocData.Mode == EnEditorMode.CustomOnline)
 			{
 				// Never happen - online not supported ATM
 				___(vsHierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_Name, out object pName));
@@ -1533,7 +1572,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 		}
 		else
 		{
-			text = GetDocumentMoniker(vsWindowFrame);
+			text = GetDocumentMoniker(frame);
 		}
 
 		vsHierarchy.SetProperty(itemid, (int)__VSHPROPID4.VSHPROPID_DescriptiveName, text);
@@ -1543,10 +1582,10 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 	private string GetAdditionalTooltipOrWindowCaption(bool toolTip)
 	{
 		string text = string.Empty;
-		AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(DocData);
-		if (auxDocData != null && auxDocData.QryMgr != null)
+		QueryManager qryMgr = QryMgr;
+
+		if (qryMgr != null)
 		{
-			QueryManager qryMgr = auxDocData.QryMgr;
 			text = qryMgr.Strategy.GetEditorCaption(toolTip);
 			// IBSqlEditorUserSettings current = SqlEditorUserSettings.Instance.Current;
 

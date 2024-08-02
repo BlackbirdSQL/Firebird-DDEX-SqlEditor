@@ -40,7 +40,7 @@ public sealed class QEResultSet : IDisposable, IBsGridStorage
 
 	private bool _IsStopping;
 
-	private StorageNotifyDelegate _NotifyDelegate;
+	private StorageNotifyDelegate _StorageNotifyEventAsync;
 
 	// private long _M_curRowsNum;
 
@@ -187,7 +187,7 @@ public sealed class QEResultSet : IDisposable, IBsGridStorage
 		}
 	}
 
-	public event MoreRowsAvailableEventHandler MoreRowsAvailableEvent;
+	public event MoreRowsAvailableEventHandler MoreRowsAvailableEventAsync;
 
 	private QEResultSet()
 	{
@@ -251,8 +251,9 @@ public sealed class QEResultSet : IDisposable, IBsGridStorage
 
 
 		// _M_curRowsNum = 0L;
-		_NotifyDelegate = OnStorageNotify;
-		_QeStorage.StorageNotify += _NotifyDelegate;
+		_StorageNotifyEventAsync = OnStorageNotifyAsync;
+		_QeStorage.StorageNotifyEventAsync += _StorageNotifyEventAsync;
+
 		if (_IsStopping || cancelToken.IsCancellationRequested)
 		{
 			_IsStopping = false;
@@ -281,9 +282,9 @@ public sealed class QEResultSet : IDisposable, IBsGridStorage
 		{
 			if (_QeStorage != null)
 			{
-				if (_NotifyDelegate != null)
+				if (_StorageNotifyEventAsync != null)
 				{
-					_QeStorage.StorageNotify -= _NotifyDelegate;
+					_QeStorage.StorageNotifyEventAsync -= _StorageNotifyEventAsync;
 				}
 
 				_QeStorage.Dispose();
@@ -525,22 +526,22 @@ public sealed class QEResultSet : IDisposable, IBsGridStorage
 		return false;
 	}
 
-	private void OnStorageNotify(long storageRowCount, bool storedAllData)
+	private async Task<bool> OnStorageNotifyAsync(long storageRowCount, bool storedAllData, CancellationToken cancelToken)
 	{
-		if (MoreRowsAvailableEvent != null)
+		if (MoreRowsAvailableEventAsync != null && !cancelToken.IsCancellationRequested)
 		{
-			_CachedMoreInfoEventArgs.SetEventInfo(storedAllData, storageRowCount);
-			MoreRowsAvailableEvent(this, _CachedMoreInfoEventArgs);
+			_CachedMoreInfoEventArgs.SetEventInfo(storedAllData, storageRowCount, cancelToken);
+			await MoreRowsAvailableEventAsync(this, _CachedMoreInfoEventArgs);
 			// _M_curRowsNum = storageRowCount;
 		}
 
 
-		if (storedAllData)
+		if (storedAllData || cancelToken.IsCancellationRequested)
 		{
 			lock (_LockLocal)
-			{
 				_StoredAllData = true;
-			}
 		}
+
+		return !cancelToken.IsCancellationRequested && !storedAllData;
 	}
 }

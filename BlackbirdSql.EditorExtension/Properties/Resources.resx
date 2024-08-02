@@ -209,6 +209,9 @@
   <data name="NewQueryBaseName" xml:space="preserve">
     <value>NewQuery</value>
   </data>
+  <data name="QueryGlyphFormat" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
   <data name="ResultsEditorFactory_Caption" xml:space="preserve">
     <value>FBSQL Results Window</value>
   </data>

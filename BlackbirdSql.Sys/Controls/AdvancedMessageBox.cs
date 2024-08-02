@@ -87,8 +87,6 @@ public partial class AdvancedMessageBox : Form
 	private const string C_AdvancedKey = "AdvancedInformation.";
 	private const string C_HttpPrefixKey = "HTTP";
 	// private const int C_MaxAdditionalPanelHeight = 150;
-	// private const int C_WM_USER = 1024;
-	private const int C_WM_GETDLGID = 7690;
 
 
 	#endregion Constants
@@ -1665,7 +1663,7 @@ public partial class AdvancedMessageBox : Form
 	[SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
 	protected override void WndProc(ref Message m)
 	{
-		if (m.Msg == C_WM_GETDLGID)
+		if (m.Msg == Native.WM_GETDLGID)
 		{
 			m.Result = (IntPtr)10007;
 		}
