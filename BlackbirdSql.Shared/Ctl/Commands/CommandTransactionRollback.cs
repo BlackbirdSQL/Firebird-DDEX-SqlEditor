@@ -38,7 +38,7 @@ public class CommandTransactionRollback : AbstractCommand
 		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
-		StoredAuxDocData?.RollbackTransactions();
+		StoredAuxDocData?.RollbackTransactions(true);
 
 		return VSConstants.S_OK;
 

@@ -77,7 +77,7 @@ public class CommandDatabaseSelect : AbstractCommand
 	{
 		// SelectedValue changed, probably by user from dropdown.
 
-		if (ExecutionLocked || !RequestDeactivateQuery(Resources.MsgQueryAbort_UncommittedTransactions))
+		if (ExecutionLocked || !CanDisposeTransaction(Resources.ExChangeConnectionCaption))
 			return VSConstants.S_OK;
 
 		string selectedQualifiedName = (string)Marshal.GetObjectForNativeVariant(pvaIn);

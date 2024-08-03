@@ -550,7 +550,7 @@ public sealed class AuxilliaryDocData
 
 			if (QryMgr.IsExecuting)
 				QryMgr.Cancel(true);
-			RollbackTransactions();
+			RollbackTransactions(false);
 		}
 		else if (QryMgr.HasTransactions)
 		{
@@ -583,7 +583,7 @@ public sealed class AuxilliaryDocData
 
 				case DialogResult.No:
 
-					RollbackTransactions();
+					RollbackTransactions(false);
 					break;
 			}
 		}
@@ -646,7 +646,7 @@ public sealed class AuxilliaryDocData
 		{
 			if (auxDocData.QryMgr.IsExecuting)
 				auxDocData.QryMgr.Cancel(true);
-			auxDocData.RollbackTransactions();
+			auxDocData.RollbackTransactions(false);
 		}
 
 		return true;
@@ -718,7 +718,7 @@ public sealed class AuxilliaryDocData
 			case DialogResult.No:
 
 				foreach (AuxilliaryDocData auxDocData in docs.Keys)
-					auxDocData.RollbackTransactions();
+					auxDocData.RollbackTransactions(false);
 
 				break;
 		}
@@ -729,15 +729,19 @@ public sealed class AuxilliaryDocData
 
 
 
-	public void RollbackTransactions()
+	public void RollbackTransactions(bool validate)
 	{
-		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked
-			|| !QryMgr.GetUpdatedTransactionsStatus(true))
+		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked)
 		{
 			return;
 		}
 
-		QryMgr.RollbackTransactions(false);
+		if (validate && !QryMgr.GetUpdatedTransactionsStatus(true))
+		{
+			return;
+		}
+
+		QryMgr.RollbackTransactions(validate);
 	}
 
 

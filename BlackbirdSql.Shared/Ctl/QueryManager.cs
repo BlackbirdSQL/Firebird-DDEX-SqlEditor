@@ -5,6 +5,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Events;
@@ -655,7 +656,8 @@ public sealed class QueryManager : IBsQueryManager
 		}
 		finally
 		{
-			SetStatusFlag(false, EnQueryStatusFlags.Connecting, false);
+			if (validate)
+				SetStatusFlag(false, EnQueryStatusFlags.Connecting, false);
 			EventLockExit();
 		}
 
