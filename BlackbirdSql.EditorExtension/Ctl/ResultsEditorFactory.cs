@@ -18,7 +18,7 @@ using LibraryData = BlackbirdSql.Shared.LibraryData;
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 
-[Guid(LibraryData.SqlResultsEditorFactoryGuid)]
+[Guid(LibraryData.C_SqlResultsEditorFactoryGuid)]
 [ProvideMenuResource("Menus.ctmenu", 1)]
 // [Name("BlackbirdSql Results")]
 
@@ -30,7 +30,7 @@ public sealed class ResultsEditorFactory : AbstruseEditorFactory
 	}
 
 
-	public override Guid ClsidEditorFactory => new(LibraryData.SqlResultsEditorFactoryGuid);
+	public override Guid ClsidEditorFactory => new(LibraryData.C_SqlResultsEditorFactoryGuid);
 
 	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalViewName,
 		IVsHierarchy hierarchy, uint itemId, IntPtr pExistingDocData, out IntPtr pDocView,

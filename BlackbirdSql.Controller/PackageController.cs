@@ -168,8 +168,16 @@ public sealed class PackageController : AbstractPackageController
 		// Sanity check. Disable events if enabled
 		// UnadviseEvents(false);
 
-		if (Dte == null)
-			Diag.ThrowException(new NullReferenceException(Resources.ExceptionDteIsNull));
+		if (_Dte == null)
+		{
+			_Dte = PackageInstance.GetService<_DTE, DTE>();
+
+			if (_Dte == null)
+			{
+				Diag.DebugDug(new NullReferenceException(Resources.ExceptionDteIsNull));
+				return false;
+			}
+		}
 
 		// If it's null there's an issue. Possibly we've come in too early
 		if (VsSolution == null)
@@ -183,7 +191,6 @@ public sealed class PackageController : AbstractPackageController
 		if (!_EventsAdvisedUnsafe)
 		{
 			_EventsAdvisedUnsafe = true;
-
 
 			// Tracer.Trace(GetType(), "AdviseUnsafeEventsImpl()", "SolutionEvents.");
 

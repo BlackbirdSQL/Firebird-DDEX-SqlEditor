@@ -109,7 +109,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		bool autoExecute, string physicalViewName = null)
 	{
 		if (editorFactory == Guid.Empty)
-			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
+			editorFactory = new(SystemData.C_MandatedSqlEditorFactoryGuid);
 
 		EnModelObjectType elementType = objectType;
 
@@ -181,7 +181,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 
 			IVsUIShellOpenDocument vsUIShellOpenDocument = ApcManager.EnsureService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
-			Guid rguidEditorType = new(SystemData.MandatedSqlEditorFactoryGuid); 
+			Guid rguidEditorType = new(SystemData.C_MandatedSqlEditorFactoryGuid); 
 			uint[] array = new uint[1];
 			IVsUIHierarchy pHierCaller = null;
 
@@ -239,7 +239,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			RdtManager.InflightMonikerStack = moniker;
 			RdtManager.InflightMonikerCsbTable.Add(moniker, csa);
 
-			OpenAsMiscellaneousFile(tempFilename, filename + NativeDb.Extension, new Guid(SystemData.EditorFactoryGuid),
+			OpenAsMiscellaneousFile(tempFilename, filename + NativeDb.Extension, new Guid(SystemData.C_EditorFactoryGuid),
 				string.Empty, VSConstants.LOGVIEWID_Primary);
 		}
 		catch
@@ -282,7 +282,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			streamWriter.Flush();
 			streamWriter.Close();
 			streamWriter = null;
-			OpenAsMiscellaneousFile(tempFileName, pbstrItemName, new Guid(SystemData.EditorFactoryGuid),
+			OpenAsMiscellaneousFile(tempFileName, pbstrItemName, new Guid(SystemData.C_EditorFactoryGuid),
 				string.Empty, VSConstants.LOGVIEWID_Primary);
 		}
 		finally
@@ -298,7 +298,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		string initialScript, bool executeQuery, bool isClone, string physicalViewName = null)
 	{
 		if (editorFactory == Guid.Empty)
-			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
+			editorFactory = new(SystemData.C_MandatedSqlEditorFactoryGuid);
 
 		EnModelTargetType targetType = EnModelTargetType.QueryScript;
 		EnModelObjectType objectType = EnModelObjectType.NewQuery;
@@ -337,7 +337,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		Diag.ThrowIfNotOnUIThread();
 
 
-		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
+		Guid clsidEditorFactory = new Guid(SystemData.C_EditorFactoryGuid);
 
 		OpenNewQueryEditor(datasetKey, baseName, clsidEditorFactory, initialScript, false, false);
 		
@@ -351,7 +351,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		Diag.ThrowIfNotOnUIThread();
 
 
-		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
+		Guid clsidEditorFactory = new Guid(SystemData.C_EditorFactoryGuid);
 
 		OpenNewQueryEditor(datasetKey, baseName, clsidEditorFactory, initialScript, false, true);
 
@@ -374,7 +374,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		EnModelObjectType objectType;
 		bool autoExecute = false;
 
-		Guid clsidEditorFactory = new Guid(SystemData.EditorFactoryGuid);
+		Guid clsidEditorFactory = new Guid(SystemData.C_EditorFactoryGuid);
 
 		try
 		{

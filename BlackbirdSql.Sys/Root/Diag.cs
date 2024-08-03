@@ -1194,7 +1194,8 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	public static void AsyncOutputPaneWriteLine(string value, bool isException)
 	{
-		_ = Task.Run(() => OutputPaneWriteLineAsync(value, isException));
+		string outputMsg = value;
+		_ = Task.Run(() => OutputPaneWriteLineAsync(outputMsg, isException));
 	}
 
 
@@ -1209,6 +1210,8 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	public static async Task OutputPaneWriteLineAsync(string value, bool isException)
 	{
+		string outputMsg = value;
+
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		if (_OutputPane == null)
@@ -1231,15 +1234,15 @@ public static class Diag
 			throw ex;
 		}
 
-		value ??= string.Empty;
+		outputMsg ??= string.Empty;
 
 
 		try
 		{
 			if (_OutputPane is IVsOutputWindowPaneNoPump noPump)
-				noPump.OutputStringNoPump(value + Environment.NewLine);
+				noPump.OutputStringNoPump(outputMsg + Environment.NewLine);
 			else
-				_OutputPane.OutputStringThreadSafe(value + Environment.NewLine);
+				_OutputPane.OutputStringThreadSafe(outputMsg + Environment.NewLine);
 		}
 		catch (Exception ex)
 		{
@@ -1299,7 +1302,7 @@ public static class Diag
 			}
 
 			if (_OutputPaneGuid == default)
-				_OutputPaneGuid = new(LibraryData.OutputPaneGuid);
+				_OutputPaneGuid = new(LibraryData.C_OutputPaneGuid);
 
 			const int visible = 1;
 			const int clearWithSolution = 1;

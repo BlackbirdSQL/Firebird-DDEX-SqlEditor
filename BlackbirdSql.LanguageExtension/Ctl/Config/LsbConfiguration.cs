@@ -34,9 +34,9 @@ internal static class LsbConfiguration
 
 	private static readonly Dictionary<int, TokenDefinition> definitions;
 
-	public const string Name = PackageData.LanguageLongName;
+	public const string Name = PackageData.C_LanguageLongName;
 
-	public const string Extension = PackageData.Extension;
+	public const string Extension = PackageData.C_Extension;
 
 	private static CommentInfo myCommentInfo;
 

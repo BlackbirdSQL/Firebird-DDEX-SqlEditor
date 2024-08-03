@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using BlackbirdSql.Controller.Ctl.Config;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Extensions;
-using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
 using Microsoft.VisualStudio;
@@ -91,6 +90,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		Controller.OnLoadSolutionOptionsEvent -= OnLoadSolutionOptions;
 		Controller.OnAfterOpenProjectEvent -= OnAfterOpenProject;
+		Controller.OnAfterOpenSolutionEvent -= OnAfterOpenSolution;
 		Controller.OnAfterCloseSolutionEvent -= OnAfterCloseSolution;
 		Controller.OnBeforeDocumentWindowShowEvent -= OnBeforeDocumentWindowShow;
 		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
@@ -128,6 +128,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		Controller.OnLoadSolutionOptionsEvent += OnLoadSolutionOptions;
 		Controller.OnAfterOpenProjectEvent += OnAfterOpenProject;
+		Controller.OnAfterOpenSolutionEvent += OnAfterOpenSolution;
 		Controller.OnAfterCloseSolutionEvent += OnAfterCloseSolution;
 		Controller.OnBeforeDocumentWindowShowEvent += OnBeforeDocumentWindowShow;
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
@@ -234,8 +235,15 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 				if (pair.Key.IsDirty)
 					continue;
 
-				if (!Path.GetExtension(pair.Value.Item2).Equals(".edmx", StringComparison.OrdinalIgnoreCase))
+				try
+				{
+					if (!Path.GetExtension(pair.Value.Item2).Equals(".edmx", StringComparison.OrdinalIgnoreCase))
+						continue;
+				}
+				catch
+				{
 					continue;
+				}
 
 				frame = RdtManager.GetWindowFrame(pair.Value.Item2);
 				if (frame == null)
@@ -261,10 +269,19 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			if (pair.Key.IsDirty)
 				continue;
 
-			if (!closeEdmx && PersistentSettings.AutoCloseOffScreenEdmx
-				&& Path.GetExtension(pair.Value.Item2).Equals(".edmx", StringComparison.OrdinalIgnoreCase))
+			if (!closeEdmx && PersistentSettings.AutoCloseOffScreenEdmx)
 			{
-				continue;
+				try
+				{
+					if (Path.GetExtension(pair.Value.Item2).Equals(".edmx", StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
+				}
+				catch
+				{
+					continue;
+				}
 			}
 
 			// RdtManager.HandsOffDocument(pair.Value.Item1, pair.Value.Item2);
@@ -945,7 +962,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	private void OnLoadSolutionOptions(Stream stream)
 	{
-		// Tracer.Trace(GetType(), "OnLoadSolutionOptions()");
+		// Diag.DebugTrace("OnLoadSolutionOptions()");
 
 		// Register configured connections.
 		// Check for loading here otherwise an exception will be thrown.
@@ -988,15 +1005,26 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnAfterOpenProject()");
 
-		if (!PersistentSettings.IncludeAppConnections || !project.IsEditable())
+		if (!project.IsEditable())
 			return VSConstants.S_OK;
 
 		NativeDb.AsyncReindexEntityFrameworkAssemblies(project);
+
+		if (!PersistentSettings.IncludeAppConnections)
+			return VSConstants.S_OK;
 
 		RctManager.AsyncLoadApplicationConnections(project);
 
 		return VSConstants.S_OK;
 	}
+
+
+	private int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
+	{
+		PackageInstance.OutputLoadStatistics();
+		return VSConstants.S_OK;
+	}
+
 
 
 	/*
@@ -1119,11 +1147,14 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnProjectItemAdded()", "Added Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);
 
+		if (!projectItem.ContainingProject.IsEditable())
+			return;
+
 		NativeDb.AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
 	}
 
 
-
+	
 	private void OnProjectItemRemoved(ProjectItem projectItem)
 	{
 		// Tracer.Trace(GetType(), "OnProjectItemRemoved()", "Removed Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);

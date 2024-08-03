@@ -110,7 +110,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	public virtual string AdornedDisplayName =>
 		MdlCsb?.AdornedDisplayName ?? string.Empty;
 
-	public virtual string AdornedTitle =>
+	public string AdornedQualifiedName =>
+		MdlCsb?.AdornedQualifiedName ?? string.Empty;
+
+	public string AdornedTitle =>
 		MdlCsb?.AdornedTitle ?? string.Empty;
 
 	public DbConnection Connection => _MdlCsb?.DataConnection;
@@ -134,7 +137,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				if (_MdlCsb == null || !RaiseNotifyConnectionState(EnNotifyConnectionState.RequestIsUnlocked, false) || HasTransactions)
 					return _MdlCsb;
 
-				if (_MdlCsb.IsInvalidated)
+				if (RctManager.Loaded && _MdlCsb.IsInvalidated)
 				{
 					Csb csb = RctManager.CloneRegistered(_MdlCsb);
 					LiveMdlCsb = new ModelCsb(csb);
@@ -267,6 +270,9 @@ public abstract class AbstractConnectionStrategy : IDisposable
 					_RctStamp = RctManager.Stamp;
 					return connection;
 				}
+
+				if (!RctManager.Loaded)
+					return connection;
 
 				// If we're here it's a reset.
 

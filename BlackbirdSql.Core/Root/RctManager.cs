@@ -851,8 +851,8 @@ public sealed class RctManager : RunningConnectionTable
 
 		if (csa.ContainsKey(SysConstants.C_KeyExConnectionName)
 			&& !string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SysConstants.DatasetKeyFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
-			|| SysConstants.DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
+			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
+			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
 		{
 			csa.Remove(SysConstants.C_KeyExConnectionName);
 		}
@@ -904,8 +904,8 @@ public sealed class RctManager : RunningConnectionTable
 			datasetId = csa.Dataset;
 
 		if (!string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SysConstants.DatasetKeyFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
-			|| SysConstants.DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
+			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
+			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
 		{
 			csa.ConnectionName = SysConstants.C_DefaultExConnectionName;
 		}
@@ -1034,7 +1034,7 @@ public sealed class RctManager : RunningConnectionTable
 
 			IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
-			Guid clsidProvider = new(SystemData.ProviderGuid);
+			Guid clsidProvider = new(SystemData.C_ProviderGuid);
 			IVsDataExplorerConnection explorerConnection;
 
 			foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
@@ -1366,7 +1366,7 @@ public sealed class RctManager : RunningConnectionTable
 
 		try
 		{
-			explorerConnection = manager.AddConnection(csa.DatasetKey, new(SystemData.ProviderGuid), csa.ConnectionString, false);
+			explorerConnection = manager.AddConnection(csa.DatasetKey, new(SystemData.C_ProviderGuid), csa.ConnectionString, false);
 
 			// RctEventSink.AdviseServerExplorerEvents(explorerConnection);
 

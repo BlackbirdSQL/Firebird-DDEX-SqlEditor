@@ -159,39 +159,6 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 
-
-
-	public void Add(string name, string parameter, Type propertyType, object defaultValue = null,
-		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
-	{
-		if (this[name] != null)
-		{
-			ArgumentException ex = new($"Unable to add Descriptor '{name}'. Already exists.");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		Describer describer = new(name, parameter, propertyType, defaultValue, isParameter,
-			isAdvanced, isPublic, isMandatory);
-
-		Add(name, describer);
-		if (describer.ConnectionParameterKey != null
-			&& describer.Name.ToLowerInvariant() != describer.ConnectionParameterKey.ToLowerInvariant())
-		{
-			AddSynonym(describer.ConnectionParameterKey.ToLowerInvariant(), describer.Name);
-		}
-	}
-
-
-
-	public void Add(string name, Type propertyType, object defaultValue = null,
-		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
-	{
-		Add(name, null, propertyType, defaultValue, isParameter,
-			isAdvanced, isPublic, isMandatory);
-	}
-
-
 	public void AddRange(Describer[] describers)
 	{
 		base.AddRange(describers);

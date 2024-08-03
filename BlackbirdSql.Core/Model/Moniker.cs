@@ -492,7 +492,7 @@ public class Moniker
 		string str = Serialization.Serialize64(Database.ToLowerInvariant());
 		// string str = JsonConvert.SerializeObject(Database.ToLowerInvariant());
 
-		string moniker = SysConstants.DatasetKeyFormat.FmtRes(DataSource, str);
+		string moniker = SysConstants.S_DatasetKeyFormat.FmtRes(DataSource, str);
 
 		moniker = moniker.Replace("\\", "."); // "{backslash}");
 		moniker = moniker.Replace("/", "."); // "{slash}");

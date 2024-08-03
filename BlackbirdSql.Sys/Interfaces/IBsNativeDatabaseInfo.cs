@@ -11,7 +11,7 @@ using BlackbirdSql.Sys.Model;
 
 namespace BlackbirdSql.Sys.Interfaces;
 
-[Guid(LibraryData.NativeDatabaseInfoServiceGuid)]
+[Guid(LibraryData.C_NativeDatabaseInfoServiceGuid)]
 
 
 // =========================================================================================================

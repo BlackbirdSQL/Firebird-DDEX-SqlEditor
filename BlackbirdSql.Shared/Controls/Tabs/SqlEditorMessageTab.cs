@@ -28,7 +28,7 @@ public class SqlEditorMessageTab : AbstractSqlEditorTab
 
 	private Guid _ClsidLogicalView = VSConstants.LOGVIEWID_Designer;
 
-	private Guid _ClsidTabEditorFactory = new Guid(LibraryData.SqlResultsEditorFactoryGuid);
+	private Guid _ClsidTabEditorFactory = new Guid(LibraryData.C_SqlResultsEditorFactoryGuid);
 
 	protected override Guid ClsidEditorTabEditorFactory => _ClsidTabEditorFactory;
 

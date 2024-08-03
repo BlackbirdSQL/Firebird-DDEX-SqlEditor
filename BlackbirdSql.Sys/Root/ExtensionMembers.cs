@@ -833,9 +833,9 @@ public static partial class ExtensionMembers
 
 
 		string derivedConnectionName = (dataSource != null && derivedDatasetId != null)
-			? SysConstants.DatasetKeyFormat.FmtRes(dataSource, derivedDatasetId) : null;
+			? SysConstants.S_DatasetKeyFormat.FmtRes(dataSource, derivedDatasetId) : null;
 		string derivedAlternateConnectionName = (dataSource != null && derivedDatasetId != null)
-			? SysConstants.DatasetKeyAlternateFormat.FmtRes(dataSource, derivedDatasetId) : null;
+			? SysConstants.S_DatasetKeyAlternateFormat.FmtRes(dataSource, derivedDatasetId) : null;
 
 
 		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived

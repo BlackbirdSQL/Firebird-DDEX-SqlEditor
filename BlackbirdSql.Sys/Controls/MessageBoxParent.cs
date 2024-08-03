@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace BlackbirdSql.Sys.Controls;
 
-[Guid(LibraryData.MessageBoxParentGuid)]
+[Guid(LibraryData.C_MessageBoxParentGuid)]
 
 
 public sealed class MessageBoxParent(IntPtr HWnd) : IWin32Window

@@ -114,7 +114,7 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 
 				// We have to ensure the connection hasn't changed.
 
-				if (!IsInvalidated)
+				if (!RctManager.Loaded || !IsInvalidated)
 					return connection;
 
 				// Get the connection string of the current connection adorned with the additional Csa properties

@@ -58,7 +58,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 // 'Help About' registration. productName & productDetails resource integers must be prefixed with #.
-[InstalledProductRegistration("#100", "#102", ExtensionData.VsixVersion, IconResourceID = 400)]
+[InstalledProductRegistration("#100", "#102", ExtensionData.C_VsixVersion, IconResourceID = 400)]
 
 
 // We start loading as soon as the VS shell is available.
@@ -66,7 +66,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // a document that was left open. In that case we use the static property accessor "Instance"
 // to load our package ourselves.
 
-[ProvideUIContextRule(SystemData.UIContextGuid,
+[ProvideUIContextRule(SystemData.C_UIContextGuid,
 	name: SystemData.C_UIContextName,
 	expression: "(ShellInit | SolutionOpening | DesignMode | DataSourceWindowVisible | DataSourceWindowSupported)",
 	termNames: ["ShellInit", "SolutionOpening", "DesignMode", "DataSourceWindowVisible", "DataSourceWindowSupported"],
@@ -77,7 +77,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 		UIContextGuids80.DataSourceWindowSupported])]
 
 
-[ProvideAutoLoad(SystemData.UIContextGuid, PackageAutoLoadFlags.BackgroundLoad)]
+[ProvideAutoLoad(SystemData.C_UIContextGuid, PackageAutoLoadFlags.BackgroundLoad)]
 
 
 [ProvideMenuResource("Menus.ctmenu", 1)]
@@ -87,9 +87,9 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 // Register services
 [ProvideService(typeof(IBsPackageController), IsAsyncQueryable = true,
-	ServiceName = ExtensionData.PackageControllerServiceName)]
+	ServiceName = ExtensionData.C_PackageControllerServiceName)]
 [ProvideService(typeof(IBsProviderObjectFactory), IsAsyncQueryable = true,
-	ServiceName = ExtensionData.ProviderObjectFactoryServiceName)]
+	ServiceName = ExtensionData.C_ProviderObjectFactoryServiceName)]
 
 // Implement Visual studio options/settings
 [VsProvideOptionPage(typeof(SettingsProvider.GeneralSettingsPage), SettingsProvider.CategoryName,
@@ -403,16 +403,18 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 			Resources.Provider_ShortDisplayName, Resources.Provider_DisplayName,
 			NativeDb.AssemblyQualifiedName);
 
+
 		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 		{
-			if (args.Name == NativeDb.ClientFactoryAssembly.FullName)
-			{
-				return NativeDb.ClientFactoryAssembly;
-			}
+
 			if (args.Name == typeof(BlackbirdSqlDdexExtension).Assembly.FullName)
-			{
 				return typeof(BlackbirdSqlDdexExtension).Assembly;
-			}
+
+			if (NativeDb.MatchesInvariantAssembly(args.Name))
+				return NativeDb.ClientFactoryAssembly;
+
+			if (NativeDb.MatchesEntityFrameworkAssembly(args.Name))
+				return NativeDb.EntityFrameworkAssembly;
 
 			return null;
 		};

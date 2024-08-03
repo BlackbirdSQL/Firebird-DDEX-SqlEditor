@@ -82,28 +82,28 @@ namespace BlackbirdSql.EditorExtension;
 	SettingsProvider.ResultsTextSettingsPageName, 300, 301, 326, 329)]
 
 
-[VsProvideEditorFactory(typeof(EditorFactoryWithoutEncoding), 311, false, DefaultName = PackageData.ServiceName,
+[VsProvideEditorFactory(typeof(EditorFactoryWithoutEncoding), 311, false, DefaultName = PackageData.C_ServiceName,
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
-[ProvideEditorExtension(typeof(EditorFactoryWithoutEncoding), LanguageExtension.PackageData.Extension, 110,
-	DefaultName = PackageData.ServiceName, NameResourceID = 311, RegisterFactory = true)]
+[ProvideEditorExtension(typeof(EditorFactoryWithoutEncoding), LanguageExtension.PackageData.C_Extension, 110,
+	DefaultName = PackageData.C_ServiceName, NameResourceID = 311, RegisterFactory = true)]
 // [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Code_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Designer_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.TextView_string)]
-[VsProvideFileExtensionMapping(typeof(EditorFactoryWithoutEncoding), PackageData.ServiceName, 311, 100)]
+[VsProvideFileExtensionMapping(typeof(EditorFactoryWithoutEncoding), PackageData.C_ServiceName, 311, 100)]
 
 [VsProvideEditorFactory(typeof(EditorFactoryWithEncoding), 317, false,
-	DefaultName = $"{PackageData.ServiceName} with Encoding",
+	DefaultName = $"{PackageData.C_ServiceName} with Encoding",
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
-[ProvideEditorExtension(typeof(EditorFactoryWithEncoding), LanguageExtension.PackageData.Extension, 100,
-	DefaultName = $"{PackageData.ServiceName} with Encoding", NameResourceID = 317, RegisterFactory = true)]
+[ProvideEditorExtension(typeof(EditorFactoryWithEncoding), LanguageExtension.PackageData.C_Extension, 100,
+	DefaultName = $"{PackageData.C_ServiceName} with Encoding", NameResourceID = 317, RegisterFactory = true)]
 // [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Code_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Designer_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.TextView_string)]
-[VsProvideFileExtensionMapping(typeof(EditorFactoryWithEncoding), $"{PackageData.ServiceName} with Encoding", 317, 96)]
+[VsProvideFileExtensionMapping(typeof(EditorFactoryWithEncoding), $"{PackageData.C_ServiceName} with Encoding", 317, 96)]
 
 [VsProvideEditorFactory(typeof(ResultsEditorFactory), 312, false,
 	DefaultName = "BlackbirdSql Results", CommonPhysicalViewAttributes = 0)]
@@ -450,12 +450,18 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 
-	public bool EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData)
+	public bool EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData, bool isClone)
 	{
 		lock (_LockLocal)
 		{
-			if (AuxilliaryDocDataExists(docData))
+			AuxilliaryDocData auxDocData = GetAuxilliaryDocData(docData);
+
+			if (auxDocData != null)
+			{
+				if (isClone)
+					auxDocData.AddClone();
 				return false;
+			}
 
 			// Accessing the stack and pop.
 			string inflightMoniker = RdtManager.InflightMonikerStack;
@@ -486,7 +492,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 
-			AuxilliaryDocData auxDocData = new AuxilliaryDocData(cookie, documentMoniker, inflightMoniker, docData);
+			auxDocData ??= new AuxilliaryDocData(cookie, documentMoniker, inflightMoniker, docData);
 
 
 			// No point looking because This will always be null for us
@@ -773,7 +779,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		IVsUIShellOpenDocument shellOpenDocumentSvc = ApcInstance.EnsureService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 
 
-		Guid rguidEditorType = new(SystemData.MandatedSqlEditorFactoryGuid);
+		Guid rguidEditorType = new(SystemData.C_MandatedSqlEditorFactoryGuid);
 		uint[] pitemidOpen = new uint[1];
 		IVsUIHierarchy pHierCaller = null;
 

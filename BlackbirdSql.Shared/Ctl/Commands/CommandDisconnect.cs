@@ -39,7 +39,7 @@ public class CommandDisconnect : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (ExecutionLocked || !CanDisposeTransaction(Resources.ExDisconnectCaption))
+		if (ExecutionLocked || !RequestDeactivateQuery(Resources.MsgQueryAbort_UncommittedTransactionsDisconnect))
 			return VSConstants.S_OK;
 
 		StoredQryMgr.Disconnect();

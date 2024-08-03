@@ -496,7 +496,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	{
 		// Tracer.Trace(GetType(), "OnNewQuery()");
 
-		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.EditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
+		if (SystemData.C_MandatedSqlEditorFactoryGuid.Equals(SystemData.C_EditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
 			if (RctManager.ShutdownState)
 				return;
@@ -527,7 +527,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
 
-		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.EditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
+		if (SystemData.C_MandatedSqlEditorFactoryGuid.Equals(SystemData.C_EditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
 			IBsDesignerExplorerServices service = ApcManager.EnsureService<IBsDesignerExplorerServices>();
 

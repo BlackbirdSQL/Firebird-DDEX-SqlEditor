@@ -130,6 +130,8 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	private long _LoadStatisticsMainThreadStartTime = 0L;
 	private long _LoadStatisticsMainThreadEndTime = 0L;
 	private long _LoadStatisticsEndTime = 0L;
+	private string _LoadStatisticsMsg = null;
+	private bool _LoadStatisticsOutputFailed = false;
 	protected static Stopwatch _S_Stopwatch = new();
 
 	protected IVsSolution _VsSolution = null;
@@ -470,6 +472,8 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	protected async Task ProgressAsync(IProgress<ServiceProgressData> progress, string message,
 		_EnStatisticsStage stage = _EnStatisticsStage.None, long elapsed = 0L)
 	{
+		await Cmd.AwaitableAsync();
+
 		switch (stage)
 		{
 			case _EnStatisticsStage.MainThreadLoadStart:
@@ -503,13 +507,29 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 			_LoadStatisticsMainThreadEndTime = 0L;
 			_LoadStatisticsEndTime = 0L;
 
-			message = Resources.LoadTimeStatistics.FmtRes(asyncInitTime.FmtStats(true), mainThreadInitTime.FmtStats(true),
+			string outputMsg = Resources.LoadTimeStatistics.FmtRes(asyncInitTime.FmtStats(true), mainThreadInitTime.FmtStats(true),
 				mainThreadSwitchTime.FmtStats(true), totalTime.FmtStats(true));
 
-			await Diag.OutputPaneWriteLineAsync(message, true);
+			if (_LoadStatisticsOutputFailed)
+				Diag.OutputPaneWriteLineAsync(outputMsg, true).Forget();
+			else
+				_LoadStatisticsMsg = outputMsg;
 		}
 	}
 
+
+	public void OutputLoadStatistics()
+	{
+		if (_LoadStatisticsMsg == null)
+		{
+			_LoadStatisticsOutputFailed = true;
+			return;
+		}
+
+		Diag.AsyncOutputPaneWriteLine(_LoadStatisticsMsg, true);
+
+		_LoadStatisticsMsg = null;
+	}
 
 
 	// ---------------------------------------------------------------------------------

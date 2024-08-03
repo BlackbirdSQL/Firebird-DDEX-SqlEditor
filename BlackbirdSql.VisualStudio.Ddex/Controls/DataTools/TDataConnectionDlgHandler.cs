@@ -406,7 +406,7 @@ public class TDataConnectionDlgHandler : IBsDataConnectionDlgHandler
 		{
 			_ProviderSelections ??= new Dictionary<Guid, Guid>
 				{
-					[new Guid(SystemData.DataSourceGuid)] = new Guid(SystemData.ProviderGuid)
+					[new Guid(SystemData.C_DataSourceGuid)] = new Guid(SystemData.C_ProviderGuid)
 				};
 
 			return _ProviderSelections;

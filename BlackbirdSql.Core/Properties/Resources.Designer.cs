@@ -541,7 +541,8 @@ namespace BlackbirdSql.Core.Properties {
         ///   Looks up a localized string similar to Extension load statistics:
         ///      Async initialization: {0}ms, MainThread initializations: {1}ms
         ///      SwitchToMainThread: {2}ms
-        ///      Total time (excl. SwitchToMainThread): {3}ms..
+        ///      Total time (excl. SwitchToMainThread): {3}ms.
+        ///.
         /// </summary>
         public static string LoadTimeStatistics {
             get {

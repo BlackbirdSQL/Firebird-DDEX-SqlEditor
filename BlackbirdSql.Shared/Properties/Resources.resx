@@ -266,11 +266,11 @@ Statement #{0} ({1} row(s) selected, {2} in total)
   <data name="InfoQueryConnectionAutoClosed" xml:space="preserve">
     <value>{0}Idle connection '{2}' closed.
 {1}ConnectionLifetime: {3} seconds.
-{1}Query: {4}.</value>
+{1}Query: {4}.
+</value>
   </data>
   <data name="InfoQueryPrefix" xml:space="preserve">
-    <value>
-Query notification:
+    <value>Query notification:
 {0}</value>
   </data>
   <data name="MsgAbortExecutionAndClose" xml:space="preserve">
@@ -281,19 +281,30 @@ Query notification:
   </data>
   <data name="MsgQueryAbort_IsExecutingList" xml:space="preserve">
     <value>There are queries that are currently executing. Do you wish to abort execution?
+
 {0}</value>
   </data>
   <data name="MsgQueryAbort_NameIndent" xml:space="preserve">
     <value>      {0}</value>
   </data>
+  <data name="MsgQueryAbort_QualifiedName" xml:space="preserve">
+    <value>{0}   |   {1}</value>
+  </data>
   <data name="MsgQueryAbort_UncommittedTransactions" xml:space="preserve">
-    <value>There are uncommitted transactions. Do you wish to commit these transactions before closing?</value>
+    <value>Unable to proceed with active transactions. Do you wish to commit these transactions before continuing?</value>
   </data>
   <data name="MsgQueryAbort_UncommittedTransactionsCaption" xml:space="preserve">
     <value>Uncommited transactions</value>
   </data>
+  <data name="MsgQueryAbort_UncommittedTransactionsClose" xml:space="preserve">
+    <value>There are uncommitted transactions. Do you wish to commit these transactions before closing?</value>
+  </data>
+  <data name="MsgQueryAbort_UncommittedTransactionsDisconnect" xml:space="preserve">
+    <value>There are active transactions. Do you wish to commit these transactions before disconnecting?</value>
+  </data>
   <data name="MsgQueryAbort_UncommittedTransactionsList" xml:space="preserve">
     <value>There are uncommitted transactions. Do you wish to commit these transactions before closing?
+
 {0}</value>
   </data>
   <data name="NewQueryBaseName" xml:space="preserve">
@@ -341,21 +352,23 @@ Query notification:
   <data name="WarnQueryConnectionBroken" xml:space="preserve">
     <value>{0}Broken connection '{2}' has been reset.
 {1}This is possibly due to a network error.
-{3}{1}Query: {4}.</value>
+{3}{1}Query: {4}.
+</value>
   </data>
   <data name="WarnQueryConnectionDead" xml:space="preserve">
     <value>{0}Dead connection '{2}' has been reset.
 {1}This is possibly due to a network error.
-{3}{1}Query: {4}.</value>
+{3}{1}Query: {4}.
+</value>
   </data>
   <data name="WarnQueryConnectionReset" xml:space="preserve">
     <value>{0}Connection '{2}' has been reset.
 {1}This is possibly due to a network error.
-{3}{1}Query: {4}.</value>
+{3}{1}Query: {4}.
+</value>
   </data>
   <data name="WarnQueryPrefix" xml:space="preserve">
-    <value>
-Query Warning:
+    <value>Query Warning:
 {0}</value>
   </data>
   <data name="WarnQueryTtsDiscarded" xml:space="preserve">

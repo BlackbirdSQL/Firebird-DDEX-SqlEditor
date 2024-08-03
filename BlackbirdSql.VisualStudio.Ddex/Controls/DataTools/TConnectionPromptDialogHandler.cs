@@ -59,7 +59,7 @@ public class TConnectionPromptDialogHandler : IBsDataConnectionPromptDialogHandl
 			?? throw Diag.ExceptionService(typeof(IVsDataConnectionFactory));
 
 		IVsDataConnectionSupport connectionSupport = null;
-		Guid clsidProvider = new(SystemData.ProviderGuid);
+		Guid clsidProvider = new(SystemData.C_ProviderGuid);
 
 		IVsDataConnection vsDataConnection = factory.CreateConnection(clsidProvider, connectionString, false);
 

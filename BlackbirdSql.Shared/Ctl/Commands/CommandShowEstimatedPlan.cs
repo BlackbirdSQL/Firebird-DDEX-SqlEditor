@@ -37,7 +37,7 @@ public class CommandShowEstimatedPlan : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (ExecutionLocked || !CanDisposeTransaction(Resources.ExExecutionPlanCaption))
+		if (ExecutionLocked || !RequestDeactivateQuery(Resources.MsgQueryAbort_UncommittedTransactions))
 			return VSConstants.S_OK;
 
 

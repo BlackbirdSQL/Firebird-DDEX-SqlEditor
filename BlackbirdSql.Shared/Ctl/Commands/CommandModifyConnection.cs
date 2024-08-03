@@ -44,7 +44,7 @@ public class CommandModifyConnection : AbstractCommand
 		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
-		if (!CanDisposeTransaction(Resources.ExModifyConnectionCaption))
+		if (ExecutionLocked || !RequestDeactivateQuery(Resources.MsgQueryAbort_UncommittedTransactions))
 			return VSConstants.S_OK;
 
 		StoredQryMgr.ModifyConnection();

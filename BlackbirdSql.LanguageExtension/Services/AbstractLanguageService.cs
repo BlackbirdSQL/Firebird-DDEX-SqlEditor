@@ -207,7 +207,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 	private readonly MetadataDisplayInfoProvider _DisplayInfoProvider;
 	private readonly LsbNoOpAuthoringScope _NoOpAuthoringScope;
 
-	private static readonly Guid _ClsidExpressionEvaluator = new(PackageData.MandatedExpressionEvaluatorGuid);
+	private static readonly Guid _ClsidExpressionEvaluator = new(PackageData.C_MandatedExpressionEvaluatorGuid);
 
 
 	#endregion Fields
@@ -221,11 +221,11 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 	// =========================================================================================================
 
 
-	public override string Name => PackageData.LanguageLongName;
+	public override string Name => PackageData.C_LanguageLongName;
 
 	public LsbLanguagePreferences Prefs => _Prefs ??= (LsbLanguagePreferences)Preferences;
 
-	private string[] FileExtensions { get; } = [PackageData.Extension];
+	private string[] FileExtensions { get; } = [PackageData.C_Extension];
 
 
 	#endregion Property accessors
@@ -497,7 +497,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 					if (OverrideError(script, error))
 						continue;
 
-					req.Sink.AddError(req.FileName, PackageData.DefaultMessagePrefix + error.Message, GetTextSpan(error.Start, error.End), error.IsWarning ? Severity.Warning : Severity.Error);
+					req.Sink.AddError(req.FileName, PackageData.C_DefaultMessagePrefix + error.Message, GetTextSpan(error.Start, error.End), error.IsWarning ? Severity.Warning : Severity.Error);
 				}
 			}
 		}

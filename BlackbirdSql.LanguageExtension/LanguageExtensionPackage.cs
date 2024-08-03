@@ -39,14 +39,14 @@ namespace BlackbirdSql.LanguageExtension;
 // ---------------------------------------------------------------------------------------------------------
 
 
-[ProvideService(typeof(LsbLanguageService), IsAsyncQueryable = true, ServiceName = PackageData.LanguageServiceName)]
-[ProvideLanguageService(typeof(LsbLanguageService), PackageData.LanguageLongName, 330, CodeSense = true, EnableCommenting = true, MatchBraces = true, ShowCompletion = true, ShowMatchingBrace = true, AutoOutlining = true, EnableAsyncCompletion = true, MaxErrorMessages = 200, CodeSenseDelay = 500)]
+[ProvideService(typeof(LsbLanguageService), IsAsyncQueryable = true, ServiceName = PackageData.C_LanguageServiceName)]
+[ProvideLanguageService(typeof(LsbLanguageService), PackageData.C_LanguageLongName, 330, CodeSense = true, EnableCommenting = true, MatchBraces = true, ShowCompletion = true, ShowMatchingBrace = true, AutoOutlining = true, EnableAsyncCompletion = true, MaxErrorMessages = 200, CodeSenseDelay = 500)]
 
 [VsProvideEditorAutomationPage(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Advanced", 300, 330)]
 [ProvideLanguageEditorOptionPage(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Advanced", null, "#331")]
 [ProvideProfile(typeof(SettingsProvider.AdvancedPreferencesPage), SettingsProvider.CategoryName, "Editor", 300, 330, false, AlternateParent = "AutomationProperties\\TextEditor")]
 
-[ProvideLanguageExtension(typeof(LsbLanguageService), PackageData.Extension)]
+[ProvideLanguageExtension(typeof(LsbLanguageService), PackageData.C_Extension)]
 
 [ProvideLanguageCodeExpansion(typeof(LsbLanguageService), "SQL_FIREBIRD", 303, "SQL_FIREBIRD", "%PackageFolder%\\Snippets\\SnippetsIndex.xml", SearchPaths = "%PackageFolder%\\Snippets\\Function;%PackageFolder%\\Snippets\\Index;%PackageFolder%\\Snippets\\Role;%PackageFolder%\\Snippets\\Stored Procedure;%PackageFolder%\\Snippets\\Table;%PackageFolder%\\Snippets\\Trigger;%PackageFolder%\\Snippets\\User;%PackageFolder%\\Snippets\\View;%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets", ForceCreateDirs = "%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets")]
 
@@ -169,7 +169,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 		{
 			using RegistryKey registryKey = UserRegistryRoot;
 
-			string settingsKey = PackageData.RegistrySettingsKey;
+			string settingsKey = PackageData.C_RegistrySettingsKey;
 			RegistryKey registryKey2 = registryKey.OpenSubKey(settingsKey, writable: false);
 
 			return registryKey2 != null;
@@ -410,7 +410,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	{
 		if (_UserPreferences == null)
 		{
-			_UserPreferences = new LsbLanguagePreferences(this, typeof(LsbLanguageService).GUID, PackageData.LanguageLongName);
+			_UserPreferences = new LsbLanguagePreferences(this, typeof(LsbLanguageService).GUID, PackageData.C_LanguageLongName);
 			_UserPreferences.Init();
 		}
 		return _UserPreferences;
@@ -422,7 +422,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	{
 		using RegistryKey registryKey = base.UserRegistryRoot;
 
-		string settingsKey = PackageData.RegistrySettingsKey;
+		string settingsKey = PackageData.C_RegistrySettingsKey;
 		object languagePreferences = GetUserPreferences();
 		RegistryKey registryKey2 = registryKey.OpenSubKey(settingsKey, writable: true);
 

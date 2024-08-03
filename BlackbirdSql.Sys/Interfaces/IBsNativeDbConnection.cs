@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace BlackbirdSql.Sys.Interfaces;
 
-[Guid(LibraryData.NativeDbConnectionServiceGuid)]
+[Guid(LibraryData.C_NativeDbConnectionServiceGuid)]
 
 
 // =========================================================================================================

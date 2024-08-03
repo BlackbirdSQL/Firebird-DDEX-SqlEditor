@@ -1086,7 +1086,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
 			string connectionName;
-			Guid clsidProvider = new(SystemData.ProviderGuid);
+			Guid clsidProvider = new(SystemData.C_ProviderGuid);
 
 
 			foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
@@ -1149,8 +1149,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		datasetId = csa.DatasetId;
 
 		// If the connection name matches the datasetKey constructed from the datasetId, remove it.
-		if (!string.IsNullOrEmpty(datasetId) && !csa.ContainsKey(C_KeyExConnectionName) && connectionName == DatasetKeyFormat.FmtRes(csa.DataSource, datasetId))
+		if (!string.IsNullOrEmpty(datasetId) && !csa.ContainsKey(C_KeyExConnectionName)
+			&& connectionName == S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetId))
+		{
 			connectionName = null;
+		}
 
 		if (!string.IsNullOrEmpty(connectionName) && !string.IsNullOrEmpty(datasetId))
 			datasetId = null;

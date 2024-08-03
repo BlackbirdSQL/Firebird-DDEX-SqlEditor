@@ -129,23 +129,23 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		{
 			Describers.AddRange(
 			[
-				new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey),
-				new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey),
-				new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId),
-				new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset),
+				new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey, D_Default),
+				new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey, D_Default),
+				new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId, D_Default),
+				new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset, D_Default | D_Derived),
 
-				new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName),
-				new Describer(C_KeyExConnectionSource, typeof(EnConnectionSource), C_DefaultExConnectionSource),
+				new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName, D_Default),
+				new Describer(C_KeyExConnectionSource, typeof(EnConnectionSource), C_DefaultExConnectionSource, D_Default),
 
-				new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, false, false),
-				new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, false, false),
-				new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, false, false),
+				new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, D_Public | D_Derived),
+				new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, D_Public | D_Derived),
+				new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, D_Public | D_Derived),
 
-				new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion),
-				new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, false, false, false),
-				new Describer(C_KeyExEdmx, typeof(bool)),
-				new Describer(C_KeyExEdmu, typeof(bool)),
-				new Describer(C_KeyExCreationFlags, typeof(EnEditorCreationFlags))
+				new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion, D_Public | D_Derived),
+				new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, D_Public | D_Derived),
+				new Describer(C_KeyExEdmx, typeof(bool), D_Default),
+				new Describer(C_KeyExEdmu, typeof(bool), D_Default),
+				new Describer(C_KeyExCreationFlags, typeof(EnEditorCreationFlags), D_Default)
 			]);
 		}
 		catch (Exception ex)
@@ -382,7 +382,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				if (string.IsNullOrWhiteSpace(retval))
 					retval = Dataset;
 				if (!string.IsNullOrWhiteSpace(DataSource))
-					retval = DatasetKeyFormat.FmtRes(DataSource, retval);
+					retval = S_DatasetKeyFormat.FmtRes(DataSource, retval);
 			}
 			return retval;
 		}
@@ -475,7 +475,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// The DatasetKey if ConnectionName is null else the DisplayName qualified with the server name.
 	/// </summary>
 	[Browsable(false)]
-	public string QualifiedName => string.IsNullOrEmpty(ConnectionName) ? DatasetKey : DatasetKeyFormat.FmtRes(DataSource, DisplayName);
+	public string QualifiedName => string.IsNullOrEmpty(ConnectionName) ? DatasetKey : S_DatasetKeyFormat.FmtRes(DataSource, DisplayName);
 
 
 
@@ -700,7 +700,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				if (describer != null)
 					continue;
 
-				if (describer.Name == C_KeyExServerVersion)
+				if (describer.IsDerived || describer.IsInternalStore)
 					continue;
 
 				if (!csa2.ContainsKey(pair.Key))
@@ -720,7 +720,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				if (describer != null)
 					continue;
 
-				if (describer.Name == C_KeyExServerVersion)
+				if (describer.IsDerived || describer.IsInternalStore)
 					continue;
 
 				if (!csa1.ContainsKey(pair.Key))

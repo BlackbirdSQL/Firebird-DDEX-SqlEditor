@@ -20,19 +20,19 @@ namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 // =========================================================================================================
 public class SettingsProvider
 {
-	public const string CategoryName = PackageData.LanguageLongName;
+	public const string CategoryName = PackageData.C_LanguageLongName;
 	public const string SubCategoryName = "LanguageService";
 	public const string AdvancedPreferencesPageName = "Firebird-SQL Intellisense Settings";
 
 
 	[ComVisible(true)]
-	[Guid(PackageData.LanguagePreferencesPageGuid)]
+	[Guid(PackageData.C_LanguagePreferencesPageGuid)]
 	public class AdvancedPreferencesPage : AbstractPersistentSettingsPage<AdvancedPreferencesPage, AdvancedPreferencesModel> { }
 
 
 
 	[ComVisible(true)]
-	[Guid(PackageData.TransientLanguagePreferencesPageGuid)]
+	[Guid(PackageData.C_TransientLanguagePreferencesPageGuid)]
 	public class TransientAdvancedPreferencesPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientAdvancedPreferencesPage, AdvancedPreferencesModel>(transientSettings) { }
 

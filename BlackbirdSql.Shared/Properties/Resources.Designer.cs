@@ -497,7 +497,8 @@ namespace BlackbirdSql.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}Idle connection &apos;{2}&apos; closed.
         ///{1}ConnectionLifetime: {3} seconds.
-        ///{1}Query: {4}..
+        ///{1}Query: {4}.
+        ///.
         /// </summary>
         internal static string InfoQueryConnectionAutoClosed {
             get {
@@ -506,8 +507,7 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///Query notification:
+        ///   Looks up a localized string similar to Query notification:
         ///{0}.
         /// </summary>
         internal static string InfoQueryPrefix {
@@ -536,6 +536,7 @@ namespace BlackbirdSql.Shared.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to There are queries that are currently executing. Do you wish to abort execution?
+        ///
         ///{0}.
         /// </summary>
         internal static string MsgQueryAbort_IsExecutingList {
@@ -554,7 +555,16 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are uncommitted transactions. Do you wish to commit these transactions before closing?.
+        ///   Looks up a localized string similar to {0}   |   {1}.
+        /// </summary>
+        internal static string MsgQueryAbort_QualifiedName {
+            get {
+                return ResourceManager.GetString("MsgQueryAbort_QualifiedName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to proceed with active transactions. Do you wish to commit these transactions before continuing?.
         /// </summary>
         internal static string MsgQueryAbort_UncommittedTransactions {
             get {
@@ -572,7 +582,26 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are uncommitted transactions. Do you wish to commit these transactions before closing?.
+        /// </summary>
+        internal static string MsgQueryAbort_UncommittedTransactionsClose {
+            get {
+                return ResourceManager.GetString("MsgQueryAbort_UncommittedTransactionsClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are active transactions. Do you wish to commit these transactions before disconnecting?.
+        /// </summary>
+        internal static string MsgQueryAbort_UncommittedTransactionsDisconnect {
+            get {
+                return ResourceManager.GetString("MsgQueryAbort_UncommittedTransactionsDisconnect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are uncommitted transactions. Do you wish to commit these transactions before closing?
+        ///
         ///{0}.
         /// </summary>
         internal static string MsgQueryAbort_UncommittedTransactionsList {
@@ -710,7 +739,8 @@ namespace BlackbirdSql.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}Broken connection &apos;{2}&apos; has been reset.
         ///{1}This is possibly due to a network error.
-        ///{3}{1}Query: {4}..
+        ///{3}{1}Query: {4}.
+        ///.
         /// </summary>
         internal static string WarnQueryConnectionBroken {
             get {
@@ -721,7 +751,8 @@ namespace BlackbirdSql.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}Dead connection &apos;{2}&apos; has been reset.
         ///{1}This is possibly due to a network error.
-        ///{3}{1}Query: {4}..
+        ///{3}{1}Query: {4}.
+        ///.
         /// </summary>
         internal static string WarnQueryConnectionDead {
             get {
@@ -732,7 +763,8 @@ namespace BlackbirdSql.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}Connection &apos;{2}&apos; has been reset.
         ///{1}This is possibly due to a network error.
-        ///{3}{1}Query: {4}..
+        ///{3}{1}Query: {4}.
+        ///.
         /// </summary>
         internal static string WarnQueryConnectionReset {
             get {
@@ -741,8 +773,7 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///Query Warning:
+        ///   Looks up a localized string similar to Query Warning:
         ///{0}.
         /// </summary>
         internal static string WarnQueryPrefix {

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace BlackbirdSql.Sys.Interfaces;
 
-[Guid(LibraryData.NativeDbCommandServiceGuid)]
+[Guid(LibraryData.C_NativeDbCommandServiceGuid)]
 
 
 // =========================================================================================================

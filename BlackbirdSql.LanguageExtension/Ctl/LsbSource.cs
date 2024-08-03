@@ -364,8 +364,8 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	public static bool IsExplicitFilteringRequired(string textTypedSofar)
 	{
-		if (string.IsNullOrEmpty(textTypedSofar) || textTypedSofar[0] == PackageData.OpenSquareBracket
-			|| textTypedSofar[0] == PackageData.DoubleQuote || char.IsLetter(textTypedSofar[0]))
+		if (string.IsNullOrEmpty(textTypedSofar) || textTypedSofar[0] == PackageData.C_OpenSquareBracket
+			|| textTypedSofar[0] == PackageData.C_DoubleQuote || char.IsLetter(textTypedSofar[0]))
 		{
 			return false;
 		}

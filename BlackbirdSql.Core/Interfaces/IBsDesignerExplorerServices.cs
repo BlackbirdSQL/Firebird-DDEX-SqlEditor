@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Data.Services;
 namespace BlackbirdSql.Core.Interfaces;
 
 [ComImport]
-[Guid(SystemData.DesignerExplorerServicesGuid)]
+[Guid(SystemData.C_DesignerExplorerServicesGuid)]
 public interface IBsDesignerExplorerServices
 {
 	void CloneQuery(string datasetKey, string baseName, string initialScript);

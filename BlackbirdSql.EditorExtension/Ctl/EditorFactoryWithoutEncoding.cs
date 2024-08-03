@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 
-[Guid(SystemData.EditorFactoryGuid)]
+[Guid(SystemData.C_EditorFactoryGuid)]
 [ProvideMenuResource("Menus.ctmenu", 1)]
 
 

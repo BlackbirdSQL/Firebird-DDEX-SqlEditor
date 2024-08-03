@@ -1497,7 +1497,7 @@ public class DisplaySQLResultsControl : IBsQueryExecutionHandler, IBsExecutionHa
 				throw;
 			}
 
-			Guid guid = new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid);
+			Guid guid = new Guid(LibraryData.C_SqlTextPlanTabLogicalViewGuid);
 			SqlEditorMessageTab tab;
 
 			try

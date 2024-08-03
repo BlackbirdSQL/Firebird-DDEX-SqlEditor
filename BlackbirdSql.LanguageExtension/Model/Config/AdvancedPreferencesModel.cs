@@ -16,7 +16,7 @@ using GlobalizedDisplayNameAttribute = BlackbirdSql.LanguageExtension.Ctl.Compon
 
 namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 
-[Guid(PackageData.LanguagePreferencesModelGuid)]
+[Guid(PackageData.C_LanguagePreferencesModelGuid)]
 
 
 // =========================================================================================================

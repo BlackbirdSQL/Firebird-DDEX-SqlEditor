@@ -41,10 +41,10 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 		{
 			if (WithEncoding)
 			{
-				return new Guid(SystemData.EditorEncodedFactoryGuid);
+				return new Guid(SystemData.C_EditorEncodedFactoryGuid);
 			}
 
-			return new Guid(SystemData.EditorFactoryGuid);
+			return new Guid(SystemData.C_EditorFactoryGuid);
 		}
 	}
 
@@ -163,7 +163,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				if (vsTextLines2 == null)
 					return VSConstants.E_FAIL;
 
-				autoExecute = EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2);
+				autoExecute = EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2, pExistingDocData != IntPtr.Zero);
 
 
 				TabbedEditorWindowPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker, autoExecute);
@@ -208,9 +208,9 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 		return new TabbedEditorWindowPane(ServiceProvider, EditorExtensionPackage.Instance, vsTextLines, moniker, autoExecute);
 	}
 
-	protected virtual bool EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData)
+	private bool EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData, bool isClone)
 	{
-		return EditorExtensionPackage.Instance.EnsureAuxilliaryDocData(hierarchy, documentMoniker, docData);
+		return EditorExtensionPackage.Instance.EnsureAuxilliaryDocData(hierarchy, documentMoniker, docData, isClone);
 	}
 
 

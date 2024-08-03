@@ -14,7 +14,7 @@ public static class SqlEtwProvider
 
 	static SqlEtwProvider()
 	{
-		S_EventProvider = new EventProviderVersionTwo(new Guid(LibraryData.MandatedEventProviderGuid));
+		S_EventProvider = new EventProviderVersionTwo(new Guid(LibraryData.C_MandatedEventProviderGuid));
 
 		SchemaCompare = new EventDescriptor(4, 1, 0, 4, 0, 3, 513L);
 		SchemaCompareError = new EventDescriptor(69, 1, 0, 2, 0, 3, 513L);

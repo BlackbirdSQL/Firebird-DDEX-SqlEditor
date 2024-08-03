@@ -262,7 +262,7 @@ public static class DbProviderFactoriesEx
 			Dictionary<Guid, IVsDataProvider> unverifiedProviders;
 
 			// List of known safe providers. (SqlServer, Oracle, BlackbirdSql etc)
-			List<string> verifiedProviderGuids = [SystemData.ProviderGuid.ToLowerInvariant(),
+			List<string> verifiedProviderGuids = [SystemData.C_ProviderGuid.ToLowerInvariant(),
 				// SqlLite.
 				"796a79e8-2579-4375-9e12-03a9e0d1fc02",
 				// OLDB.

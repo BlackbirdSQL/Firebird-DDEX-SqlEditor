@@ -28,7 +28,7 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 	public static readonly string S_PhysicalViewString = "ResultFrame";
 
 	protected virtual Guid ClsidEditorTabEditorFactory => Guid.Empty;
-	protected override Guid ClsidEditorFactory => new(SystemData.EditorFactoryGuid);
+	protected override Guid ClsidEditorFactory => new(SystemData.C_EditorFactoryGuid);
 	protected abstract Guid ClsidLogicalView { get; }
 
 

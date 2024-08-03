@@ -52,13 +52,13 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			Type providerObjectFactoryInterface = typeof(IBsProviderObjectFactory);
 			string providerObjectFactoryAssembly = providerObjectFactoryInterface.Assembly.FullName;
 
-			string dataSourceGuid = SystemData.DataSourceGuid.StartsWith("{")
-				? SystemData.DataSourceGuid
-				: $"{{{SystemData.DataSourceGuid}}}";
+			string dataSourceGuid = SystemData.C_DataSourceGuid.StartsWith("{")
+				? SystemData.C_DataSourceGuid
+				: $"{{{SystemData.C_DataSourceGuid}}}";
 
-			string providerGuid = SystemData.ProviderGuid.StartsWith("{")
-				? SystemData.ProviderGuid
-				: $"{{{SystemData.ProviderGuid}}}";
+			string providerGuid = SystemData.C_ProviderGuid.StartsWith("{")
+				? SystemData.C_ProviderGuid
+				: $"{{{SystemData.C_ProviderGuid}}}";
 
 			// Clean up
 			context.RemoveKey("DataSources\\" + dataSourceGuid + "\\SupportingProviders\\" + providerGuid);
@@ -166,13 +166,13 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			throw ex;
 		}
 
-		string dataSourceGuid = SystemData.DataSourceGuid.StartsWith("{")
-			? SystemData.DataSourceGuid
-			: $"{{{SystemData.DataSourceGuid}}}";
+		string dataSourceGuid = SystemData.C_DataSourceGuid.StartsWith("{")
+			? SystemData.C_DataSourceGuid
+			: $"{{{SystemData.C_DataSourceGuid}}}";
 
-		string providerGuid = SystemData.ProviderGuid.StartsWith("{")
-			? SystemData.ProviderGuid
-			: $"{{{SystemData.ProviderGuid}}}";
+		string providerGuid = SystemData.C_ProviderGuid.StartsWith("{")
+			? SystemData.C_ProviderGuid
+			: $"{{{SystemData.C_ProviderGuid}}}";
 
 		Type providerObjectFactoryInterface = typeof(IBsProviderObjectFactory);
 		Attribute customAttribute = Attribute.GetCustomAttribute(providerObjectFactoryInterface, typeof(GuidAttribute));
@@ -192,7 +192,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			Diag.Dug(ex);
 			throw ex;
 		}
-		Debug.Assert(guidAttribute.Value == SystemData.ProviderObjectFactoryServiceGuid);
+		Debug.Assert(guidAttribute.Value == SystemData.C_ProviderObjectFactoryServiceGuid);
 
 		context.RemoveValue("DataSources\\" + dataSourceGuid, "DefaultProvider");
 		context.RemoveKey("DataSources\\" + dataSourceGuid + "\\SupportingProviders\\" + providerGuid);

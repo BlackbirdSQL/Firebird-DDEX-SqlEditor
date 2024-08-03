@@ -192,4 +192,23 @@ public abstract class AbstractCommand
 		return ppBuffer;
 	}
 
+
+
+	protected bool RequestDeactivateQuery(string msgResource)
+	{
+		QueryManager qryMgr = StoredQryMgr;
+
+		try
+		{
+			if (!qryMgr.GetUpdatedTransactionsStatus(true))
+				return true;
+		}
+		catch
+		{
+			return true;
+		}
+
+		return StoredAuxDocData.RequestDeactivateQuery(msgResource);
+	}
+
 }

@@ -460,20 +460,20 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 			return new SqlEditorCodeTab(this, logicalView, editorLogicalView, editorTabType);
 		}
 
-		if (logicalView == new Guid(LibraryData.SqlMessageTabLogicalViewGuid)
-			|| logicalView == new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid)
-			|| logicalView == new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid))
+		if (logicalView == new Guid(LibraryData.C_SqlMessageTabLogicalViewGuid)
+			|| logicalView == new Guid(LibraryData.C_SqlTextResultsTabLogicalViewGuid)
+			|| logicalView == new Guid(LibraryData.C_SqlTextPlanTabLogicalViewGuid))
 		{
 			return new SqlEditorMessageTab(this, logicalView, editorLogicalView, editorTabType);
 		}
 
-		if (logicalView == new Guid(LibraryData.SqlStatisticsTabLogicalViewGuid))
+		if (logicalView == new Guid(LibraryData.C_SqlStatisticsTabLogicalViewGuid))
 		{
 			return new SqlEditorResultsTab(this, logicalView, editorLogicalView, editorTabType);
 		}
 
 		/*
-		if (logicalView == new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid))
+		if (logicalView == new Guid(LibraryData.C_SqlExecutionPlanTabLogicalViewGuid))
 		{
 			return new SqlEditorResultsTab(this, logicalView, editorLogicalView, editorTabType);
 		}
@@ -509,10 +509,10 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 		if (TabbedEditorUiCtl.Tabs.Count > 0)
 		{
-			// splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
+			// splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.C_SqlExecutionPlanTabLogicalViewGuid),
 			// 	EnSplitterBarButtonDisplayStyle.Text, btnPlanText, ControlsResources.ImgExecutionPlan);
 
-			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid),
+			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.C_SqlTextPlanTabLogicalViewGuid),
 				EnSplitterBarButtonDisplayStyle.Text, btnTextPlanText, ControlsResources.ImgTextPlan);
 
 			return true;
@@ -539,57 +539,57 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 		try
 		{
 
-			AbstractEditorTab editorTab = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid),
+			AbstractEditorTab editorTab = CreateEditorTabWithButton(this, new Guid(LibraryData.C_SqlTextResultsTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUiCtl.Tabs.Add(editorTab);
 			LoadDesignerPane(editorTab, asPrimary: false, showSplitter: false);
 			editorTab.Hide();
 
-			AbstractEditorTab editorTab2 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlStatisticsTabLogicalViewGuid),
+			AbstractEditorTab editorTab2 = CreateEditorTabWithButton(this, new Guid(LibraryData.C_SqlStatisticsTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUiCtl.Tabs.Add(editorTab2);
 			LoadDesignerPane(editorTab2, asPrimary: false, showSplitter: false);
 			editorTab2.Hide();
 
 			/*
-			AbstractEditorTab editorTab3 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
+			AbstractEditorTab editorTab3 = CreateEditorTabWithButton(this, new Guid(LibraryData.C_SqlExecutionPlanTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUiCtl.Tabs.Add(editorTab3);
 			LoadDesignerPane(editorTab3, asPrimary: false, showSplitter: false);
 			editorTab3.Hide();
 			*/
-			AbstractEditorTab editorTab4 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid),
+			AbstractEditorTab editorTab4 = CreateEditorTabWithButton(this, new Guid(LibraryData.C_SqlTextPlanTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUiCtl.Tabs.Add(editorTab4);
 			LoadDesignerPane(editorTab4, asPrimary: false, showSplitter: false);
 			editorTab4.Hide();
 
-			AbstractEditorTab editorTab5 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlMessageTabLogicalViewGuid),
+			AbstractEditorTab editorTab5 = CreateEditorTabWithButton(this, new Guid(LibraryData.C_SqlMessageTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUiCtl.Tabs.Add(editorTab5);
 			LoadDesignerPane(editorTab5, asPrimary: false, showSplitter: false);
 			editorTab5.Hide();
 
-			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlMessageTabLogicalViewGuid),
+			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.C_SqlMessageTabLogicalViewGuid),
 				EnSplitterBarButtonDisplayStyle.Text, ControlsResources.ToolStripButton_Message_Button_Text,
 				ControlsResources.ImgMessages);
-			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid),
+			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.C_SqlTextResultsTabLogicalViewGuid),
 				EnSplitterBarButtonDisplayStyle.Text, ControlsResources.ToolStripButton_ResultsText_Button_Text,
 				ControlsResources.ImgMessages);
 
-			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlStatisticsTabLogicalViewGuid),
+			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.C_SqlStatisticsTabLogicalViewGuid),
 				EnSplitterBarButtonDisplayStyle.Text,
 				ControlsResources.ToolStripButton_StatisticsSnapshot_Button_Text,
 				ControlsResources.ImgStatistics);
 
-			// splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
+			// splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.C_SqlExecutionPlanTabLogicalViewGuid),
 			//	EnSplitterBarButtonDisplayStyle.Text, btnPlanText, ControlsResources.ImgExecutionPlan);
-			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid),
+			splitViewContainer.CustomizeSplitterBarButton(new Guid(LibraryData.C_SqlTextPlanTabLogicalViewGuid),
 				EnSplitterBarButtonDisplayStyle.Text, btnTextPlanText, ControlsResources.ImgTextPlan);
 
-			TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid), visible: false);
-			// TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid), visible: false);
-			TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid), visible: false);
+			TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.C_SqlTextResultsTabLogicalViewGuid), visible: false);
+			// TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.C_SqlExecutionPlanTabLogicalViewGuid), visible: false);
+			TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(new Guid(LibraryData.C_SqlTextPlanTabLogicalViewGuid), visible: false);
 
 			IVsTextView codeEditorTextView = GetCodeEditorTextView();
 
@@ -705,10 +705,10 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 			: ControlsResources.ToolStripButton_MessageCount_Button_Text.FmtRes(messageCount);
 
 
-		Guid clsidMessagesTab = new Guid(LibraryData.SqlMessageTabLogicalViewGuid);
-		Guid clsidStatisticsTab = new Guid(LibraryData.SqlStatisticsTabLogicalViewGuid);
+		Guid clsidMessagesTab = new Guid(LibraryData.C_SqlMessageTabLogicalViewGuid);
+		Guid clsidStatisticsTab = new Guid(LibraryData.C_SqlStatisticsTabLogicalViewGuid);
 		Guid clsidResultsTab = args.OutputMode == EnSqlOutputMode.ToGrid
-			? VSConstants.LOGVIEWID_Designer : new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid);
+			? VSConstants.LOGVIEWID_Designer : new Guid(LibraryData.C_SqlTextResultsTabLogicalViewGuid);
 
 
 		Exception expected = null;
@@ -1095,33 +1095,33 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBsTabbedE
 
 	public SqlEditorMessageTab GetSqlEditorMessageTab()
 	{
-		Guid guidSqlMessageTabLogicalView = new Guid(LibraryData.SqlMessageTabLogicalViewGuid);
+		Guid guidSqlMessageTabLogicalView = new Guid(LibraryData.C_SqlMessageTabLogicalViewGuid);
 		return GetSqlEditorTab<SqlEditorMessageTab>(guidSqlMessageTabLogicalView);
 	}
 
 	public SqlEditorMessageTab GetSqlEditorTextResultsTab()
 	{
-		Guid guidSqlTextResultsTabLogicalView = new Guid(LibraryData.SqlTextResultsTabLogicalViewGuid);
+		Guid guidSqlTextResultsTabLogicalView = new Guid(LibraryData.C_SqlTextResultsTabLogicalViewGuid);
 		return GetSqlEditorTab<SqlEditorMessageTab>(guidSqlTextResultsTabLogicalView);
 	}
 
 	public SqlEditorResultsTab GetSqlEditorStatisticsTab()
 	{
-		Guid guidSqlStatisticsTabLogicalView = new Guid(LibraryData.SqlStatisticsTabLogicalViewGuid);
+		Guid guidSqlStatisticsTabLogicalView = new Guid(LibraryData.C_SqlStatisticsTabLogicalViewGuid);
 		return GetSqlEditorTab<SqlEditorResultsTab>(guidSqlStatisticsTabLogicalView);
 	}
 
 	/*
 	public SqlEditorResultsTab GetSqlExecutionPlanTab()
 	{
-		Guid guidSqlExecutionPlanTabLogicalView = new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid);
+		Guid guidSqlExecutionPlanTabLogicalView = new Guid(LibraryData.C_SqlExecutionPlanTabLogicalViewGuid);
 		return GetSqlEditorTab<SqlEditorResultsTab>(guidSqlExecutionPlanTabLogicalView);
 	}
 	*/
 
 	public SqlEditorMessageTab GetSqlTextPlanTab()
 	{
-		Guid guidSqlTextPlanTabLogicalView = new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid);
+		Guid guidSqlTextPlanTabLogicalView = new Guid(LibraryData.C_SqlTextPlanTabLogicalViewGuid);
 		return GetSqlEditorTab<SqlEditorMessageTab>(guidSqlTextPlanTabLogicalView);
 	}
 

@@ -331,7 +331,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// -----------------------------------------------------------------
 		// Drift detection. Refresh connection and reset counters.
 		// -----------------------------------------------------------------
-		if (MdlCsb.IsInvalidated)
+		if (RctManager.Loaded && MdlCsb.IsInvalidated)
 		{
 			Csb csaRegistered = RctManager.CloneRegistered(MdlCsb);
 

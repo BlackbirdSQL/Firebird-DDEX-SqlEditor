@@ -133,7 +133,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 	// =========================================================================================================
 
 	private readonly IBsAsyncPackage _PackageInstance;
-	private DTE _Dte = null;
+	protected DTE _Dte = null;
 	private IVsMonitorSelection _MonitorSelection = null;
 	private IVsTaskStatusCenterService _StatusCenterService = null;
 
@@ -229,7 +229,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 	public override IBsAsyncPackage PackageInstance => _PackageInstance;
 
 
-	public override string ProviderGuid => SystemData.ProviderGuid;
+	public override string ProviderGuid => SystemData.C_ProviderGuid;
 
 
 	public override IVsMonitorSelection SelectionMonitor

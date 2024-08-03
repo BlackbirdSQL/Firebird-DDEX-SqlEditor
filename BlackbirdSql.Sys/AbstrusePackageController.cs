@@ -1434,7 +1434,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 	public void OnLoadSolutionOptions(Stream stream)
 	{
-		// Tracer.Trace(GetType(), "OnLoadSolutionOptions()");
+		// Diag.DebugTrace("OnLoadSolutionOptions()");
 
 		UiRegisterProjectEventHandlers();
 

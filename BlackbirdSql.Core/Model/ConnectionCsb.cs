@@ -8,6 +8,7 @@ using BlackbirdSql.Sys.Ctl;
 using Microsoft.Data.ConnectionUI;
 
 using static BlackbirdSql.CoreConstants;
+using static BlackbirdSql.SysConstants;
 
 
 
@@ -64,8 +65,8 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 		{
 			Describers.AddRange(
 			[
-				new Describer(true, C_KeyExDataConnection, typeof(DbConnection), C_DefaultExDataConnection),
-				new Describer(true, C_KeyExDataTransaction, typeof(DbTransaction), C_DefaultExDataTransaction)
+				new Describer(C_KeyExDataConnection, typeof(DbConnection), C_DefaultExDataConnection, D_Default | D_Internal),
+				new Describer(C_KeyExDataTransaction, typeof(DbTransaction), C_DefaultExDataTransaction, D_Default | D_Internal)
 			]);
 		}
 		catch (Exception ex)
@@ -299,6 +300,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 	public bool IsExtensible => true;
 
 
+	[Browsable(false)]
 	public bool IsComplete => IsCompleteMandatory;
 
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace BlackbirdSql.Sys.Interfaces;
 
 [ComImport]
-[Guid(LibraryData.NativeProviderSchemaFactoryGuid)]
+[Guid(LibraryData.C_NativeProviderSchemaFactoryGuid)]
 
 
 // =========================================================================================================

@@ -10,7 +10,7 @@ using Microsoft.Win32;
 namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 
 [ComVisible(true)]
-[Guid(PackageData.LanguagePreferencesGuid)]
+[Guid(PackageData.C_LanguagePreferencesGuid)]
 public class LsbLanguagePreferences : LanguagePreferences
 {
 

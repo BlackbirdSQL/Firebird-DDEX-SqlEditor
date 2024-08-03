@@ -33,57 +33,57 @@ public class SettingsProvider
 
 
 	[ComVisible(true)]
-	[Guid(PackageData.GeneralSettingsGuid)]
+	[Guid(PackageData.C_GeneralSettingsGuid)]
 	public class GeneralSettingsPage : AbstractPersistentSettingsPage<GeneralSettingsPage, GeneralSettingsModel> { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.TabAndStatusBarSettingsGuid)]
+	[Guid(PackageData.C_TabAndStatusBarSettingsGuid)]
 	public class TabAndStatusBarSettingsPage : AbstractPersistentSettingsPage<TabAndStatusBarSettingsPage, TabAndStatusBarSettingsModel> { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.ExecutionSettingsGuid)]
+	[Guid(PackageData.C_ExecutionSettingsGuid)]
 	public class ExecutionSettingsPage : AbstractPersistentSettingsPage<ExecutionSettingsPage, ExecutionSettingsModel> { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.ExecutionAdvancedSettingsGuid)]
+	[Guid(PackageData.C_ExecutionAdvancedSettingsGuid)]
 	public class ExecutionAdvancedSettingsPage : AbstractPersistentSettingsPage<ExecutionAdvancedSettingsPage, ExecutionAdvancedSettingsModel> { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.ResultsSettingsGuid)]
+	[Guid(PackageData.C_ResultsSettingsGuid)]
 	public class ResultsSettingsPage : AbstractPersistentSettingsPage<ResultsSettingsPage, ResultsSettingsModel> { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.ResultsGridSettingsGuid)]
+	[Guid(PackageData.C_ResultsGridSettingsGuid)]
 	public class ResultsGridSettingsPage : AbstractPersistentSettingsPage<ResultsGridSettingsPage, ResultsGridSettingsModel> { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.ResultsTextSettingsGuid)]
+	[Guid(PackageData.C_ResultsTextSettingsGuid)]
 	public class ResultsTextSettingsPage : AbstractPersistentSettingsPage<ResultsTextSettingsPage, ResultsTextSettingsModel> { }
 
 
 
 	[ComVisible(true)]
-	[Guid(PackageData.TransientExecutionSettingsGuid)]
+	[Guid(PackageData.C_TransientExecutionSettingsGuid)]
 	public class TransientExecutionSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientExecutionSettingsPage, ExecutionSettingsModel>(transientSettings) { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.TransientExecutionAdvancedSettingsGuid)]
+	[Guid(PackageData.C_TransientExecutionAdvancedSettingsGuid)]
 	public class TransientExecutionAdvancedSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientExecutionAdvancedSettingsPage, ExecutionAdvancedSettingsModel>(transientSettings) { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.TransientResultsSettingsGuid)]
+	[Guid(PackageData.C_TransientResultsSettingsGuid)]
 	public class TransientResultsSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientResultsSettingsPage, ResultsSettingsModel>(transientSettings)	{ }
 
 	[ComVisible(true)]
-	[Guid(PackageData.TransientResultsGridSettingsGuid)]
+	[Guid(PackageData.C_TransientResultsGridSettingsGuid)]
 	public class TransientResultsGridSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientResultsGridSettingsPage, ResultsGridSettingsModel>(transientSettings) { }
 
 	[ComVisible(true)]
-	[Guid(PackageData.TransientResultsTextSettingsGuid)]
+	[Guid(PackageData.C_TransientResultsTextSettingsGuid)]
 	public class TransientResultsTextSettingsPage(IBsTransientSettings transientSettings)
 		: AbstractTransientSettingsPage<TransientResultsTextSettingsPage, ResultsTextSettingsModel>(transientSettings) { }
 

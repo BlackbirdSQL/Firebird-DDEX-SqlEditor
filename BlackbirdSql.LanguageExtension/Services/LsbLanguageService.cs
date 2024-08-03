@@ -15,7 +15,7 @@ namespace BlackbirdSql.LanguageExtension.Services;
 /// BlackbirdSql Language Service final class. This class level will handle all Firebird specific grammar.
 /// </summary>
 // =========================================================================================================
-[Guid(PackageData.LanguageServiceGuid)]
+[Guid(PackageData.C_LanguageServiceGuid)]
 public class LsbLanguageService : AbstractLanguageService
 {
 

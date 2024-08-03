@@ -14,7 +14,7 @@ using BlackbirdSql.Sys.Events;
 
 namespace BlackbirdSql.Sys.Interfaces;
 
-[Guid(LibraryData.NativeDbStatementServiceGuid)]
+[Guid(LibraryData.C_NativeDbStatementServiceGuid)]
 
 
 public interface IBsNativeDbStatementWrapper : IDisposable

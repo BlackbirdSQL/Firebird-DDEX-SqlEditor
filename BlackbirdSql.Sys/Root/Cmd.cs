@@ -261,6 +261,32 @@ public abstract class Cmd
 	}
 
 
+	/// <summary>
+	/// Shortens a moniker directory path to within maxLength and prefixes with '.'
+	/// if the path was shortened. maxLength may be less than or equal to zero.
+	/// </summary>
+	public static string GetShortenedMonikerPath(string path, int maxLength)
+	{
+		string[] parts = path.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar]);
+
+		int i = parts.Length - 1;
+		string result;
+
+		result = parts[^1];
+
+		while (i > 0 && parts[i - 1].Length + result.Length + 1 <= maxLength)
+		{
+			i--;
+			result = Path.Combine(parts[i], result);
+		}
+
+		if (i > 0)
+			result = Path.Combine(".", result);
+
+		return result;
+	}
+
+
 
 	/// <summary>
 	/// Gets the prefix of an identifier stripped of any unique suffix in the for '_999'.

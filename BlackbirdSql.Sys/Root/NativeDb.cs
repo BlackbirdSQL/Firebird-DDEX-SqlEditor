@@ -147,10 +147,11 @@ public static class NativeDb
 
 	public static string AssemblyQualifiedName => DatabaseEngineSvc.AssemblyQualifiedName_;
 	public static string ClientVersion => DatabaseEngineSvc.ClientVersion_;
-	public static Assembly  ClientFactoryAssembly => DatabaseEngineSvc.ClientFactoryAssembly_;
+	public static Assembly ClientFactoryAssembly => DatabaseEngineSvc.ClientFactoryAssembly_;
 	public static Type ClientFactoryType => DatabaseEngineSvc.ClientFactoryType_;
 	public static Type ConnectionType => DatabaseEngineSvc.ConnectionType_;
 	public static DescriberDictionary Describers => DatabaseEngineSvc.Describers_;
+	public static Assembly EntityFrameworkAssembly => DatabaseEngineSvc.EntityFrameworkAssembly_;
 	public static string Invariant => DatabaseEngineSvc.Invariant_;
 	public static string ProviderFactoryName => DatabaseEngineSvc.ProviderFactoryName_;
 	public static string ProviderFactoryClassName => DatabaseEngineSvc.ProviderFactoryClassName_;
@@ -282,6 +283,16 @@ public static class NativeDb
 	{
 		return DatabaseEngineSvc.GetDecoratedDdlSource_(node, targetType);
 	}
+
+
+
+	public static bool MatchesEntityFrameworkAssembly(string assemblyName) =>
+		DatabaseEngineSvc.MatchesEntityFrameworkAssembly_(assemblyName);
+
+
+
+	public static bool MatchesInvariantAssembly(string assemblyName) =>
+		DatabaseEngineSvc.MatchesInvariantAssembly_(assemblyName);
 
 
 

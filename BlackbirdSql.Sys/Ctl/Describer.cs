@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
+using static BlackbirdSql.SysConstants;
 
 
 namespace BlackbirdSql.Sys.Ctl;
@@ -21,6 +22,11 @@ namespace BlackbirdSql.Sys.Ctl;
 // =========================================================================================================
 public class Describer
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - Describer
+	// ---------------------------------------------------------------------------------
+
 
 	/// <summary>
 	/// Full .ctor.
@@ -58,55 +64,65 @@ public class Describer
 	/// Returns true if the describer represents a connection property/parameter and is required.
 	/// </param>
 	/// <param name="isInternalStore">Internal storage property. For example an encrypted version of a password.</param>
-	public Describer(string name, string connectionParameterKey, Type propertyType, object defaultValue = null,
-		bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true,
-		bool isMandatory = false, bool isInternalStore = false)
+	public Describer(string name, string connectionParameterKey, Type propertyType, object defaultValue, int dtype)
 	{
-		Name = name;
-
+		_Name = name;
 		_ConnectionParameterKey = connectionParameterKey;
-
-		PropertyType = propertyType;
-		DefaultValue = defaultValue;
-		IsConnectionParameter = isConnectionProperty;
-		IsAdvanced = isAdvanced;
-		IsPublic = isPublic;
-		IsMandatory = isMandatory;
-		IsInternalStore = isInternalStore;
+		_PropertyType = propertyType;
+		_DefaultValue = defaultValue;
+		_DType = dtype;
 	}
 
 	/// <summary>
 	/// Shortened .ctor.
 	/// </summary>
-	public Describer(string name, Type propertyType, object defaultValue = null, bool isConnectionProperty = false,
-		bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
-		: this(name, null, propertyType, defaultValue, isConnectionProperty, isAdvanced, isPublic, isMandatory)
+	public Describer(string name, Type propertyType, object defaultValue, int dtype)
+		: this(name, null, propertyType, defaultValue, dtype)
 	{
 	}
 
 
-	public Describer(bool isInternalStore, string name, string connectionParameterKey, Type propertyType,
-			object defaultValue = null, bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true,
-			bool isMandatory = false)
-		: this(name, connectionParameterKey, propertyType, defaultValue, isConnectionProperty, isAdvanced, isPublic,
-			isMandatory, isInternalStore)
+	public Describer(string name, string connectionParameterKey, Type propertyType, int dtype)
+		: this(name, connectionParameterKey, propertyType, null, dtype)
 	{
 	}
 
 
-	public Describer(bool isInternalStore, string name, Type propertyType, object defaultValue = null,
-			bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
-		: this(name, null, propertyType, defaultValue, isConnectionProperty, isAdvanced, isPublic, isMandatory, isInternalStore)
+	public Describer(string name, Type propertyType, int dtype)
+	: this(name, null, propertyType, null, dtype)
 	{
 	}
 
 
+	#endregion Constructors / Destructors
 
 
-	private string _ConnectionParameterKey = null;
-	private static PropertyDescriptorCollection _Descriptors = null;
+
+
+	// =========================================================================================================
+	#region Fields - Describer
+	// =========================================================================================================
+
+
+	private readonly string _Name = null;
+	private readonly string _ConnectionParameterKey = null;
+	private readonly Type _PropertyType = null;
+	private readonly object _DefaultValue = null;
+	private readonly int _DType = 6;
+
 	private bool? _IsEquivalency;
+	private static PropertyDescriptorCollection _Descriptors = null;
 
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - Describer
+	// =========================================================================================================
 
 
 	// ---------------------------------------------------------------------------------
@@ -123,66 +139,78 @@ public class Describer
 	}
 
 
-
 	/// <summary>
 	/// The TitleCased property name as defined in the native database csb or
 	/// or a title-cased nova name for external properties.
 	/// If ConnectionParameterKey is not null and does not match Name, then
 	/// Name is considered a synonym of ConnectionParameterKey.
 	/// </summary>
-	public string Name { get; set; } = null;
+	public string Name => _Name;
+
 
 	/// <summary>
 	/// The property's system type.
 	/// </summary>
-	public Type PropertyType { get; set; } = null;
+	public Type PropertyType => _PropertyType;
+
 
 	/// <summary>
 	/// The property's system data type.
 	/// </summary>
-	public Type DataType => PropertyType.IsSubclassOf(typeof(Enum))
+	public Type DataType => _PropertyType.IsSubclassOf(typeof(Enum))
 		? typeof(int)
-		: PropertyType == typeof(byte[])
+		: _PropertyType == typeof(byte[])
 			? typeof(string)
-			: PropertyType == typeof(Version)
-				? typeof(string) : PropertyType;
+			: _PropertyType == typeof(Version)
+				? typeof(string) : _PropertyType;
 
 	/// <summary>
 	/// The property default value. For properties where the default value
 	/// must be determined at runtime, for strings use null and for
 	/// cardinals use int.MinValue.
 	/// </summary>
-	public object DefaultValue { get; set; } = null;
+	public object DefaultValue => _DefaultValue;
+
+
+	/// <summary>
+	/// True if this describer is derived / calculated else false.
+	/// </summary>
+	public bool IsDerived => (_DType & D_Derived) > 0;
 
 	/// <summary>
 	/// True if this describer is a valid browsable property else false
 	/// if it's for internal storage.
 	/// </summary>
-	public bool IsInternalStore { get; set; } = false;
+	public bool IsInternalStore => (_DType & D_Internal) > 0;
+
 
 	/// <summary>
 	/// True if this describer represents a native db connection property/parameter.
 	/// If PropertyName is not null than the describer defined by it's Name
 	/// is a pseudonym for PropertyName.
 	/// </summary>
-	public bool IsConnectionParameter { get; set; } = false;
+	public bool IsConnectionParameter => (_DType & D_Connection) > 0;
+
 
 	/// <summary>
 	/// Returns false if the describer is a connection property/parameter and appears in
 	/// connection dialog front-ends (ie. a basic connection property/parameter) else
 	/// true in all other cases.
 	/// </summary>
-	public bool IsAdvanced { get; set; } = false;
+	public bool IsAdvanced => (_DType & D_Advanced) > 0;
+
 
 	/// <summary>
 	/// Returns false if the describer is a secure value else true.
 	/// </summary>
-	public bool IsPublic { get; set; } = false;
+	public bool IsPublic => (_DType & D_Public) > 0;
+
 
 	/// <summary>
 	/// Returns true if the describer represents a connection property/parameter and is required.
 	/// </summary>
-	public bool IsMandatory { get; set; } = false;
+	public bool IsMandatory => (_DType & D_Mandatory) > 0;
+
 
 	/// <summary>
 	/// Determines if changes to the underlying connection property/parameter value will produce
@@ -196,7 +224,7 @@ public class Describer
 			if (_IsEquivalency.HasValue)
 				return _IsEquivalency.Value;
 
-			_IsEquivalency = NativeDb.EquivalencyKeys.Contains(Name);
+			_IsEquivalency = NativeDb.EquivalencyKeys.Contains(_Name);
 
 			return _IsEquivalency.Value;
 		}
@@ -207,20 +235,11 @@ public class Describer
 	/// The key used in the connection string. The ConnectionParameterKey else the
 	/// Descriptor Name if ConnectionParameterKey is null.
 	/// </summary>
-	public string ConnectionStringKey
-	{
-		get
-		{
-
-			if (_ConnectionParameterKey != null)
-				return _ConnectionParameterKey;
-
-			return Key;
-		}
-	}
+	public string ConnectionStringKey => _ConnectionParameterKey ?? _Name;
 
 
-	public PropertyDescriptor Descriptor => ConnectionParameterKey == null ? null : Descriptors.Find(ConnectionParameterKey, true);
+
+	public PropertyDescriptor Descriptor => _ConnectionParameterKey == null ? null : Descriptors.Find(_ConnectionParameterKey, true);
 
 
 	public string DisplayName
@@ -232,11 +251,11 @@ public class Describer
 
 			Type csbType = NativeDb.CsbType;
 
-			PropertyInfo pinfo = csbType.GetProperty(Name);
+			PropertyInfo pinfo = csbType.GetProperty(_Name);
 
 			if (pinfo == null)
 			{
-				ArgumentNullException ex = new ArgumentNullException($"Property {Name} not found in csb.");
+				ArgumentNullException ex = new ArgumentNullException($"Property {_Name} not found in csb.");
 				Diag.Dug(ex);
 				return null;
 			}
@@ -244,7 +263,7 @@ public class Describer
 			DisplayNameAttribute attr = pinfo.GetCustomAttribute<DisplayNameAttribute>();
 			if (attr == null)
 			{
-				ArgumentNullException ex = new ArgumentNullException($"Property {Name} DisplayNameAttribute not found in csb.");
+				ArgumentNullException ex = new ArgumentNullException($"Property {_Name} DisplayNameAttribute not found in csb.");
 				Diag.Dug(ex);
 				return null;
 			}
@@ -253,15 +272,9 @@ public class Describer
 		}
 	}
 
-	public string Key
-	{
-		get
-		{
-			// if (!IsConnectionParameter)
-			// 	return null;
-			return Name;
-		}
-	}
+
+	public string Key => _Name;
+
 
 	/// <summary>
 	/// Returns true if this describer is a connection property/parameter and is a mandatory
@@ -275,13 +288,18 @@ public class Describer
 	/// is not null and does not match the Descriptor Name, then the Descriptor Name is
 	/// considered a synonym of ConnectionParameterKey.
 	/// </summary>
-	public string ConnectionParameterKey
-	{
-		get { return _ConnectionParameterKey; }
-		set { _ConnectionParameterKey = value; }
-	}
+	public string ConnectionParameterKey => _ConnectionParameterKey;
 
 
+	#endregion Property accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - Describer
+	// =========================================================================================================
 
 
 	/// <summary>
@@ -291,7 +309,7 @@ public class Describer
 	/// <returns></returns>
 	public bool DefaultEquals(object rhs)
 	{
-		if (DefaultValue == null)
+		if (_DefaultValue == null)
 		{
 			if (Cmd.IsNullValue(rhs))
 				return true;
@@ -299,10 +317,10 @@ public class Describer
 			return false;
 		}
 
-		if (PropertyType.IsEnum)
-			return Convert.ToInt32(DefaultValue) == Convert.ToInt32(rhs);
+		if (_PropertyType.IsEnum)
+			return Convert.ToInt32(_DefaultValue) == Convert.ToInt32(rhs);
 
-		return DefaultValue.Equals(rhs);
+		return _DefaultValue.Equals(rhs);
 	}
 
 
@@ -314,7 +332,7 @@ public class Describer
 	/// <returns></returns>
 	public bool DefaultEqualsOrEmpty(object rhs)
 	{
-		if (DefaultValue == null)
+		if (_DefaultValue == null)
 		{
 			if (Cmd.IsNullValue(rhs))
 				return true;
@@ -322,7 +340,7 @@ public class Describer
 			return false;
 		}
 
-		if (DataType == typeof(string) && string.IsNullOrWhiteSpace((string)DefaultValue))
+		if (DataType == typeof(string) && string.IsNullOrWhiteSpace((string)_DefaultValue))
 		{
 			if (string.IsNullOrWhiteSpace((string)rhs) || rhs == DBNull.Value)
 				return true;
@@ -330,10 +348,10 @@ public class Describer
 			return false;
 		}
 
-		if (PropertyType.IsEnum)
-			return Convert.ToInt32(DefaultValue) == Convert.ToInt32(rhs);
+		if (_PropertyType.IsEnum)
+			return Convert.ToInt32(_DefaultValue) == Convert.ToInt32(rhs);
 
-		return DefaultValue.Equals(rhs);
+		return _DefaultValue.Equals(rhs);
 	}
 
 	/// <summary>
@@ -343,7 +361,7 @@ public class Describer
 	/// <param name="rhs"></param>
 	public bool DefaultEqualsOrEmptyString(object rhs)
 	{
-		if (DefaultValue == null)
+		if (_DefaultValue == null)
 		{
 			if (Cmd.IsNullValue(rhs) || rhs.ToString() == "")
 				return true;
@@ -351,7 +369,7 @@ public class Describer
 			return false;
 		}
 
-		if (string.IsNullOrWhiteSpace(DefaultValue.ToString()))
+		if (string.IsNullOrWhiteSpace(_DefaultValue.ToString()))
 		{
 			if (string.IsNullOrWhiteSpace(rhs.ToString()))
 				return true;
@@ -359,10 +377,10 @@ public class Describer
 			return false;
 		}
 
-		if (PropertyType.IsEnum)
-			return Convert.ToInt32(DefaultValue) == Convert.ToInt32(rhs);
+		if (_PropertyType.IsEnum)
+			return Convert.ToInt32(_DefaultValue) == Convert.ToInt32(rhs);
 
-		return DefaultValue.Equals(rhs);
+		return _DefaultValue.Equals(rhs);
 	}
 
 
@@ -384,12 +402,16 @@ public class Describer
 	public bool SynonymMatches(string synonym)
 	{
 		return _ConnectionParameterKey != null && _ConnectionParameterKey.Equals(synonym, StringComparison.OrdinalIgnoreCase)
-				|| Name.Equals(synonym, StringComparison.OrdinalIgnoreCase);
+				|| _Name.Equals(synonym, StringComparison.OrdinalIgnoreCase);
 	}
 
 
 	public override string ToString()
 	{
-		return Name;
+		return _Name;
 	}
+
+
+	#endregion Methods
+
 }

@@ -204,11 +204,15 @@ public abstract class UnsafeCmd
 
 			foreach (string ext in extensions)
 			{
-				if (filepath.EndsWith(ext))
+				try
 				{
-					found = true;
-					break;
+					if (filepath.EndsWith(ext))
+					{
+						found = true;
+						break;
+					}
 				}
+				catch { }
 			}
 
 			if (!found)

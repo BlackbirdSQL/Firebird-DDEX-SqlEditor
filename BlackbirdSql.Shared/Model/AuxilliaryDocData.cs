@@ -117,6 +117,7 @@ public sealed class AuxilliaryDocData
 	private string _ConnectionUrlAtExecutionStart;
 	private readonly object _DocData;
 	private uint _DocCookie;
+	private int _CloneCardinal = 0;
 	private string _InflightMoniker;
 	private bool? _IntellisenseEnabled;
 	private string _InternalDocumentMoniker;
@@ -223,6 +224,12 @@ public sealed class AuxilliaryDocData
 
 
 	public bool HasExecutionPlan => QryMgr.LiveSettings.HasExecutionPlan;
+
+
+	public bool HasClone
+	{
+		get { return _CloneCardinal > 0; }
+	}
 
 
 	public bool? IntellisenseEnabled
@@ -451,6 +458,9 @@ public sealed class AuxilliaryDocData
 
 
 
+	public int AddClone() => ++_CloneCardinal;
+
+
 	public void CommitTransactions(bool validate)
 	{
 		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked)
@@ -482,29 +492,6 @@ public sealed class AuxilliaryDocData
 
 
 
-	private static string GetShortenedMonikerPath(string path, int maxLength)
-	{
-		string[] parts = path.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar]);
-
-		int i = parts.Length - 1;
-		string result;
-
-		result = parts[^1];
-
-		while (i > 0 && parts[i - 1].Length + result.Length + 1 <= maxLength)
-		{
-			i--;
-			result = Path.Combine(parts[i], result);
-		}
-
-		if (i > 0)
-			result = Path.Combine(".", result);
-
-		return result;
-	}
-
-
-
 	/// <summary>
 	/// For performance. Gets the AuxilliaryDocData directly from DocData.
 	/// </summary>
@@ -517,7 +504,7 @@ public sealed class AuxilliaryDocData
 			return null;
 
 		AuxilliaryDocData value = null;
-		Guid clsid = new(LibraryData.AuxilliaryDocDataGuid);
+		Guid clsid = new(LibraryData.C_AuxilliaryDocDataGuid);
 
 		try
 		{
@@ -536,7 +523,7 @@ public sealed class AuxilliaryDocData
 
 
 
-	public bool RequestDeactivateQuery()
+	public bool RequestDeactivateQuery(string msgResource = null)
 	{
 		// Tracer.Trace(GetType(), "RequestDeactivateQuery()");
 
@@ -551,7 +538,8 @@ public sealed class AuxilliaryDocData
 			if (!inAutomation)
 			{
 				ShowWindowFrame();
-				dialogResult = MessageCtl.ShowEx(Resources.MsgAbortExecutionAndClose,
+				msgResource ??= Resources.MsgAbortExecutionAndClose;
+				dialogResult = MessageCtl.ShowEx(msgResource,
 					Resources.MsgQueryAbort_IsExecutingCaption,
 					MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 			}
@@ -566,13 +554,19 @@ public sealed class AuxilliaryDocData
 		}
 		else if (QryMgr.HasTransactions)
 		{
+			if (HasClone)
+			{
+				_CloneCardinal--;
+				return true;
+			}
+
 			dialogResult = DialogResult.No;
 
 			if (!inAutomation)
 			{
 				ShowWindowFrame();
-
-				dialogResult = MessageCtl.ShowEx(Resources.MsgQueryAbort_UncommittedTransactions,
+				msgResource ??= Resources.MsgQueryAbort_UncommittedTransactionsClose;
+				dialogResult = MessageCtl.ShowEx(msgResource,
 					Resources.MsgQueryAbort_UncommittedTransactionsCaption,
 					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
 			}
@@ -614,14 +608,17 @@ public sealed class AuxilliaryDocData
 			foreach (KeyValuePair<AuxilliaryDocData, string> pair in docs)
 			{
 				string str;
+				string datasetKey = pair.Key.QryMgr.Strategy.AdornedQualifiedName;
 
 				if (pair.Key.IsVirtualWindow)
 				{
-					sortList.Add(pair.Value);
+					str = Resources.MsgQueryAbort_QualifiedName.FmtRes(pair.Value, datasetKey);
+					sortList.Add(str);
 				}
 				else
 				{
-					str = GetShortenedMonikerPath(pair.Value, 50);
+					str = Cmd.GetShortenedMonikerPath(pair.Value, 72 - datasetKey.Length);
+					str = Resources.MsgQueryAbort_QualifiedName.FmtRes(str, datasetKey);
 					savedList.Add(str);
 				}
 			}
@@ -629,9 +626,11 @@ public sealed class AuxilliaryDocData
 			sortList.Sort(StringComparer.InvariantCultureIgnoreCase);
 			savedList.Sort(StringComparer.InvariantCultureIgnoreCase);
 
+			if (sortList.Count > 0 && savedList.Count > 0)
+				sortList.Add(string.Empty);
+
 			foreach (string str in savedList)
 				sortList.Add(str);
-
 
 			foreach (string name in sortList)
 				names += (names != string.Empty ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.FmtRes(name);
@@ -672,20 +671,26 @@ public sealed class AuxilliaryDocData
 			foreach (KeyValuePair<AuxilliaryDocData, string> pair in docs)
 			{
 				string str;
+				string datasetKey = pair.Key.QryMgr.Strategy.AdornedQualifiedName;
 
 				if (pair.Key.IsVirtualWindow)
 				{
-					sortList.Add(pair.Value);
+					str = Resources.MsgQueryAbort_QualifiedName.FmtRes(pair.Value, datasetKey);
+					sortList.Add(str);
 				}
 				else
 				{
-					str = GetShortenedMonikerPath(pair.Value, 50);
+					str = Cmd.GetShortenedMonikerPath(pair.Value, 72 - datasetKey.Length);
+					str = Resources.MsgQueryAbort_QualifiedName.FmtRes(str, datasetKey);
 					savedList.Add(str);
 				}
 			}
 
 			sortList.Sort(StringComparer.InvariantCultureIgnoreCase);
 			savedList.Sort(StringComparer.InvariantCultureIgnoreCase);
+
+			if (sortList.Count > 0 && savedList.Count > 0)
+				sortList.Add(string.Empty);
 
 			foreach (string str in savedList)
 				sortList.Add(str);
@@ -757,7 +762,7 @@ public sealed class AuxilliaryDocData
 			return;
 		}
 
-		Guid clsid = new(LibraryData.AuxilliaryDocDataGuid);
+		Guid clsid = new(LibraryData.C_AuxilliaryDocDataGuid);
 
 		try
 		{
@@ -842,7 +847,7 @@ public sealed class AuxilliaryDocData
 		else
 		{
 			name = RdtManager.GetDocumentMoniker(DocCookie);
-			name = GetShortenedMonikerPath(name, 80);
+			name = Cmd.GetShortenedMonikerPath(name, 80);
 		}
 
 		string prefix;

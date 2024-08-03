@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys.Enums;
@@ -137,7 +136,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 				return _ActualPlanTable;
 
 			_ActualPlanTable = new();
-			_ActualPlanTable.Columns.Add(LibraryData.XmlActualPlanColumn, typeof(string));
+			_ActualPlanTable.Columns.Add(LibraryData.C_XmlActualPlanColumn, typeof(string));
 
 			return _ActualPlanTable;
 		}
@@ -167,7 +166,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 				return _EstimatedPlanTable;
 
 			_EstimatedPlanTable = new();
-			_EstimatedPlanTable.Columns.Add(LibraryData.XmlEstimatedPlanColumn, typeof(string));
+			_EstimatedPlanTable.Columns.Add(LibraryData.C_XmlEstimatedPlanColumn, typeof(string));
 
 			return _EstimatedPlanTable;
 		}

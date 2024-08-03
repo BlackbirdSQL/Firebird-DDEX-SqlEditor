@@ -14,26 +14,18 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Sys.Interfaces;
 
-[Guid(LibraryData.AsyncPackageGuid)]
+[Guid(LibraryData.C_AsyncPackageGuid)]
 
 
 public interface IBsAsyncPackage
 {
 
 	IBsPackageController ApcInstance { get; }
-
 	IDisposable DisposableWaitCursor { get; set; }
-
 	IVsSolution VsSolution { get; }
-
-
 	IBsEventsManager EventsManager { get; }
-
-
 	Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; }
-
 	IAsyncServiceContainer ServiceContainer { get; }
-
 	IServiceContainer SyncServiceContainer { get; }
 
 	delegate void LoadSolutionOptionsDelegate(Stream stream);
@@ -47,17 +39,11 @@ public interface IBsAsyncPackage
 	// IVsDataConnectionDialog CreateConnectionDialogHandler();
 
 	Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token);
-
 	Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress);
-
 	TInterface GetService<TService, TInterface>() where TInterface : class;
-
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
-
+	void OutputLoadStatistics();
 	void SaveUserPreferences();
-
 	object ServicesCreatorCallback(IServiceContainer container, Type serviceType);
-
 	Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType);
-
 }

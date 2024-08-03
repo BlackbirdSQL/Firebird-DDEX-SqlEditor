@@ -20,7 +20,6 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
-using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
@@ -32,7 +31,6 @@ using BlackbirdSql.Data.Model.Schema;
 using BlackbirdSql.Data.Properties;
 using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Threading;
 
 
@@ -44,7 +42,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 {
 	#region Static Members
 
-	private static readonly string ResourceName = LibraryData.SchemaMetaDataXml;
+	private static readonly string ResourceName = LibraryData.C_SchemaMetaDataXml;
 
 	#endregion
 

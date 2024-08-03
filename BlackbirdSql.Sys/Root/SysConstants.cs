@@ -1,12 +1,14 @@
-﻿using System;
+﻿
 using System.Data;
-using System.Security;
+using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Properties;
 
 
 
 namespace BlackbirdSql;
+
+[SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Preference")]
 
 
 // =========================================================================================================
@@ -19,8 +21,27 @@ namespace BlackbirdSql;
 public static class SysConstants
 {
 
-	public static string DatasetKeyFormat => Resources.DatasetKeyFormat;
-	public static string DatasetKeyAlternateFormat => Resources.DatasetKeyAlternateFormat;
+	public static string S_DatasetKeyFormat => Resources.DatasetKeyFormat;
+	public static string S_DatasetKeyAlternateFormat => Resources.DatasetKeyAlternateFormat;
+
+
+
+	// ---------------------------------------------------------------------------------
+	#region Describer Flags - SysConstants
+	// ---------------------------------------------------------------------------------
+
+
+	public const int D_Connection = 1;
+	public const int D_Advanced = 2;
+	public const int D_Public = 4;
+	public const int D_Default = 6;
+	public const int D_Mandatory = 8;
+	public const int D_Derived = 16;
+	public const int D_Internal = 32;
+
+
+	#endregion Describer Flags
+
 
 
 	// ---------------------------------------------------------------------------------

@@ -50,7 +50,7 @@ public static class CommandProperties
 	// =========================================================================================================
 
 	// Provider Clsid.
-	public static Guid ClsidProvider = new Guid(SystemData.ProviderGuid);
+	public static Guid ClsidProvider = new Guid(SystemData.C_ProviderGuid);
 
 	// VS DataToolsCommands providers
 	public const string UniversalCommandProviderGuid = "CD332A3B-B404-45B7-988F-587672086727";

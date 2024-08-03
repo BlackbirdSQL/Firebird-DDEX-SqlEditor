@@ -19,7 +19,7 @@ using Microsoft.VisualStudio.Data.Services;
 
 namespace BlackbirdSql.Sys.Interfaces;
 
-[Guid(LibraryData.NativeDatabaseEngineServiceGuid)]
+[Guid(LibraryData.C_NativeDatabaseEngineServiceGuid)]
 [SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "<Pending>")]
 
 
@@ -37,6 +37,7 @@ public interface IBsNativeDatabaseEngine
 	Type ClientFactoryType_ { get; }
 	Type EFProviderServicesType_ { get; }
 	string EFProviderServicesTypeFullName_ { get; }
+	Assembly EntityFrameworkAssembly_ { get; }
 	string[] EntityFrameworkVersions_ { get; }
 	Type ConnectionType_ { get; }
 	DescriberDictionary Describers_ { get; }
@@ -88,6 +89,8 @@ public interface IBsNativeDatabaseEngine
 	bool IsSupportedCommandType_(object command);
 	bool IsSupportedConnection_(IDbConnection connection);
 	bool LockLoadedParser_(string originalString, string updatedString);
+	bool MatchesEntityFrameworkAssembly_(string assemblyName);
+	bool MatchesInvariantAssembly_(string assemblyName);
 	void OpenConnection_(DbConnection connection);
 	Task<bool> ReaderCloseAsync_(IDataReader @this, CancellationToken cancelToken);
 	Task<DataTable> ReaderGetSchemaTableAsync_(IDataReader @this, CancellationToken cancelToken);

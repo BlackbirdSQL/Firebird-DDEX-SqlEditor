@@ -309,7 +309,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		if (connectionName == null)
 			return null;
 
-		string[] split = DatasetKeyFormat.FmtRes(dataSource, "\n").Split('\n');
+		string[] split = S_DatasetKeyFormat.FmtRes(dataSource, "\n").Split('\n');
 
 		if ((split[0] == string.Empty || connectionName.StartsWith(split[0], StringComparison.InvariantCulture))
 			&& (split[1] == string.Empty || connectionName.EndsWith(split[1], StringComparison.InvariantCulture))
@@ -416,7 +416,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 					: (proposedDatasetIdPrefix + $"_{i + 1}");
 			}
 
-			uniqueDatasetKey = DatasetKeyFormat.FmtRes(dataSource, uniqueDatasetId);
+			uniqueDatasetKey = S_DatasetKeyFormat.FmtRes(dataSource, uniqueDatasetId);
 
 			if (!TryGetEntry(uniqueDatasetKey, out int index))
 				break;
@@ -516,11 +516,11 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			}
 			else if (csa.ContainsKey(C_KeyExDatasetId) && !string.IsNullOrWhiteSpace(csa.DatasetId))
 			{
-				csa.DatasetKey = DatasetKeyFormat.FmtRes(csa.DataSource, csa.DatasetId);
+				csa.DatasetKey = S_DatasetKeyFormat.FmtRes(csa.DataSource, csa.DatasetId);
 			}
 			else
 			{
-				csa.DatasetKey = DatasetKeyFormat.FmtRes(csa.DataSource, csa.Dataset);
+				csa.DatasetKey = S_DatasetKeyFormat.FmtRes(csa.DataSource, csa.Dataset);
 			}
 		}
 

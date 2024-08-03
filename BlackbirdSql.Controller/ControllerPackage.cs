@@ -40,9 +40,10 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	protected ControllerPackage() : base()
 	{
 		// Enable solution open/close event handling.
-		AddOptionKey(SystemData.C_PersistentKey);
+		AddOptionKey(SystemData.C_SolutionKey);
 
-		// Create the Controller.
+		// Diag.DebugTrace($"Called AddOptionKey():  Key: {SystemData.C_SolutionKey}.");
+
 		// Create the Controller Events Manager. 
 		_EventsManager = ControllerEventsManager.CreateInstance(_ApcInstance);
 	}
@@ -298,7 +299,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 	protected override void OnLoadOptions(string key, Stream stream)
 	{
-		// Tracer.Trace(GetType(), "OnLoadOptions()");
+		// Diag.DebugTrace($"OnLoadOptions():  Key: {key}.");
 
 		// If this is called early we have to initialize user option push notifications
 		// and environment events synchronously.
@@ -306,7 +307,9 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		ApcInstance.UiAdviseUnsafeEvents();
 		ApcInstance.UiRegisterProjectEventHandlers();
 
-		if (key == SystemData.C_PersistentKey)
+		// Diag.DebugTrace($"OnLoadOptions():  Invoking.");
+
+		if (key == SystemData.C_SolutionKey)
 			_OnLoadSolutionOptionsEvent?.Invoke(stream);
 		else
 			base.OnLoadOptions(key, stream);
@@ -315,7 +318,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 	protected override void OnSaveOptions(string key, Stream stream)
 	{
-		if (key == SystemData.C_PersistentKey)
+		if (key == SystemData.C_SolutionKey)
 			_OnSaveSolutionOptionsEvent?.Invoke(stream);
 		else
 			base.OnSaveOptions(key, stream);

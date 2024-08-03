@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 namespace BlackbirdSql.Sys.Interfaces;
 
 [ComVisible(false)]
-[Guid(LibraryData.NativeDbCommandServiceGuid)]
+[Guid(LibraryData.C_NativeDbCommandServiceGuid)]
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
 
 

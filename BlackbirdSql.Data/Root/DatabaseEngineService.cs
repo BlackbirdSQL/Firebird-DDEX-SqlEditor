@@ -45,8 +45,8 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	public string ClientVersion_ => $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
 	public Type ClientFactoryType_ => typeof(FirebirdClientFactory);
 	public Type ConnectionType_ => typeof(FbConnection);
-	public string DataProviderName_ => LibraryData.DataProviderName;
-	public string DbEngineName_ => LibraryData.DbEngineName;
+	public string DataProviderName_ => LibraryData.C_DataProviderName;
+	public string DbEngineName_ => LibraryData.C_DbEngineName;
 
 
 	// ---------------------------------------------------------------------------------
@@ -58,31 +58,32 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	public DescriberDictionary Describers_ => new(LibraryData.Describers, LibraryData.DescriberSynonyms);
 
 
-	public string EFConnectionFactory_ => LibraryData.EFConnectionFactory;
-	public string EFProvider_ => LibraryData.EFProvider;
-	public string EFProviderServices_ => LibraryData.EFProviderServices;
+	public string EFConnectionFactory_ => LibraryData.C_EFConnectionFactory;
+	public string EFProvider_ => LibraryData.C_EFProvider;
+	public string EFProviderServices_ => LibraryData.C_EFProviderServices;
 	public Type EFProviderServicesType_ => typeof(FbProviderServices);
-	public string EFProviderServicesTypeFullName_ => LibraryData.EFProviderServicesTypeFullName;
-	public string[] EntityFrameworkVersions_ => LibraryData.EntityFrameworkVersions;
-	public string Extension_ => LibraryData.Extension;
+	public string EFProviderServicesTypeFullName_ => LibraryData.C_EFProviderServicesTypeFullName;
+	public Assembly EntityFrameworkAssembly_ => typeof(FbProviderServices).Assembly;
+	public string[] EntityFrameworkVersions_ => LibraryData.S_EntityFrameworkVersions;
+	public string Extension_ => LibraryData.C_Extension;
 
 
 	/// <summary>
 	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).
 	/// </summary>
-	public string ExternalUtilityConfigurationPath_ => LibraryData.ExternalUtilityConfigurationPath;
+	public string ExternalUtilityConfigurationPath_ => LibraryData.S_ExternalUtilityConfigurationPath;
 
 
-	public string Invariant_ => LibraryData.Invariant;
-	public string Protocol_ => LibraryData.Protocol;
-	public string ProviderFactoryName_ => LibraryData.ProviderFactoryName;
-	public string ProviderFactoryClassName_ => LibraryData.ProviderFactoryClassName;
-	public string ProviderFactoryDescription_ => LibraryData.ProviderFactoryDescription;
+	public string Invariant_ => LibraryData.C_Invariant;
+	public string Protocol_ => LibraryData.C_Protocol;
+	public string ProviderFactoryName_ => LibraryData.C_ProviderFactoryName;
+	public string ProviderFactoryClassName_ => LibraryData.C_ProviderFactoryClassName;
+	public string ProviderFactoryDescription_ => LibraryData.C_ProviderFactoryDescription;
 	public string RootObjectTypeName_ => DslObjectTypes.Root;
-	public string Scheme_ => LibraryData.Scheme;
-	public string SqlLanguageName_ => LibraryData.SqlLanguageName;
-	public string XmlActualPlanColumn_ => LibraryData.XmlActualPlanColumn;
-	public string XmlEstimatedPlanColumn_ => LibraryData.XmlEstimatedPlanColumn;
+	public string Scheme_ => LibraryData.S_Scheme;
+	public string SqlLanguageName_ => LibraryData.C_SqlLanguageName;
+	public string XmlActualPlanColumn_ => LibraryData.C_XmlActualPlanColumn;
+	public string XmlEstimatedPlanColumn_ => LibraryData.C_XmlEstimatedPlanColumn;
 
 
 
@@ -501,7 +502,52 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	}
 
 
-	public bool LockLoadedParser_(string originalString, string updatedString) => LinkageParser.LockLoadedParser(originalString, updatedString);
+	public bool LockLoadedParser_(string originalString, string updatedString) =>
+		LinkageParser.LockLoadedParser(originalString, updatedString);
+
+
+
+	public bool MatchesEntityFrameworkAssembly_(string assemblyName)
+	{
+		if (assemblyName.StartsWith(LibraryData.C_EntityFrameworkAssemblyPrefix, StringComparison.OrdinalIgnoreCase)
+			&& assemblyName.EndsWith(LibraryData.C_EntityFrameworkAssemblySuffix, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+
+		/*
+		foreach (string version in LibraryData.S_EntityFrameworkVersions)
+		{
+			if (LibraryData.C_EntityFrameworkAssemblyFullName.FmtRes(version).Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
+				return true;
+		}
+		*/
+
+		return false;
+	}
+
+
+
+	public bool MatchesInvariantAssembly_(string assemblyName)
+	{
+		if (assemblyName.StartsWith(LibraryData.C_InvariantAssemblyPrefix, StringComparison.OrdinalIgnoreCase)
+			&& assemblyName.EndsWith(LibraryData.C_InvariantAssemblySuffix, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+
+		/*
+		foreach (string version in LibraryData.S_InvariantVersions)
+		{
+			if (LibraryData.C_InvariantAssemblyFullName.FmtRes(version).Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
+				return true;
+		}
+		*/
+
+		return false;
+	}
+
+
 
 	public void OpenConnection_(DbConnection connection) => ((FbConnection)connection).Open();
 

@@ -95,7 +95,7 @@ public class TDataSource
 
 	public string Name => _Name;
 
-	public Guid NameClsid => string.IsNullOrWhiteSpace(_Name) ? Guid.Empty : (new Guid(_Name == "FirebirdServer" ? SystemData.DataSourceGuid : _Name));
+	public Guid NameClsid => string.IsNullOrWhiteSpace(_Name) ? Guid.Empty : (new Guid(_Name == "FirebirdServer" ? SystemData.C_DataSourceGuid : _Name));
 
 	public string DisplayName
 	{

@@ -31,15 +31,15 @@ static class ExtensionData
 	#region Constants - ExtensionData
 	// ---------------------------------------------------------------------------------
 
-	public const string VsixCompany = "BlackbirdSql";
-	public const string VsixProduct = "BlackbirdSql.VisualStudio.Ddex";
-	public const string VsixName = "BlackbirdSql DDEX and SqlEditor for Firebird";
-	public const string VsixDescription = "The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the \"look and feel\" of Microsoft's SqlServer extensions";
-	public const string VsixVersion = "14.0.0.0";
+	public const string C_VsixCompany = "BlackbirdSql";
+	public const string C_VsixProduct = "BlackbirdSql.VisualStudio.Ddex";
+	public const string C_VsixName = "BlackbirdSql DDEX and SqlEditor for Firebird";
+	public const string C_VsixDescription = "The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the \"look and feel\" of Microsoft's SqlServer extensions";
+	public const string C_VsixVersion = "14.0.0.1";
 
 
-	public const string PackageControllerServiceName = "SBsPackageController";
-	public const string ProviderObjectFactoryServiceName = "SBsProviderObjectFactory";
+	public const string C_PackageControllerServiceName = "SBsPackageController";
+	public const string C_ProviderObjectFactoryServiceName = "SBsProviderObjectFactory";
 
 
 	// ---------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ static class ExtensionData
 	/// to manage.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	const bool _UseFactoryOnly = false;
+	const bool C_UseFactoryOnly = false;
 
 
 	#endregion Constants
@@ -109,7 +109,7 @@ static class ExtensionData
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Dictionary of all supported provider interfaces with the
-	/// <see cref="_UseFactoryOnly"/> defining where their implementations are defined
+	/// <see cref="C_UseFactoryOnly"/> defining where their implementations are defined
 	/// or handled.
 	/// </summary>
 	/// <remarks>
@@ -126,30 +126,30 @@ static class ExtensionData
 	{
 		// { nameof(IVsDataAsyncCommand), 0 },
 		// { nameof(IVsDataCommand), 0 },
-		{ nameof(IVsDataConnectionEquivalencyComparer), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataConnectionPromptDialog), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataConnectionProperties), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataConnectionSupport), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataConnectionUIConnector), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataConnectionUIControl), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataConnectionUIProperties), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataMappedObjectConverter), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataObjectIdentifierConverter), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataObjectIdentifierResolver), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataObjectMemberComparer), _UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataConnectionEquivalencyComparer), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataConnectionPromptDialog), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataConnectionProperties), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataConnectionSupport), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataConnectionUIConnector), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataConnectionUIControl), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataConnectionUIProperties), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataMappedObjectConverter), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataObjectIdentifierConverter), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataObjectIdentifierResolver), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataObjectMemberComparer), C_UseFactoryOnly ? 0 : 1 },
 		{ nameof(IVsDataObjectSelector), true ? 0 : 1 },
-		{ nameof(IVsDataObjectSupport), _UseFactoryOnly ? 0 : 2 },
-		{ nameof(IVsDataSourceInformation), _UseFactoryOnly ? 0 : 1 },
-		{ nameof(IVsDataSourceVersionComparer), _UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataObjectSupport), C_UseFactoryOnly ? 0 : 2 },
+		{ nameof(IVsDataSourceInformation), C_UseFactoryOnly ? 0 : 1 },
+		{ nameof(IVsDataSourceVersionComparer), C_UseFactoryOnly ? 0 : 1 },
 		// { nameof(IVsDataTransaction), 0 },
-		{ nameof(IVsDataViewSupport), _UseFactoryOnly ? 0 : 5 },
+		{ nameof(IVsDataViewSupport), C_UseFactoryOnly ? 0 : 5 },
 	};
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Lists the values to be registered under an interface implementation's registry
-	/// key if <see cref="_UseFactoryOnly"/>
+	/// key if <see cref="C_UseFactoryOnly"/>
 	/// is set to false.
 	/// </summary>
 	/// <remarks>

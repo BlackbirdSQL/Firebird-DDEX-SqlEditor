@@ -161,7 +161,7 @@ public class TDataProvider(string name, string displayName, string shortDisplayN
 
 	public string Name => _Name;
 
-	public Guid NameClsid => _Name == NativeDb.Invariant ? new(SystemData.ProviderGuid) : new Guid(_Name);
+	public Guid NameClsid => _Name == NativeDb.Invariant ? new(SystemData.C_ProviderGuid) : new Guid(_Name);
 
 	public string DisplayName
 	{

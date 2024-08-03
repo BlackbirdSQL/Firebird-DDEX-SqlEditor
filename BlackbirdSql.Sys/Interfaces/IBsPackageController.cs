@@ -17,7 +17,7 @@ using VSLangProj;
 
 namespace BlackbirdSql.Sys.Interfaces;
 
-[Guid(LibraryData.PackageControllerGuid)]
+[Guid(LibraryData.C_PackageControllerGuid)]
 
 
 #if ASYNCRDTEVENTS_ENABLED

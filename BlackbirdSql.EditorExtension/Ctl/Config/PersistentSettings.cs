@@ -53,7 +53,7 @@ public abstract class PersistentSettings : LanguageExtension.Ctl.Config.Persiste
 				case EnLanguageService.TSql90:
 					return VS.TSql90LanguageServiceGuid;
 				case EnLanguageService.FbSql:
-					return LanguageExtension.PackageData.LanguageServiceGuid;
+					return LanguageExtension.PackageData.C_LanguageServiceGuid;
 				default:
 					return VS.SSDTLanguageServiceGuid;
 			}

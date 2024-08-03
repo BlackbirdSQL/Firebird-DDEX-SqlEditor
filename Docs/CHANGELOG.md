@@ -2,6 +2,20 @@
 
 ## Change log
 
+### v14.0.0.1 Addressed minor issues.
+
+#### New / Enhancements
+- Closing a cloned query with active transactions no longer prompts the user. The transaction status is maintained by the remaining clones. This applies to queries cloned through a solution merge or otherwise, and not cloned copies created using the `Clone to New Query` command, which creates a distinct independent copy.
+- Improved user message prompt options on active transaction queries. The user is now provided with options when attempting to disconnect, modify the connection or run an estimated execution plan when transactions are still pending.
+#### Fixes
+- Resolved remaining instances where an Entity Data Model would throw an `InvalidCastException` with the message __An error occured while connecting to the datasbase... Type [A] cannot be cast to Type[B]__. This could occur when there were `FirebirdClient` or `EntityFramework` assembly version mismatches. The extension's versions will now be used in all cases within the design time `CurrentDomain`. This has no affect on your project builds, which will use the project's assemblies.
+- Fixed a non-critical bug where a query window's keepalive monitor could abort during a solution merge if the SE is unavailable.
+- Addressed issue where the extension's load statistics would be cleared from the output window if loaded too early. The extension's load statistics will only be displayed if the `Load statistics` option is enabled in `User Options`.
+
+__Tip:__ The solution validation option available from the context menu of any Firebird Server Explorer node can validate and update the `app.config` of all projects with `EntityFramework.Firebird` assemblies installed, with the correct settings.
+
+
+
 ### v14.0.0.0 Critical update addressing IDE freeze.
 
 #### New / Enhancements

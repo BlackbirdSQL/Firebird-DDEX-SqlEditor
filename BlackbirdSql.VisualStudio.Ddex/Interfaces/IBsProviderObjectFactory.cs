@@ -9,7 +9,7 @@ using BlackbirdSql.Core;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Interfaces;
 
-[Guid(SystemData.ProviderObjectFactoryServiceGuid)]
+[Guid(SystemData.C_ProviderObjectFactoryServiceGuid)]
 
 
 /// <summary>

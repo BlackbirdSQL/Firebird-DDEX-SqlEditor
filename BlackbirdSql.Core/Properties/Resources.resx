@@ -280,7 +280,8 @@
     <value>Extension load statistics:
       Async initialization: {0}ms, MainThread initializations: {1}ms
       SwitchToMainThread: {2}ms
-      Total time (excl. SwitchToMainThread): {3}ms.</value>
+      Total time (excl. SwitchToMainThread): {3}ms.
+</value>
   </data>
   <data name="NewQueryBaseName" xml:space="preserve">
     <value>NewQuery</value>

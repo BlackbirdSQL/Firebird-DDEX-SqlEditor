@@ -50,7 +50,6 @@ namespace BlackbirdSql.Core.Model;
 public class Csb : AbstractCsb, IBsCsb
 {
 
-
 	// ---------------------------------------------------------------------------------
 	#region Constructors / Destructors - Csb
 	// ---------------------------------------------------------------------------------
@@ -184,11 +183,10 @@ public class Csb : AbstractCsb, IBsCsb
 
 
 
+
 	// =========================================================================================================
 	#region Property accessors - Csb
 	// =========================================================================================================
-
-
 
 
 	// ---------------------------------------------------------------------------------
@@ -263,6 +261,7 @@ public class Csb : AbstractCsb, IBsCsb
 	/// inclusive of password for connections other than Properties settings
 	/// connection strings, in order to establish a database connection.
 	/// </summary>
+	[Browsable(false)]
 	public virtual bool IsCompleteMandatory
 	{
 		get
@@ -294,6 +293,7 @@ public class Csb : AbstractCsb, IBsCsb
 	/// excluding password, for connections other than Properties settings
 	/// connection strings, in order to establish a database connection.
 	/// </summary>
+	[Browsable(false)]
 	public bool IsCompletePublic
 	{
 		get
@@ -349,6 +349,7 @@ public class Csb : AbstractCsb, IBsCsb
 
 
 
+
 	// =========================================================================================================
 	#region Methods - Csb
 	// =========================================================================================================
@@ -389,7 +390,7 @@ public class Csb : AbstractCsb, IBsCsb
 		}
 		else if (!string.IsNullOrWhiteSpace(datasetId))
 		{
-			string derivedConnectionName = DatasetKeyFormat.FmtRes(DataSource, datasetId);
+			string derivedConnectionName = S_DatasetKeyFormat.FmtRes(DataSource, datasetId);
 
 			if (!derivedConnectionName.Equals(datasetKey))
 				Remove(C_KeyExDatasetKey);
@@ -602,8 +603,8 @@ public class Csb : AbstractCsb, IBsCsb
 		// Now that the datasetId is established, we can determined its default derived value
 		// and the default derived value of the datasetKey.
 		string derivedDatasetId = string.IsNullOrEmpty(datasetId) ? dataset : datasetId;
-		string derivedConnectionName = DatasetKeyFormat.FmtRes(DataSource, derivedDatasetId);
-		string derivedAlternateConnectionName = DatasetKeyAlternateFormat.FmtRes(DataSource, derivedDatasetId);
+		string derivedConnectionName = S_DatasetKeyFormat.FmtRes(DataSource, derivedDatasetId);
+		string derivedAlternateConnectionName = S_DatasetKeyAlternateFormat.FmtRes(DataSource, derivedDatasetId);
 
 
 		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived
