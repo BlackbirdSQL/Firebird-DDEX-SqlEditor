@@ -2,7 +2,7 @@
 
 ## Change log
 
-### v14.0.0.1 Addressed minor issues.
+### v14.0.0.2 Addressed minor issues. Version bump.
 
 #### New / Enhancements
 - Closing a cloned query with active transactions no longer prompts the user. The transaction status is maintained by the remaining clones. This applies to queries cloned through a solution merge or otherwise, and not cloned copies created using the `Clone to New Query` command, which creates a distinct independent copy.
