@@ -2,7 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.ResultControlEventArgs
 
 using System;
-using BlackbirdSql.Shared.Controls.ResultsPanels;
+using BlackbirdSql.Shared.Controls.Results;
 
 
 namespace BlackbirdSql.Shared.Events;

@@ -1,7 +1,9 @@
 ﻿using System.Data.Common;
+using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Events;
 using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Shared.Enums;
 
 
 
@@ -17,6 +19,7 @@ public interface IBsModelCsb : IBsConnectionCsb
 {
 	long ConnectionId { get; }
 
+	EnCreationFlags CreationFlags { get; set; }
 
 
 	/// <summary>
@@ -48,7 +51,7 @@ public interface IBsModelCsb : IBsConnectionCsb
 	/// and invokes ConnectionChangedEvent on failure.
 	/// Do not call before ensuring IsComplete.
 	/// </summary>
-	bool OpenOrVerifyConnection();
+	(bool, bool) OpenOrVerifyConnection();
 
 	/// <summary>
 	/// Opens or verifies a connection. If no connection exists returns false.
@@ -57,5 +60,5 @@ public interface IBsModelCsb : IBsConnectionCsb
 	/// and invokes ConnectionChangedEvent on failure.
 	/// Do not call before ensuring IsComplete.
 	/// </summary>
-	Task<bool> OpenOrVerifyConnectionAsync();
+	Task<(bool, bool)> OpenOrVerifyConnectionAsync(CancellationToken cancelToken);
 }

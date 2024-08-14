@@ -198,6 +198,48 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// =========================================================================================================
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// [Launch ensure UI thread]: Validates and updates a solution projects the
+	/// app.config invariant and Entity Framework settings.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public void AsyeuValidateSolution(Stream stream = null)
+	{
+		if (!EventValidationEnter())
+			return;
+
+		// We're going to check each project that gets loaded (or has a reference added) if it
+		// references the database EntityFramework dll else the invariant dll.
+		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
+		// We also check (once and only once) within a project for any edmxs with legacy settings and update
+		// those, because they cannot work with newer versions of EntityFramework.
+
+		// Fire and wait.
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			bool result = Task.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+				if (ApcManager.SolutionClosing)
+					return true;
+
+				ValidateSolutionImpl();
+
+				return true;
+
+			}).AwaiterResult();
+
+			return;
+		}
+
+		ValidateSolutionImpl();
+	}
+
+
+
 	private void CloseOpenProjectModels(IVsHierarchy hierarchy)
 	{
 		if (hierarchy.IsMiscellaneous())
@@ -295,42 +337,6 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 				// RdtManager.HandsOnDocument(pair.Value.Item1, pair.Value.Item2);
 			}
 		}
-	}
-
-
-
-	public void ValidateSolution(Stream stream = null)
-	{
-		if (!EventValidationEnter())
-			return;
-
-		// We're going to check each project that gets loaded (or has a reference added) if it
-		// references the database EntityFramework dll else the invariant dll.
-		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
-		// We also check (once and only once) within a project for any edmxs with legacy settings and update
-		// those, because they cannot work with newer versions of EntityFramework.
-
-
-		// Fire and wait.
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			bool result = Task.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				if (ApcManager.SolutionClosing)
-					return true;
-
-				ValidateSolutionImpl();
-
-				return true;
-
-			}).AwaiterResult();
-
-			return;
-		}
-
-		ValidateSolutionImpl();
 	}
 
 
@@ -968,11 +974,11 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		// Check for loading here otherwise an exception will be thrown.
 		if (!RctManager.Loading)
 		{
-			RctManager.Reset();
+			RctManager.ResetVolatile();
 			RctManager.LoadConfiguredConnections();
 		}
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
 	}
 
 
@@ -989,7 +995,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		// Reset configured connections registration and the unique database connection
 		// DatasetKeys for rebuild on next soluton load.
-		RctManager.Delete();
+		RctManager.ResetVolatile();
 
 		return VSConstants.S_OK;
 	}
@@ -1008,12 +1014,12 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (!project.IsEditable())
 			return VSConstants.S_OK;
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies(project);
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);
 
 		if (!PersistentSettings.IncludeAppConnections)
 			return VSConstants.S_OK;
 
-		RctManager.AsyncLoadApplicationConnections(project);
+		RctManager.AsyuiLoadApplicationConnections(project);
 
 		return VSConstants.S_OK;
 	}
@@ -1032,7 +1038,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnAssemblyObsolete()");
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
 	}
 	*/
 
@@ -1077,7 +1083,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (project == null)
 			return VSConstants.S_OK;
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies(project);
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);
 
 		return VSConstants.S_OK;
 	}
@@ -1088,7 +1094,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnBuildDone()");
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
 	}
 
 
@@ -1120,7 +1126,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnDesignTimeOutputDeleted()", "bstrOutputMoniker: {0}.", bstrOutputMoniker);
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
 	}
 
 
@@ -1129,7 +1135,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnDesignTimeOutputDirty()", "bstrOutputMoniker: {0}.", bstrOutputMoniker);
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies();
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
 	}
 	*/
 
@@ -1138,7 +1144,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnProjectInitialized()", "Project: {0}.", project.Name);
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies(project);
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);
 	}
 
 
@@ -1150,7 +1156,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (!projectItem.ContainingProject.IsEditable())
 			return;
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
 	}
 
 
@@ -1159,7 +1165,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnProjectItemRemoved()", "Removed Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
 	}
 
 
@@ -1168,7 +1174,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnProjectItemRenamed()", "Renamed Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
 	}
 
 
@@ -1182,7 +1188,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnReferenceAdded()", "Project: {0}, Reference: {1}.", reference.ContainingProject?.Name, reference.Name);
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies(reference.ContainingProject);
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies(reference.ContainingProject);
 	}
 
 
@@ -1197,7 +1203,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnReferenceChanged()", "Project: {0}.", reference.ContainingProject?.Name);
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies(reference.ContainingProject);
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies(reference.ContainingProject);
 	}
 
 
@@ -1212,7 +1218,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnReferenceRemoved()", "Project: {0}.", reference.ContainingProject?.Name);
 
-		NativeDb.AsyncReindexEntityFrameworkAssemblies(reference.ContainingProject);
+		NativeDb.AsyuiReindexEntityFrameworkAssemblies(reference.ContainingProject);
 	}
 	*/
 

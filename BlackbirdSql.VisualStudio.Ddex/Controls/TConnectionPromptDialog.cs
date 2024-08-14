@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -67,6 +68,17 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 
 	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - TConnectionPromptDialog
+	// =========================================================================================================
+
+
+	#endregion Fields
 
 
 
@@ -229,18 +241,23 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 	// =========================================================================================================
 
 
+
 	protected override void OnFormClosing(FormClosingEventArgs e)
 	{
-		if (e.Cancel)
+		try
+		{
+			if (DialogResult == DialogResult.Cancel)
+			{
+				if (ConnectionSupport is TConnectionSupport connectionSupport)
+					connectionSupport.PasswordPromptCancelled = true;
+			}
+
+			base.OnFormClosing(e);
+		}
+		finally
 		{
 			RctManager.SessionConnectionSourceActive = false;
-			return;
 		}
-
-		if (DialogResult == DialogResult.OK)
-			base.OnFormClosing(e);
-
-		RctManager.SessionConnectionSourceActive = false;
 	}
 
 

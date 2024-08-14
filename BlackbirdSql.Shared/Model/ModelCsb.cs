@@ -8,7 +8,14 @@ using System.Threading.Tasks;
 using BlackbirdSql.Core.Events;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Sys.Ctl;
+
+using static BlackbirdSql.SysConstants;
+using static BlackbirdSql.SharedConstants;
+using System.ComponentModel;
+using System.Threading;
 
 
 
@@ -43,6 +50,27 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 
 	public ModelCsb() : base()
 	{
+	}
+
+
+
+	static ModelCsb()
+	{
+		// Extension specific describers.
+
+		try
+		{
+			Describers.AddRange(
+			[
+				new Describer(C_KeyExCreationFlags, typeof(EnCreationFlags), C_DefaultExCreationFlags, D_Extended)
+			]);
+		}
+		catch (Exception ex)
+		{
+			Diag.DebugDug(ex);
+		}
+
+		// Diag.DebugTrace("Added model describers");
 	}
 
 
@@ -90,7 +118,16 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	// =========================================================================================================
 
 
+	[Browsable(false)]
 	public long ConnectionId => _ConnectionId;
+
+
+	[Browsable(false)]
+	public EnCreationFlags CreationFlags
+	{
+		get { return (EnCreationFlags)GetValue(C_KeyExCreationFlags); }
+		set { SetValue(C_KeyExCreationFlags, value); }
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -101,6 +138,7 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	/// the connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
+	[Browsable(false)]
 	public DbConnection LiveConnection
 	{
 		get
@@ -161,6 +199,7 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	}
 
 
+	[Browsable(false)]
 	public event ConnectionChangedDelegate ConnectionChangedEvent
 	{
 		add { _ConnectionChangedEvent += value; }
@@ -198,15 +237,13 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 		try
 		{
 			newConnection = (DbConnection)NativeDb.CreateDbConnection(ConnectionString);
-			_ConnectionChangedEvent?.Invoke(this, new(newConnection, connection));
 		}
 		catch (Exception ex)
 		{
 			Diag.Debug(ex);
 		}
 
-		if (newConnection == null)
-			return;
+		_ConnectionChangedEvent?.Invoke(this, new(newConnection, connection));
 
 		if (connection != null)
 			DisposeConnection();
@@ -226,26 +263,28 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	/// Do not call before ensuring IsComplete.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool OpenOrVerifyConnection()
+	public (bool, bool) OpenOrVerifyConnection()
 	{
 		// Tracer.Trace(GetType(), "CreateDataConnection()");
 
 		DbConnection connection = DataConnection;
 
+		bool isOpen = false;
+		bool hasTransactions = false;
+
 		if (connection == null)
-			Diag.ThrowException(new InvalidOperationException("Connection is null"));
+		{
+			DisposeTransaction();
+			return (isOpen, hasTransactions);
+		}
 
 		try
 		{
-			connection.OpenOrVerify();
+			(isOpen, hasTransactions) = connection.OpenOrVerify();
 		}
 		catch (Exception ex)
 		{
-			try
-			{
-				_ConnectionChangedEvent?.Invoke(this, new(null, null));
-			}
-			catch { }
+			_ConnectionChangedEvent?.Invoke(this, new(null, null));
 
 			DisposeConnection();
 
@@ -257,14 +296,7 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 
 		if (connection.State != ConnectionState.Open)
 		{
-			try
-			{
-				_ConnectionChangedEvent?.Invoke(this, new(null, null));
-			}
-			catch (Exception ex)
-			{
-				exd = ex;
-			}
+			_ConnectionChangedEvent?.Invoke(this, new(null, null));
 
 			DisposeConnection();
 
@@ -274,7 +306,7 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 			throw exd;
 		}
 
-		return true;
+		return (isOpen, hasTransactions);
 	}
 
 
@@ -287,21 +319,29 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	/// and invokes ConnectionChangedEvent on failure.
 	/// Do not call before ensuring IsComplete.
 	/// </summary>
+	/// <returns>
+	/// Boolean tuple with Item1: True if open / verification succeeded and
+	/// Item2: HasTransactions.
+	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public async Task<bool> OpenOrVerifyConnectionAsync()
+	public async Task<(bool, bool)> OpenOrVerifyConnectionAsync(CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "CreateDataConnection()");
 
 		DbConnection connection = DataConnection;
 
-		if (connection == null)
-			Diag.ThrowException(new InvalidOperationException("Connection is null"));
+		bool isOpen = false;
+		bool hasTransactions = false;
 
-		bool result = false;
+		if (connection == null)
+		{
+			DisposeTransaction();
+			return (isOpen, hasTransactions);
+		}
 
 		try
 		{
-			result = await connection.OpenOrVerifyAsync();
+			(isOpen, hasTransactions) = await connection.OpenOrVerifyAsync(DataTransaction, cancelToken);
 		}
 		catch (Exception ex)
 		{
@@ -313,6 +353,8 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 			throw ex;
 		}
 
+		if (cancelToken.IsCancellationRequested)
+			return (isOpen, hasTransactions);
 
 		if (connection.State != ConnectionState.Open)
 		{
@@ -326,7 +368,7 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 			throw exd;
 		}
 
-		return result;
+		return (isOpen, hasTransactions);
 	}
 
 

@@ -15,7 +15,7 @@ public class CommandCancelQuery : AbstractCommand
 	{
 	}
 
-	public CommandCancelQuery(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
+	public CommandCancelQuery(IBsTabbedEditorPane editorPane) : base(editorPane)
 	{
 	}
 
@@ -36,7 +36,7 @@ public class CommandCancelQuery : AbstractCommand
 		if (CancellationLocked)
 			return VSConstants.S_OK;
 
-		StoredQryMgr?.Cancel(false);
+		CachedQryMgr?.Cancel(false);
 
 		return VSConstants.S_OK;
 	}

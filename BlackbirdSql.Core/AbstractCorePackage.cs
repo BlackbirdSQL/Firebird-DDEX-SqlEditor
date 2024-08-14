@@ -526,7 +526,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 			return;
 		}
 
-		Diag.AsyncOutputPaneWriteLine(_LoadStatisticsMsg, true);
+		Diag.AsyuiOutputPaneWriteLine(_LoadStatisticsMsg, true);
 
 		_LoadStatisticsMsg = null;
 	}

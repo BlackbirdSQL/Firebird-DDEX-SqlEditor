@@ -284,7 +284,7 @@ public static class Diag
 		try
 		{
 			if (enableTaskLog)
-				AsyncOutputPaneWriteLine(str, isException);
+				AsyuiOutputPaneWriteLine(str, isException);
 		}
 		catch (Exception) { }
 
@@ -1188,11 +1188,12 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Writes the given text followed by a new line to the Output window pane.
+	/// [Async on UI thread]: Writes the given text followed by a new line to the Output
+	/// window pane.
 	/// </summary>
 	/// <param name="value">The text value to write.</param>
 	// ---------------------------------------------------------------------------------
-	public static void AsyncOutputPaneWriteLine(string value, bool isException)
+	public static void AsyuiOutputPaneWriteLine(string value, bool isException)
 	{
 		string outputMsg = value;
 		_ = Task.Run(() => OutputPaneWriteLineAsync(outputMsg, isException));

@@ -343,7 +343,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 		Describer describer = this[name];
 
-		if (describer == null || describer.IsInternalStore)
+		if (describer == null || describer.IsExtended)
 			return list;
 
 		string lcname = describer.Name.ToLowerInvariant();
@@ -687,7 +687,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	{
 		public override bool IsValid(Describer describer)
 		{
-			return !describer.IsInternalStore;
+			return !describer.IsExtended;
 		}
 	}
 
@@ -697,7 +697,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	{
 		public override bool IsValid(Describer describer)
 		{
-			return describer.IsInternalStore;
+			return describer.IsExtended;
 		}
 	}
 
@@ -708,7 +708,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	{
 		public override bool IsValid(Describer describer)
 		{
-			return describer.IsAdvanced && !describer.IsInternalStore;
+			return describer.IsAdvanced && !describer.IsExtended;
 		}
 	}
 
@@ -717,7 +717,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	{
 		public override bool IsValid(Describer describer)
 		{
-			return describer.IsConnectionParameter && !describer.IsInternalStore;
+			return describer.IsConnectionParameter && !describer.IsExtended;
 		}
 
 	}
@@ -728,7 +728,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	{
 		public override bool IsValid(Describer describer)
 		{
-			return describer.IsEquivalency && !describer.IsInternalStore;
+			return describer.IsEquivalency && !describer.IsExtended;
 		}
 
 	}
@@ -738,7 +738,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	{
 		public override bool IsValid(Describer describer)
 		{
-			return describer.IsEquivalency && !describer.IsInternalStore
+			return describer.IsEquivalency && !describer.IsExtended
 				&& describer.Name != SysConstants.C_KeyApplicationName;
 		}
 
@@ -750,7 +750,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	{
 		public override bool IsValid(Describer describer)
 		{
-			return describer.IsMandatory && !describer.IsInternalStore;
+			return describer.IsMandatory && !describer.IsExtended;
 		}
 
 	}
@@ -760,7 +760,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	{
 		public override bool IsValid(Describer describer)
 		{
-			return describer.IsPublicMandatory && !describer.IsInternalStore;
+			return describer.IsPublicMandatory && !describer.IsExtended;
 		}
 
 	}

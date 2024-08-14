@@ -113,7 +113,8 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 	// =========================================================================================================
 
 
-	public async Task<EnParserAction> BatchStatementCallbackAsync(IBsNativeDbStatementWrapper sqlStatement, int numberOfTimes, CancellationToken cancelToken)
+	public async Task<EnParserAction> BatchStatementCallbackAsync(IBsNativeDbStatementWrapper sqlStatement,
+		int numberOfTimes, CancellationToken cancelToken, CancellationToken syncToken)
 	{
 		int lineNumber = _LineNumOfLastBatchEnd + 1;
 		if (_LineNumOfLastBatchEnd < -1)
@@ -128,9 +129,9 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 			_ExecBatchNumOfTimes = numberOfTimes;
 
 			// --------------------------------------------------------------------------------------------- //
-			// ******************** Execution Point (7) - QESQLExec.BatchStatementCallbackAsync() ******************** //
+			// *************** Execution Point (7) - QESQLExec.BatchStatementCallbackAsync() *************** //
 			// --------------------------------------------------------------------------------------------- //
-			bool continueProcessing = await ProcessBatchStatementAsync(sqlStatement, cancelToken);
+			bool continueProcessing = await ProcessBatchStatementAsync(sqlStatement, cancelToken, syncToken);
 
 			if (_ExecResult == EnScriptExecutionResult.Cancel)
 				_BatchConsumer.CurrentMessageCount++;
@@ -187,13 +188,14 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
-			OnErrorMessage(Resources.ExUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
+			RaiseErrorMessage(Resources.ExUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 	}
 
 
 
-	protected override async Task<EnScriptExecutionResult> ExecuteBatchStatementAsync(QESQLBatch batch, CancellationToken cancelToken)
+	protected override async Task<EnScriptExecutionResult> ExecuteBatchStatementAsync(QESQLBatch batch,
+		CancellationToken cancelToken, CancellationToken syncToken)
 	{
 		// Tracer.Trace(GetType(), "ExecuteBatchStatementAsync()", " _ExecOptions.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
 
@@ -206,7 +208,7 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 			bool multi = _ExecBatchNumOfTimes > 1;
 
 			if (multi)
-				OnInfoMessage(Resources.QueryBeginningBatchExec);
+				RaiseInfoMessage(Resources.QueryBeginningBatchExec);
 
 
 			for (int i = _ExecBatchNumOfTimes; i > 0; i--)
@@ -215,13 +217,14 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 				try
 				{
 					// ---------------------------------------------------------------------------------------------- //
-					// ******************** Execution Point (9) - QESQLExec.ExecuteBatchStatementAsync() ******************** //
+					// **************** Execution Point (9) - QESQLExec.ExecuteBatchStatementAsync() **************** //
 					// ---------------------------------------------------------------------------------------------- //
-					scriptExecutionResult = await batch.ProcessAsync(_CurrentConn, _SpecialActions, cancelToken);
+					scriptExecutionResult = await batch.ExecuteAsync(_CurrentConn, _SpecialActions, cancelToken, syncToken);
 				}
 				catch (Exception e)
 				{
-					Diag.Expected(e);
+					if (!cancelToken.IsCancellationRequested)
+						Diag.Expected(e);
 					scriptExecutionResult = EnScriptExecutionResult.Failure;
 				}
 
@@ -237,7 +240,7 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 						return scriptExecutionResult;
 					default:
 						if (multi)
-							OnInfoMessage(Resources.WarnBatchExecutionFailedIgnoring);
+							RaiseInfoMessage(Resources.WarnBatchExecutionFailedIgnoring);
 
 						break;
 					case EnScriptExecutionResult.Success:
@@ -246,7 +249,7 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 			}
 
 			if (multi)
-				OnInfoMessage(Resources.QueryBatchExecCompleted.FmtRes(_ExecBatchNumOfTimes));
+				RaiseInfoMessage(Resources.QueryBatchExecCompleted.FmtRes(_ExecBatchNumOfTimes));
 
 			return scriptExecutionResult;
 		}
@@ -259,7 +262,7 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 
 
 
-	protected override async Task<bool> ExecuteScriptAsync(CancellationToken cancelToken)
+	protected override async Task<bool> ExecuteScriptAsync(CancellationToken cancelToken, CancellationToken syncToken)
 	{
 		// Tracer.Trace(GetType(), "ExecuteScriptAsync()");
 
@@ -299,9 +302,9 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 			}
 
 			// ------------------------------------------------------------------------------- //
-			// ******************** Execution Point (5) - QESQLExec.ExecuteScriptAsync() ******************** //
+			// ************ Execution Point (5) - QESQLExec.ExecuteScriptAsync() ************* //
 			// ------------------------------------------------------------------------------- //
-			await _SqlCmdParser.ParseAsync(cancelToken);
+			await _SqlCmdParser.ParseAsync(cancelToken, syncToken);
 
 			// Tracer.Trace(GetType(), "ExecuteScriptAsync()", "ParseAsync() Completed");
 
@@ -317,7 +320,7 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 			_ExecResult = EnScriptExecutionResult.Failure;
 			string info = ex.Message;
 
-			OnScriptProcessingError(Resources.ExScriptingParseFailure.FmtRes(info),
+			RaiseScriptProcessingError(Resources.ExScriptingParseFailure.FmtRes(info),
 				EnQESQLScriptProcessingMessageType.FatalError);
 		}
 
@@ -350,31 +353,7 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 
 
 
-	protected override void OnExecutionCompleted(EnScriptExecutionResult execResult, bool executionStarted)
-	{
-		// Tracer.Trace(GetType(), "OnExecutionCompleted()", "execResult = {0}", execResult);
-
-		try
-		{
-			CloseCurrentConnIfNeeded();
-		}
-		catch (Exception ex)
-		{
-			Tracer.Warning(GetType(), "OnExecutionCompleted()", "Exception: {0}.", ex.Message);
-		}
-
-		base.OnExecutionCompleted(execResult);
-	}
-
-
-	private void OnInfoMessage(string message)
-	{
-		_BatchConsumer?.OnMessage(this, new BatchMessageEventArgs(message));
-	}
-
-
-
-	private void OnErrorMessage(string errorLine, string msg, EnQESQLScriptProcessingMessageType msgType)
+	private void RaiseErrorMessage(string errorLine, string msg, EnQESQLScriptProcessingMessageType msgType)
 	{
 		// Tracer.Trace(GetType(), "OnErrorMessage()", "msg = {0}", msg);
 		ErrorMessageEvent?.Invoke(this, new ErrorMessageEventArgs(errorLine, msg, msgType));
@@ -382,20 +361,45 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 
 
 
-	private void OnScriptProcessingError(string msg, EnQESQLScriptProcessingMessageType msgType)
+	protected override async Task<bool> RaiseExecutionCompletedAsync(EnScriptExecutionResult execResult, bool launched,
+		CancellationToken cancelToken, CancellationToken syncToken)
+	{
+		// Tracer.Trace(GetType(), "OnExecutionCompletedAsync()", "execResult = {0}", execResult);
+
+		try
+		{
+			CloseCurrentConnIfNeeded();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		return await base.RaiseExecutionCompletedAsync(execResult, launched, cancelToken, syncToken);
+	}
+
+
+	private void RaiseInfoMessage(string message)
+	{
+		_BatchConsumer?.OnMessage(this, new BatchMessageEventArgs(message));
+	}
+
+
+
+	private void RaiseScriptProcessingError(string msg, EnQESQLScriptProcessingMessageType msgType)
 	{
 		// Tracer.Trace(GetType(), "OnScriptProcessingError()", "msg = {0}", msg);
 
 		switch (msgType)
 		{
 			case EnQESQLScriptProcessingMessageType.FatalError:
-				OnErrorMessage(Resources.ErrorFatalScriptingNoParam, msg, msgType);
+				RaiseErrorMessage(Resources.ErrorFatalScriptingNoParam, msg, msgType);
 				break;
 			case EnQESQLScriptProcessingMessageType.Error:
-				OnErrorMessage(Resources.ErrorScriptingNoParam, msg, msgType);
+				RaiseErrorMessage(Resources.ErrorScriptingNoParam, msg, msgType);
 				break;
 			default:
-				OnErrorMessage(Resources.WarnScriptingNoParam, msg, msgType);
+				RaiseErrorMessage(Resources.WarnScriptingNoParam, msg, msgType);
 				break;
 		}
 	}

@@ -17,7 +17,7 @@ public class CommandToggleClientStatistics : AbstractCommand
 	{
 	}
 
-	public CommandToggleClientStatistics(IBsTabbedEditorWindowPane editorWindow)
+	public CommandToggleClientStatistics(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -29,7 +29,7 @@ public class CommandToggleClientStatistics : AbstractCommand
 		if (!ExecutionLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
-		if (StoredAuxDocData.ClientStatisticsEnabled)
+		if (CachedAuxDocData.ClientStatisticsEnabled)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
@@ -37,8 +37,8 @@ public class CommandToggleClientStatistics : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (StoredAuxDocData != null)
-			StoredAuxDocData.ClientStatisticsEnabled = !StoredAuxDocData.ClientStatisticsEnabled;
+		if (CachedAuxDocData != null)
+			CachedAuxDocData.ClientStatisticsEnabled = !CachedAuxDocData.ClientStatisticsEnabled;
 
 		return VSConstants.S_OK;
 	}

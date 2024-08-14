@@ -65,8 +65,8 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 		{
 			Describers.AddRange(
 			[
-				new Describer(C_KeyExDataConnection, typeof(DbConnection), C_DefaultExDataConnection, D_Default | D_Internal),
-				new Describer(C_KeyExDataTransaction, typeof(DbTransaction), C_DefaultExDataTransaction, D_Default | D_Internal)
+				new Describer(C_KeyExDataConnection, typeof(DbConnection), C_DefaultExDataConnection, D_Internal),
+				new Describer(C_KeyExDataTransaction, typeof(DbTransaction), C_DefaultExDataTransaction, D_Internal)
 			]);
 		}
 		catch (Exception ex)
@@ -91,15 +91,11 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 		if (!base.Dispose(disposing))
 			return false;
 
-		DisposeTransaction(true);
+		DisposeTransaction();
 
 		DbConnection connection = DataConnection;
 
-		try
-		{
-			_ConnectionChangedEvent?.Invoke(this, new(null, connection));
-		}
-		catch { }
+		_ConnectionChangedEvent?.Invoke(this, new(null, connection));
 
 		if (connection != null)
 			DisposeConnection();
@@ -111,12 +107,12 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 	public void DisposeConnection()
 	{
+		DisposeTransaction();
+
 		DbConnection connection = DataConnection;
 
 		if (connection == null)
 			return;
-
-		DisposeTransaction(true);
 
 		bool hasException = false;
 
@@ -148,7 +144,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 
 
-	public void DisposeTransaction(bool force)
+	public void DisposeTransaction()
 	{
 		DbTransaction transaction = (DbTransaction)GetValue(C_KeyExDataTransaction);
 
@@ -170,9 +166,6 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 		}
 
 
-
-		if (!force && hasTransactions)
-			Diag.ThrowException(new DataException("Attempt to dispose of database Transaction object that has pending transactions."));
 
 		try
 		{
@@ -252,8 +245,16 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 	[Browsable(false)]
 	public DbConnection DataConnection
 	{
-		get { return (DbConnection)GetValue(C_KeyExDataConnection); }
-		set { SetValue(C_KeyExDataConnection, value); }
+		get
+		{
+			return (DbConnection)GetValue(C_KeyExDataConnection);
+		}
+		set
+		{
+			if (value == null)
+				DisposeTransaction();
+			SetValue(C_KeyExDataConnection, value);
+		}
 	}
 
 
@@ -283,7 +284,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 				if (transactionCompleted)
 				{
-					DisposeTransaction(true);
+					DisposeTransaction();
 					value = C_DefaultExDataTransaction;
 				}
 
@@ -343,8 +344,25 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 			}
 			catch
 			{
-				DisposeTransaction(true);
+				DisposeTransaction();
 				throw;
+			}
+		}
+	}
+
+
+	[Browsable(false)]
+	public bool PeekTransactions
+	{
+		get
+		{
+			try
+			{
+				return DataTransaction?.HasTransactions() ?? false;
+			}
+			catch
+			{
+				return false;
 			}
 		}
 	}
@@ -363,6 +381,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 
 
+	[Browsable(false)]
 	public event EventHandler PropertyChanged
 	{
 		add { _PropertyChangedEvent += value; }
@@ -392,12 +411,18 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 		DbTransaction transaction = DataTransaction;
 
 		if (transaction != null)
+		{
+			Diag.Debug(new ApplicationException("BeginTransaction failed. Transaction already exists."));
 			return true;
+		}
 
 		DbConnection connection = DataConnection;
 
 		if (connection == null || connection.State != ConnectionState.Open)
+		{
+			Diag.Debug(new ApplicationException("BeginTransaction failed. Connection is nul or not open."));
 			return false;
+		}
 
 		lock (_LockObject)
 		{
@@ -412,12 +437,13 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 	public bool CloseConnection()
 	{
+		DisposeTransaction();
+
 		DbConnection connection = DataConnection;
 
 		if (connection == null)
 			return true;
 
-		DisposeTransaction(true);
 
 		try
 		{
@@ -430,11 +456,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 			Diag.Expected(ex);
 		}
 
-		try
-		{
-			_ConnectionChangedEvent?.Invoke(this, new(null, connection));
-		}
-		catch { }
+		_ConnectionChangedEvent?.Invoke(this, new(null, connection));
 
 		DisposeConnection();
 

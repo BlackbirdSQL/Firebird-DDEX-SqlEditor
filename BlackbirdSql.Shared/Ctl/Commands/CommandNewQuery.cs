@@ -19,7 +19,7 @@ public class CommandNewQuery : AbstractCommand
 	{
 	}
 
-	public CommandNewQuery(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
+	public CommandNewQuery(IBsTabbedEditorPane editorPane) : base(editorPane)
 	{
 	}
 
@@ -39,7 +39,7 @@ public class CommandNewQuery : AbstractCommand
 
 			IBsDesignerExplorerServices service = ApcManager.EnsureService<IBsDesignerExplorerServices>();
 
-			service.NewQuery(StoredStrategy?.CurrentDatasetKey, Resources.NewQueryBaseName, null);
+			service.NewQuery(CachedStrategy?.CurrentDatasetKey, Resources.NewQueryBaseName, null);
 		}
 
 		return VSConstants.S_OK;

@@ -501,7 +501,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Begins or resumes asynchronous linkage build operations.
+	/// [Launch async]: Begins or resumes asynchronous linkage build operations.
 	/// </summary>
 	/// <param name="delay">
 	/// The delay in milliseconds before beginning operations if an async build was

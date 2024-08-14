@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
+using System.Threading.Tasks;
 using Babel;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
@@ -46,8 +47,8 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			else
 				_IntelliSenseEnabled = auxDocData.IntellisenseEnabled.Value;
 
-			auxDocData.QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
-			auxDocData.QryMgr.BatchExecutionCompletedEvent += OnBatchExecutionCompleted;
+			auxDocData.QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
+			auxDocData.QryMgr.BatchExecutionCompletedEventAsync += OnBatchExecutionCompletedAsync;
 		}
 
 		_IsServerSupported = false;
@@ -179,24 +180,41 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 	}
 
 
-	private void OnBatchExecutionCompleted(object sender, BatchExecutionCompletedEventArgs args)
+	private async Task OnBatchExecutionCompletedAsync(object sender, BatchExecutionCompletedEventArgs args)
 	{
+		await Cmd.AwaitableAsync();
+
 		IBsModelCsb mdlCsb = MdlCsb;
 
 		if (GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
 			&& mdlCsb != null && LsbMetadataProviderProvider.CheckForDatabaseChangesAfterQueryExecution)
 		{
-			smoMetadataProviderProvider.AsyncAddDatabaseToDriftDetectionSet(mdlCsb.Moniker);
+			smoMetadataProviderProvider.AddDatabaseToDriftDetectionSet(mdlCsb.Moniker);
 		}
 	}
 
-	private void OnQueryExecutionCompleted(object sender, QueryExecutionCompletedEventArgs args)
+	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
 	{
-		if (GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
-			&& LsbMetadataProviderProvider.CheckForDatabaseChangesAfterQueryExecution)
+		bool result = true;
+
+		try
 		{
-			smoMetadataProviderProvider.AsyncCheckForDatabaseChanges();
+			if (args.Launched &&
+				GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
+				&& LsbMetadataProviderProvider.CheckForDatabaseChangesAfterQueryExecution)
+			{
+				smoMetadataProviderProvider.CheckForDatabaseChanges();
+			}
 		}
+		catch (Exception ex)
+		{
+			result = false;
+			Diag.Dug(ex);
+		}
+
+		args.Result &= result;
+
+		return await Cmd.AwaitableAsync(result);
 	}
 
 
@@ -476,8 +494,8 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			AuxilliaryDocData auxDocData = AuxDocData;
 			if (auxDocData != null)
 			{
-				auxDocData.QryMgr.BatchExecutionCompletedEvent -= OnBatchExecutionCompleted;
-				auxDocData.QryMgr.ExecutionCompletedEvent -= OnQueryExecutionCompleted;
+				auxDocData.QryMgr.BatchExecutionCompletedEventAsync -= OnBatchExecutionCompletedAsync;
+				auxDocData.QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
 			}
 		}
 	}

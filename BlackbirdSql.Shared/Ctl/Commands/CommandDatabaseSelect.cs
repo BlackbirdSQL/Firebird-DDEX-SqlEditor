@@ -3,11 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Shared.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -26,7 +22,7 @@ public class CommandDatabaseSelect : AbstractCommand
 		// Tracer.Trace();
 	}
 
-	public CommandDatabaseSelect(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
+	public CommandDatabaseSelect(IBsTabbedEditorPane editorPane) : base(editorPane)
 	{
 		// Tracer.Trace();
 	}
@@ -38,35 +34,32 @@ public class CommandDatabaseSelect : AbstractCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (!ExecutionLocked)
+		if (!ExecutionLocked && CachedStrategy != null)
+		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
+		}
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (ExecutionLocked)
-			return VSConstants.S_OK;
-
+		int result = VSConstants.S_OK;
 
 		if (pvaIn != IntPtr.Zero)
-			return OnExecSet(pvaIn);
+			result = OnExecSet(pvaIn);
+		else if (pvaOut != IntPtr.Zero)
+			result = OnExecGet(pvaOut);
 
-		if (pvaOut != IntPtr.Zero)
-			return OnExecGet(pvaOut);
-
-		return VSConstants.S_OK;
+		return result;
 	}
 
 
 	private int OnExecGet(IntPtr pvaOut)
 	{
-		object objQualifiedName = StoredLiveMdlCsb?.AdornedQualifiedTitle ?? string.Empty;
+		string qualifiedName = StoredSelectedName;
 
-		StoredSelectedName = (string)objQualifiedName;
-
-		Marshal.GetNativeVariantForObject(objQualifiedName, pvaOut);
+		Marshal.GetNativeVariantForObject(qualifiedName, pvaOut);
 
 		return VSConstants.S_OK;
 	}
@@ -77,50 +70,36 @@ public class CommandDatabaseSelect : AbstractCommand
 	{
 		// SelectedValue changed, probably by user from dropdown.
 
-		if (ExecutionLocked || !CanDisposeTransaction(Resources.ExChangeConnectionCaption))
+		if (ExecutionLocked || !RequestDisposeTts(Resources.ExChangeConnectionCaption))
 			return VSConstants.S_OK;
+
 
 		string selectedQualifiedName = (string)Marshal.GetObjectForNativeVariant(pvaIn);
 
-		try
+
+		if (CachedLiveQualifiedName != selectedQualifiedName)
 		{
-			SetDatasetKeyDisplayMember(selectedQualifiedName);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return VSConstants.S_OK;
+			bool result;
+
+			result = CachedQryMgr?.SetDatasetKeyOnConnection(selectedQualifiedName) ?? false;
+
+			if (!result)
+				return VSConstants.S_OK;
 		}
 
 		StoredSelectedName = selectedQualifiedName;
 
-		return VSConstants.S_OK;
-	}
 
+		string moniker = CachedMdlCsb.Moniker;
 
-	private bool SetDatasetKeyDisplayMember(string selectedQualifiedName)
-	{
-		IBsModelCsb mdlCsb = StoredMdlCsb;
-
-		if (mdlCsb == null || mdlCsb.IsInvalidated || mdlCsb.AdornedQualifiedTitle != selectedQualifiedName)
-		{
-			if (!(StoredStrategy?.SetDatasetKeyOnConnection(selectedQualifiedName, mdlCsb) ?? false))
-				return false;
-		}
-
-		string moniker = StoredMdlCsb.Moniker;
-
-		IVsUserData vsUserData = StoredAuxDocData.VsUserData;
+		IVsUserData vsUserData = CachedAuxDocData.VsUserData;
 		Diag.ThrowIfInstanceNull(vsUserData, typeof(IVsUserData));
 
 		Guid clsid = VS.CLSID_PropDatabaseChanged;
 		___(vsUserData.SetData(ref clsid, moniker));
 
-		// Tracer.Trace(GetType(), "SetDatasetKeyDisplayMember()", "csa.ConnectionString: {0}", csa.ConnectionString);
-
-		StoredRctStamp = RctManager.Stamp;
-
-		return true;
+		return VSConstants.S_OK;
 	}
+
 
 }

@@ -21,7 +21,7 @@ public class CommandModifyConnection : AbstractCommand
 	{
 	}
 
-	public CommandModifyConnection(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
+	public CommandModifyConnection(IBsTabbedEditorPane editorPane) : base(editorPane)
 	{
 	}
 
@@ -31,7 +31,7 @@ public class CommandModifyConnection : AbstractCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (!ExecutionLocked && StoredStrategy != null)
+		if (!ExecutionLocked && CachedStrategy != null)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -44,10 +44,10 @@ public class CommandModifyConnection : AbstractCommand
 		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
-		if (ExecutionLocked || !RequestDeactivateQuery(Resources.MsgQueryAbort_UncommittedTransactions))
+		if (!RequestDeactivateQuery(Resources.MsgQueryAbort_UncommittedTransactions))
 			return VSConstants.S_OK;
 
-		StoredQryMgr.ModifyConnection();
+		CachedQryMgr.ModifyConnection();
 
 		return VSConstants.S_OK;
 	}

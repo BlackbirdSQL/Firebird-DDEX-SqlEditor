@@ -31,7 +31,6 @@
 		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
-		<Compile Include="Enums\EnEditorCreationFlags.cs" />
 		<Compile Include="Properties\AttributeResources.Designer.cs">
 		  <DesignTime>True</DesignTime>
 		  <AutoGen>True</AutoGen>

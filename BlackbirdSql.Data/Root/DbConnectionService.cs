@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
@@ -56,7 +57,13 @@ public class DbConnectionService : SBsNativeDbConnection, IBsNativeDbConnection
 	/// </summary>
 	public string GetDataSourceVersion(IDbConnection @this)
 	{
-		return "Firebird " + FbServerProperties.ParseServerVersion(((FbConnection)@this).ServerVersion);
+		if (@this is not FbConnection connection)
+			return string.Empty;
+
+		if (connection.State != ConnectionState.Open)
+			return string.Empty;
+
+		return "Firebird " + FbServerProperties.ParseServerVersion(connection.ServerVersion);
 	}
 
 
@@ -84,46 +91,61 @@ public class DbConnectionService : SBsNativeDbConnection, IBsNativeDbConnection
 		if (@this is not FbConnection connection)
 			return new();
 
+		if (connection.State != ConnectionState.Open)
+			return new();
+
 		return FbServerProperties.ParseServerVersion(connection.ServerVersion);
 	}
 
 
-	public bool OpenOrVerifyConnection(IDbConnection @this)
+	public (bool, bool) OpenOrVerifyConnection(IDbConnection @this)
 	{
-		FbConnection connection = (FbConnection)@this;
+		if (@this is not FbConnection connection)
+			return (false, false);
 
 		if (connection.State != ConnectionState.Open)
 		{
 			connection.Open();
-			return true;
+			return (true, false);
 		}
 
-		FbDatabaseInfo info;
+		FbDatabaseInfo info = new(connection);
+		bool result = info.GetActiveTransactionsCount() > 0;
 
-		info = (FbDatabaseInfo)CreateDatabaseInfoObject(connection);
-		_ = info.GetDatabaseSizeInPages();
-
-		return true;
+		return (true, result);
 	}
 
 
 
-	public async Task<bool> OpenOrVerifyConnectionAsync(IDbConnection @this)
+	public async Task<(bool, bool)> OpenOrVerifyConnectionAsync(IDbConnection @this,
+		IDbTransaction transaction, CancellationToken cancelToken)
 	{
-		FbConnection connection = (FbConnection)@this;
+		if (@this is not FbConnection connection)
+		{
+			ArgumentException ex = new("IDbConnection is not of type FbConnection");
+			Diag.ThrowException(new ArgumentException("IDbConnection is not of type FbConnection"));
+			throw ex;
+		}
 
 		if (connection.State != ConnectionState.Open)
 		{
-			await connection.OpenAsync();
-			return true;
+			await connection.OpenAsync(cancelToken);
+			return (true, false);
 		}
 
-		FbDatabaseInfo info;
 
-		info = (FbDatabaseInfo)CreateDatabaseInfoObject(connection);
-		_ = info.GetDatabaseSizeInPages();
+		FbDatabaseInfo info = new(connection);
 
-		return true;
+		if (transaction == null)
+		{
+			_ = await info.GetDatabaseSizeInPagesAsync(cancelToken);
+			return (true, false);
+		}
+
+
+		bool hasTransactions = await info.GetActiveTransactionsCountAsync(cancelToken) > 0;
+
+		return (true, hasTransactions);
 	}
 
 }

@@ -17,7 +17,7 @@ public class CommandToggleExecutionPlan : AbstractCommand
 	{
 	}
 
-	public CommandToggleExecutionPlan(IBsTabbedEditorWindowPane editorWindow)
+	public CommandToggleExecutionPlan(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -29,7 +29,7 @@ public class CommandToggleExecutionPlan : AbstractCommand
 		if (!ExecutionLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
-		if (StoredAuxDocData.HasActualPlan)
+		if (CachedAuxDocData.HasActualPlan)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
@@ -37,8 +37,8 @@ public class CommandToggleExecutionPlan : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (!ExecutionLocked && StoredAuxDocData != null)
-			StoredAuxDocData.HasActualPlan = !StoredAuxDocData.HasActualPlan;
+		if (!ExecutionLocked && CachedAuxDocData != null)
+			CachedAuxDocData.HasActualPlan = !CachedAuxDocData.HasActualPlan;
 
 		return VSConstants.S_OK;
 	}

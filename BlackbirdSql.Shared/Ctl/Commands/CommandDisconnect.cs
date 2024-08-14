@@ -19,7 +19,7 @@ public class CommandDisconnect : AbstractCommand
 	{
 	}
 
-	public CommandDisconnect(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
+	public CommandDisconnect(IBsTabbedEditorPane editorPane) : base(editorPane)
 	{
 	}
 
@@ -31,7 +31,7 @@ public class CommandDisconnect : AbstractCommand
 
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (!ExecutionLocked && StoredQryMgr.IsConnected)
+		if (!ExecutionLocked && CachedQryMgr.IsConnected)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
@@ -42,7 +42,7 @@ public class CommandDisconnect : AbstractCommand
 		if (ExecutionLocked || !RequestDeactivateQuery(Resources.MsgQueryAbort_UncommittedTransactionsDisconnect))
 			return VSConstants.S_OK;
 
-		StoredQryMgr.Disconnect();
+		CachedQryMgr.Disconnect();
 
 		return VSConstants.S_OK;
 	}

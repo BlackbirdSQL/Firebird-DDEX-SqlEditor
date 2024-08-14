@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.EditorExtension.Ctl;
 
 
-public sealed class ToolbarCommandHandler<T> : IBsToolbarCommandHandler where T : AbstractCommand, new()
+public sealed class ToolbarCommandHandler<TCommand> : IBsToolbarCommandHandler where TCommand : AbstractCommand, new()
 {
 
 	public ToolbarCommandHandler(Guid clsidCmdSet, uint cmdId)
@@ -27,29 +27,27 @@ public sealed class ToolbarCommandHandler<T> : IBsToolbarCommandHandler where T 
 
 	public GuidId Clsid => _Clsid;
 
-	public int OnQueryStatus(AbstractTabbedEditorWindowPane windowPane, ref OLECMD prgCmd, IntPtr pCmdText)
+	public int OnQueryStatus(IBsTabbedEditorPane editorPane, ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		if (windowPane is TabbedEditorWindowPane tabbedEditorWindowPane)
+		TCommand cmd = new()
 		{
-			return new T
-			{
-				WindowPane = tabbedEditorWindowPane
-			}.QueryStatus(ref prgCmd, pCmdText);
-		}
+			EditorPane = editorPane
+		};
 
-		return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
+		int result = cmd.QueryStatus(ref prgCmd, pCmdText);
+
+		return result;
 	}
 
-	public int OnExec(AbstractTabbedEditorWindowPane windowPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	public int OnExec(IBsTabbedEditorPane editorPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (windowPane is TabbedEditorWindowPane tabbedEditorWindowPane)
+		TCommand cmd = new()
 		{
-			return new T
-			{
-				WindowPane = tabbedEditorWindowPane
-			}.Exec(nCmdexecopt, pvaIn, pvaOut);
-		}
+			EditorPane = editorPane
+		};
 
-		return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
+		int result = cmd.Exec(nCmdexecopt, pvaIn, pvaOut);
+
+		return result;
 	}
 }

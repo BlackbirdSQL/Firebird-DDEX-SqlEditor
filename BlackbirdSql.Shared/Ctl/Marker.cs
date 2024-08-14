@@ -26,7 +26,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		_markerType = mtype;
 	}
 
-	public Marker(IDictionary markers, int mtype, int doubleClickLine, SqlTextSpan textSpan)
+	public Marker(IDictionary markers, int mtype, int doubleClickLine, TextSpanEx textSpan)
 		: this(markers, mtype)
 	{
 		_doubleClickLine = doubleClickLine;
@@ -39,7 +39,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		SetMarkerTooltip(toolTip);
 	}
 
-	public Marker(IDictionary markers, int mtype, string toolTip, int doubleClickLine, SqlTextSpan textSpan)
+	public Marker(IDictionary markers, int mtype, string toolTip, int doubleClickLine, TextSpanEx textSpan)
 		: this(markers, mtype, toolTip)
 	{
 		_doubleClickLine = doubleClickLine;
@@ -62,7 +62,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 
 	private int _doubleClickLine;
 
-	private SqlTextSpan _TextSpan;
+	private TextSpanEx _TextSpan;
 
 	public IVsTextStreamMarker VsMarker
 	{
@@ -90,7 +90,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		}
 	}
 
-	public SqlTextSpan TextSpan
+	public TextSpanEx TextSpan
 	{
 		get
 		{

@@ -2,6 +2,24 @@
 
 ## Change log
 
+### v14.1.0.0 Residual VS Solution Merge peculiarities addressed.
+
+Solution merges typically occur by default when a solution is directly opened from the `No Solution` context / environment, and you have open documents. These documents are not discarded but rather merged into the newly opened solution. There are no directly available events fired when the IDE transitions out of a `No Solution` context, so we need to ensure that the integrity of the extension's __Running Connection Table__, __Inflight Document Table__, __KeepAlive Monitor__, __Active Transactions__ and __Executing Queries__ is maintained during these transitions. 
+
+#### New / Enhancements
+- Executing queries will continue to execute during a solution merge and the subsequent opening of a solution.
+- Open queries will maintain their active transactions, connection configurations and document states during a solution merge transition.
+- Ensured the integrity of the `KeepAlive Monitor` is maintained when the `Server Explorer Connection Manager` is temporarily unavailable during solution merge transitions.
+- Resolved issue where Visual Studio creates clone duplicates of query windows after a solution merge. The clones are removed immediately after being loaded.
+- Implemented asynchronous db reader data retrieval on query `string` and `blob` grid column data types. This means that there is no syncronous blocking of the IDE during long-running multi-statement (batch) query execution.
+#### Fixes
+- The `CancellationToken` has been removed from all `DbDataReader.GetValueAsync<T>()` method calls. The FirebirdClient has a bug which causes it to temporarily crash on `CancellationToken.IsCancellationRequested` when accessing blob types. 
+- The database connection dropdown list in SqlEditor no longer gives the option to commit or rollback when there are active transactions. Prompting the user to commit / rollback / cancel after making a selection was susceptible to unavoidable deadlocks so it has been removed from that specific control.
+- Resolved a bug where the `KeepAlive Monitor` was receiving an `Idle connection` response back from the `Query Manager` during execution, and could close a connection if it's `Lifetime` was set and was exceeded during a long running query.
+- Resolved several glitches where invalidated variables were accessed during a solution closing or merging state.
+
+
+
 ### v14.0.0.3 Addressed minor issues. Version bump 2.
 
 #### New / Enhancements

@@ -726,10 +726,11 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Enables solution and running document table event handling
+	/// [Launch ensure UI thread]: Enables solution and running document table event
+	/// handling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract bool UiAdviseUnsafeEvents();
+	public abstract bool AsyeuAdviseUnsafeEvents();
 
 
 
@@ -913,7 +914,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	protected abstract void InternalShutdownDte();
 
 
-	public abstract void UiRegisterProjectEventHandlers();
+	public abstract void AsyeuRegisterProjectEventHandlers();
 
 
 	public abstract Task<bool> RegisterProjectEventHandlersAsync();
@@ -1436,7 +1437,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Diag.DebugTrace("OnLoadSolutionOptions()");
 
-		UiRegisterProjectEventHandlers();
+		AsyeuRegisterProjectEventHandlers();
 
 
 		if (_SolutionLoaded)

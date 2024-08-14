@@ -17,7 +17,7 @@ public class CommandToggleIntellisense : AbstractCommand
 	{
 	}
 
-	public CommandToggleIntellisense(IBsTabbedEditorWindowPane editorWindow)
+	public CommandToggleIntellisense(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -30,7 +30,7 @@ public class CommandToggleIntellisense : AbstractCommand
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 
-		if (StoredAuxDocData.IntellisenseEnabled.AsBool())
+		if (CachedAuxDocData.IntellisenseEnabled.AsBool())
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
@@ -38,8 +38,8 @@ public class CommandToggleIntellisense : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (!ExecutionLocked && StoredAuxDocData != null)
-			StoredAuxDocData.IntellisenseEnabled = !StoredAuxDocData.IntellisenseEnabled.AsBool();
+		if (!ExecutionLocked && CachedAuxDocData != null)
+			CachedAuxDocData.IntellisenseEnabled = !CachedAuxDocData.IntellisenseEnabled.AsBool();
 
 		return VSConstants.S_OK;
 	}

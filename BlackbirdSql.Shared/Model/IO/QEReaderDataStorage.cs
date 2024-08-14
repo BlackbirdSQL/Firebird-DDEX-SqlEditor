@@ -9,7 +9,6 @@ using System.Collections;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Shared.Controls.Grid;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Properties;
@@ -150,16 +149,10 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 		// Tracer.Trace(GetType(), "InitStorage()", "ASYNC GetSchemaTableAsync()");
 
-		try
-		{
-			await _StorageReader.GetSchemaTableAsync(cancelToken);
-		}
-		catch (Exception ex)
-		{
-			if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
-				return false;
-			throw;
-		}
+		await _StorageReader.GetSchemaTableAsync(cancelToken);
+
+		if (cancelToken.IsCancellationRequested)
+			return false;
 
 		int fieldCount = _StorageReader.FieldCount;
 
@@ -222,20 +215,12 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 	private async Task<bool> GetDataFromReaderAsync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "QEReaderDataStorage.GetDataFromReader", "", null);
-		try
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
+		while (_DataStorageEnabled && !cancelToken.IsCancellationRequested
+			&& await _StorageReader.ReadAsync(cancelToken))
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
-			while (_DataStorageEnabled && !cancelToken.IsCancellationRequested
-				&& await _StorageReader.ReadAsync(cancelToken))
-			{
-				Interlocked.Increment(ref _RowCount);
-				await OnStorageNotifyAsync(_RowCount, false, cancelToken);
-			}
-		}
-		catch (Exception ex)
-		{
-			Diag.ThrowException(ex);
+			Interlocked.Increment(ref _RowCount);
+			await OnStorageNotifyAsync(_RowCount, false, cancelToken);
 		}
 
 		_DataStorageEnabled = false;

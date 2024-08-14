@@ -2,7 +2,6 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.ITabbedEditorToolbarCommandHandler
 
 using System;
-using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Shared.Ctl;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -15,7 +14,7 @@ public interface IBsToolbarCommandHandler
 {
 	GuidId Clsid { get; }
 
-	int OnQueryStatus(AbstractTabbedEditorWindowPane windowPane, ref OLECMD prgCmd, IntPtr pCmdText);
+	int OnQueryStatus(IBsTabbedEditorPane editorPane, ref OLECMD prgCmd, IntPtr pCmdText);
 
-	int OnExec(AbstractTabbedEditorWindowPane windowPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
+	int OnExec(IBsTabbedEditorPane editorPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 }

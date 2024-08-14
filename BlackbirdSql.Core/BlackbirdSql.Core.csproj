@@ -47,7 +47,7 @@
 		<Compile Include="Controls\Config\AbstractTransientSettingsPage.cs" />
 		<Compile Include="Interfaces\IBsDataConnectionDlg.cs" />
 		<Compile Include="Interfaces\IBsSettingsPage.cs" />
-		<Compile Include="Interfaces\IBsEditorWindowPane.cs" />
+		<Compile Include="Interfaces\IBsEditorPane.cs" />
 		<Compile Include="AbstractPackageController.cs" />
 		<Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\AutomatorAttribute.cs" />

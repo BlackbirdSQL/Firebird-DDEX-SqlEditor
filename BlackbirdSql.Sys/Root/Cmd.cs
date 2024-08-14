@@ -2,8 +2,10 @@
 using System;
 using System.IO;
 using System.Security;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio;
@@ -117,6 +119,25 @@ public abstract class Cmd
 	}
 
 
+
+	/// <summary>
+	/// Warning suppression. Waits for delay ms.  Returns true if on
+	/// the main thread else false.
+	/// </summary>
+	public static async Task<bool> AwaitableAsync(int delay)
+	{
+		Thread.Sleep(delay);
+
+		if (!ThreadHelper.CheckAccess())
+			return false;
+
+		// Warning suppression.
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		return true;
+	}
+
+
 	public static async Task<bool> CheckAccessAsync()
 	{
 		if (!ThreadHelper.CheckAccess())
@@ -214,6 +235,29 @@ public abstract class Cmd
 
 
 
+	public static string CreateVsFilterString(string s)
+	{
+		if (s == null)
+		{
+			return null;
+		}
+
+		int length = s.Length;
+		char[] array = new char[length + 1];
+		s.CopyTo(0, array, 0, length);
+		for (int i = 0; i < length; i++)
+		{
+			if (array[i] == '|')
+			{
+				array[i] = '\0';
+			}
+		}
+
+		return new string(array);
+	}
+
+
+
 	// EnsureNoBackslash
 	public static string EnsureNoBackslash(string fullPath)
 	{
@@ -259,6 +303,20 @@ public abstract class Cmd
 		}
 		return null;
 	}
+
+
+
+	public static int GetExtraSizeForBorderStyle(BorderStyle border)
+	{
+		return border switch
+		{
+			BorderStyle.Fixed3D => SystemInformation.Border3DSize.Height * 2,
+			BorderStyle.FixedSingle => SystemInformation.BorderSize.Height * 2,
+			BorderStyle.None => 0,
+			_ => 0,
+		};
+	}
+
 
 
 	/// <summary>

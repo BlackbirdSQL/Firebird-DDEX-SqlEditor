@@ -2,7 +2,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorDisconnectAllQueriesCommand
 
 using System;
-using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using Microsoft.VisualStudio;
@@ -20,7 +19,7 @@ public class CommandDisconnectAllQueries : AbstractCommand
 	{
 	}
 
-	public CommandDisconnectAllQueries(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
+	public CommandDisconnectAllQueries(IBsTabbedEditorPane editorPane) : base(editorPane)
 	{
 	}
 
@@ -30,7 +29,7 @@ public class CommandDisconnectAllQueries : AbstractCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (StoredQryMgr != null)
+		if (CachedQryMgr != null)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
@@ -38,20 +37,19 @@ public class CommandDisconnectAllQueries : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		foreach (AuxilliaryDocData value in ((IBsEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable.Values)
+		foreach (AuxilliaryDocData value in EditorPane.ExtensionInstance.AuxDocDataTable.Values)
 		{
 			QueryManager qryMgr = value.QryMgr;
 
 			if (qryMgr != null && qryMgr.IsConnected)
 			{
-				if (qryMgr.IsExecuting || qryMgr.HasTransactions)
+				if (qryMgr.IsExecuting || qryMgr.LiveTransactions)
 				{
-					value.RequestDeactivateQuery();
+					if (!value.RequestDeactivateQuery())
+						continue;
 				}
-				else
-				{
-					qryMgr.Disconnect();
-				}
+
+				qryMgr.Disconnect();
 			}
 		}
 

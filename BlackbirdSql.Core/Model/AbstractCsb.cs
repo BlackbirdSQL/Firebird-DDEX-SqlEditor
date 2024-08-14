@@ -144,8 +144,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion, D_Public | D_Derived),
 				new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, D_Public | D_Derived),
 				new Describer(C_KeyExEdmx, typeof(bool), D_Default),
-				new Describer(C_KeyExEdmu, typeof(bool), D_Default),
-				new Describer(C_KeyExCreationFlags, typeof(EnEditorCreationFlags), D_Default)
+				new Describer(C_KeyExEdmu, typeof(bool), D_Default)
 			]);
 		}
 		catch (Exception ex)
@@ -700,7 +699,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				if (describer != null)
 					continue;
 
-				if (describer.IsDerived || describer.IsInternalStore)
+				if (describer.IsDerived || describer.IsExtended)
 					continue;
 
 				if (!csa2.ContainsKey(pair.Key))
@@ -720,7 +719,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				if (describer != null)
 					continue;
 
-				if (describer.IsDerived || describer.IsInternalStore)
+				if (describer.IsDerived || describer.IsExtended)
 					continue;
 
 				if (!csa1.ContainsKey(pair.Key))

@@ -3,13 +3,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using EnvDTE;
-using EnvDTE90;
 using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using VSLangProj;
+
+using IOleCommandTarget = Microsoft.VisualStudio.OLE.Interop.IOleCommandTarget ;
 
 
 
@@ -64,6 +67,99 @@ public abstract class UnsafeCmd
 	/// <see cref="ErrorHandler.Succeeded"/> token.
 	/// </summary>
 	protected static bool __(int hr) => ErrorHandler.Succeeded(hr);
+
+
+
+	public static string GetFileNameUsingSaveDialog(string strFilterString, string strCaption, string initialDir, IVsSaveOptionsDlg optionsDlg)
+	{
+		return GetFileNameUsingSaveDialog(strFilterString, strCaption, initialDir, optionsDlg, out _);
+	}
+
+
+
+	public static string GetFileNameUsingSaveDialog(string strFilterString, string strCaption, string initialDir, IVsSaveOptionsDlg optionsDlg, out int filterIndex)
+	{
+		// Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetFileNameUsingSaveDialog", "strFilterString = {0}, strCaption = {1}", strFilterString, strCaption);
+
+		Diag.ThrowIfNotOnUIThread();
+
+		filterIndex = 0;
+		if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell vsUIShell)
+		{
+			int num = 512;
+			IntPtr intPtr = IntPtr.Zero;
+			VSSAVEFILENAMEW[] array = new VSSAVEFILENAMEW[1];
+			try
+			{
+				string empty = string.Empty;
+				char[] array2 = new char[num];
+				intPtr = Marshal.AllocCoTaskMem(array2.Length * 2);
+				Marshal.Copy(array2, 0, intPtr, array2.Length);
+				array[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
+				___(vsUIShell.GetDialogOwnerHwnd(out array[0].hwndOwner));
+				array[0].pwzFilter = strFilterString;
+				array[0].pwzFileName = intPtr;
+				array[0].nMaxFileName = (uint)num;
+				array[0].pwzDlgTitle = strCaption;
+				array[0].dwFlags = (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_ForceSave;
+				array[0].pSaveOpts = optionsDlg;
+				if (initialDir != null && initialDir.Length != 0)
+				{
+					array[0].pwzInitialDir = initialDir;
+				}
+				else
+				{
+					try
+					{
+						array[0].pwzInitialDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+					}
+					catch
+					{
+					}
+				}
+
+				try
+				{
+					if (vsUIShell.GetSaveFileNameViaDlg(array) != 0)
+					{
+						return null;
+					}
+
+					filterIndex = (int)array[0].nFilterIndex;
+					Marshal.Copy(intPtr, array2, 0, array2.Length);
+					int i;
+					for (i = 0; i < array2.Length && array2[i] != 0; i++)
+					{
+					}
+
+					empty = new string(array2, 0, i);
+					// Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Information, "CommonUtils.GetFileNameUsingSaveDialog", "file name is {0}", empty);
+					return empty;
+				}
+				catch (Exception e)
+				{
+					Diag.Dug(e);
+					return null;
+				}
+			}
+			catch (Exception e2)
+			{
+				Diag.Dug(e2);
+				MessageCtl.ShowEx(string.Empty, e2);
+				return null;
+			}
+			finally
+			{
+				if (intPtr != IntPtr.Zero)
+				{
+					Marshal.FreeCoTaskMem(intPtr);
+				}
+			}
+		}
+
+		// Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Verbose, "CommonUtils.GetFileNameUsingSaveDialog", "cannot get IVsUIShell!!");
+		return null;
+	}
 
 
 
@@ -392,6 +488,23 @@ public abstract class UnsafeCmd
 			if (projectItem.SubProject != null)
 				RecursiveGetDesignTimeProject(projects, projectItem.SubProject);
 		}
+	}
+
+
+
+	public static void ShowContextMenuEvent(Guid rclsidActive, int menuId, int xPos, int yPos, IOleCommandTarget commandTarget)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		IVsUIShell obj = Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell;
+
+		_ = Control.MousePosition;
+		POINTS pOINTS = new POINTS
+		{
+			x = (short)xPos,
+			y = (short)yPos
+		};
+		obj.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuId, [pOINTS], commandTarget);
 	}
 
 

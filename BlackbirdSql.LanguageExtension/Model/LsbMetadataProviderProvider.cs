@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
-using BlackbirdSql.Shared.Ctl.QueryExecution;
+using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Sys.Enums;
@@ -174,7 +174,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	protected override bool AssertInDestructor => false;
 
-	public void AsyncAddDatabaseToDriftDetectionSet(string moniker)
+	public void AddDatabaseToDriftDetectionSet(string moniker)
 	{
 		_DatabasesToCheckForDrift ??= [];
 
@@ -288,7 +288,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		return new ParseOptions(PersistentSettings.EditorContextBatchSeparator, isQuotedIdentifierSet: true, compatibilityLevel, transactSqlVersion);
 	}
 
-	internal void AsyncCheckForDatabaseChanges()
+	internal void CheckForDatabaseChanges()
 	{
 		if (ShouldEnableIntellisense())
 		{

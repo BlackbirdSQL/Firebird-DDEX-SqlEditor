@@ -9,16 +9,16 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 public interface IBsEditorPackage
 {
-	Dictionary<object, AuxilliaryDocData> AuxilliaryDocDataTable { get; }
+	Dictionary<object, AuxilliaryDocData> AuxDocDataTable { get; }
 
-	IBsTabbedEditorWindowPane LastFocusedSqlEditor { get; set; }
+	IBsTabbedEditorPane LastFocusedSqlEditor { get; set; }
 
 	AuxilliaryDocData GetAuxilliaryDocData(object docData);
 
 
-	public DialogResult ShowExecutionSettingsDialogFrame(AuxilliaryDocData auxDocData,
+	public DialogResult ShowExecutionSettingsDialog(AuxilliaryDocData auxDocData,
 		FormStartPosition startPosition);
 
 
-	bool TryGetTabbedEditorService(uint docCookie, bool activateIfOpen, out IBsWindowPaneServiceProvider tabbedEditorService);
+	bool TryGetTabbedEditorService(uint docCookie, bool activateIfOpen, out IBsEditorPaneServiceProvider tabbedEditorService);
 }

@@ -18,13 +18,13 @@ namespace BlackbirdSql.Shared.Ctl;
 public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 {
 
-	public FindTargetAdapter(AbstractTabbedEditorWindowPane editorPane)
+	public FindTargetAdapter(AbstractTabbedEditorPane editorPane)
 	{
-		TabbedEditorPane = editorPane;
+		EditorPane = editorPane;
 	}
 
 
-	protected AbstractTabbedEditorWindowPane TabbedEditorPane { get; set; }
+	protected AbstractTabbedEditorPane EditorPane { get; set; }
 
 
 
@@ -129,7 +129,7 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)((System.IServiceProvider)TabbedEditorPane).GetService(typeof(SVsWindowFrame));
+		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)((System.IServiceProvider)EditorPane).GetService(typeof(SVsWindowFrame));
 
 		if (vsWindowFrame != null)
 		{
@@ -153,8 +153,9 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 
 	protected virtual void ActivateTabForNavigateTo()
 	{
-		AbstractTabbedEditorUIControl tabControl = TabbedEditorPane.TabbedEditorControl;
-		foreach (AbstractEditorTab tab in tabControl.Tabs)
+		EditorUIControl tabControl = EditorPane.TabbedEditorUiCtl;
+
+		foreach (AbstruseEditorTab tab in tabControl.Tabs)
 		{
 			if (tab.LogicalView == VSConstants.LOGVIEWID_TextView)
 			{
@@ -186,21 +187,20 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 
 	private IVsFindTarget GetFindTarget(bool ensureTabs)
 	{
-		AbstractTabbedEditorUIControl tabControl = TabbedEditorPane.TabbedEditorControl;
+		AbstractEditorUIControl tabControl = EditorPane.TabbedEditorUiCtl;
+
 		if (tabControl == null || tabControl.Tabs == null)
-		{
 			return null;
-		}
+
 		IVsFindTarget vsFindTarget = null;
+
 		if (ensureTabs && tabControl.Tabs.Count == 0)
 		{
-			TabbedEditorPane.EnsureTabs(activateTextView: true);
+			EditorPane.EnsureTabs(activateTextView: true);
 		}
-		if (tabControl == null || tabControl.Tabs == null)
-		{
-			return null;
-		}
-		AbstractEditorTab activeTab = tabControl.ActiveTab;
+
+		AbstruseEditorTab activeTab = tabControl.ActiveTab;
+
 		if (activeTab != null)
 		{
 			vsFindTarget = activeTab.GetFindTarget();
@@ -209,7 +209,7 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 				return vsFindTarget;
 			}
 		}
-		foreach (AbstractEditorTab tab in tabControl.Tabs)
+		foreach (AbstruseEditorTab tab in tabControl.Tabs)
 		{
 			vsFindTarget = tab.GetView() as IVsFindTarget;
 			if (vsFindTarget != null)
@@ -217,7 +217,7 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 				break;
 			}
 		}
-		if (vsFindTarget == TabbedEditorPane)
+		if (vsFindTarget == EditorPane)
 		{
 			return null;
 		}

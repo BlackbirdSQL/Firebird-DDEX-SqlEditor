@@ -10,6 +10,7 @@ using BlackbirdSql.Data.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
+using EnvDTE;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
 
@@ -256,7 +257,27 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 					ProvideCommand().CommandText = statement.Text;
 
-					_QueryDataReader = await _Command.ExecuteReaderAsync(CommandBehavior.Default, cancelToken);
+					try
+					{
+						_QueryDataReader = await _Command.ExecuteReaderAsync(CommandBehavior.Default, cancelToken);
+					}
+					catch (Exception ex)
+					{
+						if (cancelToken.IsCancellationRequested)
+						{
+							Diag.Expected(ex);
+
+							try
+							{
+								_Command.Cancel();
+							}
+							catch { }
+
+							return 0;
+						}
+
+						throw;
+					}
 
 					AfterStatementExecution(_QueryDataReader, statement.Text, statementType, -1);
 					break;
@@ -398,6 +419,19 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 			}
 			catch (Exception ex)
 			{
+				if (cancelToken.IsCancellationRequested)
+				{
+					Diag.Expected(ex);
+
+					try
+					{
+						command.Cancel();
+					}
+					catch { }
+
+					return false;
+				}
+
 				Diag.Dug(ex);
 				return false;
 			}
@@ -412,6 +446,12 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		catch (Exception ex)
 		{
 			Diag.Expected(ex);
+
+			try
+			{
+				command.Cancel();
+			}
+			catch { }
 		}
 
 
@@ -433,9 +473,29 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 	private async Task<int> ExecuteCommandAsync(bool autoCommit, CancellationToken cancelToken)
 	{
-		int rowsAffected;
+		int rowsAffected = 0;
 
-		rowsAffected = await _Command.ExecuteNonQueryAsync(cancelToken);
+		try
+		{
+			rowsAffected = await _Command.ExecuteNonQueryAsync(cancelToken);
+		}
+		catch (Exception ex)
+		{
+			if (cancelToken.IsCancellationRequested)
+			{
+				Diag.Expected(ex);
+
+				try
+				{
+					_Command.Cancel();
+				}
+				catch { }
+
+				return rowsAffected;
+			}
+
+			throw;
+		}
 
 		if (!cancelToken.IsCancellationRequested && autoCommit && (bool)Reflect.GetPropertyValue(_Command, "IsDDLCommand"))
 		{

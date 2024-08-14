@@ -594,7 +594,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		Describer describer = Describers.GetSynonymDescriber(synonym);
 
 		if (describer == null)
-			Diag.ThrowException(new ArgumentException(nameof(synonym)), $"Describer does not exist: {synonym}.");
+			Diag.ThrowException(new ArgumentException($"Describer does not exist for synonym: {synonym}."));
 
 		string storageKey = describer.ConnectionStringKey;
 		object storedValue;

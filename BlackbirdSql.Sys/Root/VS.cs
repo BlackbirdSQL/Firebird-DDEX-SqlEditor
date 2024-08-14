@@ -43,16 +43,33 @@ public abstract class VS
 
 
 
-		// ---------------------------------------------------------------------------------
-		#region Fields - VS
-		// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
+	#region Fields - VS
+	// ---------------------------------------------------------------------------------
 
 
-		// private static Control _MarshalingControl;
+	// private static Control _MarshalingControl;
 	private static IVsExtensibility3 _S_Extensibility;
 
 
 	#endregion Fields
+
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	#region SqlEditor Members - VS
+	// ---------------------------------------------------------------------------------
+
+
+	public const string VSDebugCommandGuid = "C9DD4A59-47FB-11d2-83E7-00C04F9902C1";
+
+	public static readonly Guid ClsidVSDebugCommand = new Guid(VSDebugCommandGuid);
+
+
+	#endregion SqlEditor Members
+
 
 
 

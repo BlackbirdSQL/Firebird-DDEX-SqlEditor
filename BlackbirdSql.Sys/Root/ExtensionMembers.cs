@@ -663,13 +663,19 @@ public static partial class ExtensionMembers
 	}
 
 
+	[SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
+	public static async Task<bool> WaitAsync(this Task @this, int millisecondsTimeout, CancellationToken cancellationToken)
+	{
+		return await Cmd.AwaitableAsync(@this.Wait(millisecondsTimeout, cancellationToken));
+	}
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts a SecureString to a char array.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static char[] ToCharArray(this SecureString secureString)
+
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Converts a SecureString to a char array.
+		/// </summary>
+		// ---------------------------------------------------------------------------------
+		private static char[] ToCharArray(this SecureString secureString)
 	{
 		char[] array = new char[secureString.Length];
 		IntPtr intPtr = Marshal.SecureStringToGlobalAllocUnicode(secureString);

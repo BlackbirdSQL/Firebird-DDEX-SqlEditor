@@ -15,7 +15,7 @@ public class CommandTransactionRollback : AbstractCommand
 	{
 	}
 
-	public CommandTransactionRollback(IBsTabbedEditorWindowPane editorWindow)
+	public CommandTransactionRollback(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -24,8 +24,8 @@ public class CommandTransactionRollback : AbstractCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (!ExecutionLocked && StoredQryMgr.IsConnected
-			&& StoredQryMgr.HasTransactions)
+		if (!ExecutionLocked && CachedQryMgr.IsConnected
+			&& CachedQryMgr.HasTransactions)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -38,7 +38,7 @@ public class CommandTransactionRollback : AbstractCommand
 		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
-		StoredAuxDocData?.RollbackTransactions(true);
+		CachedAuxDocData?.RollbackTransactions(true);
 
 		return VSConstants.S_OK;
 

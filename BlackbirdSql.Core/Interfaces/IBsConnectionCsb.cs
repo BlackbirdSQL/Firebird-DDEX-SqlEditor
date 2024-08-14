@@ -17,6 +17,8 @@ public interface IBsConnectionCsb : IDataConnectionProperties, IBsCsb
 	DbConnection DataConnection { get; }
 	DbTransaction DataTransaction { get; }
 	bool HasTransactions { get; }
+	bool PeekTransactions { get; }
+
 	public Version ServerVersion { get; set; }
 	ConnectionState State { get; }
 
@@ -25,5 +27,5 @@ public interface IBsConnectionCsb : IDataConnectionProperties, IBsCsb
 	bool CloseConnection();
 	DbCommand CreateCommand(string cmd = null);
 	void DisposeConnection();
-	void DisposeTransaction(bool force);
+	void DisposeTransaction();
 }

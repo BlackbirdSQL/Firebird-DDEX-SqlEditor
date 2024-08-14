@@ -19,7 +19,7 @@ public class CommandTransactionCommit : AbstractCommand
 	{
 	}
 
-	public CommandTransactionCommit(IBsTabbedEditorWindowPane editorWindow)
+	public CommandTransactionCommit(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -29,8 +29,8 @@ public class CommandTransactionCommit : AbstractCommand
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
 
-		if (!ExecutionLocked && StoredQryMgr.IsConnected
-			&& StoredQryMgr.HasTransactions)
+		if (!ExecutionLocked && CachedQryMgr.IsConnected
+			&& CachedQryMgr.HasTransactions)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -43,7 +43,7 @@ public class CommandTransactionCommit : AbstractCommand
 		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
-		StoredAuxDocData?.CommitTransactions(true);
+		CachedAuxDocData?.CommitTransactions(true);
 
 		return VSConstants.S_OK;
 	}

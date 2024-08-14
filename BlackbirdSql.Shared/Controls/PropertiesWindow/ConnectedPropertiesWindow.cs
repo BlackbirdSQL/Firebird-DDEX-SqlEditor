@@ -7,8 +7,8 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Ctl.ComponentModel;
-using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Shared.Properties;
@@ -18,7 +18,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Controls.PropertiesWindow;
 
 
-public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsPropertyWindowQueryManagerInitialize
+public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedPropertiesWindow
 {
 
 	public ConnectedPropertiesWindow(ConnectionStrategy strategy) : base()

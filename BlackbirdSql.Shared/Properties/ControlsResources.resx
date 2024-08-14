@@ -3048,8 +3048,14 @@ All files (*.*)
   <data name="StatusBar_Cancelling" xml:space="preserve">
     <value>Cancelling...</value>
   </data>
+  <data name="StatusBar_CancellingAndPrompt" xml:space="preserve">
+    <value>Cancelled. Close dialog to continue.</value>
+  </data>
   <data name="StatusBar_Connected" xml:space="preserve">
     <value>Connected.</value>
+  </data>
+  <data name="StatusBar_ConnectFailedAndPrompt" xml:space="preserve">
+    <value>Connect failed. Close dialog to continue.</value>
   </data>
   <data name="StatusBar_Connecting" xml:space="preserve">
     <value>Connecting.</value>
@@ -3059,6 +3065,9 @@ All files (*.*)
   </data>
   <data name="StatusBar_ExecutingQuery" xml:space="preserve">
     <value>Executing query...</value>
+  </data>
+  <data name="StatusBar_ExecutionFailedAndPrompt" xml:space="preserve">
+    <value>Execution failed. Close dialog to continue.</value>
   </data>
   <data name="StatusBar_NewConnectionOpened" xml:space="preserve">
     <value>New Connection Opened</value>
@@ -3078,6 +3087,9 @@ All files (*.*)
   <data name="StatusBar_QueryCancelledRollback" xml:space="preserve">
     <value>Query cancelled (A rollback is recommended).</value>
   </data>
+  <data name="StatusBar_QueryCancelledTtsLost" xml:space="preserve">
+    <value>Query cancelled (Existing transactions were discarded).</value>
+  </data>
   <data name="StatusBar_QueryCompletedSuccessfully" xml:space="preserve">
     <value>Query executed successfully at {0:T}</value>
   </data>
@@ -3086,6 +3098,9 @@ All files (*.*)
   </data>
   <data name="StatusBar_QueryCompletedWithErrorsRollback" xml:space="preserve">
     <value>Query completed with errors (A rollback is recommended).</value>
+  </data>
+  <data name="StatusBar_QueryCompletedWithErrorsTtsLost" xml:space="preserve">
+    <value>Query completed with errors (Existing transactions were discarded).</value>
   </data>
   <data name="StatusBar_QueryTimedOut" xml:space="preserve">
     <value>Query batch timed out.</value>

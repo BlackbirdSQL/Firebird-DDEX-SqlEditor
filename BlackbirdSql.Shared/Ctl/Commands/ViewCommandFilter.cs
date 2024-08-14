@@ -17,7 +17,7 @@ namespace BlackbirdSql.Shared.Ctl.Commands;
 public class ViewCommandFilter : AbstractViewCommandFilter
 {
 
-	public ViewCommandFilter(IBsTabbedEditorWindowPane windowPane)
+	public ViewCommandFilter(IBsTabbedEditorPane windowPane)
 	{
 		WindowPane = windowPane;
 	}
@@ -25,11 +25,11 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 
 
 
-	private IBsTabbedEditorWindowPane WindowPane { get; set; }
+	private IBsTabbedEditorPane WindowPane { get; set; }
 
 
 
-	private AbstractCommand CreateCommand(IBsTabbedEditorWindowPane window, EnCommandSet cmdId)
+	private AbstractCommand CreateCommand(IBsTabbedEditorPane window, EnCommandSet cmdId)
 	{
 		AbstractCommand command = null;
 
@@ -150,7 +150,7 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 						break;
 					case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
 					case VSConstants.VSStd2KCmdID.SURROUNDWITH:
-						auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(WindowPane.DocData);
+						auxDocData = WindowPane.AuxDocData;
 
 						if (auxDocData != null && auxDocData.QryMgr != null && !auxDocData.QryMgr.IsLocked)
 						{
@@ -188,7 +188,7 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 					case VSConstants.VSStd97CmdID.FindReferences:
 						prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
 						/*
-						auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(WindowPane.DocData);
+						auxDocData = WindowsPane.AuxDocData;
 						if (auxDocData != null && (auxDocData.StrategyFactory.IsOnline || auxDocData.StrategyFactory is ConnectionStrategyFactory))
 						{
 							prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);

@@ -71,7 +71,6 @@ public interface IBsNativeDatabaseEngine
 	void AsyncEnsureLinkageLoading_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1);
 
 	DbConnection CastToNativeConnection_(object connection);
-	string ConvertDataTypeToSql_(object type, object length, object precision, object scale);
 	IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script);
 	DbCommand CreateDbCommand_(string cmdText = null);
 	IDbConnection CreateDbConnection_(string connectionString);
@@ -91,7 +90,6 @@ public interface IBsNativeDatabaseEngine
 	bool LockLoadedParser_(string originalString, string updatedString);
 	bool MatchesEntityFrameworkAssembly_(string assemblyName);
 	bool MatchesInvariantAssembly_(string assemblyName);
-	void OpenConnection_(DbConnection connection);
 	Task<bool> ReaderCloseAsync_(IDataReader @this, CancellationToken cancelToken);
 	Task<DataTable> ReaderGetSchemaTableAsync_(IDataReader @this, CancellationToken cancelToken);
 	Task<bool> ReaderNextResultAsync_(IDataReader @this, CancellationToken cancelToken);

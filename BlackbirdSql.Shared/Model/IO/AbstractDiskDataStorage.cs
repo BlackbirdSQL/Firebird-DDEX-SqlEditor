@@ -8,7 +8,6 @@ using System.Data.SqlTypes;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Shared.Controls.Grid;
 using BlackbirdSql.Shared.Ctl.IO;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
@@ -214,8 +213,6 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 		Task<bool> payloadAsync() =>
 			SerializeDataAsync(_AsyncWorkerCancelToken);
 
-		// Tracer.Trace(GetType(), "AsyncExecuteQuery()", "Launching ExecuteQueryAsync().");
-
 		// Fire and remember
 
 		_AsyncWorkerTask = Task.Factory.StartNew(payloadAsync, default, creationOptions, TaskScheduler.Default).Unwrap();
@@ -266,14 +263,14 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 
 		object[] array = new object[_ColumnInfoArray.Count];
 
-		while (_DataStorageEnabled && await _StorageReader.ReadAsync(cancelToken))
-		{
+		while (_DataStorageEnabled && !cancelToken.IsCancellationRequested && await _StorageReader.ReadAsync(cancelToken))
+		{ 
 			_OffsetsArray.Add(_CurrentOffset);
 			if (!_HasBlobs)
 			{
 				_StorageReader.GetValues(array);
 			}
-			for (int i = 0; i < _ColumnInfoArray.Count; i++)
+			for (int i = 0; i < _ColumnInfoArray.Count && !cancelToken.IsCancellationRequested; i++)
 			{
 				if (_HasBlobs)
 				{
@@ -286,15 +283,18 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 						columnInfo = GetColumnInfo(i);
 						if (!columnInfo.IsBlobField)
 						{
-							array[i] = _StorageReader.GetValue(i);
+							if (columnInfo.FieldType == typeof(string))
+								array[i] = await _StorageReader.GetValueAsync<string>(i, cancelToken);
+							else
+								array[i] = _StorageReader.GetValue(i);
 						}
 						else if (columnInfo.IsBytesField)
 						{
-							array[i] = _StorageReader.GetBytesWithMaxCapacity(i, MaxCharsToStore);
+							array[i] = await _StorageReader.GetBytesWithMaxCapacityAsync(i, MaxCharsToStore, cancelToken);
 						}
 						else if (columnInfo.IsCharsField)
 						{
-							array[i] = _StorageReader.GetCharsWithMaxCapacity(i, columnInfo.IsXml ? MaxXmlCharsToStore : MaxCharsToStore);
+							array[i] = await _StorageReader.GetCharsWithMaxCapacityAsync(i, MaxCharsToStore, cancelToken);
 						}
 						else if (columnInfo.IsXml)
 						{
@@ -306,6 +306,10 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 						}
 					}
 				}
+
+				if (cancelToken.IsCancellationRequested)
+					break;
+
 				type = array[i] != null ? array[i].GetType() : DiskDataEntity.TypeDbNull;
 				if (DiskDataEntity.TypeDbNull == type)
 				{
@@ -565,6 +569,10 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 					_CurrentOffset += _FsWriter.WriteString(DiskDataEntity.StringValue);
 				}
 			}
+
+			if (cancelToken.IsCancellationRequested)
+				break;
+
 			_FsWriter.FlushBuffer();
 			Interlocked.Increment(ref _RowCount);
 

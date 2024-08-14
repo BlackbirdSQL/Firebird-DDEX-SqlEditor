@@ -18,7 +18,7 @@ public class CommandToggleResultsPane : AbstractCommand
 	{
 	}
 
-	public CommandToggleResultsPane(IBsTabbedEditorWindowPane editorWindow)
+	public CommandToggleResultsPane(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -35,20 +35,20 @@ public class CommandToggleResultsPane : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (!ExecutionLocked && WindowPane != null)
+		if (!ExecutionLocked && EditorPane != null)
 		{
-			if (((IBsWindowPaneServiceProvider)WindowPane).ActiveTab is SqlEditorCodeTab)
+			if (EditorPane.ActiveTab is EditorCodeTab)
 			{
-				bool splitterHidden = !WindowPane.IsSplitterVisible;
-				WindowPane.IsSplitterVisible = splitterHidden;
+				bool splitterHidden = !EditorPane.IsSplitterVisible;
+				EditorPane.IsSplitterVisible = splitterHidden;
 
 				if (splitterHidden)
-					WindowPane.SplittersVisible = splitterHidden;
+					EditorPane.SplittersVisible = splitterHidden;
 			}
 			else
 			{
-				WindowPane.IsSplitterVisible = false;
-				WindowPane.ActivateCodeTab();
+				EditorPane.IsSplitterVisible = false;
+				EditorPane.ActivateCodeTab();
 			}
 		}
 

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 
 
 namespace BlackbirdSql.Core.Interfaces;
@@ -9,17 +10,17 @@ namespace BlackbirdSql.Core.Interfaces;
 //											IBsCsb Interface
 //
 // =========================================================================================================
-public interface IBsCsb : IDisposable, ICloneable
+public interface IBsCsb : IDictionary, IDisposable, ICloneable
 
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Constructors & Destructors - IBsPropertyAgent
+	#region Constructors & Destructors - IBsCsb
 	// ---------------------------------------------------------------------------------
 
 
+	bool ContainsKey(string keyword);
 	IBsCsb Copy();
-
 	void CopyTo(IBsCsb lhs);
 
 
@@ -65,8 +66,6 @@ public interface IBsCsb : IDisposable, ICloneable
 	#region Methods - IBsCsb
 	// =========================================================================================================
 
-
-	void Clear();
 
 	/*
 	void ClearAllErrors();

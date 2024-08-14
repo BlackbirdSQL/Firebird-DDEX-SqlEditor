@@ -16,7 +16,7 @@ public class CommandToggleTTS : AbstractCommand
 	{
 	}
 
-	public CommandToggleTTS(IBsTabbedEditorWindowPane editorWindow)
+	public CommandToggleTTS(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -28,7 +28,7 @@ public class CommandToggleTTS : AbstractCommand
 		if (!ExecutionLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
-		if (StoredAuxDocData.TtsEnabled)
+		if (CachedAuxDocData.TtsEnabled)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
@@ -36,15 +36,15 @@ public class CommandToggleTTS : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (ExecutionLocked || !CanDisposeTransaction(Resources.ExDisableTtsCaption))
+		if (ExecutionLocked || !RequestDisposeTts(Resources.ExDisableTtsCaption))
 			return VSConstants.S_OK;
 
-		if (StoredAuxDocData.TtsEnabled)
-			StoredStrategy?.DisposeTransaction(true);
+		if (CachedAuxDocData.TtsEnabled)
+			CachedStrategy?.DisposeTransaction();
 
-		StoredAuxDocData.TtsEnabled = !StoredAuxDocData.TtsEnabled;
+		CachedAuxDocData.TtsEnabled = !CachedAuxDocData.TtsEnabled;
 
-		StoredQryMgr.GetUpdatedTransactionsStatus(true);
+		_ = CachedQryMgr.LiveTransactions;
 
 
 		return VSConstants.S_OK;

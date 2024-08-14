@@ -2541,11 +2541,29 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancelled. Close dialog to continue..
+        /// </summary>
+        internal static string StatusBar_CancellingAndPrompt {
+            get {
+                return ResourceManager.GetString("StatusBar_CancellingAndPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connected..
         /// </summary>
         internal static string StatusBar_Connected {
             get {
                 return ResourceManager.GetString("StatusBar_Connected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect failed. Close dialog to continue..
+        /// </summary>
+        internal static string StatusBar_ConnectFailedAndPrompt {
+            get {
+                return ResourceManager.GetString("StatusBar_ConnectFailedAndPrompt", resourceCulture);
             }
         }
         
@@ -2573,6 +2591,15 @@ namespace BlackbirdSql.Shared.Properties {
         internal static string StatusBar_ExecutingQuery {
             get {
                 return ResourceManager.GetString("StatusBar_ExecutingQuery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution failed. Close dialog to continue..
+        /// </summary>
+        internal static string StatusBar_ExecutionFailedAndPrompt {
+            get {
+                return ResourceManager.GetString("StatusBar_ExecutionFailedAndPrompt", resourceCulture);
             }
         }
         
@@ -2631,6 +2658,15 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Query cancelled (Existing transactions were discarded)..
+        /// </summary>
+        internal static string StatusBar_QueryCancelledTtsLost {
+            get {
+                return ResourceManager.GetString("StatusBar_QueryCancelledTtsLost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Query executed successfully at {0:T}.
         /// </summary>
         internal static string StatusBar_QueryCompletedSuccessfully {
@@ -2654,6 +2690,15 @@ namespace BlackbirdSql.Shared.Properties {
         internal static string StatusBar_QueryCompletedWithErrorsRollback {
             get {
                 return ResourceManager.GetString("StatusBar_QueryCompletedWithErrorsRollback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Query completed with errors (Existing transactions were discarded)..
+        /// </summary>
+        internal static string StatusBar_QueryCompletedWithErrorsTtsLost {
+            get {
+                return ResourceManager.GetString("StatusBar_QueryCompletedWithErrorsTtsLost", resourceCulture);
             }
         }
         

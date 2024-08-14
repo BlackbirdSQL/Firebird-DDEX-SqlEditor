@@ -5,21 +5,25 @@
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Ctl.QueryExecution;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BlackbirdSql.Shared.Events;
 
 
-public delegate void BatchExecutionCompletedEventHandler(object sender, BatchExecutionCompletedEventArgs args);
+public delegate Task BatchExecutionCompletedEventHandler(object sender, BatchExecutionCompletedEventArgs args);
 
 
-public class BatchExecutionCompletedEventArgs : QueryExecutionCompletedEventArgs
+public class BatchExecutionCompletedEventArgs : ExecutionCompletedEventArgs
 {
-	public BatchExecutionCompletedEventArgs(EnScriptExecutionResult res, bool syncCancel,
-			QESQLBatch batch, EnSqlExecutionType executionType)
-		: base(res, syncCancel, executionType)
+	public BatchExecutionCompletedEventArgs(EnScriptExecutionResult res, QESQLBatch batch,
+			EnSqlExecutionType executionType, CancellationToken cancelToken, CancellationToken syncToken)
+		: base(res, executionType, true, cancelToken, syncToken)
 	{
-		Batch = batch;
+		_Batch = batch;
 	}
 
-	public QESQLBatch Batch { get; private set; }
+	private readonly QESQLBatch _Batch = null;
+
+	public QESQLBatch Batch => _Batch;
 }

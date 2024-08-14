@@ -1,9 +1,7 @@
 ﻿
 using System;
-using System.Data;
 using System.Security;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Properties;
 
 
 
@@ -45,7 +43,6 @@ public static class CoreConstants
 	public const string C_KeyExPersistPassword = "PersistPassword";
 	public const string C_KeyExEdmx = "edmx";
 	public const string C_KeyExEdmu = "edmu";
-	public const string C_KeyExCreationFlags = "CreationFlags";
 
 	// Internal (hidden) property keys
 	public const string C_KeyExInMemoryPassword = "InMemoryPassword";

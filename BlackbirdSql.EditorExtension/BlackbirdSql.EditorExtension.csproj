@@ -80,12 +80,12 @@
 		<Compile Include="EditorExtensionPackage.cs" />
 		<Compile Include="GlobalSuppressions.cs" />
 		<Compile Include="EditorEventsManager.cs" />
-		<Compile Include="Ctl\AbstractEditorFactory.cs" />
-		<Compile Include="Ctl\AbstruseEditorFactory.cs" />
-		<Compile Include="Ctl\EditorFactoryWithEncoding.cs" />
-		<Compile Include="Ctl\EditorFactoryWithoutEncoding.cs" />
+		<Compile Include="Root\AbstractEditorFactory.cs" />
+		<Compile Include="Root\AbstruseEditorFactory.cs" />
+		<Compile Include="Root\EditorFactoryEncoded.cs" />
+		<Compile Include="Root\EditorFactory.cs" />
 		<Compile Include="Ctl\ToolbarCommandHandler.cs" />
-		<Compile Include="Ctl\ResultsEditorFactory.cs" />
+		<Compile Include="Root\EditorFactoryResults.cs" />
 		<Compile Include="Events\MonitorSelectionEventArgs.cs" />
 	</ItemGroup>
 

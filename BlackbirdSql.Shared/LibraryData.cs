@@ -1,7 +1,6 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using System;
 using BlackbirdSql.Shared.Model;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -11,28 +10,31 @@ namespace BlackbirdSql.Shared;
 
 
 // =========================================================================================================
-//											ServiceData Class
+//											LibraryData Class
 //
 /// <summary>
-/// Contains extension constants for additional core BlackbirdSql services (Editor/Language services).
+/// Contains extension constants for additional (Shared) BlackbirdSql services (Editor/Language services).
 /// </summary>
 // =========================================================================================================
 public static class LibraryData
 {
 	public const int C_ConnectionValidationModulus = 20;
+	public const int C_DefaultInitialMaxCharsPerColumnForGrid = 50;
+	public const int C_DefaultInitialMinNumberOfVisibleRows = 8;
+	public const int C_DefaultMaxCharsPerColumnForGrid = 43679;
+
 	public const string C_ShowPlanNamespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan";
 
-	// ---------------------------------------------------------------------------------------------------------
-	#region Package Guids - LibraryData
-	// ---------------------------------------------------------------------------------------------------------
 
 
-	#endregion Package Guids
+	// ---------------------------------------------------------------------------------------------------------
+	#region Library Guids - LibraryData
+	// ---------------------------------------------------------------------------------------------------------
 
 
 	// Private Service and Factory Guids
 	public const string C_EditorPaneGuid = "ADE35F8D-9953-4E4C-9190-A0DDE7075840";
-	public const string C_SqlResultsEditorFactoryGuid = "31AD6A1B-B7A2-4B16-AADA-28ADEADF7F2E";
+	public const string C_ResultsEditorFactoryGuid = "31AD6A1B-B7A2-4B16-AADA-28ADEADF7F2E";
 
 
 	/// <summary>
@@ -44,10 +46,13 @@ public static class LibraryData
 
 
 	// Tabs
-	public const string C_SqlMessageTabLogicalViewGuid = "DCB777D2-E346-42A7-9619-E1D60DD1C098";
-	// public const string C_SqlExecutionPlanTabLogicalViewGuid = "10308C26-2E83-4DF5-BA5E-17935360B543";
-	public const string C_SqlTextPlanTabLogicalViewGuid = "200E716C-607B-4729-8D8C-C857A6F0FDF3";
-	public const string C_SqlStatisticsTabLogicalViewGuid = "C7601C1A-F370-4560-83B3-07DE8331EA8F";
-	public const string C_SqlTextResultsTabLogicalViewGuid = "2C5E6F49-4D0D-44E2-B6C1-DAF685928BD9";
+	public const string C_MessageTabGuid = "DCB777D2-E346-42A7-9619-E1D60DD1C098";
+	// public const string C_ExecutionPlanTabGuid = "10308C26-2E83-4DF5-BA5E-17935360B543";
+	public const string C_TextPlanTabGuid = "200E716C-607B-4729-8D8C-C857A6F0FDF3";
+	public const string C_StatisticsTabGuid = "C7601C1A-F370-4560-83B3-07DE8331EA8F";
+	public const string C_TextResultsTabGuid = "2C5E6F49-4D0D-44E2-B6C1-DAF685928BD9";
+
+
+	#endregion Library Guids
 
 };

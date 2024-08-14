@@ -3,131 +3,170 @@
 
 using System;
 using System.Windows.Forms;
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Shared.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.TextManager.Interop;
 
 
 
 namespace BlackbirdSql.Shared.Ctl.Commands;
 
 
+// =========================================================================================================
+//
+//											AbstractCommand Class
+//
+/// <summary>
+/// Base class for Editor Extension commands.
+/// </summary>
+// =========================================================================================================
 public abstract class AbstractCommand
 {
+
+	// --------------------------------------------------------
+	#region Constructors / Destructors - AbstractCommand
+	// --------------------------------------------------------
+
 
 	public AbstractCommand()
 	{
 	}
 
-	public AbstractCommand(IBsTabbedEditorWindowPane windowPane)
+
+
+	public AbstractCommand(IBsTabbedEditorPane editorPane)
 	{
-		WindowPane = windowPane;
+		_TabbedEditorPane = editorPane;
 	}
 
 
+	#endregion Constructors / Destructors
 
-	private IVsTextView _CodeEditorTextView = null;
-	private QueryManager _QryMgr = null;
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstractCommand
+	// =========================================================================================================
+
+
 	private AuxilliaryDocData _AuxDocData = null;
+	private IBsTabbedEditorPane _TabbedEditorPane;
 
 
-	protected AuxilliaryDocData AuxDocData
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - AbstractCommand
+	// =========================================================================================================
+
+
+	protected AuxilliaryDocData CachedAuxDocData
 	{
 		get
 		{
-			_AuxDocData = null;
+			if (_AuxDocData != null)
+				return _AuxDocData;
 
-			if (WindowPane == null)
-			{
-				_QryMgr = null;
+			if (EditorPane == null)
 				return null;
-			}
 
-
-			_CodeEditorTextView ??= ((IBsEditorWindowPane)WindowPane).GetCodeEditorTextView();
-
-			if (_CodeEditorTextView != null)
-			{
-				IVsTextLines textLinesForTextView = GetTextLinesForTextView(_CodeEditorTextView);
-
-				if (textLinesForTextView != null)
-					_AuxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(textLinesForTextView);
-			}
-
-			if (_AuxDocData == null)
-				_QryMgr = null;
+			_AuxDocData = EditorPane.AuxDocData;
 
 			return _AuxDocData;
 		}
 	}
 
 
+	protected IBsModelCsb CachedLiveMdlCsb => CachedStrategy?.LiveMdlCsb;
 
-	protected IBsModelCsb StoredMdlCsb => StoredStrategy?.MdlCsb;
-	protected IBsModelCsb StoredLiveMdlCsb => StoredStrategy?.LiveMdlCsb;
+	protected string CachedLiveQualifiedName => CachedLiveMdlCsb?.AdornedQualifiedTitle ?? string.Empty;
 
-	protected ConnectionStrategy StoredStrategy => StoredQryMgr?.Strategy;
+	protected IBsModelCsb CachedMdlCsb => CachedStrategy?.MdlCsb;
 
-	public long StoredRctStamp
+	protected QueryManager CachedQryMgr => CachedAuxDocData?.QryMgr;
+
+	protected ConnectionStrategy CachedStrategy => CachedQryMgr?.Strategy;
+
+
+	protected bool CancellationLocked
 	{
-		get { return StoredAuxDocData.CommandRctStamp; }
-		set { StoredAuxDocData.CommandRctStamp = value; }
-	}
-
-	public string StoredSelectedName
-	{
-		get { return StoredAuxDocData.CommandSelectedName; }
-		set { StoredAuxDocData.CommandSelectedName = value; }
-	}
-
-	public string[] StoredDatabaseList
-	{
-		get { return StoredAuxDocData.CommandDatabaseList; }
-		set { StoredAuxDocData.CommandDatabaseList = value; }
+		get
+		{
+			return (CachedQryMgr == null || CachedQryMgr.IsCancelling
+				|| (!CachedQryMgr.IsExecuting && !CachedQryMgr.IsConnecting));
+		}
 	}
 
 
-	protected AuxilliaryDocData StoredAuxDocData => _AuxDocData ?? AuxDocData;
-
-
-	public IBsTabbedEditorWindowPane WindowPane { get; set; }
+	public IBsTabbedEditorPane EditorPane
+	{
+		get { return _TabbedEditorPane; }
+		set { _TabbedEditorPane = value; }
+	}
 
 
 	protected bool ExecutionLocked
 	{
 		get
 		{
-			return (StoredQryMgr == null || StoredQryMgr.IsLocked);
+			return (CachedQryMgr == null || CachedQryMgr.IsLocked);
 		}
 	}
 
-	protected bool CancellationLocked
+
+	protected string[] StoredDatabaseList
+	{
+		get { return CachedAuxDocData.CommandDatabaseList; }
+		set { CachedAuxDocData.CommandDatabaseList = value; }
+	}
+
+
+	protected long StoredRctStamp
+	{
+		get { return CachedAuxDocData.CommandRctStamp; }
+		set { CachedAuxDocData.CommandRctStamp = value; }
+	}
+
+
+	protected string StoredSelectedName
 	{
 		get
 		{
-			return (StoredQryMgr == null || StoredQryMgr.IsCancelling || !StoredQryMgr.IsExecuting);
-		}
-	}
+			string value = CachedAuxDocData.CommandSelectedName;
 
-	protected QueryManager QryMgr
-	{
-		get
+			if (value != null)
+			{
+				CachedAuxDocData.CommandSelectedName = null;
+				return value;
+			}
+
+			return CachedLiveQualifiedName;
+		}
+		set
 		{
-			_QryMgr = StoredAuxDocData?.QryMgr;
-			return _QryMgr;
+			CachedAuxDocData.CommandSelectedName = value;
 		}
 	}
 
-	protected QueryManager StoredQryMgr => _QryMgr ?? QryMgr;
+
+	#endregion Property accessors
 
 
-	protected bool HasTransactions => StoredQryMgr?.HasTransactions ?? false;
+
+
+
+	// =========================================================================================================
+	#region Methods - AbstractCommand
+	// =========================================================================================================
 
 
 	/// <summary>
@@ -137,13 +176,46 @@ public abstract class AbstractCommand
 
 
 
-	protected bool CanDisposeTransaction(string caption = null)
+	public int Exec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgr = StoredQryMgr;
+		return OnExec(nCmdexecopt, pvaIn, pvaOut);
+	}
+
+
+
+	public int QueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	{
+		return OnQueryStatus(ref prgCmd, pCmdText);
+	}
+
+
+
+	protected bool RequestDeactivateQuery(string msgResource)
+	{
+		QueryManager qryMgr = CachedQryMgr;
 
 		try
 		{
-			if (!qryMgr.GetUpdatedTransactionsStatus(true))
+			if (!qryMgr.LiveTransactions)
+				return true;
+		}
+		catch
+		{
+			return true;
+		}
+
+		return CachedAuxDocData.RequestDeactivateQuery(msgResource);
+	}
+
+
+
+	protected bool RequestDisposeTts(string caption = null)
+	{
+		QueryManager qryMgr = CachedQryMgr;
+
+		try
+		{
+			if (!qryMgr.LiveTransactions)
 				return true;
 		}
 		catch
@@ -160,55 +232,24 @@ public abstract class AbstractCommand
 	}
 
 
-
-
-	public int QueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
-	{
-		return OnQueryStatus(ref prgCmd, pCmdText);
-	}
+	#endregion Methods
 
 
 
-	public int Exec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
-	{
-		return OnExec(nCmdexecopt, pvaIn, pvaOut);
-	}
 
 
+	// =========================================================================================================
+	#region Event Handling - AbstractCommand
+	// =========================================================================================================
 
-	protected abstract int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText);
 
 	protected abstract int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 
 
 
-	public static IVsTextLines GetTextLinesForTextView(IVsTextView textView)
-	{
-		IVsTextLines ppBuffer = null;
-
-		if (textView != null)
-			___(textView.GetBuffer(out ppBuffer));
-
-		return ppBuffer;
-	}
+	protected abstract int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText);
 
 
-
-	protected bool RequestDeactivateQuery(string msgResource)
-	{
-		QueryManager qryMgr = StoredQryMgr;
-
-		try
-		{
-			if (!qryMgr.GetUpdatedTransactionsStatus(true))
-				return true;
-		}
-		catch
-		{
-			return true;
-		}
-
-		return StoredAuxDocData.RequestDeactivateQuery(msgResource);
-	}
+	#endregion Event Handling
 
 }

@@ -284,7 +284,7 @@ public class LinkageParser : AbstractLinkageParser
 
 		AsyncExecute(0, 0);
 
-		return AsyncWait();
+		return SyncAsyncWait();
 	}
 
 
@@ -498,46 +498,6 @@ public class LinkageParser : AbstractLinkageParser
 	// =========================================================================================================
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Performs delay in small timeslices to intermittently check if the user has not
-	/// cancelled an async operation during the overall delay period of delay *
-	/// multiplier.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private bool AsyncDelay(int delay, int multiplier, CancellationToken userToken)
-	{
-		// Tracer.Trace(GetType(), "AsyncDelay()", "Entering - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
-
-		lock (_LockObject)
-			_AsyncPayloadLaunchState = EnLauncherPayloadLaunchState.Launching;
-
-		int i;
-
-		for (i = 0; i < multiplier; i++)
-		{
-			if (userToken.IsCancellationRequested || _AsyncPayloadLauncher == null)
-			{
-				break;
-			}
-
-
-			try
-			{
-				_AsyncPayloadLauncher.Wait(delay, userToken);
-			}
-			catch // (OperationCanceledException ex)
-			{
-			}
-		}
-
-		// Tracer.Trace(GetType(), "AsyncDelay()", "Exiting - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
-
-
-		return !userToken.IsCancellationRequested && _AsyncPayloadLauncher != null;
-	}
-
-
 	/*
 	 * GetInstance - Gets instance else null if no exist.
 	 * EnsureInstance - GetInstance else create if no exist.
@@ -553,8 +513,8 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>1
-	/// Ensures an instance is retrieved or else created and then initiates loading if
-	/// !PersistentSettings.OnDemandLinkage.
+	/// [Async launch]: Ensures an instance is retrieved or else created and then
+	/// initiates loading if !PersistentSettings.OnDemandLinkage.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser AsyncEnsureLoading(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
@@ -584,7 +544,7 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Begins or resumes asynchronous linkage build operations.
+	/// [Launch async]: Begins or resumes asynchronous linkage build operations.
 	/// </summary>
 	/// <param name="delay">
 	/// The delay in milliseconds before beginning operations if an async build was
@@ -634,172 +594,10 @@ public class LinkageParser : AbstractLinkageParser
 
 		_TaskHandler.RegisterTask(_AsyncPayloadLauncher);
 
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExecute()", "EXIT - AsyncTask registered - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+		// Tracer.Trace(GetType(), "AsyncExecute()", "EXIT - AsyncTask registered - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 
 
 		return true;
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Increments the sync call counter and suspends any async tasks. This should be
-	/// called on every occasion that a UI thread db call is made in the package.
-	/// </summary>
-	/// <param name="pausing">
-	/// Updates output pane and status bar with "pausing" message. Set this to true if
-	/// linkage tables will not be required.
-	/// </param>
-	/// <returns>
-	/// Negative thread id if trigger tables must still be loaded else positive if complete
-	/// </returns>
-	/// <remarks>
-	/// This is tricky because although we're entering a sandboxed synchronous tunnel
-	/// everything outside is async, including our own async process. This means we have
-	/// to handle additional sync requests coming in. At any point the parsing might be
-	/// completed. Further, if the linkage tables are required by a process, it will
-	/// synchronously complete the linkage, so any new processes in the queue must check
-	/// if their task has not been completed synchronously or asynchronously.
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public bool AsyncWait(bool disabling = false)
-	{
-
-		lock (_LockObject)
-		{
-
-			// If there's no one home just exit.
-
-			if (Completed)
-			{
-				if (!AsyncActive && _AsyncPayloadLauncher != null && _AsyncPayloadLauncher.IsCompleted)
-				{
-					_AsyncPayloadLauncher.Dispose();
-					_AsyncPayloadLauncher = null;
-				}
-
-				// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] SyncEnter()", "ENTER/EXIT SyncEnter - _SyncCardinal: {0} pausing: {1}, IsUiThread: {2}.", _SyncCardinal, pausing, ThreadHelper.CheckAccess());
-
-				return _Enabled && !disabling;
-			}
-
-		}
-
-		// Async is active. We have to optionally disable and wait.
-		// This is a deadlock trap if AsyncPending is true, so we have to take
-		// the state of the launcher task's state (EnLauncherPayloadLaunchState)
-		// into account...
-
-
-		try
-		{
-			if (disabling)
-			{
-				// Async is active so request cancellation. 
-				lock (_LockObject)
-				{
-					CancellationTokenSource tokenSource = (CancellationTokenSource)Reflect.GetField(_TaskHandler.UserCancellation, "m_source");
-					tokenSource?.Cancel();
-				}
-
-				_TaskHandler.Progress(Percent(_LinkStage), C_Elapsed_Disabling, _TotalElapsed, _Enabled, AsyncActive);
-			}
-
-			int waitTime = 0;
-			int timeout = NativeDb.LinkageTimeout * 1000;
-
-			// Wait maximum of 3 seconds for async task to launch.
-			int pendingTimeout = 3000;
-
-
-			while (AsyncActive)
-			{
-				if (waitTime >= timeout && !disabling && _Enabled)
-				{
-					// Make a non-blocking request to the user for a time extension.
-					// Message prompt will automatically disappear if linkage completes before
-					// the user has responded.
-
-					string caption = ControlsResources.LinkageParser_CaptionLinkageTimeout;
-					string msg = ControlsResources.LinkageParser_TextLinkageParser.FmtRes(NativeDb.LinkageTimeout);
-
-					if (MessageCtl.ShowEx(msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Error, OnMessageBoxShown) == DialogResult.Yes)
-					{
-						waitTime = 0;
-
-					}
-					else
-					{
-						if (AsyncActive)
-						{
-							lock (_LockObject)
-							{
-								disabling = true;
-								_Enabled = false;
-
-								CancellationTokenSource tokenSource = (CancellationTokenSource)Reflect.GetField(_TaskHandler.UserCancellation, "m_source");
-								tokenSource?.Cancel();
-							}
-
-							_TaskHandler.Progress(Percent(_LinkStage), C_Elapsed_Disabling, _TotalElapsed, _Enabled, AsyncActive);
-
-							TimeoutException ex = new($"Timed out waiting for AsyncPayloadLauncher to complete. Timeout (ms): {waitTime}.");
-							Diag.Dug(ex);
-							// throw ex;
-						}
-					}
-
-					continue;
-				}
-
-
-				try
-				{
-					_AsyncPayloadLauncher.Wait(50, _TaskHandler.UserCancellation);
-				}
-				catch // (OperationCanceledException ex)
-				{
-					// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_SyncWaitAsyncTask.Cancelled "); //, ex.Message);
-				}
-
-				if ((_TaskHandler.UserCancellation.IsCancellationRequested || disabling) && AsyncPending)
-				{
-					pendingTimeout -= 100;
-
-					if (pendingTimeout <= 0)
-					{
-						// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_AsyncPayloadLauncher Timeout");
-						_AsyncPayloadLauncher = null;
-
-						if (!_Enabled || disabling)
-							_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled && !disabling, AsyncActive);
-
-						lock (_LockObject)
-							_AsyncPayloadLaunchState = EnLauncherPayloadLaunchState.Inactive;
-
-						return false;
-					}
-				}
-
-				Thread.Sleep(50);
-				if ((waitTime % 500) == 0)
-					Thread.Yield();
-
-				waitTime += 100;
-
-			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] SyncEnter()", "EXIT after Wait and exiting - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
-
-
-		return _Enabled && !disabling;
-
 	}
 
 
@@ -815,6 +613,48 @@ public class LinkageParser : AbstractLinkageParser
 		ThreadStart threadParameters = new ThreadStart(delegate { ThreadSafeCloseMessageBox(); });
 		Thread thread = new Thread(threadParameters);
 		thread.Start();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs delay in small timeslices to intermittently check if the user has not
+	/// cancelled an async operation during the overall delay period of delay *
+	/// multiplier.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	[SuppressMessage("Usage", "VSTHRD003:Avoid awaiting foreign Tasks", Justification = "<Pending>")]
+	private async Task<bool> DelayAsync(int delay, int multiplier, CancellationToken userToken)
+	{
+		// Tracer.Trace(GetType(), "DelayAsync()", "Entering - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
+
+		lock (_LockObject)
+			_AsyncPayloadLaunchState = EnLauncherPayloadLaunchState.Launching;
+
+		int i;
+
+		for (i = 0; i < multiplier; i++)
+		{
+			if (userToken.IsCancellationRequested || _AsyncPayloadLauncher == null)
+			{
+				break;
+			}
+
+
+			try
+			{
+				await _AsyncPayloadLauncher.WaitAsync(delay, userToken);
+			}
+			catch // (OperationCanceledException ex)
+			{
+			}
+		}
+
+		// Tracer.Trace(GetType(), "DelayAsync()", "Exiting - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
+
+
+		return !userToken.IsCancellationRequested && _AsyncPayloadLauncher != null;
 	}
 
 
@@ -839,7 +679,7 @@ public class LinkageParser : AbstractLinkageParser
 
 		_Disabling = true; 
 
-		AsyncWait(true);
+		SyncAsyncWait(true);
 
 		_Enabled = false;
 
@@ -919,7 +759,7 @@ public class LinkageParser : AbstractLinkageParser
 	{
 		bool result = false;
 
-		// Tracer.Trace(GetType(), "AsyncPayloadTask()", "delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
+		// Tracer.Trace(GetType(), "ExecuteAsync()", "delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
 
 		try
 		{
@@ -929,7 +769,7 @@ public class LinkageParser : AbstractLinkageParser
 			}
 			else
 			{
-				if (AsyncDelay(delay, multiplier, userCancellationToken))
+				if (await DelayAsync(delay, multiplier, userCancellationToken))
 				{
 					await PopulateLinkageTablesAsync(userCancellationToken, "AsyncId", asyncProcessId);
 				}
@@ -1248,6 +1088,169 @@ public class LinkageParser : AbstractLinkageParser
 		}
 
 		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Increments the sync call counter and suspends any async tasks. This should be
+	/// called on every occasion that a UI thread db call is made in the package.
+	/// </summary>
+	/// <param name="pausing">
+	/// Updates output pane and status bar with "pausing" message. Set this to true if
+	/// linkage tables will not be required.
+	/// </param>
+	/// <returns>
+	/// Negative thread id if trigger tables must still be loaded else positive if complete
+	/// </returns>
+	/// <remarks>
+	/// This is tricky because although we're entering a sandboxed synchronous tunnel
+	/// everything outside is async, including our own async process. This means we have
+	/// to handle additional sync requests coming in. At any point the parsing might be
+	/// completed. Further, if the linkage tables are required by a process, it will
+	/// synchronously complete the linkage, so any new processes in the queue must check
+	/// if their task has not been completed synchronously or asynchronously.
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
+	public bool SyncAsyncWait(bool disabling = false)
+	{
+
+		lock (_LockObject)
+		{
+
+			// If there's no one home just exit.
+
+			if (Completed)
+			{
+				if (!AsyncActive && _AsyncPayloadLauncher != null && _AsyncPayloadLauncher.IsCompleted)
+				{
+					_AsyncPayloadLauncher.Dispose();
+					_AsyncPayloadLauncher = null;
+				}
+
+				// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] SyncEnter()", "ENTER/EXIT SyncEnter - _SyncCardinal: {0} pausing: {1}, IsUiThread: {2}.", _SyncCardinal, pausing, ThreadHelper.CheckAccess());
+
+				return _Enabled && !disabling;
+			}
+
+		}
+
+		// Async is active. We have to optionally disable and wait.
+		// This is a deadlock trap if AsyncPending is true, so we have to take
+		// the state of the launcher task's state (EnLauncherPayloadLaunchState)
+		// into account...
+
+
+		try
+		{
+			if (disabling)
+			{
+				// Async is active so request cancellation. 
+				lock (_LockObject)
+				{
+					CancellationTokenSource tokenSource = (CancellationTokenSource)Reflect.GetField(_TaskHandler.UserCancellation, "m_source");
+					tokenSource?.Cancel();
+				}
+
+				_TaskHandler.Progress(Percent(_LinkStage), C_Elapsed_Disabling, _TotalElapsed, _Enabled, AsyncActive);
+			}
+
+			int waitTime = 0;
+			int timeout = NativeDb.LinkageTimeout * 1000;
+
+			// Wait maximum of 3 seconds for async task to launch.
+			int pendingTimeout = 3000;
+
+
+			while (AsyncActive)
+			{
+				if (waitTime >= timeout && !disabling && _Enabled)
+				{
+					// Make a non-blocking request to the user for a time extension.
+					// Message prompt will automatically disappear if linkage completes before
+					// the user has responded.
+
+					string caption = ControlsResources.LinkageParser_CaptionLinkageTimeout;
+					string msg = ControlsResources.LinkageParser_TextLinkageParser.FmtRes(NativeDb.LinkageTimeout);
+
+					if (MessageCtl.ShowEx(msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Error, OnMessageBoxShown) == DialogResult.Yes)
+					{
+						waitTime = 0;
+
+					}
+					else
+					{
+						if (AsyncActive)
+						{
+							lock (_LockObject)
+							{
+								disabling = true;
+								_Enabled = false;
+
+								CancellationTokenSource tokenSource = (CancellationTokenSource)Reflect.GetField(_TaskHandler.UserCancellation, "m_source");
+								tokenSource?.Cancel();
+							}
+
+							_TaskHandler.Progress(Percent(_LinkStage), C_Elapsed_Disabling, _TotalElapsed, _Enabled, AsyncActive);
+
+							TimeoutException ex = new($"Timed out waiting for AsyncPayloadLauncher to complete. Timeout (ms): {waitTime}.");
+							Diag.Dug(ex);
+							// throw ex;
+						}
+					}
+
+					continue;
+				}
+
+
+				try
+				{
+					_AsyncPayloadLauncher.Wait(50, _TaskHandler.UserCancellation);
+				}
+				catch // (OperationCanceledException ex)
+				{
+					// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_SyncWaitAsyncTask.Cancelled "); //, ex.Message);
+				}
+
+				if ((_TaskHandler.UserCancellation.IsCancellationRequested || disabling) && AsyncPending)
+				{
+					pendingTimeout -= 100;
+
+					if (pendingTimeout <= 0)
+					{
+						// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_AsyncPayloadLauncher Timeout");
+						_AsyncPayloadLauncher = null;
+
+						if (!_Enabled || disabling)
+							_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled && !disabling, AsyncActive);
+
+						lock (_LockObject)
+							_AsyncPayloadLaunchState = EnLauncherPayloadLaunchState.Inactive;
+
+						return false;
+					}
+				}
+
+				Thread.Sleep(50);
+				if ((waitTime % 500) == 0)
+					Thread.Yield();
+
+				waitTime += 100;
+
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] SyncEnter()", "EXIT after Wait and exiting - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+
+
+		return _Enabled && !disabling;
+
 	}
 
 

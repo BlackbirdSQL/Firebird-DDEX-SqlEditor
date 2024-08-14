@@ -17,7 +17,7 @@ public class CommandConnect : AbstractCommand
 	{
 	}
 
-	public CommandConnect(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
+	public CommandConnect(IBsTabbedEditorPane editorPane) : base(editorPane)
 	{
 	}
 
@@ -27,7 +27,7 @@ public class CommandConnect : AbstractCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (!ExecutionLocked && !StoredQryMgr.IsConnected)
+		if (!ExecutionLocked && !CachedQryMgr.IsConnected)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
@@ -35,10 +35,10 @@ public class CommandConnect : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (ExecutionLocked || StoredQryMgr.IsConnected)
+		if (ExecutionLocked || CachedQryMgr.IsConnected)
 			return VSConstants.S_OK;
 
-		StoredQryMgr.EnsureVerifiedOpenConnection();
+		CachedQryMgr.EnsureVerifiedOpenConnection();
 
 		return VSConstants.S_OK;
 	}

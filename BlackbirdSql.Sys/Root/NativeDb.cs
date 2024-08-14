@@ -187,7 +187,12 @@ public static class NativeDb
 	// =========================================================================================================
 
 
-	public static void AsyncReindexEntityFrameworkAssemblies(Project project = null)
+	// -----------------------------------------------------------------------------------------------------
+	/// <summary>
+	/// [Async on UI thread]: Reindex the EntityFramwork ProviderService type in the TypeResolutionService. 
+	/// </summary>
+	// -----------------------------------------------------------------------------------------------------
+	public static void AsyuiReindexEntityFrameworkAssemblies(Project project = null)
 	{
 		// If it's a solution reindex (project == null), lock entry so that only
 		// other solution reindex requests can enter.
@@ -210,7 +215,7 @@ public static class NativeDb
 				{
 					// If it's a solution reindex, unlock. If other solution reindex's
 					// are behind us they'll lock us out when we call EventReindexingEnter()
-					// again after checking for SolutionClosing and swithching to the main
+					// again after checking for SolutionClosing and switching to the main
 					// thread..
 					// This is perfect code logic because it means only the last solution
 					// reindex will get through. Everything else will be discarded. Even
@@ -246,9 +251,6 @@ public static class NativeDb
 		return DatabaseEngineSvc.CastToNativeConnection_(connection);
 	}
 
-
-	public static string ConvertDataTypeToSql(object type, object length, object precision, object scale) =>
-		DatabaseEngineSvc.ConvertDataTypeToSql_(type, length, precision, scale);
 
 
 	public static DbCommand CreateDbCommand(string cmdText = null)
@@ -465,7 +467,6 @@ public static class NativeDb
 	public static bool IsSupportedConnection(IDbConnection connection) => DatabaseEngineSvc.IsSupportedConnection_(connection);
 
 	public static bool LockLoadedParser(string originalString, string updatedString) => DatabaseEngineSvc.LockLoadedParser_(originalString, updatedString);
-	public static void OpenConnection(DbConnection connection) => DatabaseEngineSvc.OpenConnection_(connection);
 
 	public static void UnlockLoadedParser() => DatabaseEngineSvc.UnlockLoadedParser_();
 

@@ -263,14 +263,14 @@ public class DbBatchParser : IBsNativeDbBatchParser
 				if (transaction != null && transaction.HasTransactions())
 				{
 					await transaction.CommitAsync(cancelToken);
-					_QryMgr.DisposeTransaction(true);
+					_QryMgr.DisposeTransaction();
 
 					return true;
 				}
 			}
 			catch
 			{
-				_QryMgr.DisposeTransaction(true);
+				_QryMgr.DisposeTransaction();
 			}
 
 
@@ -347,14 +347,18 @@ public class DbBatchParser : IBsNativeDbBatchParser
 				if (transaction != null && transaction.HasTransactions())
 				{
 					await transaction.RollbackAsync(cancelToken);
-					_QryMgr.DisposeTransaction(true);
+					_QryMgr.DisposeTransaction();
 
 					return true;
 				}
 			}
 			catch
 			{
-				_QryMgr.DisposeTransaction(true);
+				try
+				{
+					_QryMgr.DisposeTransaction();
+				}
+				catch { }
 			}
 
 

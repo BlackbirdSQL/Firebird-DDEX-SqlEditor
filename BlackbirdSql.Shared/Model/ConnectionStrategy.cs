@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
@@ -14,8 +13,6 @@ using BlackbirdSql.Shared.Controls.PropertiesWindow;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Shared.Properties;
-using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Threading;
 
 
@@ -52,14 +49,14 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 			return false;
 
 		_KeepAliveCancelTokenSource?.Cancel();
-		_KeepAliveCancelTokenSource?.Dispose();
-		_KeepAliveCancelTokenSource = null;
+		// _KeepAliveCancelTokenSource?.Dispose();
+		// _KeepAliveCancelTokenSource = null;
 
 		if (_OnInvalidateToolbar != null)
-			_InvalidateToolbarEvent -= _OnInvalidateToolbar;
+			InvalidateToolbarEvent -= _OnInvalidateToolbar;
 
 		if (_OnNotifyConnectionState != null)
-			_NotifyConnectionStateEvent -= _OnNotifyConnectionState;
+			NotifyConnectionStateEvent -= _OnNotifyConnectionState;
 
 		_InvalidateToolbarEvent = null;
 		_NotifyConnectionStateEvent = null;
@@ -141,7 +138,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		{
 			try
 			{
-				if (!GetUpdatedTransactionsStatus(false))
+				if (!GetUpdatedTtsStatus())
 					return true;
 			}
 			catch
@@ -162,10 +159,9 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		}
 
 
-		DisposeTransaction(true);
+		DisposeTransaction();
 
-		if (validate)
-			GetUpdatedTransactionsStatus(true);
+		LiveTransactions = false;
 
 		return result;
 	}
@@ -189,8 +185,32 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 
 
 
-	public bool InitializeKeepAlive(EventHandler onInvalidateToolbar, NotifyConnectionStateEventHandler onNotifyConnectionState)
+	private bool GetUpdatedTtsStatus()
 	{
+		bool hasTransactions;
+
+		try
+		{
+			hasTransactions = MdlCsb?.HasTransactions ?? false;
+		}
+		catch
+		{
+			LiveTransactions = false;
+			throw;
+		}
+
+		LiveTransactions = hasTransactions;
+
+		return hasTransactions;
+	}
+
+
+
+	public bool Initialize(IBsCsb csb, EventHandler onInvalidateToolbar, NotifyConnectionStateEventHandler onNotifyConnectionState)
+	{
+		if (csb != null)
+			SetDatabaseCsb(new ModelCsb(csb), true);
+
 		if (_KeepAliveCancelTokenSource != null)
 			return false;
 
@@ -198,11 +218,13 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 
 		CancellationToken cancelToken = _KeepAliveCancelTokenSource.Token;
 
-		InvalidateToolbarEvent += onInvalidateToolbar;
-		NotifyConnectionStateEvent += onNotifyConnectionState;
-
 		_OnInvalidateToolbar = onInvalidateToolbar;
+		_OnNotifyConnectionState = onNotifyConnectionState;
 
+		InvalidateToolbarEvent += _OnInvalidateToolbar;
+		NotifyConnectionStateEvent += _OnNotifyConnectionState;
+
+		
 		// Fire and forget.
 		Task.Factory.StartNew(() => KeepAliveMonitoringAsync(cancelToken),
 			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
@@ -224,7 +246,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		long validationCardinal = 0L;
 
 
-		while (_KeepAliveCancelTokenSource != null && !cancelToken.IsCancellationRequested)
+		while (!cancelToken.IsCancellationRequested)
 		{
 			try
 			{
@@ -243,6 +265,9 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 				break;
 			}
 		}
+
+		_KeepAliveCancelTokenSource?.Dispose();
+		_KeepAliveCancelTokenSource = null;
 
 		return result;
 	}
@@ -265,17 +290,19 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// No connection open or query manager locked.
 		// =================================================================
 
-		if (!connected || !RaiseNotifyConnectionState(EnNotifyConnectionState.RequestIsUnlocked, false))
+		if (cancelToken.IsCancellationRequested || !connected ||
+			!RaiseNotifyConnectionState(EnNotifyConnectionState.RequestIsUnlocked, false))
 		{
-			if (!connected)
+			if (!cancelToken.IsCancellationRequested && !connected)
 				RaiseNotifyConnectionState(EnNotifyConnectionState.ConfirmedClosed, false);
 
 			_KeepAliveConnectionStartTimeEpoch = long.MinValue;
 			validationCardinal = 0L;
 			connectionId = long.MinValue;
 
-			return (true, connectionId, validationCardinal);
+			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
 		}
+
 
 
 		// =================================================================
@@ -285,13 +312,13 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 
 		validationCardinal++;
 
-		bool hadTransactions = HadTransactions;
+		bool hasTransactions = HasTransactions;
 
 		// -----------------------------------------------------------------
 		// Another process killed the connection unexpectedly.
 		// -----------------------------------------------------------------
 
-		if (Connection == null)
+		if (cancelToken.IsCancellationRequested || Connection == null)
 		{
 			validationCardinal = 0L;
 			_KeepAliveConnectionStartTimeEpoch = long.MinValue;
@@ -300,10 +327,14 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 			// ConnectionChangedEventArgs args = new(null, null);
 			// OnConnectionChanged(this, args);
 
-			RaiseInvalidateToolbar();
-			RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyDead, hadTransactions);
+			if (!cancelToken.IsCancellationRequested)
+			{
 
-			return (true, connectionId, validationCardinal);
+				RaiseInvalidateToolbar();
+				RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyDead, hasTransactions);
+			}
+
+			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
 		}
 
 
@@ -317,13 +348,13 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// The connection changed. Reset all counters.
 		// -----------------------------------------------------------------
 
-		if (connectionId < 0 || connectionId != MdlCsb.ConnectionId)
+		if (cancelToken.IsCancellationRequested || connectionId < 0 || connectionId != MdlCsb.ConnectionId)
 		{
 			_KeepAliveConnectionStartTimeEpoch = long.MinValue;
 			validationCardinal = 0L;
 			connectionId = MdlCsb.ConnectionId;
 
-			return (true, connectionId, validationCardinal);
+			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
 		}
 
 
@@ -331,7 +362,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// -----------------------------------------------------------------
 		// Drift detection. Refresh connection and reset counters.
 		// -----------------------------------------------------------------
-		if (RctManager.Loaded && MdlCsb.IsInvalidated)
+		if (!cancelToken.IsCancellationRequested && !hasTransactions && RctManager.Loaded && MdlCsb.IsInvalidated)
 		{
 			Csb csaRegistered = RctManager.CloneRegistered(MdlCsb);
 
@@ -346,27 +377,19 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 				bool hasConnection = Connection != null;
 				bool isOpened = MdlCsb.State == ConnectionState.Open;
 
-				LiveMdlCsb = new ModelCsb(csaRegistered);
+				SetDatabaseCsb(new ModelCsb(csaRegistered), hasConnection);
 
-				if (hasConnection)
-				{
-					MdlCsb.CreateDataConnection();
-					if (isOpened)
-					{
-						try
-						{
-							await MdlCsb.OpenOrVerifyConnectionAsync();
-						}
-						catch { }
-					}
-				}
+				if (isOpened)
+					await VerifyOpenConnectionAsync(cancelToken);
 
-				RaiseInvalidateToolbar();
+
+				if (!cancelToken.IsCancellationRequested)
+					RaiseInvalidateToolbar();
 
 				_KeepAliveConnectionStartTimeEpoch = long.MinValue;
 				validationCardinal = 0L;
 
-				return (true, connectionId, validationCardinal);
+				return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
 			}
 		}
 
@@ -377,8 +400,12 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// Check validation modulus.
 		// =================================================================
 
-		if ((validationCardinal % LibraryData.C_ConnectionValidationModulus) != 0)
-			return (true, connectionId, validationCardinal);
+		if ((validationCardinal % LibraryData.C_ConnectionValidationModulus) != 0
+			|| cancelToken.IsCancellationRequested
+			|| !RaiseNotifyConnectionState(EnNotifyConnectionState.RequestIsUnlocked, false))
+		{
+			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
+		}
 
 
 
@@ -389,7 +416,8 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 
 
 		validationCardinal = 0L;
-		int connectionLifeTime = !hadTransactions ? MdlCsb.ConnectionLifeTime : 0;
+
+		int connectionLifeTime = !hasTransactions ? MdlCsb.ConnectionLifeTime : 0;
 
 		if (connectionLifeTime > 0)
 		{
@@ -407,15 +435,18 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 					_KeepAliveConnectionStartTimeEpoch = long.MinValue;
 
 					// Sanity check.
-					if (!GetUpdatedTransactionsStatus(true))
+					if (!LiveTransactions && !cancelToken.IsCancellationRequested)
 					{
 						CloseConnection();
-						RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyAutoClosed, false);
+
+						if (!cancelToken.IsCancellationRequested)
+							RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyAutoClosed, false);
 					}
 
-					RaiseInvalidateToolbar();
+					if (!cancelToken.IsCancellationRequested)
+						RaiseInvalidateToolbar();
 
-					return (true, connectionId, validationCardinal);
+					return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
 				}
 			}
 		}
@@ -432,57 +463,42 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// =================================================================
 
 
-		if (!connected)
-			return (true, connectionId, validationCardinal);
+		if (!connected || cancelToken.IsCancellationRequested)
+			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
 
 		// Remember the connection id because a new connection may be
 		// created while we're asynchronously checking.
 
 		connectionId = MdlCsb.ConnectionId;
-		bool hasTransactions = hadTransactions;
+
+		await VerifyOpenConnectionAsync(cancelToken);
 
 
-		// If we HadTransactions validate them.
-		try
-		{
-			if (hadTransactions)
-				hasTransactions = MdlCsb.HasTransactions;
-		}
-		catch
-		{
-			hasTransactions = false;
-		}
-
-
-		// If we never HadTransactions or we now don't HasTransactions
-		// validate the connection.
-		try
-		{
-			if (!hasTransactions)
-				_ = await MdlCsb.OpenOrVerifyConnectionAsync();
-		}
-		catch { }
-
-
-		if (_KeepAliveCancelTokenSource == null || cancelToken.IsCancellationRequested)
+		if (cancelToken.IsCancellationRequested)
 			return (false, connectionId, validationCardinal);
 
 		// If we're on the same connection after returning from an async call
 		// and the Connection was disposed of, it means there was a fail.
 
-		if (Connection == null && MdlCsb != null
-				&& connectionId == MdlCsb.ConnectionId)
+		if (MdlCsb != null && connectionId == MdlCsb.ConnectionId)
 		{
-			connectionId = long.MinValue;
-			RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyReset, hadTransactions);
+			if (Connection == null)
+			{
+				connectionId = long.MinValue;
+				RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyReset, hasTransactions);
+			}
+			else
+			{
+				// If we have a solution merge the status flag will be wrong.
+				RaiseNotifyConnectionState(EnNotifyConnectionState.ConfirmedOpen, false);
+			}
 		}
-		else if (MdlCsb != null && connectionId == MdlCsb.ConnectionId)
+		else if (hasTransactions != HasTransactions)
 		{
-			// If we have a solution merge the status flag will be wrong.
-			RaiseNotifyConnectionState(EnNotifyConnectionState.ConfirmedOpen, false);
+			RaiseInvalidateToolbar();
 		}
 
-		return (true, connectionId, validationCardinal);
+		return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
 	}
 
 
@@ -504,7 +520,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		{
 			try
 			{
-				if (!GetUpdatedTransactionsStatus(false))
+				if (!GetUpdatedTtsStatus())
 					return true;
 			}
 			catch
@@ -526,96 +542,34 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		}
 
 
-		DisposeTransaction(true);
-		GetUpdatedTransactionsStatus(true);
+		DisposeTransaction();
+
+		LiveTransactions = false;
 
 		return result;
 	}
 
 
 
-	public bool SetDatasetKeyOnConnection(string selectedQualifiedName, IBsCsb csb)
+	public bool SetDatasetKeyOnConnection(string selectedQualifiedName)
 	{
 		// Tracer.Trace(GetType(), "SetDatasetKeyOnConnection()", "selectedDatasetKey: {0}, ConnectionString: {1}.", selectedDatasetKey, csb.ConnectionString);
 
 		lock (_LockObject)
 		{
-			try
-			{
-				if (csb == null || csb.AdornedQualifiedTitle != selectedQualifiedName || _RctStamp != RctManager.Stamp)
-				{
-					_RctStamp = RctManager.Stamp;
-					csb = RctManager.ShutdownState ? null : RctManager.CloneRegistered(selectedQualifiedName, EnRctKeyType.AdornedQualifiedTitle);
-				}
+			_RctStamp = RctManager.Stamp;
 
-				if (csb == null)
-					return false;
+			IBsCsb csb = RctManager.ShutdownState
+				? null
+				: RctManager.CloneRegistered(selectedQualifiedName, EnRctKeyType.AdornedQualifiedTitle);
 
-				IBsModelCsb mdlCsb = new ModelCsb(csb);
+			if (csb == null)
+				return false;
 
-				LiveMdlCsb = mdlCsb;
-
-				try
-				{
-					mdlCsb.CreateDataConnection();
-				}
-				finally
-				{
-					_DatabaseChangedEvent?.Invoke(this, new EventArgs());
-				}
-
-			}
-			catch (DbException ex)
-			{
-				Diag.Expected(ex);
-				MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessibleEx.FmtRes(selectedQualifiedName), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			}
+			SetDatabaseCsb(new ModelCsb(csb), true);
 		}
 
 		return true;
-	}
-
-
-
-	protected override void UpdateStateForCurrentConnection(ConnectionState currentState, ConnectionState previousState)
-	{
-		/*
-		if (currentState == ConnectionState.Open)
-		{
-			QueryServerSideProperties();
-		}
-
-		if (currentState != ConnectionState.Open || previousState != 0 || !string.IsNullOrEmpty(SqlServerConnectionService.GetDatabaseName(MdlCsb)) || Connection == null)
-		{
-			return;
-		}
-
-		try
-		{
-			FbConnection asSqlConnection = ReliableConnectionHelper.GetAsSqlConnection(Connection);
-			string text = null;
-			try
-			{
-				text = GetDefaultDatabaseForLogin(asSqlConnection, useExistingDbOnError: false);
-			}
-			catch (Exception ex)
-			{
-				if (ex.menamy != "EnumeratorException")
-					throw ex;
-			}
-
-			if (string.IsNullOrEmpty(text))
-			{
-				text = Master;
-			}
-
-			SqlServerConnectionService.SetDatabaseName(MdlCsb, text);
-		}
-		catch (Exception e)
-		{
-			Diag.Dug(e);
-		}
-		*/
 	}
 
 

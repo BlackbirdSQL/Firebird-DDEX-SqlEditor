@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using BlackbirdSql.Core.Ctl.CommandProviders;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
@@ -105,6 +106,12 @@ public class TObjectSelector : TObjectSelectorTable
 		// This is far less volatile than using IVsDataConnection.
 
 
+		Csb csb = new(Site.DecryptedConnectionString(), false);
+
+		if (string.IsNullOrEmpty(csb.Password))
+			return new AdoDotNetTableReader(new DataTable());
+
+
 
 		object lockedProviderObject = Site.GetLockedProviderObject();
 
@@ -132,6 +139,7 @@ public class TObjectSelector : TObjectSelectorTable
 				// Tracer.Trace(GetType(), "SelectObjects()", "Glitch!!!!");
 				connectionCreated = true;
 				connection = (DbConnection)NativeDb.CreateDbConnection(Site.DecryptedConnectionString());
+
 				connection.Open();
 			}
 			else

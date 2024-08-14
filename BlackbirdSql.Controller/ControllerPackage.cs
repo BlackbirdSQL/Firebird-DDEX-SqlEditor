@@ -304,8 +304,8 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		// If this is called early we have to initialize user option push notifications
 		// and environment events synchronously.
 		PropagateSettings();
-		ApcInstance.UiAdviseUnsafeEvents();
-		ApcInstance.UiRegisterProjectEventHandlers();
+		ApcInstance.AsyeuAdviseUnsafeEvents();
+		ApcInstance.AsyeuRegisterProjectEventHandlers();
 
 		// Diag.DebugTrace($"OnLoadOptions():  Invoking.");
 

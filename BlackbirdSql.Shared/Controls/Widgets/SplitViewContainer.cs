@@ -1070,12 +1070,12 @@ public class SplitViewContainer : Control, IServiceProvider
 		}
 	}
 
-	public void ShowView(AbstractEditorTab editorTab)
+	public void ShowView(AbstruseEditorTab editorTab)
 	{
 		ShowView(GetButton(editorTab));
 	}
 
-	public ToolStripButton GetButton(AbstractEditorTab editorTab)
+	public ToolStripButton GetButton(AbstruseEditorTab editorTab)
 	{
 		ToolStripButton result = null;
 		foreach (ToolStripButton item in SplitterBar.EnumerateAllButtons())

@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
 using BlackbirdSql.Sys.Interfaces;
+using EnvDTE;
 
 namespace BlackbirdSql.Shared.Model.IO;
 
@@ -273,6 +274,7 @@ public class StorageDataReader
 		return _DataReader.GetValue(i);
 	}
 
+	
 	public bool IsDBNull(int i)
 	{
 		if (_TableReader != null)
@@ -339,6 +341,33 @@ public class StorageDataReader
 		return array;
 	}
 
+
+	public async Task<byte[]> GetBytesWithMaxCapacityAsync(int iCol, int maxNumBytesToReturn, CancellationToken cancelToken)
+	{
+		if (maxNumBytesToReturn <= 0)
+		{
+			ArgumentException ex = new("maxNumBytesToReturn");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		byte[] result = await GetValueAsync<byte[]>(iCol, cancelToken);
+
+		if (cancelToken.IsCancellationRequested)
+			return [];
+
+		if (result.Length > maxNumBytesToReturn)
+		{
+			byte[] trunced = new byte[maxNumBytesToReturn];
+			Array.Copy(result, trunced, maxNumBytesToReturn);
+			return trunced;
+		}
+
+		return result;
+	}
+
+
+
 	public string GetCharsWithMaxCapacity(int iCol, int maxCharsToReturn)
 	{
 		if (maxCharsToReturn <= 0)
@@ -373,6 +402,26 @@ public class StorageDataReader
 		string result = new string(array);
 
 		// Tracer.Trace(GetType(), "GetCharsWithMaxCapacity()", "Col: {0}[{1}], maxReturnBytes: {2}, result: {3}.", GetName(iCol), iCol, maxCharsToReturn, result);
+
+		return result;
+	}
+
+	public async Task<string> GetCharsWithMaxCapacityAsync(int iCol, int maxCharsToReturn, CancellationToken cancelToken)
+	{
+		if (maxCharsToReturn <= 0)
+		{
+			ArgumentException ex = new("maxNumBytesToReturn");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		string result = await GetValueAsync<string>(iCol, cancelToken);
+
+		if (cancelToken.IsCancellationRequested)
+			return "";
+
+		if (result.Length > maxCharsToReturn)
+			return result[..maxCharsToReturn];
 
 		return result;
 	}
@@ -435,6 +484,8 @@ public class StorageDataReader
 		return _DataReader.GetBytes(i, dataIndex, buffer, bufferIndex, length);
 	}
 
+
+
 	private long GetChars(int i, long dataIndex, char[] buffer, int bufferIndex, int length)
 	{
 		if (_TableReader != null)
@@ -444,6 +495,35 @@ public class StorageDataReader
 			return _DbDataReader.GetChars(i, dataIndex, buffer, bufferIndex, length);
 
 		return _DataReader.GetChars(i, dataIndex, buffer, bufferIndex, length);
+	}
+
+
+
+	public async Task<T> GetValueAsync<T>(int i, CancellationToken cancelToken)
+	{
+		try
+		{
+			// TODO: Removing cancelToken causing Fb to crash.
+			// return await _DbDataReader.GetFieldValueAsync<T>(i, cancelToken);
+			return await _DbDataReader.GetFieldValueAsync<T>(i, default);
+		}
+		catch (Exception ex)
+		{
+			if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+			{
+				Diag.Expected(ex);
+
+				try
+				{
+					await _DbDataReader.CloseAsync(default);
+				}
+				catch { }
+
+				return default;
+			}
+
+			throw;
+		}
 	}
 
 

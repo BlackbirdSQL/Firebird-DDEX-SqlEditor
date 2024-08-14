@@ -37,7 +37,6 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 
 
-
 	private static IBsNativeDatabaseEngine _Instance = null;
 	public static IBsNativeDatabaseEngine EnsureInstance() => _Instance ??= new DatabaseEngineService();
 	public string AssemblyQualifiedName_ => typeof(FirebirdClientFactory).AssemblyQualifiedName;
@@ -101,11 +100,6 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	}
 
 
-
-	public string ConvertDataTypeToSql_(object type, object length, object precision, object scale)
-	{
-		return DbTypeHelper.ConvertDataTypeToSql(type, length, precision, scale);
-	}
 
 	public DbCommand CreateDbCommand_(string cmdText = null)
 	{
@@ -220,7 +214,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 			direction = (short)child.Object.Properties["ORDINAL_POSITION"] == 0 ? 1 : 0;
 
 			flddef = (direction == 0 ? child.Object.Properties["ARGUMENT_NAME"] + " " : "")
-					+ NativeDb.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+					+ DbTypeHelper.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
 					child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
 					child.Object.Properties["NUMERIC_SCALE"]);
 
@@ -270,7 +264,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 			direction = Convert.ToInt32(child.Object.Properties["PARAMETER_DIRECTION"]);
 
 			flddef = child.Object.Properties["PARAMETER_NAME"] + " "
-					+ NativeDb.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+					+ DbTypeHelper.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
 					child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
 					child.Object.Properties["NUMERIC_SCALE"]);
 
@@ -479,7 +473,8 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		if (@this == null)
 			return false;
 
-		FbConnection connection = (FbConnection)@this.Connection;
+		if (@this == null || @this.Connection is not FbConnection connection)
+			return false;
 
 		if (connection == null || connection.State != ConnectionState.Open)
 			return false;
@@ -549,9 +544,6 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 
 
-	public void OpenConnection_(DbConnection connection) => ((FbConnection)connection).Open();
-
-
 	public void UnlockLoadedParser_() => LinkageParser.UnlockLoadedParser();
 
 
@@ -591,12 +583,50 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 	public async Task<bool> ReaderNextResultAsync_(IDataReader @this, CancellationToken cancelToken)
 	{
-		return await ((FbDataReader)@this).NextResultAsync(cancelToken);
+		try
+		{
+			return await ((FbDataReader)@this).NextResultAsync(cancelToken);
+		}
+		catch (Exception ex)
+		{
+			if (cancelToken.IsCancellationRequested)
+			{
+				Diag.Expected(ex);
+
+				try
+				{
+					await ((FbDataReader)@this).CloseAsync(default);
+				}
+				catch { }
+
+				return false;
+			}
+			throw;
+		}
 	}
 
 	public async Task<bool> ReaderReadAsync_(IDataReader @this, CancellationToken cancelToken)
 	{
-		return await ((FbDataReader)@this).ReadAsync(cancelToken);
+		try
+		{
+			return await ((FbDataReader)@this).ReadAsync(cancelToken);
+		}
+		catch (Exception ex)
+		{
+			if (cancelToken.IsCancellationRequested)
+			{
+				Diag.Expected(ex);
+
+				try
+				{
+					await ((FbDataReader)@this).CloseAsync(default);
+				}
+				catch { }
+
+				return false;
+			}
+			throw;
+		}
 	}
 
 

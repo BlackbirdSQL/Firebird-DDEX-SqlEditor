@@ -418,7 +418,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		UndoEnabled = flag;
 	}
 
-	public int CreateStreamMarker(int markerType, int position, int length, int doubleClickLine, SqlTextSpan textSpan)
+	public int CreateStreamMarker(int markerType, int position, int length, int doubleClickLine, TextSpanEx textSpan)
 	{
 		return CreateStreamMarkerInternal(markerType, position, length, doubleClickLine, textSpan);
 	}
@@ -445,7 +445,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		markers.Clear();
 	}
 
-	private int CreateStreamMarkerInternal(int markerType, int position, int length, int doubleClickLine, SqlTextSpan textSpan)
+	private int CreateStreamMarkerInternal(int markerType, int position, int length, int doubleClickLine, TextSpanEx textSpan)
 	{
 		IVsTextStreamMarker[] array = new IVsTextStreamMarker[1];
 		Marker marker = new Marker(markers, markerType);

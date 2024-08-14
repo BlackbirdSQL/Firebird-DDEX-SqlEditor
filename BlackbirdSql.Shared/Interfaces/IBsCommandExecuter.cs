@@ -12,7 +12,8 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 public interface IBsCommandExecuter
 {
-	Task<EnParserAction> BatchStatementCallbackAsync(IBsNativeDbStatementWrapper statement, int numberOfTimes, CancellationToken cancelToken);
+	Task<EnParserAction> BatchStatementCallbackAsync(IBsNativeDbStatementWrapper statement,
+		int numberOfTimes, CancellationToken cancelToken, CancellationToken syncToken);
 
 	void OnBatchDataLoaded(object sender, QueryDataEventArgs eventArgs);
 	void OnBatchScriptParsed(object sender, QueryDataEventArgs eventArgs);

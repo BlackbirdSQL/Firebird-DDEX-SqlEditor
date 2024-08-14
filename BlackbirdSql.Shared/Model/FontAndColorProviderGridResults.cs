@@ -2,11 +2,10 @@
 // C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLEditor\Microsoft.VisualStudio.Data.Tools.SqlEditor.dll
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
+
 using System.Drawing;
 using System.Windows.Forms;
-
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Core;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 

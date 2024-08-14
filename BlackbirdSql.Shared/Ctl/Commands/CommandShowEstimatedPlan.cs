@@ -20,7 +20,7 @@ public class CommandShowEstimatedPlan : AbstractCommand
 	{
 	}
 
-	public CommandShowEstimatedPlan(IBsTabbedEditorWindowPane editorWindow)
+	public CommandShowEstimatedPlan(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -41,10 +41,10 @@ public class CommandShowEstimatedPlan : AbstractCommand
 			return VSConstants.S_OK;
 
 
-		StoredStrategy?.DisposeTransaction(true);
+		CachedStrategy?.DisposeTransaction();
 
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "OnExec", "calling ISqlEditorWindowPane.OnExec");
-		WindowPane.AsyncExecuteQuery(EnSqlExecutionType.PlanOnly);
+		EditorPane.AsyncExecuteQuery(EnSqlExecutionType.PlanOnly);
 
 
 		return VSConstants.S_OK;

@@ -22,7 +22,7 @@ public class CommandDatabaseList : AbstractCommand
 		// Tracer.Trace();
 	}
 
-	public CommandDatabaseList(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
+	public CommandDatabaseList(IBsTabbedEditorPane editorPane) : base(editorPane)
 	{
 		// Tracer.Trace();
 	}
@@ -42,7 +42,7 @@ public class CommandDatabaseList : AbstractCommand
 			{
 				// Tracer.Trace(typeof(CommandDatabaseList), "get_DatabaseList", "Rebuilding list. Csb.DatasetKey: {0}.", _Csa == null ? "null" : _Csa.DatasetKey);
 
-				string nodeDisplayMember = StoredLiveMdlCsb?.AdornedQualifiedTitle;
+				string nodeDisplayMember = CachedLiveQualifiedName;
 
 				List<string> list = [];
 

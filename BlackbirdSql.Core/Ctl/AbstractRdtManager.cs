@@ -8,7 +8,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
 using Microsoft.VisualStudio;
@@ -94,7 +94,7 @@ public abstract class AbstractRdtManager : IDisposable
 	protected static int _InflightMonikerSeed = -1;
 
 	protected static Dictionary<int, string> _InflightMonikers = null;
-	protected static Dictionary<string, Csb> _InflightMonikerCsbTable = null;
+	protected static Dictionary<string, IBsCsb> _InflightMonikerCsbTable = null;
 
 
 	private readonly Dictionary<uint, int> _KeepAliveDocCookies = [];

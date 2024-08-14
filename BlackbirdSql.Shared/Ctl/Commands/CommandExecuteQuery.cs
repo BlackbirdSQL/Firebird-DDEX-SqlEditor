@@ -18,7 +18,7 @@ public class CommandExecuteQuery : AbstractCommand
 		// Tracer.Trace();
 	}
 
-	public CommandExecuteQuery(IBsTabbedEditorWindowPane windowPane) : base(windowPane)
+	public CommandExecuteQuery(IBsTabbedEditorPane editorPane) : base(editorPane)
 	{
 		// Tracer.Trace();
 	}
@@ -41,15 +41,15 @@ public class CommandExecuteQuery : AbstractCommand
 		if (ExecutionLocked)
 			return VSConstants.S_OK;
 
-		EnSqlExecutionType executionType = StoredAuxDocData.HasActualPlan
+		EnSqlExecutionType executionType = CachedAuxDocData.HasActualPlan
 			? EnSqlExecutionType.QueryWithPlan : EnSqlExecutionType.QueryOnly;
 
 		// Tracer.Trace(GetType(), "OnExec()", "ExecutionType: {0}.", executionType);
 
 		// ----------------------------------------------------------------------------------- //
-		// ******************** Execution Point (0) - CommandExecuteQuery.OnExec() ******************** //
+		// *************** Execution Point (0) - CommandExecuteQuery.OnExec() **************** //
 		// ----------------------------------------------------------------------------------- //
-		WindowPane.AsyncExecuteQuery(executionType);
+		EditorPane.AsyncExecuteQuery(executionType);
 
 		return VSConstants.S_OK;
 	}

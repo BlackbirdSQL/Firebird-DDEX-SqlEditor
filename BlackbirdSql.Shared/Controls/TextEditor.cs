@@ -42,7 +42,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	private TextEditorProxy _TextEditorProxy;
 
-	private readonly IBsWindowPaneServiceProvider _TabbedEditorService;
+	private readonly IBsEditorPaneServiceProvider _TabbedEditorService;
 
 	private ServiceProvider _Services;
 
@@ -144,7 +144,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			_TabbedEditorService = tabbedEditorServices.GetService(typeof(IBsWindowPaneServiceProvider)) as IBsWindowPaneServiceProvider;
+			_TabbedEditorService = tabbedEditorServices.GetService(typeof(IBsEditorPaneServiceProvider)) as IBsEditorPaneServiceProvider;
 			if (_TabbedEditorService != null)
 			{
 				_TabbedEditorService.TextEditor = TextEditorProxy;

@@ -4,6 +4,9 @@
 using System;
 using System.ComponentModel.Design;
 using System.Data;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Core;
@@ -11,6 +14,8 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -48,7 +53,10 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectionS
 	#region Fields - TConnectionSupport
 	// =====================================================================================================
 
+	private readonly object _LockLocal = new();
 
+	private bool _PasswordPromptCancelled = false;
+	private bool _PasswordPromptCancelling = false;
 	private EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
 
 
@@ -122,6 +130,13 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectionS
 	{
 		get { return Connection.ConnectionTimeout; }
 		set { throw new NotSupportedException(); }
+	}
+
+
+	public bool PasswordPromptCancelled
+	{
+		get { lock(_LockLocal) return _PasswordPromptCancelled; }
+		set { lock (_LockLocal) _PasswordPromptCancelled = value; }
 	}
 
 
@@ -222,7 +237,36 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectionS
 		// Tracer.Trace(GetType(), "Open()", "doPromptCheck: {0}", doPromptCheck);
 
 		if (State == DataConnectionState.Open)
+		{
 			return true;
+		}
+
+		if (PasswordPromptCancelled)
+		{
+			if (!_PasswordPromptCancelling)
+			{
+				_PasswordPromptCancelling = true;
+
+				// Fire and forget
+
+				Task.Factory.StartNew(
+					async () =>
+					{
+
+						await Cmd.AwaitableAsync(640);
+
+						PasswordPromptCancelled = false;
+						_PasswordPromptCancelling = false;
+
+					},
+					default, TaskCreationOptions.None, TaskScheduler.Default).Forget();
+			}
+
+			return true;
+		}
+
+
+
 
 		IVsDataSiteableObject<IVsDataProvider> @this = this;
 		IVsDataConnectionUIProperties connectionUIProperties;
@@ -250,13 +294,13 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectionS
 			throw;
 		}
 
-		if (doPromptCheck && !(connectionUIProperties as TConnectionProperties).IsComplete)
+		if (doPromptCheck && !connectionUIProperties.IsComplete)
 			return false;
 
 
 		try
 		{
-			NativeDb.OpenConnection(Connection);
+			Connection.Open();
 			/*
 			// Fire and wait.
 			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate

@@ -914,7 +914,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		// event. Disable it.
 
 		if (ConnectionSource == EnConnectionSource.ServerExplorer)
-			RctManager.ExternalEventEnter(false, true);
+			RctManager.ExternalEventSinkEnter(false, true);
 
 		// Tracer.Trace(GetType(), "OnAccept()", "Completed. Site.ToString(): {0}.", Site.ToString());
 	}
@@ -1382,7 +1382,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		// Reenable the Rct OnExplorerConnectionNodeChanged() event.
 
 		if (ConnectionSource == EnConnectionSource.ServerExplorer)
-			RctManager.ExternalEventExit();
+			RctManager.ExternalEventSinkExit();
 
 		if (RctManager.ShutdownState)
 			return;

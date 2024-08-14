@@ -18,7 +18,7 @@ public class CommandResultsAsText : AbstractCommand
 	{
 	}
 
-	public CommandResultsAsText(IBsTabbedEditorWindowPane editorWindow)
+	public CommandResultsAsText(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -30,7 +30,7 @@ public class CommandResultsAsText : AbstractCommand
 		if (!ExecutionLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
-		if (StoredAuxDocData.SqlOutputMode == EnSqlOutputMode.ToText)
+		if (CachedAuxDocData.SqlOutputMode == EnSqlOutputMode.ToText)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
@@ -38,8 +38,8 @@ public class CommandResultsAsText : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (!ExecutionLocked && StoredAuxDocData != null)
-			StoredAuxDocData.SqlOutputMode = EnSqlOutputMode.ToText;
+		if (!ExecutionLocked && CachedAuxDocData != null)
+			CachedAuxDocData.SqlOutputMode = EnSqlOutputMode.ToText;
 
 		return VSConstants.S_OK;
 	}

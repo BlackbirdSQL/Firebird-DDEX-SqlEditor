@@ -4,16 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Media;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Ctl.Config;
-using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
@@ -46,7 +45,6 @@ public sealed class StatusBarManager : IDisposable
 
 	public StatusBarManager()
 	{
-		CurrentState = EnQeStatusBarKnownStates.Unknown;
 		SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 	}
 
@@ -128,8 +126,8 @@ public sealed class StatusBarManager : IDisposable
 			QueryManager qryMgr = QryMgr;
 			if (qryMgr != null)
 			{
-				qryMgr.ExecutionStartedEvent -= OnQueryExecutionStarted;
-				qryMgr.ExecutionCompletedEvent -= OnQueryExecutionCompleted;
+				qryMgr.ExecutionStartedEventAsync -= OnExecutionStartedAsync;
+				qryMgr.ExecutionCompletedEventAsync -= OnExecutionCompletedAsync;
 				qryMgr.StatusChangedEvent -= OnStatusChanged;
 			}
 
@@ -160,6 +158,41 @@ public sealed class StatusBarManager : IDisposable
 	}
 
 
+	public void Initialize(StatusStrip statusStrip, bool rowCountValid, IBsTabbedEditorPane editorWindowPane)
+	{
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Expected O, but got Unknown
+		EditorWindowPane = editorWindowPane;
+		QryMgr.StatusChangedEvent += OnStatusChanged;
+		QryMgr.ExecutionStartedEventAsync += OnExecutionStartedAsync;
+		QryMgr.ExecutionCompletedEventAsync += OnExecutionCompletedAsync;
+		// Tracer.Trace(GetType(), "StatusBarManager.Initialize", "_RowCountValid = {0}", rowCountValid);
+		_StatusStrip = statusStrip;
+		_StatusStrip.LayoutStyle = ToolStripLayoutStyle.Table;
+		_RowCountValid = rowCountValid;
+		_GeneralPanel.SetParent(_StatusStrip);
+		((ToolStripStatusLabel)(object)_GeneralPanel).Spring = true;
+		_StatusStrip.RenderMode = ToolStripRenderMode.Professional;
+		_StatusStrip.Renderer = new EditorStatusStripRenderer(_StatusStrip);
+
+		// Invert.
+		bool isOnline = QryMgr.IsOnline;
+		_ModeState = isOnline ? EnState.Offline : EnState.Disconnected;
+
+		QueryStateChangedEventArgs args = new(QryMgr.StateFlags, EnQueryState.Online, isOnline,
+			EnQueryState.None, EnQueryState.None);
+
+		OnStatusChanged(this, args);
+
+		if (QryMgr.IsConnected)
+		{
+			args = new(QryMgr.StateFlags, EnQueryState.Connected, true, EnQueryState.Online, EnQueryState.None);
+
+			OnStatusChanged(this, args);
+		}
+	}
+
+
 	#endregion Constructors / Destructors
 
 
@@ -176,17 +209,19 @@ public sealed class StatusBarManager : IDisposable
 
 	private bool _Disposed = false;
 	private bool _RowCountValid;
-	private readonly Queue<Action> _StatusBarUpdateActions = new Queue<Action>();
+	private EnState _CurrentState = EnState.Unknown;
+	private EnState _ModeState = EnState.Offline;
+	private readonly Queue<Action> _UpdateActionsQueue = new Queue<Action>();
 	private System.Timers.Timer _ElapsedExecutionTimer;
 
 	private StatusStrip _StatusStrip;
 	private AnimatedStatusStripItem _GeneralPanel = new AnimatedStatusStripItem(100);
-	private ToolStripStatusLabelWithMaxLimit _ServerNamePanel = new ToolStripStatusLabelWithMaxLimit(30, 150);
-	private ToolStripStatusLabelWithMaxLimit _UserNamePanel = new ToolStripStatusLabelWithMaxLimit(25, 150);
-	private ToolStripStatusLabelWithMaxLimit _DatabaseNamePanel = new ToolStripStatusLabelWithMaxLimit(25, 150);
-	private ToolStripStatusLabelWithMaxLimit _ExecutionTimePanel = new ToolStripStatusLabelWithMaxLimit(15, 70);
-	private ToolStripStatusLabelWithMaxLimit _CompletedTimePanel = new ToolStripStatusLabelWithMaxLimit(25, 150);
-	private ToolStripStatusLabelWithMaxLimit _NumOfRowsPanel = new ToolStripStatusLabelWithMaxLimit(15, 100);
+	private StatusBarStatusLabel _ServerNamePanel = new(30, 150);
+	private StatusBarStatusLabel _UserNamePanel = new(25, 150);
+	private StatusBarStatusLabel _DatabaseNamePanel = new(25, 150);
+	private StatusBarStatusLabel _ExecutionTimePanel = new(15, 70);
+	private StatusBarStatusLabel _CompletedTimePanel = new(25, 150);
+	private StatusBarStatusLabel _NumOfRowsPanel = new(15, 100);
 
 	private static readonly Image S_NumOfRowsPanel;
 	private static readonly Image S_OfflineBitmap;
@@ -209,42 +244,30 @@ public sealed class StatusBarManager : IDisposable
 	// =========================================================================================================
 
 
-	public EnQeStatusBarKnownStates CurrentState { get; private set; }
+	public EnState CurrentState => _CurrentState;
 
 	public StatusStrip StatusStrip => _StatusStrip;
 
+
 	public AnimatedStatusStripItem GeneralPanel => _GeneralPanel;
 
-	public ToolStripStatusLabelWithMaxLimit ServerNamePanel => _ServerNamePanel;
+	public StatusBarStatusLabel ServerNamePanel => _ServerNamePanel;
 
-	public ToolStripStatusLabelWithMaxLimit UserNamePanel => _UserNamePanel;
+	public StatusBarStatusLabel UserNamePanel => _UserNamePanel;
 
-	public ToolStripStatusLabelWithMaxLimit DatabaseNamePanel => _DatabaseNamePanel;
+	public StatusBarStatusLabel DatabaseNamePanel => _DatabaseNamePanel;
 
-	public ToolStripStatusLabelWithMaxLimit ExecutionTimePanel => _ExecutionTimePanel;
+	public StatusBarStatusLabel ExecutionTimePanel => _ExecutionTimePanel;
 
-	public ToolStripStatusLabelWithMaxLimit CompletedTimePanel => _CompletedTimePanel;
+	public StatusBarStatusLabel CompletedTimePanel => _CompletedTimePanel;
 
-	public ToolStripStatusLabelWithMaxLimit NumOfRowsPanel => _NumOfRowsPanel;
+	public StatusBarStatusLabel NumOfRowsPanel => _NumOfRowsPanel;
 
 	private DateTime ExecutionStartTime { get; set; }
 
-	private IBsTabbedEditorWindowPane EditorWindowPane { get; set; }
+	private IBsTabbedEditorPane EditorWindowPane { get; set; }
 
-	private QueryManager QryMgr
-	{
-		get
-		{
-			QueryManager result = null;
-			AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(EditorWindowPane.DocData);
-			if (auxDocData != null)
-			{
-				result = auxDocData.QryMgr;
-			}
-
-			return result;
-		}
-	}
+	private QueryManager QryMgr => EditorWindowPane.AuxDocData?.QryMgr;
 
 
 	#endregion Property Accessors
@@ -267,54 +290,27 @@ public sealed class StatusBarManager : IDisposable
 
 
 
-	public void Initialize(StatusStrip statusStrip, bool rowCountValid, IBsTabbedEditorWindowPane editorWindowPane)
-	{
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c9: Expected O, but got Unknown
-		EditorWindowPane = editorWindowPane;
-		QryMgr.StatusChangedEvent += OnStatusChanged;
-		QryMgr.ExecutionStartedEvent += OnQueryExecutionStarted;
-		QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
-		// Tracer.Trace(GetType(), "StatusBarManager.Initialize", "_RowCountValid = {0}", rowCountValid);
-		_StatusStrip = statusStrip;
-		_StatusStrip.LayoutStyle = ToolStripLayoutStyle.Table;
-		_RowCountValid = rowCountValid;
-		_GeneralPanel.SetParent(_StatusStrip);
-		((ToolStripStatusLabel)(object)_GeneralPanel).Spring = true;
-		_StatusStrip.RenderMode = ToolStripRenderMode.Professional;
-		_StatusStrip.Renderer = new EditorStatusStripRenderer(_StatusStrip);
-		_ = QryMgr.Strategy.MdlCsb;
-		IDbConnection connection = QryMgr.Strategy.Connection;
-
-		if (connection != null && connection.State == ConnectionState.Open)
-			TransitionIntoOnlineMode(useNewConnectionOpenedState: false);
-		else
-			TransitionIntoOfflineMode();
-	}
-
-
-
-	private void EnqueAndExecuteStatusBarUpdate(Action action)
+	private void EnqueUpdateAction(Action action)
 	{
 		lock (_LockLocal)
 		{
-			_StatusBarUpdateActions.Enqueue(action);
+			_UpdateActionsQueue.Enqueue(action);
 		}
 
 		if (ThreadHelper.CheckAccess())
 		{
-			ProcessStatusBarUpdateActions();
+			ProcessUpdateActions();
 			return;
 		}
 
-		Action method = ProcessStatusBarUpdateActions;
+		Action method = ProcessUpdateActions;
 
 		_StatusStrip.BeginInvoke(method);
 	}
 
 
 
-	private void ProcessStatusBarUpdateActions()
+	private void ProcessUpdateActions()
 	{
 		if (_Disposed)
 			return;
@@ -326,10 +322,10 @@ public sealed class StatusBarManager : IDisposable
 
 			lock (_LockLocal)
 			{
-				if (_StatusBarUpdateActions.Count == 0)
+				if (_UpdateActionsQueue.Count == 0)
 					return;
 
-				action = _StatusBarUpdateActions.Dequeue();
+				action = _UpdateActionsQueue.Dequeue();
 			}
 
 			action?.Invoke();
@@ -433,125 +429,150 @@ public sealed class StatusBarManager : IDisposable
 
 
 
-	private string SetKnownState(EnQeStatusBarKnownStates newState)
+	private string SetBarState(EnState newState)
 	{
-		// Tracer.Trace(GetType(), "StatusBarManager.SetKnownState", "newState = {0}", newState);
+		// Tracer.Trace(GetType(), "SetBarState()", "StatusBarCurrentState: {0}, StatusBarNewState: {1}", CurrentState, newState);
 
-		if (CurrentState != newState)
+		ToolStripItem toolStripItem = (ToolStripItem)(object)_GeneralPanel;
+
+		if (CurrentState == newState)
 		{
-			if (QryMgr.IsExecuting)
-			{
-				if (newState == EnQeStatusBarKnownStates.Connected
-					|| newState == EnQeStatusBarKnownStates.Connecting
-					|| newState == EnQeStatusBarKnownStates.Disconnected
-					|| newState == EnQeStatusBarKnownStates.Offline
-					|| newState == EnQeStatusBarKnownStates.NewConnectionOpened)
-				{
-					return null;
-				}
-			}
+			UpdateStatusBar();
 
-
-			CurrentState = newState;
-			_GeneralPanel.BeginInit();
-			switch (newState)
-			{
-				case EnQeStatusBarKnownStates.Connecting:
-					_GeneralPanel.SetOneImage(S_OfflineBitmap);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBar_Connecting;
-					break;
-				case EnQeStatusBarKnownStates.Connected:
-					_GeneralPanel.SetOneImage(S_NumOfRowsPanel);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBar_Connected;
-					break;
-				case EnQeStatusBarKnownStates.Disconnected:
-					_GeneralPanel.SetOneImage(S_NumOfRowsPanel);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBar_Disconnected;
-					break;
-				case EnQeStatusBarKnownStates.NewConnectionOpened:
-					_GeneralPanel.SetOneImage(S_NumOfRowsPanel);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBar_NewConnectionOpened;
-					break;
-				case EnQeStatusBarKnownStates.Executing:
-					_GeneralPanel.SetImages(S_ExecutingBitmaps, false);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBar_ExecutingQuery;
-					_GeneralPanel.StartAnimate();
-					break;
-				case EnQeStatusBarKnownStates.CancellingExecution:
-					_GeneralPanel.SetImages(S_ExecutingCancelBitmaps, false);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBar_Cancelling;
-					_GeneralPanel.StartAnimate();
-					break;
-				case EnQeStatusBarKnownStates.ExecutionCancelled:
-					_GeneralPanel.SetOneImage(S_ExecCancelledBitmap);
-					((ToolStripItem)(object)_GeneralPanel).Text = QryMgr.HasTransactions
-						? ControlsResources.StatusBar_QueryCancelledRollback : ControlsResources.StatusBar_QueryCancelled;
-					ResetDatasetId();
-					break;
-				case EnQeStatusBarKnownStates.ExecutionFailed:
-					_GeneralPanel.SetOneImage(S_ExecWithErrorBitmap);
-					((ToolStripItem)(object)_GeneralPanel).Text = QryMgr.HasTransactions
-						? ControlsResources.StatusBar_QueryCompletedWithErrorsRollback : ControlsResources.StatusBar_QueryCompletedWithErrors;
-					ResetDatasetId();
-					break;
-				case EnQeStatusBarKnownStates.ExecutionOk:
-					_GeneralPanel.SetOneImage(S_ExecSuccessBitmap);
-					((ToolStripItem)(object)_GeneralPanel).Text =
-						ControlsResources.StatusBar_QueryCompletedSuccessfully.FmtRes(!QryMgr.QueryExecutionEndTime.HasValue ? string.Empty : QryMgr.QueryExecutionEndTime);
-					ResetDatasetId();
-					break;
-				case EnQeStatusBarKnownStates.ExecutionTimedOut:
-					_GeneralPanel.SetOneImage(S_ExecWithErrorBitmap);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBar_QueryTimedOut;
-					ResetDatasetId();
-					break;
-				case EnQeStatusBarKnownStates.Offline:
-					_GeneralPanel.SetOneImage(S_OfflineBitmap);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBar_Offline;
-					break;
-				case EnQeStatusBarKnownStates.Parsing:
-					_GeneralPanel.SetImages(S_ExecutingBitmaps, false);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBar_ParsingQueryBatch;
-					_GeneralPanel.StartAnimate();
-					break;
-				case EnQeStatusBarKnownStates.Unknown:
-					_GeneralPanel.SetOneImage(null);
-					((ToolStripItem)(object)_GeneralPanel).Text = string.Empty;
-					break;
-			}
-
-			if (newState == EnQeStatusBarKnownStates.Executing || newState == EnQeStatusBarKnownStates.Offline)
-			{
-				DateTime now = DateTime.Now;
-				SetExecutionCompletedTime(now);
-				SetRowsAffected(0L);
-			}
-
-			if (newState == EnQeStatusBarKnownStates.ExecutionTimedOut || newState == EnQeStatusBarKnownStates.ExecutionOk
-				|| newState == EnQeStatusBarKnownStates.ExecutionFailed || newState == EnQeStatusBarKnownStates.ExecutionCancelled)
-			{
-				if (QryMgr.QueryExecutionStartTime.HasValue && QryMgr.QueryExecutionEndTime.HasValue)
-				{
-					_ = QryMgr.QueryExecutionStartTime.Value;
-					DateTime value = QryMgr.QueryExecutionEndTime.Value;
-					SetExecutionCompletedTime(value);
-				}
-
-				SetRowsAffected(QryMgr.RowsAffected);
-				AuxilliaryDocData auxDocData = ((IBsEditorPackage)ApcManager.PackageInstance).GetAuxilliaryDocData(EditorWindowPane.DocData);
-				if (auxDocData != null && auxDocData.LiveSettings.EditorResultsPlaySounds)
-				{
-					new SoundPlayer().Play();
-				}
-			}
-
-			((ToolStripItem)(object)_GeneralPanel).ToolTipText = ((ToolStripItem)(object)_GeneralPanel).Text;
-			_GeneralPanel.EndInit();
+			return toolStripItem.Text;
 		}
+
+
+		if (newState > EnState.ModeMarker)
+		{
+			_ModeState = newState == EnState.NewConnectionOpened
+				? EnState.Connected : newState;
+		}
+
+		_CurrentState = newState;
+		_GeneralPanel.BeginInit();
+
+
+		switch (newState)
+		{
+			case EnState.Connecting:
+				_GeneralPanel.SetOneImage(S_OfflineBitmap);
+				toolStripItem.Text = ControlsResources.StatusBar_Connecting;
+				break;
+			case EnState.Connected:
+				_GeneralPanel.SetOneImage(S_NumOfRowsPanel);
+				toolStripItem.Text = ControlsResources.StatusBar_Connected;
+				break;
+			case EnState.Disconnected:
+				_GeneralPanel.SetOneImage(S_NumOfRowsPanel);
+				toolStripItem.Text = ControlsResources.StatusBar_Disconnected;
+				break;
+			case EnState.NewConnectionOpened:
+				_GeneralPanel.SetOneImage(S_NumOfRowsPanel);
+				toolStripItem.Text = ControlsResources.StatusBar_NewConnectionOpened;
+				break;
+			case EnState.Executing:
+				_GeneralPanel.SetImages(S_ExecutingBitmaps, false);
+				toolStripItem.Text = ControlsResources.StatusBar_ExecutingQuery;
+				_GeneralPanel.StartAnimate();
+				break;
+			case EnState.Cancelling:
+				_GeneralPanel.SetImages(S_ExecutingCancelBitmaps, false);
+				toolStripItem.Text = ControlsResources.StatusBar_Cancelling;
+				_GeneralPanel.StartAnimate();
+				break;
+			case EnState.CancellingPrompt:
+				_GeneralPanel.SetImages(S_ExecutingCancelBitmaps, false);
+				toolStripItem.Text = ControlsResources.StatusBar_CancellingAndPrompt;
+				_GeneralPanel.StartAnimate();
+				break;
+			case EnState.ConnectFailedPrompt:
+				_GeneralPanel.SetImages(S_ExecutingCancelBitmaps, false);
+				toolStripItem.Text = ControlsResources.StatusBar_ConnectFailedAndPrompt;
+				_GeneralPanel.StartAnimate();
+				break;
+			case EnState.ExecutionFailedPrompt:
+				_GeneralPanel.SetImages(S_ExecutingCancelBitmaps, false);
+				toolStripItem.Text = ControlsResources.StatusBar_ExecutionFailedAndPrompt;
+				_GeneralPanel.StartAnimate();
+				break;
+			case EnState.ExecutionCancelled:
+				_GeneralPanel.SetOneImage(S_ExecCancelledBitmap);
+				toolStripItem.Text = QryMgr.HadTransactions && !QryMgr.PeekTransactions
+					? ControlsResources.StatusBar_QueryCancelledTtsLost
+					: (QryMgr.PeekTransactions
+						? ControlsResources.StatusBar_QueryCancelledRollback
+						: ControlsResources.StatusBar_QueryCancelled);
+				ResetDatasetId();
+				break;
+			case EnState.ExecutionFailed:
+				_GeneralPanel.SetOneImage(S_ExecWithErrorBitmap);
+				toolStripItem.Text = QryMgr.HadTransactions && !QryMgr.PeekTransactions
+					? ControlsResources.StatusBar_QueryCompletedWithErrorsTtsLost
+					: (QryMgr.PeekTransactions
+						? ControlsResources.StatusBar_QueryCompletedWithErrorsRollback
+						: ControlsResources.StatusBar_QueryCompletedWithErrors);
+				ResetDatasetId();
+				break;
+			case EnState.ExecutionOk:
+				_GeneralPanel.SetOneImage(S_ExecSuccessBitmap);
+				toolStripItem.Text =
+					ControlsResources.StatusBar_QueryCompletedSuccessfully.FmtRes(!QryMgr.QueryExecutionEndTime.HasValue ? string.Empty : QryMgr.QueryExecutionEndTime);
+				ResetDatasetId();
+				break;
+			case EnState.ExecutionTimedOut:
+				_GeneralPanel.SetOneImage(S_ExecWithErrorBitmap);
+				toolStripItem.Text = ControlsResources.StatusBar_QueryTimedOut;
+				ResetDatasetId();
+				break;
+			case EnState.Offline:
+				_GeneralPanel.SetOneImage(S_OfflineBitmap);
+				toolStripItem.Text = ControlsResources.StatusBar_Offline;
+				break;
+			case EnState.Parsing:
+				_GeneralPanel.SetImages(S_ExecutingBitmaps, false);
+				toolStripItem.Text = ControlsResources.StatusBar_ParsingQueryBatch;
+				_GeneralPanel.StartAnimate();
+				break;
+			case EnState.Unknown:
+				_GeneralPanel.SetOneImage(null);
+				toolStripItem.Text = string.Empty;
+				break;
+		}
+
+		if (newState == EnState.Executing || newState == EnState.Offline)
+		{
+			DateTime now = DateTime.Now;
+			SetExecutionCompletedTime(now);
+			SetRowsAffected(0L);
+		}
+
+		if (newState == EnState.ExecutionTimedOut || newState == EnState.ExecutionOk
+			|| newState == EnState.ExecutionFailed || newState == EnState.ExecutionCancelled)
+		{
+			if (QryMgr.QueryExecutionStartTime.HasValue && QryMgr.QueryExecutionEndTime.HasValue)
+			{
+				_ = QryMgr.QueryExecutionStartTime.Value;
+				DateTime value = QryMgr.QueryExecutionEndTime.Value;
+				SetExecutionCompletedTime(value);
+			}
+
+			SetRowsAffected(QryMgr.RowsAffected);
+
+			AuxilliaryDocData auxDocData = EditorWindowPane.AuxDocData;
+
+			if (auxDocData != null && auxDocData.LiveSettings.EditorResultsPlaySounds)
+			{
+				new SoundPlayer().Play();
+			}
+		}
+
+		toolStripItem.ToolTipText = toolStripItem.Text;
+		_GeneralPanel.EndInit();
 
 		UpdateStatusBar();
 
-		return ((ToolStripItem)(object)_GeneralPanel).Text;
+		return toolStripItem.Text;
 	}
 
 
@@ -570,40 +591,24 @@ public sealed class StatusBarManager : IDisposable
 	private void TransitionIntoOfflineMode()
 	{
 		// Tracer.Trace(GetType(), "StatusBarManager.TransitionIntoOfflineMode", "", null);
-		AbstractConnectionStrategy strategy = QryMgr.Strategy;
-		if (strategy != null && strategy.MdlCsb != null)
-		{
-			ResetPanelsForOnlineMode();
-			SetKnownState(EnQeStatusBarKnownStates.Disconnected);
-		}
-		else if (CurrentState != EnQeStatusBarKnownStates.Offline)
+
+		_ModeState = EnState.Offline;
+
+		if (CurrentState != EnState.Offline)
 		{
 			_StatusStrip.Items.Clear();
 			_StatusStrip.Items.Add((ToolStripItem)(object)_GeneralPanel);
-			SetKnownState(EnQeStatusBarKnownStates.Offline);
 		}
 	}
 
 
 
-	private void TransitionIntoOnlineMode(bool useNewConnectionOpenedState)
+	private void TransitionIntoOnlineMode()
 	{
-		AbstractConnectionStrategy strategy = QryMgr.Strategy;
+		if (_ModeState == EnState.Offline)
+			_ModeState = EnState.Disconnected;
 
-		if (strategy.MdlCsb != null)
-		{
-			ResetPanelsForOnlineMode();
-			if (useNewConnectionOpenedState)
-			{
-				SetKnownState(EnQeStatusBarKnownStates.NewConnectionOpened);
-			}
-			else
-			{
-				SetKnownState(EnQeStatusBarKnownStates.Connected);
-			}
-
-			// userName = strategy.DisplayUserName;
-		}
+		ResetPanelsForOnlineMode();
 	}
 
 
@@ -660,41 +665,44 @@ public sealed class StatusBarManager : IDisposable
 	// =========================================================================================================
 
 
-	private void OnExecutionTimerElapsed(object sender, ElapsedEventArgs args)
+	private void OnExecutionTimerElapsed(object sender, ElapsedEventArgs a)
 	{
-		void a()
+		void update()
 		{
-			((ToolStripItem)(object)_ExecutionTimePanel).Text = (args.SignalTime - ExecutionStartTime).FmtStatus();
+			((ToolStripItem)(object)_ExecutionTimePanel).Text = (a.SignalTime - ExecutionStartTime).FmtStatus();
 		}
-		EnqueAndExecuteStatusBarUpdate(a);
+
+		EnqueUpdateAction(update);
 	}
 
 
 
-	private void OnQueryExecutionCompleted(object sender, QueryExecutionCompletedEventArgs args)
+	private async Task<bool> OnExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs a)
 	{
-		// Tracer.Trace(GetType(), "OnQueryExecutionCompleted()", "args.ExecResult: {0}.", args.ExecutionResult);
+		// Tracer.Trace(GetType(), "OnQueryExecutionCompletedAsync()", "a.ExecResult: {0}.", a.ExecutionResult);
 
-		if (args.SyncCancel)
-			return;
+		if (a.SyncToken.IsCancellationRequested)
+			return true;
+
+		// await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		void updateAction()
 		{
-			if ((args.ExecutionResult & EnScriptExecutionResult.Cancel) == EnScriptExecutionResult.Cancel)
+			if ((a.ExecutionResult & EnScriptExecutionResult.Cancel) == EnScriptExecutionResult.Cancel)
 			{
-				SetKnownState(EnQeStatusBarKnownStates.ExecutionCancelled);
+				SetBarState(EnState.ExecutionCancelled);
 			}
-			else if ((args.ExecutionResult & EnScriptExecutionResult.Failure) == EnScriptExecutionResult.Failure)
+			else if ((a.ExecutionResult & EnScriptExecutionResult.Failure) == EnScriptExecutionResult.Failure)
 			{
-				SetKnownState(EnQeStatusBarKnownStates.ExecutionFailed);
+				SetBarState(EnState.ExecutionFailed);
 			}
-			else if ((args.ExecutionResult & EnScriptExecutionResult.Timeout) == EnScriptExecutionResult.Timeout)
+			else if ((a.ExecutionResult & EnScriptExecutionResult.Timeout) == EnScriptExecutionResult.Timeout)
 			{
-				SetKnownState(EnQeStatusBarKnownStates.ExecutionTimedOut);
+				SetBarState(EnState.ExecutionTimedOut);
 			}
-			else if ((args.ExecutionResult & EnScriptExecutionResult.Success) == EnScriptExecutionResult.Success)
+			else if ((a.ExecutionResult & EnScriptExecutionResult.Success) == EnScriptExecutionResult.Success)
 			{
-				SetKnownState(EnQeStatusBarKnownStates.ExecutionOk);
+				SetBarState(EnState.ExecutionOk);
 			}
 
 			if (PersistentSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
@@ -708,12 +716,14 @@ public sealed class StatusBarManager : IDisposable
 			}
 		}
 
-		EnqueAndExecuteStatusBarUpdate(updateAction);
+		EnqueUpdateAction(updateAction);
+
+		return await Cmd.AwaitableAsync(true);
 	}
 
 
 
-	private bool OnQueryExecutionStarted(object sender, QueryExecutionStartedEventArgs args)
+	private async Task<bool> OnExecutionStartedAsync(object sender, ExecutionStartedEventArgs a)
 	{
 		void updateAction()
 		{
@@ -732,61 +742,138 @@ public sealed class StatusBarManager : IDisposable
 			}
 		}
 
-		EnqueAndExecuteStatusBarUpdate(updateAction);
+		EnqueUpdateAction(updateAction);
 
-		return true;
+		return await Cmd.AwaitableAsync(true);
 	}
 
 
 
-	private void OnStatusChanged(object sender, QueryStatusChangedEventArgs args)
+	private void OnStatusChanged(object sender, QueryStateChangedEventArgs args)
 	{
-		bool isConnected = QryMgr.IsConnected;
-		bool isExecuting = QryMgr.IsExecuting;
-		bool isConnecting = QryMgr.IsConnecting;
-		bool isCancelling = QryMgr.IsCancelling;
-
+		EnqueUpdateAction(updateAction);
 
 		void updateAction()
 		{
-			if (args.StatusFlag == EnQueryStatusFlags.Connected || args.StatusFlag == EnQueryStatusFlags.Connection)
-			{
-				// Tracer.Trace(GetType(), "OnStatusChanged()", "Change: {0}, IsConnected: {1}.", args.StatusFlag, isConnected);
+			QueryStateChangedEventArgs a = args.Clone();
 
-				if (isConnected)
-					TransitionIntoOnlineMode(args.NewConnection);
-				else
-					TransitionIntoOfflineMode();
+			bool isOnline = a.Online;
+
+			if (a.IsStateOnline)
+				isOnline = a.Value;
+
+			if (isOnline)
+			{
+				if (_ModeState == EnState.Offline || (a.IsStateConnected && a.Value && a.DatabaseChanged))
+					TransitionIntoOnlineMode();
+			}
+			else if (!isOnline && _ModeState != EnState.Offline)
+			{
+				TransitionIntoOfflineMode();
 			}
 
-			if (args.StatusFlag == EnQueryStatusFlags.Executing && isExecuting)
+			while (true)
 			{
-				SetKnownState(EnQeStatusBarKnownStates.Executing);
-			}
+				EnState result = EnState.Unknown;
 
-			if (args.StatusFlag == EnQueryStatusFlags.Connecting)
-			{
-				if (isConnecting)
-					SetKnownState(EnQeStatusBarKnownStates.Connecting);
-				else if (isConnected)
-					TransitionIntoOnlineMode(args.NewConnection);
-				else
-					TransitionIntoOfflineMode();
-			}
 
-			if (args.StatusFlag == EnQueryStatusFlags.Cancelling && isCancelling)
-			{
-				SetKnownState(EnQeStatusBarKnownStates.CancellingExecution);
-			}
+				// --------------------------------------------
+				// Enable State.
+				//---------------------------------------------
 
-			if (args.StatusFlag == EnQueryStatusFlags.DatabaseChanged)
-			{
-				ResetDatasetId();
+				if (a.Value)
+				{
+					if (a.IsStateConnecting)
+					{
+						result = EnState.Connecting;
+						SetBarState(result);
+						return;
+					}
+
+					if (a.IsStateExecuting)
+					{
+						result = EnState.Executing;
+						SetBarState(result);
+						return;
+					}
+
+
+					if (a.IsStatePrompting)
+					{
+						if (a.PrevState == EnQueryState.Connecting)
+							result = EnState.ConnectFailedPrompt;
+						else if (a.PrevState == EnQueryState.Cancelling)
+							result = EnState.CancellingPrompt;
+						else // if (a.PrevState == EnQueryState.Executing)
+							result = EnState.ExecutionFailedPrompt;
+
+						SetBarState(result);
+						return;
+					}
+
+
+					if (a.IsStateConnected)
+					{
+						if (a.Executing)
+							result = EnState.Executing;
+						else if (a.DatabaseChanged)
+							result = EnState.NewConnectionOpened;
+						else
+							result = EnState.Connected;
+
+						SetBarState(result);
+						ResetDatasetId();
+
+						return;
+					}
+
+					if (a.IsStateOnline)
+					{
+						result = EnState.Disconnected;
+
+						SetBarState(result);
+						ResetDatasetId();
+
+						return;
+					}
+
+					return;
+				}
+
+
+
+				// --------------------------------------------
+				// Disable values follow.
+				// --------------------------------------------
+
+				if (a.IsStateExecuting || a.IsStateCancelling
+					|| (a.IsStateConnected && a.Executing))
+				{
+					return;
+				}
+
+
+				if (a.IsStateOnline)
+				{
+					result = EnState.Offline;
+					SetBarState(result);
+					ResetDatasetId();
+
+					return;
+				}
+
+				if (!a.CanProcreate)
+				{
+					SetBarState(_ModeState);
+					return;
+				}
+
+
+				a = a.PopClone();
+
 			}
 		}
 
-
-		EnqueAndExecuteStatusBarUpdate(updateAction);
 	}
 
 
@@ -808,20 +895,24 @@ public sealed class StatusBarManager : IDisposable
 	// =========================================================================================================
 
 
-	public enum EnQeStatusBarKnownStates
+	public enum EnState
 	{
 		Unknown,
-		Offline,
 		Connecting,
-		Connected,
-		NewConnectionOpened,
 		Executing,
 		Parsing,
+		Cancelling,
+		CancellingPrompt,
+		ConnectFailedPrompt,
+		ExecutionFailedPrompt,
 		ExecutionOk,
 		ExecutionFailed,
 		ExecutionCancelled,
 		ExecutionTimedOut,
-		CancellingExecution,
+		ModeMarker,
+		Offline,
+		Connected,
+		NewConnectionOpened,
 		Disconnected
 	}
 

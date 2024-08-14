@@ -26,8 +26,7 @@ public interface IBsQueryManager : IDisposable
 	void BeginTransaction();
 	bool CommitTransactions(bool validate);
 	void CloseConnection();
-	void DisposeTransaction(bool force);
-	bool OnNotifyConnectionState(object sender, EventArgs args);
+	void DisposeTransaction();
 	bool RollbackTransactions(bool validate);
 	void RaiseShowWindowFrame();
 }

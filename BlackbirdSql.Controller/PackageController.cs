@@ -241,7 +241,8 @@ public sealed class PackageController : AbstractPackageController
 		{
 			List<Project> projects = UnsafeCmd.RecursiveGetDesignTimeProjects();
 
-			// Tracer.Trace(GetType(), "UiRegisterProjectEventHandlers()", "Adding event handlers for {0} EF projects", projects.Count);
+			// Tracer.Trace(GetType(), "RegisterProjectEventHandlersImpl()", "Adding event handlers for {0} EF projects", projects.Count);
+
 			foreach (Project project in projects)
 				AddProjectEventHandlers(project);
 		}
@@ -257,11 +258,12 @@ public sealed class PackageController : AbstractPackageController
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Enables unsafe solution, running document table and selection monitor event handling
-	/// on the UI and safe solution OnLoadOptions and OnSaveOptions event handling.
+	/// [Launch ensure UI thread]: Enables unsafe solution, running document table and
+	/// selection monitor event handling on the UI and safe solution OnLoadOptions and
+	/// OnSaveOptions event handling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override bool UiAdviseUnsafeEvents()
+	public override bool AsyeuAdviseUnsafeEvents()
 	{
 		lock (_LockObject)
 		{
@@ -275,7 +277,9 @@ public sealed class PackageController : AbstractPackageController
 		if (!ThreadHelper.CheckAccess())
 		{
 			// Fire and forget async
+
 			Task.Run(AdviseUnsafeEventsAsync).Forget();
+
 			return true;
 		}
 
@@ -284,7 +288,12 @@ public sealed class PackageController : AbstractPackageController
 
 
 
-	public override void UiRegisterProjectEventHandlers()
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// [Launch ensure UI thread]: Registers project event handlers.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override void AsyeuRegisterProjectEventHandlers()
 	{
 		if (!EventProjectRegistrationEnter(true))
 			return;
@@ -306,7 +315,7 @@ public sealed class PackageController : AbstractPackageController
 
 	public override void ValidateSolution()
 	{
-		((ControllerEventsManager)ControllerPackage.EventsManager).ValidateSolution();
+		((ControllerEventsManager)ControllerPackage.EventsManager).AsyeuValidateSolution();
 	}
 
 	#endregion Methods

@@ -109,14 +109,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			if (_SyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Inactive)
 			{
 				launchersActive = true;
-				ClearSyncPayloadLauncher();
+				ClearSyncPayloadLauncher(false);
 				_SyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Shutdown;
 			}
 
 			if (_AsyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Inactive)
 			{
 				launchersActive = true;
-				ClearAsyncPayloadLauncher();
+				ClearAsyncPayloadLauncher(false);
 				_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Shutdown;
 			}
 
@@ -150,8 +150,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// =========================================================================================================
 
 
-	protected bool _InternalLoaded = false;
 	private bool _HasLocal = false;
+	private static int _Seed = -1;
+	protected bool _InternalLoaded = false;
 	protected static IBsRunningConnectionTable _Instance;
 	protected int _LoadDataCardinal = 0;
 	protected static readonly object _LockGlobal = new();
@@ -229,8 +230,17 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// async tasks are not in Inactive or Shutdown states.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected bool InternalLoading => _LoadingSyncCardinal > 0 ||
-		(_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.IsCancellationRequested);
+	protected bool InternalLoading
+	{
+		get
+		{
+			lock (_LockObject)
+			{
+				return _LoadingSyncCardinal > 0 ||
+					(_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.IsCancellationRequested);
+			}
+		}
+	}
 
 
 	private IList<object> Probjects => _Probjects ??= [];
@@ -275,7 +285,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			InternalInvalidate();
 
-			_InternalConnectionsTable.Rows.Add(row);
+			lock (_LockObject)
+				_InternalConnectionsTable.Rows.Add(row);
 
 			return true;
 		}
@@ -302,19 +313,22 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected void BeginLoadData(bool resetTables)
 	{
-		if (resetTables)
+		lock (_LockObject)
 		{
-			if (_InternalDatabases != null)
-				_InternalDatabases = null;
+			if (resetTables)
+			{
+				if (_InternalDatabases != null)
+					_InternalDatabases = null;
 
-			if (_InternalServers != null)
-				_InternalServers = null;
+				if (_InternalServers != null)
+					_InternalServers = null;
+			}
+
+			if (_LoadDataCardinal == 0)
+				_InternalConnectionsTable?.BeginLoadData();
+
+			_LoadDataCardinal++;
 		}
-
-		if (_LoadDataCardinal == 0)
-			_InternalConnectionsTable?.BeginLoadData();
-
-		_LoadDataCardinal++;
 	}
 
 
@@ -324,15 +338,19 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// Clears the async payload launcher variables.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void ClearAsyncPayloadLauncher()
+	private void ClearAsyncPayloadLauncher(bool disposeToken)
 	{
 		// Tracer.Trace(GetType(), "ClearAsyncPayloadLauncher()");
 
 		lock (_LockObject)
 		{
-			_AsyncPayloadLauncherToken = default;
-			_AsyncPayloadLauncherTokenSource?.Dispose();
-			_AsyncPayloadLauncherTokenSource = null;
+			if (disposeToken)
+			{
+				_AsyncPayloadLauncherToken = default;
+				_AsyncPayloadLauncherTokenSource?.Dispose();
+				_AsyncPayloadLauncherTokenSource = null;
+			}
+
 			_LoadingAsyncCardinal--;
 			_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Inactive;
 
@@ -347,7 +365,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// Clears the sync payload launcher variables except for the launch state.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void ClearSyncPayloadLauncher()
+	private void ClearSyncPayloadLauncher(bool disposeToken)
 	{
 		lock (_LockObject)
 		{
@@ -359,9 +377,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 
 			_SyncPayloadLauncher = null;
-			_SyncPayloadLauncherTokenSource?.Dispose();
-			_SyncPayloadLauncherTokenSource = null;
-			_SyncPayloadLauncherToken = default;
+
+			if (disposeToken)
+			{
+				_SyncPayloadLauncherTokenSource?.Dispose();
+				_SyncPayloadLauncherTokenSource = null;
+				_SyncPayloadLauncherToken = default;
+			}
 		}
 	}
 
@@ -378,9 +400,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (key == null)
 			return false;
 
-		IEnumerable<DataRow> rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[C_KeyExConnectionUrl]));
+		lock (_LockObject)
+		{
+			IEnumerable<DataRow> rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[C_KeyExConnectionUrl]));
 
-		return rows.Count() > 0;
+			return rows.Count() > 0;
+		}
 	}
 
 
@@ -392,9 +417,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private DataRow CreateDataRow(Csb csa = null)
 	{
-		DataRow row = _InternalConnectionsTable.NewRow();
+		DataRow row = null;
 
-		row["Id"] = _InternalConnectionsTable.Rows.Count;
+		lock (_LockObject)
+		{
+			row = _InternalConnectionsTable.NewRow();
+			row["Id"] = ++_Seed;
+		}
+
 		row[C_KeyExConnectionUrl] = "";
 
 		UpdateDataRowFromCsa(row, csa);
@@ -528,28 +558,28 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected void EndLoadData()
 	{
-		_LoadDataCardinal--;
-
-		if (_LoadDataCardinal < 0)
+		lock (_LockObject)
 		{
-			InvalidOperationException ex = new($"EndLoadData() over called {-_LoadDataCardinal} times.");
-			Diag.Dug(ex);
-			return;
-		}
+			_LoadDataCardinal--;
 
-		try
-		{
-			_InternalConnectionsTable?.AcceptChanges();
-
-			if (_LoadDataCardinal == 0)
+			if (_LoadDataCardinal < 0)
 			{
-
-				_InternalConnectionsTable?.EndLoadData();
+				InvalidOperationException ex = new($"EndLoadData() over called {-_LoadDataCardinal} times.");
+				Diag.Dug(ex);
+				return;
 			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
+
+			try
+			{
+				_InternalConnectionsTable?.AcceptChanges();
+
+				if (_LoadDataCardinal == 0)
+					_InternalConnectionsTable?.EndLoadData();
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
 		}
 
 	}
@@ -558,14 +588,15 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Launches an async task to perform unsafe loading of solution connections which
-	/// require the DTE on the UI thread. To keep things tight this method will throw an exception if
-	/// it's already on the UI thread and should not have been called.
+	/// [Async on UI thread]: Launches an async task to perform unsafe loading of
+	/// solution connections which require the DTE on the UI thread. To keep things
+	/// tight this method will throw an exception if it's already on the UI thread and
+	/// should not have been called.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected bool InternalAsyncLoadApplicationConnections(object probject)
+	protected bool InternalAsyuiLoadApplicationConnections(object probject)
 	{
-		// Tracer.Trace(GetType(), "AsyncLoadApplicationConnections()", "Probject? {0}, _LoadingAsyncCardinal: {1}.",
+		// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Probject? {0}, _LoadingAsyncCardinal: {1}.",
 		//  	probject == null ? "probject == null" : "probject != null", _LoadingAsyncCardinal);
 
 		if (!PersistentSettings.IncludeAppConnections)
@@ -582,7 +613,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			if (_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.IsCancellationRequested && probject != null)
 			{
-				// Tracer.Trace(GetType(), "AsyncLoadApplicationConnections()", "Abort - is probject.");
+				// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Abort - is probject.");
 
 				Probjects.Add(probject);
 
@@ -620,12 +651,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		async Task<bool> payloadAsync() => await InternalLoadApplicationConnectionsAsync(cancellationToken, probject);
 
 
-		// Tracer.Trace(GetType(), "AsyncLoadApplicationConnections()", "Queueing InternalLoadApplicationConnectionsAsync.");
+		// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Queueing InternalLoadApplicationConnectionsAsync.");
 
 		_AsyncPayloadLauncher = Task.Factory.StartNew(payloadAsync, default, creationOptions, TaskScheduler.Default).Unwrap();
 
 
-		// Tracer.Trace(GetType(), "AsyncLoadApplicationConnections()", "Queued InternalLoadApplicationConnectionsAsync.");
+		// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Queued InternalLoadApplicationConnectionsAsync.");
 
 
 		return true;
@@ -809,7 +840,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 		finally
 		{
-			ClearAsyncPayloadLauncher();
+			ClearAsyncPayloadLauncher(true);
 
 			lock (_LockObject)
 			{
@@ -915,7 +946,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		bool result = false;
 
-		_LoadingSyncCardinal++;
+		lock (_LockObject)
+			_LoadingSyncCardinal++;
 
 		try
 		{
@@ -938,7 +970,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			// with a fire and forget async task.
 
 			if (PersistentSettings.IncludeAppConnections && !ThreadHelper.CheckAccess())
-				InternalAsyncLoadApplicationConnections(null);
+				InternalAsyuiLoadApplicationConnections(null);
 		}
 		finally
 		{
@@ -974,15 +1006,20 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "InternalLoadConnectionsSync()");
 
-		_InternalConnectionsTable ??= CreateDataTable();
+		lock (_LockObject)
+		{
+
+			_InternalDatabases = null;
+			_InternalServers = null;
+			_InternalConnectionsTable ??= CreateDataTable();
+		}
 
 
 		BeginLoadData(true);
 
 		try
 		{
-
-			if (RctManager.ExternalEventEnter(true))
+			if (RctEventSink.EventEnter(true))
 				InternalLoadServerExplorerConnections();
 
 			if (_Instance == null)
@@ -1079,7 +1116,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "InternalLoadServerExplorerConnections()");
 
-		RctManager.ExternalEventEnter(false, true);
+		RctEventSink.EventEnter(false, true);
 
 		try
 		{
@@ -1114,7 +1151,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 		finally
 		{
-			RctManager.ExternalEventExit();
+			RctEventSink.EventExit();
 		}
 
 	}
@@ -1336,12 +1373,67 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	}
 
-	protected void InternalReset()
+	protected bool InternalResetVolatile()
 	{
-		_InternalLoaded = false;
+		lock (_LockObject)
+		{
+			if (_InternalConnectionsTable == null || InternalLoading)
+				return false;
+
+			int orderer;
+			int source;
+			int seSource = (int)EnConnectionSource.ServerExplorer;
+			int sessionSource = (int)EnConnectionSource.Session;
+
+			const string orderKey = "Orderer";
+			const string monikerKey = C_KeyExConnectionUrl;
+			const string sourceKey = C_KeyExConnectionSource;
+
+			DataRow[] rows = _InternalConnectionsTable.Select().Where
+				(x =>
+					((orderer = Convert.ToInt32(x[orderKey])) == 2 || orderer == 3)
+					&& (source = Convert.ToInt32(x[sourceKey])) != seSource
+					&& source != sessionSource
+					&& !Cmd.IsNullValueOrEmpty(x[monikerKey])
+				).ToArray();
+
+
+			if (rows.Length == 0)
+				return false;
+
+			_InternalLoaded = false;
+
+
+			BeginLoadData(true);
+
+			try
+			{
+				foreach (DataRow row in rows)
+				{
+					int id = Convert.ToInt32(row["Id"]);
+
+					foreach (KeyValuePair<string, int> pair in this)
+					{
+						if (pair.Value == id)
+							RemoveEntry(pair.Key);
+					}
+
+					_InternalConnectionsTable.Rows.Remove(row);
+				}
+
+			}
+			finally
+			{
+				EndLoadData();
+			}
+
+		}
+
+		return true;
 	}
 
 
+	
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Executes the sync configuration loader's wait task.
@@ -1659,11 +1751,15 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			_HasLocal = true;
 		}
 
+		DataRow[] rows = null;
 		string search = serverName.ToLower();
 
-		DataRow[] rows = _InternalConnectionsTable.Select()
+		lock (_LockObject)
+		{
+			rows = _InternalConnectionsTable.Select()
 				.Where(x => search.Equals(x["DataSourceLc"])
 					&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])).ToArray();
+		}
 
 		if (rows.Length > 0)
 			return (string)rows[0]["DataSource"];
@@ -1835,7 +1931,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				csa.DatasetId = proposedDatasetId;
 
 
-			int id = _InternalConnectionsTable.Rows.Count;
+			int id = 0;
+
+			lock (_LockObject)
+				id = _InternalConnectionsTable.Rows.Count;
 
 			// Add the generated DatasetKey to the list of internal unique keys (synonyms).
 			Add(uniqueDatasetKey, id);
@@ -1888,8 +1987,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	public override bool Remove(string key)
 	{
-		if (key == null || _InternalConnectionsTable == null)
-			return false;
+		lock (_LockObject)
+		{
+			if (key == null || _InternalConnectionsTable == null)
+				return false;
+		}
 
 
 		if (!TryGetHybridInternalRowValue(key, out DataRow row))
@@ -1906,7 +2008,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		BeginLoadData(true);
 
-		_InternalConnectionsTable.Rows.Remove(row);
+		lock (_LockObject)
+			_InternalConnectionsTable.Rows.Remove(row);
 
 		InternalInvalidate();
 
@@ -2002,7 +2105,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		// Tracer.Trace(GetType(), "InternalLoadConnections()", "Killing SyncPayloadTask. Loading sync done. State: {0}",
 		//	_SyncPayloadLauncherLaunchState);
 
-		ClearSyncPayloadLauncher();
+		ClearSyncPayloadLauncher(false);
 
 
 		if (_SyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown)
@@ -2024,10 +2127,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected bool TryGetHybridInternalRowValue(string hybridKey, out DataRow value)
 	{
-		if (hybridKey == null || _InternalConnectionsTable == null)
+		lock (_LockObject)
 		{
-			value = null;
-			return false;
+			if (hybridKey == null || _InternalConnectionsTable == null)
+			{
+				value = null;
+				return false;
+			}
 		}
 
 		bool isConnectionUrl = hybridKey.StartsWith(_Scheme);
@@ -2042,7 +2148,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		if (isConnectionUrl)
 		{
-			DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExConnectionUrl])).ToArray();
+			DataRow[] rows = null;
+
+			lock (_LockObject)
+				rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExConnectionUrl])).ToArray();
+
 
 			value = rows.Length > 0 ? rows[0] : null;
 		}
@@ -2050,7 +2160,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			if (TryGetEntry(hybridKey, out int id))
 			{
-				value = _InternalConnectionsTable.Rows.Find(id);
+				lock (_LockObject)
+					value = _InternalConnectionsTable.Rows.Find(id);
 			}
 			else
 			{
@@ -2168,7 +2279,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// The awaiter for unsafe loading of solution connections that use the DTE and were
-	/// launched by <see cref="InternalAsyncLoadApplicationConnections"/> .
+	/// launched by <see cref="InternalAsyuiLoadApplicationConnections"/> .
 	/// </summary>
 	/// <remarks>
 	/// This may take some time if the ide is starting up, followed in quick succession
@@ -2177,7 +2288,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected void WaitForAsyncLoad()
 	{
-		// Tracer.Trace(GetType(), "WaitForAsyncLoadConfiguredConnections()");
+		// Tracer.Trace(GetType(), "WaitForAsyncLoad()");
 
 		int waitTime = 0;
 
@@ -2185,12 +2296,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			if (waitTime >= 15000)
 			{
-				TimeoutException ex = new($"Timed out waiting for AsyncLoadApplicationConnections() to complete. Timeout (ms): {waitTime}.");
+				TimeoutException ex = new($"Timed out waiting for InternalAsyuiLoadApplicationConnections() to complete. Timeout (ms): {waitTime}.");
 				Diag.Dug(ex);
 				throw ex;
 			}
 
-			// Tracer.Trace(GetType(), "WaitForAsyncLoadConfiguredConnections()", "WAITING");
+			// Tracer.Trace(GetType(), "WaitForAsyncLoad()", "WAITING");
 
 			try
 			{
@@ -2202,7 +2313,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			waitTime += 100;
 		}
 
-		// Tracer.Trace(GetType(), "WaitForAsyncLoadConfiguredConnections()", "DONE WAITING");
+		// Tracer.Trace(GetType(), "WaitForAsyncLoad()", "DONE WAITING");
 
 	}
 
@@ -2217,7 +2328,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected bool WaitForSyncLoad()
 	{
-		// Tracer.Trace(GetType(), "WaitForAsyncLoadConfiguredConnections()");
+		// Tracer.Trace(GetType(), "WaitForSyncLoad()");
 
 		if (!InternalLoading)
 			return true;

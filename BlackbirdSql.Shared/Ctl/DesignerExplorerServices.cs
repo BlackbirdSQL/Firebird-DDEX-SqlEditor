@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
@@ -15,6 +14,7 @@ using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Ctl.Commands;
 using BlackbirdSql.Shared.Ctl.Config;
+using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Shared.Properties;
@@ -126,14 +126,20 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		if (RctManager.ShutdownState)
 			return;
 
-		Csb csa = RctManager.CloneRegistered(node);
+		Csb csb = RctManager.CloneRegistered(node);
+		ModelCsb csa = null;
+
+		if (csb != null)
+		{
+			EnCreationFlags creationFlags = autoExecute ? EnCreationFlags.CreateAndExecute : EnCreationFlags.CreateConnection;
+
+			csa = new(csb)
+			{
+				CreationFlags = creationFlags
+			};
+		}
 
 		RaiseBeforeOpenDocument(mkDocument, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
-
-		EnEditorCreationFlags creationFlags = autoExecute ? EnEditorCreationFlags.CreateAndExecute : EnEditorCreationFlags.CreateConnection;
-
-		if (csa != null) 
-			csa[CoreConstants.C_KeyExCreationFlags] = creationFlags;
 
 		OpenMiscellaneousVirtualFile(mkDocument, node, targetType, csa, null);
 
@@ -159,7 +165,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		if (RdtManager.InflightMonikerCsbTable.ContainsKey(moniker))
 		{
-			foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBsEditorPackage)ApcManager.PackageInstance).AuxilliaryDocDataTable)
+			foreach (KeyValuePair<object, AuxilliaryDocData> pair in ((IBsEditorPackage)ApcManager.PackageInstance).AuxDocDataTable)
 			{
 				if (!pair.Value.IsVirtualWindow)
 					continue;
@@ -307,19 +313,26 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		if (RctManager.ShutdownState)
 			return;
 
-		Csb csa = datasetKey != null ? RctManager.CloneRegistered(datasetKey, EnRctKeyType.DatasetKey) : null;
+		Csb csb = datasetKey != null ? RctManager.CloneRegistered(datasetKey, EnRctKeyType.DatasetKey) : null;
 
 		IList<string> identifierList = [baseName];
 		IList<string> identifierArray = new List<string>(identifierList); 
 
 		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenNewQueryEditor()", "csa.DataSource: {0}, csa.Database: {1}", csa.DataSource, csa.Database);
 
-		string mkDocument = Moniker.BuildDocumentMoniker(csa?.DataSource, csa?.Database, elementType, ref identifierArray, targetType, true, isClone);
+		string mkDocument = Moniker.BuildDocumentMoniker(csb?.DataSource, csb?.Database, elementType, ref identifierArray, targetType, true, isClone);
+
+		ModelCsb csa = null;
+
+		if (csb != null)
+		{
+			csa = new(csb)
+			{
+				CreationFlags = EnCreationFlags.CreateConnection
+			};
+		}
 
 		RaiseBeforeOpenDocument(mkDocument, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
-
-		if (csa != null)
-			csa[CoreConstants.C_KeyExCreationFlags] = EnEditorCreationFlags.CreateConnection;
 
 		OpenMiscellaneousVirtualFile(mkDocument, null, targetType, csa, initialScript);
 
@@ -434,7 +447,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		if (alreadyLoaded)
 			return;
 
-		IBsTabbedEditorWindowPane lastFocusedSqlEditor = ((IBsEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
+		IBsTabbedEditorPane lastFocusedSqlEditor = ((IBsEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
 
 		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
 

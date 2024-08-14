@@ -33,6 +33,7 @@ public interface IBsNativeDbConnection
 	Task<DataTable> GetSchemaAsync(DbConnection @this, string collectionName,
 		string[] restrictions, CancellationToken cancellationToken);
 	Version ParseServerVersion(IDbConnection @this);
-	bool OpenOrVerifyConnection(IDbConnection @this);
-	Task<bool> OpenOrVerifyConnectionAsync(IDbConnection @this);
+	(bool, bool) OpenOrVerifyConnection(IDbConnection @this);
+	Task<(bool, bool)> OpenOrVerifyConnectionAsync(IDbConnection @this, IDbTransaction transaction,
+		CancellationToken cancelToken);
 }

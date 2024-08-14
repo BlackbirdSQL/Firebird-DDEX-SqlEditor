@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.Shared.Ctl.Commands;
 
 
-public class CommandQuerySettings(IBsTabbedEditorWindowPane editorWindow)
+public class CommandQuerySettings(IBsTabbedEditorPane editorWindow)
 
 	: AbstractCommand(editorWindow)
 {
@@ -28,13 +28,11 @@ public class CommandQuerySettings(IBsTabbedEditorWindowPane editorWindow)
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (ExecutionLocked || StoredAuxDocData == null)
+		if (ExecutionLocked || CachedAuxDocData == null)
 			return VSConstants.S_OK;
 
 
-		IBsEditorPackage editorPackage = (IBsEditorPackage)ApcManager.PackageInstance;
-
-		editorPackage.ShowExecutionSettingsDialogFrame(StoredAuxDocData, FormStartPosition.CenterParent);
+		EditorPane.ExtensionInstance.ShowExecutionSettingsDialog(CachedAuxDocData, FormStartPosition.CenterParent);
 
 		return VSConstants.S_OK;
 	}

@@ -13,7 +13,6 @@ using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.EditorExtension.Controls.Config;
 using BlackbirdSql.EditorExtension.Ctl;
 using BlackbirdSql.EditorExtension.Ctl.Config;
@@ -23,13 +22,11 @@ using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Ctl.Commands;
 using BlackbirdSql.Shared.Ctl.ComponentModel;
-using BlackbirdSql.Shared.Ctl.QueryExecution;
+using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Sys;
-using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
-using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -82,35 +79,35 @@ namespace BlackbirdSql.EditorExtension;
 	SettingsProvider.ResultsTextSettingsPageName, 300, 301, 326, 329)]
 
 
-[VsProvideEditorFactory(typeof(EditorFactoryWithoutEncoding), 311, false, DefaultName = PackageData.C_ServiceName,
+[VsProvideEditorFactory(typeof(EditorFactory), 311, false, DefaultName = PackageData.C_ServiceName,
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
-[ProvideEditorExtension(typeof(EditorFactoryWithoutEncoding), LanguageExtension.PackageData.C_Extension, 110,
+[ProvideEditorExtension(typeof(EditorFactory), LanguageExtension.PackageData.C_Extension, 110,
 	DefaultName = PackageData.C_ServiceName, NameResourceID = 311, RegisterFactory = true)]
 // [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Debugging_string)]
-[ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Code_string)]
-[ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Designer_string)]
-[ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.TextView_string)]
-[VsProvideFileExtensionMapping(typeof(EditorFactoryWithoutEncoding), PackageData.C_ServiceName, 311, 100)]
+[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Code_string)]
+[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.Designer_string)]
+[ProvideEditorLogicalView(typeof(EditorFactory), VSConstants.LOGVIEWID.TextView_string)]
+[VsProvideFileExtensionMapping(typeof(EditorFactory), PackageData.C_ServiceName, 311, 100)]
 
-[VsProvideEditorFactory(typeof(EditorFactoryWithEncoding), 317, false,
+[VsProvideEditorFactory(typeof(EditorFactoryEncoded), 317, false,
 	DefaultName = $"{PackageData.C_ServiceName} with Encoding",
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
-[ProvideEditorExtension(typeof(EditorFactoryWithEncoding), LanguageExtension.PackageData.C_Extension, 100,
+[ProvideEditorExtension(typeof(EditorFactoryEncoded), LanguageExtension.PackageData.C_Extension, 100,
 	DefaultName = $"{PackageData.C_ServiceName} with Encoding", NameResourceID = 317, RegisterFactory = true)]
 // [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Debugging_string)]
-[ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Code_string)]
-[ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Designer_string)]
-[ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.TextView_string)]
-[VsProvideFileExtensionMapping(typeof(EditorFactoryWithEncoding), $"{PackageData.C_ServiceName} with Encoding", 317, 96)]
+[ProvideEditorLogicalView(typeof(EditorFactoryEncoded), VSConstants.LOGVIEWID.Code_string)]
+[ProvideEditorLogicalView(typeof(EditorFactoryEncoded), VSConstants.LOGVIEWID.Designer_string)]
+[ProvideEditorLogicalView(typeof(EditorFactoryEncoded), VSConstants.LOGVIEWID.TextView_string)]
+[VsProvideFileExtensionMapping(typeof(EditorFactoryEncoded), $"{PackageData.C_ServiceName} with Encoding", 317, 96)]
 
-[VsProvideEditorFactory(typeof(ResultsEditorFactory), 312, false,
+[VsProvideEditorFactory(typeof(EditorFactoryResults), 312, false,
 	DefaultName = "BlackbirdSql Results", CommonPhysicalViewAttributes = 0)]
-// [ProvideEditorLogicalView(typeof(ResultsEditorFactory), VSConstants.LOGVIEWID.Debugging_string)]
-[ProvideEditorLogicalView(typeof(ResultsEditorFactory), VSConstants.LOGVIEWID.Code_string)]
-[ProvideEditorLogicalView(typeof(ResultsEditorFactory), VSConstants.LOGVIEWID.Designer_string)]
-[ProvideEditorLogicalView(typeof(ResultsEditorFactory), VSConstants.LOGVIEWID.TextView_string)]
+// [ProvideEditorLogicalView(typeof(EditorFactoryResults), VSConstants.LOGVIEWID.Debugging_string)]
+[ProvideEditorLogicalView(typeof(EditorFactoryResults), VSConstants.LOGVIEWID.Code_string)]
+[ProvideEditorLogicalView(typeof(EditorFactoryResults), VSConstants.LOGVIEWID.Designer_string)]
+[ProvideEditorLogicalView(typeof(EditorFactoryResults), VSConstants.LOGVIEWID.TextView_string)]
 
 
 
@@ -197,7 +194,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	private readonly object _LockLocal = new object();
 
 
-	private Dictionary<object, AuxilliaryDocData> _AuxilliaryDocDataTable = null;
+	private Dictionary<object, AuxilliaryDocData> _AuxDocDataTable = null;
 
 	private object _CurrentDocData = null;
 	private AuxilliaryDocData _CurrentAuxilliaryDocData = null;
@@ -206,9 +203,9 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	private readonly EditorEventsManager _EventsManager;
 	private uint _BroadcastMessageEventsCookie;
-	private EditorFactoryWithoutEncoding _SqlEditorFactory;
-	private EditorFactoryWithEncoding _SqlEditorFactoryWithEncoding;
-	private ResultsEditorFactory _SqlResultsEditorFactory;
+	private EditorFactory _SqlEditorFactory;
+	private EditorFactoryEncoded _SqlEditorFactoryWithEncoding;
+	private EditorFactoryResults _SqlResultsEditorFactory;
 	private uint _MarkerServiceCookie;
 	private uint _FontAndColorServiceCookie;
 
@@ -228,15 +225,15 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	private JoinableTaskContext? JoinableTaskContext { get; set; }
 	*/
 
-	public Dictionary<object, AuxilliaryDocData> AuxilliaryDocDataTable => _AuxilliaryDocDataTable ??= [];
+	public Dictionary<object, AuxilliaryDocData> AuxDocDataTable => _AuxDocDataTable ??= [];
 
 	public bool EnableSpatialResultsTab { get; set; }
 
 	public override IBsEventsManager EventsManager => _EventsManager;
 
-	public bool HasAuxillaryDocData => (_AuxilliaryDocDataTable?.Count ?? 0) > 0;
+	public bool HasAuxillaryDocData => (_AuxDocDataTable?.Count ?? 0) > 0;
 
-	public IBsTabbedEditorWindowPane LastFocusedSqlEditor { get; set; }
+	public IBsTabbedEditorPane LastFocusedSqlEditor { get; set; }
 
 	public object LockLocal => _LockLocal;
 
@@ -316,9 +313,9 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 		ProgressAsync(progress, "Finalizing Editor. Registering Editor factories...").Forget();
 
-		_SqlEditorFactory = new EditorFactoryWithoutEncoding();
-		_SqlEditorFactoryWithEncoding = new EditorFactoryWithEncoding();
-		_SqlResultsEditorFactory = new ResultsEditorFactory();
+		_SqlEditorFactory = new EditorFactory();
+		_SqlEditorFactoryWithEncoding = new EditorFactoryEncoded();
+		_SqlResultsEditorFactory = new EditorFactoryResults();
 
 		RegisterEditorFactory(_SqlEditorFactory);
 		RegisterEditorFactory(_SqlEditorFactoryWithEncoding);
@@ -428,7 +425,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	{
 		lock (_LockLocal)
 		{
-			if (docData == null || _AuxilliaryDocDataTable == null)
+			if (docData == null || _AuxDocDataTable == null)
 				return false;
 
 			if (_CurrentDocData != null && object.ReferenceEquals(docData, _CurrentDocData))
@@ -438,7 +435,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 				return true;
 
 			// Sanity check
-			if (_AuxilliaryDocDataTable.TryGetValue(docData, out AuxilliaryDocData value))
+			if (_AuxDocDataTable.TryGetValue(docData, out AuxilliaryDocData value))
 			{
 				AuxilliaryDocData.SetUserDataAuxilliaryDocData(docData, value);
 				return true;
@@ -450,27 +447,33 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 
-	public bool EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData, bool isClone)
+	public bool EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData,
+		bool isClone, out AuxilliaryDocData auxDocData)
 	{
+		// Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()",
+		//	"AuxDocData does not exist. Clone? {0}, documentMoniker: {1}.", isClone, documentMoniker);
+
 		lock (_LockLocal)
 		{
-			AuxilliaryDocData auxDocData = GetAuxilliaryDocData(docData);
+			auxDocData = GetAuxilliaryDocData(docData);
 
 			if (auxDocData != null)
 			{
 				if (isClone)
-					auxDocData.AddClone();
+					auxDocData.CloneAdd();
 				return false;
 			}
+
 
 			// Accessing the stack and pop.
 			string inflightMoniker = RdtManager.InflightMonikerStack;
 
 
-			Csb csb = null;
+			IBsModelCsb csa = null;
 
-			if (inflightMoniker != null && RdtManager.InflightMonikerCsbTable.TryGetValue(inflightMoniker, out csb))
+			if (inflightMoniker != null && RdtManager.InflightMonikerCsbTable.TryGetValue(inflightMoniker, out IBsCsb csb))
 			{
+				csa = csb as IBsModelCsb;
 				RdtManager.InflightMonikerCsbTable[inflightMoniker] = null;
 			}
 
@@ -487,12 +490,13 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 			}
 
 
-			//Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()", "fileCookie: {0}, monikerCookie: {1}, filePath: {2}, inflightMoniker: {3}, documentMoniker: {4}.",
+			//Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()",
+			//	"fileCookie: {0}, monikerCookie: {1}, filePath: {2}, inflightMoniker: {3}, documentMoniker: {4}.",
 			//	fileCookie, cookie, filePath, inflightMoniker, documentMoniker);
 
 
 
-			auxDocData ??= new AuxilliaryDocData(cookie, documentMoniker, inflightMoniker, docData);
+			auxDocData ??= new AuxilliaryDocData(this, cookie, documentMoniker, inflightMoniker, docData);
 
 
 			// No point looking because This will always be null for us
@@ -503,21 +507,22 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 			// We always use DefaultConnectionStrategy and use the csb passed via userdata that was
 			// constructed from the SE node
 
-			EnEditorCreationFlags creationFlags = EnEditorCreationFlags.None;
+			EnCreationFlags creationFlags = EnCreationFlags.None;
 
-			if (csb?.ContainsKey(CoreConstants.C_KeyExCreationFlags) ?? false)
+			if (csa?.ContainsKey(SharedConstants.C_KeyExCreationFlags) ?? false)
 			{
-				creationFlags = (EnEditorCreationFlags)csb[CoreConstants.C_KeyExCreationFlags];
-				csb.Remove(CoreConstants.C_KeyExCreationFlags);
+				creationFlags = csa.CreationFlags;
+				csa.Remove(SharedConstants.C_KeyExCreationFlags);
 			}
 
 
-			// auxDocData.StrategyFactory = new ConnectionStrategyFactory(auxDocData.UserDataCsb, creationFlags);
 
-			auxDocData.CreateQueryManager(csb, creationFlags);
+			bool createConnection = (creationFlags & EnCreationFlags.CreateConnection) > 0;
+
+			auxDocData.CreateQueryManager(createConnection ? csa : null);
 
 
-			AuxilliaryDocDataTable.Add(docData, auxDocData);
+			AuxDocDataTable.Add(docData, auxDocData);
 
 			AuxilliaryDocData.SetUserDataAuxilliaryDocData(docData, auxDocData);
 
@@ -527,7 +532,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 			// True if query must be executed.
 
-			return (creationFlags & EnEditorCreationFlags.AutoExecute) > 0;
+			return (creationFlags & EnCreationFlags.AutoExecute) > 0;
 		}
 	}
 
@@ -537,7 +542,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	{
 		lock (_LockLocal)
 		{
-			if (docData == null || _AuxilliaryDocDataTable == null)
+			if (docData == null || _AuxDocDataTable == null)
 				return null;
 
 			if (_CurrentDocData != null && object.ReferenceEquals(docData, _CurrentDocData))
@@ -548,7 +553,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 			if (value == null)
 			{
 				// Sanity check
-				if (_AuxilliaryDocDataTable.TryGetValue(docData, out value))
+				if (_AuxDocDataTable.TryGetValue(docData, out value))
 					AuxilliaryDocData.SetUserDataAuxilliaryDocData(docData, value);
 			}
 
@@ -621,44 +626,44 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	private static void InitializeTabbedEditorToolbarHandlerManager()
 	{
-		ToolbarCommandMapper toolbarMgr = AbstractTabbedEditorWindowPane.ToolbarManager;
+		ToolbarCommandMapper toolbarMgr = AbstractTabbedEditorPane.ToolbarManager;
 
 		if (toolbarMgr == null)
 			return;
 
 		Guid clsid = CommandProperties.ClsidCommandSet;
 
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandDatabaseSelect>(clsid, (uint)EnCommandSet.CmbIdDatabaseSelect));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandDatabaseList>(clsid, (uint)EnCommandSet.CmbIdDatabaseList));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandExecuteQuery>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandCancelQuery>(clsid, (uint)EnCommandSet.CmdIdCancelQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandConnect>(clsid, (uint)EnCommandSet.CmdIdConnect));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandDisconnect>(clsid, (uint)EnCommandSet.CmdIdDisconnect));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandDisconnectAllQueries>(clsid, (uint)EnCommandSet.CmdIdDisconnectAllQueries));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandModifyConnection>(clsid, (uint)EnCommandSet.CmdIdModifyConnection));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandShowEstimatedPlan>(clsid, (uint)EnCommandSet.CmdIdShowEstimatedPlan));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandCloneQueryWindow>(clsid, (uint)EnCommandSet.CmdIdCloneQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandToggleExecutionPlan>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandToggleClientStatistics>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandNewQuery>(clsid, (uint)EnCommandSet.CmdIdNewQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandTransactionCommit>(clsid, (uint)EnCommandSet.CmdIdTransactionCommit));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandTransactionRollback>(clsid, (uint)EnCommandSet.CmdIdTransactionRollback));
-		toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
 			new ToolbarCommandHandler<CommandToggleTTS>(clsid, (uint)EnCommandSet.CmdIdToggleTTS));
 	}
 
@@ -712,12 +717,14 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	public void RemoveAuxilliaryDocData(object docData)
 	{
+		// Tracer.Trace(GetType(), "RemoveAuxilliaryDocData()");
+
 		lock (_LockLocal)
 		{
-			if (_AuxilliaryDocDataTable == null)
+			if (_AuxDocDataTable == null)
 				return;
 
-			if (_AuxilliaryDocDataTable.TryGetValue(docData, out AuxilliaryDocData auxDocData))
+			if (_AuxDocDataTable.TryGetValue(docData, out AuxilliaryDocData auxDocData))
 			{
 				if (auxDocData.IsVirtualWindow)
 					auxDocData.IsVirtualWindow = false;
@@ -730,7 +737,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 				AuxilliaryDocData.SetUserDataAuxilliaryDocData(docData, null);
 
-				_AuxilliaryDocDataTable.Remove(docData);
+				_AuxDocDataTable.Remove(docData);
 				auxDocData?.Dispose();
 			}
 		}
@@ -738,7 +745,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 
-	public DialogResult ShowExecutionSettingsDialogFrame(AuxilliaryDocData auxDocData,
+	public DialogResult ShowExecutionSettingsDialog(AuxilliaryDocData auxDocData,
 		FormStartPosition startPosition)
 	{
 		// Tracer.Trace(GetType(), "ShowExecutionSettingsDialogFrame()");
@@ -772,7 +779,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 
-	public bool TryGetTabbedEditorService(uint docCookie, bool activateIfOpen, out IBsWindowPaneServiceProvider tabbedEditorService)
+	public bool TryGetTabbedEditorService(uint docCookie, bool activateIfOpen, out IBsEditorPaneServiceProvider tabbedEditorService)
 	{
 		// Tracer.Trace(GetType(), "TryGetTabbedEditorService()", "ENTER!!!");
 
@@ -819,15 +826,15 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 			return false;
 		}
 
-		if (pvar is not IBsWindowPaneServiceProvider tabbedEditorPane)
+		if (pvar is not IBsEditorPaneServiceProvider editorPane)
 		{
-			Diag.Dug(new COMException($"Window frame DocView property is not of type IBsWindowPaneServiceProvider for moniker {mkDocument} using document cookie {docCookie}."));
+			Diag.Dug(new COMException($"Window frame DocView property is not of type IBsEditorPaneServiceProvider for moniker {mkDocument} using document cookie {docCookie}."));
 			tabbedEditorService = null;
 			return false;
 		}
 
 
-		tabbedEditorService = tabbedEditorPane;
+		tabbedEditorService = editorPane;
 
 		// Tracer.Trace(GetType(), "TryGetTabbedEditorService()", "DONE!!!");
 
@@ -889,7 +896,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 		{
 			DesignerExplorerServices.OpenNewMiscellaneousSqlFile(Resources.NewQueryBaseName, string.Empty);
-			IBsTabbedEditorWindowPane lastFocusedSqlEditor = LastFocusedSqlEditor;
+			IBsTabbedEditorPane lastFocusedSqlEditor = LastFocusedSqlEditor;
 
 			if (lastFocusedSqlEditor != null)
 				new CommandNewQuery(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
@@ -902,13 +909,13 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	{
 		// Tracer.Trace(GetType(), "OnPowerBroadcast()");
 
-		if ((int)wParam != Native.PBT_APMSUSPEND || _AuxilliaryDocDataTable == null
-			|| _AuxilliaryDocDataTable.Count == 0)
+		if ((int)wParam != Native.PBT_APMSUSPEND || _AuxDocDataTable == null
+			|| _AuxDocDataTable.Count == 0)
 		{
 			return;
 		}
 
-		foreach (AuxilliaryDocData value in _AuxilliaryDocDataTable.Values)
+		foreach (AuxilliaryDocData value in _AuxDocDataTable.Values)
 		{
 			value?.QryMgr?.Strategy?.CloseConnection();
 		}

@@ -21,7 +21,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 {
 	private IBsGridControl2 _GridCtl;
 
-	private QEResultSet _QeResultSet;
+	private QueryResultSet _ResultSet;
 
 	private MoreRowsAvailableEventHandler _MoreRowsAvailableEventAsync;
 
@@ -39,7 +39,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	private const int C_NewRowsNotificationFreq = 10000;
 
-	public QEResultSet QEResultSet => _QeResultSet;
+	public QueryResultSet ResultSet => _ResultSet;
 
 	public IBsGridControl2 GridCtl => _GridCtl;
 
@@ -56,10 +56,10 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		}
 	}
 
-	public ResultSetAndGridContainer(QEResultSet resultSet, bool printColumnHeaders, int numberOfCharsToShow)
+	public ResultSetAndGridContainer(QueryResultSet resultSet, bool printColumnHeaders, int numberOfCharsToShow)
 	{
 		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.ResultSetAndGridContainer", "", null);
-		_QeResultSet = resultSet;
+		_ResultSet = resultSet;
 		_PrintColumnHeaders = printColumnHeaders;
 		_NumberOfCharsToShow = numberOfCharsToShow;
 		_MoreRowsAvailableEventAsync = OnMoreRowsAvailableFromStorageAsync;
@@ -69,11 +69,11 @@ public sealed class ResultSetAndGridContainer : IDisposable
 	{
 		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.Initialize", "", null);
 		_GridCtl = grid;
-		_QeResultSet.InGridMode = true;
-		_QeResultSet.MoreRowsAvailableEventAsync += _MoreRowsAvailableEventAsync;
+		_ResultSet.InGridMode = true;
+		_ResultSet.MoreRowsAvailableEventAsync += _MoreRowsAvailableEventAsync;
 		((ISupportInitialize)_GridCtl).BeginInit();
 		_GridCtl.SelectionType = EnGridSelectionType.CellBlocks;
-		_GridCtl.GridStorage = _QeResultSet;
+		_GridCtl.GridStorage = _ResultSet;
 		_GridCtl.WithHeader = _PrintColumnHeaders;
 		_GridCtl.AlwaysHighlightSelection = true;
 		_GridCtl.NumberOfCharsToShow = _NumberOfCharsToShow;
@@ -84,10 +84,10 @@ public sealed class ResultSetAndGridContainer : IDisposable
 			WidthType = EnGridColumnWidthType.InAverageFontChar
 		};
 		_GridCtl.AddColumn(gridColumnInfo);
-		for (int i = 0; i < _QeResultSet.NumberOfDataColumns; i++)
+		for (int i = 0; i < _ResultSet.NumberOfDataColumns; i++)
 		{
 			gridColumnInfo = new GridColumnInfo();
-			if (_QeResultSet.IsXMLColumn(i))
+			if (_ResultSet.IsXMLColumn(i))
 			{
 				gridColumnInfo.ColumnType = 5;
 			}
@@ -97,7 +97,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 			}
 
 			_GridCtl.AddColumn(gridColumnInfo);
-			string text = _QeResultSet.ColumnNames[i];
+			string text = _ResultSet.ColumnNames[i];
 			if (text == null || text.Length == 0)
 			{
 				text = ControlsResources.Grid_ResultsNoColumnTitle;
@@ -117,12 +117,12 @@ public sealed class ResultSetAndGridContainer : IDisposable
 	public void Dispose()
 	{
 		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.Dispose", "", null);
-		if (_QeResultSet != null)
+		if (_ResultSet != null)
 		{
-			_QeResultSet.MoreRowsAvailableEventAsync -= _MoreRowsAvailableEventAsync;
+			_ResultSet.MoreRowsAvailableEventAsync -= _MoreRowsAvailableEventAsync;
 			_MoreRowsAvailableEventAsync = null;
-			_QeResultSet.Dispose();
-			_QeResultSet = null;
+			_ResultSet.Dispose();
+			_ResultSet = null;
 		}
 
 		if (_GridCtl != null)
@@ -135,7 +135,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 	public async Task<bool> StartRetrievingDataAsync(int nMaxNumCharsToDisplay, int nMaxNumXmlCharsToDisplay, CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.StartRetrievingData", "nMaxNumCharsToDisplay = {0}, nMaxNumXmlCharsToDisplay={1}", nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay);
-		await _QeResultSet.StartRetrievingDataAsync(nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay, cancelToken);
+		await _ResultSet.StartRetrievingDataAsync(nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay, cancelToken);
 
 		return !cancelToken.IsCancellationRequested;
 	}

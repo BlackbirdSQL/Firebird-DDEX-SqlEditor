@@ -340,21 +340,39 @@ public static class NativeDbExtensionMembers
 		return NativeDb.DbConnectionSvc.ParseServerVersion(@this);
 	}
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Parses and converts a server version string to it's Version format.
+	/// Opens or verifies a connection. The Connection must exists.
+	/// Throws an exception on failure.
+	/// Always use this method to open connections because it disposes of the connection
+	/// and invokes ConnectionChangedEvent on failure.
+	/// Do not call before ensuring IsComplete.
 	/// </summary>
-	public static bool OpenOrVerify(this IDbConnection @this)
+	/// <returns>Boolean tuple with Item1: IsOpen and Item2: HasTransactions.</returns>
+	// ---------------------------------------------------------------------------------
+	public static (bool, bool) OpenOrVerify(this IDbConnection @this)
 	{
 		return NativeDb.DbConnectionSvc.OpenOrVerifyConnection(@this);
 	}
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Parses and converts a server version string to it's Version format.
+	/// Opens or verifies a connection. The Connection must exists.
+	/// Throws an exception on failure.
+	/// Always use this method to open connections because it disposes of the connection
+	/// and invokes ConnectionChangedEvent on failure.
+	/// Do not call before ensuring IsComplete.
 	/// </summary>
-	public static async Task<bool> OpenOrVerifyAsync(this IDbConnection @this)
+	/// <returns>
+	/// Boolean tuple with Item1: True if open / verification succeeded and
+	/// Item2: HasTransactions.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static async Task<(bool, bool)> OpenOrVerifyAsync(this IDbConnection @this,
+		IDbTransaction transaction, CancellationToken cancelToken)
 	{
-		return await NativeDb.DbConnectionSvc.OpenOrVerifyConnectionAsync(@this);
+		return await NativeDb.DbConnectionSvc.OpenOrVerifyConnectionAsync(@this, transaction, cancelToken);
 	}
 
 

@@ -178,10 +178,16 @@ public class Describer
 	public bool IsDerived => (_DType & D_Derived) > 0;
 
 	/// <summary>
+	/// True if this describer is an additional describer no in the original native
+	/// describer table else false.
+	/// </summary>
+	public bool IsExtended => (_DType & D_ExtendedType) > 0;
+
+	/// <summary>
 	/// True if this describer is a valid browsable property else false
 	/// if it's for internal storage.
 	/// </summary>
-	public bool IsInternalStore => (_DType & D_Internal) > 0;
+	public bool IsInternalStore => (_DType & D_InternalType) > 0;
 
 
 	/// <summary>

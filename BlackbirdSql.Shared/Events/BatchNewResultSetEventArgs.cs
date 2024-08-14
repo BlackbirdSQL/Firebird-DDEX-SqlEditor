@@ -17,13 +17,13 @@ public delegate Task<bool> BatchNewResultSetEventHandler(object sender, BatchNew
 
 public class BatchNewResultSetEventArgs : EventArgs
 {
-	private readonly QEResultSet _ResultSet;
+	private readonly QueryResultSet _ResultSet;
 	private readonly CancellationToken _CancelToken;
 
-	public QEResultSet ResultSet => _ResultSet;
+	public QueryResultSet ResultSet => _ResultSet;
 	public CancellationToken CancelToken => _CancelToken;
 
-	public BatchNewResultSetEventArgs(QEResultSet resultSet, CancellationToken cancelToken)
+	public BatchNewResultSetEventArgs(QueryResultSet resultSet, CancellationToken cancelToken)
 	{
 		_ResultSet = resultSet;
 		_CancelToken = cancelToken;

@@ -130,19 +130,27 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 	{
 		get
 		{
-			if (_InternalDatabases == null)
+			lock (_LockObject)
 			{
+
+				if (_InternalDatabases != null)
+					return _InternalDatabases;
+
 				if (_Instance == null)
 					return null;
+			}
 
-				RctManager.EnsureLoaded();
+			InternalResolveDeadlocksAndEnsureLoaded(false);
 
-				if (_LoadDataCardinal > 0)
-				{
-					AccessViolationException ex = new($"Attempt to access Rct internal table while loading. LoadDataCardinal: {_LoadDataCardinal}.");
-					Diag.Dug(ex);
-					throw ex;
-				}
+			if (_LoadDataCardinal > 0)
+			{
+				AccessViolationException ex = new($"Attempt to access Rct internal table while loading. LoadDataCardinal: {_LoadDataCardinal}.");
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			lock (_LockObject)
+			{
 
 				_InternalConnectionsTable.AcceptChanges();
 
@@ -154,9 +162,9 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 				_InternalDatabases.PrimaryKey = [_InternalDatabases.Columns["Id"]];
 				_InternalDatabases.AcceptChanges();
 				_InternalServers = null;
-			}
 
-			return _InternalDatabases;
+				return _InternalDatabases;
+			}
 
 		}
 	}
@@ -195,7 +203,10 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 	/// This internal table storing all registered connections and datasources/servers.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected DataTable InternalConnectionsTable => _InternalConnectionsTable;
+	protected DataTable InternalConnectionsTable
+	{
+		get { lock (_LockObject) return _InternalConnectionsTable; }
+	}
 
 
 
@@ -263,7 +274,10 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 		if (_Instance == null)
 			return;
 
-		DataRow[] rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[CoreConstants.C_KeyExDatasetKey])).ToArray();
+		DataRow[] rows = null;
+
+		lock (_LockObject)
+			rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[CoreConstants.C_KeyExDatasetKey])).ToArray();
 
 		if (rows.Length == 0)
 		{
@@ -283,6 +297,9 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 		}
 	}
 
+
+
+	protected abstract bool InternalResolveDeadlocksAndEnsureLoaded(bool asynchronous);
 
 
 	// ---------------------------------------------------------------------------------

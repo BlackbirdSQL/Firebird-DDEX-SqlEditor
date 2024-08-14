@@ -18,7 +18,7 @@ public class CommandResultsAsGrid : AbstractCommand
 	{
 	}
 
-	public CommandResultsAsGrid(IBsTabbedEditorWindowPane editorWindow)
+	public CommandResultsAsGrid(IBsTabbedEditorPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -30,7 +30,7 @@ public class CommandResultsAsGrid : AbstractCommand
 		if (!ExecutionLocked)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
-		if (StoredAuxDocData.SqlOutputMode == EnSqlOutputMode.ToGrid)
+		if (CachedAuxDocData.SqlOutputMode == EnSqlOutputMode.ToGrid)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
@@ -38,8 +38,8 @@ public class CommandResultsAsGrid : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (!ExecutionLocked && StoredAuxDocData != null)
-			StoredAuxDocData.SqlOutputMode = EnSqlOutputMode.ToGrid;
+		if (!ExecutionLocked && CachedAuxDocData != null)
+			CachedAuxDocData.SqlOutputMode = EnSqlOutputMode.ToGrid;
 
 		return VSConstants.S_OK;
 	}

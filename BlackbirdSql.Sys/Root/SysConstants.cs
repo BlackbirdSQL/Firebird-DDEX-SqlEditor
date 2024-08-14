@@ -31,13 +31,16 @@ public static class SysConstants
 	// ---------------------------------------------------------------------------------
 
 
-	public const int D_Connection = 1;
-	public const int D_Advanced = 2;
-	public const int D_Public = 4;
-	public const int D_Default = 6;
-	public const int D_Mandatory = 8;
-	public const int D_Derived = 16;
-	public const int D_Internal = 32;
+	public const int D_Connection = 0x1;
+	public const int D_Advanced = 0x2;
+	public const int D_Public = 0x4;
+	public const int D_Default = D_Advanced | D_Public;
+	public const int D_Mandatory = 0x8;
+	public const int D_Derived = 0x10;
+	public const int D_ExtendedType = 0x20;
+	public const int D_Extended = D_Default | D_ExtendedType;
+	public const int D_InternalType = 0x40;
+	public const int D_Internal = D_Extended | D_InternalType;
 
 
 	#endregion Describer Flags

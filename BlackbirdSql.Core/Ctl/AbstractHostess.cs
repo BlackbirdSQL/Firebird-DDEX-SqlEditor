@@ -189,6 +189,7 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 		PostExecuteCommandImpl(command);
+
 		return true;
 	}
 

@@ -42,7 +42,7 @@ public sealed class RctManager : RunningConnectionTable
 
 
 	// ---------------------------------------------------------------------------------
-	#region Constructors / Destructors - AbstractRunningConnectionTable
+	#region Constructors / Destructors - RctManager
 	// ---------------------------------------------------------------------------------
 
 
@@ -59,12 +59,15 @@ public sealed class RctManager : RunningConnectionTable
 		}
 	}
 
+	private static RctManager Instance => (RctManager)_Instance;
+
+
 	/// <summary>
 	/// Gets the instance of the RctManager for this session.
 	/// We do not auto-create to avoid instantiation confusion.
 	/// Use CreateInstance() to instantiate.
 	/// </summary>
-	private static RctManager Instance
+	private static RctManager EnsuredInstance
 	{
 		get
 		{
@@ -75,13 +78,13 @@ public sealed class RctManager : RunningConnectionTable
 				return null;
 			}
 
-			if (_Instance != null)
+			if (_Instance != null && Loaded)
 				return (RctManager)_Instance;
 
 			_Instance ??= new RctManager();
 
 			if (!Loaded || Loading)
-				EnsureLoaded();
+				ResolveDeadlocksAndEnsureLoaded(false);
 
 			return Loaded ? (RctManager)_Instance : null;
 
@@ -91,6 +94,8 @@ public sealed class RctManager : RunningConnectionTable
 
 	public static void Delete()
 	{
+		// Tracer.Trace(typeof(RctManager), "Delete()");
+
 		((RctManager)_Instance)?.Dispose(true);
 		_Instance = null;
 	}
@@ -103,9 +108,9 @@ public sealed class RctManager : RunningConnectionTable
 		Dispose(true);
 	}
 
-	public static void Reset()
+	public static void ResetVolatile()
 	{
-		((RctManager)_Instance)?.InternalReset();
+		((RctManager)_Instance)?.InternalResetVolatile();
 	}
 
 
@@ -169,7 +174,7 @@ public sealed class RctManager : RunningConnectionTable
 	/// volatile unique connections defined in SqlEditor.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static DataTable Databases => Instance?.InternalDatabases;
+	public static DataTable Databases => EnsuredInstance?.InternalDatabases;
 
 
 	// ---------------------------------------------------------------------------------
@@ -183,7 +188,7 @@ public sealed class RctManager : RunningConnectionTable
 	/// an example.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static DataTable Servers => Instance?.InternalServers;
+	public static DataTable Servers => EnsuredInstance?.InternalServers;
 
 
 
@@ -209,10 +214,35 @@ public sealed class RctManager : RunningConnectionTable
 	/// shutdown state.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IEnumerable<string> AdornedQualifiedNames => Instance?.InternalAdornedQualifiedNames;
+	public static IEnumerable<string> AdornedQualifiedNames
+	{
+		get
+		{
+			if (!Loaded && !ExplorerHasConnections)
+				return [];
+			return EnsuredInstance?.InternalAdornedQualifiedNames ?? [];
+		}
+	}
 
-	public static IEnumerable<string> AdornedQualifiedTitles => Instance?.InternalAdornedQualifiedTitles;
 
+	public static IEnumerable<string> AdornedQualifiedTitles
+	{
+		get
+		{
+			if (!Loaded && !ExplorerHasConnections)
+				return [];
+			return EnsuredInstance?.InternalAdornedQualifiedTitles ?? [];
+		}
+	}
+
+
+	public static bool ExplorerHasConnections
+	{
+		get
+		{
+			return (ApcManager.ExplorerConnectionManager?.Connections?.Count ?? 0) > 0;
+		}
+	}
 
 	public static bool SessionConnectionSourceActive
 	{
@@ -248,7 +278,8 @@ public sealed class RctManager : RunningConnectionTable
 	/// Returns the global shutdown state.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ShutdownState => ApcManager.IdeShutdownState || (_Instance != null && Instance.InternalLoaded && Instance.InternalShutdownState);
+	public static bool ShutdownState => ApcManager.IdeShutdownState
+		|| (Instance?.InternalShutdownState ?? false);
 
 
 	public static char EdmDatasetGlyph => SystemData.C_EdmDatasetGlyph;
@@ -275,7 +306,7 @@ public sealed class RctManager : RunningConnectionTable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Launches an async task to perform explorer connection advise events.
+	/// [Launch async]: Task to perform explorer connection advise events.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private static bool AsyncInitializeServerExplorerModels()
@@ -310,7 +341,7 @@ public sealed class RctManager : RunningConnectionTable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Loads a project's App.Config Settings and EDM connections.
+	/// [Async on UI thread]: Loads a project's App.Config Settings and EDM connections.
 	/// </summary>
 	/// <param name="probject">The <see cref="EnvDTE.Project"/>.</param>
 	/// <remarks>
@@ -318,14 +349,14 @@ public sealed class RctManager : RunningConnectionTable
 	/// completed loading.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool AsyncLoadApplicationConnections(object probject)
+	public static bool AsyuiLoadApplicationConnections(object probject)
 	{
 		// Tracer.Trace(typeof(RctManager), "LoadProjectConnections()");
 
-		if (!PersistentSettings.IncludeAppConnections || _Instance == null || !Instance.InternalLoaded || ShutdownState)
+		if (!PersistentSettings.IncludeAppConnections || !(Instance?.InternalLoaded ?? false) || ShutdownState)
 			return false;
 
-		return Instance.InternalAsyncLoadApplicationConnections(probject);
+		return EnsuredInstance.InternalAsyuiLoadApplicationConnections(probject);
 	}
 
 
@@ -341,7 +372,7 @@ public sealed class RctManager : RunningConnectionTable
 		if (csb == null)
 			return null;
 
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 		string connectionUrl = csb.Moniker;
@@ -375,7 +406,7 @@ public sealed class RctManager : RunningConnectionTable
 			throw ex;
 		}
 
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 		if (!Instance.TryGetHybridRowValue(connection.ConnectionString, EnRctKeyType.ConnectionString, out DataRow row))
@@ -406,7 +437,7 @@ public sealed class RctManager : RunningConnectionTable
 			throw ex;
 		}
 
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 		if (!Instance.TryGetHybridRowValue(root.DecryptedConnectionString(), EnRctKeyType.ConnectionString, out DataRow row))
@@ -437,7 +468,7 @@ public sealed class RctManager : RunningConnectionTable
 			throw ex;
 		}
 
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 		Csb csa = new(node, false);
@@ -464,7 +495,7 @@ public sealed class RctManager : RunningConnectionTable
 			throw ex;
 		}
 
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 		if (!Instance.TryGetHybridRowValue(hybridKey, keyType, out DataRow row))
@@ -491,7 +522,7 @@ public sealed class RctManager : RunningConnectionTable
 			throw ex;
 		}
 
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 		return CloneRegistered(csb);
@@ -514,7 +545,7 @@ public sealed class RctManager : RunningConnectionTable
 			throw ex;
 		}
 
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 		return CloneRegistered(connection);
@@ -534,18 +565,18 @@ public sealed class RctManager : RunningConnectionTable
 	/// Returns false if an event has already been entered else true if it is safe to enter.
 	/// </returns>
 	// -------------------------------------------------------------------------------------------
-	public static bool ExternalEventEnter(bool test = false, bool force = false) =>
+	public static bool ExternalEventSinkEnter(bool test = false, bool force = false) =>
 		RctEventSink.EventEnter(test, force);
 
 
 
 	// ---------------------------------------------------------------------------------------
 	/// <summary>
-	/// Decrements the <see cref="_ExternalEventsCardinal"/> counter that was previously
-	/// incremented by <see cref="ExternalEventEnter"/>.
+	/// Decrements the RctEventSink Event counter that was previously
+	/// incremented by <see cref="ExternalEventSinkEnter"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------------
-	public static void ExternalEventExit() => RctEventSink.EventExit();
+	public static void ExternalEventSinkExit() => RctEventSink.EventExit();
 
 
 
@@ -587,7 +618,7 @@ public sealed class RctManager : RunningConnectionTable
 		if (connectionString == null)
 			return string.Empty;
 
-		if (ShutdownState)
+		if (ShutdownState || EnsuredInstance == null)
 			return connectionString;
 
 
@@ -782,7 +813,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	public static string GetConnectionString(string connectionUrl)
 	{
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 		if (!Instance.TryGetHybridRowValue(connectionUrl, EnRctKeyType.ConnectionUrl, out DataRow row))
@@ -802,7 +833,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	private static string GetDatasetKey(string connectionUrl)
 	{
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 		if (!Instance.TryGetHybridRowValue(connectionUrl, EnRctKeyType.ConnectionUrl, out DataRow row))
@@ -831,7 +862,7 @@ public sealed class RctManager : RunningConnectionTable
 			throw ex;
 		}
 
-		if (ShutdownState)
+		if (ShutdownState || EnsuredInstance == null)
 			return null;
 
 
@@ -881,7 +912,7 @@ public sealed class RctManager : RunningConnectionTable
 			throw ex;
 		}
 
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 
@@ -930,7 +961,7 @@ public sealed class RctManager : RunningConnectionTable
 			throw ex;
 		}
 
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return false;
 
 		if (!Instance.TryGetHybridRowValue(root.DecryptedConnectionString(), EnRctKeyType.ConnectionString, out _))
@@ -989,7 +1020,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	public static bool LoadConfiguredConnections()
 	{
-		return ResolveDeadlocksAndLoadConfiguredConnections(true);
+		return ResolveDeadlocksAndEnsureLoaded(true);
 	}
 
 
@@ -1005,7 +1036,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	public static bool EnsureLoaded()
 	{
-		return ResolveDeadlocksAndLoadConfiguredConnections(false);
+		return ResolveDeadlocksAndEnsureLoaded(false);
 	}
 
 
@@ -1015,7 +1046,7 @@ public sealed class RctManager : RunningConnectionTable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Loads server explorer models on thread pool.
+	/// [Async launch]: Loads server explorer models on thread pool.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private static async Task<bool> InitializeServerExplorerModelsAsync(CancellationToken cancellationToken)
@@ -1067,6 +1098,12 @@ public sealed class RctManager : RunningConnectionTable
 
 
 
+	protected override bool InternalResolveDeadlocksAndEnsureLoaded(bool asynchronous)
+	{
+		return ResolveDeadlocksAndEnsureLoaded(asynchronous);
+	}
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Modifies the name and connection information of Server Explorer's internal
@@ -1080,7 +1117,7 @@ public sealed class RctManager : RunningConnectionTable
 		//	"csa.ConnectionString: {0}, se.DecryptedConnectionString: {1}, modifyExplorerConnection: {2}.",
 		//	csa.ConnectionString, explorerConnection.Connection.DecryptedConnectionString(), modifyExplorerConnection);
 
-		Instance?.EventEnter(false, true);
+		EnsuredInstance?.EventEnter(false, true);
 
 		// finally is unreliable.
 		try
@@ -1150,7 +1187,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	public static string RegisterServer(string serverName, int port)
 	{
-		if (ShutdownState || _Instance == null || !Instance.InternalLoaded)
+		if (ShutdownState || !(Instance?.InternalLoaded ?? false))
 			return serverName;
 
 		return Instance.InternalRegisterServer(serverName, port);
@@ -1181,9 +1218,9 @@ public sealed class RctManager : RunningConnectionTable
 	/// several times during the load.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	private static bool ResolveDeadlocksAndLoadConfiguredConnections(bool asynchronous)
+	private static bool ResolveDeadlocksAndEnsureLoaded(bool asynchronous)
 	{
-		// Tracer.Trace(typeof(RctManager), "ResolveDeadlocksAndLoadConfiguredConnections()", "Instance.Initialized: {0}", Instance._Rct == null);
+		// Tracer.Trace(typeof(RctManager), "ResolveDeadlocksAndLoad()", "Instance.Initialized: {0}", Instance._Rct == null);
 
 		AsyncInitializeServerExplorerModels();
 
@@ -1192,15 +1229,18 @@ public sealed class RctManager : RunningConnectionTable
 
 		_Instance ??= new RctManager();
 
+		RctManager instance = (RctManager)_Instance;
+
+
 		// Rct has not been initialized.
 		if (!Loading && !Loaded)
 		{
-			Instance.InternalLoadConnections();
+			instance.InternalLoadConnections();
 
 			if (asynchronous || !PersistentSettings.IncludeAppConnections || ThreadHelper.CheckAccess())
 				return true;
 
-			Instance.WaitForAsyncLoad();
+			instance.WaitForAsyncLoad();
 
 			return true;
 		}
@@ -1215,13 +1255,13 @@ public sealed class RctManager : RunningConnectionTable
 			// If sync loads are still active we're safe and can wait because no switching
 			// of threads takes place here.
 
-			Instance.WaitForSyncLoad();
+			instance.WaitForSyncLoad();
 
 			// If we're not on the main thread or the async payload is not in a
 			// pending state we can safely wait.
-			if (!ThreadHelper.CheckAccess() || !Instance.AsyncPending)
+			if (!ThreadHelper.CheckAccess() || !instance.AsyncPending)
 			{
-				Instance.WaitForAsyncLoad();
+				instance.WaitForAsyncLoad();
 			}
 			else
 			{
@@ -1229,12 +1269,12 @@ public sealed class RctManager : RunningConnectionTable
 				// Send the async payload a cancel notification and execute the cancelled
 				// async task on the main thread.
 
-				Instance.InternalLoadApplicationConnectionsSync();
+				instance.InternalLoadApplicationConnectionsSync();
 			}
 		}
 
 
-		return Instance.InternalLoaded;
+		return instance.InternalLoaded;
 	}
 
 
@@ -1252,7 +1292,7 @@ public sealed class RctManager : RunningConnectionTable
 			string str = "\nRegistered Datasets: ";
 			object datasetKey;
 
-			foreach (DataRow row in Instance.InternalConnectionsTable.Rows)
+			foreach (DataRow row in EnsuredInstance.InternalConnectionsTable.Rows)
 			{
 				datasetKey = row[CoreConstants.C_KeyExDatasetKey];
 
@@ -1305,7 +1345,7 @@ public sealed class RctManager : RunningConnectionTable
 	public static Csb UpdateOrRegisterConnection(string connectionString,
 		EnConnectionSource source, bool addExplorerConnection, bool modifyExplorerConnection)
 	{
-		if (Instance == null)
+		if (EnsuredInstance == null)
 			return null;
 
 
@@ -1362,7 +1402,7 @@ public sealed class RctManager : RunningConnectionTable
 
 		csa.ConnectionKey = csa.DatasetKey;
 
-		Instance.EventEnter(false, true);
+		EnsuredInstance.EventEnter(false, true);
 
 		try
 		{
@@ -1614,7 +1654,8 @@ public sealed class RctManager : RunningConnectionTable
 			out string uniqueDatasetId);
 
 		/*
-		// Tracer.Trace(typeof(RctManager), "ValidateSiteProperties()", "GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}, createnew: {4}, storedConnectionSource: {5}, changedTargetDatasetKey: {6}, uniqueDatasetKey : {7}, uniqueConnectionName: {8}, uniqueDatasetId: {9}.",
+		// Tracer.Trace(typeof(RctManager), "ValidateSiteProperties()",
+			"GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}, createnew: {4}, storedConnectionSource: {5}, changedTargetDatasetKey: {6}, uniqueDatasetKey : {7}, uniqueConnectionName: {8}, uniqueDatasetId: {9}.",
 			proposedConnectionName, proposedDatasetId, dataSource, dataset, createNew, storedConnectionSource,
 			changedTargetDatasetKey ?? "Null", uniqueDatasetKey ?? "Null",
 			uniqueConnectionName == null ? "Null" : (uniqueConnectionName == string.Empty ? "string.Empty" : uniqueConnectionName),

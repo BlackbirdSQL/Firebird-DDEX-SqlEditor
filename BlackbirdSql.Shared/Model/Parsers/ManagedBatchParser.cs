@@ -116,7 +116,7 @@ public class ManagedBatchParser : IDisposable
 	}
 
 
-	public async Task<bool> ParseAsync(CancellationToken cancelToken)
+	public async Task<bool> ParseAsync(CancellationToken cancelToken, CancellationToken syncToken)
 	{
 		// Tracer.Trace(GetType(), "ParseAsync()");
 
@@ -145,9 +145,9 @@ public class ManagedBatchParser : IDisposable
 				//	_BatchParser.CurrentAction, _BatchParser.Current);
 
 				// ------------------------------------------------------------------------------- //
-				// ******************** Execution Point (6) - ManagedBatchParser.ParseAsync() ******************** //
+				// ************ Execution Point (6) - ManagedBatchParser.ParseAsync() ************ //
 				// ------------------------------------------------------------------------------- //
-				result = await _Executor.BatchStatementCallbackAsync(sqlStatement, 1, cancelToken);
+				result = await _Executor.BatchStatementCallbackAsync(sqlStatement, 1, cancelToken, syncToken);
 
 				// Tracer.Trace(GetType(), "ParseAsync()", "Done Calling BatchStatementCallbackAsync() for ParserAction: {0}, Statement: {1}.",
 				//	_BatchParser.CurrentAction, _BatchParser.Current);
@@ -162,7 +162,8 @@ public class ManagedBatchParser : IDisposable
 				break;
 
 			// Call statistics output
-			RaiseDataLoadedEvent(cancelToken);
+			if (!syncToken.IsCancellationRequested)
+				RaiseDataLoadedEvent(cancelToken);
 
 			if (cancelToken.IsCancellationRequested)
 				break;

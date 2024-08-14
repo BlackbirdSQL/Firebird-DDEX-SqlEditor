@@ -177,9 +177,9 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 	uint ToolboxCmdUICookie { get; }
 
 
-	abstract bool UiAdviseUnsafeEvents();
+	abstract bool AsyeuAdviseUnsafeEvents();
 	Task<bool> AdviseUnsafeEventsAsync();
-	void UiRegisterProjectEventHandlers();
+	void AsyeuRegisterProjectEventHandlers();
 	bool EventRdtEnter(bool test = false, bool force = false);
 	void EventRdtExit();
 	string CreateConnectionUrl(string connectionString);

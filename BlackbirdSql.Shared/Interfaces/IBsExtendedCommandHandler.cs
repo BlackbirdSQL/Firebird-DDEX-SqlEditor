@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 public interface IBsExtendedCommandHandler
 {
-	int OnExec(AbstractTabbedEditorWindowPane editor, ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
+	int OnExec(AbstractTabbedEditorPane editor, ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 
-	int OnQueryStatus(AbstractTabbedEditorWindowPane editor, ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText);
+	int OnQueryStatus(AbstractTabbedEditorPane editor, ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText);
 }

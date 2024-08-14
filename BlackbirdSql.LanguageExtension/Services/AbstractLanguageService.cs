@@ -785,7 +785,7 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 						IDbConnection connection = auxDocData.QryMgr.Strategy.Connection;
 						if (connection != null && !string.IsNullOrEmpty(connection.Database))
 						{
-							smoMetadataProviderProvider.AsyncAddDatabaseToDriftDetectionSet(connection.Database);
+							smoMetadataProviderProvider.AddDatabaseToDriftDetectionSet(connection.Database);
 						}
 					}
 				}

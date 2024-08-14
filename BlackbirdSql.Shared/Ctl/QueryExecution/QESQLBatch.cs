@@ -91,7 +91,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
-	private QEResultSet _ActiveResultSet;
+	private QueryResultSet _ActiveResultSet;
 	private int _BatchIndex;
 	private bool _ContainsErrors = false;
 	private int _ExecTimeout = SysConstants.C_DefaultCommandTimeout;
@@ -212,7 +212,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 
-	protected async Task<EnScriptExecutionResult> ExecuteAsync(IDbConnection conn, CancellationToken cancelToken)
+	public async Task<EnScriptExecutionResult> ExecuteAsync(IDbConnection conn, EnSpecialActions specialActions,
+		CancellationToken cancelToken, CancellationToken syncToken)
 	{
 		// Tracer.Trace(GetType(), "ExecuteAsync()", "conn.State = {0}", conn.State);
 		lock (_LockLocal)
@@ -223,6 +224,12 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				return EnScriptExecutionResult.Cancel;
 			}
 		}
+
+		if (_ActiveResultSet != null)
+			_ActiveResultSet = null;
+
+		_SpecialActions = specialActions;
+
 
 		// Tracer.Trace(GetType(), "ExecuteAsync()", " Creating command - _SpecialActions: " + _SpecialActions);
 
@@ -235,7 +242,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		try
 		{
 			// ----------------------------------------------------------------------------------------- //
-			// ******************** Final Execution Point (11) - QESQLBatch.ExecuteAsync() ******************** //
+			// **************** Final Execution Point (10) - QESQLBatch.ExecuteAsync() ***************** //
 			// ----------------------------------------------------------------------------------------- //
 
 			// Tracer.Trace(GetType(), "ExecuteAsync()", "Async Executing _SqlStatement.");
@@ -276,8 +283,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 				if (result != EnScriptExecutionResult.Failure)
 				{
-					BatchStatementCompletedEventArgs args = new(statementIndex, rowsSelected, totalRowsSelected, false);
-					OnSqlStatementCompleted(_SqlStatement, args);
+					RaiseStatementCompleted(statementIndex, rowsSelected, totalRowsSelected, false);
 
 					// Tracer.Trace(GetType(), "ExecuteAsync()", " ExecuteNonQuery returned!");
 					lock (_LockLocal)
@@ -302,10 +308,14 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				//	_SqlStatement.ExecutionType, _SqlStatement.CurrentAction, _NoResultsExpected,
 				//	rowsAffected, totalRowsAffected, isSpecialAction);
 
-				result = await ProcessReaderAsync(conn, dataReader, isSpecialAction, statementIndex, rowsSelected, totalRowsSelected, true, cancelToken);
+				result = await ProcessReaderAsync(conn, dataReader, isSpecialAction, statementIndex, rowsSelected,
+					totalRowsSelected, true, cancelToken);
 
-				if (!CheckCancelled(cancelToken) && !isSpecialAction && _SqlStatement.CurrentAction == EnSqlStatementAction.ProcessQuery)
+				if (!CheckCancelled(cancelToken) && !isSpecialAction
+					&& _SqlStatement.CurrentAction == EnSqlStatementAction.ProcessQuery)
+				{
 					_SqlStatement.UpdateRowsSelected(_RowsAffected);
+				}
 
 			}
 
@@ -342,9 +352,12 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			HandleSqlMessages(ex.GetErrors(), true);
 
 			_QryMgr.IsCancelling = true;
+			_QryMgr.IsFaulted = true;
+			_QryMgr.IsPrompting = true;
 			_QryMgr.RaiseShowWindowFrame();
 
 			MessageCtl.ShowEx(ex, ex.Message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			_QryMgr.IsPrompting = false;
 			return;
 		}
 
@@ -363,9 +376,12 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			HandleSqlMessages(ex.GetErrors(), true);
 
 			_QryMgr.IsCancelling = true;
+			_QryMgr.IsFaulted = true;
+			_QryMgr.IsPrompting = true;
 			_QryMgr.RaiseShowWindowFrame();
 
 			MessageCtl.ShowEx(ex, ex.Message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			_QryMgr.IsPrompting = false;
 		}
 	}
 
@@ -531,23 +547,6 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 
-	public async Task<EnScriptExecutionResult> ProcessAsync(IDbConnection conn, EnSpecialActions specialActions, CancellationToken cancelToken)
-	{
-		// Tracer.Trace(GetType(), "ProcessAsync()", " ExecutionOptions.EstimatedPlanOnly: " + QryMgr.LiveSettings.EstimatedPlanOnly);
-
-		if (_ActiveResultSet != null)
-			_ActiveResultSet = null;
-
-		_SpecialActions = specialActions;
-
-		// ----------------------------------------------------------------------------------- //
-		// ******************** Execution Point (10) - QESQLBatch.ProcessAsync() ******************** //
-		// ----------------------------------------------------------------------------------- //
-		return await ExecuteAsync(conn, cancelToken);
-	}
-
-
-
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
 	public async Task<EnScriptExecutionResult> ProcessReaderAsync(IDbConnection conn, IDataReader dataReader,
 		bool isSpecialAction, int statementIndex, long rowsSelected, long totalRowsSelected, bool canComplete, CancellationToken cancelToken)
@@ -562,7 +561,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		{
 
 			// ----------------------------------------------------------------------------------------- //
-			// ******************** After Execution Point (12) - Execute() ******************** //
+			// ******************* After Execution Point (11) - ProcessReaderAsync() ******************* //
 			// ----------------------------------------------------------------------------------------- //
 
 
@@ -608,7 +607,9 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 							}
 							catch (Exception ex)
 							{
-								if (ex is not OperationCanceledException && !cancelToken.IsCancellationRequested)
+								if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+									Diag.Expected(ex);
+								else
 									throw;
 							}
 						}
@@ -625,7 +626,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 					// Tracer.Trace(GetType(), "ProcessReaderAsync()", ": processing result set");
 
 					// ------------------------------------------------------------------------------- //
-					// ******************** Output Point (1) - QESQLBatch.ProcessReaderAsync() ******************** //
+					// ************* Output Point (1) - QESQLBatch.ProcessReaderAsync() ************** //
 					// ------------------------------------------------------------------------------- //
 					processingResult = await ProcessResultSetAsync(dataReader, cancelToken);
 
@@ -660,7 +661,9 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 						}
 						catch (Exception ex)
 						{
-							if (ex is not OperationCanceledException && !cancelToken.IsCancellationRequested)
+							if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+								Diag.Expected(ex);
+							else
 								throw;
 						}
 
@@ -689,7 +692,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 					}
 
 					if (!isSpecialAction)
-						OnSqlStatementCompleted(_SqlStatement, new(statementIndex, _RowsAffected, _TotalRowsAffected, false));
+						RaiseStatementCompleted(statementIndex, _RowsAffected, _TotalRowsAffected, false);
 				}
 
 			}
@@ -726,7 +729,9 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 						}
 						catch (Exception ex)
 						{
-							if (ex is not OperationCanceledException && !cancelToken.IsCancellationRequested)
+							if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+								Diag.Expected(ex);
+							else
 								throw;
 						}
 					}
@@ -789,7 +794,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		lock (_LockLocal)
 		{
-			_ActiveResultSet = new QEResultSet(dataReader);
+			_ActiveResultSet = new QueryResultSet(dataReader);
 		}
 
 		try
@@ -803,8 +808,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			// The data reader loads into a mem or disk storage dataset here then notifies
 			// the consumer result set for loading into a grid or text page.
 			// Call sequence: QWSQLBatch.NewResultSetEvent -> IQESQLBatchConsumer.OnNewResultSet
-			// The consumer (AbstractQESQLBatchConsumer DisplaySQLResultsControl.BatchConsumer can be either of:
-			//	ResultsToGridBatchConsumer or ResultsToTextOrFileBatchConsumer
+			// The consumer (AbstractBatchConsumer ResultsHandler.BatchConsumer can be either of:
+			//	GridBatchConsumer or TextOrFileBatchConsumer
 			await NewResultSetEventAsync(this, args);
 
 			_RowsAffected += _ActiveResultSet.TotalNumberOfRows;
@@ -924,27 +929,33 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	// =========================================================================================================
 
 
-	public void OnSqlStatementCompleted(object sender, BatchStatementCompletedEventArgs e)
+	private void RaiseErrorMessage(BatchErrorMessageEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatch.OnSqlStatementCompleted", "", null);
-		StatementCompletedEvent?.Invoke(sender, e);
-
-		if (MessageEvent != null)
-		{
-			RaiseMessage(new(Resources.BatchRowsSelectedMessage.FmtRes(
-				e.StatementIndex+1, e.RowsSelected.ToString(CultureInfo.InvariantCulture),
-				e.TotalRowsSelected.ToString(CultureInfo.InvariantCulture))));
-		}
+		ErrorMessageEvent?.Invoke(this, args);
 	}
+
+
 
 	private void RaiseMessage(BatchMessageEventArgs args)
 	{
 		MessageEvent?.Invoke(this, args);
 	}
 
-	private void RaiseErrorMessage(BatchErrorMessageEventArgs args)
+
+
+	private void RaiseStatementCompleted(int statementIndex, long rowsSelected, long totalRowsSelected, bool isParseOnly)
 	{
-		ErrorMessageEvent?.Invoke(this, args);
+		BatchStatementCompletedEventArgs args = new(statementIndex, rowsSelected, totalRowsSelected, false);
+
+		// Tracer.Trace(GetType(), "QESQLBatch.OnSqlStatementCompleted", "", null);
+		StatementCompletedEvent?.Invoke(_SqlStatement, args);
+
+		if (MessageEvent != null)
+		{
+			RaiseMessage(new(Resources.BatchRowsSelectedMessage.FmtRes(
+				statementIndex + 1, rowsSelected.ToString(CultureInfo.InvariantCulture),
+				totalRowsSelected.ToString(CultureInfo.InvariantCulture))));
+		}
 	}
 
 

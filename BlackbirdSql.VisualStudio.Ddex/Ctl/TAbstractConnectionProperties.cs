@@ -271,7 +271,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 						ConnectionStringBuilder[CoreConstants.C_KeyExEdmx] = true;
 						ConnectionStringBuilder.Remove(CoreConstants.C_KeyExEdmu);
 
-						NativeDb.AsyncReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
+						NativeDb.AsyuiReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
 					}
 				}
 

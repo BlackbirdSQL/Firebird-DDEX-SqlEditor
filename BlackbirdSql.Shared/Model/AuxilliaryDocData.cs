@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Ctl.Config;
-using BlackbirdSql.Shared.Ctl.QueryExecution;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
@@ -35,7 +37,7 @@ namespace BlackbirdSql.Shared.Model;
 /// AuxilliaryDocData is linked to a document's <see cref="IVsTextLines"/> through DocData.
 /// </summary>
 // =========================================================================================================
-public sealed class AuxilliaryDocData
+public sealed class AuxilliaryDocData : IDisposable
 {
 
 	// ---------------------------------------------------
@@ -46,8 +48,9 @@ public sealed class AuxilliaryDocData
 	/// <summary>
 	/// Default .ctor.
 	/// </summary>
-	public AuxilliaryDocData(uint cookie, string documentMoniker, string inflightMoniker, object docData)
+	public AuxilliaryDocData(IBsEditorPackage package, uint cookie, string documentMoniker, string inflightMoniker, object docData)
 	{
+		_ExtensionInstance = package;
 		_DocCookie = cookie;
 		_InternalDocumentMoniker = documentMoniker;
 		_InflightMoniker = inflightMoniker;
@@ -74,13 +77,11 @@ public sealed class AuxilliaryDocData
 				if (_QryMgr != null)
 				{
 					_QryMgr.StatusChangedEvent -= OnQueryManagerStatusChanged;
-					_QryMgr.ExecutionStartedEvent -= OnQueryExecutionStarted;
-					_QryMgr.ExecutionCompletedEvent -= OnQueryExecutionCompleted;
+					_QryMgr.ExecutionStartedEventAsync -= OnQueryExecutionStartedAsync;
+					_QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
 					_QryMgr.NotifyConnectionStateEvent -= OnNotifyConnectionState;
 					_QryMgr.InvalidateToolbarEvent -= OnInvalidateToolbar;
 					_QryMgr.ShowWindowFrameEvent -= OnShowWindowFrame;
-
-					NotifyConnectionStateEvent -= _QryMgr.OnNotifyConnectionState;
 
 					_QryMgr.Dispose();
 					_QryMgr = null;
@@ -118,13 +119,13 @@ public sealed class AuxilliaryDocData
 	private readonly object _DocData;
 	private uint _DocCookie;
 	private int _CloneCardinal = 0;
+	private readonly IBsEditorPackage _ExtensionInstance = null;
 	private string _InflightMoniker;
 	private bool? _IntellisenseEnabled;
 	private string _InternalDocumentMoniker;
 	private QueryManager _QryMgr;
 	// private IBsConnectionStrategyFactory _StrategyFactory;
 
-	private NotifyConnectionStateEventHandler _NotifyConnectionStateEvent = null;
 
 	#endregion Fields
 
@@ -207,10 +208,10 @@ public sealed class AuxilliaryDocData
 	}
 
 
-	public EnSqlExecutionType ExecutionType
-	{
-		get { return QryMgr.LiveSettings.ExecutionType; }
-	}
+
+	public EnSqlExecutionType ExecutionType => QryMgr.LiveSettings.ExecutionType;
+
+	public IBsEditorPackage ExtensionInstance => _ExtensionInstance;
 
 
 	public string InflightMoniker => _InflightMoniker;
@@ -305,36 +306,27 @@ public sealed class AuxilliaryDocData
 	}
 
 
-	public QueryManager CreateQueryManager(Csb csb, EnEditorCreationFlags creationFlags)
+	public QueryManager CreateQueryManager(IBsCsb csb = null)
 	{
-		ConnectionStrategy strategy = new();
-
-		if ((creationFlags & EnEditorCreationFlags.CreateConnection) > 0)
+		try
 		{
-			try
-			{
-				ModelCsb mdlCsb = new ModelCsb(csb);
-				mdlCsb.CreateDataConnection();
-				strategy.LiveMdlCsb = mdlCsb;
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw;
-			}
+			ConnectionStrategy strategy = new();
+
+			_QryMgr = new QueryManager(strategy);
+			_QryMgr.StatusChangedEvent += OnQueryManagerStatusChanged;
+			_QryMgr.ExecutionStartedEventAsync += OnQueryExecutionStartedAsync;
+			_QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
+			_QryMgr.NotifyConnectionStateEvent += OnNotifyConnectionState;
+			_QryMgr.InvalidateToolbarEvent += OnInvalidateToolbar;
+			_QryMgr.ShowWindowFrameEvent += OnShowWindowFrame;
+
+			strategy.Initialize(csb, OnInvalidateToolbar, OnNotifyConnectionState);
 		}
-
-		_QryMgr = new QueryManager(strategy);
-		_QryMgr.StatusChangedEvent += OnQueryManagerStatusChanged;
-		_QryMgr.ExecutionStartedEvent += OnQueryExecutionStarted;
-		_QryMgr.ExecutionCompletedEvent += OnQueryExecutionCompleted;
-		_QryMgr.NotifyConnectionStateEvent += OnNotifyConnectionState;
-		_QryMgr.InvalidateToolbarEvent += OnInvalidateToolbar;
-		_QryMgr.ShowWindowFrameEvent += OnShowWindowFrame;
-
-		NotifyConnectionStateEvent += QryMgr.OnNotifyConnectionState;
-
-		strategy.InitializeKeepAlive(OnInvalidateToolbar, OnNotifyConnectionState);
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 
 		return _QryMgr;
 	}
@@ -347,7 +339,7 @@ public sealed class AuxilliaryDocData
 		}
 		set
 		{
-			// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SqlOutputMode", "value = {0}", value);
+			// Tracer.Trace(GetType(), "set_SqlOutputMode", "value = {0}", value);
 			if (QryMgr.IsLocked)
 			{
 				InvalidOperationException ex = new(Resources.ExSqlExecutionModeChangeFailed);
@@ -433,12 +425,6 @@ public sealed class AuxilliaryDocData
 	public event EventHandler<SqlExecutionModeChangedEventArgs> SqlExecutionModeChangedEvent;
 	public event EventHandler<LiveSettingsChangedEventArgs> LiveSettingsChangedEvent;
 
-	public event NotifyConnectionStateEventHandler NotifyConnectionStateEvent
-	{
-		add { _NotifyConnectionStateEvent += value; }
-		remove { _NotifyConnectionStateEvent -= value; }
-	}
-
 
 	#endregion Property Accessors
 
@@ -458,7 +444,41 @@ public sealed class AuxilliaryDocData
 
 
 
-	public int AddClone() => ++_CloneCardinal;
+	public int CloneAdd() => ++_CloneCardinal;
+	public int CloneRemove() => --_CloneCardinal;
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// [Launch ensure UI thread]: Switches toi the query's window.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public void AsyeuShowWindowFrame()
+	{
+		if (DocCookie == 0)
+			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and wait.
+
+			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+				RdtManager.ShowFrame(_DocCookie);
+
+				return true;
+			});
+
+		}
+		else
+		{
+			RdtManager.ShowFrame(_DocCookie);
+		}
+	}
+
 
 
 	public void CommitTransactions(bool validate)
@@ -530,14 +550,34 @@ public sealed class AuxilliaryDocData
 		if (QryMgr == null)
 			return true;
 
+		if (!QryMgr.IsExecuting && !QryMgr.LiveTransactions)
+			return true;
+
+
 		bool inAutomation = UnsafeCmd.IsInAutomationFunction();
+
+		/*
+		bool isClone = false;
+		bool isHost = false;
+
+		if (HasClone)
+		{
+			if (_ExtensionInstance.TryGetTabbedEditorService(DocCookie,
+				false, out IBsEditorPaneServiceProvider windowPane))
+			{
+				isHost = !windowPane.IsClone;
+				isClone = windowPane.IsClone;
+			}
+		}
+		*/
+
 		DialogResult dialogResult = DialogResult.Yes;
 
 		if (QryMgr.IsExecuting)
 		{
 			if (!inAutomation)
 			{
-				ShowWindowFrame();
+				AsyeuShowWindowFrame();
 				msgResource ??= Resources.MsgAbortExecutionAndClose;
 				dialogResult = MessageCtl.ShowEx(msgResource,
 					Resources.MsgQueryAbort_IsExecutingCaption,
@@ -546,7 +586,7 @@ public sealed class AuxilliaryDocData
 
 
 			if (dialogResult == DialogResult.No)
-				return true;
+				return false;
 
 			if (QryMgr.IsExecuting)
 				QryMgr.Cancel(true);
@@ -554,18 +594,22 @@ public sealed class AuxilliaryDocData
 		}
 		else if (QryMgr.HasTransactions)
 		{
-			if (HasClone)
+			/*
+			if (isClone)
 			{
-				_CloneCardinal--;
+				CloneRemove();
 				return true;
 			}
+			*/
 
 			dialogResult = DialogResult.No;
 
 			if (!inAutomation)
 			{
-				ShowWindowFrame();
+				AsyeuShowWindowFrame();
+
 				msgResource ??= Resources.MsgQueryAbort_UncommittedTransactionsClose;
+
 				dialogResult = MessageCtl.ShowEx(msgResource,
 					Resources.MsgQueryAbort_UncommittedTransactionsCaption,
 					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
@@ -588,8 +632,20 @@ public sealed class AuxilliaryDocData
 			}
 		}
 
+
 		return true;
 	}
+
+
+
+	public void RollbackTransactions(bool validate)
+	{
+		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked)
+			return;
+
+		QryMgr.RollbackTransactions(validate);
+	}
+
 
 
 	public static bool ShowAbortExecutionsCloseAllDialog(Dictionary<AuxilliaryDocData, string> docs)
@@ -608,7 +664,7 @@ public sealed class AuxilliaryDocData
 			foreach (KeyValuePair<AuxilliaryDocData, string> pair in docs)
 			{
 				string str;
-				string datasetKey = pair.Key.QryMgr.Strategy.AdornedQualifiedName;
+				string datasetKey = pair.Key.QryMgr.Strategy.AdornedQualifiedTitle;
 
 				if (pair.Key.IsVirtualWindow)
 				{
@@ -671,7 +727,7 @@ public sealed class AuxilliaryDocData
 			foreach (KeyValuePair<AuxilliaryDocData, string> pair in docs)
 			{
 				string str;
-				string datasetKey = pair.Key.QryMgr.Strategy.AdornedQualifiedName;
+				string datasetKey = pair.Key.QryMgr.Strategy.AdornedQualifiedTitle;
 
 				if (pair.Key.IsVirtualWindow)
 				{
@@ -728,24 +784,6 @@ public sealed class AuxilliaryDocData
 
 
 
-
-	public void RollbackTransactions(bool validate)
-	{
-		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsLocked)
-		{
-			return;
-		}
-
-		if (validate && !QryMgr.GetUpdatedTransactionsStatus(true))
-		{
-			return;
-		}
-
-		QryMgr.RollbackTransactions(validate);
-	}
-
-
-
 	/// <summary>
 	/// For performance. Sets a reference to the AuxilliaryDocData in DocData.
 	/// </summary>
@@ -780,33 +818,6 @@ public sealed class AuxilliaryDocData
 
 
 
-	public void ShowWindowFrame()
-	{
-		if (DocCookie == 0)
-			return;
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			// Fire and wait.
-
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-				RdtManager.ShowFrame(_DocCookie);
-
-				return true;
-			});
-
-		}
-		else
-		{
-			RdtManager.ShowFrame(_DocCookie);
-		}
-	}
-
-
-
 	public void UpdateLiveSettingsState(IBsEditorTransientSettings liveSettings)
 	{
 		QryMgr.LiveSettingsApplied = false;
@@ -828,17 +839,17 @@ public sealed class AuxilliaryDocData
 	public void OnInvalidateToolbar(object sender, EventArgs args)
 	{
 		if (DocCookie != 0)
-			RdtManager.InvalidateToolbar(_DocCookie);
+			RdtManager.AsyeuInvalidateToolbar(_DocCookie);
 	}
 
 
 
 	public bool OnNotifyConnectionState(object sender, NotifyConnectionStateEventArgs args)
 	{
+		bool isUnlocked = QryMgr?.NotifyConnectionState(args.State) ?? false;
+
 		if (args.State > EnNotifyConnectionState.NotifyEnumEndMarker)
-		{
-			return _NotifyConnectionStateEvent?.Invoke(sender, args) ?? true;
-		}
+			return isUnlocked;
 
 
 		string name;
@@ -859,7 +870,7 @@ public sealed class AuxilliaryDocData
 		string datasetKey = QryMgr?.Strategy?.MdlCsb?.DatasetKey;
 
 		if (datasetKey == null)
-			return true;
+			return isUnlocked;
 
 
 		string msg;
@@ -889,27 +900,28 @@ public sealed class AuxilliaryDocData
 					datasetKey, ttsMsg, name);
 				break;
 			default:
-				return true;
+				return isUnlocked;
 		}
 
 
-		Diag.AsyncOutputPaneWriteLine(msg, true);
+		Diag.AsyuiOutputPaneWriteLine(msg, true);
 
-		return true;
+		return isUnlocked;
 	}
 
 
 
-	private void OnQueryManagerStatusChanged(object sender, QueryStatusChangedEventArgs args)
+	private void OnQueryManagerStatusChanged(object sender, QueryStateChangedEventArgs args)
 	{
 		lock (_LockLocal)
 		{
-			if (args.StatusFlag != EnQueryStatusFlags.Connected)
+			if (!args.IsStateConnected)
 				return;
 
+			// Tracer.Trace(GetType(), "OnQueryManagerStatusChanged()", "IN");
 
 			IVsUserData vsUserData = VsUserData;
-			if (QryMgr.IsConnected)
+			if (args.Value)
 			{
 				IDbConnection connection = QryMgr.Strategy.Connection;
 
@@ -935,52 +947,57 @@ public sealed class AuxilliaryDocData
 
 
 
-	private void OnQueryExecutionCompleted(object sender, QueryExecutionCompletedEventArgs args)
+	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
 	{
-		if (args.SyncCancel)
-			return;
+		// if (args.CancelToken.IsCancellationRequested)
+		//	return;
 
-		string connectionUrl = null;
-		IDbConnection connection = QryMgr.Strategy.Connection;
-
-		if (connection != null)
-			connectionUrl = Csb.CreateConnectionUrl(connection);
-
-		EnNullEquality nullEquality = Cmd.NullEquality(_ConnectionUrlAtExecutionStart, connectionUrl);
-
-		if (nullEquality == EnNullEquality.NotNulls)
+		if (!args.SyncToken.IsCancellationRequested)
 		{
-			nullEquality = connectionUrl.Equals(_ConnectionUrlAtExecutionStart, StringComparison.Ordinal)
-				? EnNullEquality.Equal : EnNullEquality.UnEqual;
-		}
+			string connectionUrl = null;
+			IDbConnection connection = QryMgr.Strategy.Connection;
 
-		if (nullEquality == EnNullEquality.UnEqual)
-		{
-			IVsUserData vsUserData = VsUserData;
-			if (vsUserData != null)
+			if (connection != null)
+				connectionUrl = Csb.CreateConnectionUrl(connection);
+
+			EnNullEquality nullEquality = Cmd.NullEquality(_ConnectionUrlAtExecutionStart, connectionUrl);
+
+			if (nullEquality == EnNullEquality.NotNulls)
 			{
-				Guid riidKey = VS.CLSID_PropDatabaseChanged;
-				___(vsUserData.SetData(ref riidKey, connectionUrl));
+				nullEquality = connectionUrl.Equals(_ConnectionUrlAtExecutionStart, StringComparison.Ordinal)
+					? EnNullEquality.Equal : EnNullEquality.UnEqual;
+			}
+
+			if (nullEquality == EnNullEquality.UnEqual)
+			{
+				IVsUserData vsUserData = VsUserData;
+				if (vsUserData != null)
+				{
+					Guid riidKey = VS.CLSID_PropDatabaseChanged;
+					___(vsUserData.SetData(ref riidKey, connectionUrl));
+				}
 			}
 		}
 
 		_ConnectionUrlAtExecutionStart = null;
+
+		return await Cmd.AwaitableAsync(true);
 	}
 
 
-	private bool OnQueryExecutionStarted(object sender, QueryExecutionStartedEventArgs args)
+	private async Task<bool> OnQueryExecutionStartedAsync(object sender, ExecutionStartedEventArgs args)
 	{
 		if (args.Connection != null)
 			_ConnectionUrlAtExecutionStart = Csb.CreateConnectionUrl(args.Connection);
 		else
 			_ConnectionUrlAtExecutionStart = null;
 
-		return true;
+		return await Cmd.AwaitableAsync(true);
 	}
 
 
 
-	public void OnShowWindowFrame(object sender, EventArgs args) => ShowWindowFrame();
+	public void OnShowWindowFrame(object sender, EventArgs args) => AsyeuShowWindowFrame();
 
 
 	#endregion Event Handling

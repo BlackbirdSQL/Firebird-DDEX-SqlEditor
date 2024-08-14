@@ -145,7 +145,7 @@ public class TConnectionUIProperties : TConnectionProperties
 					ConnectionStringBuilder.Remove(CoreConstants.C_KeyExEdmx);
 					ConnectionStringBuilder[CoreConstants.C_KeyExEdmu] = true;
 
-					NativeDb.AsyncReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
+					NativeDb.AsyuiReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
 				}
 
 

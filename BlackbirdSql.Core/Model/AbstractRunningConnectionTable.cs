@@ -451,8 +451,11 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	// ---------------------------------------------------------------------------------
 	protected Csb InternalUpdateRegisteredConnection(string connectionString, EnConnectionSource source, bool forceOwnership)
 	{
-		if (_InternalConnectionsTable == null)
-			return null;
+		lock (_LockObject)
+		{
+			if (_InternalConnectionsTable == null)
+				return null;
+		}
 
 		if (connectionString == null)
 		{

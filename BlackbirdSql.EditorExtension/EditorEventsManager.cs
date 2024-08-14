@@ -125,6 +125,8 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		InitializeUnsafeImpl();
 	}
 
+
+
 	private async Task<bool> InitializeUnsafeAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -133,6 +135,8 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 		return true;
 	}
+
+
 
 	private bool InitializeUnsafeImpl()
 	{
@@ -345,14 +349,13 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	/// Cleans up any SE sql editor documents that may have been left dangling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool CleanupTemporarySqlItems(IVsHierarchy projectHierarchy, bool force)
+	private bool CleanupTemporarySqlItems(IVsHierarchy projectHierarchy)
 	{
 		IDictionary<ProjectItem, object> tempSqlItems = UnsafeCmd.GetOpenMiscProjectItems(projectHierarchy, [NativeDb.Extension], Path.GetTempPath());
 
 		// Tracer.Trace(GetType(), "CleanupTemporarySqlItems()", "Count: {0}.", tempSqlItems.Count);
 
 		bool result = false;
-		AuxilliaryDocData auxDocData;
 		ProjectItem item;
 
 		foreach (KeyValuePair<ProjectItem, object> pair in tempSqlItems)
@@ -360,27 +363,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			// Tracer.Trace(GetType(), "CleanupTemporarySqlItems()", "Deleting project item: {0}.", projectItem.Name);
 
 			item = pair.Key;
-
-			if (!force)
-			{
-				auxDocData = EditorPackage.GetAuxilliaryDocData(pair.Value);
-
-				if (auxDocData?.QryMgr?.GetUpdatedTransactionsStatus(true) ?? false)
-				{
-					// Fire and forget
-
-					Task.Factory.StartNew(
-						async () =>
-						{
-							await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-							RdtManager.InvalidateToolbar(auxDocData.DocCookie);
-						},
-						default, TaskCreationOptions.PreferFairness, TaskScheduler.Default).Forget();
-
-					continue;
-				}
-			}
-
 
 			try
 			{
@@ -504,7 +486,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 					if (auxDocData == null || auxDocData.QryMgr == null)
 						continue;
 
-					if (auxDocData.QryMgr.GetUpdatedTransactionsStatus(true))
+					if (auxDocData.QryMgr.LiveTransactions)
 					{
 						if (auxDocData.IsVirtualWindow)
 						{
@@ -669,7 +651,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		if (docInfo.IsDocumentInitialized
 			&& __(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar)))
 		{
-			if (pvar is TabbedEditorWindowPane sqlEditorTabbedEditorPane
+			if (pvar is TabbedEditorPane sqlEditorTabbedEditorPane
 				&& sqlEditorTabbedEditorPane == EditorPackage.LastFocusedSqlEditor)
 			{
 				EditorPackage.LastFocusedSqlEditor = null;
@@ -719,7 +701,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		if (!__(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar)))
 			return VSConstants.S_OK;
 
-		if (pvar is TabbedEditorWindowPane sqlEditorTabbedEditorPane)
+		if (pvar is TabbedEditorPane sqlEditorTabbedEditorPane)
 			EditorPackage.LastFocusedSqlEditor = sqlEditorTabbedEditorPane;
 
 		return VSConstants.S_OK;
@@ -830,7 +812,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 		try
 		{
-			CleanupTemporarySqlItems(hierarchy, true);
+			CleanupTemporarySqlItems(hierarchy);
 		}
 		finally
 		{
