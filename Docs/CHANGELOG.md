@@ -2,6 +2,15 @@
 
 ## Change log
 
+### v14.1.0.1 Patch to support FirebirdClient versions prior to 6.0.0.
+
+#### New / Enhancements
+- Implemented support for legacy projects using FirebirdClient and EntityFramework versions prior to 6.0.0.
+#### Fixes
+- None.
+
+
+
 ### v14.1.0.0 Residual VS Solution Merge peculiarities addressed.
 
 Solution merges typically occur by default when a solution is directly opened from the `No Solution` context / environment, and you have open documents. These documents are not discarded but rather merged into the newly opened solution. There are no directly available events fired when the IDE transitions out of a `No Solution` context, so we need to ensure that the integrity of the extension's __Running Connection Table__, __Inflight Document Table__, __KeepAlive Monitor__, __Active Transactions__ and __Executing Queries__ is maintained during these transitions. 
