@@ -61,18 +61,11 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 	{
 		// Connection specific describers.
 
-		try
-		{
-			Describers.AddRange(
-			[
-				new Describer(C_KeyExDataConnection, typeof(DbConnection), C_DefaultExDataConnection, D_Internal),
-				new Describer(C_KeyExDataTransaction, typeof(DbTransaction), C_DefaultExDataTransaction, D_Internal)
-			]);
-		}
-		catch (Exception ex)
-		{
-			Diag.DebugDug(ex);
-		}
+		Describers.AddRange(
+		[
+			new Describer(C_KeyExDataConnection, typeof(DbConnection), C_DefaultExDataConnection, D_Internal),
+			new Describer(C_KeyExDataTransaction, typeof(DbTransaction), C_DefaultExDataTransaction, D_Internal)
+		]);
 
 		// Diag.DebugTrace("Added connection describers");
 	}

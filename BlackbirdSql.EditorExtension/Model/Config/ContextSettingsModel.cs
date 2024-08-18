@@ -18,12 +18,11 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for Pane context options
 /// </summary>
 // =========================================================================================================
-public class ContextSettingsModel(IBsTransientSettings transientSettings)
-	: AbstractSettingsModel<ContextSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class ContextSettingsModel : AbstractSettingsModel<ContextSettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - ContextSettingsModel
+	#region Constructors / Destructors - ContextSettingsModel
 	// ---------------------------------------------------------------------------------
 
 
@@ -32,7 +31,13 @@ public class ContextSettingsModel(IBsTransientSettings transientSettings)
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	public ContextSettingsModel(IBsTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
+	{
+	}
+
+
+	#endregion Constructors / Destructors
 
 
 
@@ -44,7 +49,7 @@ public class ContextSettingsModel(IBsTransientSettings transientSettings)
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "Context";
-	private const string C_LivePrefix = "EditorContext";
+	private const string C_PropertyPrefix = "EditorContext";
 
 
 	#endregion Constants
@@ -82,8 +87,8 @@ public class ContextSettingsModel(IBsTransientSettings transientSettings)
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayContextBatchSeparator")]
 	[GlobalizedDescription("OptionDescriptionContextBatchSeparator")]
-	[DefaultValue(SysConstants.C_DefaultBatchSeparator)]
-	public string BatchSeparator { get; set; } = SysConstants.C_DefaultBatchSeparator;
+	[DefaultValue(SharedConstants.C_DefaultBatchSeparator)]
+	public string BatchSeparator { get; set; } = SharedConstants.C_DefaultBatchSeparator;
 
 
 	#endregion Property Accessors

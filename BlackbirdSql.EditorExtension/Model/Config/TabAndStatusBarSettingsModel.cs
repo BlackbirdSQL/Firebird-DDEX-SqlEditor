@@ -25,12 +25,11 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for Tabs ad Statuc bar options
 /// </summary>
 // =========================================================================================================
-public class TabAndStatusBarSettingsModel(IBsTransientSettings transientSettings)
-	: AbstractSettingsModel<TabAndStatusBarSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class TabAndStatusBarSettingsModel : AbstractSettingsModel<TabAndStatusBarSettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - TabAndStatusBarSettingsModel
+	#region Constructors / Destructors - TabAndStatusBarSettingsModel
 	// ---------------------------------------------------------------------------------
 
 
@@ -39,7 +38,13 @@ public class TabAndStatusBarSettingsModel(IBsTransientSettings transientSettings
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	public TabAndStatusBarSettingsModel(IBsTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
+	{
+	}
+
+
+	#endregion Constructors / Destructors
 
 
 
@@ -51,7 +56,7 @@ public class TabAndStatusBarSettingsModel(IBsTransientSettings transientSettings
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "TabAndStatusBar";
-	private const string C_LivePrefix = "EditorStatus";
+	private const string C_PropertyPrefix = "EditorStatus";
 	private const string C_DefaultControlColor = "Control";
 
 

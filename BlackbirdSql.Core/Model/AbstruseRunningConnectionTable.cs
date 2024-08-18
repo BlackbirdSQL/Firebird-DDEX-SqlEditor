@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
@@ -222,6 +223,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			&& _AsyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Shutdown
 			&& _AsyncPayloadLauncher != null && !_AsyncPayloadLauncher.IsCompleted
 			&& !_AsyncPayloadLauncherToken.IsCancellationRequested;
+
+
+	private bool AsyncPending => _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Pending;
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -1433,7 +1438,148 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	}
 
 
-	
+
+
+
+
+	protected bool InternalResolveDeadlocksAndEnsureLoaded(bool asynchronous)
+	{
+		// Tracer.Trace(typeof(RctManager), "ResolveDeadlocksAndLoad()", "Instance.Initialized: {0}", Instance._Rct == null);
+
+
+		if (!InternalLoading && !_InternalLoaded)
+		{
+			// Rct has not been initialized.
+
+			InternalLoadConnections();
+
+			if (asynchronous || !PersistentSettings.IncludeAppConnections || ThreadHelper.CheckAccess())
+				return true;
+
+			WaitForAsyncLoad();
+
+			return true;
+		}
+		// Asynchronous request. Rct has been initialized or is loading, so just exit.
+		else if (asynchronous)
+		{
+			return false;
+		}
+		// Synchronous request and loading - deadlock red zone.
+		else if (InternalLoading)
+		{
+			// If sync loads are still active we're safe and can wait because no switching
+			// of threads takes place here.
+
+			WaitForSyncLoad();
+
+			// If we're not on the main thread or the async payload is not in a
+			// pending state we can safely wait.
+			if (!ThreadHelper.CheckAccess() || !AsyncPending)
+			{
+				WaitForAsyncLoad();
+			}
+			else
+			{
+				// We're on the main thread and async is pending. This is a deadlock red zone.
+				// Send the async payload a cancel notification and execute the cancelled
+				// async task on the main thread.
+
+				InternalLoadApplicationConnectionsSync();
+			}
+		}
+
+
+		return _InternalLoaded;
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Get the internal connection data row given the ConnectionUrl, ConnectionString,
+	/// DatasetKey or DatasetKey synonym.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected bool InternalTryGetHybridRowValue(string hybridKey, EnRctKeyType keyType, out DataRow value)
+	{
+		lock (_LockObject)
+		{
+			if (hybridKey == null || _InternalConnectionsTable == null)
+			{
+				value = null;
+				return false;
+			}
+		}
+
+
+		// Tracer.Trace(GetType(), "TryGetHybridRowValue()", "hybridKey: {0}", hybridKey);
+
+
+		if (keyType == EnRctKeyType.ConnectionString)
+		{
+			Csb csa = new(hybridKey, false);
+			hybridKey = csa.Moniker;
+			keyType = EnRctKeyType.ConnectionUrl;
+		}
+
+
+		if (keyType == EnRctKeyType.ConnectionUrl)
+		{
+			lock (_LockObject)
+			{
+				DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[C_KeyExConnectionUrl])).ToArray();
+
+				value = rows.Length > 0 ? rows[0] : null;
+			}
+
+			// if (value == null)
+			//	Tracer.Trace(GetType(), "TryGetHybridRowValue()", "FAILED Final hybridKey: {0}", hybridKey);
+		}
+		else if (keyType == EnRctKeyType.AdornedQualifiedName)
+		{
+			lock (_LockObject)
+			{
+				DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[C_KeyExAdornedQualifiedName])).ToArray();
+
+				value = rows.Length > 0 ? rows[0] : null;
+			}
+
+			// if (value == null)
+			//	Tracer.Trace(GetType(), "TryGetHybridRowValue()", "FAILED Final hybridKey: {0}", hybridKey);
+		}
+		else if (keyType == EnRctKeyType.AdornedQualifiedTitle)
+		{
+			lock (_LockObject)
+			{
+				DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[C_KeyExAdornedQualifiedTitle])).ToArray();
+
+				value = rows.Length > 0 ? rows[0] : null;
+			}
+
+			// if (value == null)
+			//	Tracer.Trace(GetType(), "TryGetHybridRowValue()", "FAILED Final hybridKey: {0}", hybridKey);
+		}
+		else
+		{
+			if (TryGetEntry(hybridKey, out int id))
+			{
+				lock (_LockObject)
+					value = _InternalConnectionsTable.Rows.Find(id);
+			}
+			else
+			{
+				value = null;
+			}
+		}
+
+		return value != null;
+
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Executes the sync configuration loader's wait task.
@@ -1917,14 +2063,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			csa.DatasetKey = uniqueDatasetKey;
 
 			if (uniqueConnectionName == null && proposedConnectionName == null)
-				csa.Remove(SysConstants.C_KeyExConnectionName);
+				csa.Remove(C_KeyExConnectionName);
 			else if (!string.IsNullOrEmpty(uniqueConnectionName))
 				csa.ConnectionName = uniqueConnectionName;
 			else
 				csa.ConnectionName = proposedConnectionName;
 
 			if (uniqueDatasetId == null && proposedDatasetId == null)
-				csa.Remove(SysConstants.C_KeyExDatasetId);
+				csa.Remove(C_KeyExDatasetId);
 			else if (!string.IsNullOrEmpty(uniqueDatasetId))
 				csa.DatasetId = uniqueDatasetId;
 			else
@@ -1978,46 +2124,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	}
 
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Removes a connection given the ConnectionUrl or DatasetKey
-	/// or DatsetKey synonym.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override bool Remove(string key)
-	{
-		lock (_LockObject)
-		{
-			if (key == null || _InternalConnectionsTable == null)
-				return false;
-		}
-
-
-		if (!TryGetHybridInternalRowValue(key, out DataRow row))
-			return false;
-
-
-		int id = Convert.ToInt32(row["Id"]);
-
-		foreach (KeyValuePair<string, int> pair in this)
-		{
-			if (pair.Value == id)
-				RemoveEntry(pair.Key);
-		}
-
-		BeginLoadData(true);
-
-		lock (_LockObject)
-			_InternalConnectionsTable.Rows.Remove(row);
-
-		InternalInvalidate();
-
-		EndLoadData();
-
-		return true;
-
-	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -2114,62 +2220,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		_SyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Inactive;
 
 		return true;
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Get the internal connection data row given the ConnectionUrl, ConnectionString,
-	/// DatasetKey or DatasetKey synonym.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected bool TryGetHybridInternalRowValue(string hybridKey, out DataRow value)
-	{
-		lock (_LockObject)
-		{
-			if (hybridKey == null || _InternalConnectionsTable == null)
-			{
-				value = null;
-				return false;
-			}
-		}
-
-		bool isConnectionUrl = hybridKey.StartsWith(_Scheme);
-
-		if (!isConnectionUrl &&
-			(hybridKey.StartsWith("data source=", StringComparison.InvariantCultureIgnoreCase)
-			|| hybridKey.ToLowerInvariant().Contains(";data source=")))
-		{
-			hybridKey = Csb.CreateConnectionUrl(hybridKey);
-			isConnectionUrl = true;
-		}
-
-		if (isConnectionUrl)
-		{
-			DataRow[] rows = null;
-
-			lock (_LockObject)
-				rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExConnectionUrl])).ToArray();
-
-
-			value = rows.Length > 0 ? rows[0] : null;
-		}
-		else
-		{
-			if (TryGetEntry(hybridKey, out int id))
-			{
-				lock (_LockObject)
-					value = _InternalConnectionsTable.Rows.Find(id);
-			}
-			else
-			{
-				value = null;
-			}
-		}
-
-		return value != null;
 
 	}
 

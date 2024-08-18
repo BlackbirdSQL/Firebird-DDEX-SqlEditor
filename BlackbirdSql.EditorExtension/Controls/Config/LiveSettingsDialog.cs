@@ -1,6 +1,7 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ToolsOptions.CurrentWndOptions
 
+using System;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Controls.Config;
 using BlackbirdSql.Core.Interfaces;
@@ -17,7 +18,16 @@ public sealed class LiveSettingsDialog : AbstractTransientSettingsDialog
 		: base(AttributeResources.IconProperties16x, VsFontColorPreferences.EnvironmentFont)
 	{
 		InitializeComponent();
-		InitializeDialog(settings);
+
+		try
+		{
+			InitializeDialog(settings);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 	}
 
 	protected override void Dispose(bool disposing)

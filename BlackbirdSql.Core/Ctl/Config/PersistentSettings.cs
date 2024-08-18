@@ -27,11 +27,76 @@ public abstract class PersistentSettings : IBsPersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Fields
+	#region Constructors / Destructors - PersistentSettings
 	// ---------------------------------------------------------------------------------
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Protected singleton .ctor
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected PersistentSettings()
+	{
+		if (_Instance != null)
+		{
+			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes(GetType().FullName));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		_Instance = this;
+	}
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Private live .ctor
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected PersistentSettings(bool live)
+	{
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the singleton PersistentSettings instance
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static IBsPersistentSettings Instance
+	{
+		get
+		{
+			if (_Instance == null)
+			{
+				NullReferenceException ex = new("Cannot instantiate PersistentSettings from abstract ancestor");
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			return _Instance;
+		}
+	}
+
+
+	protected abstract void Initialize();
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields
+	// =========================================================================================================
+
+	protected static readonly object _LockGlobal = new object();
+	protected readonly object _LockObject = new object();
 	protected static IBsPersistentSettings _Instance = null;
-	protected static Dictionary<string, object> _SettingsStore;
+	protected static Dictionary<string, object> _SettingsStore = null;
 
 	#endregion Fields
 
@@ -49,7 +114,7 @@ public abstract class PersistentSettings : IBsPersistentSettings
 		{
 			object value = null;
 
-			_SettingsStore?.TryGetValue(name, out value);
+			SettingsStore?.TryGetValue(name, out value);
 
 			return value;
 		}
@@ -61,7 +126,19 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	}
 
 
-	protected static Dictionary<string, object> SettingsStore => _SettingsStore ??= [];
+	public static Dictionary<string, object> SettingsStore
+	{
+		get
+		{
+			lock (_LockGlobal)
+			{
+				if (_SettingsStore == null)
+					((PersistentSettings)Instance).Initialize();
+
+				return _SettingsStore;
+			}
+		}
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -189,64 +266,6 @@ public abstract class PersistentSettings : IBsPersistentSettings
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - PersistentSettings
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private singleton .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected PersistentSettings()
-	{
-		if (_Instance != null)
-		{
-			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes(GetType().FullName));
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-
-		_Instance = this;
-	}
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private live .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected PersistentSettings(bool live)
-	{
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the singleton PersistentSettings instance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static IBsPersistentSettings Instance
-	{
-		get
-		{
-			if (_Instance == null)
-			{
-				NullReferenceException ex = new("Cannot instantiate PersistentSettings from abstract ancestor");
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			return _Instance;
-		}
-	}
-
-
-	#endregion Constructors / Destructors
-
-
-
-	// =========================================================================================================
 	#region Methods - PersistentSettings
 	// =========================================================================================================
 
@@ -255,7 +274,7 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	{
 		try
 		{
-			if (_SettingsStore == null || !_SettingsStore.TryGetValue(name, out object value))
+			if (!SettingsStore.TryGetValue(name, out object value))
 				value = defaultValue;
 
 			return value;
@@ -339,7 +358,7 @@ public abstract class PersistentSettings : IBsPersistentSettings
 
 		if (e.Package == null && e.Group == null)
 		{
-				List<string> equivalencyKeys = [];
+			List<string> equivalencyKeys = [];
 
 			foreach (MutablePair<string, object> pair in e.Arguments)
 			{
@@ -347,8 +366,14 @@ public abstract class PersistentSettings : IBsPersistentSettings
 					equivalencyKeys.Add(pair.Key[15..]);
 			}
 
-			if (equivalencyKeys.Count > 0)
-				NativeDb.EquivalencyKeys = [.. equivalencyKeys];
+			if (equivalencyKeys.Count == 0)
+			{
+				ApplicationException ex = new("Could not extract Equivalency keys from User Options");
+				Diag.DebugDug(ex);
+				throw (ex);
+			}
+
+			NativeDb.EquivalencyKeys = [.. equivalencyKeys];
 
 		}
 	}

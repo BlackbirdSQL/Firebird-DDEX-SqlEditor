@@ -45,7 +45,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 
 
-	protected int _MaxCharsPerColumn = SysConstants.C_DefaultTextMaxCharsPerColumnStd;
+	protected int _MaxCharsPerColumn = SharedConstants.C_DefaultTextMaxCharsPerColumnStd;
 
 	protected bool _DiscardResults = true;
 

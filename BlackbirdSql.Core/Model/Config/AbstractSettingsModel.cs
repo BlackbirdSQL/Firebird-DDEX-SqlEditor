@@ -28,15 +28,15 @@ using Microsoft.VisualStudio.Utilities;
 namespace BlackbirdSql.Core.Model.Config;
 
 
-// =========================================================================================================
+// =============================================================================================================
 //										AbstractSettingsModel Class
 //
 /// <summary>
 /// Base class template for the user options model. If created with transientSettings then uses a volatile
 /// copy of the model that can be used in code and modified programatically or by using 
 /// </summary>
-// =========================================================================================================
-public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : AbstractSettingsModel<T>
+// =============================================================================================================
+public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TModel : AbstractSettingsModel<TModel>
 {
 
 	// -------------------------------------------------------
@@ -45,21 +45,21 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 
 
 	/// <summary>
-	/// Persistent settings .ctor used by <see cref="CreateAsync()"/>.
+	/// Persistent settings .ctor used by <see cref="CreateInstanceAsync()"/>.
 	/// </summary>
-	protected AbstractSettingsModel(string package, string group, string livePrefix)
+	protected AbstractSettingsModel(string package, string group, string propertyPrefix)
 	{
 		_SettingsPackage = package;
 		_SettingsGroup = group;
-		_LivePrefix = livePrefix;
+		_PropertyPrefix = propertyPrefix;
 	}
 
 
 	/// <summary>
-	/// Transient settings .ctor used by <see cref="CreateAsync(IBsTransientSettings)"/>.
+	/// Transient settings .ctor used by <see cref="CreateInstanceAsync(IBsTransientSettings)"/>.
 	/// </summary>
-	protected AbstractSettingsModel(string package, string group, string livePrefix, IBsTransientSettings transientSettings)
-		: this(package, group, livePrefix)
+	protected AbstractSettingsModel(string package, string group, string propertyPrefix, IBsTransientSettings transientSettings)
+		: this(package, group, propertyPrefix)
 	{
 		_TransientSettings = transientSettings;
 	}
@@ -68,8 +68,12 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 	/// <summary>
 	/// The singleton instance of this options model.
 	/// </summary>
-	public static T Instance =>
-		ThreadHelper.JoinableTaskFactory.Run(new Func<Task<T>>(GetLiveInstanceAsync));
+	public static TModel Instance =>
+		ThreadHelper.JoinableTaskFactory.Run(new Func<Task<TModel>>(LazyInstance.GetValueAsync));
+
+
+	public static AsyncLazy<TModel> LazyInstance => _LazyInstance ??=
+		new AsyncLazy<TModel>(new Func<Task<TModel>>(CreateInstanceAsync), ThreadHelper.JoinableTaskFactory);
 
 
 	/// <summary>
@@ -83,49 +87,16 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 	}
 
 
-	/// <summary>
-	/// Get the singleton instance of the persistent settings/options. Thread safe.
-	/// </summary>
-	public static T GetLiveInstance()
-	{
-		return LiveModel.GetValue();
-	}
-
-	/// <summary>
-	/// Get the singleton instance of the persistent settings/options. Thread safe.
-	/// </summary>
-	public static Task<T> GetLiveInstanceAsync()
-	{
-		return LiveModel.GetValueAsync();
-	}
 
 	/// <summary>
 	/// Creates a new instance of the options class and loads the values from the store.
 	/// This is for persistent settings and save operations save to the store.
 	/// </summary>
-	public static async Task<T> CreateAsync()
+	public static async Task<TModel> CreateInstanceAsync()
 	{
-		T instance = null;
+		TModel instance = (TModel)Activator.CreateInstance(typeof(TModel));
 
-		try
-		{
-			instance = (T)Activator.CreateInstance(typeof(T));
-		}
-		catch (Exception ex)
-		{
-			Diag.DebugDug(ex, $"CreateInstance failed for type: {typeof(T).FullName}.");
-		}
-
-		try
-		{
-			if (instance != null)
-				await instance.LoadAsync();
-		}
-		catch (Exception ex)
-		{
-			Diag.DebugDug(ex, $"LoadAsync failed for type: {typeof(T).FullName}.");
-		}
-
+		await instance.LoadAsync();
 
 		return instance;
 	}
@@ -135,11 +106,14 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 	/// Creates a new instance of the options class and loads the values from the store.
 	/// This is for transient settings. Save operations save to memory.
 	/// </summary>
-	public static async Task<T> CreateAsync(IBsTransientSettings transientSettings)
+	public static async Task<TModel> CreateInstanceAsync(IBsTransientSettings transientSettings)
 	{
 		object[] args = [transientSettings];
-		T instance = (T)Activator.CreateInstance(typeof(T), args);
+
+		TModel instance = (TModel)Activator.CreateInstance(typeof(TModel), args);
+
 		await instance.LoadAsync();
+
 		return instance;
 	}
 
@@ -159,14 +133,13 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 	private VerbSite _Site = null;
 	private readonly string _SettingsPackage;
 	private readonly string _SettingsGroup;
-	private readonly string _LivePrefix;
+	private readonly string _PropertyPrefix;
 
 	private readonly IBsTransientSettings _TransientSettings = null;
 
 
-	private static AsyncLazy<T> _LiveModel = null;
-	// private static AsyncLazy<ShellSettingsManager> _SettingsManager = null;
-	private static ShellSettingsManager _SettingsManager = null;
+	private static AsyncLazy<TModel> _LazyInstance = null;
+	private static AsyncLazy<ShellSettingsManager> _SettingsManager = null;
 	private static List<IBsModelPropertyWrapper> _PropertyWrappers = null;
 
 
@@ -193,13 +166,11 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 	}
 
 
-	private static AsyncLazy<T> LiveModel => _LiveModel ??=
-		new AsyncLazy<T>(new Func<Task<T>>(CreateAsync), ThreadHelper.JoinableTaskFactory);
-
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public string LivePrefix => _LivePrefix;
+	public string PropertyPrefix => _PropertyPrefix;
+
 
 	// ** Item of interest ** Return the site object that supports DesignerVerbs
 	[Browsable(false)]
@@ -222,7 +193,7 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public virtual string CollectionName { get; } = typeof(T).FullName;
+	public virtual string CollectionName { get; } = typeof(TModel).FullName;
 
 
 	[Browsable(false)]
@@ -248,7 +219,7 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 					}
 					catch (Exception ex)
 					{
-						Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} Property:{2} PropertyType:{3} is not a valid property.", typeof(T).FullName, "GetPropertyWrappersEnumeration", property.Name, property.PropertyType));
+						Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} Property:{2} PropertyType:{3} is not a valid property.", typeof(TModel).FullName, "GetPropertyWrappersEnumeration", property.Name, property.PropertyType));
 					}
 				}
 
@@ -265,28 +236,39 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public virtual IEnumerable<IBsModelPropertyWrapper> PropertyWrappersEnumeration => PropertyWrappers.AsReadOnly();
+	public IEnumerable<IBsModelPropertyWrapper> PropertyWrappersEnumeration => PropertyWrappers.AsReadOnly();
 
 
-	// This is already lazy. Performing lazy on a lazy makes no sense and iac fails.
-	// private static AsyncLazy<ShellSettingsManager> SettingsManager =>
-	//	_SettingsManager ??=
-	//		new AsyncLazy<ShellSettingsManager>(new Func<Task<ShellSettingsManager>>(GetSettingsManagerAsync),
-	//		ThreadHelper.JoinableTaskFactory);
+	private static AsyncLazy<ShellSettingsManager> SettingsManager =>
+		_SettingsManager ??=
+				new AsyncLazy<ShellSettingsManager>(new Func<Task<ShellSettingsManager>>(GetSettingsManagerAsync),
+				ThreadHelper.JoinableTaskFactory);
 
-	private static ShellSettingsManager SettingsManager =>
-		_SettingsManager ??= new ShellSettingsManager(ServiceProvider.GlobalProvider);
 
-	public static event Action<T> SettingsSavedEvent;
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public string SettingsGroup => _SettingsGroup;
 
-	public event AutomationVerbEventHandler SettingsResetEvent;
-	// public event IBsSettingsModel.SelectedItemChangedEventHandler SelectedItemChangedEvent;
-	public event IBsSettingsModel.EditControlFocusEventHandler EditControlGotFocusEvent;
-	public event IBsSettingsModel.EditControlFocusEventHandler EditControlLostFocusEvent;
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public string SettingsPackage => _SettingsPackage;
+
+
+
 	public event IBsSettingsModel.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
 
 	public event EventHandler BeforeLoadEvent;
+
 	public event EventHandler Disposed;
+
+	public event IBsSettingsModel.EditControlFocusEventHandler EditControlGotFocusEvent;
+
+	public event IBsSettingsModel.EditControlFocusEventHandler EditControlLostFocusEvent;
+
+	public event AutomationVerbEventHandler SettingsResetEvent;
+
+	public static event Action<TModel> SettingsSavedEvent;
+
 
 
 	#endregion Property accessors
@@ -300,7 +282,7 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 
 
 
-	public virtual object GetDefaultValue(string propertyName)
+	public object GetDefaultValue(string propertyName)
 	{
 		lock (_LockGlobal)
 		{
@@ -315,27 +297,22 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 
 
 
-
-	public virtual void Load()
+	public void Load()
 	{
 		ThreadHelper.JoinableTaskFactory.Run(new Func<Task>(LoadAsync));
 	}
 
 
 
-	public virtual async Task LoadAsync()
+	private async Task LoadAsync()
 	{
-		await Cmd.AwaitableAsync();
-
 		BeforeLoadEvent?.Invoke(this, EventArgs.Empty);
 
 		SettingsStore readOnlySettingsStore = null;
 
 		if (_TransientSettings == null)
 		{
-			ShellSettingsManager manager = SettingsManager;
-
-			// ShellSettingsManager manager = await SettingsManager.GetValueAsync();
+			ShellSettingsManager manager = await SettingsManager.GetValueAsync();
 			SettingsScope scope = SettingsScope.UserSettings;
 			readOnlySettingsStore = manager.GetReadOnlySettingsStore(scope);
 		}
@@ -352,7 +329,7 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 
 
 
-	public virtual void LoadDefaults()
+	public void LoadDefaults()
 	{
 		BeforeLoadEvent?.Invoke(this, EventArgs.Empty);
 
@@ -367,21 +344,20 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 
 
 
-	public virtual void Save()
+	public void Save()
 	{
 		ThreadHelper.JoinableTaskFactory.Run(new Func<Task>(SaveAsync));
 	}
 
 
 
-	public virtual async Task SaveAsync()
+	private async Task SaveAsync()
 	{
 		WritableSettingsStore writableSettingsStore = null;
 
 		if (_TransientSettings == null)
 		{
-			ShellSettingsManager manager = SettingsManager;
-			// obj = await SettingsManager.GetValueAsync();
+			ShellSettingsManager manager = await SettingsManager.GetValueAsync();
 			SettingsScope scope = SettingsScope.UserSettings;
 			writableSettingsStore = manager.GetWritableSettingsStore(scope);
 		}
@@ -394,11 +370,10 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 				((IBSettingsModelPropertyWrapper)propertyWrapper).Save(this, writableSettingsStore);
 		}
 
-		T liveModel = await GetLiveInstanceAsync();
+		TModel liveModel = await LazyInstance.GetValueAsync();
+		
 		if (this != liveModel)
-		{
 			await liveModel.LoadAsync();
-		}
 
 		SettingsSavedEvent?.Invoke(liveModel);
 	}
@@ -436,21 +411,22 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 	}
 
 
-	/*
+	
 	private static async Task<ShellSettingsManager> GetSettingsManagerAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-		return new ShellSettingsManager(ServiceProvider.GlobalProvider);
+
+		return new(ServiceProvider.GlobalProvider);
 	}
-	*/
+	
 
 
 
 	/// <summary>
 	/// Returns an enumerable of System.Reflection.PropertyInfo for the properties of
-	/// T that will be loaded and saved. Base implementation utilizes reflection.
+	/// TModel that will be loaded and saved. Base implementation utilizes reflection.
 	/// </summary>
-	protected virtual IEnumerable<PropertyInfo> GetOptionProperties()
+	private IEnumerable<PropertyInfo> GetOptionProperties()
 	{
 		Attribute attribute;
 		DesignerSerializationVisibilityAttribute visibility;
@@ -460,12 +436,12 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 
 		foreach (PropertyInfo property in properties)
 		{
-			// Tracer.Trace($"Validating property for model {typeof(T).Name} property: {property.Name}.");
+			// Tracer.Trace($"Validating property for model {typeof(TModel).Name} property: {property.Name}.");
 
 			if ((!property.PropertyType.IsPublic && !property.PropertyType.IsNestedPublic)
 				|| !property.CanWrite || !property.CanRead)
 			{
-				// Tracer.Trace($"Ignored property for model {typeof(T).Name} property {property.Name} - IsPublic: {property.PropertyType.IsPublic} CanWrite: {property.CanWrite} CanRead: {property.CanRead}.");
+				// Tracer.Trace($"Ignored property for model {typeof(TModel).Name} property {property.Name} - IsPublic: {property.PropertyType.IsPublic} CanWrite: {property.CanWrite} CanRead: {property.CanRead}.");
 				continue;
 			}
 
@@ -477,29 +453,17 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 
 				if (visibility.Visibility == DesignerSerializationVisibility.Hidden)
 				{
-					// Tracer.Trace($"IGNORED property for model {typeof(T).Name} property {property.Name} because Hidden.");
+					// Tracer.Trace($"IGNORED property for model {typeof(TModel).Name} property {property.Name} because Hidden.");
 					continue;
 				}
 			}
 
 			settings.Add(property);
 
-			// Tracer.Trace($"ADDED property for model {typeof(T).Name} property: {property.Name}.");
+			// Tracer.Trace($"ADDED property for model {typeof(TModel).Name} property: {property.Name}.");
 		}
 
 		return settings;
-	}
-
-
-
-	public virtual string GetPackage()
-	{
-		return _SettingsPackage;
-	}
-
-	public virtual string GetGroup()
-	{
-		return _SettingsGroup;
 	}
 
 
@@ -522,6 +486,12 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 	#region Event Handling - AbstractSettingsModel
 	// =========================================================================================================
 
+	public void OnAutomatorPropertyValueChanged(object sender, AutomatorPropertyValueChangedEventArgs e)
+	{
+		AutomatorPropertyValueChangedEvent?.Invoke(sender, e);
+	}
+
+
 
 	public void OnEditControlGotFocus(object sender, EditControlFocusEventArgs e)
 	{
@@ -534,22 +504,6 @@ public abstract class AbstractSettingsModel<T> : IBsSettingsModel where T : Abst
 	{
 		EditControlLostFocusEvent?.Invoke(sender, e);
 	}
-
-
-
-	public void OnAutomatorPropertyValueChanged(object sender, AutomatorPropertyValueChangedEventArgs e)
-	{
-		AutomatorPropertyValueChangedEvent?.Invoke(sender, e);
-	}
-
-
-
-	/*
-	public void OnSelectedItemChanged(object sender, SelectedGridItemChangedEventArgs e)
-	{
-		SelectedItemChangedEvent?.Invoke(sender, e);
-	}
-	*/
 
 
 

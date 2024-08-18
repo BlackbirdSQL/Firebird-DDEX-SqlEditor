@@ -8,7 +8,6 @@ using BlackbirdSql.EditorExtension.Properties;
 using BlackbirdSql.Shared.Controls;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -19,7 +18,7 @@ using LibraryData = BlackbirdSql.Shared.LibraryData;
 namespace BlackbirdSql.EditorExtension;
 
 [Guid(LibraryData.C_ResultsEditorFactoryGuid)]
-[ProvideMenuResource("Menus.ctmenu", 1)]
+// [ProvideMenuResource("Menus.ctmenu", 1)]
 
 
 // =========================================================================================================

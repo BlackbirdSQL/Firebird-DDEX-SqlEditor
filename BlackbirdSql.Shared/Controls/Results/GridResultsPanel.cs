@@ -297,7 +297,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		gridResultsGrid.SetIncludeHeadersOnDragAndDrop(m_includeColumnHeaders);
 		if (_FirstGridPanel.HostedControlsCount == 0)
 		{
-			_FirstGridPanel.HostedControlsMinInitialSize = LibraryData.C_DefaultInitialMinNumberOfVisibleRows * (gridResultsGrid.RowHeight + 1) + gridResultsGrid.HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(gridResultsGrid.BorderStyle);
+			_FirstGridPanel.HostedControlsMinInitialSize = SharedConstants.C_DefaultInitialMinNumberOfVisibleRows * (gridResultsGrid.RowHeight + 1) + gridResultsGrid.HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(gridResultsGrid.BorderStyle);
 			_FirstGridPanel.HostedControlsMinSize = ((Control)(object)gridResultsGrid).GetPreferredSize(((Control)(object)gridResultsGrid).Size).Height;
 		}
 

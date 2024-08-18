@@ -598,6 +598,9 @@
   <data name="OptionCategoryGridULimits" xml:space="preserve">
     <value>Column Data Limits</value>
   </data>
+  <data name="OptionCategoryObsolete" xml:space="preserve">
+    <value>Obsolete and Deprecated Settings</value>
+  </data>
   <data name="OptionCategoryStatusBar" xml:space="preserve">
     <value>Status Bar Content</value>
   </data>
@@ -685,9 +688,6 @@
   <data name="OptionDescriptionExecutionTimeout" xml:space="preserve">
     <value>The maximum time in minutes to wait for an async query request to complete. Async query requests include DbCommand.ExecuteAsync(), DbReader.ReadAsync and DbReader.NextResultAsync().</value>
   </data>
-  <data name="OptionDescriptionExecutionTtsDefault" xml:space="preserve">
-    <value>The default initial TTS state when a SQL script is opened.</value>
-  </data>
   <data name="OptionDescriptionGeneralEnableIntellisense" xml:space="preserve">
     <value>Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar.</value>
   </data>
@@ -699,6 +699,9 @@
   </data>
   <data name="OptionDescriptionGeneralPromptSave" xml:space="preserve">
     <value>Prompt to save unsaved SQL query windows on close.</value>
+  </data>
+  <data name="OptionDescriptionGeneralTtsDefault" xml:space="preserve">
+    <value>The default initial TTS state when a SQL script is opened.</value>
   </data>
   <data name="OptionDescriptionResultsDirectory" xml:space="preserve">
     <value>The default folder for saving SQL results.</value>
@@ -868,9 +871,6 @@
   <data name="OptionDisplayExecutionTimeout" xml:space="preserve">
     <value>Execution timeout</value>
   </data>
-  <data name="OptionDisplayExecutionTtsDefault" xml:space="preserve">
-    <value>Default initial TTS state</value>
-  </data>
   <data name="OptionDisplayGeneralEnableIntellisense" xml:space="preserve">
     <value> Enable Intellisense</value>
   </data>
@@ -882,6 +882,9 @@
   </data>
   <data name="OptionDisplayGeneralPromptSave" xml:space="preserve">
     <value>Prompt to save</value>
+  </data>
+  <data name="OptionDisplayGeneralTtsDefault" xml:space="preserve">
+    <value>Default initial TTS state</value>
   </data>
   <data name="OptionDisplayResultsDirectory" xml:space="preserve">
     <value>Default save folder</value>

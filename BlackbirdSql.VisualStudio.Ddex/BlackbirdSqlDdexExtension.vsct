@@ -33,8 +33,8 @@
 			</Menu>
 
 
-			<Menu guid="CommandSetGuid" id="CtlrIdResultsToToolbar" priority="0x0180" type="MenuController">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Menu guid="CommandSetGuid" id="CtlrIdResultsToToolbar" priority="0x0400" type="MenuController">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarOutput" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>TextIsAnchorCommand</CommandFlag>
 				<Strings>
@@ -47,8 +47,8 @@
 
 
 		<Combos>
-			<Combo guid="CommandSetGuid" id="CmbIdDatabaseSelect" priority="0x0100" type="DropDownCombo" defaultWidth="280" idCommandList="CmbIdDatabaseList">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar"/>
+			<Combo guid="CommandSetGuid" id="CmbIdDatabaseSelect" priority="0x0400" type="DropDownCombo" defaultWidth="280" idCommandList="CmbIdDatabaseList">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarConnection"/>
 				<CommandFlag>IconAndText</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
@@ -97,10 +97,21 @@
 			</Group>
 
 
-			<Group guid="CommandSetGuid" id="GrpIdEditorToolbar" priority="0x0600">
+			<Group guid="CommandSetGuid" id="GrpIdToolbarExecute" priority="0x0100">
 				<Parent guid="CommandSetGuid" id="ToolbarIdEditorWindow"/>
 			</Group>
-
+			<Group guid="CommandSetGuid" id="GrpIdToolbarConnection" priority="0x0200">
+				<Parent guid="CommandSetGuid" id="ToolbarIdEditorWindow"/>
+			</Group>
+			<Group guid="CommandSetGuid" id="GrpIdToolbarNew" priority="0x0300">
+				<Parent guid="CommandSetGuid" id="ToolbarIdEditorWindow"/>
+			</Group>
+			<Group guid="CommandSetGuid" id="GrpIdToolbarOutput" priority="0x0400">
+				<Parent guid="CommandSetGuid" id="ToolbarIdEditorWindow"/>
+			</Group>
+			<Group guid="CommandSetGuid" id="GrpIdToolbarAdditional" priority="0x0700">
+				<Parent guid="CommandSetGuid" id="ToolbarIdEditorWindow"/>
+			</Group>
 
 			<Group guid="CommandSetGuid" id="GrpIdResultsToController" priority="0x0220">
 				<Parent guid="CommandSetGuid" id="CtlrIdResultsToToolbar" />
@@ -116,11 +127,11 @@
 
 		<Buttons>
 
-			<!-- GrpIdEditorToolbar -->
+			<!-- GrpIdToolbarExecute -->
 
-			<!-- GrpIdEditorToolbar : GrpIdExecuteController -->
-			<Button guid="CommandSetGuid" id="CmdIdExecuteQuery" priority="0x0000" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<!-- GrpIdToolbarExecute : GrpIdExecuteController -->
+			<Button guid="CommandSetGuid" id="CmdIdExecuteQuery" priority="0x0100" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarExecute" />
 				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -130,10 +141,8 @@
 					<CommandName>ExecuteQuery</CommandName>
 				</Strings>
 			</Button>
-
-
-			<Button guid="CommandSetGuid" id="CmdIdCancelQuery" priority="0x0020" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdCancelQuery" priority="0x0200" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarExecute" />
 				<Icon guid="ImagesGuid" id="ImgCancelQuery" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -142,8 +151,8 @@
 					<ButtonText>Cancel Query</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdToggleTTS" priority="0x0025" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdToggleTTS" priority="0x0300" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarExecute" />
 				<Icon guid="ImagesGuid" id="ImgToggleTTS" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -152,8 +161,8 @@
 					<ButtonText>Toggle TTS</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdTransactionCommit" priority="0x0030" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdTransactionCommit" priority="0x0400" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarExecute" />
 				<Icon guid="ImagesGuid" id="ImgAccept" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -162,8 +171,8 @@
 					<ButtonText>Commit</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdTransactionRollback" priority="0x0035" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdTransactionRollback" priority="0x0500" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarExecute" />
 				<Icon guid="ImagesGuid" id="ImgCancel" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -172,8 +181,8 @@
 					<ButtonText>Rollback</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdConnect" priority="0x0050" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdConnect" priority="0x0100" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarConnection" />
 				<Icon guid="ImagesGuid" id="ImgConnect" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -182,8 +191,8 @@
 					<ButtonText>Connect</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdDisconnect" priority="0x0060" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdDisconnect" priority="0x0200" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarConnection" />
 				<Icon guid="ImagesGuid" id="ImgDisconnect" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -192,8 +201,8 @@
 					<ButtonText>Disconnect</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdModifyConnection" priority="0x0070" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdModifyConnection" priority="0x0300" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarConnection" />
 				<Icon guid="ImagesGuid" id="ImgModifyConnection" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -202,8 +211,8 @@
 					<ButtonText>Modify Connection</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0120" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0100" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarNew" />
 				<Icon guid="ImagesGuid" id="ImgNewQuery" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -212,8 +221,8 @@
 					<ButtonText>New Query</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdCloneQuery" priority="0x0140" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdCloneQuery" priority="0x0200" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarNew" />
 				<Icon guid="ImagesGuid" id="ImgCloneQuery" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -222,8 +231,8 @@
 					<ButtonText>Clone To New Query</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdShowEstimatedPlan" priority="0x0150" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdShowEstimatedPlan" priority="0x0100" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarOutput" />
 				<Icon guid="ImagesGuid" id="ImgShowEstimatedPlan" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -232,8 +241,8 @@
 					<ButtonText>Show Estimated Execution Plan</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdToggleExecutionPlan" priority="0x0160" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdToggleExecutionPlan" priority="0x0200" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarOutput" />
 				<Icon guid="ImagesGuid" id="ImgToggleExecutionPlan" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -242,8 +251,8 @@
 					<ButtonText>Include Actual Execution Plan on next Execution</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0170" type="Button">
-				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
+			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0300" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarOutput" />
 				<Icon guid="ImagesGuid" id="ImgToggleClientStatistics" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -252,9 +261,19 @@
 					<ButtonText>Include Client Statistics on next Execution</ButtonText>
 				</Strings>
 			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdQuerySettings2" priority="0x0100" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdToolbarAdditional" />
+				<Icon guid="ImagesGuid" id="ImgQuerySettings" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				<Strings>
+					<ButtonText>Execution Settings</ButtonText>
+				</Strings>
+			</Button>
 
-			<!-- GrpIdEditorToolbar : GrpIdResultsToController -->
-			<Button guid="CommandSetGuid" id="CmdIdResultsAsGrid" priority="0x0000" type="Button">
+			<!-- GrpIdToolbarExecute : GrpIdResultsToController -->
+			<Button guid="CommandSetGuid" id="CmdIdResultsAsGrid" priority="0x0100" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdResultsToController" />
 				<Icon guid="ImagesGuid" id="ImgResultsAsGrid" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -265,7 +284,7 @@
 					<CommandName>ResultsAsGrid</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdResultsAsText" priority="0x0020" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdResultsAsText" priority="0x0200" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdResultsToController" />
 				<Icon guid="ImagesGuid" id="ImgResultsAsText" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -276,7 +295,7 @@
 					<CommandName>ResultsAsText</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdResultsAsFile" priority="0x0040" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdResultsAsFile" priority="0x0300" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdResultsToController" />
 				<Icon guid="ImagesGuid" id="ImgResultsAsFile" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -510,13 +529,12 @@
 					<CommandName>CommandCycleToPreviousEditorTab</CommandName>
 				</Strings>
 			</Button>
-
 		</Buttons>
 
 
 		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
 		<Bitmaps>
-			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgExecuteQueryNoResult, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgCloneQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgAccept, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgModifyConnection, ImgCancel, ImgToggleTTS2, ImgToggleTTS, ImgExecuteQueryBatch, ImgCopyQuery, ImgNewQuery" />
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgExecuteQueryNoResult, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgCloneQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgAccept, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgModifyConnection, ImgCancel, ImgToggleTTS2, ImgToggleTTS, ImgExecuteQueryBatch, ImgCopyQuery, ImgNewQuery, ImgQuerySettings" />
 		</Bitmaps>
 	</Commands>
 
@@ -625,11 +643,19 @@
 			<IDSymbol name="ToolbarIdOnlineWindow" value="0x5001" />
 
 			<!-- 20736 -->
-			<IDSymbol name="GrpIdEditorToolbar" value="0x5100" />
+			<IDSymbol name="GrpIdToolbarExecute" value="0x5100" />
 			<!-- 20737 unused -->
 			<IDSymbol name="GrpIdOnlineToolbar" value="0x5101" />
 			<!-- 20738 -->
 			<IDSymbol name="GrpIdReusableWell" value="0x5102" />
+			<!-- 20739 -->
+			<IDSymbol name="GrpIdToolbarConnection" value="0x5103" />
+			<!-- 20740 -->
+			<IDSymbol name="GrpIdToolbarNew" value="0x5104" />
+			<!-- 20741 -->
+			<IDSymbol name="GrpIdToolbarOutput" value="0x5105" />
+			<!-- 20742 -->
+			<IDSymbol name="GrpIdToolbarAdditional" value="0x5106" />
 
 			<!-- 20992 -->
 			<IDSymbol name="GrpIdSeRootContext" value="0x5200" />
@@ -734,6 +760,7 @@
 			<IDSymbol name="CmdIdTransactionCommit" value="0x033B" />
 			<IDSymbol name="CmdIdTransactionRollback" value="0x033C" />
 			<IDSymbol name="CmdIdToggleTTS" value="0x033D" />
+			<IDSymbol name="CmdIdQuerySettings2" value="0x033E" />
 		</GuidSymbol>
 
 		<GuidSymbol name="ImagesGuid" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >
@@ -766,6 +793,7 @@
 			<IDSymbol name="ImgExecuteQueryBatch" value="27" />
 			<IDSymbol name="ImgCopyQuery" value="28" />
 			<IDSymbol name="ImgNewQuery" value="29" />
+			<IDSymbol name="ImgQuerySettings" value="30" />
 		</GuidSymbol>
 
 	</Symbols>

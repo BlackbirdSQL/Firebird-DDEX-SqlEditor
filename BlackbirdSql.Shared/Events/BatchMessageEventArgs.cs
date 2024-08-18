@@ -14,26 +14,26 @@ public delegate void BatchMessageEventHandler(object sender, BatchMessageEventAr
 
 public class BatchMessageEventArgs : EventArgs
 {
-	private readonly string m_strMsg = string.Empty;
+	private readonly string _Message = string.Empty;
 
-	private readonly string m_strDetailedMsg = string.Empty;
+	private readonly string _DetailedMessage = string.Empty;
 
-	public string Message => m_strMsg;
+	public string Message => _Message;
 
-	public string DetailedMessage => m_strDetailedMsg;
+	public string DetailedMessage => _DetailedMessage;
 
 	protected BatchMessageEventArgs()
 	{
 	}
 
-	public BatchMessageEventArgs(string msg)
+	public BatchMessageEventArgs(string message)
 	{
-		m_strMsg = msg;
+		_Message = message;
 	}
 
-	public BatchMessageEventArgs(string detailedMsg, string msg)
+	public BatchMessageEventArgs(string detailedMessage, string message)
 	{
-		m_strMsg = msg;
-		m_strDetailedMsg = detailedMsg;
+		_DetailedMessage = detailedMessage;
+		_Message = message;
 	}
 }

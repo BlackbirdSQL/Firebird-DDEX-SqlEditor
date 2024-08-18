@@ -49,6 +49,17 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	}
 
 
+
+	/// <summary>
+	/// ControllerPackage static .ctor
+	/// </summary>
+	static ControllerPackage()
+	{
+		RegisterAssemblies();
+	}
+
+
+
 	/// <summary>
 	/// Instance disposal.
 	/// </summary>
@@ -286,6 +297,25 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		return PackageController.CreateInstance(this);
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Adds this assembly to CurrentDomain.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static void RegisterAssemblies()
+	{
+		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
+		{
+			if (args.Name == typeof(ControllerPackage).Assembly.FullName)
+				return typeof(ControllerPackage).Assembly;
+
+			return null;
+		};
+	}
+
+
 	#endregion Methods
 
 
@@ -303,7 +333,8 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 		// If this is called early we have to initialize user option push notifications
 		// and environment events synchronously.
-		PropagateSettings();
+		// PropagateSettings();
+
 		ApcInstance.AsyeuAdviseUnsafeEvents();
 		ApcInstance.AsyeuRegisterProjectEventHandlers();
 

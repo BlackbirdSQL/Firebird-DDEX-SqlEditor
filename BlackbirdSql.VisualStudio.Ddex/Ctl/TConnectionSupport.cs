@@ -56,7 +56,6 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectionS
 	private readonly object _LockLocal = new();
 
 	private bool _PasswordPromptCancelled = false;
-	private bool _PasswordPromptCancelling = false;
 	private EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
 
 
@@ -135,8 +134,37 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectionS
 
 	public bool PasswordPromptCancelled
 	{
-		get { lock(_LockLocal) return _PasswordPromptCancelled; }
-		set { lock (_LockLocal) _PasswordPromptCancelled = value; }
+		get
+		{
+			lock(_LockLocal)
+				return _PasswordPromptCancelled;
+		}
+		set
+		{
+			lock (_LockLocal)
+			{
+				if (_PasswordPromptCancelled == value)
+					return;
+
+				_PasswordPromptCancelled = value;
+			}
+
+			if (!value)
+				return;
+
+			// Fire and forget
+
+			Task.Factory.StartNew(
+				async () =>
+				{
+
+					await Cmd.AwaitableAsync(640);
+
+					lock (_LockLocal)
+						_PasswordPromptCancelled = false;
+				},
+				default, TaskCreationOptions.None, TaskScheduler.Default).Forget();
+		}
 	}
 
 
@@ -236,36 +264,8 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectionS
 	{
 		// Tracer.Trace(GetType(), "Open()", "doPromptCheck: {0}", doPromptCheck);
 
-		if (State == DataConnectionState.Open)
-		{
+		if (State == DataConnectionState.Open || PasswordPromptCancelled)
 			return true;
-		}
-
-		if (PasswordPromptCancelled)
-		{
-			if (!_PasswordPromptCancelling)
-			{
-				_PasswordPromptCancelling = true;
-
-				// Fire and forget
-
-				Task.Factory.StartNew(
-					async () =>
-					{
-
-						await Cmd.AwaitableAsync(640);
-
-						PasswordPromptCancelled = false;
-						_PasswordPromptCancelling = false;
-
-					},
-					default, TaskCreationOptions.None, TaskScheduler.Default).Forget();
-			}
-
-			return true;
-		}
-
-
 
 
 		IVsDataSiteableObject<IVsDataProvider> @this = this;

@@ -1016,9 +1016,6 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);
 
-		if (!PersistentSettings.IncludeAppConnections)
-			return VSConstants.S_OK;
-
 		RctManager.AsyuiLoadApplicationConnections(project);
 
 		return VSConstants.S_OK;

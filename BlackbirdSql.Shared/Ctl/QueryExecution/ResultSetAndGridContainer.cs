@@ -29,7 +29,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	private readonly bool _PrintColumnHeaders = true;
 
-	private readonly int _NumberOfCharsToShow = SysConstants.C_DefaultGridMaxCharsPerColumnStd;
+	private readonly int _NumberOfCharsToShow = SharedConstants.C_DefaultGridMaxCharsPerColumnStd;
 
 	private bool m_bGridHasRows;
 

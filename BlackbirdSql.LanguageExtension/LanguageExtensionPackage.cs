@@ -48,7 +48,7 @@ namespace BlackbirdSql.LanguageExtension;
 
 [ProvideLanguageExtension(typeof(LsbLanguageService), PackageData.C_Extension)]
 
-[ProvideLanguageCodeExpansion(typeof(LsbLanguageService), "SQL_FIREBIRD", 303, "SQL_FIREBIRD", "%PackageFolder%\\Snippets\\SnippetsIndex.xml", SearchPaths = "%PackageFolder%\\Snippets\\Function;%PackageFolder%\\Snippets\\Index;%PackageFolder%\\Snippets\\Role;%PackageFolder%\\Snippets\\Stored Procedure;%PackageFolder%\\Snippets\\Table;%PackageFolder%\\Snippets\\Trigger;%PackageFolder%\\Snippets\\User;%PackageFolder%\\Snippets\\View;%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets", ForceCreateDirs = "%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets")]
+[ProvideLanguageCodeExpansion(typeof(LsbLanguageService), "SQL_FIREBIRD", 303, "SQL_FIREBIRD", "$PackageFolder$\\Snippets\\SnippetsIndex.xml", SearchPaths = "$PackageFolder$\\Snippets\\Function;$PackageFolder$\\Snippets\\Index;$PackageFolder$\\Snippets\\Role;$PackageFolder$\\Snippets\\Surround;$PackageFolder$\\Snippets\\Stored Procedure;$PackageFolder$\\Snippets\\Table;$PackageFolder$\\Snippets\\Trigger;$PackageFolder$\\Snippets\\User;$PackageFolder$\\Snippets\\View;%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets", ForceCreateDirs = "%MyDocs%\\Code Snippets\\SQL_FIREBIRD\\My Code Snippets")]
 
 
 #endregion Class Attributes
@@ -69,6 +69,15 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	protected LanguageExtensionPackage() : base()
 	{
 		// SyncServiceContainer.AddService(typeof(LsbLanguageService), ServicesCreatorCallback, promote: true);
+	}
+
+
+	/// <summary>
+	/// LanguageExtensionPackage static .ctor
+	/// </summary>
+	static LanguageExtensionPackage()
+	{
+		RegisterAssemblies();
 	}
 
 
@@ -414,6 +423,24 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 			_UserPreferences.Init();
 		}
 		return _UserPreferences;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Adds this assembly to CurrentDomain.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static void RegisterAssemblies()
+	{
+		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
+		{
+			if (args.Name == typeof(LanguageExtensionPackage).Assembly.FullName)
+				return typeof(LanguageExtensionPackage).Assembly;
+
+			return null;
+		};
 	}
 
 

@@ -1,7 +1,9 @@
 ﻿//
 // Plagiarized from Community.VisualStudio.Toolkit extension
 //
+using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using Microsoft.VisualStudio.Shell;
@@ -18,16 +20,16 @@ namespace BlackbirdSql.Core.Controls.Config;
 /// </summary>
 // =========================================================================================================
 [ComVisible(true)]
-public abstract class AbstractTransientSettingsPage<TPage, T> : AbstractSettingsPage<T>
-	where TPage : AbstractSettingsPage<T> where T : AbstractSettingsModel<T>, new()
+public abstract class AbstractTransientSettingsPage<TPage, TModel> : AbstractSettingsPage<TModel>
+	where TPage : AbstractSettingsPage<TModel> where TModel : AbstractSettingsModel<TModel>, new()
 
 {
-
-	public AbstractTransientSettingsPage(IBsTransientSettings transientSettings)
+	public AbstractTransientSettingsPage(IBsTransientSettings transientSettings) : base()
 	{
 		// Tracer.Trace(GetType(), ".ctor");
 
-		_Model = ThreadHelper.JoinableTaskFactory.Run(() => AbstractSettingsModel<T>.CreateAsync(transientSettings));
+		_Model = ThreadHelper.JoinableTaskFactory.Run(() => AbstractSettingsModel<TModel>.CreateInstanceAsync(transientSettings));
+
 		_Model.SettingsResetEvent += OnResetSettings;
 
 		EditControlGotFocusEvent += _Model.OnEditControlGotFocus;

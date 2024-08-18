@@ -2,6 +2,24 @@
 
 ## Change log
 
+### v14.5.0.0 Major update addressing major and minor issues.
+
+#### New / Enhancements
+- Added the __Query Execution Settings__ as a button on the query toolbar.
+- Moved the __Initial TTS State__ user option from the `SqlEditor > Execution > General` model to the `SqlEditor > General` model. This is to prevent the setting from appearing in the Transient __Execution Settings__ options dialog, accessible from the context menu or toolbar of a query, where it would be redundant.
+- Included the SqlEditor script parsing in the error handling of batch processing so that SQL script parsing errors are only reported as SQL errors in the Messages tab instead of appearing in the detailed exception message box. This applies to both single-statement and multi-statement scripts. There may still be cases where certain iSql commands will still appear in the detailed critical error message box. Connection failures will still appear in the error message box.
+- Extensive ongoing code cleanup and comment documentation. Several types have also been renamed from their original MS SqlServer class names.
+- Converted initial push propagation of user settings models to on-demand push propagation. Settings are now initially pushed at the latest possible when a setting is actually required.
+- Ongoing removal of the default contructor syntax from classes to improve readability. 
+#### Fixes
+- Fixed bug introduced in version 14 that caused a new __Server Explorer__ or __Session__ connection that is based on a FlameRobin, Entity Data Model or Project settings connection, to create a duplicate connection with a numbered name, instead of taking ownership of the existing connection. 
+- Resolved a longtime bug that caused __SqlEditor User Options__ pages to fail when there had been an early load of the options models. This was caused by cascaded extension/package assemblies that were intermittently not picked up in the IDE's `CurrentDomain`.
+- Fixed bug that caused expansion of the full trigger list nodes to fail if full linkage was not completed. The linker was attempting to perform optimistic linking when full linkage was required.
+- Reimplemented lazy loading of options models and the `SettingsManager` after clearing up the __SqlEditor User Options__ bug.
+- Updated the Visual Studio extension installer manifest to the correct VS range of 17.10 - 18.0.
+
+
+
 ### v14.1.0.1 Patch to support FirebirdClient versions prior to 6.0.0.
 
 #### New / Enhancements

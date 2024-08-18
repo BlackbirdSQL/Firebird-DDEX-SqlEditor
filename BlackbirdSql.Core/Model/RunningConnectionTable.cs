@@ -3,10 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using BlackbirdSql.Core.Ctl.Config;
+using System.Runtime.CompilerServices;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
+using Microsoft.VisualStudio.Shell;
 
 
 
@@ -114,8 +117,6 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 
 	}
 
-
-	protected bool AsyncPending => _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Pending;
 
 
 
@@ -299,9 +300,6 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 
 
 
-	protected abstract bool InternalResolveDeadlocksAndEnsureLoaded(bool asynchronous);
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the registered connection data row given the ConnectionUrl,
@@ -319,60 +317,19 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 
 		// Tracer.Trace(GetType(), "TryGetHybridRowValue()", "hybridKey: {0}", hybridKey);
 
+		InternalResolveDeadlocksAndEnsureLoaded(false);
 
-		if (keyType == EnRctKeyType.ConnectionString)
+		if (_LoadDataCardinal > 0)
 		{
-			Csb csa = new(hybridKey, false);
-			hybridKey = csa.Moniker;
-			keyType = EnRctKeyType.ConnectionUrl;
+			AccessViolationException ex = new($"Attempt to access Rct internal table while loading. LoadDataCardinal: {_LoadDataCardinal}.");
+			Diag.Dug(ex);
+			throw ex;
 		}
 
-
-		if (keyType == EnRctKeyType.ConnectionUrl)
-		{
-			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExConnectionUrl])).ToArray();
-
-			value = rows.Length > 0 ? rows[0] : null;
-
-			// if (value == null)
-			//	Tracer.Trace(GetType(), "TryGetHybridRowValue()", "FAILED Final hybridKey: {0}", hybridKey);
-		}
-		else if (keyType == EnRctKeyType.AdornedQualifiedName)
-		{
-			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExAdornedQualifiedName])).ToArray();
-
-			value = rows.Length > 0 ? rows[0] : null;
-
-			// if (value == null)
-			//	Tracer.Trace(GetType(), "TryGetHybridRowValue()", "FAILED Final hybridKey: {0}", hybridKey);
-		}
-		else if (keyType == EnRctKeyType.AdornedQualifiedTitle)
-		{
-			DataRow[] rows = InternalDatabases.Select().Where(x => hybridKey.Equals(x[CoreConstants.C_KeyExAdornedQualifiedTitle])).ToArray();
-
-			value = rows.Length > 0 ? rows[0] : null;
-
-			// if (value == null)
-			//	Tracer.Trace(GetType(), "TryGetHybridRowValue()", "FAILED Final hybridKey: {0}", hybridKey);
-		}
-		else
-		{
-			if (TryGetEntry(hybridKey, out int id))
-			{
-				value = InternalDatabases.Rows.Find(id);
-			}
-			else
-			{
-				value = null;
-			}
-		}
-
-		return value != null;
-
+		return InternalTryGetHybridRowValue(hybridKey, keyType, out value);
 	}
 
 
 	#endregion Methods
-
 
 }

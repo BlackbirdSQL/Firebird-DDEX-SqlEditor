@@ -174,7 +174,7 @@ public class LinkageParser : AbstractLinkageParser
 
 		if (root != null)
 		{
-			if (restrictions == null)
+			if (restrictions == null || restrictions.Length < 3 || string.IsNullOrWhiteSpace(restrictions[2]))
 				return EnsureLoaded(root);
 
 			parser = CreateInstance(root, true);

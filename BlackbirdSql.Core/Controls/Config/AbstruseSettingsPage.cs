@@ -18,7 +18,7 @@ using TextBox = System.Windows.Forms.TextBox;
 
 namespace BlackbirdSql.Core.Controls.Config;
 
-// =========================================================================================================
+// =============================================================================================================
 //										AbstruseSettingsPage Class
 //
 /// <summary>
@@ -29,14 +29,60 @@ namespace BlackbirdSql.Core.Controls.Config;
 /// DialogPage property grid.
 /// Common cardinal synonyms include current culture min[imum], max[imum], unlimited, default etc.
 /// </summary>
-// =========================================================================================================
+// =============================================================================================================
 [ComVisible(true)]
 public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Fields - AbstruseSettingsPage
+	#region Constructors / Destructors - AbstruseSettingsPage
 	// ---------------------------------------------------------------------------------
+
+
+	public AbstruseSettingsPage()
+	{
+		// Tracer.Trace(GetType(), ".ctor");
+	}
+
+
+
+
+	protected override void Dispose(bool disposing)
+	{
+		// Tracer.Trace(GetType(), "Dispose()");
+		if (disposing)
+		{
+			if (_Window != null)
+			{
+				_Window.SelectedGridItemChanged -= OnSelectedItemChanged;
+				_Window.GotFocus -= OnGotFocus;
+				_Window.VisibleChanged -= (sender, args) => OnTraceEvent(sender, args, $"VisibleChanged[Visible: {_Window.Visible}]");
+				_Window.Invalidated -= (sender, args) => OnTraceEvent(sender, args, "Invalidated");
+				_Window.Enter -= (sender, args) => OnTraceEvent(sender, args, "Enter");
+				_Window.Leave -= (sender, args) => OnTraceEvent(sender, args, "Leave");
+				_Window.LostFocus -= (sender, args) => OnTraceEvent(sender, args, "LostFocus");
+				_Window.Validated -= (sender, args) => OnTraceEvent(sender, args, "Validated");
+				_Window.MouseDown -= (sender, args) => OnTraceEvent(sender, args, "MouseDown");
+				_Window.Click -= (sender, args) => OnTraceEvent(sender, args, "Clicked");
+				_Window.MouseClick -= (sender, args) => OnTraceEvent(sender, args, "MouseClick");
+				_Window.PropertyValueChanged -= OnPropertyValueChanged;
+				_Window = null;
+			}
+		}
+
+		base.Dispose(disposing);
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstruseSettingsPage
+	// =========================================================================================================
 
 
 	// A protected 'this' object lock
@@ -52,8 +98,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	private bool _ValidMouseEventCell = false;
 
 
-
 	#endregion Fields
+
 
 
 
@@ -232,52 +278,9 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	public event IBsSettingsPage.EditControlFocusEventHandler EditControlLostFocusEvent;
 	public event IBsSettingsPage.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
 
+
 	#endregion Property Accessors
 
-
-
-
-	// =========================================================================================================
-	#region Constructors / Destructors - AbstruseSettingsPage
-	// =========================================================================================================
-
-
-	public AbstruseSettingsPage()
-	{
-		// Tracer.Trace(GetType(), ".ctor");
-	}
-
-
-
-
-	protected override void Dispose(bool disposing)
-	{
-		// Tracer.Trace(GetType(), "Dispose()");
-		if (disposing)
-		{
-			if (_Window != null)
-			{
-				_Window.SelectedGridItemChanged -= OnSelectedItemChanged;
-				_Window.GotFocus -= OnGotFocus;
-				_Window.VisibleChanged -= (sender, args) => OnTraceEvent(sender, args, $"VisibleChanged[Visible: {_Window.Visible}]");
-				_Window.Invalidated -= (sender, args) => OnTraceEvent(sender, args, "Invalidated");
-				_Window.Enter -= (sender, args) => OnTraceEvent(sender, args, "Enter");
-				_Window.Leave -= (sender, args) => OnTraceEvent(sender, args, "Leave");
-				_Window.LostFocus -= (sender, args) => OnTraceEvent(sender, args, "LostFocus");
-				_Window.Validated -= (sender, args) => OnTraceEvent(sender, args, "Validated");
-				_Window.MouseDown -= (sender, args) => OnTraceEvent(sender, args, "MouseDown");
-				_Window.Click -= (sender, args) => OnTraceEvent(sender, args, "Clicked");
-				_Window.MouseClick -= (sender, args) => OnTraceEvent(sender, args, "MouseClick");
-				_Window.PropertyValueChanged -= OnPropertyValueChanged;
-				_Window = null;
-			}
-		}
-
-		base.Dispose(disposing);
-	}
-
-
-	#endregion Constructors / Destructors
 
 
 

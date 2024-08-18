@@ -58,17 +58,10 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	{
 		// Extension specific describers.
 
-		try
-		{
-			Describers.AddRange(
-			[
-				new Describer(C_KeyExCreationFlags, typeof(EnCreationFlags), C_DefaultExCreationFlags, D_Extended)
-			]);
-		}
-		catch (Exception ex)
-		{
-			Diag.DebugDug(ex);
-		}
+		Describers.AddRange(
+		[
+			new Describer(C_KeyExCreationFlags, typeof(EnCreationFlags), C_DefaultExCreationFlags, D_Extended)
+		]);
 
 		// Diag.DebugTrace("Added model describers");
 	}

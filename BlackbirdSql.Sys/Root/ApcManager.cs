@@ -304,6 +304,8 @@ public static class ApcManager
 	public static string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root)
 		=> Instance?.GetRegisterConnectionDatasetKey(root);
 
+	public static void InitializeSettings() => Instance.InitializeSettings();
+
 	public static void InvalidateRctManager() => Instance?.InvalidateRctManager();
 
 	public static bool IsConnectionEquivalency(string connectionString1, string connectionString2)

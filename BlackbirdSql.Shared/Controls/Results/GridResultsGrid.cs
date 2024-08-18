@@ -42,7 +42,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 
 	private class GridHyperlinkColumnWithLimit : GridHyperlinkColumn
 	{
-		protected int m_maxNumOfChars = LibraryData.C_DefaultMaxCharsPerColumnForGrid;
+		protected int m_maxNumOfChars = SharedConstants.C_DefaultMaxCharsPerColumnForGrid;
 
 		protected StringBuilder m_cellSB = new StringBuilder(256);
 
@@ -246,9 +246,9 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 
 	private static string s_selectWholeColumnTooltip;
 
-	private int _NumberOfCharsToShow = LibraryData.C_DefaultMaxCharsPerColumnForGrid;
+	private int _NumberOfCharsToShow = SharedConstants.C_DefaultMaxCharsPerColumnForGrid;
 
-	private readonly StringBuilder m_sbCustomClipboardText = new(LibraryData.C_DefaultMaxCharsPerColumnForGrid);
+	private readonly StringBuilder m_sbCustomClipboardText = new(SharedConstants.C_DefaultMaxCharsPerColumnForGrid);
 
 	private bool m_includeColumnHeadersForDnD;
 
@@ -338,10 +338,10 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 		if (rowCount == 0L)
 			rowCount = 1L;
 
-		if (rowCount > LibraryData.C_DefaultInitialMinNumberOfVisibleRows)
-			rowCount = LibraryData.C_DefaultInitialMinNumberOfVisibleRows;
+		if (rowCount > SharedConstants.C_DefaultInitialMinNumberOfVisibleRows)
+			rowCount = SharedConstants.C_DefaultInitialMinNumberOfVisibleRows;
 
-		if (rowCount <= LibraryData.C_DefaultInitialMinNumberOfVisibleRows)
+		if (rowCount <= SharedConstants.C_DefaultInitialMinNumberOfVisibleRows)
 		{
 			bool flag = false;
 			if (IsHandleCreated)
@@ -654,7 +654,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 			}
 
 			int numberOfCharsToShow = NumberOfCharsToShow;
-			NumberOfCharsToShow = LibraryData.C_DefaultInitialMaxCharsPerColumnForGrid;
+			NumberOfCharsToShow = SharedConstants.C_DefaultInitialMaxCharsPerColumnForGrid;
 			for (int i = 1; i < ColumnsNumber; i++)
 			{
 				ResizeColumnToShowAllContents(i);

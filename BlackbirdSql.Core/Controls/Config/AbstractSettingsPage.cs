@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Core.Controls.Config;
 
 
-// =========================================================================================================
+// =============================================================================================================
 //										AbstractSettingsPage Class
 //
 /// <summary>
@@ -24,20 +24,38 @@ namespace BlackbirdSql.Core.Controls.Config;
 /// DialogPage property grid.
 /// Common cardinal synonyms include current culture min[imum], max[imum], unlimited, default etc.
 /// </summary>
-// =========================================================================================================
+// =============================================================================================================
 [ComVisible(true)]
 public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : AbstractSettingsModel<T>, new()
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Fields - AbstractSettingsPage
+	#region Constructors / Destructors - AbstractSettingsPage
 	// ---------------------------------------------------------------------------------
+
+
+	public AbstractSettingsPage() : base()
+	{
+		// Tracer.Trace(GetType(), ".ctor");
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstractSettingsPage
+	// =========================================================================================================
 
 
 	protected AbstractSettingsModel<T> _Model;
 
 
 	#endregion Fields
+
 
 
 
@@ -54,21 +72,6 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 
 	#endregion Property Accessors
 
-
-
-
-	// =========================================================================================================
-	#region Constructors / Destructors - AbstractSettingsPage
-	// =========================================================================================================
-
-
-	public AbstractSettingsPage()
-	{
-		// Tracer.Trace(GetType(), ".ctor");
-	}
-
-
-	#endregion Constructors / Destructors
 
 
 

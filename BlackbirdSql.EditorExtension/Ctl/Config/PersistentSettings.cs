@@ -11,7 +11,7 @@ using BlackbirdSql.Shared.Enums;
 
 namespace BlackbirdSql.EditorExtension.Ctl.Config;
 
-// =========================================================================================================
+// =============================================================================================================
 //										PersistentSettings Class
 //
 /// <summary>
@@ -22,13 +22,32 @@ namespace BlackbirdSql.EditorExtension.Ctl.Config;
 /// There is no point using services as this configuration is fixed. ie:
 /// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
-// =========================================================================================================
+// =============================================================================================================
 public abstract class PersistentSettings : LanguageExtension.Ctl.Config.PersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Fields
+	#region Constructors / Destructors - PersistentSettings
 	// ---------------------------------------------------------------------------------
+
+
+	/// <summary>
+	/// Protected singleton .ctor
+	/// </summary>
+	protected PersistentSettings() : base()
+	{
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields
+	// =========================================================================================================
 
 
 	#endregion Fields
@@ -65,25 +84,6 @@ public abstract class PersistentSettings : LanguageExtension.Ctl.Config.Persiste
 	#endregion Property Accessors
 
 
-
-
-
-	// =========================================================================================================
-	#region Constructors / Destructors - PersistentSettings
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private singleton .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected PersistentSettings() : base()
-	{
-	}
-
-
-	#endregion Constructors / Destructors
 
 
 

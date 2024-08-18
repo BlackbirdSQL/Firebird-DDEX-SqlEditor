@@ -31,7 +31,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataS
 		}
 		catch (Exception e)
 		{
-			Diag.Dug(e);
+			Diag.Debug(e);
 			long rowCount = RowCount;
 
 			if (rowCount > 0)

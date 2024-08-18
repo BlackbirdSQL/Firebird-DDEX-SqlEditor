@@ -30,13 +30,13 @@ using Microsoft.VisualStudio.Utilities;
 namespace BlackbirdSql.Shared.Ctl;
 
 
-// =========================================================================================================
+// =============================================================================================================
 //										QueryManager Class
 //
 /// <summary>
 /// Manages query execution of an active document.
 /// </summary>
-// =========================================================================================================
+// =============================================================================================================
 public sealed class QueryManager : IBsQueryManager
 {
 
@@ -321,9 +321,8 @@ public sealed class QueryManager : IBsQueryManager
 			{
 				if (_LiveSettings != null)
 					return _LiveSettings;
-
 				_LiveSettings = TransientSettings.CreateInstance();
-				_LiveSettings.TtsEnabled = _LiveSettings.EditorExecutionTtsDefault;
+				_LiveSettings.TtsEnabled = _LiveSettings.EditorTtsDefault;
 
 				return _LiveSettings;
 			}

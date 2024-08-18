@@ -32,7 +32,7 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 
 
 	public GeneralSettingsModel(IBsTransientSettings transientSettings)
-		: base(C_Package, C_Group, C_LivePrefix, transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 
 	}
@@ -56,7 +56,7 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 
 	private const string C_Package = "Ddex";
 	private const string C_Group = "General";
-	private const string C_LivePrefix = "DdexGeneral";
+	private const string C_PropertyPrefix = "DdexGeneral";
 
 
 	#endregion Constants

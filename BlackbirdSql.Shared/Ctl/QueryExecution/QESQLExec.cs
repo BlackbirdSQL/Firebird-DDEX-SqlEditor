@@ -9,10 +9,10 @@ using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Shared.Model.Parsers;
 using BlackbirdSql.Shared.Properties;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
+using Microsoft.VisualStudio.PlatformUI;
 
 
 
@@ -23,10 +23,11 @@ namespace BlackbirdSql.Shared.Ctl.QueryExecution;
 //										QESQLExec Class
 //
 /// <summary>
-/// Query executor class.
+/// Query executor class. Handles post-script multi-statement batch processing. The ancestor class handles
+/// script processing.
 /// </summary>
 // =========================================================================================================
-public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
+public class QESQLExec : AbstractQESQLExec
 {
 
 	// -------------------------------------------
@@ -40,30 +41,14 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 	}
 
 
-	protected override void Dispose(bool disposing)
+	protected override bool Dispose(bool disposing)
 	{
 		// Tracer.Trace(GetType(), "Dispose(bool)", "disposing: {0}", disposing);
 
-		base.Dispose(disposing);
+		if (!base.Dispose(disposing))
+			return false;
 
-		if (!disposing)
-			return;
-
-		if (_SqlCmdParser != null)
-		{
-			try
-			{
-				_SqlCmdParser.Dispose();
-			}
-			catch
-			{
-			}
-
-			_SqlCmdParser = null;
-			_CurrentConn = null;
-			_Conn = null;
-			// _CurrentConnInfo = null;
-		}
+		return true;
 	}
 
 
@@ -78,10 +63,9 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 	// =========================================================================================================
 
 
-	private IDbConnection _CurrentConn;
 	private int _ExecBatchNumOfTimes = 1;
+	private bool _Hooked = false;
 	private int _LineNumOfLastBatchEnd = -1;
-	private ManagedBatchParser _SqlCmdParser;
 
 
 	#endregion Fields
@@ -97,9 +81,10 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 
 	public GetCurrentWorkingDirectoryPath CurrentWorkingDirectoryPath { get; set; }
 
-	public event ErrorMessageEventHandler ErrorMessageEvent;
 	public event QueryDataEventHandler BatchDataLoadedEvent;
-	public event QueryDataEventHandler BatchScriptParsedEvent;
+	public event BatchStatementCompletedEventHandler BatchStatementCompletedEvent;
+	public event BatchExecutionCompletedEventHandler BatchExecutionCompletedEventAsync;
+	public event BatchExecutionStartEventHandler BatchExecutionStartEvent;
 
 
 	#endregion Property Accessors
@@ -113,7 +98,7 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 	// =========================================================================================================
 
 
-	public async Task<EnParserAction> BatchStatementCallbackAsync(IBsNativeDbStatementWrapper sqlStatement,
+	public async override Task<EnParserAction> BatchStatementCallbackAsync(IBsNativeDbStatementWrapper sqlStatement,
 		int numberOfTimes, CancellationToken cancelToken, CancellationToken syncToken)
 	{
 		int lineNumber = _LineNumOfLastBatchEnd + 1;
@@ -129,7 +114,7 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 			_ExecBatchNumOfTimes = numberOfTimes;
 
 			// --------------------------------------------------------------------------------------------- //
-			// *************** Execution Point (7) - QESQLExec.BatchStatementCallbackAsync() *************** //
+			// *************** Execution Point (10) - QESQLExec.BatchStatementCallbackAsync() ************** //
 			// --------------------------------------------------------------------------------------------- //
 			bool continueProcessing = await ProcessBatchStatementAsync(sqlStatement, cancelToken, syncToken);
 
@@ -148,8 +133,12 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 	protected override void Cleanup()
 	{
 		_LineNumOfLastBatchEnd = -1;
+		_CurBatchIndex = -1;
 
 		CloseCurrentConnIfNeeded();
+		UnhookBatchConsumer(_CurBatch, _BatchConsumer);
+
+		_BatchConsumer = null;
 
 		base.Cleanup();
 	}
@@ -217,7 +206,7 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 				try
 				{
 					// ---------------------------------------------------------------------------------------------- //
-					// **************** Execution Point (9) - QESQLExec.ExecuteBatchStatementAsync() **************** //
+					// **************** Execution Point (12) - QESQLExec.ExecuteBatchStatementAsync() *************** //
 					// ---------------------------------------------------------------------------------------------- //
 					scriptExecutionResult = await batch.ExecuteAsync(_CurrentConn, _SpecialActions, cancelToken, syncToken);
 				}
@@ -262,69 +251,93 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 
 
 
-	protected override async Task<bool> ExecuteScriptAsync(CancellationToken cancelToken, CancellationToken syncToken)
+	private async Task<bool> ProcessBatchStatementAsync(IBsNativeDbStatementWrapper sqlStatement,
+	CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "ExecuteScriptAsync()");
+		// Tracer.Trace(GetType(), "ProcessBatchStatementAsync()", " ExecLiveSettings.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
 
-		if (cancelToken.IsCancellationRequested)
-			return false;
+		bool continueProcessing = true;
 
-		_ExecBatchNumOfTimes = 1;
-		_CurrentConn = _Conn;
-
-		try
+		if (sqlStatement == null)
 		{
-			if (_SqlCmdParser == null)
+			_ExecResult |= EnScriptExecutionResult.Success;
+			return continueProcessing;
+		}
+
+
+		lock (_LockObject)
+		{
+			if (cancelToken.IsCancellationRequested)
 			{
-				_SqlCmdParser = new ManagedBatchParser(QryMgr, _ExecutionType, _TextSpan.Text);
+				_ExecResult = EnScriptExecutionResult.Cancel;
 			}
 			else
 			{
-				_SqlCmdParser.Cleanup(QryMgr, /* _BatchConsumer, */ _ExecutionType, /* ExecLiveSettings.EditorResultsOutputMode, */ _TextSpan.Text);
+				_CurBatch.Reset();
+				_CurBatch.SqlStatement = sqlStatement;
+				// _CurBatch.SqlScript = sqlScript;
+				// _CurBatch.TextSpan = textSpan;
+				_CurBatch.BatchIndex = _CurBatchIndex;
+				_CurBatchIndex++;
+				_AsyncExecState = EnLauncherPayloadLaunchState.Launching;
 			}
-
-			string batchDelimiter = SysConstants.C_DefaultBatchSeparator;
-
-			if (ExecLiveSettings.EditorContextBatchSeparator != null && ExecLiveSettings.EditorContextBatchSeparator.Length > 0)
-			{
-				batchDelimiter = ExecLiveSettings.EditorContextBatchSeparator;
-			}
-
-			_SqlCmdParser.SetBatchDelimiter(batchDelimiter);
-			_SqlCmdParser.SetParseMode(EnParseMode.RecognizeOnlyBatchDelimiter);
-
-			_SqlCmdParser.SetCommandExecuter(this);
-
-			if (ExecLiveSettings.ExecutionType != EnSqlExecutionType.PlanOnly
-				&& ExecLiveSettings.TtsEnabled && !QryMgr.Strategy.TtsActive)
-			{
-				QryMgr.Strategy.BeginTransaction(ExecLiveSettings.EditorExecutionIsolationLevel);
-			}
-
-			// ------------------------------------------------------------------------------- //
-			// ************ Execution Point (5) - QESQLExec.ExecuteScriptAsync() ************* //
-			// ------------------------------------------------------------------------------- //
-			await _SqlCmdParser.ParseAsync(cancelToken, syncToken);
-
-			// Tracer.Trace(GetType(), "ExecuteScriptAsync()", "ParseAsync() Completed");
-
 		}
-		catch (ThreadAbortException e)
+
+		EnScriptExecutionResult scriptExecutionResult = EnScriptExecutionResult.Failure;
+
+		if (_ExecResult != EnScriptExecutionResult.Cancel)
 		{
-			Diag.ThrowException(e);
+			bool discarded = false;
+			try
+			{
+				RaiseBatchExecutionStart(_CurBatch);
+
+				// ---------------------------------------------------------------------------------------------- //
+				// *********** Execution Point (11) - AbstractQESQLExec.ProcessBatchStatementAsync() ************ //
+				// ---------------------------------------------------------------------------------------------- //
+				scriptExecutionResult = await ExecuteBatchStatementAsync(_CurBatch, cancelToken, syncToken);
+			}
+			finally
+			{
+				lock (_LockObject)
+				{
+					// Tracer.Trace(GetType(), "ProcessBatchStatementAsync()", "execState = {0}", _ExecState);
+					if (cancelToken.IsCancellationRequested || _AsyncExecState == EnLauncherPayloadLaunchState.Discarded)
+					{
+						scriptExecutionResult = EnScriptExecutionResult.Cancel;
+					}
+					else
+					{
+						_AsyncExecState = EnLauncherPayloadLaunchState.Launching;
+					}
+
+					discarded = _AsyncExecState == EnLauncherPayloadLaunchState.Discarded;
+				}
+			}
+
+			if (!discarded)
+			{
+				await RaiseBatchExecutionCompletedAsync(_CurBatch, scriptExecutionResult, cancelToken, syncToken);
+			}
 		}
-		catch (Exception ex)
+		else
 		{
-			Diag.Expected(ex);
-
-			_ExecResult = EnScriptExecutionResult.Failure;
-			string info = ex.Message;
-
-			RaiseScriptProcessingError(Resources.ExScriptingParseFailure.FmtRes(info),
-				EnQESQLScriptProcessingMessageType.FatalError);
+			scriptExecutionResult = EnScriptExecutionResult.Cancel;
 		}
 
-		return !cancelToken.IsCancellationRequested;
+		if (scriptExecutionResult == EnScriptExecutionResult.Cancel
+			|| scriptExecutionResult == EnScriptExecutionResult.Halted
+			|| scriptExecutionResult == EnScriptExecutionResult.Failure)
+		{
+			_ExecResult = scriptExecutionResult;
+			continueProcessing = false;
+		}
+		else
+		{
+			_ExecResult |= scriptExecutionResult;
+		}
+
+		return continueProcessing;
 	}
 
 
@@ -339,24 +352,73 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 	// =========================================================================================================
 
 
+	protected override void HookupBatchConsumer(QESQLBatch batch, IBsQESQLBatchConsumer batchConsumer)
+	{
+		// Tracer.Trace(GetType(), "HookupBatchConsumer()");
+
+		if (batch == null || batchConsumer == null || _Hooked)
+			return;
+
+		_Hooked = true;
+
+		batch.ErrorMessageEvent += batchConsumer.OnErrorMessage;
+		batch.MessageEvent += batchConsumer.OnMessage;
+		batch.NewResultSetEventAsync += batchConsumer.OnNewResultSetAsync;
+		batch.CancellingEvent += batchConsumer.OnCancelling;
+		batch.FinishedResultSetEvent += batchConsumer.OnFinishedProcessingResultSet;
+		batch.SpecialActionEvent += batchConsumer.OnSpecialAction;
+		batch.StatementCompletedEvent += batchConsumer.OnStatementCompleted;
+
+		batch.StatementCompletedEvent += OnBatchStatementCompleted;
+	}
+
+
+
 	// Call statistics output
-	public void OnBatchDataLoaded(object sender, QueryDataEventArgs eventArgs)
+	public override void OnBatchDataLoaded(object sender, QueryDataEventArgs eventArgs)
 	{
 		BatchDataLoadedEvent?.Invoke(this, eventArgs);
 	}
 
 
-	public void OnBatchScriptParsed(object sender, QueryDataEventArgs eventArgs)
+
+	private void OnBatchStatementCompleted(object sender, BatchStatementCompletedEventArgs args)
 	{
-		BatchScriptParsedEvent?.Invoke(this, eventArgs);
+		// Tracer.Trace(GetType(), "OnBatchStatementCompleted()", "sender: {0}, args.RecordCount: {1}", sender, args.RecordCount);
+
+		// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
+		BatchStatementCompletedEvent?.Invoke(sender, args);
 	}
 
 
 
-	private void RaiseErrorMessage(string errorLine, string msg, EnQESQLScriptProcessingMessageType msgType)
+	private async Task RaiseBatchExecutionCompletedAsync(QESQLBatch batch, EnScriptExecutionResult batchResult,
+		CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "OnErrorMessage()", "msg = {0}", msg);
-		ErrorMessageEvent?.Invoke(this, new ErrorMessageEventArgs(errorLine, msg, msgType));
+		// Tracer.Trace(GetType(), "OnBatchExecutionCompletedAsync()", "m_curBatchIndex = {0}, batchResult = {1}, _ExecState = {2}", _CurBatchIndex, batchResult, _ExecState);
+		if (BatchExecutionCompletedEventAsync != null)
+		{
+			EnSqlExecutionType executionType = EnSqlExecutionType.QueryOnly;
+			if (ExecLiveSettings != null)
+				executionType = ExecLiveSettings.ExecutionType;
+
+			await Cmd.AwaitableAsync();
+
+			if (batchResult == EnScriptExecutionResult.Cancel)
+				QryMgr.AsyncCancelTokenSource.Cancel();
+
+			BatchExecutionCompletedEventArgs args = new(batchResult, batch, executionType, cancelToken, syncToken);
+
+			_ = BatchExecutionCompletedEventAsync.RaiseEventAsync(this, args);
+		}
+	}
+
+
+
+	private void RaiseBatchExecutionStart(QESQLBatch batch)
+	{
+		// Tracer.Trace(GetType(), "QESQLExec.OnStartBatchExecution", "m_curBatchIndex = {0}", _CurBatchIndex);
+		BatchExecutionStartEvent?.Invoke(this, new BatchExecutionStartEventArgs(-1, batch));
 	}
 
 
@@ -386,22 +448,24 @@ public class QESQLExec : AbstractQESQLExec, IBsCommandExecuter
 
 
 
-	private void RaiseScriptProcessingError(string msg, EnQESQLScriptProcessingMessageType msgType)
+	private void UnhookBatchConsumer(QESQLBatch batch, IBsQESQLBatchConsumer batchConsumer)
 	{
-		// Tracer.Trace(GetType(), "OnScriptProcessingError()", "msg = {0}", msg);
+		// Tracer.Trace(GetType(), "UnhookBatchConsumer()");
 
-		switch (msgType)
-		{
-			case EnQESQLScriptProcessingMessageType.FatalError:
-				RaiseErrorMessage(Resources.ErrorFatalScriptingNoParam, msg, msgType);
-				break;
-			case EnQESQLScriptProcessingMessageType.Error:
-				RaiseErrorMessage(Resources.ErrorScriptingNoParam, msg, msgType);
-				break;
-			default:
-				RaiseErrorMessage(Resources.WarnScriptingNoParam, msg, msgType);
-				break;
-		}
+		if (batch == null || batchConsumer == null || !_Hooked)
+			return;
+
+		_Hooked = false;
+
+		batch.ErrorMessageEvent -= batchConsumer.OnErrorMessage;
+		batch.MessageEvent -= batchConsumer.OnMessage;
+		batch.NewResultSetEventAsync -= batchConsumer.OnNewResultSetAsync;
+		batch.CancellingEvent -= batchConsumer.OnCancelling;
+		batch.FinishedResultSetEvent -= batchConsumer.OnFinishedProcessingResultSet;
+		batch.SpecialActionEvent -= batchConsumer.OnSpecialAction;
+		batch.StatementCompletedEvent -= batchConsumer.OnStatementCompleted;
+
+		batch.StatementCompletedEvent -= OnBatchStatementCompleted;
 	}
 
 

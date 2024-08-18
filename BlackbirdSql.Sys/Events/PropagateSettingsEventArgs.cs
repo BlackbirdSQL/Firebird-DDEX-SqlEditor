@@ -4,23 +4,105 @@ using BlackbirdSql.Sys.Extensions;
 using BlackbirdSql.Sys.Interfaces;
 
 
+
 namespace BlackbirdSql.Sys.Events;
 
+
+// =============================================================================================================
+//										PropagateSettingsEventArgs Class
+//
 /// <summary>
-/// Contains the package settings/options payload used by GlobalsAgent
-/// to push/propogate all extension packages' settings/options updates.
-/// Allows us to add options/settings without having to define variables
+/// Contains the package settings/options payload used to push/propogate all extension packages'
+/// settings/options updates. Allows us to add options/settings without having to define variables
 /// each and every time.
 /// </summary>
+// =============================================================================================================
 public class PropagateSettingsEventArgs : EventArgs
 {
-	public readonly string Package = null;
-	public readonly string Group = null;
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - PropagateSettingsEventArgs
+	// ---------------------------------------------------------------------------------
+
+
+	public PropagateSettingsEventArgs()
+	{
+	}
+
+
+	public PropagateSettingsEventArgs(string package, string group)
+	{
+		_Package = package;
+		_Group = group;
+	}
+
+
+	public PropagateSettingsEventArgs(KeyValuePair<string, object>[] arguments)
+	{
+
+		if (arguments != null)
+		{
+			_Arguments = new(arguments.Length);
+
+			AddRange(arguments);
+		}
+	}
+
+
+	public PropagateSettingsEventArgs(string package, string group, KeyValuePair<string, object>[] arguments) : this(arguments)
+	{
+		_Package = package;
+		_Group = group;
+	}
+
+
+	public PropagateSettingsEventArgs(MutablePair<string, object>[] arguments)
+	{
+		if (arguments != null)
+		{
+			_Arguments = new(arguments.Length);
+
+			AddRange(arguments);
+		}
+	}
+
+
+	public PropagateSettingsEventArgs(string package, string group, MutablePair<string, object>[] arguments) : this(arguments)
+	{
+		_Package = package;
+		_Group = group;
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - PropagateSettingsEventArgs
+	// =========================================================================================================
+
+
+	private readonly string _Package = null;
+	private readonly string _Group = null;
 
 	/// <summary>
 	/// Package options with legacy options for brevity
 	/// </summary>
 	private List<MutablePair<string, object>> _Arguments = null;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - PropagateSettingsEventArgs
+	// =========================================================================================================
 
 
 	public object this[string name]
@@ -54,65 +136,20 @@ public class PropagateSettingsEventArgs : EventArgs
 
 	public List<MutablePair<string, object>> Arguments => _Arguments ??= [];
 
+	public string Group => _Group;
+
+	public string Package => _Package;
 
 
-	public PropagateSettingsEventArgs()
-	{
-	}
-
-	public PropagateSettingsEventArgs(string package, string group)
-	{
-		Package = package;
-		Group = group;
-	}
+	#endregion Property Accessors
 
 
 
-	public PropagateSettingsEventArgs(KeyValuePair<string, object>[] arguments)
-	{
-
-		if (arguments != null)
-		{
-			_Arguments = new(arguments.Length);
-
-			AddRange(arguments);
-		}
-	}
-
-	public PropagateSettingsEventArgs(string package, string group, KeyValuePair<string, object>[] arguments) : this(arguments)
-	{
-		Package = package;
-		Group = group;
-	}
-
-	public PropagateSettingsEventArgs(MutablePair<string, object>[] arguments)
-	{
-		if (arguments != null)
-		{
-			_Arguments = new(arguments.Length);
-
-			AddRange(arguments);
-		}
-	}
-
-	public PropagateSettingsEventArgs(string package, string group, MutablePair<string, object>[] arguments) : this(arguments)
-	{
-		Package = package;
-		Group = group;
-	}
 
 
-	public KeyValuePair<string, object> ValuePair(string key, object value)
-	{
-		return new KeyValuePair<string, object>(key, value);
-	}
-
-
-
-	public MutablePair<string, object> MutatedPair(string key, object value)
-	{
-		return new MutablePair<string, object>(key, value);
-	}
+	// =========================================================================================================
+	#region Methods - PropagateSettingsEventArgs
+	// =========================================================================================================
 
 
 	public void Add(MutablePair<string, object> pair)
@@ -120,11 +157,15 @@ public class PropagateSettingsEventArgs : EventArgs
 		Arguments.Add(pair);
 	}
 
+
+
 	public void Add(IBsSettingsModel model, IBsModelPropertyWrapper wrapper)
 	{
 		object value = wrapper.WrappedPropertyGetMethod(model);
-		Arguments.Add(new MutablePair<string, object>(model.LivePrefix + wrapper.PropertyName, value));
+		Arguments.Add(new MutablePair<string, object>(model.PropertyPrefix + wrapper.PropertyName, value));
 	}
+
+
 
 	public void AddRange(KeyValuePair<string, object>[] arguments)
 	{
@@ -140,6 +181,7 @@ public class PropagateSettingsEventArgs : EventArgs
 	}
 
 
+
 	public void AddRange(MutablePair<string, object>[] arguments)
 	{
 		if (arguments != null)
@@ -152,6 +194,8 @@ public class PropagateSettingsEventArgs : EventArgs
 		}
 	}
 
+
+
 	public void AddRange(IBsSettingsModel model)
 	{
 		if (model == null)
@@ -163,5 +207,21 @@ public class PropagateSettingsEventArgs : EventArgs
 		}
 	}
 
+
+
+	public MutablePair<string, object> MutatedPair(string key, object value)
+	{
+		return new MutablePair<string, object>(key, value);
+	}
+
+
+
+	public KeyValuePair<string, object> ValuePair(string key, object value)
+	{
+		return new KeyValuePair<string, object>(key, value);
+	}
+
+
+	#endregion Methods
 
 }

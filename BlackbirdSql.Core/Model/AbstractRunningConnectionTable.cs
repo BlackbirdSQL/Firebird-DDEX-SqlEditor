@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Data;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Enums;
 
@@ -214,7 +215,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		string existingDatasetId = null;
 
 		// Get the index if the connection already exists.
-		if (TryGetHybridInternalRowValue(connectionUrl, out DataRow row))
+		if (InternalTryGetHybridRowValue(connectionUrl, EnRctKeyType.ConnectionUrl, out DataRow row))
 		{
 			rNewRctConnection = false;
 			connectionIndex = Convert.ToInt32(row["Id"]);
@@ -473,7 +474,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 
 		// Nothing to update. New connection.
-		if (!TryGetHybridInternalRowValue(connectionUrl, out DataRow row))
+		if (!InternalTryGetHybridRowValue(connectionUrl, EnRctKeyType.ConnectionUrl, out DataRow row))
 			return null;
 
 
@@ -557,7 +558,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 			bool itsOurDatasetKey = false;
 
-			if (TryGetHybridInternalRowValue(csa.DatasetKey, out DataRow tmpRow))
+			if (InternalTryGetHybridRowValue(csa.DatasetKey, EnRctKeyType.DatasetKey, out DataRow tmpRow))
 			{
 				// Is taken but perhaps it's ours.
 				if (connectionUrl.Equals((string)tmpRow[C_KeyExConnectionUrl]))

@@ -125,32 +125,25 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	{
 		// Extension specific describers.
 
-		try
-		{
-			Describers.AddRange(
-			[
-				new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey, D_Default),
-				new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey, D_Default),
-				new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId, D_Default),
-				new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset, D_Default | D_Derived),
+		Describers.AddRange(
+		[
+			new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey, D_Default),
+			new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey, D_Default),
+			new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId, D_Default),
+			new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset, D_Default | D_Derived),
 
-				new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName, D_Default),
-				new Describer(C_KeyExConnectionSource, typeof(EnConnectionSource), C_DefaultExConnectionSource, D_Default),
+			new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName, D_Default),
+			new Describer(C_KeyExConnectionSource, typeof(EnConnectionSource), C_DefaultExConnectionSource, D_Default),
 
-				new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, D_Public | D_Derived),
-				new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, D_Public | D_Derived),
-				new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, D_Public | D_Derived),
+			new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, D_Public | D_Derived),
+			new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, D_Public | D_Derived),
+			new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, D_Public | D_Derived),
 
-				new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion, D_Public | D_Derived),
-				new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, D_Public | D_Derived),
-				new Describer(C_KeyExEdmx, typeof(bool), D_Default),
-				new Describer(C_KeyExEdmu, typeof(bool), D_Default)
-			]);
-		}
-		catch (Exception ex)
-		{
-			Diag.DebugDug(ex);
-		}
+			new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion, D_Public | D_Derived),
+			new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, D_Public | D_Derived),
+			new Describer(C_KeyExEdmx, typeof(bool), D_Default),
+			new Describer(C_KeyExEdmu, typeof(bool), D_Default)
+		]);
 
 		// Diag.DebugTrace("Added core describers");
 	}

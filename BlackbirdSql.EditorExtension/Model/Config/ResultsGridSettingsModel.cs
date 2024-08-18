@@ -23,12 +23,11 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for Grid Results options
 /// </summary>
 // =========================================================================================================
-public class ResultsGridSettingsModel(IBsTransientSettings transientSettings)
-	: AbstractSettingsModel<ResultsGridSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class ResultsGridSettingsModel : AbstractSettingsModel<ResultsGridSettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - ResultsGridSettingsModel
+	#region Constructors / Destructors - ResultsGridSettingsModel
 	// ---------------------------------------------------------------------------------
 
 
@@ -37,7 +36,13 @@ public class ResultsGridSettingsModel(IBsTransientSettings transientSettings)
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	public ResultsGridSettingsModel(IBsTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
+	{
+	}
+
+
+	#endregion Constructors / Destructors
 
 
 
@@ -49,7 +54,7 @@ public class ResultsGridSettingsModel(IBsTransientSettings transientSettings)
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "ResultsGrid";
-	private const string C_LivePrefix = "EditorResultsGrid";
+	private const string C_PropertyPrefix = "EditorResultsGrid";
 
 
 	#endregion Constants
@@ -163,14 +168,14 @@ public class ResultsGridSettingsModel(IBsTransientSettings transientSettings)
 	[GlobalizedCategory("OptionCategoryGridULimits")]
 	[GlobalizedDisplayName("OptionDisplayResultsGridMaxXml")]
 	[GlobalizedDescription("OptionDescriptionResultsGridMaxXml")]
-	[DefaultValue(SysConstants.C_DefaultGridMaxCharsPerColumnXml)]
-	public EnGlobalizedMegabytes MaxCharsPerColumnXml { get; set; } = (EnGlobalizedMegabytes)SysConstants.C_DefaultGridMaxCharsPerColumnXml;
+	[DefaultValue(SharedConstants.C_DefaultGridMaxCharsPerColumnXml)]
+	public EnGlobalizedMegabytes MaxCharsPerColumnXml { get; set; } = (EnGlobalizedMegabytes)SharedConstants.C_DefaultGridMaxCharsPerColumnXml;
 
 	[GlobalizedCategory("OptionCategoryGridULimits")]
 	[GlobalizedDisplayName("OptionDisplayResultsGridMaxStd")]
 	[GlobalizedDescription("OptionDescriptionResultsGridMaxStd")]
-	[DefaultValue(SysConstants.C_DefaultGridMaxCharsPerColumnStd)]
-	public EnGlobalizedKilobytes MaxCharsPerColumnStd { get; set; } = (EnGlobalizedKilobytes)SysConstants.C_DefaultGridMaxCharsPerColumnStd;
+	[DefaultValue(SharedConstants.C_DefaultGridMaxCharsPerColumnStd)]
+	public EnGlobalizedKilobytes MaxCharsPerColumnStd { get; set; } = (EnGlobalizedKilobytes)SharedConstants.C_DefaultGridMaxCharsPerColumnStd;
 
 
 	#endregion Property Accessors

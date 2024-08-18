@@ -395,12 +395,6 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 
 
-
-
-
-
-
-
 	public async Task<bool> GeneratePlanAsync(CancellationToken cancelToken)
 	{
 		FbStatement statement = _Statement;

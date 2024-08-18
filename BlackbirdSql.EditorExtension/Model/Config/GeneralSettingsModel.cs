@@ -17,12 +17,11 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for General options
 /// </summary>
 // =========================================================================================================
-public class GeneralSettingsModel(IBsTransientSettings transientSettings)
-	: AbstractSettingsModel<GeneralSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - GeneralSettingsModel
+	#region Constructors / Destructors - GeneralSettingsModel
 	// ---------------------------------------------------------------------------------
 
 
@@ -31,7 +30,14 @@ public class GeneralSettingsModel(IBsTransientSettings transientSettings)
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	public GeneralSettingsModel(IBsTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
+	{
+
+	}
+
+
+	#endregion Constructors / Destructors
 
 
 
@@ -43,7 +49,7 @@ public class GeneralSettingsModel(IBsTransientSettings transientSettings)
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "General";
-	private const string C_LivePrefix = "EditorGeneral";
+	private const string C_PropertyPrefix = "EditorGeneral";
 
 
 	#endregion Constants
@@ -105,6 +111,13 @@ public class GeneralSettingsModel(IBsTransientSettings transientSettings)
 	[DefaultValue(EnGlobalizedLanguageService.FbSql)]
 	public EnGlobalizedLanguageService LanguageService { get; set; } = EnGlobalizedLanguageService.FbSql;
 
+
+	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayGeneralTtsDefault")]
+	[GlobalizedDescription("OptionDescriptionGeneralTtsDefault")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(true)]
+	public bool TtsDefault { get; set; } = true;
 
 	#endregion Property Accessors
 

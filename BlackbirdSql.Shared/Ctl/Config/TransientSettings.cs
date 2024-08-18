@@ -20,23 +20,65 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Ctl.Config;
 
 
-// =========================================================================================================
+// =============================================================================================================
 //										TransientSettings Class
 //
 /// <summary>
-/// Consolidated single access point for daisy-chained packages settings models (IBsSettingsModel).
-/// As a convention we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
-/// descendent tree from the top-level extension lib down to the Core. There is no point using services as
-/// this configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
+/// A Transient Options Model that inherits as a copy from the Persistent models but can be used as a volatile
+/// AutomationObject.
 /// </summary>
-// =========================================================================================================
+// =============================================================================================================
 public class TransientSettings : PersistentSettings, IBsEditorTransientSettings, IBsTransientSettings, ICloneable
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Fields
+	#region Constructors / Destructors - TransientSettings
 	// ---------------------------------------------------------------------------------
+
+
+	/// <summary>
+	/// Protected singleton .ctor
+	/// </summary>
+	protected TransientSettings() : base(true)
+	{
+		_ExecOptions = new BitArray(16);
+	}
+
+	protected TransientSettings(BitArray execOptions) : base(true)
+	{
+		_ExecOptions = execOptions.Clone() as BitArray;
+	}
+
+
+
+	public static TransientSettings CreateInstance()
+	{
+		return new()
+		{
+			_LiveStore = new(SettingsStore)
+		};
+	}
+
+
+
+	public static TransientSettings CreateInstance(IDictionary<string, object> liveStore, BitArray execOptions)
+	{
+		return new(execOptions)
+		{
+			_LiveStore = new(liveStore)
+		};
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields
+	// =========================================================================================================
 
 
 	private readonly BitArray _ExecOptions;
@@ -57,15 +99,10 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 	{
 		get
 		{
-			lock (_LockGlobal)
+			lock (_LockObject)
 			{
 				if (!_LiveStore.TryGetValue(name, out object value))
-				{
-					CmdObject.Name = null;
 					return null;
-				}
-
-				CmdObject.Name = name;
 
 				return value;
 			}
@@ -73,7 +110,7 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 		set
 		{
-			lock (_LockGlobal)
+			lock (_LockObject)
 				_LiveStore[name] = value;
 		}
 	}
@@ -105,6 +142,11 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 	{
 		get { return (EnLanguageService)this["EditorGeneralLanguageService"]; }
 		set { this["EditorGeneralLanguageService"] = value; }
+	}
+	public new bool EditorTtsDefault
+	{
+		get { return (bool)this["EditorGeneralTtsDefault"]; }
+		set { this["EditorGeneralTtsDefault"] = value; }
 	}
 
 
@@ -176,16 +218,12 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 
 	// Editor ExecutionSettingsModel
-	public new bool EditorExecutionTtsDefault
-	{
-		get { return (bool)this["EditorExecutionGeneralTtsDefault"]; }
-		set { this["EditorExecutionGeneralTtsDefault"] = value; }
-	}
 	public new int EditorExecutionSetRowCount
 	{
 		get { return (int)this["EditorExecutionGeneralSetRowCount"]; }
 		set { this["EditorExecutionGeneralSetRowCount"] = value; }
 	}
+
 	public new EnBlobSubType EditorExecutionSetBlobDisplay
 	{
 		get { return (EnBlobSubType)this["EditorExecutionGeneralSetBlobDisplay"]; }
@@ -538,63 +576,13 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - TransientSettings
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private singleton .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected TransientSettings() : base(true)
-	{
-		_ExecOptions = new BitArray(16);
-	}
-
-	protected TransientSettings(BitArray execOptions) : base(true)
-	{
-		_ExecOptions = execOptions.Clone() as BitArray;
-	}
-
-
-
-	public static TransientSettings CreateInstance()
-	{
-		TransientSettings settings = new()
-		{
-			_LiveStore = new(_SettingsStore)
-		};
-
-		return settings;
-
-	}
-
-
-
-	public static TransientSettings CreateInstance(IDictionary<string, object> liveStore, BitArray execOptions)
-	{
-		TransientSettings settings = new(execOptions)
-		{
-			_LiveStore = new(liveStore)
-		};
-
-		return settings;
-	}
-
-
-	#endregion Constructors / Destructors
-
-
-
-	// =========================================================================================================
 	#region Methods - TransientSettings
 	// =========================================================================================================
 
 
 	public virtual object Clone()
 	{
-		lock (_LockGlobal)
+		lock (_LockObject)
 			return CreateInstance(_LiveStore, _ExecOptions);
 	}
 
@@ -613,8 +601,13 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 	public bool PropertyExists(string name)
 	{
-		lock (_LockGlobal)
+		lock (_LockObject)
 			return _LiveStore.ContainsKey(name);
+	}
+
+
+	protected override void Initialize()
+	{
 	}
 
 	/// <summary>

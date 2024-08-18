@@ -26,12 +26,11 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for General Results options
 /// </summary>
 // =========================================================================================================
-public class ResultsSettingsModel(IBsTransientSettings transientSettings)
-	: AbstractSettingsModel<ResultsSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class ResultsSettingsModel : AbstractSettingsModel<ResultsSettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - ResultsSettingsModel
+	#region Constructors / Destructors - ResultsSettingsModel
 	// ---------------------------------------------------------------------------------
 
 
@@ -40,7 +39,13 @@ public class ResultsSettingsModel(IBsTransientSettings transientSettings)
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	public ResultsSettingsModel(IBsTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
+	{
+	}
+
+
+	#endregion Constructors / Destructors
 
 
 
@@ -52,7 +57,7 @@ public class ResultsSettingsModel(IBsTransientSettings transientSettings)
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "Results";
-	private const string C_LivePrefix = "EditorResultsGeneral";
+	private const string C_PropertyPrefix = "EditorResultsGeneral";
 
 
 	#endregion Constants

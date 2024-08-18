@@ -61,6 +61,25 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Statement #{0}: {1}.
+        /// </summary>
+        internal static string BatchErrorMessage {
+            get {
+                return ResourceManager.GetString("BatchErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Script parse error:
+        ///{0}.
+        /// </summary>
+        internal static string BatchParseErrorMessage {
+            get {
+                return ResourceManager.GetString("BatchParseErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 
         ///Statement #{0} ({1} row(s) selected, {2} in total)
         ///.
@@ -333,11 +352,22 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occurred while executing batch. Error message is: {0}.
+        ///   Looks up a localized string similar to An error occurred while executing batch. Error message is:
+        ///{0}.
         /// </summary>
         internal static string ExQueryBatchError {
             get {
                 return ResourceManager.GetString("ExQueryBatchError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while executing batch statement #{0}. Error message is:
+        ///{1}.
+        /// </summary>
+        internal static string ExQueryBatchStatementError {
+            get {
+                return ResourceManager.GetString("ExQueryBatchStatementError", resourceCulture);
             }
         }
         

@@ -12,10 +12,10 @@ using BlackbirdSql.Shared.Enums;
 namespace BlackbirdSql.Shared.Interfaces;
 
 
-// =========================================================================================================
+// =============================================================================================================
 //									IBsEditorTransientSettings Interface
 //
-// =========================================================================================================
+// =============================================================================================================
 public interface IBsEditorTransientSettings
 {
 
@@ -29,6 +29,7 @@ public interface IBsEditorTransientSettings
 	bool EditorExecuteQueryOnOpen { get; set; }
 	bool EditorPromptSave { get; set; }
 	EnLanguageService EditorLanguageService { get; set; }
+	bool EditorTtsDefault { get; set; }
 
 
 	// Editor ContextSettingsModel
@@ -50,7 +51,6 @@ public interface IBsEditorTransientSettings
 
 
 	// Editor ExecutionSettingsModel
-	bool EditorExecutionTtsDefault { get; set; }
 	int EditorExecutionSetRowCount { get; set; }
 	EnBlobSubType EditorExecutionSetBlobDisplay { get; set; }
 	int EditorExecutionTimeout { get; set; }

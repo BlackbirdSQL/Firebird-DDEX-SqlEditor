@@ -1412,6 +1412,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Obsolete and Deprecated Settings.
+        /// </summary>
+        internal static string OptionCategoryObsolete {
+            get {
+                return ResourceManager.GetString("OptionCategoryObsolete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Status Bar Content.
         /// </summary>
         internal static string OptionCategoryStatusBar {
@@ -1673,15 +1682,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The default initial TTS state when a SQL script is opened..
-        /// </summary>
-        internal static string OptionDescriptionExecutionTtsDefault {
-            get {
-                return ResourceManager.GetString("OptionDescriptionExecutionTtsDefault", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar..
         /// </summary>
         internal static string OptionDescriptionGeneralEnableIntellisense {
@@ -1714,6 +1714,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         internal static string OptionDescriptionGeneralPromptSave {
             get {
                 return ResourceManager.GetString("OptionDescriptionGeneralPromptSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default initial TTS state when a SQL script is opened..
+        /// </summary>
+        internal static string OptionDescriptionGeneralTtsDefault {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralTtsDefault", resourceCulture);
             }
         }
         
@@ -2222,15 +2231,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Default initial TTS state.
-        /// </summary>
-        internal static string OptionDisplayExecutionTtsDefault {
-            get {
-                return ResourceManager.GetString("OptionDisplayExecutionTtsDefault", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to  Enable Intellisense.
         /// </summary>
         internal static string OptionDisplayGeneralEnableIntellisense {
@@ -2263,6 +2263,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         internal static string OptionDisplayGeneralPromptSave {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralPromptSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default initial TTS state.
+        /// </summary>
+        internal static string OptionDisplayGeneralTtsDefault {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralTtsDefault", resourceCulture);
             }
         }
         

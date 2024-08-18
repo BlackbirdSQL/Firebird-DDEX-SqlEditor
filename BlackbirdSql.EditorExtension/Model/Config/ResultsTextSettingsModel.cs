@@ -24,12 +24,11 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for Text Results options
 /// </summary>
 // =========================================================================================================
-public class ResultsTextSettingsModel(IBsTransientSettings transientSettings)
-	: AbstractSettingsModel<ResultsTextSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class ResultsTextSettingsModel : AbstractSettingsModel<ResultsTextSettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - ResultsTextSettingsModel
+	#region Constructors / Destructors - ResultsTextSettingsModel
 	// ---------------------------------------------------------------------------------
 
 
@@ -38,7 +37,13 @@ public class ResultsTextSettingsModel(IBsTransientSettings transientSettings)
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	public ResultsTextSettingsModel(IBsTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
+	{
+	}
+
+
+	#endregion Constructors / Destructors
 
 
 
@@ -50,7 +55,7 @@ public class ResultsTextSettingsModel(IBsTransientSettings transientSettings)
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "ResultsText";
-	private const string C_LivePrefix = "EditorResultsText";
+	private const string C_PropertyPrefix = "EditorResultsText";
 
 
 	#endregion Constants
@@ -144,8 +149,8 @@ public class ResultsTextSettingsModel(IBsTransientSettings transientSettings)
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayResultsTextMaxStd")]
 	[GlobalizedDescription("OptionDescriptionResultsTextMaxStd")]
-	[DefaultValue(SysConstants.C_DefaultTextMaxCharsPerColumnStd)]
-	public EnGlobalizedBytes MaxCharsPerColumnStd { get; set; } = (EnGlobalizedBytes)SysConstants.C_DefaultTextMaxCharsPerColumnStd;
+	[DefaultValue(SharedConstants.C_DefaultTextMaxCharsPerColumnStd)]
+	public EnGlobalizedBytes MaxCharsPerColumnStd { get; set; } = (EnGlobalizedBytes)SharedConstants.C_DefaultTextMaxCharsPerColumnStd;
 
 
 	[GlobalizedCategory("OptionCategoryTextTabs")]

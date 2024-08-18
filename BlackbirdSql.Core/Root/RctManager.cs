@@ -353,7 +353,7 @@ public sealed class RctManager : RunningConnectionTable
 	{
 		// Tracer.Trace(typeof(RctManager), "LoadProjectConnections()");
 
-		if (!PersistentSettings.IncludeAppConnections || !(Instance?.InternalLoaded ?? false) || ShutdownState)
+		if (!(Instance?.InternalLoaded ?? false) || ShutdownState)
 			return false;
 
 		return EnsuredInstance.InternalAsyuiLoadApplicationConnections(probject);
@@ -1098,12 +1098,6 @@ public sealed class RctManager : RunningConnectionTable
 
 
 
-	protected override bool InternalResolveDeadlocksAndEnsureLoaded(bool asynchronous)
-	{
-		return ResolveDeadlocksAndEnsureLoaded(asynchronous);
-	}
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Modifies the name and connection information of Server Explorer's internal
@@ -1221,60 +1215,16 @@ public sealed class RctManager : RunningConnectionTable
 	private static bool ResolveDeadlocksAndEnsureLoaded(bool asynchronous)
 	{
 		// Tracer.Trace(typeof(RctManager), "ResolveDeadlocksAndLoad()", "Instance.Initialized: {0}", Instance._Rct == null);
-
-		AsyncInitializeServerExplorerModels();
-
 		if (ApcManager.IdeShutdownState)
 			return false;
+
+		AsyncInitializeServerExplorerModels();
 
 		_Instance ??= new RctManager();
 
 		RctManager instance = (RctManager)_Instance;
 
-
-		// Rct has not been initialized.
-		if (!Loading && !Loaded)
-		{
-			instance.InternalLoadConnections();
-
-			if (asynchronous || !PersistentSettings.IncludeAppConnections || ThreadHelper.CheckAccess())
-				return true;
-
-			instance.WaitForAsyncLoad();
-
-			return true;
-		}
-		// Asynchronous request. Rct has been initialized or is loading, so just exit.
-		else if (asynchronous)
-		{
-			return false;
-		}
-		// Synchronous request and loading - deadlock red zone.
-		else if (Loading)
-		{
-			// If sync loads are still active we're safe and can wait because no switching
-			// of threads takes place here.
-
-			instance.WaitForSyncLoad();
-
-			// If we're not on the main thread or the async payload is not in a
-			// pending state we can safely wait.
-			if (!ThreadHelper.CheckAccess() || !instance.AsyncPending)
-			{
-				instance.WaitForAsyncLoad();
-			}
-			else
-			{
-				// We're on the main thread and async is pending. This is a deadlock red zone.
-				// Send the async payload a cancel notification and execute the cancelled
-				// async task on the main thread.
-
-				instance.InternalLoadApplicationConnectionsSync();
-			}
-		}
-
-
-		return instance.InternalLoaded;
+		return instance.InternalResolveDeadlocksAndEnsureLoaded(asynchronous);
 	}
 
 

@@ -4,8 +4,6 @@
 
 using System;
 using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core.Interfaces;
@@ -18,7 +16,6 @@ using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Threading;
 
 
 

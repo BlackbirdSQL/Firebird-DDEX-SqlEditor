@@ -325,7 +325,15 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	{
 		// Tracer.Trace(GetType(), "IsSqlException()", "exceptionType: {0}.", @this.GetType().Name);
 
-		return @this is FbException || @this.GetType().Name == "IscException";
+		if (@this is FbException exception)
+		{
+			if (GetErrorCode(exception) == 335544727)
+				return false;
+
+			return true;
+		}
+
+		return @this.GetType().Name == "IscException";
 	}
 
 

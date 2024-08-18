@@ -66,6 +66,7 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 				command = new CommandToggleIntellisense(window);
 				break;
 			case EnCommandSet.CmdIdQuerySettings:
+			case EnCommandSet.CmdIdQuerySettings2:
 				command = new CommandQuerySettings(window);
 				break;
 			case EnCommandSet.CmdIdResultsAsText:

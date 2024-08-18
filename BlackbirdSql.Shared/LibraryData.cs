@@ -19,10 +19,7 @@ namespace BlackbirdSql.Shared;
 public static class LibraryData
 {
 	public const int C_ConnectionValidationModulus = 20;
-	public const int C_DefaultInitialMaxCharsPerColumnForGrid = 50;
-	public const int C_DefaultInitialMinNumberOfVisibleRows = 8;
-	public const int C_DefaultMaxCharsPerColumnForGrid = 43679;
-
+	public const int C_ChangeDatabaseErrorNumber = 5701;
 	public const string C_ShowPlanNamespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan";
 
 

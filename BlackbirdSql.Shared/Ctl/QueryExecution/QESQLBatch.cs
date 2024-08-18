@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Shared.Enums;
@@ -18,6 +19,7 @@ using BlackbirdSql.Shared.Model.QueryExecution;
 using BlackbirdSql.Shared.Properties;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
+using static System.Net.Mime.MediaTypeNames;
 
 
 
@@ -85,9 +87,6 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	// =========================================================================================================
 
 
-	private const int C_ChangeDatabaseErrorNumber = 5701;
-
-
 	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
@@ -101,7 +100,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	private long _RowsAffected;
 	private EnSpecialActions _SpecialActions;
 	private IBsNativeDbStatementWrapper _SqlStatement = null;
-	private bool _SuppressProviderMessageHeaders;
+	// private bool _SuppressProviderMessageHeaders;
 	private IBsTextSpan _TextSpan;
 	private long _TotalRowsAffected;
 
@@ -242,7 +241,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		try
 		{
 			// ----------------------------------------------------------------------------------------- //
-			// **************** Final Execution Point (10) - QESQLBatch.ExecuteAsync() ***************** //
+			// **************** Final 4Execution Point (13) - QESQLBatch.ExecuteAsync() ***************** //
 			// ----------------------------------------------------------------------------------------- //
 
 			// Tracer.Trace(GetType(), "ExecuteAsync()", "Async Executing _SqlStatement.");
@@ -325,7 +324,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			if (!cancelToken.IsCancellationRequested)
 				Diag.Expected(ex);
 
-			result = HandleExecutionExceptions(ex, cancelToken);
+			result = HandleExecutionExceptions(ex, _SqlStatement.Index, cancelToken);
 		}
 		finally
 		{
@@ -343,57 +342,40 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 
-	protected void HandleCriticalExceptionMessage(Exception ex)
+	protected void HandleCriticalExceptionMessage(Exception ex, int statementIndex)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatch.HandleExceptionMessage", "", null);
 
-		if (ex.IsSqlException())
-		{
-			HandleSqlMessages(ex.GetErrors(), true);
+		// HandleSqlMessages(ex.GetErrors(), true);
+		string message = statementIndex < 0
+			? Resources.ExQueryBatchError.FmtRes(ex.Message)
+			: Resources.ExQueryBatchStatementError.FmtRes(statementIndex+1, ex.Message);
 
-			_QryMgr.IsCancelling = true;
-			_QryMgr.IsFaulted = true;
-			_QryMgr.IsPrompting = true;
-			_QryMgr.RaiseShowWindowFrame();
-
-			MessageCtl.ShowEx(ex, ex.Message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			_QryMgr.IsPrompting = false;
-			return;
-		}
-
-
-		BatchErrorMessageEventArgs args = new BatchErrorMessageEventArgs(
-			Resources.ExQueryBatchError.FmtRes(ex.Message), "");
+		BatchErrorMessageEventArgs args = new BatchErrorMessageEventArgs(message, "");
 		RaiseErrorMessage(args);
+
+		_QryMgr.IsCancelling = true;
+		_QryMgr.IsFaulted = true;
+		_QryMgr.IsPrompting = true;
+		_QryMgr.RaiseShowWindowFrame();
+
+		message = statementIndex < 0
+			? ex.Message
+			: Resources.BatchErrorMessage.FmtRes(statementIndex+1, ex.Message);
+
+		MessageCtl.ShowEx(ex, message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+		_QryMgr.IsPrompting = false;
 	}
 
 
 
-	protected void HandleDbExceptionMessage(Exception ex)
-	{
-		if (ex.IsSqlException())
-		{
-			HandleSqlMessages(ex.GetErrors(), true);
-
-			_QryMgr.IsCancelling = true;
-			_QryMgr.IsFaulted = true;
-			_QryMgr.IsPrompting = true;
-			_QryMgr.RaiseShowWindowFrame();
-
-			MessageCtl.ShowEx(ex, ex.Message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			_QryMgr.IsPrompting = false;
-		}
-	}
-
-
-
-	public EnScriptExecutionResult HandleExecutionExceptions(Exception exception, CancellationToken cancelToken)
+	public EnScriptExecutionResult HandleExecutionExceptions(Exception exception, int statementIndex, CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "Exception: {0}.", exception.Message);
 
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 
-		if (exception.IsSqlException())
+		if (exception.IsSqlException() || (statementIndex == -1 && exception is ArgumentException))
 		{
 			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "DbException: {0}.", exception.GetType().Name);
 
@@ -401,21 +383,21 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				result = !CheckCancelled(cancelToken) ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
 
 			if (result != EnScriptExecutionResult.Cancel)
-				HandleDbExceptionMessage(exception);
+				HandleSqlMessages(exception, statementIndex);
 		}
 		else if (exception.HasExceptionType<IOException>())
 		{
 			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "IOException: {0}.", exception.GetType().Name);
 
 			result = EnScriptExecutionResult.Failure;
-			HandleCriticalExceptionMessage(exception);
+			HandleCriticalExceptionMessage(exception, statementIndex);
 		}
 		else if (exception.HasExceptionType<OverflowException>())
 		{
 			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "OverflowException: {0}.", exception.GetType().Name);
 
 			result = EnScriptExecutionResult.Failure;
-			HandleCriticalExceptionMessage(exception);
+			HandleCriticalExceptionMessage(exception, statementIndex);
 		}
 		else if (exception.HasExceptionType<ThreadAbortException>())
 		{
@@ -431,13 +413,13 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				result = !CheckCancelled(cancelToken) ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
 
 			if (result != EnScriptExecutionResult.Cancel)
-				HandleCriticalExceptionMessage(exception);
+				HandleCriticalExceptionMessage(exception, statementIndex);
 		}
 		else
 		{
 			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "Exception.Exception: {0}.", exception.GetType().Name);
 
-			HandleCriticalExceptionMessage(exception);
+			HandleCriticalExceptionMessage(exception, statementIndex);
 			result = EnScriptExecutionResult.Failure;
 		}
 
@@ -447,71 +429,47 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 
-	public void HandleSqlMessages(IList<object> errors, bool isException)
+	public void HandleSqlMessages(Exception ex, int statementIndex)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatch.HandleSqlMessages", "Error count: {0}.", errors.Count);
 
-		foreach (object error in NativeDb.GetErrorEnumerator(errors))
+		if (statementIndex == -1 && ex is ArgumentException)
 		{
-			// Tracer.Trace(GetType(), "HandleSqlMessages()", "GetErrorNumber: {0}", NativeDb.GetErrorNumber(error));
+			string text = Resources.BatchParseErrorMessage.FmtRes(ex.Message);
 
-			if (NativeDb.GetErrorNumber(error) != C_ChangeDatabaseErrorNumber)
+			_ContainsErrors = true;
+
+			if (ErrorMessageEvent != null)
+				RaiseErrorMessage(new(text, string.Empty, -1, _TextSpan));
+		}
+		else
+		{
+			IList<object> errors = ex.GetErrors();
+
+			foreach (object error in NativeDb.GetErrorEnumerator(errors))
 			{
-				string text = string.Empty;
-				bool isError = false;
+				// Tracer.Trace(GetType(), "HandleSqlMessages()", "GetErrorNumber: {0}", NativeDb.GetErrorNumber(error));
 
-				/*
-				int num = 0;
+				string text = NativeDb.GetErrorMessage(error);
+				int line = NativeDb.GetErrorLineNumber(error);
 
-				if (_TextSpan != null && _TextSpan.LineWithinTextSpan >= 0)
-					num = _TextSpan.LineWithinTextSpan + _TextSpan.AnchorLine;
-				*/
+				if (string.IsNullOrWhiteSpace(text))
+					continue;
 
-				if (isException)
-				{
-					// Tracer.Trace(GetType(), "HandleSqlMessages()", "GetErrorMesage: {0}", NativeDb.GetErrorMessage(error));
+				text = text.Trim();
 
-					if (NativeDb.GetErrorMessage(error) != null && NativeDb.GetErrorMessage(error).Trim() != string.Empty)
-					{
-						isError = true;
-						text = NativeDb.GetErrorMessage(error).Trim();
-						// text = Resources.SQLErrorFormatDbEngine.FmtRes(error.Message == null ? string.Empty : error.Message.Trim(),
-						//	error.Number, error.Class, error.LineNumber + num);
-					}
+				if (statementIndex > -1)
+					text = Resources.BatchErrorMessage.FmtRes(statementIndex + 1, text);
 
-					/*
-					text = ((error.Procedure != null && (error.Procedure == null || error.Procedure.Length != 0))
-						? ((!_SuppressProviderMessageHeaders)
-							? string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat6, error.Source, error.Number, error.Class, error.State, error.Procedure, error.LineNumber + num)
-							: string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat6_NoSource, error.Number, error.Class, error.State, error.Procedure, error.LineNumber + num))
-						: ((!_SuppressProviderMessageHeaders)
-							? string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat5, error.Source, error.Number, error.Class, error.State, error.LineNumber + num)
-							: string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat5_NoSource, error.Number, error.Class, error.State, error.LineNumber + num)));
-					*/
-				}
-				else if (NativeDb.GetErrorClass(error) > 0 && NativeDb.GetErrorNumber(error) > 0)
-				{
-					text = !_SuppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture,
-						Resources.SQLErrorFormat4, NativeDb.GetErrorMessage(error), NativeDb.GetErrorNumber(error),
-						NativeDb.GetErrorClass(error), -1) : string.Format(CultureInfo.CurrentCulture,
-						Resources.SQLErrorFormat4_NoSource, NativeDb.GetErrorNumber(error),
-						NativeDb.GetErrorClass(error), -1);
-					text = text.Trim();
-				}
+				_ContainsErrors = true;
 
-				if (isError)
-				{
-					_ContainsErrors = true;
-
-					if (ErrorMessageEvent != null)
-						RaiseErrorMessage(new(text, string.Empty, -1, _TextSpan));
-				}
-				else if (MessageEvent != null && text != string.Empty)
-				{
-					RaiseMessage(new(text, NativeDb.GetErrorMessage(error)));
-				}
+				if (ErrorMessageEvent != null)
+					RaiseErrorMessage(new(text, string.Empty, line, _TextSpan));
 			}
 		}
+
+		_QryMgr.IsCancelling = true;
+		_QryMgr.IsFaulted = true;
 	}
 
 
@@ -541,8 +499,33 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				return true;
 			}
 		}
-
 		return false;
+	}
+
+
+
+	public EnScriptExecutionResult Parse(IBsNativeDbBatchParser batchParser)
+	{
+		// Tracer.Trace(GetType(), "Parse()");
+
+		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
+
+
+		// ----------------------------------------------------------------------------------------- //
+		// ******************** Parse Execution Point (8) - QESQLBatch.Parse() ********************* //
+		// ----------------------------------------------------------------------------------------- //
+
+		try
+		{
+			batchParser.Parse();
+		}
+		catch (Exception ex)
+		{
+			result = HandleExecutionExceptions(ex, -1, default);
+		}
+
+		return result;
+
 	}
 
 
@@ -561,7 +544,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		{
 
 			// ----------------------------------------------------------------------------------------- //
-			// ******************* After Execution Point (11) - ProcessReaderAsync() ******************* //
+			// ******************* After Execution Point (14) - ProcessReaderAsync() ******************* //
 			// ----------------------------------------------------------------------------------------- //
 
 
@@ -705,7 +688,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		{
 			Diag.Expected(ex);
 
-			result = HandleExecutionExceptions(ex, cancelToken);
+			result = HandleExecutionExceptions(ex, statementIndex, cancelToken);
 		}
 		finally
 		{
@@ -827,7 +810,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Debug(ex);
 			throw ex;
 		}
 		finally
@@ -914,7 +897,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	public void SetSuppressProviderMessageHeaders(bool shouldSuppress)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatch.SetSuppressProviderMessageHeaders", "shouldSuppress = {0}", shouldSuppress);
-		_SuppressProviderMessageHeaders = shouldSuppress;
+		// _SuppressProviderMessageHeaders = shouldSuppress;
 	}
 
 

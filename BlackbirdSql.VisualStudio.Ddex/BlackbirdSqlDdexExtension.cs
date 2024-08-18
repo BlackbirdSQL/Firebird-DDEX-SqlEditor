@@ -11,7 +11,6 @@ using BlackbirdSql.Core.Extensions;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension;
 using BlackbirdSql.LanguageExtension;
-using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -123,6 +122,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// </summary>
 	public BlackbirdSqlDdexExtension() : base()
 	{
+		PersistentSettings.CreateInstance();
 	}
 
 
@@ -170,12 +170,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 			return (BlackbirdSqlDdexExtension)_Instance;
 		}
 	}
-
-
-	/// <summary>
-	/// Accessor to user options at this level of the <see cref="IBsAsyncPackage"/> class hierarchy.
-	/// </summary>
-	private PersistentSettings ExtensionSettings => (PersistentSettings)PersistentSettings.Instance;
 
 
 	#endregion Property accessors
@@ -248,14 +242,9 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 		_S_Stopwatch.Start();
 
-		ProgressAsync(progress, "Extension propagating user settings...").Forget();
-
-		// Load all packages settings models and propogate throughout the extension hierarchy.
-		PropagateSettings();
-
-		ProgressAsync(progress, "Extension propagating user settings... Done.").Forget();
 
 		await base.InitializeAsync(cancellationToken, progress);
+
 
 		ProgressAsync(progress, "Extension registering DDEX Provider services...").Forget();
 
@@ -269,6 +258,13 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 		ProgressAsync(progress, "Extension registering DDEX Provider services... Done.").Forget();
 
+
+		ProgressAsync(progress, "Extension propagating user settings...").Forget();
+
+		// Load all packages settings models and propogate throughout the extension hierarchy.
+		// InitializeSettings();
+
+		ProgressAsync(progress, "Extension propagating user settings... Done.").Forget();
 
 
 		// Perform any final initialization tasks.
@@ -394,7 +390,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Adds Database Client invariant to assembly factory register.
+	/// Adds Database Client invariant to assembly factory register and Native Db
+	/// assemblies and this assembly to CurrentDomain.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private static void RegisterAssemblies()
@@ -406,7 +403,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 		{
-
 			if (args.Name == typeof(BlackbirdSqlDdexExtension).Assembly.FullName)
 				return typeof(BlackbirdSqlDdexExtension).Assembly;
 
@@ -420,27 +416,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		};
 	}
 
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Starts up extension user options push notifications. Only the final class in
-	/// the <see cref="IBsAsyncPackage"/> class hierarchy should implement the method.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected override void PropagateSettings()
-	{
-		if (_InitializedSettings)
-			return;
-
-		_InitializedSettings = true;
-
-		PropagateSettingsEventArgs e = new();
-
-		ExtensionSettings.PopulateSettingsEventArgs(ref e);
-		ExtensionSettings.PropagateSettings(e);
-		ExtensionSettings.RegisterSettingsEventHandlers(ExtensionSettings.OnSettingsSaved);
-	}
 
 
 	#endregion Methods

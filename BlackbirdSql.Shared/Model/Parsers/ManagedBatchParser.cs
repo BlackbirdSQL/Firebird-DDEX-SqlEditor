@@ -3,6 +3,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
@@ -121,9 +122,14 @@ public class ManagedBatchParser : IDisposable
 		// Tracer.Trace(GetType(), "ParseAsync()");
 
 		_BatchParser = NativeDbBatchParserProxy.CreateInstance(_ExecutionType, _QryMgr, _Script);
-		_BatchParser.Parse();
 
-		RaiseScriptParsedEvent(cancelToken);
+		// ------------------------------------------------------------------------------- //
+		// ************ Execution Point (6) - ManagedBatchParser.ParseAsync() ************ //
+		// ------------------------------------------------------------------------------- //
+
+		if (await _Executor.BatchParseCallbackAsync(_BatchParser, cancelToken, syncToken) != EnScriptExecutionResult.Success)
+			return !cancelToken.IsCancellationRequested;
+
 
 		IBsNativeDbStatementWrapper sqlStatement = null;
 		EnParserAction result = EnParserAction.Continue;
@@ -145,7 +151,7 @@ public class ManagedBatchParser : IDisposable
 				//	_BatchParser.CurrentAction, _BatchParser.Current);
 
 				// ------------------------------------------------------------------------------- //
-				// ************ Execution Point (6) - ManagedBatchParser.ParseAsync() ************ //
+				// ************ Execution Point (9) - ManagedBatchParser.ParseAsync() ************ //
 				// ------------------------------------------------------------------------------- //
 				result = await _Executor.BatchStatementCallbackAsync(sqlStatement, 1, cancelToken, syncToken);
 
@@ -201,15 +207,6 @@ public class ManagedBatchParser : IDisposable
 		// GC.SuppressFinalize(this);
 	}
 
-	private void RaiseScriptParsedEvent(CancellationToken cancelToken)
-	{
-		QueryDataEventArgs args = new(_ExecutionType,
-			cancelToken.IsCancellationRequested ? EnSqlStatementAction.Cancelled : _BatchParser.CurrentAction,
-			_QryMgr.IsWithClientStats, _BatchParser.TotalRowsSelected, _BatchParser.StatementCount,
-			_QryMgr.QueryExecutionStartTime, DateTime.Now);
-
-		_Executor.OnBatchScriptParsed(this, args);
-	}
 
 	private void RaiseDataLoadedEvent(CancellationToken cancelToken)
 	{

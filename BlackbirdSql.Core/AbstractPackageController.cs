@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Interfaces;
@@ -399,6 +400,9 @@ public abstract class AbstractPackageController : AbstrusePackageController
 		return csa == null ? CoreConstants.C_DefaultExDatasetKey : csa.DatasetKey;
 	}
 
+
+
+	public override void InitializeSettings() => _ = PersistentSettings.SettingsStore;
 
 
 	protected override void InternalShutdownDte()

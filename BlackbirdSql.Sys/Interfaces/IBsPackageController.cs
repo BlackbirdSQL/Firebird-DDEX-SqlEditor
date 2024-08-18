@@ -188,6 +188,7 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 	TInterface GetService<TService, TInterface>() where TInterface : class;
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
 	string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root);
+	void InitializeSettings();
 	void InvalidateRctManager();
 	bool IsConnectionEquivalency(string connectionString1, string connectionString2);
 	bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2);

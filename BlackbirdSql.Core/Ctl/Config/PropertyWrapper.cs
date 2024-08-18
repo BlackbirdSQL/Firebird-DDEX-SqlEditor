@@ -528,7 +528,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	//     The settings store to set the setting value in.
 	//
 	// Type parameters:
-	//   TOptMdl:
+	//   TModel:
 	//     Type of the base option model.
 	//
 	// Returns:
@@ -536,7 +536,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	//     results in a null value, it cannot be persisted in the settings store and false
 	//     will be returned. False is also returned if any step of the process failed, and
 	//     these are logged.
-	public virtual bool Save<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, WritableSettingsStore settingsStore) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	public virtual bool Save<TModel>(AbstractSettingsModel<TModel> baseOptionModel, WritableSettingsStore settingsStore) where TModel : AbstractSettingsModel<TModel>
 	{
 		string collectionName = OverrideCollectionName ?? baseOptionModel.CollectionName;
 		object obj = null;
@@ -563,7 +563,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		return false;
 	}
 
-	public virtual bool Save<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBsTransientSettings transientSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	public virtual bool Save<TModel>(AbstractSettingsModel<TModel> baseOptionModel, IBsTransientSettings transientSettings) where TModel : AbstractSettingsModel<TModel>
 	{
 		string collectionName = OverrideCollectionName ?? baseOptionModel.CollectionName;
 		object obj = null;
@@ -577,7 +577,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 				return false;
 			}
 
-			transientSettings[baseOptionModel.LivePrefix + PropertyName] = obj;
+			transientSettings[baseOptionModel.PropertyPrefix + PropertyName] = obj;
 			return true;
 		}
 		catch (Exception ex)
@@ -605,13 +605,13 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	//     The settings store to retrieve the setting value from.
 	//
 	// Type parameters:
-	//   TOptMdl:
+	//   TModel:
 	//     Type of the base option model.
 	//
 	// Returns:
 	//     True if the value exists in the settingsStore, and the property was updated in
 	//     baseOptionModel, false if setting does not exist or any step of the process failed.
-	public virtual bool Load<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, SettingsStore settingsStore) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	public virtual bool Load<TModel>(AbstractSettingsModel<TModel> baseOptionModel, SettingsStore settingsStore) where TModel : AbstractSettingsModel<TModel>
 	{
 		string text = OverrideCollectionName ?? baseOptionModel.CollectionName;
 		object obj = null;
@@ -637,32 +637,32 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		return false;
 	}
 
-	public virtual bool Load<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBsTransientSettings transientSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	public virtual bool Load<TModel>(AbstractSettingsModel<TModel> baseOptionModel, IBsTransientSettings transientSettings) where TModel : AbstractSettingsModel<TModel>
 	{
 		object obj = null;
 
 		try
 		{
-			if (!transientSettings.PropertyExists(baseOptionModel.LivePrefix + PropertyName))
+			if (!transientSettings.PropertyExists(baseOptionModel.PropertyPrefix + PropertyName))
 			{
 				return false;
 			}
 
-			obj = transientSettings[baseOptionModel.LivePrefix + PropertyName];
+			obj = transientSettings[baseOptionModel.PropertyPrefix + PropertyName];
 
 			WrappedPropertySetMethod(baseOptionModel, obj);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}", baseOptionModel.GetType().FullName, "Load", baseOptionModel.LivePrefix + PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+			Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}", baseOptionModel.GetType().FullName, "Load", baseOptionModel.PropertyPrefix + PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 		}
 
 		return false;
 	}
 
 
-	public virtual bool LoadDefault<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	public virtual bool LoadDefault<TModel>(AbstractSettingsModel<TModel> baseOptionModel) where TModel : AbstractSettingsModel<TModel>
 	{
 		string text = OverrideCollectionName ?? baseOptionModel.CollectionName;
 		object obj = DefaultValue;
@@ -788,7 +788,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	//     serialization, methods in this object are used.
 	//
 	// Type parameters:
-	//   TOptMdl:
+	//   TModel:
 	//     Type of Community.VisualStudio.Toolkit.AbstractSettingsModel`1.
 	//
 	// Returns:
@@ -842,7 +842,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	//     uses Community.VisualStudio.Toolkit.AbstractSettingsModel`1.SerializeValue(System.Object,System.Type,System.String)
 	//     and Community.VisualStudio.Toolkit.AbstractSettingsModel`1.DeserializeValue(System.String,System.Type,System.String)
 	//     and stores it as binary, refer to those overridable methods for details.
-	protected virtual object ConvertPropertyTypeToStorageType<TOptMdl>(object propertyValue, AbstractSettingsModel<TOptMdl> baseOptionModel) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	protected virtual object ConvertPropertyTypeToStorageType<TModel>(object propertyValue, AbstractSettingsModel<TModel> baseOptionModel) where TModel : AbstractSettingsModel<TModel>
 	{
 		switch (DataType)
 		{
@@ -1017,12 +1017,12 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	//     deserialization, methods in this object are used.
 	//
 	// Type parameters:
-	//   TOptMdl:
+	//   TModel:
 	//     Type of Community.VisualStudio.Toolkit.AbstractSettingsModel`1.
 	//
 	// Returns:
 	//     settingsStoreValue, converted to the property type.
-	protected virtual object ConvertStorageTypeToPropertyType<TOptMdl>(object settingsStoreValue, AbstractSettingsModel<TOptMdl> baseOptionModel) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	protected virtual object ConvertStorageTypeToPropertyType<TModel>(object settingsStoreValue, AbstractSettingsModel<TModel> baseOptionModel) where TModel : AbstractSettingsModel<TModel>
 	{
 		Type type = PropInfo.PropertyType;
 		if (type.IsEnum)

@@ -117,6 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BatchErrorMessage" xml:space="preserve">
+    <value>Statement #{0}: {1}</value>
+  </data>
+  <data name="BatchParseErrorMessage" xml:space="preserve">
+    <value>Script parse error:
+{0}</value>
+  </data>
   <data name="BatchRowsSelectedMessage" xml:space="preserve">
     <value>
 Statement #{0} ({1} row(s) selected, {2} in total)
@@ -210,7 +217,12 @@ Statement #{0} ({1} row(s) selected, {2} in total)
     <value>Modify Connection Error</value>
   </data>
   <data name="ExQueryBatchError" xml:space="preserve">
-    <value>An error occurred while executing batch. Error message is: {0}</value>
+    <value>An error occurred while executing batch. Error message is:
+{0}</value>
+  </data>
+  <data name="ExQueryBatchStatementError" xml:space="preserve">
+    <value>An error occurred while executing batch statement #{0}. Error message is:
+{1}</value>
   </data>
   <data name="ExQueryExecutionCaption" xml:space="preserve">
     <value>Query execution failed</value>

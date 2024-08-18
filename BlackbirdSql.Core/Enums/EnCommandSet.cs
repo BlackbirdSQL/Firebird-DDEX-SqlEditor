@@ -18,9 +18,13 @@ public enum EnCommandSet
 	ToolbarIdEditorWindow = 0x5000, // 20480
 	ToolbarIdOnlineWindow = 0x5001, // 20481
 
-	GrpIdEditorToolbar = 0x5100, // 20736
+	GrpIdToolbarExecute = 0x5100, // 20736
 	GrpIdOnlineToolbar = 0x5101, // 20737
 	GrpIdReusableWell = 0x5102, // 20738
+	GrpIdToolbarConnection = 0x5103, // 20738
+	GrpIdToolbarNew = 0x5104, // 20739
+	GrpIdToolbarOutput = 0x5105, // 20740
+	GrpIdToolbarAdditional = 0x5106, // 20741
 
 	GrpIdSeRootContext = 0x5200, // 20992
 	GrpIdSeNodeContext = 0x5201, // 20993
@@ -81,5 +85,6 @@ public enum EnCommandSet
 	CmdIdValidateSolution = 0x033A, // 826
 	CmdIdTransactionCommit = 0x033B, // 827
 	CmdIdTransactionRollback = 0x033C, // 829
-	CmdIdToggleTTS = 0x033D // 830
+	CmdIdToggleTTS = 0x033D, // 830
+	CmdIdQuerySettings2 = 0x033E // 831
 }

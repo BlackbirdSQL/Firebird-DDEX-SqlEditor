@@ -135,6 +135,15 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 	/// <summary>
+	/// EditorExtensionPackage static .ctor
+	/// </summary>
+	static EditorExtensionPackage()
+	{
+		RegisterAssemblies();
+	}
+
+
+	/// <summary>
 	/// Gets the singleton Package instance
 	/// </summary>
 	public static new EditorExtensionPackage Instance
@@ -686,6 +695,27 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		service = IntPtr.Zero;
 
 		return VSConstants.E_NOINTERFACE;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Adds this assembly to CurrentDomain.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static void RegisterAssemblies()
+	{
+		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
+		{
+			if (args.Name == typeof(EditorExtensionPackage).Assembly.FullName)
+				return typeof(EditorExtensionPackage).Assembly;
+
+			if (args.Name == typeof(TabbedEditorPane).Assembly.FullName)
+				return typeof(TabbedEditorPane).Assembly;
+
+			return null;
+		};
 	}
 
 

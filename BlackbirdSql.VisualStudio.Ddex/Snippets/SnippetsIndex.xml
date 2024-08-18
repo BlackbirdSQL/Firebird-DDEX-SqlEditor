@@ -5,56 +5,56 @@
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\Function\</DirPath>
+      <DirPath>Snippets\Function\</DirPath>
       <LocalizedName>Function</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\Table\</DirPath>
+      <DirPath>$PackageFolder$\Snippets\Table\</DirPath>
       <LocalizedName>Table</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\Index\</DirPath>
+      <DirPath>$PackageFolder$\Snippets\Index\</DirPath>
       <LocalizedName>Index</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\Role\</DirPath>
+      <DirPath>$PackageFolder$\Snippets\Role\</DirPath>
       <LocalizedName>Role</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\Stored Procedure\</DirPath>
+      <DirPath>$PackageFolder$\Snippets\Stored Procedure\</DirPath>
       <LocalizedName>Stored Procedure</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\Trigger\</DirPath>
+      <DirPath>$PackageFolder$\Snippets\Trigger\</DirPath>
       <LocalizedName>Trigger</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\User\</DirPath>
+      <DirPath>$PackageFolder$\Snippets\User\</DirPath>
       <LocalizedName>User</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>LOCALE_ID</Locale>
-      <DirPath>%PackageFolder%\Snippets\View\</DirPath>
+      <DirPath>$PackageFolder$\Snippets\View\</DirPath>
       <LocalizedName>View</LocalizedName>
     </SnippetDir>
   </Language>

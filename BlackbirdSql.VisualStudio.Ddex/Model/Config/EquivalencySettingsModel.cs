@@ -27,7 +27,7 @@ public class EquivalencySettingsModel : AbstractSettingsModel<EquivalencySetting
 
 
 	public EquivalencySettingsModel(IBsTransientSettings transientSettings)
-		: base(C_Package, C_Group, C_LivePrefix, transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 
 	}
@@ -51,7 +51,7 @@ public class EquivalencySettingsModel : AbstractSettingsModel<EquivalencySetting
 
 	private const string C_Package = "Ddex";
 	private const string C_Group = "Equivalency";
-	private const string C_LivePrefix = "DdexEquivalency";
+	private const string C_PropertyPrefix = "DdexEquivalency";
 
 
 	#endregion Constants

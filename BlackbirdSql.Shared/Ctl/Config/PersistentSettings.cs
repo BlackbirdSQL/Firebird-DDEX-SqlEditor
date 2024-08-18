@@ -17,7 +17,7 @@ using BlackbirdSql.Sys.Events;
 namespace BlackbirdSql.Shared.Ctl.Config;
 
 
-// =========================================================================================================
+// =============================================================================================================
 //										PersistentSettings Class
 //
 /// <summary>
@@ -28,24 +28,30 @@ namespace BlackbirdSql.Shared.Ctl.Config;
 /// There is no point using services as this configuration is fixed. ie:
 /// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
-// =========================================================================================================
+// =============================================================================================================
 public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Sub-classes - PersistentSettings
+	#region Constructors / Destructors - PersistentSettings
 	// ---------------------------------------------------------------------------------
 
 
-
-	public class CommandObject(ResourceManager resMgr)
+	/// <summary>
+	/// Protected singleton .ctor
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected PersistentSettings() : base()
 	{
-		public ResourceManager ResMgr { get; } = resMgr;
-		public string Name { get; set; }
+	}
+
+	protected PersistentSettings(bool live) : base(live)
+	{
 	}
 
 
-	#endregion Sub-classes
+	#endregion Constructors / Destructors
+
 
 
 
@@ -56,9 +62,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 
 	// Tracking variables
-	protected static object _LockGlobal = new object();
 	private static bool _LayoutPropertyChanged = false;
-	private static CommandObject _CmdObject = null;
 
 
 	#endregion Fields
@@ -71,8 +75,6 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	#region Property Accessors - PersistentSettings
 	// =========================================================================================================
 
-
-	public static CommandObject CmdObject => _CmdObject ??= new(SqlCmdResources.ResourceManager);
 
 	// LanguageService AdvancedPreferencesModel
 
@@ -94,6 +96,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static EnLanguageService EditorLanguageService => (EnLanguageService)GetSetting("EditorGeneralLanguageService",
 		EnLanguageService.SSDT);
 	public static bool EditorPromptSave => (bool)GetSetting("EditorGeneralPromptSave", true);
+	public static bool EditorTtsDefault => (bool)GetSetting("EditorGeneralTtsDefault", true);
 
 
 
@@ -115,39 +118,38 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static EnStatusBarPosition EditorContextStatusBarPosition =>
 		(EnStatusBarPosition)GetSetting("EditorContextStatusBarPosition", EnStatusBarPosition.Bottom);
 	public static string EditorContextBatchSeparator =>
-		(string)GetSetting("EditorContextBatchSeparator", SysConstants.C_DefaultBatchSeparator);
+		(string)GetSetting("EditorContextBatchSeparator", SharedConstants.C_DefaultBatchSeparator);
 
 
 	// Editor ExecutionSettingsModel
 
-	public static bool EditorExecutionTtsDefault => (bool)GetSetting("EditorExecutionGeneralTtsDefault", true);
-	public static int EditorExecutionSetRowCount => (int)GetSetting("EditorExecutionGeneralSetRowCount", SysConstants.C_DefaultSetRowCount);
-	public static EnBlobSubType EditorExecutionSetBlobDisplay => (EnBlobSubType)GetSetting("EditorExecutionGeneralSetBlobDisplay", SysConstants.C_DefaultSetBlobDisplay);
-	public static int EditorExecutionTimeout => (int)GetSetting("EditorExecutionGeneralExecutionTimeout", SysConstants.C_DefaultExecutionTimeout);
+	public static int EditorExecutionSetRowCount => (int)GetSetting("EditorExecutionGeneralSetRowCount", SharedConstants.C_DefaultSetRowCount);
+	public static EnBlobSubType EditorExecutionSetBlobDisplay => (EnBlobSubType)GetSetting("EditorExecutionGeneralSetBlobDisplay", SharedConstants.C_DefaultSetBlobDisplay);
+	public static int EditorExecutionTimeout => (int)GetSetting("EditorExecutionGeneralExecutionTimeout", SharedConstants.C_DefaultExecutionTimeout);
 
 	// Editor ExecutionAdvancedSettingsModel
-	public static bool EditorExecutionSetCount => (bool)GetSetting("EditorExecutionAdvancedSetCount", SysConstants.C_DefaultSetCount);
-	public static bool EditorExecutionSetNoExec => (bool)GetSetting("EditorExecutionAdvancedSetNoExec", SysConstants.C_DefaultSetPlanOnly);
-	public static bool EditorExecutionSetShowplanText => (bool)GetSetting("EditorExecutionAdvancedSetShowplanText", SysConstants.C_DefaultSetPlan);
-	public static bool EditorExecutionSetPlanXml => (bool)GetSetting("EditorExecutionAdvancedSetPlanXml", SysConstants.C_DefaultSetExplain);
+	public static bool EditorExecutionSetCount => (bool)GetSetting("EditorExecutionAdvancedSetCount", SharedConstants.C_DefaultSetCount);
+	public static bool EditorExecutionSetNoExec => (bool)GetSetting("EditorExecutionAdvancedSetNoExec", SharedConstants.C_DefaultSetPlanOnly);
+	public static bool EditorExecutionSetShowplanText => (bool)GetSetting("EditorExecutionAdvancedSetShowplanText", SharedConstants.C_DefaultSetPlan);
+	public static bool EditorExecutionSetPlanXml => (bool)GetSetting("EditorExecutionAdvancedSetPlanXml", SharedConstants.C_DefaultSetExplain);
 	public static bool EditorExecutionSetParseOnly =>
-		(bool)GetSetting("EditorExecutionAdvancedSetParseOnly", SysConstants.C_DefaultSetParseOnly);
+		(bool)GetSetting("EditorExecutionAdvancedSetParseOnly", SharedConstants.C_DefaultSetParseOnly);
 	public static bool EditorExecutionSetConcatenationNull =>
-		(bool)GetSetting("EditorExecutionAdvancedSetConcatenationNull", SysConstants.C_DefaultSetConcatenationNull);
-	public static bool EditorExecutionSetBail => (bool)GetSetting("EditorExecutionAdvancedSetBail", SysConstants.C_DefaultSetBail);
-	public static bool EditorExecutionSetPlanText => (bool)GetSetting("EditorExecutionAdvancedSetPlanText", SysConstants.C_DefaultSetPlanText);
-	public static bool EditorExecutionSetStats => (bool)GetSetting("EditorExecutionAdvancedSetStats", SysConstants.C_DefaultSetStats);
+		(bool)GetSetting("EditorExecutionAdvancedSetConcatenationNull", SharedConstants.C_DefaultSetConcatenationNull);
+	public static bool EditorExecutionSetBail => (bool)GetSetting("EditorExecutionAdvancedSetBail", SharedConstants.C_DefaultSetBail);
+	public static bool EditorExecutionSetPlanText => (bool)GetSetting("EditorExecutionAdvancedSetPlanText", SharedConstants.C_DefaultSetPlanText);
+	public static bool EditorExecutionSetStats => (bool)GetSetting("EditorExecutionAdvancedSetStats", SharedConstants.C_DefaultSetStats);
 	public static bool EditorExecutionSetStatisticsIO =>
-		(bool)GetSetting("EditorExecutionAdvancedSetStatisticsIO", SysConstants.C_DefaultSetStatisticsIO);
-	public static bool EditorExecutionSetWarnings => (bool)GetSetting("EditorExecutionAdvancedSetWarnings", SysConstants.C_DefaultSetWarnings);
+		(bool)GetSetting("EditorExecutionAdvancedSetStatisticsIO", SharedConstants.C_DefaultSetStatisticsIO);
+	public static bool EditorExecutionSetWarnings => (bool)GetSetting("EditorExecutionAdvancedSetWarnings", SharedConstants.C_DefaultSetWarnings);
 	public static IsolationLevel EditorExecutionIsolationLevel
 		=> (IsolationLevel)(int)GetSetting("EditorExecutionAdvancedIsolationLevel", SysConstants.C_DefaultIsolationLevel);
 	public static EnDeadlockPriority EditorExecutionDeadlockPriority
 		=> (EnDeadlockPriority)(int)GetSetting("EditorExecutionAdvancedIsolationLevel", EnDeadlockPriority.Low);
 	public static bool EditorExecutionDeadlockPriorityLow => EditorExecutionDeadlockPriority == EnDeadlockPriority.Low;
-	public static int EditorExecutionLockTimeout => (int)GetSetting("EditorExecutionAdvancedLockTimeout", SysConstants.C_DefaultLockTimeout);
+	public static int EditorExecutionLockTimeout => (int)GetSetting("EditorExecutionAdvancedLockTimeout", SharedConstants.C_DefaultLockTimeout);
 	public static int EditorExecutionCostLimit => (int)GetSetting("EditorExecutionAdvancedCostLimit", 0);
-	public static bool EditorExecutionSuppressHeaders => (bool)GetSetting("EditorExecutionAdvancedSuppressHeaders", SysConstants.C_DefaultSuppressHeaders);
+	public static bool EditorExecutionSuppressHeaders => (bool)GetSetting("EditorExecutionAdvancedSuppressHeaders", SharedConstants.C_DefaultSuppressHeaders);
 	public static bool EditorExecutionDisconnectOnCompletion => (bool)GetSetting("EditorExecutionAdvancedDisconnectOnCompletion", false);
 
 
@@ -168,9 +170,9 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static bool EditorResultsGridSeparateTabs => (bool)GetSetting("EditorResultsGridSeparateTabs", false);
 	public static bool EditorResultsGridSwitchToResults => (bool)GetSetting("EditorResultsGridSwitchToResults", false);
 	public static int EditorResultsGridMaxCharsPerColumnStd =>
-		(int)GetSetting("EditorResultsGridMaxCharsPerColumnStd", SysConstants.C_DefaultGridMaxCharsPerColumnStd);
+		(int)GetSetting("EditorResultsGridMaxCharsPerColumnStd", SharedConstants.C_DefaultGridMaxCharsPerColumnStd);
 	public static int EditorResultsGridMaxCharsPerColumnXml =>
-		(int)GetSetting("EditorResultsGridMaxCharsPerColumnXml", SysConstants.C_DefaultGridMaxCharsPerColumnXml);
+		(int)GetSetting("EditorResultsGridMaxCharsPerColumnXml", SharedConstants.C_DefaultGridMaxCharsPerColumnXml);
 
 
 
@@ -182,7 +184,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static bool EditorResultsTextAlignRightNumerics => (bool)GetSetting("EditorResultsTextAlignRightNumerics", false);
 	public static bool EditorResultsTextDiscardResults => (bool)GetSetting("EditorResultsTextDiscardResults", false);
 	public static int EditorResultsTextMaxCharsPerColumnStd =>
-		(int)GetSetting("EditorResultsTextMaxCharsPerColumnStd", SysConstants.C_DefaultTextMaxCharsPerColumnStd);
+		(int)GetSetting("EditorResultsTextMaxCharsPerColumnStd", SharedConstants.C_DefaultTextMaxCharsPerColumnStd);
 	public static bool EditorResultsTextSeparateTabs => (bool)GetSetting("EditorResultsTextSeparateTabs", false);
 	public static bool EditorResultsTextSwitchToResults => (bool)GetSetting("EditorResultsTextSwitchToResults", false);
 	public static EnSqlOutputFormat EditorResultsTextOutputFormat
@@ -208,29 +210,6 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	#endregion Property Accessors
 
 
-
-
-
-	// =========================================================================================================
-	#region Constructors / Destructors - PersistentSettings
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private singleton .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected PersistentSettings() : base()
-	{
-	}
-
-	protected PersistentSettings(bool live) : base(live)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
 
 
 
@@ -285,6 +264,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 
 
+
 	// =========================================================================================================
 	#region Event handlers - PersistentSettings
 	// =========================================================================================================
@@ -329,101 +309,6 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 
 	#endregion Event handlers
-
-
-}
-
-
-
-public static class PersistentSettingsExtensions
-{
-	/// <summary>
-	/// Gets the SQL command string for a property that exists within the PersistentSettings
-	/// hierarchy. The SQL statement is accessed from ResMgr using the property's name
-	/// as stored in LiveStore; which is the PropertyName prefixed with the LivePrefix
-	/// constant of the settings model. The default for ResMgr is
-	/// Properties\SqlResources.resx but this resource can be overriden.
-	/// </summary>
-	/// <param name="property">
-	/// The PersistentSettings instance property accessed directly by name or through the
-	/// PersistentSettings instance index accessor. This overload extension expects that
-	/// the 'property' value passed is the result of a direct accessor get. Any
-	/// unsupported commands must either have string.Empty in the resource file or
-	/// nothing at all.
-	/// </param>
-	/// <param name="value">
-	/// An optional value to use in place of the 'property' value for building the sql
-	/// command/statement for 'property'.
-	/// </param>
-	/// <returns>
-	/// The complete SQL statement for property otherwise string.Empty if the statement
-	/// format string does not exist in ResMgr. 
-	/// </returns>
-	public static string SqlCmd(this object property, object value = null)
-	{
-
-		string name = PersistentSettings.CmdObject.Name;
-		Type type = property.GetType();
-
-		if (name == null)
-		{
-			Diag.Dug(true, $"Could not retrieve name of object type {type.Name}.");
-			return string.Empty;
-		}
-
-		string cmd = PersistentSettings.CmdObject.ResMgr.GetString(name);
-
-		if (cmd == null)
-			return string.Empty;
-
-		value ??= property;
-
-
-		string result;
-
-		if (type.IsEnum)
-			result = cmd.FmtSqlEnum((System.Enum)value);
-		else if (type == typeof(bool))
-			result = cmd.FmtSqlOnOff((bool)value);
-		else
-			result = cmd.FmtRes(value);
-
-		return result;
-	}
-
-
-	/// <summary>
-	/// Formats an sql command using the string value of the enum
-	/// if it's int.MinValue or int.MaxValue.
-	/// </summary>
-	public static string FmtSqlEnum(this string value, Enum arg0)
-	{
-		try
-		{
-			int num = Convert.ToInt32(arg0);
-
-			if (num == int.MinValue || num == int.MaxValue)
-				return string.Format(CultureInfo.InvariantCulture, value, arg0.ToString());
-
-			return string.Format(CultureInfo.InvariantCulture, value, num);
-		}
-		catch { }
-
-		return string.Format(CultureInfo.InvariantCulture, value, arg0);
-	}
-
-
-	/// <summary>
-	/// Formats an sql command using the boolean value as an On/Off
-	/// value.
-	/// </summary>
-	/// <param name="value"></param>
-	/// <param name="arg0"></param>
-	/// <returns></returns>
-	public static string FmtSqlOnOff(this string value, bool arg0)
-	{
-		return string.Format(CultureInfo.InvariantCulture, value, arg0 ? "On" : "Off");
-	}
 
 
 }

@@ -2,6 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Dynamic;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Model.Config;
@@ -10,7 +11,7 @@ using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 
-// =========================================================================================================
+// =============================================================================================================
 //										PersistentSettings Class
 //
 /// <summary>
@@ -21,9 +22,61 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 /// There is no point using services as this configuration is fixed. ie:
 /// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
 /// </summary>
-// =========================================================================================================
+// =============================================================================================================
 public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - PersistentSettings
+	// ---------------------------------------------------------------------------------
+
+
+	/// <summary>
+	/// Protected singleton .ctor
+	/// </summary>
+	protected PersistentSettings() : base()
+	{
+	}
+
+
+	public static IBsPersistentSettings CreateInstance()
+	{
+		return new PersistentSettings();
+	}
+
+
+	/// <summary>
+	/// Gets the singleton PersistentSettings instance
+	/// </summary>
+	public new static IBsPersistentSettings Instance => _Instance ??= new PersistentSettings();
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Starts up extension user options push notifications. Only the final class in
+	/// the <see cref="IBsAsyncPackage"/> class hierarchy should implement the method.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected override void Initialize()
+	{
+		if (_SettingsStore != null)
+			return;
+
+		_SettingsStore = [];
+
+		PropagateSettingsEventArgs e = new();
+
+		PopulateSettingsEventArgs(ref e);
+		PropagateSettings(e);
+		RegisterSettingsEventHandlers(OnSettingsSaved);
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
 
 
 	// =========================================================================================================
@@ -42,37 +95,8 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - PersistentSettings
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private singleton .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected PersistentSettings() : base()
-	{
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the singleton PersistentSettings instance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public new static IBsPersistentSettings Instance => _Instance ??= new PersistentSettings();
-
-
-	#endregion Constructors / Destructors
-
-
-
-	// =========================================================================================================
 	#region Methods - PersistentSettings
 	// =========================================================================================================
-
 
 
 	/// <summary>
@@ -161,7 +185,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 
 		IBsSettingsModel model = (IBsSettingsModel)sender;
 
-		PropagateSettingsEventArgs e = new(model.GetPackage(), model.GetGroup());
+		PropagateSettingsEventArgs e = new(model.SettingsPackage, model.SettingsGroup);
 
 		PopulateSettingsEventArgs(ref e);
 		PropagateSettings(e);

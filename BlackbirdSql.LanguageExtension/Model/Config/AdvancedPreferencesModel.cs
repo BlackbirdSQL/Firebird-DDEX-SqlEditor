@@ -26,12 +26,11 @@ namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 /// Option Model for Language Service Advanced options
 /// </summary>
 // =========================================================================================================
-public class AdvancedPreferencesModel(IBsTransientSettings transientSettings)
-	: AbstractSettingsModel<AdvancedPreferencesModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class AdvancedPreferencesModel : AbstractSettingsModel<AdvancedPreferencesModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - AdvancedPreferencesModel
+	#region Constructors / Destructors - AdvancedPreferencesModel
 	// ---------------------------------------------------------------------------------
 
 
@@ -40,7 +39,13 @@ public class AdvancedPreferencesModel(IBsTransientSettings transientSettings)
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	public AdvancedPreferencesModel(IBsTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
+	{
+	}
+
+
+	#endregion Constructors / Destructors
 
 
 
@@ -52,7 +57,7 @@ public class AdvancedPreferencesModel(IBsTransientSettings transientSettings)
 
 	private const string C_Package = "LanguageService";
 	private const string C_Group = "Advanced";
-	private const string C_LivePrefix = "LanguageServiceAdvanced";
+	private const string C_PropertyPrefix = "LanguageServiceAdvanced";
 
 
 	#endregion Constants

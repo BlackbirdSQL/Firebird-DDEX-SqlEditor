@@ -10,6 +10,7 @@ using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Data;
+using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -64,6 +65,16 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 		}
 
 		_ApcInstance = CreateController();
+	}
+
+
+
+	/// <summary>
+	/// AbstractCorePackage static .ctor
+	/// </summary>
+	static AbstractCorePackage()
+	{
+		RegisterAssemblies();
 	}
 
 
@@ -126,7 +137,6 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 
 	protected IBsPackageController _ApcInstance = null;
 	private IDisposable _DisposableWaitCursor;
-	protected bool _InitializedSettings = false;
 	private long _LoadStatisticsMainThreadStartTime = 0L;
 	private long _LoadStatisticsMainThreadEndTime = 0L;
 	private long _LoadStatisticsEndTime = 0L;
@@ -495,25 +505,35 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 		// ServiceProgressData progressData = new("Loading BlackbirdSql", message, _InitializationSeed++, C_ProgressTotal);
 		// progress.Report(progressData);
 
-		if (PersistentSettings.EnableLoadStatistics && _LoadStatisticsMainThreadStartTime != 0L
+
+		if (_LoadStatisticsMainThreadStartTime != 0L
 			&& _LoadStatisticsMainThreadEndTime != 0L && _LoadStatisticsEndTime != 0L)
 		{
-			long asyncInitTime = _LoadStatisticsMainThreadStartTime;
-			long mainThreadSwitchTime = _LoadStatisticsMainThreadEndTime - _LoadStatisticsMainThreadStartTime;
-			long mainThreadInitTime = _LoadStatisticsEndTime - _LoadStatisticsMainThreadEndTime;
-			long totalTime = asyncInitTime + mainThreadInitTime;
+			bool enableLoadStatistics = true;
 
-			_LoadStatisticsMainThreadStartTime = 0L;
-			_LoadStatisticsMainThreadEndTime = 0L;
-			_LoadStatisticsEndTime = 0L;
+#if !DEBUG
+			enableLoadStatistics = PersistentSettings.EnableLoadStatistics;
+#endif
 
-			string outputMsg = Resources.LoadTimeStatistics.FmtRes(asyncInitTime.FmtStats(true), mainThreadInitTime.FmtStats(true),
-				mainThreadSwitchTime.FmtStats(true), totalTime.FmtStats(true));
+			if (enableLoadStatistics)
+			{
+				long asyncInitTime = _LoadStatisticsMainThreadStartTime;
+				long mainThreadSwitchTime = _LoadStatisticsMainThreadEndTime - _LoadStatisticsMainThreadStartTime;
+				long mainThreadInitTime = _LoadStatisticsEndTime - _LoadStatisticsMainThreadEndTime;
+				long totalTime = asyncInitTime + mainThreadInitTime;
 
-			if (_LoadStatisticsOutputFailed)
-				Diag.OutputPaneWriteLineAsync(outputMsg, true).Forget();
-			else
-				_LoadStatisticsMsg = outputMsg;
+				_LoadStatisticsMainThreadStartTime = 0L;
+				_LoadStatisticsMainThreadEndTime = 0L;
+				_LoadStatisticsEndTime = 0L;
+
+				string outputMsg = Resources.LoadTimeStatistics.FmtRes(asyncInitTime.FmtStats(true), mainThreadInitTime.FmtStats(true),
+					mainThreadSwitchTime.FmtStats(true), totalTime.FmtStats(true));
+
+				if (_LoadStatisticsOutputFailed)
+					Diag.OutputPaneWriteLineAsync(outputMsg, true).Forget();
+				else
+					_LoadStatisticsMsg = outputMsg;
+			}
 		}
 	}
 
@@ -532,13 +552,28 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	}
 
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Starts up extension user options push notifications. Only the final class in
-	/// the <see cref="IBsAsyncPackage"/> class hierarchy should implement the method.
+	/// Adds this assembly to CurrentDomain.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected abstract void PropagateSettings();
+	private static void RegisterAssemblies()
+	{
+		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
+		{
+			if (args.Name == typeof(AbstractCorePackage).Assembly.FullName)
+				return typeof(AbstractCorePackage).Assembly;
+
+			if (args.Name == typeof(AbstrusePackageController).Assembly.FullName)
+				return typeof(AbstrusePackageController).Assembly;
+
+			if (args.Name == typeof(DatabaseEngineService).Assembly.FullName)
+				return typeof(DatabaseEngineService).Assembly;
+
+			return null;
+		};
+	}
 
 
 
@@ -546,7 +581,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	{
 	}
 
-	#endregion Methods
+#endregion Methods
 
 
 }

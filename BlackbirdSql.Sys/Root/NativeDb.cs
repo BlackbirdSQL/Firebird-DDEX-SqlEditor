@@ -50,7 +50,7 @@ public static class NativeDb
 
 	private static Type _CsbType = null;
 
-	private static string[] _EquivalencyKeys = [];
+	private static string[] _EquivalencyKeys = null;
 	private static bool _OnDemandLinkage = false;
 	private static int _LinkageTimeout = 120;
 
@@ -89,8 +89,19 @@ public static class NativeDb
 	// ---------------------------------------------------------------------------------
 	public static string[] EquivalencyKeys
 	{
-		get { return _EquivalencyKeys; }
-		set { _EquivalencyKeys = value; }
+		get
+		{
+			if (_EquivalencyKeys == null)
+				ApcManager.InitializeSettings();
+
+			return _EquivalencyKeys;
+		}
+		set
+		{
+			_EquivalencyKeys ??= [];
+
+			_EquivalencyKeys = value;
+		}
 	}
 
 

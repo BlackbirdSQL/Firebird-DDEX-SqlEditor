@@ -34,19 +34,14 @@ public abstract class AbstractPersistentSettingsPage<TPage, T> : AbstractSetting
 
 	public AbstractPersistentSettingsPage()
 	{
-		try
-		{
-			_Model = ThreadHelper.JoinableTaskFactory.Run(new Func<Task<T>>(AbstractSettingsModel<T>.CreateAsync));
-			_Model.SettingsResetEvent += OnResetSettings;
+		// Diag.DebugTrace($"{typeof(T)}: Requesting model from page.");
 
-			EditControlGotFocusEvent += _Model.OnEditControlGotFocus;
-			EditControlLostFocusEvent += _Model.OnEditControlLostFocus;
-			AutomatorPropertyValueChangedEvent += _Model.OnAutomatorPropertyValueChanged;
-		}
-		catch (Exception ex)
-		{
-			Diag.DebugDug(ex);
-		}
+		_Model = ThreadHelper.JoinableTaskFactory.Run(new Func<Task<T>>(AbstractSettingsModel<T>.CreateInstanceAsync));
+		_Model.SettingsResetEvent += OnResetSettings;
+
+		EditControlGotFocusEvent += _Model.OnEditControlGotFocus;
+		EditControlLostFocusEvent += _Model.OnEditControlLostFocus;
+		AutomatorPropertyValueChangedEvent += _Model.OnAutomatorPropertyValueChanged;
 	}
 
 	protected override void Dispose(bool disposing)

@@ -15,33 +15,28 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
 //											TDataProvider Class
 //
 // =========================================================================================================
-public class TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType)
+public class TDataProvider
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Constructor Arguments - TDataProvider
+	#region Constructors / Destructors - TDataProvider
 	// ---------------------------------------------------------------------------------
 
 
-	private readonly string _Name = name ?? throw new ArgumentNullException("nameGuid");
+	public TDataProvider(string name, string displayName, string shortDisplayName, string description,
+		Type targetConnectionType)
+	{
+		_Name = name ?? throw new ArgumentNullException("nameGuid");
 
-	private readonly string _DisplayName = displayName;
+		_DisplayName = displayName;
 
-	private readonly string _ShortDisplayName = shortDisplayName;
+		_ShortDisplayName = shortDisplayName;
 
-	private readonly string _Description = description;
+		_Description = description;
 
-	private readonly Type _TargetConnectionType = targetConnectionType;
+		_TargetConnectionType = targetConnectionType;
+	}
 
-
-	#endregion Constructor Arguments
-
-
-
-
-	// =====================================================================================================
-	#region Additional Constructors / Destructors - TDataProvider
-	// =====================================================================================================
 
 
 	public TDataProvider(string name, string displayName, string shortDisplayName)
@@ -49,10 +44,12 @@ public class TDataProvider(string name, string displayName, string shortDisplayN
 	{
 	}
 
+
 	public TDataProvider(string name, string displayName, string shortDisplayName, string description)
 		: this(name, displayName, shortDisplayName, description, null)
 	{
 	}
+
 
 	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, Type connectionPropertiesType)
 		: this(name, displayName, shortDisplayName, description, targetConnectionType)
@@ -67,6 +64,7 @@ public class TDataProvider(string name, string displayName, string shortDisplayN
 		};
 	}
 
+
 	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, Type connectionUIControlType, Type connectionPropertiesType)
 		: this(name, displayName, shortDisplayName, description, targetConnectionType, connectionPropertiesType)
 	{
@@ -80,17 +78,20 @@ public class TDataProvider(string name, string displayName, string shortDisplayN
 		};
 	}
 
+
 	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, IDictionary<string, Type> connectionUIControlTypes, Type connectionPropertiesType)
 		: this(name, displayName, shortDisplayName, description, targetConnectionType, connectionPropertiesType)
 	{
 		_ConnectionUIControlTypes = connectionUIControlTypes;
 	}
 
+
 	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, IDictionary<string, string> dataSourceDescriptions, IDictionary<string, Type> connectionUIControlTypes, Type connectionPropertiesType)
 		: this(name, displayName, shortDisplayName, description, targetConnectionType, connectionUIControlTypes, connectionPropertiesType)
 	{
 		_DataSourceDescriptions = dataSourceDescriptions;
 	}
+
 
 	public TDataProvider(string name, string displayName, string shortDisplayName, string description,
 			Type targetConnectionType, IDictionary<string, string> dataSourceDescriptions,
@@ -103,7 +104,7 @@ public class TDataProvider(string name, string displayName, string shortDisplayN
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	#endregion Constructors / Destructors
 
 
 
@@ -120,6 +121,12 @@ public class TDataProvider(string name, string displayName, string shortDisplayN
 	private readonly IDictionary<string, Type> _ConnectionUIControlTypes;
 
 	private readonly IDictionary<string, Type> _ConnectionPropertiesTypes;
+
+	private readonly string _Name;
+	private readonly string _DisplayName;
+	private readonly string _ShortDisplayName;
+	private readonly string _Description;
+	private readonly Type _TargetConnectionType;
 
 
 	#endregion Fields

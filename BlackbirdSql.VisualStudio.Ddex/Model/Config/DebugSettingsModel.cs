@@ -34,7 +34,7 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 
 
 	public DebugSettingsModel(IBsTransientSettings transientSettings)
-		: base(C_Package, C_Group, C_LivePrefix, transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 
 	}
@@ -57,7 +57,7 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 
 	private const string C_Package = "Ddex";
 	private const string C_Group = "Debug";
-	private const string C_LivePrefix = "DdexDebug";
+	private const string C_PropertyPrefix = "DdexDebug";
 
 
 	#endregion Constants

@@ -753,6 +753,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	public abstract string CreateConnectionUrl(string connectionString);
 	public abstract string GetConnectionQualifiedName(string connectionString);
 	public abstract string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root);
+	public abstract void InitializeSettings();
 	public abstract void InvalidateRctManager();
 	public abstract bool IsConnectionEquivalency(string connectionString1, string connectionString2);
 	public abstract bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2);

@@ -20,7 +20,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 		: base(resultsControl)
 	{
 		// Tracer.Trace(GetType(), ".ctor", "", null);
-		_MaxCharsPerColumn = SysConstants.C_DefaultGridMaxCharsPerColumnStd;
+		_MaxCharsPerColumn = SharedConstants.C_DefaultGridMaxCharsPerColumnStd;
 	}
 
 	public override void CleanupAfterFinishingExecution()
@@ -75,7 +75,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Debug(ex);
 			throw ex;
 		}
 

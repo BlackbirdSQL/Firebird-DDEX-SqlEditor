@@ -23,12 +23,11 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for Advanced execution options
 /// </summary>
 // =========================================================================================================
-public class ExecutionAdvancedSettingsModel(IBsTransientSettings transientSettings)
-	: AbstractSettingsModel<ExecutionAdvancedSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
+public class ExecutionAdvancedSettingsModel : AbstractSettingsModel<ExecutionAdvancedSettingsModel>
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Additional Constructors / Destructors - ExecutionAdvancedSettingsModel
+	#region Constructors / Destructors - ExecutionAdvancedSettingsModel
 	// ---------------------------------------------------------------------------------
 
 
@@ -37,7 +36,13 @@ public class ExecutionAdvancedSettingsModel(IBsTransientSettings transientSettin
 	}
 
 
-	#endregion Additional Constructors / Destructors
+	public ExecutionAdvancedSettingsModel(IBsTransientSettings transientSettings)
+		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
+	{
+	}
+
+
+	#endregion Constructors / Destructors
 
 
 
@@ -49,7 +54,7 @@ public class ExecutionAdvancedSettingsModel(IBsTransientSettings transientSettin
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "ExecutionAdvanced";
-	private const string C_LivePrefix = "EditorExecutionAdvanced";
+	private const string C_PropertyPrefix = "EditorExecutionAdvanced";
 
 
 	#endregion Constants
@@ -94,91 +99,11 @@ public class ExecutionAdvancedSettingsModel(IBsTransientSettings transientSettin
 
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetCount")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetCount")]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetCount)]
-	public bool SetCount { get; set; } = SysConstants.C_DefaultSetCount;
-
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetPlanOnly")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetPlanOnly")]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetPlanOnly)]
-	public bool SetNoExec { get; set; } = SysConstants.C_DefaultSetPlanOnly;
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetPlan")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetPlan")]
-	[Browsable(false)]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetPlan)]
-	public bool SetShowplanText { get; set; } = SysConstants.C_DefaultSetPlan;
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetExplain")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetExplain")]
-	[Browsable(false)]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetExplain)]
-	public bool SetPlanXml { get; set; } = SysConstants.C_DefaultSetExplain;
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetParseOnly")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetParseOnly")]
-	[Browsable(false)]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetParseOnly)]
-	public bool SetParseOnly { get; set; } = SysConstants.C_DefaultSetParseOnly;
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetConcatenationNull")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetConcatenationNull")]
-	[Browsable(false)]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetConcatenationNull)]
-	public bool SetConcatenationNull { get; set; } = SysConstants.C_DefaultSetConcatenationNull;
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetBail")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetBail")]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetBail)]
-	public bool SetBail { get; set; } = SysConstants.C_DefaultSetBail;
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetPlanText")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetPlanText")]
-	[Browsable(false)]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetPlanText)]
-	public bool SetPlanText { get; set; } = SysConstants.C_DefaultSetPlanText;
-
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetStats")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetStats")]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetStats)]
-	public bool SetStats { get; set; } = SysConstants.C_DefaultSetStats;
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetWarnings")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetWarnings")]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetWarnings)]
-	public bool SetWarnings { get; set; } = SysConstants.C_DefaultSetWarnings;
-
-
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionSetStatisticsIO")]
-	[GlobalizedDescription("OptionDescriptionExecutionSetStatisticsIO")]
-	[Browsable(false)]
-	[TypeConverter(typeof(GlobalOnOffConverter))]
-	[DefaultValue(SysConstants.C_DefaultSetStatisticsIO)]
-	public bool SetStatisticsIO { get; set; } = SysConstants.C_DefaultSetStatisticsIO;
+	[GlobalizedDisplayName("OptionDisplayExecutionDisconnectOnCompletion")]
+	[GlobalizedDescription("OptionDescriptionExecutionDisconnectOnCompletion")]
+	[TypeConverter(typeof(GlobalYesNoConverter))]
+	[DefaultValue(false)]
+	public bool DisconnectOnCompletion { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryAdvanced")]
 	[GlobalizedDisplayName("OptionDisplayExecutionIsolationLevel")]
@@ -186,22 +111,111 @@ public class ExecutionAdvancedSettingsModel(IBsTransientSettings transientSettin
 	[DefaultValue((EnGlobalizedIsolationLevel)SysConstants.C_DefaultIsolationLevel)]
 	public EnGlobalizedIsolationLevel IsolationLevel { get; set; } = (EnGlobalizedIsolationLevel)SysConstants.C_DefaultIsolationLevel;
 
-	[GlobalizedCategory("OptionCategoryAdvanced")]
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetCount")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetCount")]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetCount)]
+	public bool SetCount { get; set; } = SharedConstants.C_DefaultSetCount;
+
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetPlanOnly")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetPlanOnly")]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetPlanOnly)]
+	public bool SetNoExec { get; set; } = SharedConstants.C_DefaultSetPlanOnly;
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetPlan")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetPlan")]
+	[Browsable(false)]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetPlan)]
+	public bool SetShowplanText { get; set; } = SharedConstants.C_DefaultSetPlan;
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetExplain")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetExplain")]
+	[Browsable(false)]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetExplain)]
+	public bool SetPlanXml { get; set; } = SharedConstants.C_DefaultSetExplain;
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetParseOnly")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetParseOnly")]
+	[Browsable(false)]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetParseOnly)]
+	public bool SetParseOnly { get; set; } = SharedConstants.C_DefaultSetParseOnly;
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetConcatenationNull")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetConcatenationNull")]
+	[Browsable(false)]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetConcatenationNull)]
+	public bool SetConcatenationNull { get; set; } = SharedConstants.C_DefaultSetConcatenationNull;
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetBail")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetBail")]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetBail)]
+	public bool SetBail { get; set; } = SharedConstants.C_DefaultSetBail;
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetPlanText")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetPlanText")]
+	[Browsable(false)]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetPlanText)]
+	public bool SetPlanText { get; set; } = SharedConstants.C_DefaultSetPlanText;
+
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetStats")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetStats")]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetStats)]
+	public bool SetStats { get; set; } = SharedConstants.C_DefaultSetStats;
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetWarnings")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetWarnings")]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetWarnings)]
+	public bool SetWarnings { get; set; } = SharedConstants.C_DefaultSetWarnings;
+
+
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
+	[GlobalizedDisplayName("OptionDisplayExecutionSetStatisticsIO")]
+	[GlobalizedDescription("OptionDescriptionExecutionSetStatisticsIO")]
+	[Browsable(false)]
+	[TypeConverter(typeof(GlobalOnOffConverter))]
+	[DefaultValue(SharedConstants.C_DefaultSetStatisticsIO)]
+	public bool SetStatisticsIO { get; set; } = SharedConstants.C_DefaultSetStatisticsIO;
+
+
+	[GlobalizedCategory("OptionCategoryObsolete")]
 	[GlobalizedDisplayName("OptionDisplayExecutionDeadlockPriority")]
 	[GlobalizedDescription("OptionDescriptionExecutionDeadlockPriority")]
 	[Browsable(false)]
 	[DefaultValue(EnGlobalizedDeadlockPriority.Low)]
 	public EnGlobalizedDeadlockPriority DeadlockPriority { get; set; } = EnGlobalizedDeadlockPriority.Low;
 
-	[GlobalizedCategory("OptionCategoryAdvanced")]
+	[GlobalizedCategory("OptionCategoryObsolete")]
 	[GlobalizedDisplayName("OptionDisplayExecutionLockTimeout")]
 	[GlobalizedDescription("OptionDescriptionExecutionLockTimeout")]
 	[TypeConverter(typeof(UomConverter)), LiteralRange(0, int.MaxValue, "SecondsDisabled")]
-	[DefaultValue(SysConstants.C_DefaultLockTimeout)]
-	public int LockTimeout { get; set; } = SysConstants.C_DefaultLockTimeout;
+	[DefaultValue(SharedConstants.C_DefaultLockTimeout)]
+	public int LockTimeout { get; set; } = SharedConstants.C_DefaultLockTimeout;
 
 
-	[GlobalizedCategory("OptionCategoryAdvanced")]
+	[GlobalizedCategory("OptionCategoryObsolete")]
 	[GlobalizedDisplayName("OptionDisplayExecutionCostLimit")]
 	[GlobalizedDescription("OptionDescriptionExecutionCostLimit")]
 	[Browsable(false)]
@@ -209,19 +223,12 @@ public class ExecutionAdvancedSettingsModel(IBsTransientSettings transientSettin
 	[DefaultValue(0)]
 	public int CostLimit { get; set; } = 0;
 
-	[GlobalizedCategory("OptionCategoryAdvanced")]
+	[GlobalizedCategory("OptionCategoryObsolete")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSuppressHeaders")]
 	[GlobalizedDescription("OptionDescriptionExecutionSuppressHeaders")]
 	[TypeConverter(typeof(GlobalOnOffInverter))]
-	[DefaultValue(SysConstants.C_DefaultSuppressHeaders)]
-	public bool SuppressHeaders { get; set; } = SysConstants.C_DefaultSuppressHeaders;
-
-	[GlobalizedCategory("OptionCategoryAdvanced")]
-	[GlobalizedDisplayName("OptionDisplayExecutionDisconnectOnCompletion")]
-	[GlobalizedDescription("OptionDescriptionExecutionDisconnectOnCompletion")]
-	[TypeConverter(typeof(GlobalYesNoConverter))]
-	[DefaultValue(false)]
-	public bool DisconnectOnCompletion { get; set; } = false;
+	[DefaultValue(SharedConstants.C_DefaultSuppressHeaders)]
+	public bool SuppressHeaders { get; set; } = SharedConstants.C_DefaultSuppressHeaders;
 
 
 	#endregion Property Accessors

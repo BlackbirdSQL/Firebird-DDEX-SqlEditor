@@ -22,7 +22,6 @@ public class SettingsProvider
 {
 	public const string CategoryName = PackageData.C_LanguageLongName;
 	public const string SubCategoryName = "LanguageService";
-	public const string AdvancedPreferencesPageName = "Firebird-SQL Intellisense Settings";
 
 
 	[ComVisible(true)]
