@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sql", "Sql", "{F13C0BD2-B112-42D0-8B8D-1E26986B0410}"
@@ -43,7 +44,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F6F05A4E-8
 		Docs\GettingStartedGuide.md = Docs\GettingStartedGuide.md
 		Docs\int128.md = Docs\int128.md
 		Docs\license.txt = Docs\license.txt
-		Docs\README.md = Docs\README.md
 		Docs\Regex Saved Replaces.txt = Docs\Regex Saved Replaces.txt
 		Docs\services-backup.md = Docs\services-backup.md
 		Docs\time-zones.md = Docs\time-zones.md

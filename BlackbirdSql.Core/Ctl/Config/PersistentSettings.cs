@@ -344,7 +344,6 @@ public abstract class PersistentSettings : IBsPersistentSettings
 		foreach (MutablePair<string, object> pair in e.Arguments)
 			this[pair.Key] = pair.Value;
 
-
 		PropagateEquivalencyKeys(e);
 		PropagateDiagnosticsSettings(e);
 	}

@@ -267,7 +267,6 @@ public static class Diag
 			{
 				if (enableDiagnosticsLog)
 				{
-
 					StreamWriter sw = File.AppendText(logfile);
 
 					sw.WriteLine(str);

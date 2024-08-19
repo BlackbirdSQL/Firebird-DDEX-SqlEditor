@@ -17,6 +17,20 @@ namespace BlackbirdSql;
 // =========================================================================================================
 public static class CoreConstants
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Engine Miscellaneous constants - CoreConstants
+	// ---------------------------------------------------------------------------------
+
+	public const int C_KeepAliveModulus = 750; // Approx 25 minutes.
+
+
+	#endregion Engine Miscellaneous constants
+
+
+
+
+
 	// ---------------------------------------------------------------------------------
 	#region DbConnectionString Property Names - CoreConstants
 	// ---------------------------------------------------------------------------------
@@ -84,16 +98,5 @@ public static class CoreConstants
 
 
 	#endregion DbConnectionString Property Default Values
-
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	#region Model Engine Miscellaneous keys and defaults - CoreConstants
-	// ---------------------------------------------------------------------------------
-
-
-	#endregion Model Engine Miscellaneous keys and defaults
 
 }

@@ -2,20 +2,16 @@
 // Microsoft.SqlServer.Management.Smo.RegSvrEnum.UIConnectionInfo
 
 using System;
-using System.Data;
+using System.ComponentModel;
 using System.Data.Common;
-using System.Threading.Tasks;
-using BlackbirdSql.Core.Events;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Sys.Ctl;
 
-using static BlackbirdSql.SysConstants;
 using static BlackbirdSql.SharedConstants;
-using System.ComponentModel;
-using System.Threading;
+using static BlackbirdSql.SysConstants;
 
 
 
@@ -98,7 +94,6 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	#region Fields - ModelCsb
 	// =========================================================================================================
 
-	private long _ConnectionId = 0;
 
 	#endregion Fields
 
@@ -109,10 +104,6 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	// =========================================================================================================
 	#region Property Accessors - ModelCsb
 	// =========================================================================================================
-
-
-	[Browsable(false)]
-	public long ConnectionId => _ConnectionId;
 
 
 	[Browsable(false)]
@@ -192,14 +183,6 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	}
 
 
-	[Browsable(false)]
-	public event ConnectionChangedDelegate ConnectionChangedEvent
-	{
-		add { _ConnectionChangedEvent += value; }
-		remove { _ConnectionChangedEvent -= value; }
-	}
-
-
 	#endregion Property Accessors
 
 
@@ -209,187 +192,6 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 	// =========================================================================================================
 	#region Methods - ModelCsb
 	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Creates a new data connection. If a connection already exists, disposes of the
-	/// connection.
-	/// Always use this method to create connections because it invokes
-	/// ConnectionChangedEvent.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public void CreateDataConnection()
-	{
-		// Tracer.Trace(GetType(), "CreateDataConnection()");
-
-
-		DbConnection connection = DataConnection;
-		DbConnection newConnection = null;
-
-		try
-		{
-			newConnection = (DbConnection)NativeDb.CreateDbConnection(ConnectionString);
-		}
-		catch (Exception ex)
-		{
-			Diag.Debug(ex);
-		}
-
-		_ConnectionChangedEvent?.Invoke(this, new(newConnection, connection));
-
-		if (connection != null)
-			DisposeConnection();
-
-		DataConnection = newConnection;
-		_ConnectionId++;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Opens or verifies a connection. The Connection must exists.
-	/// Throws an exception on failure.
-	/// Always use this method to open connections because it disposes of the connection
-	/// and invokes ConnectionChangedEvent on failure.
-	/// Do not call before ensuring IsComplete.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public (bool, bool) OpenOrVerifyConnection()
-	{
-		// Tracer.Trace(GetType(), "CreateDataConnection()");
-
-		DbConnection connection = DataConnection;
-
-		bool isOpen = false;
-		bool hasTransactions = false;
-
-		if (connection == null)
-		{
-			DisposeTransaction();
-			return (isOpen, hasTransactions);
-		}
-
-		try
-		{
-			(isOpen, hasTransactions) = connection.OpenOrVerify();
-		}
-		catch (Exception ex)
-		{
-			_ConnectionChangedEvent?.Invoke(this, new(null, null));
-
-			DisposeConnection();
-
-			Diag.Expected(ex);
-			throw ex;
-		}
-
-		Exception exd = null;
-
-		if (connection.State != ConnectionState.Open)
-		{
-			_ConnectionChangedEvent?.Invoke(this, new(null, null));
-
-			DisposeConnection();
-
-			exd ??= new DataException("Failed to open connection");
-
-			Diag.Expected(exd);
-			throw exd;
-		}
-
-		return (isOpen, hasTransactions);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Opens or verifies a connection. The Connection must exists.
-	/// Throws an exception on failure.
-	/// Always use this method to open connections because it disposes of the connection
-	/// and invokes ConnectionChangedEvent on failure.
-	/// Do not call before ensuring IsComplete.
-	/// </summary>
-	/// <returns>
-	/// Boolean tuple with Item1: True if open / verification succeeded and
-	/// Item2: HasTransactions.
-	/// </returns>
-	// ---------------------------------------------------------------------------------
-	public async Task<(bool, bool)> OpenOrVerifyConnectionAsync(CancellationToken cancelToken)
-	{
-		// Tracer.Trace(GetType(), "CreateDataConnection()");
-
-		DbConnection connection = DataConnection;
-
-		bool isOpen = false;
-		bool hasTransactions = false;
-
-		if (connection == null)
-		{
-			DisposeTransaction();
-			return (isOpen, hasTransactions);
-		}
-
-		try
-		{
-			(isOpen, hasTransactions) = await connection.OpenOrVerifyAsync(DataTransaction, cancelToken);
-		}
-		catch (Exception ex)
-		{
-			_ConnectionChangedEvent?.Invoke(this, new(null, connection));
-
-			DisposeConnection();
-
-			Diag.Expected(ex);
-			throw ex;
-		}
-
-		if (cancelToken.IsCancellationRequested)
-			return (isOpen, hasTransactions);
-
-		if (connection.State != ConnectionState.Open)
-		{
-			_ConnectionChangedEvent?.Invoke(this, new(null, null));
-
-			DisposeConnection();
-
-			Exception exd = new DataException("Failed to open connection");
-
-			Diag.Expected(exd);
-			throw exd;
-		}
-
-		return (isOpen, hasTransactions);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Closes a connection if open and disposes of it if it is broken on close,
-	/// then applies the current PropertyAgent values to it. 
-	/// </summary>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	private bool RefreshDataConnection()
-	{
-		// Tracer.Trace(GetType(), "CreateDataConnection()");
-
-		CloseConnection();
-
-		DbConnection connection = DataConnection;
-
-		if (connection == null)
-			return false;
-
-		connection.ConnectionString = ConnectionString;
-
-		// Tracer.Trace(GetType(), "RefreshDataConnection()", "Connection refreshed with connectiongstring: {0}.", Csa.ConnectionString);
-
-		return true;
-	}
 
 
 	#endregion Methods

@@ -118,12 +118,12 @@ public class DbConnectionService : SBsNativeDbConnection, IBsNativeDbConnection
 
 
 	public async Task<(bool, bool)> OpenOrVerifyConnectionAsync(IDbConnection @this,
-		IDbTransaction transaction, CancellationToken cancelToken)
+		IDbTransaction transaction, bool keepAlive, CancellationToken cancelToken)
 	{
 		if (@this is not FbConnection connection)
 		{
 			ArgumentException ex = new("IDbConnection is not of type FbConnection");
-			Diag.ThrowException(new ArgumentException("IDbConnection is not of type FbConnection"));
+			Diag.Dug(ex);
 			throw ex;
 		}
 
@@ -144,6 +144,23 @@ public class DbConnectionService : SBsNativeDbConnection, IBsNativeDbConnection
 
 
 		bool hasTransactions = await info.GetActiveTransactionsCountAsync(cancelToken) > 0;
+
+		if (!keepAlive || !hasTransactions)
+			return (true, hasTransactions);
+
+
+		string sql = "SELECT RDB$CHARACTER_SET_NAME FROM RDB$CHARACTER_SETS WHERE RDB$CHARACTER_SET_NAME = 'UTF8'";
+
+		try
+		{
+			FbCommand command = new(sql, connection, (FbTransaction)transaction);
+			FbDataReader reader = await command.ExecuteReaderAsync(cancelToken);
+			await reader.ReadAsync(cancelToken);
+			await reader.CloseAsync();
+			command.Dispose();
+		}
+		catch { }
+
 
 		return (true, hasTransactions);
 	}

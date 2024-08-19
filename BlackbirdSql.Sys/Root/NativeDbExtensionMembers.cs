@@ -370,9 +370,10 @@ public static class NativeDbExtensionMembers
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	public static async Task<(bool, bool)> OpenOrVerifyAsync(this IDbConnection @this,
-		IDbTransaction transaction, CancellationToken cancelToken)
+		IDbTransaction transaction, bool keepAlive, CancellationToken cancelToken)
 	{
-		return await NativeDb.DbConnectionSvc.OpenOrVerifyConnectionAsync(@this, transaction, cancelToken);
+		return await NativeDb.DbConnectionSvc.OpenOrVerifyConnectionAsync(@this, transaction,
+			keepAlive, cancelToken);
 	}
 
 

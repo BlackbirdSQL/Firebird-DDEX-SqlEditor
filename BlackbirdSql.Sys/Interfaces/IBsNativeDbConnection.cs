@@ -35,5 +35,5 @@ public interface IBsNativeDbConnection
 	Version ParseServerVersion(IDbConnection @this);
 	(bool, bool) OpenOrVerifyConnection(IDbConnection @this);
 	Task<(bool, bool)> OpenOrVerifyConnectionAsync(IDbConnection @this, IDbTransaction transaction,
-		CancellationToken cancelToken);
+		bool keepAlive, CancellationToken cancelToken);
 }
