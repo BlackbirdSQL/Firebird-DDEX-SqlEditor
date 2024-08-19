@@ -690,7 +690,16 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		bool isConfiguredDbProviderStatus = false; // globals.IsConfiguredDbProviderStatus;
 
-		VSProject projectObject = project.Object as VSProject;
+		VSProject projectObject = null;
+
+		try
+		{
+			projectObject = project.Object as VSProject;
+		}
+		catch { };
+
+		if (projectObject == null)
+			return;
 
 		if (projectObject.References.Find(NativeDb.EFProvider) != null)
 		{
@@ -1011,7 +1020,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnAfterOpenProject()");
 
-		if (!project.IsEditable())
+		if (project.EditableObject() == null)
 			return VSConstants.S_OK;
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);

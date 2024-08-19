@@ -677,10 +677,15 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Tracer.Trace(GetType(), "AddProjectEventHandlers()", "CALLING ReindexEntityFrameworkAssemblies() for project: {0}.", project.Name);
 
-		if (ApcManager.SolutionClosing || ApcManager.SolutionObject == null || !project.IsEditable())
+		if (ApcManager.SolutionClosing || ApcManager.SolutionObject == null)
 			return;
 
-		VSProject projectObject = project.Object as VSProject;
+
+		VSProject projectObject = project.EditableObject();
+
+		if (projectObject == null)
+			return;
+
 
 		if (_ProjectReferencesEvents != null && _ProjectReferencesEvents.Count != 0 && _ProjectReferencesEvents.ContainsKey(projectObject))
 			return;
@@ -935,7 +940,16 @@ public abstract class AbstrusePackageController : IBsPackageController
 			if (project == null)
 				return;
 
-			VSProject projectObject = project.Object as VSProject;
+			VSProject projectObject = null;
+
+			try
+			{
+				projectObject = project.Object as VSProject;
+			}
+			catch { };
+
+			if (projectObject == null)
+				return;
 
 			if (_ProjectReferencesEvents.Remove(projectObject))
 			{
@@ -1027,8 +1041,11 @@ public abstract class AbstrusePackageController : IBsPackageController
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	protected void OnProjectItemAdded(ProjectItem projectItem)
 	{
-		if (_OnProjectItemAddedEvent == null || !projectItem.ContainingProject.IsEditable())
+		if (_OnProjectItemAddedEvent == null || projectItem.ContainingProject == null
+			|| projectItem.ContainingProject.EditableObject() == null)
+		{
 			return;
+		}
 
 		_OnProjectItemAddedEvent.Invoke(projectItem);
 	}
@@ -1040,7 +1057,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Tracer.Trace(typeof(AbstrusePackageController), "OnProjectItemRemoved()", projectItem.ContainingProject.Name);
 
-		if (_OnProjectItemRemovedEvent == null || !projectItem.ContainingProject.IsEditable())
+		if (_OnProjectItemRemovedEvent == null || projectItem.ContainingProject == null
+			|| projectItem.ContainingProject.EditableObject() == null)
 		{
 			return;
 		}
@@ -1056,7 +1074,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Tracer.Trace(typeof(AbstrusePackageController), "OnProjectItemRenamed()", projectItem.ContainingProject.Name);
 
-		if (_OnProjectItemRenamedEvent == null || !projectItem.ContainingProject.IsEditable())
+		if (_OnProjectItemRenamedEvent == null || projectItem.ContainingProject == null
+			|| projectItem.ContainingProject.EditableObject() == null)
 		{
 			return;
 		}
@@ -1077,7 +1096,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Tracer.Trace(typeof(AbstrusePackageController), "OnReferenceAdded()", reference.ContainingProject.Name);
 
-		if (_OnReferenceAddedEvent == null || !reference.ContainingProject.IsEditable())
+		if (_OnReferenceAddedEvent == null || reference.ContainingProject == null
+			|| reference.ContainingProject.EditableObject() == null)
 		{
 			return;
 		}
@@ -1089,7 +1109,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 	private void OnReferenceChanged(Reference reference)
 	{
-		if (_OnReferenceChangedEvent == null || !reference.ContainingProject.IsEditable())
+		if (_OnReferenceChangedEvent == null || reference.ContainingProject == null
+			|| reference.ContainingProject.EditableObject() == null)
 		{
 			return;
 		}
@@ -1103,7 +1124,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Tracer.Trace(typeof(AbstrusePackageController), "OnReferenceRemoved()", reference.ContainingProject.Name);
 
-		if (_OnReferenceRemovedEvent == null || !reference.ContainingProject.IsEditable())
+		if (_OnReferenceRemovedEvent == null || reference.ContainingProject == null
+			|| reference.ContainingProject.EditableObject() == null)
 		{
 			return;
 		}
@@ -1169,10 +1191,20 @@ public abstract class AbstrusePackageController : IBsPackageController
 			return VSConstants.S_OK;
 		}
 
+		VSProject projectObject = null;
+
+		try
+		{
+			projectObject = project.Object as VSProject;
+		}
+		catch { };
+
+		if (projectObject == null)
+			return VSConstants.S_OK;
 
 
 		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0
-			|| !_ProjectReferencesEvents.ContainsKey(project.Object as VSProject))
+			|| !_ProjectReferencesEvents.ContainsKey(projectObject))
 		{
 			_ = Task.Factory.StartNew(
 				async () =>
@@ -1285,9 +1317,19 @@ public abstract class AbstrusePackageController : IBsPackageController
 			return VSConstants.S_OK;
 		}
 
+		VSProject projectObject = null;
+
+		try
+		{
+			projectObject = project.Object as VSProject;
+		}
+		catch { };
+
+		if (projectObject == null)
+			return VSConstants.S_OK;
 
 		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0
-			|| !_ProjectReferencesEvents.ContainsKey(project.Object as VSProject))
+			|| !_ProjectReferencesEvents.ContainsKey(projectObject))
 		{
 			_ = Task.Factory.StartNew(
 				async () =>

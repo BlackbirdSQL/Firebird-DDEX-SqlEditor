@@ -191,18 +191,33 @@ public static class UnsafeExtensionMembers
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>
-	/// True if the project is valid else false.
+	/// The VSProject object if the project is valid else null.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool IsEditable(this Project @this)
+	public static VSProject EditableObject(this Project @this)
 	{
 		// We're just peeking.
 		// Diag.ThrowIfNotOnUIThread();
 
-		if (@this.Object is not VSProject)
-			return false;
+		VSProject projectObject = null;
 
-		return !UnsafeCmd.IsMiscProjectKind(@this.Kind) && !UnsafeCmd.IsProjectFolderKind(@this.Kind);
+		try
+		{
+			if (@this.Object == null)
+				return null;
+
+			projectObject = @this.Object as VSProject;
+		}
+		catch { };
+
+		if (projectObject == null)
+			return null;
+
+
+		if (UnsafeCmd.IsMiscProjectKind(@this.Kind) || UnsafeCmd.IsProjectFolderKind(@this.Kind))
+			return null;
+
+		return projectObject;
 	}
 
 

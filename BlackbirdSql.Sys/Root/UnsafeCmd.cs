@@ -474,7 +474,7 @@ public abstract class UnsafeCmd
 		}
 		else
 		{
-			if (project.IsEditable())
+			if (project.EditableObject() != null)
 				projects.Add(project);
 		}
 	}

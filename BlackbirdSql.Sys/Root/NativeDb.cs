@@ -321,7 +321,9 @@ public static class NativeDb
 	{
 		// Tracer.Trace(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()");
 
-		List<Project> projects = project == null ? UnsafeCmd.RecursiveGetDesignTimeProjects() : (project.IsEditable() ? [project] : []);
+		List<Project> projects = project == null
+			? UnsafeCmd.RecursiveGetDesignTimeProjects()
+			: (project.EditableObject() != null ? [project] : []);
 
 		if (projects.Count == 0)
 			return projects;
@@ -343,10 +345,11 @@ public static class NativeDb
 
 		foreach (Project proj in projects)
 		{
-			if (!proj.IsEditable())
+			projectObject = proj.EditableObject();
+
+			if (projectObject == null)
 				continue;
 
-			projectObject = proj.Object as VSProject;
 
 			if (projectObject.References.Find(EFProvider) == null)
 				continue;
