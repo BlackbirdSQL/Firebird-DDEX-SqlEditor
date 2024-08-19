@@ -350,9 +350,15 @@ public static class NativeDb
 			if (projectObject == null)
 				continue;
 
-
-			if (projectObject.References.Find(EFProvider) == null)
+			try
+			{
+				if (projectObject.References == null || projectObject.References.Find(EFProvider) == null)
+					continue;
+			}
+			catch
+			{
 				continue;
+			}
 
 
 			if (serviceProvider == null)

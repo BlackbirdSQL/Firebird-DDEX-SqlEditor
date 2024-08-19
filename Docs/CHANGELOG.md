@@ -2,6 +2,15 @@
 
 ## Change log
 
+### v14.5.0.3 Patch for Type A Type B project validity exception.
+
+#### New / Enhancements
+- None.
+#### Fixes
+- The __KeepAlive Monitor__ has been modified to execute a dummy Select command on active connections with transactions at intervals of approximately 25 minutes. The connection verification function was not preventing a FirebirdClient shutdown of a connection after a prolonged idle period using the previous method.
+- Addressed issue where a `VsProject` type check on a `Project.Object` and a find on `Project.References`, to resolve assembly version mismatches, throws an exception.
+
+
 ### v14.5.0.2 Patch for Type A Type B project validity exception.
 
 #### New / Enhancements

@@ -2,7 +2,7 @@
 
 The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"* of Microsoft's SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.5.0.2)](https://raw.githubusercontent.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/master/BlackbirdSql.VisualStudio.Ddex/bin/Release/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
+[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.5.0.3)](https://raw.githubusercontent.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/master/BlackbirdSql.VisualStudio.Ddex/bin/Release/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/e22c80d4-56d9-4982-ac17-15a7a73eef76)
@@ -11,7 +11,7 @@ The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"*
 
 
 ### Features
-* Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.0.0.0. 
+* Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.3.1.0. 
 * Microsoft SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions, SQL scripts and `.fbsql` files.
 </br>__Note:__ The Firebird Language Service is a phased implementation of Microsoft's Transaction-SQL SSDT language service. Intellisense may report Firebird specific grammar as errors or warnings but still successfully execute.
 </br>__New:__ Full support for multi-statement SQL scripts and iSql.

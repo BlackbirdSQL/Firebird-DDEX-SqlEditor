@@ -701,7 +701,21 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (projectObject == null)
 			return;
 
-		if (projectObject.References.Find(NativeDb.EFProvider) != null)
+		Reference reference;
+
+		try
+		{
+			if (projectObject.References == null)
+				return;
+
+			reference = projectObject.References.Find(NativeDb.EFProvider);
+		}
+		catch
+		{
+			return;
+		}
+
+		if (reference != null)
 		{
 			isConfiguredDbProviderStatus = true;
 
