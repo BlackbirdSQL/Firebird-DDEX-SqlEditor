@@ -930,13 +930,24 @@ public sealed class QueryManager : IBsQueryManager
 
 		_StateStack.RemoveAt(i);
 
-		// If there are no more actions in the stack, clear the virtual flags.
-		if (_StateStack.Count == 0 || (value > EnQueryState.ActionMarker
-			&& _StateStack[^1] < EnQueryState.ActionMarker))
+		// If there are no more actions (ignoring Executing) in the stack, clear the virtual flags.
+		if (_StateStack.Count == 0 || value > EnQueryState.ActionMarker)
 		{
-			for (uint state = 1; state < (uint)EnQueryState.VirtualMarker; state *= 2)
+			bool actionFound = false;
+
+			foreach (EnQueryState querystate in _StateStack)
 			{
-				_StateFlags &= ~state;
+				if (querystate > EnQueryState.ActionMarker && querystate != EnQueryState.Executing)
+				{
+					actionFound = true;
+					break;
+				}
+			}
+
+			if (!actionFound)
+			{
+				for (uint state = 1; state < (uint)EnQueryState.VirtualMarker; state *= 2)
+					_StateFlags &= ~state;
 			}
 		}
 

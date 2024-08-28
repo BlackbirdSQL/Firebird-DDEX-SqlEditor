@@ -1717,11 +1717,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			}
 			else if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97)
 			{
-				if (!ReferenceEquals(this, ExtensionInstance.CurrentTabbedEditor))
-				{
-					Diag.DebugTrace("NOT EQUAL TabbedEditors");
-				}
-				else
+				if (ReferenceEquals(this, ExtensionInstance.CurrentTabbedEditor))
 				{
 					if (cmdID == (uint)VSConstants.VSStd97CmdID.SplitNext)
 						command = new CommandOleCycleToNext(this);

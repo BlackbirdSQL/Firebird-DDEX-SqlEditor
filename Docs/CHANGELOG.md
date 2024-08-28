@@ -2,6 +2,30 @@
 
 ## Change log
 
+
+### v14.5.1.1 Minor enhancements and code cleanup.
+
+#### New / Enhancements
+- Enabled the IDE SplitNext (F6) and SpitPrev (Shift-F6) global commands with AutoScroll. Grids in multiple resultset queries will automatically scroll into view when they receive focus.
+- Moved the initial statement terminator (batch separator) user option to `SqlEditor > Query Execution > General` so that it now appears in the __Live Settings__ of a query. Setting the option within a query affects multi-statement script parsing only. 
+- Enabled the `Commit` and `Rollback` SQL statements in SqlEditor scripts. These statements were previously disabled.
+- Code cleanup: Converted calls to the `RdtManager` `ShowWindowFrame()` and `InvalidateToolbar()` methods to direct calls instead of using an event driven mechanism. This includes calls to the Async versions of these methods.
+- Code cleanup: Converted all references to the `this` object in extension members to the name __@this__.
+- Code cleanup: Converted all references to `string.Empty` to it's functionally equivalent constant `""`.
+- Code cleanup: Moved all native db script parsing of server explorer nodes into a separate `IBsNativeDbServerExplorerService` service. This is to unclutter the `IBsNativeDatabaseEngine` service. Also moved the handling of native db error types into the `IBsNativeDbException` service.
+- Code cleanup: Dropped the `IBsNativeDbCommand`, `IBsNativeDbConnection` and `IBsNativeDbConnectionWrapper` services, as equivalent functionality was already available in the remaining native database services.
+#### Fixes
+- Fixed issues with the IBsDbExceptionService. Database exceptions were themselves throwing exceptions when the exception were of type `IscException`. This caused error information loss when a critical Firebird connection error was displayed in the __Advanced Message Box__ detailed information popup. Isc exceptions are typically raised when when a connection fails due to a broken network connection or server shutdown. Also cofigured the service to recognize an `FbException` with error code `isc_net_write_err` as a critical error and not an SQL error.
+- Removed second attempt to prevent a disconnect of connections that have been idle for 90+ minutes and have active transactions. Executing a mutating low-overhead `SELECT` statement on the database every 25 minutes fails to prevent the connection shutdown. The shutdown can be prevented by giving the connection a large `ConnectionLifetime`. The property has an upper limit of `int.MaxValue` seconds.
+- Fixed issue where first statistics snapshot was being dropped.
+
+#### Tips
+- To manage your __BlackbirdSql SqlEditor__ Text Editor and Intellisense settings, navigate to the __Text Editor__ section in __User Options__. There you will find the settings for all text editors, including the BlackbirdSql editor, which is located under the __FB-SQL__ language sub-menu. All other settings are located under the __BlackbirdSQL Server Tools__ User Options section.
+- You can change the terminator as many times as you require within a multi-statement SQL script. It is not necessary to reset it to it's original initial value at the end of your script. As soon as you re-execute the query the terminator is reset to it's value in __User Options__ or the query's __Live (Transient) Settings__.
+- The Visual Studio **_F6_** (`SplitNext`) and **_Shift-F6_** (`SplitPrev`) global commands navigate between tabbed panes within a document window pane. If you have a batch query with multiple result sets, the results tabbed pane will contain multiple result grids. The **_F6_** and **_Shift-F6_** commands can be used to navigate to each grid within the results pane.
+
+
+
 ### v14.5.1.0 Minor enhancements and code cleanup.
 
 #### New / Enhancements
