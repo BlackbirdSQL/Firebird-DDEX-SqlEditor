@@ -17,6 +17,8 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 
 namespace BlackbirdSql.Core;
@@ -99,9 +101,8 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 		NativeDb.DatabaseEngineSvc ??= DatabaseEngineService.EnsureInstance();
 		NativeDb.ProviderSchemaFactorySvc ??= ProviderSchemaFactoryService.EnsureInstance();
 		NativeDb.DatabaseInfoSvc ??= DatabaseInfoService.EnsureInstance();
-		NativeDb.DbCommandSvc ??= DbCommandService.EnsureInstance();
-		NativeDb.DbConnectionSvc ??= DbConnectionService.EnsureInstance();
 		NativeDb.DbExceptionSvc ??= DbExceptionService.EnsureInstance();
+		NativeDb.DbServerExplorerSvc ??= DbServerExplorerService.EnsureInstance();
 	}
 
 
@@ -130,10 +131,10 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	// =========================================================================================================
 
 
-	protected const int C_ProgressTotal = 50;
+	protected const int C_ServiceProgressTotal = 50;
 
 	protected static Package _Instance = null;
-	// private int _InitializationSeed = 0;
+	// private int _ServiceProgressSeed = 0;
 
 	protected IBsPackageController _ApcInstance = null;
 	private IDisposable _DisposableWaitCursor;
@@ -186,9 +187,6 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 
 
 
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Accessor to the current <see cref="IVsSolution"/> instance.
@@ -212,39 +210,16 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	}
 
 
-	public abstract IBsEventsManager EventsManager { get; }
-
-
-
-	public Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider
-	{
-		get
-		{
-			if (GetService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider))
-				is not Microsoft.VisualStudio.OLE.Interop.IServiceProvider provider)
-			{
-				throw Diag.ExceptionService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
-			}
-
-			return provider;
-		}
-	}
-
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Accessor to the 'this' cast as the <see cref="IAsyncServiceContainer"/>.
+	/// Property accessors for EventsManagers are distinct for each
+	/// package.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public virtual IAsyncServiceContainer ServiceContainer => this;
+	public IBsEventsManager EventsManager => null;
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Accessor to the 'this' cast as the <see cref="IServiceContainer"/>.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public virtual IServiceContainer SyncServiceContainer => this;
+	public IOleServiceProvider OleServiceProvider =>
+		GetService(typeof(IOleServiceProvider)) as IOleServiceProvider
+			?? throw Diag.ExceptionService(typeof(IOleServiceProvider));
 
 
 	/// <summary>
@@ -279,90 +254,63 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Creates a service instance of the specified type if this class has access to the
-	/// final class type of the service being added.
-	/// The class requiring and adding the service may not necessarily be the class that
-	/// creates an instance of the service.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public virtual async Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token)
-	{
-		if (serviceType == null)
-		{
-			ArgumentNullException ex = new("serviceType");
-			Diag.Dug(ex);
-			throw ex;
-		}
-		else if (serviceType == typeof(SBsNativeDatabaseEngine))
-		{
-			object service = NativeDb.DatabaseEngineSvc;
-			return service;
-		}
-		else if (serviceType == typeof(SBsNativeDatabaseInfo))
-		{
-			object service = NativeDb.DatabaseInfoSvc;
-			return service;
-		}
-		else if (serviceType == typeof(SBsNativeDbCommand))
-		{
-			object service = NativeDb.DbCommandSvc;
-			return service;
-		}
-		else if (serviceType == typeof(SBsNativeDbConnection))
-		{
-			object service = NativeDb.DbConnectionSvc;
-			return service;
-		}
-		else if (serviceType == typeof(SBsNativeDbException))
-		{
-			object service = NativeDb.DbExceptionSvc;
-			return service;
-		}
-		/*
-		else if (serviceType == typeof(IBDesignerOnlineServices))
-		{
-			object service = new DesignerOnlineServices()
-				?? throw Diag.ExceptionService(serviceType);
-
-			return service;
-		}
-		*/
-		else if (serviceType.IsInstanceOfType(this))
-		{
-			return this;
-		}
-
-		return await Task.FromResult<object>(null); 
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Final asynchronous initialization tasks for the package that must occur after
 	/// all descendents and ancestors have completed their InitializeAsync() tasks.
 	/// It is the final descendent package class's responsibility to initiate the call
 	/// to FinalizeAsync.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public virtual async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+	public virtual async Task FinalizeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
 	{
-		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+		await JoinableTaskFactory.SwitchToMainThreadAsync(cancelToken);
 
 
 		ProgressAsync(progress, "Finalizing Core...").Forget();
 
 		// Sample format of FinalizeAsync in descendents
-		// if (cancellationToken.IsCancellationRequested)
+		// if (cancelToken.Cancelled())
 		//	return;
-		// await base.FinalizeAsync(cancellationToken, progress);
+		// await base.FinalizeAsync(cancelToken, progress);
 
 		// Sample add service call
-		// ServiceContainer.AddService(typeof(ICustomService), ServiceCreatorCallbackMethod, promote: true);
+		// ServiceContainer.AddService(typeof(ICustomService), ServiceCreatorCallbackMethod, promote: false);
 
 		ProgressAsync(progress, "Finalizing Core... Done.").Forget();
 
 	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Creates a service instance of the specified type if this class has access to the
+	/// final class type of the service being added.
+	/// The class requiring and adding the service may not necessarily be the class that
+	/// creates an instance of the service.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public virtual async Task<TInterface> GetLocalServiceInstanceAsync<TService, TInterface>(CancellationToken token)
+		 where TInterface : class
+	{
+		Type serviceType = typeof(TService);
+
+		if (serviceType == typeof(SBsNativeDatabaseEngine))
+			return NativeDb.DatabaseEngineSvc as TInterface;
+
+		else if (serviceType == typeof(SBsNativeDatabaseInfo))
+			return NativeDb.DatabaseInfoSvc as TInterface;
+
+		else if (serviceType == typeof(SBsNativeDbException))
+			return NativeDb.DbExceptionSvc as TInterface;
+
+		else if (serviceType == typeof(SBsNativeDbServerExplorerService))
+			return NativeDb.DbServerExplorerSvc as TInterface;
+
+		else if (serviceType == typeof(SBsNativeProviderSchemaFactory))
+			return NativeDb.ProviderSchemaFactorySvc as TInterface;
+
+		return await Task.FromResult<TInterface>(null);
+	}
+
 
 
 	public abstract TInterface GetService<TService, TInterface>() where TInterface : class;
@@ -377,35 +325,19 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	/// Asynchronous initialization of the package. The class must register services it
 	/// requires using the ServicesCreatorCallback method.
 	/// </summary>
-	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+	protected override async Task InitializeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
 	{
-		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
+		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState)
 			return;
 
 
 		ProgressAsync(progress, "Initializing Core...").Forget();
 
-		await base.InitializeAsync(cancellationToken, progress);
+		await base.InitializeAsync(cancelToken, progress);
 
 		ProgressAsync(progress, "Initializing Core... Done.").Forget();
 
 	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Implementation of the <see cref="IBsAsyncPackage"/> ServicesCreatorCallback
-	/// method.
-	/// Initializes and configures a service of the specified type that is used by this
-	/// Package.
-	/// Configuration is performed by the class requiring the service.
-	/// The actual instance creation of the service is the responsibility of the class
-	/// Package that has access to the final descendent class of the Service.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public virtual object ServicesCreatorCallback(IServiceContainer container,
-		Type serviceType) => null;
 
 
 
@@ -420,8 +352,29 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	/// Package that has access to the final descendent class of the Service.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public virtual Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container,
-		CancellationToken token, Type serviceType) => Task.FromResult<object>(null);
+	public virtual async Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container,
+		CancellationToken token, Type serviceType)
+	{
+		if (serviceType == typeof(SBsNativeDatabaseEngine))
+			return await GetLocalServiceInstanceAsync<SBsNativeDatabaseEngine, IBsNativeDatabaseEngine>(token);
+
+		else if (serviceType == typeof(SBsNativeDatabaseInfo))
+			return await GetLocalServiceInstanceAsync<SBsNativeDatabaseInfo, IBsNativeDatabaseInfo>(token);
+
+		else if (serviceType == typeof(SBsNativeDbException))
+			return await GetLocalServiceInstanceAsync<SBsNativeDbException, IBsNativeDbException>(token);
+
+		else if (serviceType == typeof(SBsNativeDbServerExplorerService))
+			return await GetLocalServiceInstanceAsync<SBsNativeDbServerExplorerService, IBsNativeDbServerExplorerService>(token);
+
+		else if (serviceType == typeof(SBsNativeProviderSchemaFactory))
+			return await GetLocalServiceInstanceAsync<SBsNativeProviderSchemaFactory, IBsNativeProviderSchemaFactory>(token);
+
+
+		return await Diag.ThrowExceptionServiceUnavailableAsync<object>(serviceType);
+	}
+
+
 
 	delegate void LoadSolutionOptionsDelegate(Stream stream);
 	delegate void SaveSolutionOptionsDelegate(Stream stream);
@@ -499,11 +452,12 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 				break;
 		}
 
-		// string thread = ThreadHelper.CheckAccess() ? "UI!!" : "Pool";
-		// Diag.DebugTrace($"Loading BlackbirdSql [{thread}:{++_InitializationSeed}/{C_ProgressTotal}]: {message}");
-
-		// ServiceProgressData progressData = new("Loading BlackbirdSql", message, _InitializationSeed++, C_ProgressTotal);
+		
+		// ServiceProgressData progressData = new("Loading BlackbirdSql", message, ++_ServiceProgressSeed, C_ServiceProgressTotal);
 		// progress.Report(progressData);
+
+		// string thread = ThreadHelper.CheckAccess() ? "MainThread" : "ThreadPool";
+		// Diag.DebugTrace($"Loading BlackbirdSql [{thread}:{_ServiceProgressSeed}/{C_ServiceProgressTotal}]: {message}");
 
 
 		if (_LoadStatisticsMainThreadStartTime != 0L
@@ -581,7 +535,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	{
 	}
 
-#endregion Methods
+	#endregion Methods
 
 
 }

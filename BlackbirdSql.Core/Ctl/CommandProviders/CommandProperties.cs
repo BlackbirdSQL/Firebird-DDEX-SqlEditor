@@ -6,7 +6,10 @@ using System.ComponentModel.Design;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Sys.Enums;
 
+
+
 namespace BlackbirdSql.Core.Ctl.CommandProviders;
+
 
 // =========================================================================================================
 //											CommandProperties Class

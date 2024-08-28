@@ -56,7 +56,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 			if (_Csa != null)
 				return _Csa.DatasetKey;
 
-			return string.Empty;
+			return "";
 		}
 	}
 
@@ -72,7 +72,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 				return ((DbConnection)Connection).DataSource;
 			}
 
-			return string.Empty;
+			return "";
 		}
 	}
 
@@ -92,7 +92,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 			if (Connection != null && Connection.State == ConnectionState.Open)
 				_ServerVersion = Connection.GetDataSourceVersion();
 			else
-				_ServerVersion = string.Empty;
+				_ServerVersion = "";
 
 			return _ServerVersion;
 		}
@@ -114,7 +114,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 			if (Connection != null)
 				return ((DbConnection)Connection).Database;
 
-			return string.Empty;
+			return "";
 		}
 	}
 
@@ -142,7 +142,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 		{
 			ValidateStoredConnection();
 
-			return _Csa?.ToDisplayString() ?? string.Empty;
+			return _Csa?.ToDisplayString() ?? "";
 		}
 	}
 
@@ -156,7 +156,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 		{
 			if (!(QryMgr?.QueryExecutionStartTime.HasValue ?? false))
 			{
-				return string.Empty;
+				return "";
 			}
 
 			return FormatTime(QryMgr.QueryExecutionStartTime.Value);
@@ -172,7 +172,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 		{
 			if (QryMgr == null || !QryMgr.QueryExecutionEndTime.HasValue)
 			{
-				return string.Empty;
+				return "";
 			}
 
 			return FormatTime(QryMgr.QueryExecutionEndTime.Value);
@@ -188,7 +188,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 		{
 			if (QryMgr == null || !QryMgr.QueryExecutionEndTime.HasValue || !QryMgr.QueryExecutionStartTime.HasValue)
 			{
-				return string.Empty;
+				return "";
 			}
 
 			return (QryMgr.QueryExecutionEndTime.Value - QryMgr.QueryExecutionStartTime.Value).FmtStats();
@@ -207,7 +207,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 				return QryMgr.RowsAffected.ToString(CultureInfo.CurrentCulture);
 			}
 
-			return string.Empty;
+			return "";
 		}
 	}
 
@@ -218,7 +218,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	{
 		get
 		{
-			string result = string.Empty;
+			string result = "";
 			if (Connection != null)
 			{
 				result = GetStateString(Connection.State);
@@ -239,7 +239,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 			if (_Csa != null)
 				return _Csa.UserID;
 
-			return string.Empty;
+			return "";
 		}
 
 	}
@@ -264,7 +264,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	{
 		if (!(time != DateTime.MinValue))
 		{
-			return string.Empty;
+			return "";
 		}
 
 		return time.ToString(CultureInfo.CurrentCulture);

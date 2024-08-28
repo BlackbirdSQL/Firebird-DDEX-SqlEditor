@@ -22,7 +22,7 @@ public class CommandDatabaseList : AbstractCommand
 		// Tracer.Trace();
 	}
 
-	public CommandDatabaseList(IBsTabbedEditorPane editorPane) : base(editorPane)
+	public CommandDatabaseList(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
 		// Tracer.Trace();
 	}

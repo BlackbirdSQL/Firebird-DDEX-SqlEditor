@@ -48,8 +48,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		SetStyle(ControlStyles.UserMouse, value: true);
 		SetStyle(ControlStyles.OptimizedDoubleBuffer, value: true);
 		BackColor = SystemColors.Window;
-		m_scrollMgr.SetColumns(m_Columns);
-		m_scrollMgr.RowCount = 0L;
+		_ScrollMgr.SetColumns(m_Columns);
+		_ScrollMgr.RowCount = 0L;
 		m_gridTooltip = new ToolTip
 		{
 			InitialDelay = 1000,
@@ -67,8 +67,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			BeginInvoke(new VoidInvoker(InitDefaultEmbeddedControls));
 		};
 		GetFontInfo(Font, out var height, out m_cAvCharWidth);
-		m_scrollMgr.CellHeight = height + GridButton.ButtonAdditionalHeight;
-		m_scrollMgr.SetHorizontalScrollUnitForArrows((int)m_cAvCharWidth);
+		_ScrollMgr.CellHeight = height + GridButton.ButtonAdditionalHeight;
+		_ScrollMgr.SetHorizontalScrollUnitForArrows((int)m_cAvCharWidth);
 		m_autoScrollTimer.Interval = 75;
 		m_autoScrollTimer.Tick += AutoscrollTimerProcessor;
 		m_linkFont = new Font(Font, FontStyle.Underline | Font.Style);
@@ -201,7 +201,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				if (m_gridRowNumber > 0)
 				{
 					int gRID_LINE_WIDTH = ScrollManager.GRID_LINE_WIDTH;
-					int cellHeight = _GridCtl.m_scrollMgr.CellHeight;
+					int cellHeight = _GridCtl._ScrollMgr.CellHeight;
 					int top = ev.MarginBounds.Top;
 					top = !flag ? top + 1 : top + _GridCtl.HeaderHeight + 1;
 					Rectangle rCell = default;
@@ -243,7 +243,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			SolidBrush textBrush = null;
 			rCell.Width = widthInPixels + gRID_LINE_WIDTH;
 			_GridCtl.GetCellGDIObjects(gridColumn, nRow, nCol, ref bkBrush, ref textBrush);
-			if (gridColumn.WithSelectionBk && _GridCtl.m_selMgr.IsCellSelected(nRow, nCol))
+			if (gridColumn.WithSelectionBk && _GridCtl._SelectionMgr.IsCellSelected(nRow, nCol))
 			{
 				bkBrush = _GridCtl.m_highlightBrush;
 			}
@@ -287,7 +287,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			}
 
 			long firstRowNum = m_firstRowNum;
-			int num = _GridCtl.m_scrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH;
+			int num = _GridCtl._ScrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH;
 			firstRowNum = m_firstRowNum != 0L || !_GridCtl.m_withHeader ? firstRowNum + (nPageHeight / num - 1) : firstRowNum + ((nPageHeight - _GridCtl.HeaderHeight) / num - 1);
 			if (firstRowNum < m_firstRowNum)
 			{
@@ -473,7 +473,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 				public override AccessibleObject Parent => m_parent;
 
-				public override Rectangle Bounds => Grid.RectangleToScreen(Grid.m_scrollMgr.GetCellRectangle(m_rowIndex, m_colIndex));
+				public override Rectangle Bounds => Grid.RectangleToScreen(Grid._ScrollMgr.GetCellRectangle(m_rowIndex, m_colIndex));
 
 				public override string Name => Grid.GetGridCellAccessibleName(m_rowIndex, m_colIndex);
 
@@ -498,12 +498,12 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						{
 							AccessibleStates accessibleState = Grid.m_Columns[m_colIndex].GetAccessibleState(m_rowIndex, Grid.GridStorage);
 							AccessibleStates accessibleStates = AccessibleStates.Focusable | AccessibleStates.Selectable;
-							if (Grid.m_selMgr.CurrentColumn == m_colIndex && Grid.m_selMgr.CurrentRow == m_rowIndex)
+							if (Grid._SelectionMgr.CurrentColumn == m_colIndex && Grid._SelectionMgr.CurrentRow == m_rowIndex)
 							{
 								accessibleStates |= AccessibleStates.Focused;
 							}
 
-							if (Grid.m_selMgr.IsCellSelected(m_rowIndex, m_colIndex))
+							if (Grid._SelectionMgr.IsCellSelected(m_rowIndex, m_colIndex))
 							{
 								accessibleStates |= AccessibleStates.Selected;
 							}
@@ -514,7 +514,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 							}
 
 							Rectangle empty = Rectangle.Empty;
-							if (empty.Equals(Grid.m_scrollMgr.GetCellRectangle(m_rowIndex, m_colIndex)))
+							if (empty.Equals(Grid._ScrollMgr.GetCellRectangle(m_rowIndex, m_colIndex)))
 							{
 								accessibleStates |= AccessibleStates.Invisible;
 							}
@@ -598,10 +598,10 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				{
 					if ((AccessibleSelection.TakeSelection & accessibleSelection) != 0)
 					{
-						Grid.m_selMgr.Clear();
+						Grid._SelectionMgr.Clear();
 						if (AccessibleSelection.TakeSelection == accessibleSelection)
 						{
-							Grid.m_selMgr.StartNewBlock(m_rowIndex, m_colIndex);
+							Grid._SelectionMgr.StartNewBlock(m_rowIndex, m_colIndex);
 							Grid.Refresh();
 							return;
 						}
@@ -611,17 +611,17 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					{
 						if ((AccessibleSelection.TakeSelection & accessibleSelection) != 0 || (AccessibleSelection.AddSelection & accessibleSelection) != 0)
 						{
-							Grid.m_selMgr.StartNewBlock(m_rowIndex, m_colIndex);
+							Grid._SelectionMgr.StartNewBlock(m_rowIndex, m_colIndex);
 						}
 						else if ((AccessibleSelection.ExtendSelection & accessibleSelection) != 0)
 						{
-							Grid.m_selMgr.UpdateCurrentBlock(m_rowIndex, m_colIndex);
-							Grid.m_selMgr.CurrentRow = m_rowIndex;
-							Grid.m_selMgr.CurrentColumn = m_colIndex;
+							Grid._SelectionMgr.UpdateCurrentBlock(m_rowIndex, m_colIndex);
+							Grid._SelectionMgr.CurrentRow = m_rowIndex;
+							Grid._SelectionMgr.CurrentColumn = m_colIndex;
 						}
 						else if ((AccessibleSelection.RemoveSelection & accessibleSelection) == 0)
 						{
-							Grid.m_selMgr.StartNewBlock(m_rowIndex, m_colIndex);
+							Grid._SelectionMgr.StartNewBlock(m_rowIndex, m_colIndex);
 						}
 
 						Grid.Refresh();
@@ -631,13 +631,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					switch (accessibleSelection)
 					{
 						case AccessibleSelection.AddSelection:
-							Grid.m_selMgr.StartNewBlock(m_rowIndex, m_colIndex);
+							Grid._SelectionMgr.StartNewBlock(m_rowIndex, m_colIndex);
 							break;
 						case AccessibleSelection.RemoveSelection:
-							Grid.m_selMgr.StartNewBlockOrExcludeCell(m_rowIndex, m_colIndex);
+							Grid._SelectionMgr.StartNewBlockOrExcludeCell(m_rowIndex, m_colIndex);
 							break;
 						case AccessibleSelection.ExtendSelection:
-							Grid.m_selMgr.UpdateCurrentBlock(m_rowIndex, m_colIndex);
+							Grid._SelectionMgr.UpdateCurrentBlock(m_rowIndex, m_colIndex);
 							break;
 					}
 
@@ -661,16 +661,16 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						return;
 					}
 
-					Rectangle cellRectangle = Grid.m_scrollMgr.GetCellRectangle(m_rowIndex, m_colIndex);
+					Rectangle cellRectangle = Grid._ScrollMgr.GetCellRectangle(m_rowIndex, m_colIndex);
 					if (cellRectangle.Equals(Rectangle.Empty))
 					{
 						Grid.EnsureCellIsVisible(m_rowIndex, m_colIndex);
-						cellRectangle = Grid.m_scrollMgr.GetCellRectangle(m_rowIndex, m_colIndex);
+						cellRectangle = Grid._ScrollMgr.GetCellRectangle(m_rowIndex, m_colIndex);
 					}
 
 					if (Grid.OnMouseButtonClicking(m_rowIndex, m_colIndex, cellRectangle, ModifierKeys, MouseButtons.Left))
 					{
-						Grid.m_selMgr.Clear();
+						Grid._SelectionMgr.Clear();
 						int num = Grid.m_gridStorage.IsCellEditable(m_rowIndex, Grid.m_Columns[m_colIndex].ColumnIndex);
 						if (num != 0)
 						{
@@ -678,10 +678,10 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 							Grid.StartEditingCell(m_rowIndex, m_colIndex, cellRectangle, num, ref bSendMouseClick);
 						}
 
-						Grid.m_selMgr.StartNewBlock(m_rowIndex, m_colIndex);
+						Grid._SelectionMgr.StartNewBlock(m_rowIndex, m_colIndex);
 						Grid.OnMouseButtonClicked(m_rowIndex, m_colIndex, cellRectangle, MouseButtons.Left);
 						Grid.Refresh();
-						Grid.OnSelectionChanged(Grid.m_selMgr.SelectedBlocks);
+						Grid.OnSelectionChanged(Grid._SelectionMgr.SelectedBlocks);
 					}
 				}
 
@@ -757,12 +757,12 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				{
 					get
 					{
-						Rectangle cellRectangle = Grid.m_scrollMgr.GetCellRectangle(Grid.m_scrollMgr.FirstRowIndex, m_colIndex);
+						Rectangle cellRectangle = Grid._ScrollMgr.GetCellRectangle(Grid._ScrollMgr.FirstRowIndex, m_colIndex);
 						int num = 0;
 						int num2 = m_colIndex;
 						while (num2 > 0 && Grid.m_gridHeader[num2 - 1].MergedWithRight)
 						{
-							num += Grid.m_scrollMgr.GetCellRectangle(Grid.m_scrollMgr.FirstRowIndex, num2 - 1).Width;
+							num += Grid._ScrollMgr.GetCellRectangle(Grid._ScrollMgr.FirstRowIndex, num2 - 1).Width;
 							num2--;
 						}
 
@@ -786,7 +786,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					get
 					{
 						AccessibleStates accessibleStates = AccessibleStates.None;
-						if (m_colIndex >= Grid.m_scrollMgr.FirstScrollableColumnIndex && (m_colIndex < Grid.m_scrollMgr.FirstColumnIndex || m_colIndex > Grid.m_scrollMgr.LastColumnIndex))
+						if (m_colIndex >= Grid._ScrollMgr.FirstScrollableColumnIndex && (m_colIndex < Grid._ScrollMgr.FirstColumnIndex || m_colIndex > Grid._ScrollMgr.LastColumnIndex))
 						{
 							accessibleStates |= AccessibleStates.Invisible;
 						}
@@ -828,12 +828,12 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				get
 				{
 					AccessibleStates accessibleStates = AccessibleStates.Focusable | AccessibleStates.Selectable;
-					if (m_colIndex >= Grid.m_scrollMgr.FirstScrollableColumnIndex && (m_colIndex < Grid.m_scrollMgr.FirstColumnIndex || m_colIndex > Grid.m_scrollMgr.LastColumnIndex))
+					if (m_colIndex >= Grid._ScrollMgr.FirstScrollableColumnIndex && (m_colIndex < Grid._ScrollMgr.FirstColumnIndex || m_colIndex > Grid._ScrollMgr.LastColumnIndex))
 					{
 						accessibleStates |= AccessibleStates.Invisible;
 					}
 
-					if (Grid.m_selMgr.CurrentColumn == m_colIndex)
+					if (Grid._SelectionMgr.CurrentColumn == m_colIndex)
 					{
 						accessibleStates |= AccessibleStates.Focused;
 					}
@@ -846,7 +846,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			{
 				get
 				{
-					Rectangle cellRectangle = Grid.m_scrollMgr.GetCellRectangle(Grid.m_scrollMgr.FirstRowIndex, m_colIndex);
+					Rectangle cellRectangle = Grid._ScrollMgr.GetCellRectangle(Grid._ScrollMgr.FirstRowIndex, m_colIndex);
 					if (!cellRectangle.Equals(Rectangle.Empty))
 					{
 						cellRectangle.Y = 0;
@@ -901,9 +901,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			public override AccessibleObject GetFocused()
 			{
-				if (Grid.m_selMgr.CurrentColumn == m_colIndex)
+				if (Grid._SelectionMgr.CurrentColumn == m_colIndex)
 				{
-					return new CellAccessibleObject(this, Grid.m_selMgr.CurrentRow, m_colIndex);
+					return new CellAccessibleObject(this, Grid._SelectionMgr.CurrentRow, m_colIndex);
 				}
 
 				return null;
@@ -1471,9 +1471,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected GridColumnCollection m_Columns = [];
 
-	protected ScrollManager m_scrollMgr = new ScrollManager();
+	protected ScrollManager _ScrollMgr = new ScrollManager();
 
-	protected SelectionManager m_selMgr = new SelectionManager();
+	protected SelectionManager _SelectionMgr = new SelectionManager();
 
 	protected GridHeader m_gridHeader = new GridHeader();
 
@@ -1652,11 +1652,11 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		get
 		{
-			return m_selMgr.SelectionType;
+			return _SelectionMgr.SelectionType;
 		}
 		set
 		{
-			if (m_selMgr.SelectionType != value)
+			if (_SelectionMgr.SelectionType != value)
 			{
 				if (!Enum.IsDefined(typeof(EnGridSelectionType), value))
 				{
@@ -1665,11 +1665,11 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					throw ex;
 				}
 
-				m_selMgr.SelectionType = value;
+				_SelectionMgr.SelectionType = value;
 				if (IsHandleCreated && m_nIsInitializingCount == 0)
 				{
-					m_selMgr.Clear();
-					OnSelectionChanged(m_selMgr.SelectedBlocks);
+					_SelectionMgr.Clear();
+					OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 					Invalidate();
 				}
 			}
@@ -1709,11 +1709,11 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		get
 		{
-			return m_scrollMgr.FirstScrollableColumnIndex;
+			return _ScrollMgr.FirstScrollableColumnIndex;
 		}
 		set
 		{
-			if (m_scrollMgr.FirstScrollableColumnIndex != value)
+			if (_ScrollMgr.FirstScrollableColumnIndex != value)
 			{
 				if (value < 0)
 				{
@@ -1734,13 +1734,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		get
 		{
-			return m_scrollMgr.FirstScrollableRowIndex;
+			return _ScrollMgr.FirstScrollableRowIndex;
 		}
 		set
 		{
-			if (m_scrollMgr.FirstScrollableRowIndex != value)
+			if (_ScrollMgr.FirstScrollableRowIndex != value)
 			{
-				m_scrollMgr.FirstScrollableRowIndex = value;
+				_ScrollMgr.FirstScrollableRowIndex = value;
 				UpdateScrollableAreaRect();
 				UpdateGridInternal(bRecalcRows: true);
 			}
@@ -1769,12 +1769,20 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 	}
 
+
+	[Browsable(false)]
+	public ScrollManager ScrollMgr => _ScrollMgr;
+
+	[Browsable(false)]
+	public SelectionManager SelectionMgr => _SelectionMgr;
+
+
 	[Browsable(false)]
 	public int VisibleRowsNum
 	{
 		get
 		{
-			int num = m_scrollMgr.CalcVertPageSize(m_scrollableArea);
+			int num = _ScrollMgr.CalcVertPageSize(m_scrollableArea);
 			if (num <= 0)
 			{
 				num = s_nMaxNumOfVisibleRows;
@@ -1783,6 +1791,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			return num;
 		}
 	}
+
 
 	[Description("Widths of the left and right margins for an embedded control")]
 	[Category(C_GridPropsCategory)]
@@ -1846,9 +1855,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		get
 		{
-			if (m_scrollMgr != null)
+			if (_ScrollMgr != null)
 			{
-				return m_scrollMgr.CellHeight;
+				return _ScrollMgr.CellHeight;
 			}
 
 			return -1;
@@ -1991,13 +2000,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 	}
 
-	protected virtual bool NeedToHighlightCurrentCell => m_selMgr.CurrentColumn >= 0;
+	protected virtual bool NeedToHighlightCurrentCell => _SelectionMgr.CurrentColumn >= 0;
 
 	protected virtual string NewLineCharacters => "\r\n";
 
 	protected virtual string ColumnsSeparator => "\t";
 
-	protected virtual string StringForBitmapData => string.Empty;
+	protected virtual string StringForBitmapData => "";
 
 	protected virtual string StringForButtonsWithBmpOnly => "<button>";
 
@@ -2035,16 +2044,16 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		get
 		{
-			if (m_scrollMgr.FirstScrollableColumnIndex > 0)
+			if (_ScrollMgr.FirstScrollableColumnIndex > 0)
 			{
-				return m_scrollMgr.FirstScrollableColumnIndex < m_Columns.Count;
+				return _ScrollMgr.FirstScrollableColumnIndex < m_Columns.Count;
 			}
 
 			return false;
 		}
 	}
 
-	private long RowCount => m_scrollMgr.RowCount;
+	private long RowCount => _ScrollMgr.RowCount;
 
 	private bool IsEmpty
 	{
@@ -2306,13 +2315,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		int count = m_Columns.Count;
 		GetHeaderInfo(1, out string headerText, out Bitmap headerBitmap);
 		_ = headerBitmap;
-		stringBuilder.Append(headerText ?? string.Empty);
+		stringBuilder.Append(headerText ?? "");
 		for (int i = 2; i < count; i++)
 		{
 			GetHeaderInfo(i, out headerText, out headerBitmap);
 			_ = headerBitmap;
 			stringBuilder.Append(ColumnsSeparator);
-			stringBuilder.Append(headerText ?? string.Empty);
+			stringBuilder.Append(headerText ?? "");
 		}
 
 		return stringBuilder.ToString();
@@ -2559,13 +2568,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	public void GetCurrentCell(out long rowIndex, out int columnIndex)
 	{
-		rowIndex = m_selMgr.CurrentRow;
-		columnIndex = m_selMgr.CurrentColumn;
+		rowIndex = _SelectionMgr.CurrentRow;
+		columnIndex = _SelectionMgr.CurrentColumn;
 	}
 
 	public Rectangle GetVisibleCellRectangle(long rowIndex, int columnIndex)
 	{
-		return m_scrollMgr.GetCellRectangle(rowIndex, columnIndex);
+		return _ScrollMgr.GetCellRectangle(rowIndex, columnIndex);
 	}
 
 	public void ResizeColumnToShowAllContents(int columnIndex)
@@ -2749,11 +2758,11 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	protected override void OnSizeChanged(EventArgs e)
 	{
 		base.OnSizeChanged(e);
-		if (m_scrollMgr.FirstScrollableColumnIndex > 0)
+		if (_ScrollMgr.FirstScrollableColumnIndex > 0)
 		{
 			if (ProcessNonScrollableVerticalAreaChange(recalcGridIfNeeded: false))
 			{
-				m_scrollMgr.RecalcAll(m_scrollableArea);
+				_ScrollMgr.RecalcAll(m_scrollableArea);
 			}
 		}
 		else
@@ -2766,8 +2775,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		double cAvCharWidth = m_cAvCharWidth;
 		GetFontInfo(Font, out var height, out m_cAvCharWidth);
-		m_scrollMgr.CellHeight = height + GridButton.ButtonAdditionalHeight;
-		m_scrollMgr.SetHorizontalScrollUnitForArrows((int)m_cAvCharWidth);
+		_ScrollMgr.CellHeight = height + GridButton.ButtonAdditionalHeight;
+		_ScrollMgr.SetHorizontalScrollUnitForArrows((int)m_cAvCharWidth);
 		UpdateEmbeddedControlsFont();
 		m_Columns.ProcessNewGridFont(Font);
 		if (cAvCharWidth > 0.0)
@@ -2785,7 +2794,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			}
 		}
 
-		if (m_scrollMgr.FirstScrollableColumnIndex > 0)
+		if (_ScrollMgr.FirstScrollableColumnIndex > 0)
 		{
 			ProcessNonScrollableVerticalAreaChange(recalcGridIfNeeded: false);
 		}
@@ -2796,7 +2805,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 		if (IsHandleCreated && m_nIsInitializingCount == 0)
 		{
-			m_scrollMgr.RecalcAll(m_scrollableArea);
+			_ScrollMgr.RecalcAll(m_scrollableArea);
 		}
 
 		m_linkFont?.Dispose();
@@ -2814,7 +2823,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	protected override void OnHandleCreated(EventArgs e)
 	{
 		SystemEvents.UserPreferenceChanged += OnUserPrefChanged;
-		m_scrollMgr.SetGridWindowHandle(Handle);
+		_ScrollMgr.SetGridWindowHandle(Handle);
 		UpdateGridInternal(bRecalcRows: true);
 		base.OnHandleCreated(e);
 		Width--;
@@ -3219,7 +3228,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected override void OnGotFocus(EventArgs a)
 	{
-		if (!m_bInGridStorageCall && m_selMgr.SelectedBlocks.Count > 0 && !IsEditing)
+		if (!m_bInGridStorageCall && _SelectionMgr.SelectedBlocks.Count > 0 && !IsEditing)
 		{
 			Invalidate();
 		}
@@ -3234,7 +3243,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			StopEditCell();
 		}
 
-		if (!m_bInGridStorageCall && !ContainsFocus && m_selMgr.SelectedBlocks.Count > 0)
+		if (!m_bInGridStorageCall && !ContainsFocus && _SelectionMgr.SelectedBlocks.Count > 0)
 		{
 			Invalidate();
 		}
@@ -3256,7 +3265,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 				break;
 			case 276:
-				m_scrollMgr.HandleHScroll(Native.Util.LOWORD(m.WParam));
+				_ScrollMgr.HandleHScroll(Native.Util.LOWORD(m.WParam));
 				if (!m_withHeader)
 				{
 					CheckAndRePositionEmbeddedControlForSmallSizes();
@@ -3264,7 +3273,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 				break;
 			case 277:
-				m_scrollMgr.HandleVScroll(Native.Util.LOWORD(m.WParam));
+				_ScrollMgr.HandleVScroll(Native.Util.LOWORD(m.WParam));
 				CheckAndRePositionEmbeddedControlForSmallSizes();
 				break;
 			case 526:
@@ -3340,27 +3349,27 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			if (flag)
 			{
-				if (RowCount > 0 && RowCount > m_scrollMgr.FirstScrollableRowIndex)
+				if (RowCount > 0 && RowCount > _ScrollMgr.FirstScrollableRowIndex)
 				{
 					if (num2 > 0)
 					{
-						m_scrollMgr.HandleVScroll(0);
+						_ScrollMgr.HandleVScroll(0);
 					}
 					else
 					{
-						m_scrollMgr.HandleVScroll(1);
+						_ScrollMgr.HandleVScroll(1);
 					}
 				}
 			}
-			else if (NumColInt > 0 && NumColInt > m_scrollMgr.FirstScrollableColumnIndex)
+			else if (NumColInt > 0 && NumColInt > _ScrollMgr.FirstScrollableColumnIndex)
 			{
 				if (num2 > 0)
 				{
-					m_scrollMgr.HandleHScroll(0);
+					_ScrollMgr.HandleHScroll(0);
 				}
 				else
 				{
-					m_scrollMgr.HandleHScroll(1);
+					_ScrollMgr.HandleHScroll(1);
 				}
 			}
 		}
@@ -3380,9 +3389,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		int num3 = Math.Abs(num2);
 		for (int i = 0; i < num3; i++)
 		{
-			if (NumColInt > 0 && NumColInt > m_scrollMgr.FirstScrollableColumnIndex)
+			if (NumColInt > 0 && NumColInt > _ScrollMgr.FirstScrollableColumnIndex)
 			{
-				m_scrollMgr.HandleHScroll(num2 > 0 ? 1 : 0);
+				_ScrollMgr.HandleHScroll(num2 > 0 ? 1 : 0);
 			}
 		}
 	}
@@ -3503,9 +3512,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			}
 
 			int num = NumColInt - 1;
-			if (m_scrollMgr.FirstScrollableColumnIndex > 0 && columnIndex <= m_scrollMgr.FirstScrollableColumnIndex - 1)
+			if (_ScrollMgr.FirstScrollableColumnIndex > 0 && columnIndex <= _ScrollMgr.FirstScrollableColumnIndex - 1)
 			{
-				num = Math.Min(num, m_scrollMgr.FirstScrollableColumnIndex - 1);
+				num = Math.Min(num, _ScrollMgr.FirstScrollableColumnIndex - 1);
 			}
 
 			rCellRect.Width = 0;
@@ -3581,17 +3590,17 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			if (m_gridStorage != null)
 			{
-				m_scrollMgr.RowCount = m_gridStorage.RowCount;
+				_ScrollMgr.RowCount = m_gridStorage.RowCount;
 			}
 			else
 			{
-				m_scrollMgr.RowCount = 0L;
-				m_selMgr.Clear();
+				_ScrollMgr.RowCount = 0L;
+				_SelectionMgr.Clear();
 			}
 
 			if (!m_scrollableArea.IsEmpty && IsHandleCreated)
 			{
-				m_scrollMgr.RecalcAll(m_scrollableArea);
+				_ScrollMgr.RecalcAll(m_scrollableArea);
 			}
 		}
 
@@ -3610,10 +3619,10 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 		m_gridStorage = null;
 		m_captureTracker.Reset();
-		m_scrollMgr.Reset();
+		_ScrollMgr.Reset();
 		m_Columns.Clear();
 		m_gridHeader.Reset();
-		m_selMgr.Clear();
+		_SelectionMgr.Clear();
 		m_hooverOverArea.Reset();
 		Refresh();
 	}
@@ -3660,7 +3669,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		m_gridHeader.InsertHeaderItem(nIndex, ci);
 		if (m_nIsInitializingCount == 0)
 		{
-			m_scrollMgr.ProcessNewCol(nIndex);
+			_ScrollMgr.ProcessNewCol(nIndex);
 			if (IsHandleCreated)
 			{
 				Refresh();
@@ -3677,7 +3686,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			throw ex;
 		}
 
-		if (m_scrollMgr.FirstScrollableColumnIndex == m_Columns.Count - 1 && m_Columns.Count != 1)
+		if (_ScrollMgr.FirstScrollableColumnIndex == m_Columns.Count - 1 && m_Columns.Count != 1)
 		{
 			ArgumentException ex = new(ControlsResources.ExFirstScrollableWillBeBad, "nIndex");
 			Diag.Dug(ex);
@@ -3693,7 +3702,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		try
 		{
 			m_Columns.RemoveAtAndAdjust(nIndex);
-			m_scrollMgr.ProcessDeleteCol(nIndex, gridColumn.WidthInPixels);
+			_ScrollMgr.ProcessDeleteCol(nIndex, gridColumn.WidthInPixels);
 		}
 		finally
 		{
@@ -3800,9 +3809,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			throw ex;
 		}
 
-		if (nRowIndex < m_scrollMgr.FirstRowIndex || nRowIndex > m_scrollMgr.LastRowIndex || nColIndex < m_scrollMgr.FirstColumnIndex || nColIndex > m_scrollMgr.LastColumnIndex)
+		if (nRowIndex < _ScrollMgr.FirstRowIndex || nRowIndex > _ScrollMgr.LastRowIndex || nColIndex < _ScrollMgr.FirstColumnIndex || nColIndex > _ScrollMgr.LastColumnIndex)
 		{
-			m_scrollMgr.EnsureCellIsVisible(nRowIndex, nColIndex);
+			_ScrollMgr.EnsureCellIsVisible(nRowIndex, nColIndex);
 		}
 	}
 
@@ -3812,7 +3821,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			m_EmbeddedControls[editableCellType] = embeddedControl;
 			embeddedControl.Font = Font;
-			embeddedControl.Height = m_scrollMgr.CellHeight + 2 * ScrollManager.GRID_LINE_WIDTH;
+			embeddedControl.Height = _ScrollMgr.CellHeight + 2 * ScrollManager.GRID_LINE_WIDTH;
 			embeddedControl.RightToLeft = IsRTL ? RightToLeft.Yes : RightToLeft.No;
 		}
 	}
@@ -3822,11 +3831,11 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (!bSet)
 		{
 			col.Clear();
-			col.AddRange(m_selMgr.SelectedBlocks);
+			col.AddRange(_SelectionMgr.SelectedBlocks);
 			return;
 		}
 
-		if (col != null && col.Count > 1 && m_selMgr.OnlyOneSelItem)
+		if (col != null && col.Count > 1 && _SelectionMgr.OnlyOneSelItem)
 		{
 			ArgumentException ex = new(ControlsResources.ExNoMultiBlockSelInSingleSelMode, "SelectionBlocks");
 			Diag.Dug(ex);
@@ -3865,17 +3874,17 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			CancelEditCell();
 		}
 
-		m_selMgr.Clear();
+		_SelectionMgr.Clear();
 		if (col != null)
 		{
 			foreach (BlockOfCells item2 in col)
 			{
-				m_selMgr.StartNewBlock(item2.Y, item2.X);
-				m_selMgr.UpdateCurrentBlock(item2.Bottom, item2.Right);
+				_SelectionMgr.StartNewBlock(item2.Y, item2.X);
+				_SelectionMgr.UpdateCurrentBlock(item2.Bottom, item2.Right);
 			}
 		}
 
-		OnSelectionChanged(m_selMgr.SelectedBlocks);
+		OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 		Invalidate();
 	}
 
@@ -3924,13 +3933,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			return false;
 		}
 
-		m_selMgr.Clear();
+		_SelectionMgr.Clear();
 		EnsureCellIsVisibleInternal(nRowIndex, nColIndex);
 		bool num2 = StartEditingCell(nRowIndex, nColIndex, num);
 		if (num2)
 		{
-			m_selMgr.StartNewBlock(nRowIndex, nColIndex);
-			OnSelectionChanged(m_selMgr.SelectedBlocks);
+			_SelectionMgr.StartNewBlock(nRowIndex, nColIndex);
+			OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 			Refresh();
 		}
 
@@ -3974,20 +3983,20 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		int widthInPixels = m_Columns[nColIndex].WidthInPixels;
 		m_Columns[nColIndex].WidthInPixels = columnWidthInPixels;
 		bool flag = false;
-		if (nColIndex < m_scrollMgr.FirstScrollableColumnIndex)
+		if (nColIndex < _ScrollMgr.FirstScrollableColumnIndex)
 		{
 			flag = ProcessNonScrollableVerticalAreaChange(recalcGridIfNeeded: false);
 		}
 		else
 		{
-			m_scrollMgr.UpdateColWidth(nColIndex, widthInPixels, columnWidthInPixels, bFinalUpdate: true);
+			_ScrollMgr.UpdateColWidth(nColIndex, widthInPixels, columnWidthInPixels, bFinalUpdate: true);
 		}
 
 		if (m_nIsInitializingCount == 0)
 		{
 			if (flag)
 			{
-				m_scrollMgr.RecalcAll(m_scrollableArea);
+				_ScrollMgr.RecalcAll(m_scrollableArea);
 			}
 			else
 			{
@@ -4082,7 +4091,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (m_alwaysHighlightSelection != bAlwaysHighlight)
 		{
 			m_alwaysHighlightSelection = bAlwaysHighlight;
-			if (m_selMgr.SelectedBlocks.Count > 0)
+			if (_SelectionMgr.SelectedBlocks.Count > 0)
 			{
 				Invalidate();
 			}
@@ -4117,7 +4126,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 
 		int num = nFirstRowPos;
-		int cellHeight = m_scrollMgr.CellHeight;
+		int cellHeight = _ScrollMgr.CellHeight;
 		for (long num2 = 0L; num2 <= rows; num2++)
 		{
 			g.DrawLine(gridLinesPen, nLeftMostPoint, num, nRightMostPoint, num);
@@ -4142,7 +4151,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		if (HasNonScrollableColumns)
 		{
-			PaintHeaderHelper(g, 0, m_scrollMgr.FirstScrollableColumnIndex - 1, 0, 0);
+			PaintHeaderHelper(g, 0, _ScrollMgr.FirstScrollableColumnIndex - 1, 0, 0);
 		}
 
 		Region clip = g.Clip;
@@ -4150,7 +4159,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			Rectangle clip2 = new Rectangle(m_scrollableArea.X, 0, m_scrollableArea.Width, m_scrollableArea.Y);
 			g.SetClip(clip2);
-			PaintHeaderHelper(g, m_scrollMgr.FirstColumnIndex, m_scrollMgr.LastColumnIndex, m_scrollMgr.FirstColumnPos, 0);
+			PaintHeaderHelper(g, _ScrollMgr.FirstColumnIndex, _ScrollMgr.LastColumnIndex, _ScrollMgr.FirstColumnPos, 0);
 		}
 		finally
 		{
@@ -4262,7 +4271,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			}
 
 			using Graphics g = GraphicsFromHandle();
-			if (!m_Columns[nColNumber].IsPointOverTextInCell(PointToClient(MousePosition), m_scrollMgr.GetCellRectangle(nRowNumber, nColNumber), m_gridStorage, nRowNumber, g, m_linkFont))
+			if (!m_Columns[nColNumber].IsPointOverTextInCell(PointToClient(MousePosition), _ScrollMgr.GetCellRectangle(nRowNumber, nColNumber), m_gridStorage, nRowNumber, g, m_linkFont))
 			{
 				m_gridTooltip.Active = false;
 			}
@@ -4272,13 +4281,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			}
 		}
 
-		string toolTipText = string.Empty;
+		string toolTipText = "";
 		if (ht == EnHitTestResult.HyperlinkCell && ModifierKeys == Keys.None && Cursor == Cursors.Hand)
 		{
 			try
 			{
 				using Graphics g2 = GraphicsFromHandle();
-				if (m_Columns[nColNumber].IsPointOverTextInCell(PointToClient(MousePosition), m_scrollMgr.GetCellRectangle(nRowNumber, nColNumber), m_gridStorage, nRowNumber, g2, m_linkFont))
+				if (m_Columns[nColNumber].IsPointOverTextInCell(PointToClient(MousePosition), _ScrollMgr.GetCellRectangle(nRowNumber, nColNumber), m_gridStorage, nRowNumber, g2, m_linkFont))
 				{
 					toolTipText = ControlsResources.Grid_ToolTipUrl.FmtRes(m_gridStorage.GetCellDataAsString(nRowNumber, m_Columns[nColNumber].ColumnIndex));
 				}
@@ -4290,7 +4299,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 
 		m_hooverOverArea.Reset();
-		if (!OnTooltipDataNeeded(ht, nRowNumber, nColNumber, ref toolTipText) && !(toolTipText != string.Empty))
+		if (!OnTooltipDataNeeded(ht, nRowNumber, nColNumber, ref toolTipText) && !(toolTipText != ""))
 		{
 			if (m_gridTooltip.Active)
 			{
@@ -4319,23 +4328,23 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected virtual DataObject GetDataObjectInternal(bool bOnlyCurrentSelBlock)
 	{
-		if (m_selMgr.SelectedBlocks.Count > 0)
+		if (_SelectionMgr.SelectedBlocks.Count > 0)
 		{
 			StringBuilder stringBuilder = new StringBuilder(256);
 			if (bOnlyCurrentSelBlock)
 			{
-				if (m_selMgr.CurrentSelectionBlockIndex < 0)
+				if (_SelectionMgr.CurrentSelectionBlockIndex < 0)
 				{
 					InvalidOperationException ex = new(ControlsResources.ExInvalidCurrentSelBlockForClipboard);
 					Diag.Dug(ex);
 					throw ex;
 				}
 
-				stringBuilder.Append(GetClipboardTextForSelectionBlock(m_selMgr.CurrentSelectionBlockIndex));
+				stringBuilder.Append(GetClipboardTextForSelectionBlock(_SelectionMgr.CurrentSelectionBlockIndex));
 			}
 			else
 			{
-				int count = m_selMgr.SelectedBlocks.Count;
+				int count = _SelectionMgr.SelectedBlocks.Count;
 				for (int i = 0; i < count; i++)
 				{
 					stringBuilder.Append(GetClipboardTextForSelectionBlock(i));
@@ -4356,8 +4365,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected virtual bool IsCellEditableFromKeyboardNav()
 	{
-		long currentRow = m_selMgr.CurrentRow;
-		int currentColumn = m_selMgr.CurrentColumn;
+		long currentRow = _SelectionMgr.CurrentRow;
+		int currentColumn = _SelectionMgr.CurrentColumn;
 		int columnType = m_Columns[currentColumn].ColumnType;
 		if (columnType != 2 && columnType != 4)
 		{
@@ -4386,9 +4395,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected virtual bool AdjustSelectionForButtonCellMouseClick()
 	{
-		m_selMgr.Clear();
-		m_selMgr.StartNewBlock(m_captureTracker.RowIndex, m_captureTracker.ColumnIndex);
-		OnSelectionChanged(m_selMgr.SelectedBlocks);
+		_SelectionMgr.Clear();
+		_SelectionMgr.StartNewBlock(m_captureTracker.RowIndex, m_captureTracker.ColumnIndex);
+		OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 		return true;
 	}
 
@@ -4431,12 +4440,12 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				array[i - num2] = m_Columns[i].WidthInPixels;
 				if (RowCount > 0)
 				{
-					num = m_Columns[i].ColumnType >= 1024 ? !considerAllRows ? MeasureWidthOfCustomColumnRows(i, m_Columns[i].ColumnType, m_scrollMgr.FirstRowIndex, m_scrollMgr.LastRowIndex, g) : MeasureWidthOfCustomColumnRows(i, m_Columns[i].ColumnType, 0L, RowCount - 1, g) : !considerAllRows ? MeasureWidthOfRows(i, m_Columns[i].ColumnType, m_scrollMgr.FirstRowIndex, m_scrollMgr.LastRowIndex, g) : MeasureWidthOfRows(i, m_Columns[i].ColumnType, 0L, RowCount - 1, g);
+					num = m_Columns[i].ColumnType >= 1024 ? !considerAllRows ? MeasureWidthOfCustomColumnRows(i, m_Columns[i].ColumnType, _ScrollMgr.FirstRowIndex, _ScrollMgr.LastRowIndex, g) : MeasureWidthOfCustomColumnRows(i, m_Columns[i].ColumnType, 0L, RowCount - 1, g) : !considerAllRows ? MeasureWidthOfRows(i, m_Columns[i].ColumnType, _ScrollMgr.FirstRowIndex, _ScrollMgr.LastRowIndex, g) : MeasureWidthOfRows(i, m_Columns[i].ColumnType, 0L, RowCount - 1, g);
 				}
 
-				if (m_scrollMgr.FirstScrollableRowIndex != 0)
+				if (_ScrollMgr.FirstScrollableRowIndex != 0)
 				{
-					num = m_Columns[i].ColumnType < 1024 ? Math.Max(num, MeasureWidthOfRows(i, m_Columns[i].ColumnType, 0L, m_scrollMgr.FirstScrollableRowIndex - 1, g)) : Math.Max(num, MeasureWidthOfCustomColumnRows(i, m_Columns[i].ColumnType, m_scrollMgr.FirstRowIndex, m_scrollMgr.LastRowIndex, g));
+					num = m_Columns[i].ColumnType < 1024 ? Math.Max(num, MeasureWidthOfRows(i, m_Columns[i].ColumnType, 0L, _ScrollMgr.FirstScrollableRowIndex - 1, g)) : Math.Max(num, MeasureWidthOfCustomColumnRows(i, m_Columns[i].ColumnType, _ScrollMgr.FirstRowIndex, _ScrollMgr.LastRowIndex, g));
 				}
 
 				num3 += num;
@@ -4637,33 +4646,33 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		int num = CalcNonScrollableColumnsWidth();
 		if (HasNonScrollableColumns && nMouseX <= num)
 		{
-			return HitTestColumnsHelper(nMouseX, nMouseY, 0, m_scrollMgr.FirstScrollableColumnIndex - 1, ScrollManager.GRID_LINE_WIDTH, out nColIndex, ref rCellRect);
+			return HitTestColumnsHelper(nMouseX, nMouseY, 0, _ScrollMgr.FirstScrollableColumnIndex - 1, ScrollManager.GRID_LINE_WIDTH, out nColIndex, ref rCellRect);
 		}
 
-		return HitTestColumnsHelper(nMouseX, nMouseY, m_scrollMgr.FirstColumnIndex, m_scrollMgr.LastColumnIndex, m_scrollMgr.FirstColumnPos, out nColIndex, ref rCellRect);
+		return HitTestColumnsHelper(nMouseX, nMouseY, _ScrollMgr.FirstColumnIndex, _ScrollMgr.LastColumnIndex, _ScrollMgr.FirstColumnPos, out nColIndex, ref rCellRect);
 	}
 
 	private EnHitTestResult HitTestRows(int nMouseX, int nMouseY, out long nRowIndex, ref Rectangle rCellRect)
 	{
 		_ = nMouseX;
 		nRowIndex = -1L;
-		long firstRowIndex = m_scrollMgr.FirstRowIndex;
-		long lastRowIndex = m_scrollMgr.LastRowIndex;
+		long firstRowIndex = _ScrollMgr.FirstRowIndex;
+		long lastRowIndex = _ScrollMgr.LastRowIndex;
 		if (nMouseY < NonScrollableRowsHeight() + HeaderHeight + ScrollManager.GRID_LINE_WIDTH)
 		{
-			nRowIndex = (nMouseY - HeaderHeight) / (m_scrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH);
+			nRowIndex = (nMouseY - HeaderHeight) / (_ScrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH);
 			if (nRowIndex < 0)
 			{
 				nRowIndex = 0L;
 			}
 
-			rCellRect.Y = (int)nRowIndex * (m_scrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH) + HeaderHeight;
-			rCellRect.Height = m_scrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH;
+			rCellRect.Y = (int)nRowIndex * (_ScrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH) + HeaderHeight;
+			rCellRect.Height = _ScrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH;
 			return EnHitTestResult.TextCell;
 		}
 
-		int num = m_scrollMgr.FirstRowPos;
-		int cellHeight = m_scrollMgr.CellHeight;
+		int num = _ScrollMgr.FirstRowPos;
+		int cellHeight = _ScrollMgr.CellHeight;
 		long num2;
 		for (num2 = firstRowIndex; num2 <= lastRowIndex; num2++)
 		{
@@ -4724,11 +4733,11 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			return;
 		}
 
-		int firstColumnIndex = m_scrollMgr.FirstColumnIndex;
-		int lastColumnIndex = m_scrollMgr.LastColumnIndex;
-		long firstRowIndex = m_scrollMgr.FirstRowIndex;
-		long num = Math.Min(m_scrollMgr.LastRowIndex, m_gridStorage.RowCount - 1);
-		int cellHeight = m_scrollMgr.CellHeight;
+		int firstColumnIndex = _ScrollMgr.FirstColumnIndex;
+		int lastColumnIndex = _ScrollMgr.LastColumnIndex;
+		long firstRowIndex = _ScrollMgr.FirstRowIndex;
+		long num = Math.Min(_ScrollMgr.LastRowIndex, m_gridStorage.RowCount - 1);
+		int cellHeight = _ScrollMgr.CellHeight;
 		Rectangle rCurrentCellRect = Rectangle.Empty;
 		Rectangle rCell = default;
 		int gRID_LINE_WIDTH = ScrollManager.GRID_LINE_WIDTH;
@@ -4751,16 +4760,16 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		rCell.Y = HeaderHeight;
 		rCell.Height = cellHeight + gRID_LINE_WIDTH;
 		int num4;
-		for (long num5 = 0L; num5 < m_scrollMgr.FirstScrollableRowIndex; num5++)
+		for (long num5 = 0L; num5 < _ScrollMgr.FirstScrollableRowIndex; num5++)
 		{
-			rCell.X = m_scrollMgr.FirstColumnPos;
+			rCell.X = _ScrollMgr.FirstColumnPos;
 			for (num4 = firstColumnIndex; num4 <= lastColumnIndex; num4++)
 			{
 				PaintOneCell(g, num4, num5, num2, num3, ref rCell, ref rCurrentCellRect, ref rEditingCellRect);
 			}
 
 			rCell.X = ScrollManager.GRID_LINE_WIDTH;
-			for (num4 = 0; num4 < m_scrollMgr.FirstScrollableColumnIndex; num4++)
+			for (num4 = 0; num4 < _ScrollMgr.FirstScrollableColumnIndex; num4++)
 			{
 				PaintOneCell(g, num4, num5, num2, num3, ref rCell, ref rCurrentCellRect, ref rEditingCellRect);
 			}
@@ -4769,9 +4778,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 
 		int num6 = ScrollManager.GRID_LINE_WIDTH;
-		for (num4 = 0; num4 < m_scrollMgr.FirstScrollableColumnIndex; num4++)
+		for (num4 = 0; num4 < _ScrollMgr.FirstScrollableColumnIndex; num4++)
 		{
-			rCell.Y = m_scrollMgr.FirstRowPos;
+			rCell.Y = _ScrollMgr.FirstRowPos;
 			for (long num7 = firstRowIndex; num7 <= num; num7++)
 			{
 				rCell.X = num6;
@@ -4784,11 +4793,11 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 		Region clip = g.Clip;
 		g.IntersectClip(m_scrollableArea);
-		rCell.Y = m_scrollMgr.FirstRowPos;
+		rCell.Y = _ScrollMgr.FirstRowPos;
 		rCell.Height = cellHeight + gRID_LINE_WIDTH;
 		for (long num8 = firstRowIndex; num8 <= num; num8++)
 		{
-			rCell.X = m_scrollMgr.FirstColumnPos;
+			rCell.X = _ScrollMgr.FirstColumnPos;
 			for (num4 = firstColumnIndex; num4 <= lastColumnIndex; num4++)
 			{
 				PaintOneCell(g, num4, num8, num2, num3, ref rCell, ref rCurrentCellRect, ref rEditingCellRect);
@@ -4806,18 +4815,18 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (m_lineType != 0)
 		{
 			PaintHorizGridLines(g, num - firstRowIndex + FirstScrollableRow + 1, HeaderHeight, 0, rCell.X - 2 * gRID_LINE_WIDTH, bAdjust: true);
-			if (m_scrollMgr.FirstScrollableRowIndex != 0)
+			if (_ScrollMgr.FirstScrollableRowIndex != 0)
 			{
-				PaintVertGridLines(g, firstColumnIndex, lastColumnIndex, m_scrollMgr.FirstColumnPos - ScrollManager.GRID_LINE_WIDTH, HeaderHeight, HeaderHeight + m_scrollMgr.FirstScrollableColumnIndex * (cellHeight + gRID_LINE_WIDTH));
+				PaintVertGridLines(g, firstColumnIndex, lastColumnIndex, _ScrollMgr.FirstColumnPos - ScrollManager.GRID_LINE_WIDTH, HeaderHeight, HeaderHeight + _ScrollMgr.FirstScrollableColumnIndex * (cellHeight + gRID_LINE_WIDTH));
 			}
 
 			if (hasNonScrollableColumns)
 			{
-				PaintVertGridLines(g, 0, m_scrollMgr.FirstScrollableColumnIndex - 1, 0, HeaderHeight, rCell.Y - gRID_LINE_WIDTH);
+				PaintVertGridLines(g, 0, _ScrollMgr.FirstScrollableColumnIndex - 1, 0, HeaderHeight, rCell.Y - gRID_LINE_WIDTH);
 				g.IntersectClip(new Rectangle(m_scrollableArea.X, HeaderHeight, m_scrollableArea.Width, ClientRectangle.Height - HeaderHeight + 1));
 			}
 
-			PaintVertGridLines(g, firstColumnIndex, lastColumnIndex, m_scrollMgr.FirstColumnPos - ScrollManager.GRID_LINE_WIDTH, HeaderHeight, rCell.Y - gRID_LINE_WIDTH);
+			PaintVertGridLines(g, firstColumnIndex, lastColumnIndex, _ScrollMgr.FirstColumnPos - ScrollManager.GRID_LINE_WIDTH, HeaderHeight, rCell.Y - gRID_LINE_WIDTH);
 		}
 		else if (hasNonScrollableColumns)
 		{
@@ -4827,7 +4836,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (!rCurrentCellRect.IsEmpty)
 		{
 			rCurrentCellRect.Height += gRID_LINE_WIDTH;
-			if (m_selMgr.CurrentColumn >= m_scrollMgr.FirstScrollableColumnIndex && (m_alwaysHighlightSelection || ContainsFocus))
+			if (_SelectionMgr.CurrentColumn >= _ScrollMgr.FirstScrollableColumnIndex && (m_alwaysHighlightSelection || ContainsFocus))
 			{
 				PaintCurrentCellRect(g, rCurrentCellRect);
 			}
@@ -4838,7 +4847,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			g.Clip = clip;
 		}
 
-		if (!rCurrentCellRect.IsEmpty && (m_alwaysHighlightSelection || ContainsFocus) && m_selMgr.CurrentColumn < m_scrollMgr.FirstScrollableColumnIndex)
+		if (!rCurrentCellRect.IsEmpty && (m_alwaysHighlightSelection || ContainsFocus) && _SelectionMgr.CurrentColumn < _ScrollMgr.FirstScrollableColumnIndex)
 		{
 			PaintCurrentCellRect(g, rCurrentCellRect);
 		}
@@ -4853,7 +4862,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			PositionEmbeddedEditor(rEditingCellRect, num2);
 		}
 
-		m_scrollMgr.RowCount = m_gridStorage.RowCount;
+		_ScrollMgr.RowCount = m_gridStorage.RowCount;
 	}
 
 	private void GetFontInfo(Font font, out int height, out double aveWidth)
@@ -4903,36 +4912,36 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				return true;
 			}
 
-			if (row < m_scrollMgr.FirstRowIndex)
+			if (row < _ScrollMgr.FirstRowIndex)
 			{
 				return false;
 			}
 
-			if (row <= m_scrollMgr.LastRowIndex)
+			if (row <= _ScrollMgr.LastRowIndex)
 			{
 				return true;
 			}
 		}
 		else
 		{
-			if (column < m_scrollMgr.FirstColumnIndex)
+			if (column < _ScrollMgr.FirstColumnIndex)
 			{
 				return false;
 			}
 
-			if (column <= m_scrollMgr.LastColumnIndex)
+			if (column <= _ScrollMgr.LastColumnIndex)
 			{
 				if (row < FirstScrollableRow)
 				{
 					return true;
 				}
 
-				if (row < m_scrollMgr.FirstRowIndex)
+				if (row < _ScrollMgr.FirstRowIndex)
 				{
 					return false;
 				}
 
-				if (row <= m_scrollMgr.LastRowIndex)
+				if (row <= _ScrollMgr.LastRowIndex)
 				{
 					return true;
 				}
@@ -5132,7 +5141,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (ShouldCommitEmbeddedControlOnLostFocus && !ContainsFocus)
 		{
 			StopEditCell();
-			if (m_selMgr.SelectedBlocks.Count > 0)
+			if (_SelectionMgr.SelectedBlocks.Count > 0)
 			{
 				Invalidate();
 			}
@@ -5235,7 +5244,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 		if (flag)
 		{
-			m_scrollMgr.RecalcAll(m_scrollableArea);
+			_ScrollMgr.RecalcAll(m_scrollableArea);
 		}
 
 		Refresh();
@@ -5254,7 +5263,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected virtual BlockOfCellsCollection AdjustColumnIndexesInSelectedCells(BlockOfCellsCollection originalCol, bool bFromUIToStorage)
 	{
-		if (m_selMgr.SelectionType == EnGridSelectionType.CellBlocks || m_selMgr.SelectionType == EnGridSelectionType.ColumnBlocks || m_selMgr.SelectionType == EnGridSelectionType.RowBlocks || m_selMgr.SelectionType == EnGridSelectionType.SingleRow)
+		if (_SelectionMgr.SelectionType == EnGridSelectionType.CellBlocks || _SelectionMgr.SelectionType == EnGridSelectionType.ColumnBlocks || _SelectionMgr.SelectionType == EnGridSelectionType.RowBlocks || _SelectionMgr.SelectionType == EnGridSelectionType.SingleRow)
 		{
 			return originalCol;
 		}
@@ -5283,13 +5292,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			return false;
 		}
 
-		int num = m_selMgr.GetSelecttionBlockNumberForCell(rowIndex, columnIndex);
+		int num = _SelectionMgr.GetSelecttionBlockNumberForCell(rowIndex, columnIndex);
 		long num2 = -1L;
 		int num3 = -1;
 		if (IsEditing)
 		{
-			num2 = m_selMgr.CurrentRow;
-			num3 = m_selMgr.CurrentColumn;
+			num2 = _SelectionMgr.CurrentRow;
+			num3 = _SelectionMgr.CurrentColumn;
 			if (!StopEditCell())
 			{
 				return false;
@@ -5316,8 +5325,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			if (num2 >= 0 && num3 >= 0)
 			{
-				m_selMgr.Clear();
-				m_selMgr.StartNewBlock(num2, num3);
+				_SelectionMgr.Clear();
+				_SelectionMgr.StartNewBlock(num2, num3);
 			}
 
 			return false;
@@ -5326,17 +5335,17 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		bool flag3 = true;
 		if ((modKeys & Keys.Shift) != 0)
 		{
-			m_selMgr.UpdateCurrentBlock(rowIndex, columnIndex);
+			_SelectionMgr.UpdateCurrentBlock(rowIndex, columnIndex);
 		}
 		else if ((modKeys & Keys.Control) != 0)
 		{
-			if (m_selMgr.IsCellSelected(rowIndex, columnIndex) && m_selMgr.SingleRowOrColumnSelectedInMultiSelectionMode)
+			if (_SelectionMgr.IsCellSelected(rowIndex, columnIndex) && _SelectionMgr.SingleRowOrColumnSelectedInMultiSelectionMode)
 			{
 				flag3 = false;
 			}
 			else
 			{
-				flag3 = m_selMgr.StartNewBlockOrExcludeCell(rowIndex, columnIndex);
+				flag3 = _SelectionMgr.StartNewBlockOrExcludeCell(rowIndex, columnIndex);
 				if (!flag3)
 				{
 					flag = true;
@@ -5346,13 +5355,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		else
 		{
 			flag3 = true;
-			if ((m_selMgr.OnlyOneSelItem && num == -1 || !m_selMgr.OnlyOneSelItem && columnIndex < m_scrollMgr.FirstScrollableColumnIndex || !m_selMgr.OnlyOneSelItem && rowIndex < m_scrollMgr.FirstScrollableRowIndex) && !bDragCancelled)
+			if ((_SelectionMgr.OnlyOneSelItem && num == -1 || !_SelectionMgr.OnlyOneSelItem && columnIndex < _ScrollMgr.FirstScrollableColumnIndex || !_SelectionMgr.OnlyOneSelItem && rowIndex < _ScrollMgr.FirstScrollableRowIndex) && !bDragCancelled)
 			{
 				flag = true;
 				if (num == -1)
 				{
 					num = 0;
-					m_selMgr.StartNewBlock(rowIndex, columnIndex);
+					_SelectionMgr.StartNewBlock(rowIndex, columnIndex);
 				}
 			}
 
@@ -5363,11 +5372,11 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			}
 			else
 			{
-				m_selMgr.StartNewBlock(rowIndex, columnIndex);
+				_SelectionMgr.StartNewBlock(rowIndex, columnIndex);
 				if (bDragCancelled)
 				{
 					m_captureTracker.DragState = CaptureTracker.EnDragOperation.None;
-					if (m_selMgr.OnlyOneSelItem)
+					if (_SelectionMgr.OnlyOneSelItem)
 					{
 						flag3 = false;
 					}
@@ -5391,7 +5400,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 		if (flag)
 		{
-			OnSelectionChanged(m_selMgr.SelectedBlocks);
+			OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 		}
 
 		return flag3;
@@ -5461,9 +5470,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			if ((now - m_captureTracker.Time).TotalSeconds < C_HyperlinkSelectionDelay)
 			{
 				OnGridSpecialEvent(0, null, m_captureTracker.CaptureHitTest, m_captureTracker.RowIndex, m_captureTracker.ColumnIndex, m_captureTracker.CellRect, MouseButtons.None, m_captureTracker.ButtonArea);
-				m_selMgr.Clear();
-				m_selMgr.StartNewBlock(m_captureTracker.RowIndex, m_captureTracker.ColumnIndex);
-				OnSelectionChanged(m_selMgr.SelectedBlocks);
+				_SelectionMgr.Clear();
+				_SelectionMgr.StartNewBlock(m_captureTracker.RowIndex, m_captureTracker.ColumnIndex);
+				OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 				Invalidate();
 			}
 			else
@@ -5507,16 +5516,16 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					num = 0;
 				}
 
-				if (m_selMgr.SelectionType != EnGridSelectionType.SingleCell || num != 0)
+				if (_SelectionMgr.SelectionType != EnGridSelectionType.SingleCell || num != 0)
 				{
-					m_selMgr.Clear();
+					_SelectionMgr.Clear();
 					if (num != 0)
 					{
 						HandleStartCellEditFromStdCellLBtnDown(num, hitTestInfo.RowIndex, hitTestInfo.ColumnIndex, bNotifySelChange: false);
 					}
 					else
 					{
-						m_selMgr.StartNewBlock(hitTestInfo.RowIndex, hitTestInfo.ColumnIndex);
+						_SelectionMgr.StartNewBlock(hitTestInfo.RowIndex, hitTestInfo.ColumnIndex);
 					}
 
 					flag = true;
@@ -5529,9 +5538,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			}
 		}
 
-		if (!m_selMgr.OnlyOneSelItem)
+		if (!_SelectionMgr.OnlyOneSelItem)
 		{
-			OnSelectionChanged(m_selMgr.SelectedBlocks);
+			OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 		}
 	}
 
@@ -5558,7 +5567,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			}
 		}
 
-		if (m_captureTracker.ColumnIndex < m_scrollMgr.FirstScrollableColumnIndex || m_selMgr.OnlyOneSelItem || m_captureTracker.DragState == CaptureTracker.EnDragOperation.DragReady)
+		if (m_captureTracker.ColumnIndex < _ScrollMgr.FirstScrollableColumnIndex || _SelectionMgr.OnlyOneSelItem || m_captureTracker.DragState == CaptureTracker.EnDragOperation.DragReady)
 		{
 			return;
 		}
@@ -5589,7 +5598,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 		m_captureTracker.AdjustedCellRect = m_captureTracker.CellRect;
 		int num = CalcNonScrollableColumnsWidth();
-		if (num > 0 && m_captureTracker.ColumnIndex >= m_scrollMgr.FirstScrollableColumnIndex && m_captureTracker.CellRect.X <= num)
+		if (num > 0 && m_captureTracker.ColumnIndex >= _ScrollMgr.FirstScrollableColumnIndex && m_captureTracker.CellRect.X <= num)
 		{
 			int right = m_captureTracker.AdjustedCellRect.Right;
 			int num2 = num + ScrollManager.GRID_LINE_WIDTH;
@@ -5633,7 +5642,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		int num2 = SystemInformation.DragSize.Height / 2;
 		if (Math.Abs(X - m_captureTracker.MouseCapturePoint.X) > num || Math.Abs(Y - m_captureTracker.MouseCapturePoint.Y) > num2)
 		{
-			bool flag = m_captureTracker.ColumnIndex >= m_scrollMgr.FirstScrollableColumnIndex;
+			bool flag = m_captureTracker.ColumnIndex >= _ScrollMgr.FirstScrollableColumnIndex;
 			if (flag)
 			{
 				flag = IsColumnHeaderDraggable(m_captureTracker.ColumnIndex);
@@ -5860,7 +5869,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			else
 			{
 				bool flag = false;
-				if ((m_selMgr.SelectionType == EnGridSelectionType.SingleCell || m_selMgr.SelectionType == EnGridSelectionType.CellBlocks || m_selMgr.SelectionType == EnGridSelectionType.SingleRow) && !IsEditing)
+				if ((_SelectionMgr.SelectionType == EnGridSelectionType.SingleCell || _SelectionMgr.SelectionType == EnGridSelectionType.CellBlocks || _SelectionMgr.SelectionType == EnGridSelectionType.SingleRow) && !IsEditing)
 				{
 					flag = AdjustSelectionForButtonCellMouseClick();
 				}
@@ -5915,14 +5924,14 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		m_captureTracker.LastColumnWidth = num;
 		ResizeMultipleColumns(m_captureTracker.LeftMostMergedColumnIndex, m_captureTracker.ColumnIndex, sizeDelta, bLastUpdate, null);
 		bool flag = false;
-		if (m_captureTracker.ColumnIndex < m_scrollMgr.FirstScrollableColumnIndex)
+		if (m_captureTracker.ColumnIndex < _ScrollMgr.FirstScrollableColumnIndex)
 		{
 			flag = ProcessNonScrollableVerticalAreaChange(recalcGridIfNeeded: false);
 		}
 
 		if (flag)
 		{
-			m_scrollMgr.RecalcAll(m_scrollableArea);
+			_ScrollMgr.RecalcAll(m_scrollableArea);
 		}
 		else
 		{
@@ -5980,7 +5989,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		Graphics graphics = GraphicsFromHandle();
 		try
 		{
-			if (HasNonScrollableColumns && nColumnIndex >= m_scrollMgr.FirstScrollableColumnIndex)
+			if (HasNonScrollableColumns && nColumnIndex >= _ScrollMgr.FirstScrollableColumnIndex)
 			{
 				graphics.SetClip(new Rectangle(m_scrollableArea.X, HeaderHeight, m_scrollableArea.Width, ClientRectangle.Height - HeaderHeight + 1));
 			}
@@ -5995,7 +6004,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	private void ValidateFirstScrollableColumn()
 	{
-		int firstScrollableColumnIndex = m_scrollMgr.FirstScrollableColumnIndex;
+		int firstScrollableColumnIndex = _ScrollMgr.FirstScrollableColumnIndex;
 		if (m_Columns.Count > 0)
 		{
 			if (firstScrollableColumnIndex < 0 || firstScrollableColumnIndex >= m_Columns.Count)
@@ -6016,7 +6025,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	private void ValidateFirstScrollableRow()
 	{
-		if (m_scrollMgr.FirstScrollableRowIndex < 0)
+		if (_ScrollMgr.FirstScrollableRowIndex < 0)
 		{
 			ArgumentException ex = new(ControlsResources.ExFirstScrollableRowShouldBeValid, "FirstScrollalbeRow");
 			Diag.Dug(ex);
@@ -6026,7 +6035,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	private int CalcNonScrollableColumnsWidth()
 	{
-		return CalcNonScrollableColumnsWidth(m_scrollMgr.FirstScrollableColumnIndex - 1);
+		return CalcNonScrollableColumnsWidth(_ScrollMgr.FirstScrollableColumnIndex - 1);
 	}
 
 	private int CalcNonScrollableColumnsWidth(int lastIndex)
@@ -6046,12 +6055,12 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	private uint NonScrollableRowsHeight()
 	{
-		if (m_scrollMgr.FirstScrollableRowIndex == 0)
+		if (_ScrollMgr.FirstScrollableRowIndex == 0)
 		{
 			return 0u;
 		}
 
-		return (uint)((m_scrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH) * m_scrollMgr.FirstScrollableRowIndex);
+		return (uint)((_ScrollMgr.CellHeight + ScrollManager.GRID_LINE_WIDTH) * _ScrollMgr.FirstScrollableRowIndex);
 	}
 
 	protected void PaintHeaderHelper(Graphics g, int nFirstCol, int nLastCol, int nFirstColPos, int nY)
@@ -6095,12 +6104,12 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				if (g.IsVisible(rectangle))
 				{
 					ButtonState buttonState = headerItem.Pushed ? ButtonState.Pushed : ButtonState.Normal;
-					if (i == m_scrollMgr.FirstScrollableColumnIndex - 1 || i == NumColInt - 1)
+					if (i == _ScrollMgr.FirstScrollableColumnIndex - 1 || i == NumColInt - 1)
 					{
 						rectangle.Width++;
 					}
 
-					if (m_scrollMgr.FirstScrollableColumnIndex > 0 && i == nFirstCol && i == m_scrollMgr.FirstScrollableColumnIndex)
+					if (_ScrollMgr.FirstScrollableColumnIndex > 0 && i == nFirstCol && i == _ScrollMgr.FirstScrollableColumnIndex)
 					{
 						rectangle.X--;
 						rectangle.Width++;
@@ -6151,7 +6160,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		SolidBrush bkBrush = null;
 		SolidBrush textBrush = null;
 		_ = Font;
-		if (m_scrollMgr.FirstScrollableColumnIndex > 0 && nCol == m_scrollMgr.FirstScrollableColumnIndex)
+		if (_ScrollMgr.FirstScrollableColumnIndex > 0 && nCol == _ScrollMgr.FirstScrollableColumnIndex)
 		{
 			rCell.X -= gRID_LINE_WIDTH;
 			rCell.Width = widthInPixels + 2 * gRID_LINE_WIDTH;
@@ -6171,10 +6180,10 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			{
 				GetCellGDIObjects(gridColumn, nRow, nCol, ref bkBrush, ref textBrush);
 				DoCellPainting(g, bkBrush, textBrush, GetCellFont(nRow, gridColumn), rCell, gridColumn, nRow, enabledState: true);
-				if (NeedToHighlightCurrentCell && nCol == m_selMgr.CurrentColumn && nRow == m_selMgr.CurrentRow)
+				if (NeedToHighlightCurrentCell && nCol == _SelectionMgr.CurrentColumn && nRow == _SelectionMgr.CurrentRow)
 				{
 					rCurrentCellRect = rCell;
-					if (m_scrollMgr.FirstScrollableColumnIndex > 0 && nCol == m_scrollMgr.FirstScrollableColumnIndex)
+					if (_ScrollMgr.FirstScrollableColumnIndex > 0 && nCol == _ScrollMgr.FirstScrollableColumnIndex)
 					{
 						rCurrentCellRect.X++;
 						rCurrentCellRect.Width--;
@@ -6204,7 +6213,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			bkBrush = m_CustomizeCellGDIObjectsArgs.BKBrush;
 		}
 
-		if (gridColumn.WithSelectionBk && m_selMgr.IsCellSelected(nRow, nCol))
+		if (gridColumn.WithSelectionBk && _SelectionMgr.IsCellSelected(nRow, nCol))
 		{
 			if (ContainsFocus)
 			{
@@ -6239,21 +6248,21 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			m_scrollableArea.Height -= HeaderHeight;
 		}
 
-		if (m_scrollMgr.FirstScrollableColumnIndex != 0)
+		if (_ScrollMgr.FirstScrollableColumnIndex != 0)
 		{
 			int num = CalcNonScrollableColumnsWidth();
 			m_scrollableArea.X = num;
 			m_scrollableArea.Width -= num;
 		}
 
-		if (m_scrollMgr.FirstScrollableRowIndex != 0)
+		if (_ScrollMgr.FirstScrollableRowIndex != 0)
 		{
 			uint num2 = NonScrollableRowsHeight();
 			m_scrollableArea.Y += (int)num2;
 			m_scrollableArea.Height -= (int)num2;
 		}
 
-		m_scrollMgr.OnSAChange(m_scrollableArea);
+		_ScrollMgr.OnSAChange(m_scrollableArea);
 	}
 
 	protected void CheckAndRePositionEmbeddedControlForSmallSizes()
@@ -6263,8 +6272,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			return;
 		}
 
-		Rectangle bounds = m_scrollMgr.GetCellRectangle(nRowNum, nColNum);
-		if (m_scrollableArea.Height > m_scrollMgr.CellHeight)
+		Rectangle bounds = _ScrollMgr.GetCellRectangle(nRowNum, nColNum);
+		if (m_scrollableArea.Height > _ScrollMgr.CellHeight)
 		{
 			return;
 		}
@@ -6292,7 +6301,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		rEditingCellRect.X -= ScrollManager.GRID_LINE_WIDTH;
 		rEditingCellRect.Width += ScrollManager.GRID_LINE_WIDTH;
-		if (HasNonScrollableColumns && nEditingCol >= m_scrollMgr.FirstScrollableColumnIndex && rEditingCellRect.X < m_scrollableArea.X)
+		if (HasNonScrollableColumns && nEditingCol >= _ScrollMgr.FirstScrollableColumnIndex && rEditingCellRect.X < m_scrollableArea.X)
 		{
 			rEditingCellRect.Width -= m_scrollableArea.X - rEditingCellRect.X - ScrollManager.GRID_LINE_WIDTH;
 			rEditingCellRect.X = m_scrollableArea.X - ScrollManager.GRID_LINE_WIDTH;
@@ -6382,8 +6391,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			GetCellGDIObjects(m_Columns[nColIndex], nRowIndex, nColIndex, ref bkBrush, ref textBrush);
 			control.BackColor = bkBrush.Color;
 			control.ForeColor = textBrush.Color;
-			m_selMgr.CurrentColumn = nColIndex;
-			m_selMgr.CurrentRow = nRowIndex;
+			_SelectionMgr.CurrentColumn = nColIndex;
+			_SelectionMgr.CurrentRow = nRowIndex;
 			m_curEmbeddedControl = control;
 			m_curEmbeddedControl.Visible = true;
 			m_curEmbeddedControl.AccessibleName = GetGridCellAccessibleName(nRowIndex, nColIndex);
@@ -6414,7 +6423,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	private bool StartEditingCell(long nRowIndex, int nColIndex, int editType, bool focusEmbedded)
 	{
-		Rectangle cellRectangle = m_scrollMgr.GetCellRectangle(nRowIndex, nColIndex);
+		Rectangle cellRectangle = _ScrollMgr.GetCellRectangle(nRowIndex, nColIndex);
 		if (!cellRectangle.IsEmpty)
 		{
 			bool bSendMouseClick = false;
@@ -6482,7 +6491,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	private void UpdateEmbeddedControlsFont()
 	{
-		if (m_scrollMgr.CellHeight <= 0)
+		if (_ScrollMgr.CellHeight <= 0)
 		{
 			return;
 		}
@@ -6491,7 +6500,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			Control obj = (Control)embeddedControl.Value;
 			obj.Font = Font;
-			obj.Height = m_scrollMgr.CellHeight + 2 * ScrollManager.GRID_LINE_WIDTH;
+			obj.Height = _ScrollMgr.CellHeight + 2 * ScrollManager.GRID_LINE_WIDTH;
 		}
 	}
 
@@ -6506,8 +6515,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	private void UpdateSelectionBlockFromMouse(long nRowIndex, int nColIndex)
 	{
-		EnGridSelectionType selectionType = m_selMgr.SelectionType;
-		m_selMgr.UpdateCurrentBlock(nRowIndex, nColIndex);
+		EnGridSelectionType selectionType = _SelectionMgr.SelectionType;
+		_SelectionMgr.UpdateCurrentBlock(nRowIndex, nColIndex);
 		if ((selectionType != EnGridSelectionType.CellBlocks || m_captureTracker.LastColumnIndex != nColIndex || m_captureTracker.LastRowIndex != nRowIndex) && (selectionType != EnGridSelectionType.RowBlocks || nRowIndex != m_captureTracker.LastRowIndex) && (selectionType != EnGridSelectionType.ColumnBlocks || nColIndex != m_captureTracker.LastColumnIndex))
 		{
 			Refresh();
@@ -6540,24 +6549,24 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			if (mousePosition.Y < m_scrollableArea.Y)
 			{
-				m_scrollMgr.HandleVScrollWithoutClientRedraw(2, ref yDelta, ref scrollRect);
-				nRowIndex = m_scrollMgr.FirstRowIndex;
+				_ScrollMgr.HandleVScrollWithoutClientRedraw(2, ref yDelta, ref scrollRect);
+				nRowIndex = _ScrollMgr.FirstRowIndex;
 			}
 			else if (mousePosition.Y >= m_scrollableArea.Bottom)
 			{
-				m_scrollMgr.HandleVScrollWithoutClientRedraw(3, ref yDelta, ref scrollRect);
-				nRowIndex = m_scrollMgr.LastRowIndex;
+				_ScrollMgr.HandleVScrollWithoutClientRedraw(3, ref yDelta, ref scrollRect);
+				nRowIndex = _ScrollMgr.LastRowIndex;
 			}
 
 			if (mousePosition.X < m_scrollableArea.X)
 			{
-				m_scrollMgr.HandleHScrollWithoutClientRedraw(2, ref yDelta, ref scrollRect);
-				nColIndex = m_scrollMgr.FirstColumnIndex;
+				_ScrollMgr.HandleHScrollWithoutClientRedraw(2, ref yDelta, ref scrollRect);
+				nColIndex = _ScrollMgr.FirstColumnIndex;
 			}
 			else if (mousePosition.X >= m_scrollableArea.Right)
 			{
-				m_scrollMgr.HandleHScrollWithoutClientRedraw(3, ref yDelta, ref scrollRect);
-				nColIndex = m_scrollMgr.LastColumnIndex;
+				_ScrollMgr.HandleHScrollWithoutClientRedraw(3, ref yDelta, ref scrollRect);
+				nColIndex = _ScrollMgr.LastColumnIndex;
 			}
 
 			UpdateSelectionBlockFromMouse(nRowIndex, nColIndex);
@@ -6634,25 +6643,25 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		switch (ke.KeyCode)
 		{
 			case Keys.F3:
-				if (m_selMgr.CurrentColumn >= 0)
+				if (_SelectionMgr.CurrentColumn >= 0)
 				{
-					EnGridButtonArea headerArea = HitTestGridButton(0L, m_selMgr.CurrentColumn, m_captureTracker.CellRect, m_captureTracker.MouseCapturePoint);
-					OnHeaderButtonClicked(m_selMgr.CurrentColumn, MouseButtons.Left, headerArea);
+					EnGridButtonArea headerArea = HitTestGridButton(0L, _SelectionMgr.CurrentColumn, m_captureTracker.CellRect, m_captureTracker.MouseCapturePoint);
+					OnHeaderButtonClicked(_SelectionMgr.CurrentColumn, MouseButtons.Left, headerArea);
 					return true;
 				}
 
 				return false;
 			case Keys.F2:
-				if (!IsEditing && m_selMgr.OnlyOneCellSelected)
+				if (!IsEditing && _SelectionMgr.OnlyOneCellSelected)
 				{
-					int num = m_gridStorage.IsCellEditable(m_selMgr.CurrentRow, m_Columns[m_selMgr.CurrentColumn].ColumnIndex);
+					int num = m_gridStorage.IsCellEditable(_SelectionMgr.CurrentRow, m_Columns[_SelectionMgr.CurrentColumn].ColumnIndex);
 					if (num != 0)
 					{
-						long currentRow = m_selMgr.CurrentRow;
-						int currentColumn = m_selMgr.CurrentColumn;
-						m_selMgr.Clear();
+						long currentRow = _SelectionMgr.CurrentRow;
+						int currentColumn = _SelectionMgr.CurrentColumn;
+						_SelectionMgr.Clear();
 						StartEditingCell(currentRow, currentColumn, num, focusEmbedded: true);
-						m_selMgr.StartNewBlock(currentRow, currentColumn);
+						_SelectionMgr.StartNewBlock(currentRow, currentColumn);
 						ForwardKeyStrokeToControl(ke);
 					}
 				}
@@ -6668,9 +6677,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 				break;
 			case Keys.Return:
-				if (m_selMgr.CurrentColumn >= 0 && m_selMgr.CurrentRow >= 0 && m_Columns[m_selMgr.CurrentColumn].ColumnType == 2 && GetButtonCellState(m_selMgr.CurrentRow, m_selMgr.CurrentColumn) == EnButtonCellState.Normal)
+				if (_SelectionMgr.CurrentColumn >= 0 && _SelectionMgr.CurrentRow >= 0 && m_Columns[_SelectionMgr.CurrentColumn].ColumnType == 2 && GetButtonCellState(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn) == EnButtonCellState.Normal)
 				{
-					OnKeyPressedOnCell(m_selMgr.CurrentRow, m_selMgr.CurrentColumn, Keys.Space, ke.Modifiers);
+					OnKeyPressedOnCell(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn, Keys.Space, ke.Modifiers);
 					return true;
 				}
 
@@ -6686,12 +6695,12 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						return true;
 					}
 				}
-				else if (IsEditing && m_selMgr.CurrentRow < RowCount - 1)
+				else if (IsEditing && _SelectionMgr.CurrentRow < RowCount - 1)
 				{
 					CancelEditCell();
 				}
 
-				if (m_selMgr.CurrentRow < RowCount - 1)
+				if (_SelectionMgr.CurrentRow < RowCount - 1)
 				{
 					ProcessUpDownKeys(bDown: true, Keys.None);
 				}
@@ -6702,7 +6711,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				return ProcessPageUpDownKeys(ke.KeyCode == Keys.Prior, ke.Modifiers);
 			case Keys.Left:
 			case Keys.Right:
-				if (ke.Shift && !m_selMgr.OnlyOneSelItem && !IsEditing)
+				if (ke.Shift && !_SelectionMgr.OnlyOneSelItem && !IsEditing)
 				{
 					ProcessLeftRightUpDownKeysForBlockSel(ke.KeyCode);
 					return true;
@@ -6713,16 +6722,16 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			case Keys.Down:
 				if (ke.Alt)
 				{
-					if (m_gridStorage.IsCellEditable(m_selMgr.CurrentRow, m_selMgr.CurrentColumn) == 2 && !m_curEmbeddedControl.Enabled)
+					if (m_gridStorage.IsCellEditable(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn) == 2 && !m_curEmbeddedControl.Enabled)
 					{
-						OnMouseButtonClicked(m_selMgr.CurrentRow, m_selMgr.CurrentColumn, default, MouseButtons.Left);
+						OnMouseButtonClicked(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn, default, MouseButtons.Left);
 						return true;
 					}
 
 					return false;
 				}
 
-				if (ke.Shift && !m_selMgr.OnlyOneSelItem && !IsEditing)
+				if (ke.Shift && !_SelectionMgr.OnlyOneSelItem && !IsEditing)
 				{
 					ProcessLeftRightUpDownKeysForBlockSel(ke.KeyCode);
 					return true;
@@ -6741,9 +6750,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				ProcessHomeEndKeys(ke.KeyCode == Keys.Home, ke.Modifiers);
 				return true;
 			default:
-				if (m_selMgr.CurrentColumn >= 0 && m_selMgr.CurrentRow >= 0)
+				if (_SelectionMgr.CurrentColumn >= 0 && _SelectionMgr.CurrentRow >= 0)
 				{
-					OnKeyPressedOnCell(m_selMgr.CurrentRow, m_selMgr.CurrentColumn, ke.KeyCode, ke.Modifiers);
+					OnKeyPressedOnCell(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn, ke.KeyCode, ke.Modifiers);
 				}
 
 				break;
@@ -6754,8 +6763,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected void ProcessHomeEndKeys(bool bHome, Keys mod)
 	{
-		long currentRow = m_selMgr.CurrentRow;
-		int currentColumn = m_selMgr.CurrentColumn;
+		long currentRow = _SelectionMgr.CurrentRow;
+		int currentColumn = _SelectionMgr.CurrentColumn;
 		long num;
 		int num3;
 		int num2;
@@ -6763,8 +6772,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			if (bHome)
 			{
-				num = m_scrollMgr.FirstScrollableRowIndex;
-				num3 = num2 = m_scrollMgr.FirstScrollableColumnIndex;
+				num = _ScrollMgr.FirstScrollableRowIndex;
+				num3 = num2 = _ScrollMgr.FirstScrollableColumnIndex;
 			}
 			else
 			{
@@ -6777,7 +6786,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			if (bHome)
 			{
-				num2 = num3 = m_scrollMgr.FirstScrollableColumnIndex;
+				num2 = num3 = _ScrollMgr.FirstScrollableColumnIndex;
 			}
 			else
 			{
@@ -6785,10 +6794,10 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				num3 = num2 - 1;
 			}
 
-			num = m_selMgr.CurrentRow;
+			num = _SelectionMgr.CurrentRow;
 			if (num < 0)
 			{
-				num = m_scrollMgr.FirstScrollableRowIndex;
+				num = _ScrollMgr.FirstScrollableRowIndex;
 			}
 		}
 
@@ -6800,10 +6809,10 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				return;
 			}
 
-			m_selMgr.Clear();
+			_SelectionMgr.Clear();
 		}
 
-		m_scrollMgr.EnsureCellIsVisible(num, num2, bMakeFirstColFullyVisible: true, bRedraw: false);
+		_ScrollMgr.EnsureCellIsVisible(num, num2, bMakeFirstColFullyVisible: true, bRedraw: false);
 		if (flag)
 		{
 			int num4 = m_gridStorage.IsCellEditable(num, m_Columns[num3].ColumnIndex);
@@ -6812,8 +6821,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				StartEditingCell(num, num3, num4, FocusEditorOnNavigation);
 			}
 
-			m_selMgr.StartNewBlock(num, num3);
-			OnSelectionChanged(m_selMgr.SelectedBlocks);
+			_SelectionMgr.StartNewBlock(num, num3);
+			OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 		}
 
 		Refresh();
@@ -6822,8 +6831,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	protected bool ProcessPageUpDownKeys(bool bPageUp, Keys mod)
 	{
 		_ = mod;
-		long currentRow = m_selMgr.CurrentRow;
-		int currentColumn = m_selMgr.CurrentColumn;
+		long currentRow = _SelectionMgr.CurrentRow;
+		int currentColumn = _SelectionMgr.CurrentColumn;
 		if (currentRow < 0 || currentColumn < 0)
 		{
 			return false;
@@ -6836,8 +6845,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 		int yDelta = -1;
 		Native.RECTEx scrollRect = new Native.RECTEx(0, 0, 0, 0);
-		_ = m_scrollMgr.FirstRowIndex;
-		int num = m_scrollMgr.CalcVertPageSize(m_scrollableArea);
+		_ = _ScrollMgr.FirstRowIndex;
+		int num = _ScrollMgr.CalcVertPageSize(m_scrollableArea);
 		if (!CheckAndProcessCurrentEditingCellForKeyboard())
 		{
 			return true;
@@ -6845,25 +6854,25 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 		if (bPageUp)
 		{
-			if (currentRow >= m_scrollMgr.FirstRowIndex && currentRow <= m_scrollMgr.LastRowIndex)
+			if (currentRow >= _ScrollMgr.FirstRowIndex && currentRow <= _ScrollMgr.LastRowIndex)
 			{
-				m_scrollMgr.HandleVScrollWithoutClientRedraw(2, ref yDelta, ref scrollRect);
+				_ScrollMgr.HandleVScrollWithoutClientRedraw(2, ref yDelta, ref scrollRect);
 			}
 			else
 			{
-				m_scrollMgr.EnsureRowIsVisbleWithoutClientRedraw(currentRow - num, bMakeRowTheTopOne: true, out yDelta);
+				_ScrollMgr.EnsureRowIsVisibleNoRedraw(currentRow - num, bMakeRowTheTopOne: true, out yDelta);
 			}
 		}
-		else if (currentRow >= m_scrollMgr.FirstRowIndex && currentRow <= m_scrollMgr.LastRowIndex)
+		else if (currentRow >= _ScrollMgr.FirstRowIndex && currentRow <= _ScrollMgr.LastRowIndex)
 		{
-			m_scrollMgr.HandleVScrollWithoutClientRedraw(3, ref yDelta, ref scrollRect);
+			_ScrollMgr.HandleVScrollWithoutClientRedraw(3, ref yDelta, ref scrollRect);
 		}
 		else
 		{
-			m_scrollMgr.EnsureRowIsVisbleWithoutClientRedraw(currentRow + num, bMakeRowTheTopOne: true, out yDelta);
+			_ScrollMgr.EnsureRowIsVisibleNoRedraw(currentRow + num, bMakeRowTheTopOne: true, out yDelta);
 		}
 
-		m_selMgr.Clear();
+		_SelectionMgr.Clear();
 		currentRow += (!bPageUp ? 1 : -1) * num;
 		if (currentRow < 0)
 		{
@@ -6881,88 +6890,88 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			StartEditingCell(currentRow, currentColumn, num2, FocusEditorOnNavigation);
 		}
 
-		m_selMgr.StartNewBlock(currentRow, currentColumn);
-		OnSelectionChanged(m_selMgr.SelectedBlocks);
+		_SelectionMgr.StartNewBlock(currentRow, currentColumn);
+		OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 		Refresh();
 		return true;
 	}
 
 	protected void ProcessLeftRightUpDownKeysForBlockSel(Keys key)
 	{
-		long lastUpdatedRow = m_selMgr.LastUpdatedRow;
-		int lastUpdatedColumn = m_selMgr.LastUpdatedColumn;
+		long lastUpdatedRow = _SelectionMgr.LastUpdatedRow;
+		int lastUpdatedColumn = _SelectionMgr.LastUpdatedColumn;
 		switch (key)
 		{
 			case Keys.Up:
-				if (m_selMgr.SelectionType == EnGridSelectionType.ColumnBlocks)
+				if (_SelectionMgr.SelectionType == EnGridSelectionType.ColumnBlocks)
 				{
-					m_scrollMgr.HandleVScroll(0);
+					_ScrollMgr.HandleVScroll(0);
 					return;
 				}
 
 				if (lastUpdatedRow != -1 && lastUpdatedRow > 0)
 				{
-					m_selMgr.UpdateCurrentBlock(lastUpdatedRow - 1, lastUpdatedColumn);
+					_SelectionMgr.UpdateCurrentBlock(lastUpdatedRow - 1, lastUpdatedColumn);
 					break;
 				}
 
 				return;
 			case Keys.Down:
-				if (m_selMgr.SelectionType == EnGridSelectionType.ColumnBlocks)
+				if (_SelectionMgr.SelectionType == EnGridSelectionType.ColumnBlocks)
 				{
-					m_scrollMgr.HandleVScroll(1);
+					_ScrollMgr.HandleVScroll(1);
 					return;
 				}
 
 				if (lastUpdatedRow != -1 && lastUpdatedRow < RowCount - 1)
 				{
-					m_selMgr.UpdateCurrentBlock(lastUpdatedRow + 1, lastUpdatedColumn);
+					_SelectionMgr.UpdateCurrentBlock(lastUpdatedRow + 1, lastUpdatedColumn);
 					break;
 				}
 
 				return;
 			case Keys.Left:
-				if (m_selMgr.SelectionType == EnGridSelectionType.RowBlocks)
+				if (_SelectionMgr.SelectionType == EnGridSelectionType.RowBlocks)
 				{
-					m_scrollMgr.HandleHScroll(0);
+					_ScrollMgr.HandleHScroll(0);
 					return;
 				}
 
 				if (lastUpdatedColumn != -1 && lastUpdatedColumn > 0)
 				{
-					m_selMgr.UpdateCurrentBlock(lastUpdatedRow, lastUpdatedColumn - 1);
+					_SelectionMgr.UpdateCurrentBlock(lastUpdatedRow, lastUpdatedColumn - 1);
 					break;
 				}
 
 				return;
 			default:
-				if (m_selMgr.SelectionType == EnGridSelectionType.RowBlocks)
+				if (_SelectionMgr.SelectionType == EnGridSelectionType.RowBlocks)
 				{
-					m_scrollMgr.HandleHScroll(1);
+					_ScrollMgr.HandleHScroll(1);
 					return;
 				}
 
 				if (lastUpdatedColumn != -1 && lastUpdatedColumn < NumColInt - 1)
 				{
-					m_selMgr.UpdateCurrentBlock(lastUpdatedRow, lastUpdatedColumn + 1);
+					_SelectionMgr.UpdateCurrentBlock(lastUpdatedRow, lastUpdatedColumn + 1);
 					break;
 				}
 
 				return;
 		}
 
-		OnSelectionChanged(m_selMgr.SelectedBlocks);
-		if (m_selMgr.SelectionType == EnGridSelectionType.CellBlocks)
+		OnSelectionChanged(_SelectionMgr.SelectedBlocks);
+		if (_SelectionMgr.SelectionType == EnGridSelectionType.CellBlocks)
 		{
-			m_scrollMgr.EnsureCellIsVisible(m_selMgr.LastUpdatedRow, m_selMgr.LastUpdatedColumn, bMakeFirstColFullyVisible: true, bRedraw: false);
+			_ScrollMgr.EnsureCellIsVisible(_SelectionMgr.LastUpdatedRow, _SelectionMgr.LastUpdatedColumn, bMakeFirstColFullyVisible: true, bRedraw: false);
 		}
-		else if (m_selMgr.SelectionType == EnGridSelectionType.ColumnBlocks)
+		else if (_SelectionMgr.SelectionType == EnGridSelectionType.ColumnBlocks)
 		{
-			m_scrollMgr.EnsureColumnIsVisible(m_selMgr.LastUpdatedColumn, bMakeFirstFullyVisible: true, bRedraw: false);
+			_ScrollMgr.EnsureColumnIsVisible(_SelectionMgr.LastUpdatedColumn, bMakeFirstFullyVisible: true, bRedraw: false);
 		}
 		else
 		{
-			m_scrollMgr.EnsureRowIsVisbleWithoutClientRedraw(m_selMgr.LastUpdatedRow, bMakeRowTheTopOne: true, out var _);
+			_ScrollMgr.EnsureRowIsVisibleNoRedraw(_SelectionMgr.LastUpdatedRow, bMakeRowTheTopOne: true, out var _);
 		}
 
 		Refresh();
@@ -6972,13 +6981,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		if (Keys.Control == mod && !IsEditing)
 		{
-			m_scrollMgr.HandleVScroll(bDown ? 1 : 0);
+			_ScrollMgr.HandleVScroll(bDown ? 1 : 0);
 			return true;
 		}
 
-		if (m_selMgr.CurrentColumn != -1 && m_selMgr.CurrentRow != -1 && RowCount > 0)
+		if (_SelectionMgr.CurrentColumn != -1 && _SelectionMgr.CurrentRow != -1 && RowCount > 0)
 		{
-			if (m_selMgr.CurrentRow == 0L && !bDown || m_selMgr.CurrentRow == RowCount - 1 && bDown)
+			if (_SelectionMgr.CurrentRow == 0L && !bDown || _SelectionMgr.CurrentRow == RowCount - 1 && bDown)
 			{
 				return true;
 			}
@@ -6990,23 +6999,23 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			if (bDown)
 			{
-				m_selMgr.CurrentRow = Math.Min(RowCount - 1, m_selMgr.CurrentRow + 1);
+				_SelectionMgr.CurrentRow = Math.Min(RowCount - 1, _SelectionMgr.CurrentRow + 1);
 			}
 			else
 			{
-				m_selMgr.CurrentRow = Math.Max(0L, m_selMgr.CurrentRow - 1);
+				_SelectionMgr.CurrentRow = Math.Max(0L, _SelectionMgr.CurrentRow - 1);
 			}
 
-			m_selMgr.Clear(bClearCurrentCell: false);
+			_SelectionMgr.Clear(bClearCurrentCell: false);
 			bool flag = IsCellEditableFromKeyboardNav();
 			if (!flag)
 			{
-				m_selMgr.StartNewBlock(m_selMgr.CurrentRow, m_selMgr.CurrentColumn);
+				_SelectionMgr.StartNewBlock(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn);
 			}
 
 			bool bMakeRowTheTopOne = !bDown;
-			m_scrollMgr.EnsureRowIsVisbleWithoutClientRedraw(m_selMgr.CurrentRow, bMakeRowTheTopOne, out var _);
-			m_scrollMgr.EnsureColumnIsVisible(m_selMgr.CurrentColumn, bMakeFirstFullyVisible: false, bRedraw: false);
+			_ScrollMgr.EnsureRowIsVisibleNoRedraw(_SelectionMgr.CurrentRow, bMakeRowTheTopOne, out var _);
+			_ScrollMgr.EnsureColumnIsVisible(_SelectionMgr.CurrentColumn, bMakeFirstFullyVisible: false, bRedraw: false);
 			CompleteArrowsNatigation(flag, bDown ? Keys.Down : Keys.Up, mod);
 			return true;
 		}
@@ -7016,9 +7025,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected bool ProcessLeftRightKeys(bool bLeft, Keys mod, bool bChangeRowIfNeeded)
 	{
-		if (m_selMgr.CurrentColumn != -1 && m_selMgr.CurrentRow != -1 && RowCount > 0)
+		if (_SelectionMgr.CurrentColumn != -1 && _SelectionMgr.CurrentRow != -1 && RowCount > 0)
 		{
-			bool flag = m_selMgr.CurrentColumn == 0 && m_selMgr.CurrentRow == 0 && bLeft || m_selMgr.CurrentColumn == NumColInt - 1 && m_selMgr.CurrentRow == RowCount - 1 && !bLeft;
+			bool flag = _SelectionMgr.CurrentColumn == 0 && _SelectionMgr.CurrentRow == 0 && bLeft || _SelectionMgr.CurrentColumn == NumColInt - 1 && _SelectionMgr.CurrentRow == RowCount - 1 && !bLeft;
 			if (flag && bChangeRowIfNeeded)
 			{
 				return HandleTabOnLastOrFirstCell(bLeft);
@@ -7031,60 +7040,60 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			bool bMakeFirstColFullyVisible = bLeft;
 			bool flag2 = false;
-			m_scrollMgr.EnsureCellIsVisible(m_selMgr.CurrentRow, m_selMgr.CurrentColumn, bMakeFirstColFullyVisible, bRedraw: false);
+			_ScrollMgr.EnsureCellIsVisible(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn, bMakeFirstColFullyVisible, bRedraw: false);
 			if (bLeft)
 			{
-				m_selMgr.CurrentColumn--;
-				if (m_selMgr.CurrentColumn < 0)
+				_SelectionMgr.CurrentColumn--;
+				if (_SelectionMgr.CurrentColumn < 0)
 				{
 					if (bChangeRowIfNeeded && !flag)
 					{
-						m_selMgr.CurrentColumn = NumColInt - 1;
-						m_selMgr.CurrentRow--;
+						_SelectionMgr.CurrentColumn = NumColInt - 1;
+						_SelectionMgr.CurrentRow--;
 						flag2 = true;
 					}
 					else
 					{
-						m_selMgr.CurrentColumn = 0;
+						_SelectionMgr.CurrentColumn = 0;
 					}
 				}
 			}
-			else if (m_selMgr.CurrentColumn == m_scrollMgr.FirstScrollableColumnIndex - 1)
+			else if (_SelectionMgr.CurrentColumn == _ScrollMgr.FirstScrollableColumnIndex - 1)
 			{
-				m_selMgr.CurrentColumn = m_scrollMgr.FirstScrollableColumnIndex;
+				_SelectionMgr.CurrentColumn = _ScrollMgr.FirstScrollableColumnIndex;
 			}
 			else
 			{
-				m_selMgr.CurrentColumn++;
-				if (m_selMgr.CurrentColumn > NumColInt - 1)
+				_SelectionMgr.CurrentColumn++;
+				if (_SelectionMgr.CurrentColumn > NumColInt - 1)
 				{
 					if (bChangeRowIfNeeded && !flag)
 					{
-						m_selMgr.CurrentColumn = 0;
-						m_selMgr.CurrentRow++;
+						_SelectionMgr.CurrentColumn = 0;
+						_SelectionMgr.CurrentRow++;
 						flag2 = true;
 					}
 					else
 					{
-						m_selMgr.CurrentColumn = NumColInt - 1;
+						_SelectionMgr.CurrentColumn = NumColInt - 1;
 					}
 				}
 			}
 
-			m_selMgr.Clear(bClearCurrentCell: false);
+			_SelectionMgr.Clear(bClearCurrentCell: false);
 			bool flag3 = IsCellEditableFromKeyboardNav();
 			if (!flag3)
 			{
-				m_selMgr.StartNewBlock(m_selMgr.CurrentRow, m_selMgr.CurrentColumn);
+				_SelectionMgr.StartNewBlock(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn);
 			}
 
-			if (bLeft || !bLeft && flag2 || m_selMgr.CurrentColumn < m_scrollMgr.FirstColumnIndex)
+			if (bLeft || !bLeft && flag2 || _SelectionMgr.CurrentColumn < _ScrollMgr.FirstColumnIndex)
 			{
-				m_scrollMgr.EnsureCellIsVisible(m_selMgr.CurrentRow, m_selMgr.CurrentColumn, bMakeFirstColFullyVisible: true, bRedraw: false);
+				_ScrollMgr.EnsureCellIsVisible(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn, bMakeFirstColFullyVisible: true, bRedraw: false);
 			}
-			else if (m_selMgr.CurrentColumn > m_scrollMgr.LastColumnIndex)
+			else if (_SelectionMgr.CurrentColumn > _ScrollMgr.LastColumnIndex)
 			{
-				m_scrollMgr.MakeNextColumnVisible(bRedraw: false);
+				_ScrollMgr.MakeNextColumnVisible(bRedraw: false);
 			}
 
 			CompleteArrowsNatigation(flag3, bLeft ? Keys.Left : Keys.Right, mod);
@@ -7165,8 +7174,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected void NotifyAccAboutNewSelection(bool notifySelection, bool notifyFocus)
 	{
-		int currentColumn = m_selMgr.CurrentColumn;
-		int childID = (int)m_selMgr.CurrentRow + (WithHeader ? 1 : 0);
+		int currentColumn = _SelectionMgr.CurrentColumn;
+		int childID = (int)_SelectionMgr.CurrentRow + (WithHeader ? 1 : 0);
 		int objectID = currentColumn + 2 + 1;
 		if (notifySelection)
 		{
@@ -7213,15 +7222,15 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		if (bStartEditNewCurrentCell)
 		{
-			if (StartEditingCell(m_selMgr.CurrentRow, m_selMgr.CurrentColumn, m_gridStorage.IsCellEditable(m_selMgr.CurrentRow, m_Columns[m_selMgr.CurrentColumn].ColumnIndex), FocusEditorOnNavigation) && m_curEmbeddedControl.ContainsFocus)
+			if (StartEditingCell(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn, m_gridStorage.IsCellEditable(_SelectionMgr.CurrentRow, m_Columns[_SelectionMgr.CurrentColumn].ColumnIndex), FocusEditorOnNavigation) && m_curEmbeddedControl.ContainsFocus)
 			{
 				NotifyControlAboutFocusFromKeyboard(keyPressed, modifiers);
 			}
 
-			m_selMgr.StartNewBlock(m_selMgr.CurrentRow, m_selMgr.CurrentColumn);
+			_SelectionMgr.StartNewBlock(_SelectionMgr.CurrentRow, _SelectionMgr.CurrentColumn);
 		}
 
-		OnSelectionChanged(m_selMgr.SelectedBlocks);
+		OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 		Refresh();
 	}
 
@@ -7259,26 +7268,26 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		long num2;
 		int num3;
 		int num4;
-		if (m_selMgr.SelectionType == EnGridSelectionType.ColumnBlocks || m_selMgr.SelectionType == EnGridSelectionType.SingleColumn)
+		if (_SelectionMgr.SelectionType == EnGridSelectionType.ColumnBlocks || _SelectionMgr.SelectionType == EnGridSelectionType.SingleColumn)
 		{
 			num = 0L;
 			num2 = RowCount - 1;
-			num3 = m_selMgr.SelectedBlocks[nBlockNum].X;
-			num4 = m_selMgr.SelectedBlocks[nBlockNum].Right;
+			num3 = _SelectionMgr.SelectedBlocks[nBlockNum].X;
+			num4 = _SelectionMgr.SelectedBlocks[nBlockNum].Right;
 		}
-		else if (m_selMgr.SelectionType == EnGridSelectionType.RowBlocks || m_selMgr.SelectionType == EnGridSelectionType.SingleRow)
+		else if (_SelectionMgr.SelectionType == EnGridSelectionType.RowBlocks || _SelectionMgr.SelectionType == EnGridSelectionType.SingleRow)
 		{
 			num3 = 0;
 			num4 = NumColInt - 1;
-			num = m_selMgr.SelectedBlocks[nBlockNum].Y;
-			num2 = m_selMgr.SelectedBlocks[nBlockNum].Bottom;
+			num = _SelectionMgr.SelectedBlocks[nBlockNum].Y;
+			num2 = _SelectionMgr.SelectedBlocks[nBlockNum].Bottom;
 		}
 		else
 		{
-			num3 = m_selMgr.SelectedBlocks[nBlockNum].X;
-			num4 = m_selMgr.SelectedBlocks[nBlockNum].Right;
-			num = m_selMgr.SelectedBlocks[nBlockNum].Y;
-			num2 = m_selMgr.SelectedBlocks[nBlockNum].Bottom;
+			num3 = _SelectionMgr.SelectedBlocks[nBlockNum].X;
+			num4 = _SelectionMgr.SelectedBlocks[nBlockNum].Right;
+			num = _SelectionMgr.SelectedBlocks[nBlockNum].Y;
+			num2 = _SelectionMgr.SelectedBlocks[nBlockNum].Bottom;
 		}
 
 		if (num4 >= num3 && num2 >= num && num3 >= 0 && num >= 0)
@@ -7364,33 +7373,33 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if ((modKeys & Keys.Control) == 0 && (modKeys & Keys.Shift) == 0)
 		{
 			bDragCancelled = !OnCanInitiateDragFromCell(m_captureTracker.RowIndex, m_captureTracker.ColumnIndex);
-			if (!m_selMgr.IsCellSelected(nRowIndex, nColIndex))
+			if (!_SelectionMgr.IsCellSelected(nRowIndex, nColIndex))
 			{
 				bShouldStartEditing = editType != 0;
-				m_selMgr.Clear();
+				_SelectionMgr.Clear();
 				flag = true;
 			}
 			else if (bDragCancelled)
 			{
 				bShouldStartEditing = editType != 0;
-				flag = !m_selMgr.OnlyOneSelItem;
+				flag = !_SelectionMgr.OnlyOneSelItem;
 				if (bShouldStartEditing)
 				{
-					m_selMgr.Clear();
+					_SelectionMgr.Clear();
 				}
 				else if (flag)
 				{
-					m_selMgr.Clear();
+					_SelectionMgr.Clear();
 				}
 			}
 		}
 		else
 		{
 			bShouldStartEditing = false;
-			if (m_selMgr.OnlyOneSelItem)
+			if (_SelectionMgr.OnlyOneSelItem)
 			{
-				flag = !m_selMgr.IsCellSelected(nRowIndex, nColIndex);
-				m_selMgr.Clear();
+				flag = !_SelectionMgr.IsCellSelected(nRowIndex, nColIndex);
+				_SelectionMgr.Clear();
 			}
 		}
 
@@ -7407,7 +7416,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				SendMouseClickToEmbeddedControl();
 			}
 
-			m_selMgr.StartNewBlock(nRowIndex, nColIndex);
+			_SelectionMgr.StartNewBlock(nRowIndex, nColIndex);
 			if (!OnMouseButtonClicked(nRowIndex, nColIndex, m_captureTracker.CellRect, MouseButtons.Left))
 			{
 				Refresh();
@@ -7415,7 +7424,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			if (bNotifySelChange)
 			{
-				OnSelectionChanged(m_selMgr.SelectedBlocks);
+				OnSelectionChanged(_SelectionMgr.SelectedBlocks);
 			}
 
 			return true;
@@ -7500,7 +7509,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		if (columnIndex <= 0 || CalcNonScrollableColumnsWidth(columnIndex - 1) < ClientRectangle.Width)
 		{
-			m_scrollMgr.FirstScrollableColumnIndex = columnIndex;
+			_ScrollMgr.FirstScrollableColumnIndex = columnIndex;
 			UpdateScrollableAreaRect();
 			if (recalcGrid)
 			{
@@ -7519,7 +7528,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			int firstScrollableColumn = FirstScrollableColumn;
 			SetFirstScrollableColumnInt(0, recalcGridIfNeeded);
 			result = !recalcGridIfNeeded;
-			m_scrollMgr.EnsureColumnIsVisible(0, bMakeFirstFullyVisible: true, recalcGridIfNeeded);
+			_ScrollMgr.EnsureColumnIsVisible(0, bMakeFirstFullyVisible: true, recalcGridIfNeeded);
 			OnResetFirstScrollableColumn(firstScrollableColumn, 0);
 		}
 		else
@@ -7582,9 +7591,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				if (columnWidths == null)
 				{
 					m_Columns[num6].WidthInPixels = num7;
-					if ((num != m_Columns[num6].WidthInPixels || bFinalUpdate) && m_captureTracker.ColumnIndex >= m_scrollMgr.FirstScrollableColumnIndex)
+					if ((num != m_Columns[num6].WidthInPixels || bFinalUpdate) && m_captureTracker.ColumnIndex >= _ScrollMgr.FirstScrollableColumnIndex)
 					{
-						m_scrollMgr.UpdateColWidth(num6, num, m_Columns[num6].WidthInPixels, bFinalUpdate);
+						_ScrollMgr.UpdateColWidth(num6, num, m_Columns[num6].WidthInPixels, bFinalUpdate);
 					}
 				}
 				else

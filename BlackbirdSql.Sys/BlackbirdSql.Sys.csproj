@@ -31,6 +31,10 @@
 		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
+		<Compile Include="Interfaces\IBsNativeDbException.cs" />
+		<Compile Include="Interfaces\IBsNativeDbServerExplorerService.cs" />
+		<Compile Include="Interfaces\SBsNativeDbException.cs" />
+		<Compile Include="Interfaces\SBsNativeDbServerExplorerService.cs" />
 		<Compile Include="Properties\AttributeResources.Designer.cs">
 		  <DesignTime>True</DesignTime>
 		  <AutoGen>True</AutoGen>
@@ -128,11 +132,8 @@
 		<Compile Include="Interfaces\IBsNativeDbStatementWrapper.cs" />
 		<Compile Include="Interfaces\IBsNativeDatabaseEngine.cs" />
 		<Compile Include="Interfaces\IBsNativeDatabaseInfo.cs" />
-		<Compile Include="Interfaces\IBsNativeDbConnection.cs" />
 		<Compile Include="Interfaces\SBsNativeDatabaseEngine.cs" />
 		<Compile Include="Interfaces\SBsNativeDatabaseInfo.cs" />
-		<Compile Include="Interfaces\SBsNativeDbConnection.cs" />
-		<Compile Include="Interfaces\IBsNativeDbCommand.cs" />
 		<Compile Include="Events\PropagateSettingsEventArgs.cs" />
 		<Compile Include="GlobalSuppressions.cs" />
 		<Compile Include="Extensions\Index.cs" />
@@ -142,11 +143,8 @@
 		<Compile Include="Interfaces\IBsSqlTraceTelemetryProvider.cs" />
 		<Compile Include="Interfaces\IBsTaskHandlerClient.cs" />
 		<Compile Include="Interfaces\IBsTrace.cs" />
-		<Compile Include="Interfaces\SBsNativeDbCommand.cs" />
 		<Compile Include="Extensions\Range.cs" />
 		<Compile Include="Root\Reflect.cs" />
-		<Compile Include="Interfaces\SBsNativeDbException.cs" />
-		<Compile Include="Interfaces\IBsNativeDbException.cs" />
 		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 		<Compile Include="Properties\Resources.Designer.cs">
 			<DesignTime>True</DesignTime>

@@ -36,12 +36,12 @@ public static class EnModelObjectTypeExtensions
 	/// IDE editor window else false.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool CanAlter(this IVsDataExplorerNode node)
+	public static bool CanAlter(this IVsDataExplorerNode @this)
 	{
-		if (node != null && node.Object != null)
+		if (@this != null && @this.Object != null)
 		{
-			if (node.Object.Type.Name.EndsWith("Trigger")
-				|| node.ModelObjectTypeIn(EnModelObjectType.View, EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
+			if (@this.Object.Type.Name.EndsWith("Trigger")
+				|| @this.ModelObjectTypeIn(EnModelObjectType.View, EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
 			{
 				return true;
 			}
@@ -52,11 +52,11 @@ public static class EnModelObjectTypeExtensions
 
 
 
-	public static bool CanCopy(this IVsDataExplorerNode node)
+	public static bool CanCopy(this IVsDataExplorerNode @this)
 	{
-		if (node != null)
+		if (@this != null)
 		{
-			if (!node.ModelObjectTypeIn(EnModelObjectType.Table,
+			if (!@this.ModelObjectTypeIn(EnModelObjectType.Table,
 				EnModelObjectType.View, EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
 			{
 				return false;
@@ -70,11 +70,11 @@ public static class EnModelObjectTypeExtensions
 
 
 
-	public static bool CanExecute(this IVsDataExplorerNode node)
+	public static bool CanExecute(this IVsDataExplorerNode @this)
 	{
-		if (node != null)
+		if (@this != null)
 		{
-			if (!node.ModelObjectTypeIn(EnModelObjectType.StoredProcedure,
+			if (!@this.ModelObjectTypeIn(EnModelObjectType.StoredProcedure,
 				EnModelObjectType.Function))
 			{
 				return false;
@@ -93,14 +93,14 @@ public static class EnModelObjectTypeExtensions
 	/// editor window else false.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool CanOpen(this IVsDataExplorerNode node)
+	public static bool CanOpen(this IVsDataExplorerNode @this)
 	{
-		if (node != null && node.Object != null)
+		if (@this != null && @this.Object != null)
 		{
-			IVsDataObject @object = node.Object;
+			IVsDataObject @object = @this.Object;
 
 			if (@object.Type.Name.EndsWith("Column") || @object.Type.Name.EndsWith("Parameter")
-				|| node.ModelObjectTypeIn(EnModelObjectType.Index, EnModelObjectType.ForeignKey))
+				|| @this.ModelObjectTypeIn(EnModelObjectType.Index, EnModelObjectType.ForeignKey))
 			{
 				if ((bool)@object.Properties["IS_COMPUTED"])
 				{
@@ -108,7 +108,7 @@ public static class EnModelObjectTypeExtensions
 				}
 			}
 			else if (@object.Type.Name.EndsWith("Trigger")
-				|| node.ModelObjectTypeIn(EnModelObjectType.Table, EnModelObjectType.View,
+				|| @this.ModelObjectTypeIn(EnModelObjectType.Table, EnModelObjectType.View,
 					EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
 			{
 				return true;
@@ -126,10 +126,10 @@ public static class EnModelObjectTypeExtensions
 	/// Returns the designer node (type Table or View) this node belongs to else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IVsDataExplorerNode DesignerNode(this IVsDataExplorerNode currNode)
+	public static IVsDataExplorerNode DesignerNode(this IVsDataExplorerNode @this)
 	{
 		IVsDataExplorerNode result = null;
-		IVsDataExplorerNode node = currNode;
+		IVsDataExplorerNode node = @this;
 
 		while (node != null && node != node.ExplorerConnection.ConnectionNode)
 		{
@@ -152,14 +152,14 @@ public static class EnModelObjectTypeExtensions
 	/// editor window else false.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool HasScript(this IVsDataExplorerNode node)
+	public static bool HasScript(this IVsDataExplorerNode @this)
 	{
-		if (node != null && node.Object != null)
+		if (@this != null && @this.Object != null)
 		{
-			IVsDataObject @object = node.Object;
+			IVsDataObject @object = @this.Object;
 
 			if (@object.Type.Name.EndsWith("Column") || @object.Type.Name.EndsWith("Parameter")
-				|| node.ModelObjectTypeIn(EnModelObjectType.Index, EnModelObjectType.ForeignKey))
+				|| @this.ModelObjectTypeIn(EnModelObjectType.Index, EnModelObjectType.ForeignKey))
 			{
 				if ((bool)@object.Properties["IS_COMPUTED"])
 				{
@@ -167,7 +167,7 @@ public static class EnModelObjectTypeExtensions
 				}
 			}
 			else if (@object.Type.Name.EndsWith("Trigger")
-				|| node.ModelObjectTypeIn(EnModelObjectType.Table, EnModelObjectType.View,
+				|| @this.ModelObjectTypeIn(EnModelObjectType.Table, EnModelObjectType.View,
 					EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
 			{
 				return true;
@@ -179,14 +179,14 @@ public static class EnModelObjectTypeExtensions
 	}
 
 
-	public static EnModelObjectType ModelObjectType(this IVsDataExplorerNode node)
+	public static EnModelObjectType ModelObjectType(this IVsDataExplorerNode @this)
 	{
-		if (node == null || node.Object == null)
+		if (@this == null || @this.Object == null)
 			return EnModelObjectType.Unknown;
 
 		// Tracer.Trace(typeof(EnModelObjectTypeExtensions), "ModelObjectType", "Node type for node '{0}' is {1}.", node.Name, node.Object.Type.Name.ToUpperInvariant());
 
-		return node.Object.Type.Name.ToUpperInvariant() switch
+		return @this.Object.Type.Name.ToUpperInvariant() switch
 		{
 			"DATABASE" => EnModelObjectType.Database,
 			"TABLE" => EnModelObjectType.Table,
@@ -221,9 +221,9 @@ public static class EnModelObjectTypeExtensions
 	/// Returns true if typeName exists in the values array else false.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ModelObjectTypeIn(this IVsDataExplorerNode node, params EnModelObjectType[] types)
+	public static bool ModelObjectTypeIn(this IVsDataExplorerNode @this, params EnModelObjectType[] types)
 	{
-		EnModelObjectType objecttype = node.ModelObjectType();
+		EnModelObjectType objecttype = @this.ModelObjectType();
 
 		foreach (EnModelObjectType type in types)
 		{
@@ -240,31 +240,31 @@ public static class EnModelObjectTypeExtensions
 	/// Gets a node's type as reflected in the IVsObjectSupport xml given the node.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static EnModelObjectType NodeBaseType(this IVsDataExplorerNode node)
+	public static EnModelObjectType NodeBaseType(this IVsDataExplorerNode @this)
 	{
-		if (node == null)
+		if (@this == null)
 			return EnModelObjectType.Unknown;
 
-		if (node.Object == null)
+		if (@this.Object == null)
 			return EnModelObjectType.Unknown;
 
-		if (node.ModelObjectTypeIn(EnModelObjectType.Table, EnModelObjectType.Index,
+		if (@this.ModelObjectTypeIn(EnModelObjectType.Table, EnModelObjectType.Index,
 			EnModelObjectType.ForeignKey, EnModelObjectType.View,
 			EnModelObjectType.StoredProcedure, EnModelObjectType.Function,
 			EnModelObjectType.Database))
 		{
-			return node.ModelObjectType();
+			return @this.ModelObjectType();
 		}
-		else if (node.Object.Type.Name.EndsWith("Column"))
+		else if (@this.Object.Type.Name.EndsWith("Column"))
 		{
 			return EnModelObjectType.Column;
 		}
-		else if (node.Object.Type.Name.EndsWith("Parameter")
-			|| node.Object.Type.Name.EndsWith("ReturnValue"))
+		else if (@this.Object.Type.Name.EndsWith("Parameter")
+			|| @this.Object.Type.Name.EndsWith("ReturnValue"))
 		{
 			return EnModelObjectType.FunctionParameter;
 		}
-		else if (node.Object.Type.Name.EndsWith("Trigger"))
+		else if (@this.Object.Type.Name.EndsWith("Trigger"))
 		{
 			return EnModelObjectType.Trigger;
 		}
@@ -282,10 +282,10 @@ public static class EnModelObjectTypeExtensions
 	/// Returns the HasScript node this node belongs to else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IVsDataExplorerNode ScriptNode(this IVsDataExplorerNode currNode)
+	public static IVsDataExplorerNode ScriptNode(this IVsDataExplorerNode @this)
 	{
 		IVsDataExplorerNode result = null;
-		IVsDataExplorerNode node = currNode;
+		IVsDataExplorerNode node = @this;
 
 		while (node != null && node != node.ExplorerConnection.ConnectionNode)
 		{

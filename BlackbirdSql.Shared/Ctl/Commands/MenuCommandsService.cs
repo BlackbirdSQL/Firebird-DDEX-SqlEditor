@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
+using BlackbirdSql.Core.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;

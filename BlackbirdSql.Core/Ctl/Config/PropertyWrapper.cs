@@ -957,7 +957,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 
 							if (propertyValue == null)
 							{
-								return string.Empty;
+								return "";
 							}
 
 							break;

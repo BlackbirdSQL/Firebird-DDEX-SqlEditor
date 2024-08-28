@@ -3,13 +3,14 @@
 
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
+using Microsoft.VisualStudio.Shell;
 
 
 
 namespace BlackbirdSql.EditorExtension;
 
 [Guid(SystemData.C_EditorFactoryGuid)]
-// [ProvideMenuResource("Menus.ctmenu", 1)]
+[ProvideMenuResource("Menus.ctmenu", 1)]
 
 
 // =========================================================================================================

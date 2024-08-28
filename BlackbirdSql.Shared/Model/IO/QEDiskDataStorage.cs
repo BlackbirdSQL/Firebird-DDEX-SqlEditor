@@ -44,7 +44,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataS
 			_IsClosed = true;
 		}
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	public new bool IsClosed()
@@ -62,7 +62,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataS
 
 		await SerializeDataAsync(cancelToken);
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	public void InitiateStopStoringData()

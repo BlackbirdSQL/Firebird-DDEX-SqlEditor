@@ -195,7 +195,7 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 	{
 		if (_TextView == null)
 		{
-			return string.Empty;
+			return "";
 		}
 
 		___(_TextView.GetCaretPos(out var piLine, out var piColumn));
@@ -334,7 +334,7 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 
 	public int GetBuilderDescriptionText(int iIndex, out string pbstrDescription)
 	{
-		pbstrDescription = string.Empty;
+		pbstrDescription = "";
 		if (iIndex == 0)
 		{
 			string firstBindingForCommand = GetFirstBindingForCommand("Edit.ToggleCompletionMode");
@@ -348,7 +348,7 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 
 	public int GetBuilderDisplayText(int iIndex, out string pbstrText, int[] piGlyph = null)
 	{
-		pbstrText = string.Empty;
+		pbstrText = "";
 		if (IsDisplayed)
 		{
 			pbstrText = GetTextTypedSoFar();
@@ -389,12 +389,12 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 		}
 		if (command == null)
 		{
-			return string.Empty;
+			return "";
 		}
 		object[] array = (object[])command.Bindings;
 		if (array.Length < 1)
 		{
-			return string.Empty;
+			return "";
 		}
 		string text = (string)array[0];
 		string text2 = "::";

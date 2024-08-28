@@ -118,10 +118,10 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 			_OnMoreRowsFromDSForDiscardEventAsync = null;
 			_ResultSetForDiscardArgs = null;
 
-			return await Cmd.AwaitableAsync(true);
+			return await Task.FromResult(true);
 		}
 
-		return await Cmd.AwaitableAsync(false);
+		return await Task.FromResult(false);
 	}
 
 	private bool ShouldFlushMessages(int currentMessagesNumber)
@@ -217,7 +217,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 	protected virtual async Task<bool> RegisterNewResultSetForDiscardEventsAsync(BatchNewResultSetEventArgs args)
 	{
-		if (args.CancelToken.IsCancellationRequested)
+		if (args.CancelToken.Cancelled())
 			return false;
 
 		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.HandleNewResultSetForDiscard", "", null);
@@ -227,7 +227,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 		await _ResultSetForDiscardArgs.ResultSet.StartConsumingDataWithoutStoringAsync(args.CancelToken);
 
-		return !args.CancelToken.IsCancellationRequested;
+		return !args.CancelToken.Cancelled();
 	}
 
 

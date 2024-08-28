@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
 using BlackbirdSql.EditorExtension.Events;
@@ -652,9 +653,9 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			&& __(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar)))
 		{
 			if (pvar is TabbedEditorPane sqlEditorTabbedEditorPane
-				&& sqlEditorTabbedEditorPane == EditorPackage.LastFocusedSqlEditor)
+				&& sqlEditorTabbedEditorPane == EditorPackage.CurrentTabbedEditor)
 			{
-				EditorPackage.LastFocusedSqlEditor = null;
+				EditorPackage.CurrentTabbedEditor = null;
 			}
 		}
 
@@ -701,8 +702,8 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		if (!__(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar)))
 			return VSConstants.S_OK;
 
-		if (pvar is TabbedEditorPane sqlEditorTabbedEditorPane)
-			EditorPackage.LastFocusedSqlEditor = sqlEditorTabbedEditorPane;
+		if (pvar is TabbedEditorPane tabbedEditor)
+			EditorPackage.CurrentTabbedEditor = tabbedEditor;
 
 		return VSConstants.S_OK;
 	}

@@ -30,7 +30,7 @@ public sealed class Operation
 
 	private static readonly Color transparentColor = Color.FromArgb(219, 64, 140);
 
-	private static readonly Operation unknown = new Operation(string.Empty, "Unknown", "UnknownDescription", "Result_32x.ico", ".swb.showplan.result.f1");
+	private static readonly Operation unknown = new Operation("", "Unknown", "UnknownDescription", "Result_32x.ico", ".swb.showplan.result.f1");
 
 	public string Name => name;
 

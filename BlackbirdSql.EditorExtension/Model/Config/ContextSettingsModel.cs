@@ -84,12 +84,6 @@ public class ContextSettingsModel : AbstractSettingsModel<ContextSettingsModel>
 	[DefaultValue(EnGlobalizedStatusBarPosition.Bottom)]
 	public EnGlobalizedStatusBarPosition StatusBarPosition { get; set; } = EnGlobalizedStatusBarPosition.Bottom;
 
-	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayContextBatchSeparator")]
-	[GlobalizedDescription("OptionDescriptionContextBatchSeparator")]
-	[DefaultValue(SharedConstants.C_DefaultBatchSeparator)]
-	public string BatchSeparator { get; set; } = SharedConstants.C_DefaultBatchSeparator;
-
 
 	#endregion Property Accessors
 

@@ -8,6 +8,8 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 
 namespace BlackbirdSql.Shared.Controls.Results;
@@ -85,7 +87,7 @@ public abstract class AbstractResultsPanel : Panel
 		Diag.ThrowIfNotOnUIThread();
 
 		_ObjServiceProvider = oleServiceProvider;
-		_ServiceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)oleServiceProvider);
+		_ServiceProvider = new ServiceProvider((IOleServiceProvider)oleServiceProvider);
 		_vsUIShell = GetService(typeof(IVsUIShell)) as IVsUIShell;
 	}
 

@@ -7,6 +7,8 @@ using BlackbirdSql.Shared.Controls.Tabs;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 
 namespace BlackbirdSql.EditorExtension;
@@ -47,7 +49,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 
 	private readonly bool _Encoded;
 	private Guid _MandatedSqlLanguageServiceClsid = Guid.Empty;
-	private Microsoft.VisualStudio.OLE.Interop.IServiceProvider _OleServiceProvider = null;
+	private IOleServiceProvider _OleServiceProvider = null;
 	private IServiceProvider _ServiceProvider = null;
 
 
@@ -72,7 +74,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 		: _MandatedSqlLanguageServiceClsid;
 
 
-	protected Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider => _OleServiceProvider;
+	protected IOleServiceProvider OleServiceProvider => _OleServiceProvider;
 
 	protected IServiceProvider ServiceProvider => _ServiceProvider;
 
@@ -133,7 +135,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 
 
 
-	public int SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider)
+	public int SetSite(IOleServiceProvider serviceProvider)
 	{
 		// Tracer.Trace(GetType(), "IVsEditorFactory.SetSite", "");
 		_OleServiceProvider = serviceProvider;

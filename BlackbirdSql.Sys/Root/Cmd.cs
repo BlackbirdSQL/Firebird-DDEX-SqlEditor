@@ -104,39 +104,6 @@ public abstract class Cmd
 	}
 
 
-	/// <summary>
-	/// Warning suppression. Returns the boolean passed.
-	/// </summary>
-	public static async Task<bool> AwaitableAsync(bool result)
-	{
-		if (!ThreadHelper.CheckAccess())
-			return result;
-
-		// Warning suppression.
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		return result;
-	}
-
-
-
-	/// <summary>
-	/// Warning suppression. Waits for delay ms.  Returns true if on
-	/// the main thread else false.
-	/// </summary>
-	public static async Task<bool> AwaitableAsync(int delay)
-	{
-		Thread.Sleep(delay);
-
-		if (!ThreadHelper.CheckAccess())
-			return false;
-
-		// Warning suppression.
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		return true;
-	}
-
 
 	public static async Task<bool> CheckAccessAsync()
 	{
@@ -391,9 +358,9 @@ public abstract class Cmd
 	public static bool IsNullValue(object value) => value == null || value == DBNull.Value;
 
 	/// <summary>
-	/// Checks for null and DBNull and string.Empty.
+	/// Checks for null and DBNull and "".
 	/// </summary>
-	public static bool IsNullValueOrEmpty(object value) => value == null || value == DBNull.Value || value.ToString() == string.Empty;
+	public static bool IsNullValueOrEmpty(object value) => value == null || value == DBNull.Value || value.ToString() == "";
 
 
 

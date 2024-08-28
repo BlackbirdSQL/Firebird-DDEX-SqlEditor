@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +13,7 @@ using BlackbirdSql.LanguageExtension.Services;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Threading;
@@ -125,6 +125,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 
 
+
 	// =========================================================================================================
 	#region Constants & Fields - LanguageExtensionPackage
 	// =========================================================================================================
@@ -145,8 +146,6 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	#region Property accessors - LanguageExtensionPackage
 	// =========================================================================================================
 
-
-	public static bool IsInitialized { get; private set; }
 
 	public ITextUndoHistoryRegistry TextUndoHistoryRegistrySvc { get; private set; }
 
@@ -200,89 +199,23 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Creates a service instance of the specified type if this class has access to the
-	/// final class type of the service being added.
-	/// The class requiring and adding the service may not necessarily be the class that
-	/// creates an instance of the service.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override async Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token)
-	{
-		if (serviceType == null)
-		{
-			ArgumentNullException ex = new("serviceType");
-			Diag.Dug(ex);
-			throw ex;
-		}
-		/*
-		else if (serviceType == typeof(IBsDesignerExplorerServices))
-		{
-			object service = new DesignerExplorerServices()
-				?? throw Diag.ExceptionService(serviceType);
-
-			return service;
-		}
-		else if (serviceType == typeof(IBDesignerOnlineServices))
-		{
-			object service = new DesignerOnlineServices()
-				?? throw Diag.ExceptionService(serviceType);
-
-			return service;
-		}
-		*/
-		else if (serviceType.IsInstanceOfType(this))
-		{
-			return this;
-		}
-
-		return await base.CreateServiceInstanceAsync(serviceType, token);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Asynchronous initialization of the package. The class must register services it
-	/// requires using the ServicesCreatorCallback method.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-	{
-		ProgressAsync(progress, "Initializing Language services...").Forget();
-
-
-		ProgressAsync(progress, "Language service registering...").Forget();
-
-		ServiceContainer.AddService(typeof(LsbLanguageService), ServicesCreatorCallbackAsync, promote: true);
-
-		ProgressAsync(progress, "Language registering service... Done.").Forget();
-
-		await base.InitializeAsync(cancellationToken, progress);
-
-		ProgressAsync(progress, "Initializing Language services... Done.").Forget();
-
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Final asynchronous initialization tasks for the package that must occur after
 	/// all descendents and ancestors have completed their InitializeAsync() tasks.
 	/// It is the final descendent package class's responsibility to initiate the call
 	/// to FinalizeAsync.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+	public override async Task FinalizeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
+		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState)
 			return;
 
 
 		ProgressAsync(progress, "Finalizing Language Services...").Forget();
 
-		await base.FinalizeAsync(cancellationToken, progress);
+		await base.FinalizeAsync(cancelToken, progress);
 
 
 
@@ -297,8 +230,6 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 		// _ = SqlSchemaModel.ModelSchema;
 
-		IsInitialized = true;
-
 		ProgressAsync(progress, "Finalizing Language Services. Proffering Language services... Done.").Forget();
 
 
@@ -311,26 +242,27 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Initializes and configures a service of the specified type that is used by this
-	/// Package.
-	/// Configuration is performed by the class requiring the service.
-	/// The actual instance creation of the service is the responsibility of the class
-	/// Package that has access to the final descendent class of the Service.
+	/// Creates a service instance of the specified type if this class has access to the
+	/// final class type of the service being added.
+	/// The class requiring and adding the service may not necessarily be the class that
+	/// creates an instance of the service.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override object ServicesCreatorCallback(IServiceContainer container, Type serviceType)
+	public override async Task<TInterface> GetLocalServiceInstanceAsync<TService, TInterface>(CancellationToken token)
+		 where TInterface : class
 	{
+		Type serviceType = typeof(TService);
 
-		if (typeof(LsbLanguageService) == serviceType)
+		if (serviceType == typeof(LanguageService) || serviceType == typeof(LsbLanguageService))
 		{
 			if (_LanguageService != null)
-				return _LanguageService;
+				return _LanguageService as TInterface;
 
 			_LanguageService = new LsbLanguageService(this);
 			_LanguageService.SetSite(this);
 
 
-			if (_ComponentID == 0 && GetService(typeof(SOleComponentManager)) is IOleComponentManager oleComponentManager)
+			if (_ComponentID == 0 && await GetServiceAsync(typeof(SOleComponentManager)) is IOleComponentManager oleComponentManager)
 			{
 				OLECRINFO[] array = new OLECRINFO[1];
 				array[0].cbSize = (uint)Marshal.SizeOf(typeof(OLECRINFO));
@@ -340,11 +272,36 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 				oleComponentManager.FRegisterComponent(this, array, out _ComponentID);
 			}
 
-			return _LanguageService;
+			return _LanguageService as TInterface;
 		}
 
 
-		return base.ServicesCreatorCallback(container, serviceType);
+		return await base.GetLocalServiceInstanceAsync<TService, TInterface>(token);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Asynchronous initialization of the package. The class must register services it
+	/// requires using the ServicesCreatorCallback method.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected override async Task InitializeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
+	{
+		ProgressAsync(progress, "Initializing Language services...").Forget();
+
+
+		ProgressAsync(progress, "Language service registering...").Forget();
+
+		AddService(typeof(LsbLanguageService), ServicesCreatorCallbackAsync, promote: true);
+
+		ProgressAsync(progress, "Language registering service... Done.").Forget();
+
+		await base.InitializeAsync(cancelToken, progress);
+
+		ProgressAsync(progress, "Initializing Language services... Done.").Forget();
+
 	}
 
 
@@ -362,8 +319,8 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 	{
 
 
-		if (serviceType == typeof(LsbLanguageService))
-			return ServicesCreatorCallback(this, serviceType);
+		if (serviceType == typeof(LanguageService) || serviceType == typeof(LsbLanguageService))
+			return await GetLocalServiceInstanceAsync<LanguageService, LsbLanguageService>(token);
 
 
 		return await base.ServicesCreatorCallbackAsync(container, token, serviceType);

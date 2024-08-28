@@ -34,6 +34,10 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
 
+using DpiAwareness = Microsoft.VisualStudio.Utilities.DpiAwareness;
+using DpiAwarenessContext = Microsoft.VisualStudio.Utilities.DpiAwarenessContext;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 
 namespace BlackbirdSql.Shared.Controls;
@@ -44,7 +48,7 @@ namespace BlackbirdSql.Shared.Controls;
 //										TabbedEditorPane Class
 //
 /// <summary>
-/// The containg editor window pane.
+/// The containing editor window pane.
 /// </summary>
 // =========================================================================================================
 public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
@@ -485,6 +489,50 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 	// =========================================================================================================
 
 
+	public override void ActivateNextTab()
+	{
+		if (IsGridCheckedAndMoreThanOneResultSet)
+		{
+			for (int i = 0; i < PanelGridResults.NumberOfGrids - 1; i++)
+			{
+				if (PanelGridResults.GridContainers[i].GridCtl.ContainsFocus)
+				{
+					ScrollGridIntoView(PanelGridResults.GridContainers[i + 1].GridCtl);
+					return;
+				}
+			}
+		}
+
+		base.ActivateNextTab();
+
+		if (IsGridCheckedAndMoreThanOneResultSet)
+			ScrollGridIntoView(PanelGridResults.GridContainers[0].GridCtl);
+	}
+
+
+
+	public override void ActivatePreviousTab()
+	{
+		if (IsGridCheckedAndMoreThanOneResultSet)
+		{
+			for (int i = PanelGridResults.NumberOfGrids - 1; i > 0; i--)
+			{
+				if (PanelGridResults.GridContainers[i].GridCtl.ContainsFocus)
+				{
+					ScrollGridIntoView(PanelGridResults.GridContainers[i - 1].GridCtl);
+					return;
+				}
+			}
+		}
+
+		base.ActivatePreviousTab();
+
+		if (IsGridCheckedAndMoreThanOneResultSet)
+			ScrollGridIntoView(PanelGridResults.GridContainers[PanelGridResults.NumberOfGrids - 1].GridCtl);
+	}
+
+
+
 	public void ActivateTab(AbstruseEditorTab tab)
 	{
 		if (TabbedEditorUiCtl.IsSplitterVisible)
@@ -494,54 +542,6 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		else
 		{
 			TabbedEditorUiCtl.ActivateTab(tab, EnTabViewMode.Maximize);
-		}
-	}
-
-
-
-	public override void ActivateNextTab()
-	{
-		if (IsGridCheckedAndMoreThanOneResultSet)
-		{
-			for (int i = 0; i < PanelGridResults.NumberOfGrids - 1; i++)
-			{
-				if (PanelGridResults.GridContainers[i].GridCtl.ContainsFocus)
-				{
-					PanelGridResults.GridContainers[i + 1].GridCtl.Focus();
-					return;
-				}
-			}
-		}
-
-		base.ActivateNextTab();
-
-		if (IsGridCheckedAndMoreThanOneResultSet)
-		{
-			PanelGridResults.GridContainers[0].GridCtl.Focus();
-		}
-	}
-
-
-
-	public override void ActivatePreviousTab()
-	{
-		if (IsGridCheckedAndMoreThanOneResultSet)
-		{
-			for (int num = PanelGridResults.NumberOfGrids - 1; num > 0; num--)
-			{
-				if (PanelGridResults.GridContainers[num].GridCtl.ContainsFocus)
-				{
-					PanelGridResults.GridContainers[num - 1].GridCtl.Focus();
-					return;
-				}
-			}
-		}
-
-		base.ActivatePreviousTab();
-
-		if (IsGridCheckedAndMoreThanOneResultSet)
-		{
-			PanelGridResults.GridContainers[PanelGridResults.NumberOfGrids - 1].GridCtl.Focus();
 		}
 	}
 
@@ -640,7 +640,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		Diag.ThrowIfNotOnUIThread();
 
 		frame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out object pvar);
-		Microsoft.VisualStudio.OLE.Interop.IServiceProvider site = pvar as Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+		IOleServiceProvider site = pvar as IOleServiceProvider;
 		if (textView is not IObjectWithSite objectWithSite)
 		{
 			// Tracer.Trace(typeof(AbstractSqlEditorTab), "ConfigureTextViewForAutonomousFind", "Couldn't cast textView to IObjectWithsite!");
@@ -656,7 +656,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 
 
-	protected override AbstruseEditorTab CreateEditorTab(AbstractTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
+	protected override AbstruseEditorTab CreateEditorTab(AbstractTabbedEditorPane tabbedEditor, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
 	{
 		AbstruseEditorTab result = null;
 		if (logicalView == VSConstants.LOGVIEWID_Designer)
@@ -959,7 +959,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 	private string GetAdditionalTooltipOrWindowCaption(bool toolTip)
 	{
-		string text = string.Empty;
+		string text = "";
 		QueryManager qryMgr = QryMgr;
 
 		if (qryMgr != null)
@@ -1062,7 +1062,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		}
 
 		if (textSpanInfo == null || string.IsNullOrEmpty(textSpanInfo.Text))
-			return string.Empty;
+			return "";
 
 		return textSpanInfo.Text;
 	}
@@ -1122,9 +1122,23 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 
 
+	int IVsFindTarget.GetMatchRect(RECT[] prc)
+	{
+		return TargetAdapter.GetMatchRect(prc);
+	}
+
+
+
 	int IVsFindTarget.GetProperty(uint propid, out object pvar)
 	{
 		return TargetAdapter.GetProperty(propid, out pvar);
+	}
+
+
+
+	int IVsFindTarget.GetSearchImage(uint grfOptions, IVsTextSpanSet[] ppSpans, out IVsTextImage ppTextImage)
+	{
+		return TargetAdapter.GetSearchImage(grfOptions, ppSpans, out ppTextImage);
 	}
 
 
@@ -1168,19 +1182,6 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		}
 
 		return false;
-	}
-
-
-
-	int IVsFindTarget.GetMatchRect(RECT[] prc)
-	{
-		return TargetAdapter.GetMatchRect(prc);
-	}
-
-
-	int IVsFindTarget.GetSearchImage(uint grfOptions, IVsTextSpanSet[] ppSpans, out IVsTextImage ppTextImage)
-	{
-		return TargetAdapter.GetSearchImage(grfOptions, ppSpans, out ppTextImage);
 	}
 
 
@@ -1238,6 +1239,61 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		}
 
 		return base.SaveFiles(ref pgrfSaveOptions);
+	}
+
+
+
+	private void ScrollGridIntoView(IBsGridControl2 gridCtl)
+	{
+		gridCtl.Focus();
+
+		// The original MS SqlEditor only performed a focus. This is useless when
+		// focusing on a hidden grid in a multi-resultset query, so we're going to
+		// ensure the grid is autoscrolled into view.
+
+		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
+		{
+			Control ctl = (Control)gridCtl;
+			ScrollableControl parent = (ScrollableControl)ctl.Parent.Parent;
+
+			// Back off 36 pixels so that the bottom of previous grid is visible and
+			// the user is given a visual context in a multi-grid result set.
+			// Subtracting 'offset' could result in a negative scrollpos, which will
+			// default to zero.
+			// Also, we won't back off more than a third of the client area height.
+
+			int offset = 36;
+			int height = parent.ClientRectangle.Height;
+
+			if (offset * 3 > height)
+				offset = height / 3;
+
+			// The parent of 'gridCtl' is actually MultiControlPanel.SmartPanelWithLayout, so the
+			// AutoScrollPosition of 'parent' (MultiControlPanel) must be added in.
+
+			offset = ctl.Top + parent.AutoScrollPosition.Y - offset;
+
+			// The simplest way to scroll the grid control into view is by using a dummy control
+			// placed where we want to auto scroll to.
+			// Then we can use ScrollControlIntoView() to do all the hard work for us.
+
+			using (Control dummy = new Control() { Parent = parent, Height = height, Top = offset })
+			{
+				parent.ScrollControlIntoView(dummy);
+			}
+
+
+			if (gridCtl.ScrollMgr.RowCount > 0)
+			{
+				long row = gridCtl.SelectionMgr.CurrentRow;
+				if (row == -1)
+					row = 0;
+				gridCtl.ScrollMgr.EnsureRowIsVisible(row, false);
+			}
+		}
+
+		return;
+
 	}
 
 
@@ -1500,7 +1556,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			string text2 = Environment.NewLine;
 			if (string.IsNullOrEmpty(text))
 			{
-				text2 = string.Empty;
+				text2 = "";
 			}
 
 			if (auxDocData.Mode == EnEditorMode.CustomProject)
@@ -1538,7 +1594,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		string text2 = " - ";
 		if (string.IsNullOrEmpty(text))
 		{
-			text2 = string.Empty;
+			text2 = "";
 			text = " ";
 		}
 
@@ -1572,32 +1628,43 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 	public override int OnExec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
+		IBsCommand command = null;
+
 		if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 		{
-			AbstractCommand sqlEditorCommand = null;
-
 			EnCommandSet cmd = (EnCommandSet)nCmdID;
 			switch (cmd)
 			{
 				case EnCommandSet.CmdIdResultsAsText:
-					sqlEditorCommand = new CommandResultsAsText(this);
+					command = new CommandResultsAsText(this);
 					break;
 				case EnCommandSet.CmdIdResultsAsGrid:
-					sqlEditorCommand = new CommandResultsAsGrid(this);
+					command = new CommandResultsAsGrid(this);
 					break;
 				case EnCommandSet.CmdIdResultsAsFile:
-					sqlEditorCommand = new CommandResultsAsFile(this);
+					command = new CommandResultsAsFile(this);
 					break;
 				case EnCommandSet.CmdIdToggleResultsPane:
-					sqlEditorCommand = new CommandToggleResultsPane(this);
+					command = new CommandToggleResultsPane(this);
 					break;
 			}
 
-			if (sqlEditorCommand != null)
+		}
+		else if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97)
+		{
+			if (ReferenceEquals(this, ExtensionInstance.CurrentTabbedEditor))
 			{
-				return sqlEditorCommand.Exec(nCmdexecopt, pvaIn, pvaOut);
+
+				if (nCmdID == (uint)VSConstants.VSStd97CmdID.SplitNext)
+					command = new CommandOleCycleToNext(this);
+				else if (nCmdID == (uint)VSConstants.VSStd97CmdID.SplitPrev)
+					command = new CommandOleCycleToPrevious(this);
 			}
 		}
+
+		if (command != null)
+			return command.Exec(nCmdexecopt, pvaIn, pvaOut);
+
 
 		// Tracer.Trace(GetType(), "OnExec()", "pguidCmdGroup: {0}, nCmdId: {1}.", pguidCmdGroup, nCmdID);
 
@@ -1626,9 +1693,10 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		for (int i = 0; i < cCmds; i++)
 		{
 			uint cmdID = prgCmds[i].cmdID;
+			IBsCommand command = null;
+
 			if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 			{
-				AbstractCommand command = null;
 				EnCommandSet cmd = (EnCommandSet)cmdID;
 
 				switch (cmd)
@@ -1646,12 +1714,24 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 						command = new CommandToggleResultsPane(this);
 						break;
 				}
-
-				if (command != null)
+			}
+			else if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97)
+			{
+				if (!ReferenceEquals(this, ExtensionInstance.CurrentTabbedEditor))
 				{
-					return command.QueryStatus(ref prgCmds[i], pCmdText);
+					Diag.DebugTrace("NOT EQUAL TabbedEditors");
+				}
+				else
+				{
+					if (cmdID == (uint)VSConstants.VSStd97CmdID.SplitNext)
+						command = new CommandOleCycleToNext(this);
+					else if (cmdID == (uint)VSConstants.VSStd97CmdID.SplitPrev)
+						command = new CommandOleCycleToPrevious(this);
 				}
 			}
+
+			if (command != null)
+				return command.QueryStatus(ref prgCmds[i], pCmdText);
 		}
 
 		/* No extended command handlers

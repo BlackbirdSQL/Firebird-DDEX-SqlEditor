@@ -169,7 +169,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 	private Guid _RequestedView;
 	private readonly EditorUIControl _TabbedEditorUICtl;
 	private IBsTextEditor _TextEditor;
-	private static ToolbarCommandMapper _ToolbarManager;
+	private static CommandMapper _CmdMapper;
 
 
 
@@ -230,8 +230,8 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 	public IVsWindowFrame TabFrame => Frame;
 
 
-	public static ToolbarCommandMapper ToolbarManager =>
-		_ToolbarManager ??= new ToolbarCommandMapper();
+	public static CommandMapper CmdMapper =>
+		_CmdMapper ??= new CommandMapper();
 
 
 	public override IWin32Window Window => _TabbedEditorUICtl;
@@ -408,11 +408,11 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 
 
-	protected abstract AbstruseEditorTab CreateEditorTab(AbstractTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType);
+	protected abstract AbstruseEditorTab CreateEditorTab(AbstractTabbedEditorPane tabbedEditor, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType);
 
 
 
-	protected AbstruseEditorTab CreateEditorTabWithButton(AbstractTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
+	protected AbstruseEditorTab CreateEditorTabWithButton(AbstractTabbedEditorPane tabbedEditor, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
 	{
 		switch (editorTabType)
 		{
@@ -426,7 +426,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 				break;
 		}
 
-		return CreateEditorTab(editorPane, logicalView, editorLogicalView, editorTabType);
+		return CreateEditorTab(tabbedEditor, logicalView, editorLogicalView, editorTabType);
 	}
 
 
@@ -628,14 +628,15 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 		GuidId guidId = new GuidId(pguidCmdGroup, nCmdID);
 
-		if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBsToolbarCommandHandler commandHandler))
+		if (CmdMapper.TryGetCommandHandler(GetType(), guidId, out IBsCommandHandler commandHandler))
 		{
 			hresult = commandHandler.OnExec((IBsTabbedEditorPane)this, nCmdexecopt, pvaIn, pvaOut);
 
 			return hresult;
 		}
 
-		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdID == 289 && _IsLoading)
+		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97
+			&& nCmdID == (uint)VSConstants.VSStd97CmdID.PaneActivateDocWindow && _IsLoading)
 		{
 			hresult = VSConstants.S_OK;
 		}
@@ -661,7 +662,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 	/// <returns></returns>
 	int IVsDesignerInfo.get_DesignerTechnology(out string pbstrTechnology)
 	{
-		pbstrTechnology = string.Empty;
+		pbstrTechnology = "";
 
 		return VSConstants.S_OK;
 	}
@@ -772,7 +773,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	public virtual string GetHelpKeywordForCodeWindowTextView()
 	{
-		return string.Empty;
+		return "";
 	}
 
 
@@ -1103,12 +1104,12 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 		if (hresult == VSConstants.S_OK)
 			return hresult;
 
-		for (int i = 0; i < prgCmds.Length; i++)
+		for (int i = 0; i < cCmds; i++)
 		{
 			uint cmdID = prgCmds[i].cmdID;
 			GuidId guidId = new GuidId(pguidCmdGroup, cmdID);
 
-			if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBsToolbarCommandHandler commandHandler))
+			if (CmdMapper.TryGetCommandHandler(GetType(), guidId, out IBsCommandHandler commandHandler))
 			{
 				return commandHandler.OnQueryStatus((IBsTabbedEditorPane)this, ref prgCmds[i], pCmdText);
 			}
@@ -1341,7 +1342,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	protected virtual async Task<bool> UpdateTabsButtonTextAsync(ExecutionCompletedEventArgs args)
 	{
-		return await Cmd.AwaitableAsync(!args.SyncToken.IsCancellationRequested && _TabbedEditorUICtl != null
+		return await Task.FromResult(!args.SyncToken.Cancelled() && _TabbedEditorUICtl != null
 			&& _TabbedEditorUICtl.Tabs.Count > 0 && !_IsClosing && !ApcManager.SolutionClosing);
 	}
 
@@ -1556,7 +1557,8 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	public virtual int OnExec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdID == 377)
+		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97
+			&& nCmdID == (uint)VSConstants.VSStd97CmdID.F1Help)
 		{
 			SetupF1Help();
 

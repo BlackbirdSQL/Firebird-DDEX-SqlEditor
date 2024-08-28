@@ -41,11 +41,11 @@ public class StatisticsDlgGridControl : DlgGridControl
 		{
 			bkBrush = _highlightedCellBrush;
 		}
-		if (m_selMgr.IsCellSelected(nRow, nCol) && ContainsFocus)
+		if (_SelectionMgr.IsCellSelected(nRow, nCol) && ContainsFocus)
 		{
 			bkBrush = _selectedCellBrush;
 		}
-		else if (m_selMgr.IsCellSelected(nRow, nCol) && !ContainsFocus)
+		else if (_SelectionMgr.IsCellSelected(nRow, nCol) && !ContainsFocus)
 		{
 			bkBrush = _inactiveSelectedCellBrush;
 		}

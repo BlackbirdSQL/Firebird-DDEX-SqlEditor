@@ -247,7 +247,7 @@ public class EmbeddedComboBox : ComboBox, IBsGridEmbeddedControl, IBsGridEmbedde
 		else
 		{
 			Text = c.ToString();
-			SelectedText = string.Empty;
+			SelectedText = "";
 			Select(1, 0);
 		}
 	}

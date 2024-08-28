@@ -242,11 +242,11 @@ public class DlgGridControl : GridControl, IBsDlgGridControl, IBsGridControl
 	{
 		if (ShouldRedirectKeyPressToMouseClick(curRow, curCol, key, mod))
 		{
-			if (!OnMouseButtonClicking(curRow, curCol, m_scrollMgr.GetCellRectangle(curRow, curCol), mod, MouseButtons.Left))
+			if (!OnMouseButtonClicking(curRow, curCol, _ScrollMgr.GetCellRectangle(curRow, curCol), mod, MouseButtons.Left))
 			{
 				return;
 			}
-			if (!OnMouseButtonClicked(curRow, curCol, m_scrollMgr.GetCellRectangle(curRow, curCol), MouseButtons.Left))
+			if (!OnMouseButtonClicked(curRow, curCol, _ScrollMgr.GetCellRectangle(curRow, curCol), MouseButtons.Left))
 			{
 				Refresh();
 				return;

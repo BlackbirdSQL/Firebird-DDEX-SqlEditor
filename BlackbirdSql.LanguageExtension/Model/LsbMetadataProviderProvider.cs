@@ -285,7 +285,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				Monitor.Exit(_LockLocal);
 			}
 		}
-		return new ParseOptions(PersistentSettings.EditorContextBatchSeparator, isQuotedIdentifierSet: true, compatibilityLevel, transactSqlVersion);
+		return new ParseOptions(PersistentSettings.EditorExecutionBatchSeparator, isQuotedIdentifierSet: true, compatibilityLevel, transactSqlVersion);
 	}
 
 	internal void CheckForDatabaseChanges()

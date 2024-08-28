@@ -233,7 +233,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 			catch (Exception e)
 			{
 				Diag.Dug(e);
-				Cmd.ShowExceptionInDialog(string.Empty, e);
+				Cmd.ShowExceptionInDialog("", e);
 			}
 			return 0;
 		}
@@ -311,7 +311,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		string text = string.Empty;
+		string text = "";
 		try
 		{
 			string showPlanXml = GetShowPlanXml();
@@ -390,9 +390,9 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine("/ * ");
 			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "USE {0}", missingIndexDatabase));
-			stringBuilder.AppendLine(?Settings.EditorContextBatchSeparator);
+			stringBuilder.AppendLine(?Settings.EditorExecutionBatchSeparator);
 			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0}", missingIndexQueryText));
-			stringBuilder.AppendLine(?Settings.EditorContextBatchSeparator);
+			stringBuilder.AppendLine(?Settings.EditorExecutionBatchSeparator);
 			stringBuilder.AppendLine("* /");
 			Cmd.OpenNewMiscellaneousSqlFile(new ServiceProvider(Controller.OleServiceProvider), stringBuilder.ToString());
 		}
@@ -447,8 +447,8 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		List<StmtBlockType> list = new List<StmtBlockType>();
 		object obj = null;
 		bool flag = false;
-		string version = string.Empty;
-		string build = string.Empty;
+		string version = "";
+		string build = "";
 		for (int i = 0; i < GraphPanelCount; i++)
 		{
 			if (dataBindings == null || !dataBindings.TryGetValue(GetGraphPanel(i), out DataBinding value))
@@ -505,7 +505,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		{
 			return value.DataSource.ToString();
 		}
-		return string.Empty;
+		return "";
 	}
 
 	private void OnZoomIn(object sender, EventArgs a)
@@ -764,8 +764,8 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		string value2 = obj.Attributes["Database"].Value;
 		string value3 = obj.Attributes["Schema"].Value;
 		string value4 = obj.Attributes["Table"].Value;
-		string text = string.Empty;
-		string text2 = string.Empty;
+		string text = "";
+		string text2 = "";
 		foreach (XmlNode item in obj.SelectNodes("shp:ColumnGroup", xmlNamespaceManager))
 		{
 			foreach (XmlNode childNode in item.ChildNodes)
@@ -773,11 +773,11 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 				string value5 = childNode.Attributes["Name"].Value;
 				if (string.Compare(item.Attributes["Usage"].Value, "INCLUDE", StringComparison.Ordinal) != 0)
 				{
-					text = ((!(text == string.Empty)) ? string.Format(CultureInfo.InvariantCulture, "{0},{1}", text, value5) : value5);
+					text = ((!(text == "")) ? string.Format(CultureInfo.InvariantCulture, "{0},{1}", text, value5) : value5);
 				}
 				else
 				{
-					text2 = ((!(text2 == string.Empty)) ? string.Format(CultureInfo.InvariantCulture, "{0},{1}", text2, value5) : value5);
+					text2 = ((!(text2 == "")) ? string.Format(CultureInfo.InvariantCulture, "{0},{1}", text2, value5) : value5);
 				}
 			}
 		}

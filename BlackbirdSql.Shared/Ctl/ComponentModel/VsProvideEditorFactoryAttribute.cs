@@ -74,7 +74,7 @@ public sealed class VsProvideEditorFactoryAttribute(Type factoryType, short name
 	{
 		context.Log.WriteLine(AttributeResources.RegNotifyEditorFactory.FmtRes(FactoryType.Name));
 		using Key key = context.CreateKey(EditorRegKey);
-		key.SetValue(string.Empty, DefaultName);
+		key.SetValue("", DefaultName);
 		key.SetValue("DisplayName", string.Format(CultureInfo.InvariantCulture, "#{0}", NameResourceID));
 		key.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 		key.SetValue("EditorTrustLevel", (int)_trustLevel);
@@ -95,7 +95,7 @@ public sealed class VsProvideEditorFactoryAttribute(Type factoryType, short name
 					context.Log.WriteLine(AttributeResources.RegNotifyEditorView.FmtRes(converter.ConvertToString(provideViewAttribute.LogicalView)));
 					Guid guid = (Guid)converter.ConvertTo(provideViewAttribute.LogicalView, typeof(Guid));
 					string text = provideViewAttribute.PhysicalView;
-					text ??= string.Empty;
+					text ??= "";
 					key2.SetValue(guid.ToString("B"), text);
 				}
 			}

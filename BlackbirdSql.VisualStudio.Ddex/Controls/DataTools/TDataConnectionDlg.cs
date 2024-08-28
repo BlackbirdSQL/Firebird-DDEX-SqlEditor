@@ -178,7 +178,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 
 		public void Reset()
 		{
-			_s = string.Empty;
+			_s = "";
 		}
 
 		public void Parse(string s)
@@ -204,7 +204,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 
 		public void Reset(string propertyName)
 		{
-			_s = string.Empty;
+			_s = "";
 		}
 
 		public void Test()
@@ -232,13 +232,13 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 
 	private string _ChooseDataSourceTitle;
 
-	private string _ChooseDataSourceHeaderLabel = string.Empty;
+	private string _ChooseDataSourceHeaderLabel = "";
 
 	private string _ChooseDataSourceAcceptText;
 
 	private string _ChangeDataSourceTitle;
 
-	private string _ChangeDataSourceHeaderLabel = string.Empty;
+	private string _ChangeDataSourceHeaderLabel = "";
 
 	private readonly ICollection<TDataSource> _DataSources;
 
@@ -281,7 +281,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 		{
 			if (_HeaderLabel == null)
 			{
-				return string.Empty;
+				return "";
 			}
 			return _HeaderLabel.Text;
 		}
@@ -371,7 +371,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 			{
 				throw new InvalidOperationException(ControlsResources.TDataConnectionDlg_CannotModifyState);
 			}
-			value ??= string.Empty;
+			value ??= "";
 			if (!(value == _ChooseDataSourceTitle))
 			{
 				_ChooseDataSourceTitle = value;
@@ -391,7 +391,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 			{
 				throw new InvalidOperationException(ControlsResources.TDataConnectionDlg_CannotModifyState);
 			}
-			value ??= string.Empty;
+			value ??= "";
 			if (!(value == _ChooseDataSourceHeaderLabel))
 			{
 				_ChooseDataSourceHeaderLabel = value;
@@ -411,7 +411,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 			{
 				throw new InvalidOperationException(ControlsResources.TDataConnectionDlg_CannotModifyState);
 			}
-			value ??= string.Empty;
+			value ??= "";
 			if (!(value == _ChooseDataSourceAcceptText))
 			{
 				_ChooseDataSourceAcceptText = value;
@@ -431,7 +431,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 			{
 				throw new InvalidOperationException(ControlsResources.TDataConnectionDlg_CannotModifyState);
 			}
-			value ??= string.Empty;
+			value ??= "";
 			if (!(value == _ChangeDataSourceTitle))
 			{
 				_ChangeDataSourceTitle = value;
@@ -451,7 +451,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 			{
 				throw new InvalidOperationException(ControlsResources.TDataConnectionDlg_CannotModifyState);
 			}
-			value ??= string.Empty;
+			value ??= "";
 			if (!(value == _ChangeDataSourceHeaderLabel))
 			{
 				_ChangeDataSourceHeaderLabel = value;
@@ -546,7 +546,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 			}
 			if (text == null)
 			{
-				return string.Empty;
+				return "";
 			}
 			return text;
 		}
@@ -569,7 +569,7 @@ public partial class TDataConnectionDlg : Form, IBsDataConnectionDlg
 			}
 			if (text == null)
 			{
-				return string.Empty;
+				return "";
 			}
 			return text;
 		}

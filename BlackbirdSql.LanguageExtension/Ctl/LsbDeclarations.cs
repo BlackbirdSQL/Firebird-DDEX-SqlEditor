@@ -65,7 +65,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 
 		bool result = false;
 
-		if (textSoFar == string.Empty)
+		if (textSoFar == "")
 		{
 			if (isDisplayed)
 			{
@@ -129,7 +129,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 			}
 		}
 
-		return string.Empty;
+		return "";
 	}
 
 	public override string GetDisplayText(int index)
@@ -150,7 +150,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 			}
 		}
 
-		return string.Empty;
+		return "";
 	}
 
 

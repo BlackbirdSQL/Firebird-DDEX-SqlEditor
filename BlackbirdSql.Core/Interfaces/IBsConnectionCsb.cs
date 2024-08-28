@@ -55,12 +55,20 @@ public interface IBsConnectionCsb : IDataConnectionProperties, IBsCsb
 	/// </summary>
 	(bool, bool) OpenOrVerifyConnection();
 
+
 	/// <summary>
-	/// Opens or verifies a connection. If no connection exists returns false.
+	/// Opens or verifies a connection. The Connection must exists.
 	/// Throws an exception on failure.
 	/// Always use this method to open connections because it disposes of the connection
 	/// and invokes ConnectionChangedEvent on failure.
 	/// Do not call before ensuring IsComplete.
+	/// The cardinal must be either zero, if no keepalive reads are required, or an
+	/// incremental value that can be used to execute a select statement unique from
+	/// the previous call to this method.
 	/// </summary>
+	/// <returns>
+	/// Boolean tuple with Item1: True if open / verification succeeded and
+	/// Item2: HasTransactions.
+	/// </returns>
 	Task<(bool, bool)> OpenOrVerifyConnectionAsync(CancellationToken cancelToken);
 }

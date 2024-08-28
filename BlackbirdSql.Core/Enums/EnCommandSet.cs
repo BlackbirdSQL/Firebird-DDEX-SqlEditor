@@ -7,11 +7,11 @@ using BlackbirdSql.Core.Ctl.CommandProviders;
 
 namespace BlackbirdSql.Core.Enums;
 
-// [Guid(CommandProperties.CommandSetGuid)]
 
 /// <summary>
-/// When specifiec, suffix is the parent/owner.
+/// When specific, suffix is the parent/owner.
 /// </summary>
+[Guid(CommandProperties.CommandSetGuid)]
 public enum EnCommandSet
 {
 	MenuIdToplevel = 0xC201, // 49665
@@ -37,7 +37,6 @@ public enum EnCommandSet
 	GrpIdEditorWindowContext = 0x5400,
 	GrpIdResultsWindowContextSelect = 0x5401,
 	GrpIdResultsWindowContextPrint = 0x5402,
-
 	ContextIdResultsWindow = 0x5403,
 	ContextIdMessageWindow = 0x5404,
 	ContextIdExecutionPlanWindow = 0x5405,
@@ -70,9 +69,8 @@ public enum EnCommandSet
 	CmdIdExecutionPlanZoomCustom = 0x0320, // 800
 	CmdIdExecutionPlanZoomToFit = 0x0321, // 801
 	CmdIdCopyWithHeaders = 0x0322, // 802
-	CmdIdCycleToNextTab = 0x0323, // 803
-	CmdIdCycleToPrevious = 0x0324, // 804
-	CmdIdExecuteQueryBatch = 0x0326, // 806
+	CmdIdOleCycleToNextTab = 0x0323, // 803
+	CmdIdOleCycleToPreviousTab = 0x0324, // 804
 	CmdIdDisconnectAllQueries = 0x0327, // 807
 	CmdIdModifyConnection = 0x0328, // 808
 
@@ -86,5 +84,5 @@ public enum EnCommandSet
 	CmdIdTransactionCommit = 0x033B, // 827
 	CmdIdTransactionRollback = 0x033C, // 829
 	CmdIdToggleTTS = 0x033D, // 830
-	CmdIdQuerySettings2 = 0x033E // 831
+	CmdIdQuerySettingsToolbar = 0x033E // 831
 }

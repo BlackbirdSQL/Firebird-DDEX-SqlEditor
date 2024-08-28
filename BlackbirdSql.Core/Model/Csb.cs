@@ -364,12 +364,12 @@ public class Csb : AbstractCsb, IBsCsb
 	// ---------------------------------------------------------------------------------
 	public void ApplyValidKeys(string connectionName, string datasetId, bool clearInvalidDatasetKey)
 	{
-		if (connectionName == string.Empty)
+		if (connectionName == "")
 			Remove(C_KeyExConnectionName);
 		else if (connectionName != null)
 			ConnectionName = connectionName;
 
-		if (datasetId == string.Empty)
+		if (datasetId == "")
 			Remove(C_KeyExDatasetId);
 		else if (datasetId != null)
 			DatasetId = datasetId;
@@ -473,6 +473,15 @@ public class Csb : AbstractCsb, IBsCsb
 	}
 
 
+	public static string GetDisplayName(string connectionString)
+	{
+		if (string.IsNullOrWhiteSpace(connectionString))
+			return connectionString;
+
+		return new Csb(connectionString, false).DisplayName;
+	}
+
+
 	public static string GetQualifiedName(string connectionString)
 	{
 		if (string.IsNullOrWhiteSpace(connectionString))
@@ -535,7 +544,7 @@ public class Csb : AbstractCsb, IBsCsb
 		string connectionString = ConnectionString;
 
 		if (string.IsNullOrEmpty(connectionString))
-			return string.Empty;
+			return "";
 
 		if (!ContainsKey(C_KeyPassword))
 			return connectionString;
@@ -571,7 +580,7 @@ public class Csb : AbstractCsb, IBsCsb
 	/// <returns>
 	/// Returns a tuple (ConnectionName, DatsetId). The contents of each reflects the
 	/// result:
-	/// 1. If a property is to be deleted, string.Empty is returned indicating
+	/// 1. If a property is to be deleted, "" is returned indicating
 	/// it exists but is not required.
 	/// 2. If a property was already correctly deleted or is valid, no action is
 	/// required and null is returned.
@@ -591,13 +600,13 @@ public class Csb : AbstractCsb, IBsCsb
 			if (string.IsNullOrWhiteSpace(datasetId))
 			{
 				// DatasetId exists and is invalid (empty). Delete it.
-				datasetId = string.Empty;
+				datasetId = "";
 			}
 			else
 			{
 				// If the DatasetId is equal to the Dataset it's not needed. Delete it.
 				if (datasetId == dataset)
-					datasetId = string.Empty;
+					datasetId = "";
 			}
 		}
 
@@ -618,7 +627,7 @@ public class Csb : AbstractCsb, IBsCsb
 			if (string.IsNullOrWhiteSpace(connectionName))
 			{
 				// ConnectionName exists and is invalid (empty). Delete it.
-				connectionName = string.Empty;
+				connectionName = "";
 			}
 			else
 			{
@@ -627,9 +636,9 @@ public class Csb : AbstractCsb, IBsCsb
 				// else the ConnectionName still exists and is the determinant, so
 				// any existing proposed DatasetId is not required.
 				if (connectionName == derivedConnectionName || connectionName == derivedAlternateConnectionName)
-					connectionName = string.Empty;
+					connectionName = "";
 				else if (!string.IsNullOrWhiteSpace(datasetId))
-					datasetId = string.Empty;
+					datasetId = "";
 			}
 		}
 

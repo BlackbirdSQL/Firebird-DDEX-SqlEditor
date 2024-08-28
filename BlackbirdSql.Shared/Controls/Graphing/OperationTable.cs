@@ -60,12 +60,12 @@ internal static class OperationTable
 
 	public static Operation GetUdf()
 	{
-		return new Operation(null, "Udf", null, "Language_construct_catch_all.ico", string.Empty);
+		return new Operation(null, "Udf", null, "Language_construct_catch_all.ico", "");
 	}
 
 	public static Operation GetStoredProc()
 	{
-		return new Operation(null, "StoredProc", null, "Language_construct_catch_all.ico", string.Empty);
+		return new Operation(null, "StoredProc", null, "Language_construct_catch_all.ico", "");
 	}
 
 	static OperationTable()
@@ -74,14 +74,14 @@ internal static class OperationTable
 		{
 			new Operation("AdaptiveJoin", "AdaptiveJoin", "AdaptiveJoinDescription", "Adaptive_Join_32x.ico", "sql13.swb.showplan.adaptivejoin.f1"),
 			new Operation("Assert", "Assert", "AssertDescription", "Assert_32x.ico", "sql13.swb.showplan.assert.f1"),
-			new Operation("Bitmap", "Bitmap", "BitmapDescription", "Bitmap_32x.ico", string.Empty),
+			new Operation("Bitmap", "Bitmap", "BitmapDescription", "Bitmap_32x.ico", ""),
 			new Operation("ClusteredIndexDelete", "ClusteredIndexDelete", "ClusteredIndexDeleteDescription", "Clustered_index_delete_32x.ico", "sql13.swb.showplan.clusteredindexdelete.f1"),
 			new Operation("ClusteredIndexInsert", "ClusteredIndexInsert", "ClusteredIndexInsertDescription", "Clustered_index_insert_32x.ico", "sql13.swb.showplan.clusteredindexinsert.f1"),
 			new Operation("ClusteredIndexScan", "ClusteredIndexScan", "ClusteredIndexScanDescription", "Clustered_index_scan_32x.ico", "sql13.swb.showplan.clusteredindexscan.f1"),
 			new Operation("ClusteredIndexSeek", "ClusteredIndexSeek", "ClusteredIndexSeekDescription", "Clustered_index_seek_32x.ico", "sql13.swb.showplan.clusteredindexseek.f1"),
 			new Operation("ClusteredIndexUpdate", "ClusteredIndexUpdate", "ClusteredIndexUpdateDescription", "Clustered_index_update_32x.ico", "sql13.swb.showplan.clusteredindexupdate.f1"),
 			new Operation("ClusteredIndexMerge", "ClusteredIndexMerge", "ClusteredIndexMergeDescription", "Clustered_index_merge_32x.ico", "sql13.swb.showplan.clusteredindexmerge.f1"),
-			new Operation("ClusteredUpdate", "ClusteredUpdate", "ClusteredUpdateDescription", "Clustered_update_32x.ico", string.Empty),
+			new Operation("ClusteredUpdate", "ClusteredUpdate", "ClusteredUpdateDescription", "Clustered_update_32x.ico", ""),
 			new Operation("Collapse", "Collapse", "CollapseDescription", "Collapse_32x.ico", "sql13.swb.showplan.collapse.f1"),
 			new Operation("ComputeScalar", "ComputeScalar", "ComputeScalarDescription", "Compute_scalar_32x.ico", "sql13.swb.showplan.computescalar.f1"),
 			new Operation("Concatenation", "Concatenation", "ConcatenationDescription", "Concatenation_32x.ico", "sql13.swb.showplan.concatenation.f1"),
@@ -102,7 +102,7 @@ internal static class OperationTable
 			new Operation("IndexUpdate", "IndexUpdate", "IndexUpdateDescription", "Nonclust_index_update_32x.ico", "sql13.swb.showplan.indexupdate.f1"),
 			new Operation("InsertedScan", "InsertedScan", "InsertedScanDescription", "Inserted_scan_32x.ico", "sql13.swb.showplan.insertedscan.f1"),
 			new Operation("LogRowScan", "LogRowScan", "LogRowScanDescription", "Log_row_scan_32x.ico", "sql13.swb.showplan.logrowscan.f1"),
-			new Operation("MergeInterval", "MergeInterval", "MergeIntervalDescription", "Merge_interval_32x.ico", string.Empty),
+			new Operation("MergeInterval", "MergeInterval", "MergeIntervalDescription", "Merge_interval_32x.ico", ""),
 			new Operation("MergeJoin", "MergeJoin", "MergeJoinDescription", "Merge_join_32x.ico", "sql13.swb.showplan.mergejoin.f1"),
 			new Operation("NestedLoops", "NestedLoops", "NestedLoopsDescription", "Nested_loops_32x.ico", "sql13.swb.showplan.nestedloops.f1"),
 			new Operation("Parallelism", "Parallelism", "ParallelismDescription", "Parallelism_32x.ico", "sql13.swb.showplan.parallelism.f1"),
@@ -118,31 +118,31 @@ internal static class OperationTable
 			new Operation("RemoteQuery", "RemoteQuery", "RemoteQueryDescription", "Remote_query_32x.ico", "sql13.swb.showplan.remotequery.f1"),
 			new Operation("RemoteScan", "RemoteScan", "RemoteScanDescription", "Remote_scan_32x.ico", "sql13.swb.showplan.remotescan.f1"),
 			new Operation("RemoteUpdate", "RemoteUpdate", "RemoteUpdateDescription", "Remote_update_32x.ico", "sql13.swb.showplan.remoteupdate.f1"),
-			new Operation("RIDLookup", "RIDLookup", "RIDLookupDescription", "RID_clustered_locate_32x.ico", string.Empty),
+			new Operation("RIDLookup", "RIDLookup", "RIDLookupDescription", "RID_clustered_locate_32x.ico", ""),
 			new Operation("RowCountSpool", "RowCountSpool", "RowCountSpoolDescription", "Remote_count_spool_32x.ico", "sql13.swb.showplan.rowcountspool.f1"),
-			new Operation("Segment", "Segment", "SegmentDescription", "Segment_32x.ico", string.Empty),
+			new Operation("Segment", "Segment", "SegmentDescription", "Segment_32x.ico", ""),
 			new Operation("Sequence", "Sequence", "SequenceDescription", "Sequence_32x.ico", "sql13.swb.showplan.sequence.f1"),
-			new Operation("SequenceProject", "SequenceProject", "SequenceProjectDescription", "Sequence_project_32x.ico", string.Empty),
+			new Operation("SequenceProject", "SequenceProject", "SequenceProjectDescription", "Sequence_project_32x.ico", ""),
 			new Operation("Sort", "Sort", "SortDescription", "Sort_32x.ico", "sql13.swb.showplan.sort.f1"),
-			new Operation("Split", "Split", "SplitDescription", "Split_32x.ico", string.Empty),
+			new Operation("Split", "Split", "SplitDescription", "Split_32x.ico", ""),
 			new Operation("StreamAggregate", "StreamAggregate", "StreamAggregateDescription", "Stream_aggregate_32x.ico", "sql13.swb.showplan.streamaggregate.f1"),
-			new Operation("Switch", "Switch", "SwitchDescription", "Switch_32x.ico", string.Empty),
-			new Operation("Tablevaluedfunction", "TableValueFunction", "TableValueFunctionDescription", "Table_value_function_32x.ico", string.Empty),
+			new Operation("Switch", "Switch", "SwitchDescription", "Switch_32x.ico", ""),
+			new Operation("Tablevaluedfunction", "TableValueFunction", "TableValueFunctionDescription", "Table_value_function_32x.ico", ""),
 			new Operation("TableDelete", "TableDelete", "TableDeleteDescription", "Table_delete_32x.ico", "sql13.swb.showplan.tabledelete.f1"),
 			new Operation("TableInsert", "TableInsert", "TableInsertDescription", "Table_insert_32x.ico", "sql13.swb.showplan.tableinsert.f1"),
 			new Operation("TableScan", "TableScan", "TableScanDescription", "Table_scan_32x.ico", "sql13.swb.showplan.tablescan.f1"),
 			new Operation("TableSpool", "TableSpool", "TableSpoolDescription", "Table_spool_32x.ico", "sql13.swb.showplan.tablespool.f1"),
 			new Operation("TableUpdate", "TableUpdate", "TableUpdateDescription", "Table_update_32x.ico", "sql13.swb.showplan.tableupdate.f1"),
 			new Operation("TableMerge", "TableMerge", "TableMergeDescription", "Table_merge_32x.ico", "sql13.swb.showplan.tablemerge.f1"),
-			new Operation("TFP", "TFP", "TFPDescription", "Predict_32x.ico", string.Empty),
+			new Operation("TFP", "TFP", "TFPDescription", "Predict_32x.ico", ""),
 			new Operation("Top", "Top", "TopDescription", "Top_32x.ico", "sql13.swb.showplan.top.f1"),
-			new Operation("UDX", "UDX", "UDXDescription", "UDX_32x.ico", string.Empty),
+			new Operation("UDX", "UDX", "UDXDescription", "UDX_32x.ico", ""),
 			new Operation("BatchHashTableBuild", "BatchHashTableBuild", "BatchHashTableBuildDescription", "BatchHashTableBuild_32x.ico", "sql13.swb.showplan.buildhash.f1"),
-			new Operation("WindowSpool", "Window", "WindowDescription", "Table_spool_32x.ico", string.Empty),
-			new Operation("WindowAggregate", "WindowAggregate", "WindowAggregateDescription", "Window_aggregate_32x.ico", string.Empty),
-			new Operation("FetchQuery", "FetchQuery", "FetchQueryDescription", "Fetch_query_32x.ico", string.Empty),
-			new Operation("PopulateQuery", "PopulationQuery", "PopulationQueryDescription", "Population_query_32x.ico", string.Empty),
-			new Operation("RefreshQuery", "RefreshQuery", "RefreshQueryDescription", "Refresh_query_32x.ico", string.Empty),
+			new Operation("WindowSpool", "Window", "WindowDescription", "Table_spool_32x.ico", ""),
+			new Operation("WindowAggregate", "WindowAggregate", "WindowAggregateDescription", "Window_aggregate_32x.ico", ""),
+			new Operation("FetchQuery", "FetchQuery", "FetchQueryDescription", "Fetch_query_32x.ico", ""),
+			new Operation("PopulateQuery", "PopulationQuery", "PopulationQueryDescription", "Population_query_32x.ico", ""),
+			new Operation("RefreshQuery", "RefreshQuery", "RefreshQueryDescription", "Refresh_query_32x.ico", ""),
 			new Operation("Result", "Result", "ResultDescription", "Result_32x.ico", "sql13.swb.showplan.result.f1"),
 			new Operation("Aggregate", "Aggregate", "AggregateDescription", "Aggregate_32x.ico", "sql13.swb.showplan.aggregate.f1"),
 			new Operation("Assign", "Assign", "AssignDescription", "Assign_32x.ico", "sql13.swb.showplan.assign.f1"),
@@ -166,28 +166,28 @@ internal static class OperationTable
 			new Operation("TSQL", "SQL", "SQLDescription", "SQL_32x.ico", "sql13.swb.showplan.sql.f1"),
 			new Operation("Update", "Update", "UpdateDescription", "Update_32x.ico", "sql13.swb.showplan.update.f1"),
 			new Operation("KeyLookup", "KeyLookup", "KeyLookupDescription", "Bookmark_lookup_32x.ico", "sql13.swb.showplan.keylookup.f1"),
-			new Operation("Apply", "Apply", "ApplyDescription", "Apply_32x.ico", string.Empty),
-			new Operation("Broadcast", "Broadcast", "BroadcastDescription", "Broadcast_32x.ico", string.Empty),
-			new Operation("ComputeToControlNode", "ComputeToControlNode", "ComputeToControlNodeDescription", "Compute_to_control_32x.ico", string.Empty),
-			new Operation("ConstTableGet", "ConstTableGet", "ConstTableGetDescription", "Const_table_get_32x.ico", string.Empty),
-			new Operation("ControlToComputeNodes", "ControlToComputeNodes", "ControlToComputeNodesDescription", "Control_to_compute_32x.ico", string.Empty),
-			new Operation("ExternalBroadcast", "ExternalBroadcast", "ExternalBroadcastDescription", "External_broadcast_32x.ico", string.Empty),
-			new Operation("ExternalExport", "ExternalExport", "ExternalExportDescription", "External_export_32x.ico", string.Empty),
-			new Operation("ExternalLocalStreaming", "ExternalLocalStreaming", "ExternalLocalStreamingDescription", "External_local_streaming_32x.ico", string.Empty),
-			new Operation("ExternalRoundRobin", "ExternalRoundRobin", "ExternalRoundRobinDescription", "External_round_robin_32x.ico", string.Empty),
-			new Operation("ExternalShuffle", "ExternalShuffle", "ExternalShuffleDescription", "External_shuffle_32x.ico", string.Empty),
-			new Operation("Get", "Get", "GetDescription", "Get_32x.ico", string.Empty),
-			new Operation("GbApply", "GbApply", "GbApplyDescription", "Apply_32x.ico", string.Empty),
-			new Operation("GbAgg", "GbAgg", "GbAggDescription", "Group_by_aggregate_32x.ico", string.Empty),
-			new Operation("Join", "Join", "JoinDescription", "Join_32x.ico", string.Empty),
-			new Operation("LocalCube", "LocalCube", "LocalCubeDescription", "Intrinsic_32x.ico", string.Empty),
-			new Operation("Project", "Project", "ProjectDescription", "Project_32x.ico", string.Empty),
-			new Operation("Shuffle", "Shuffle", "ShuffleDescription", "Shuffle_32x.ico", string.Empty),
-			new Operation("SingleSourceRoundRobin", "SingleSourceRoundRobin", "SingleSourceRoundRobinDescription", "Single_source_round_robin_32x.ico", string.Empty),
-			new Operation("SingleSourceShuffle", "SingleSourceShuffle", "SingleSourceShuffleDescription", "Single_source_shuffle_32x.ico", string.Empty),
-			new Operation("Trim", "Trim", "TrimDescription", "Trim_32x.ico", string.Empty),
-			new Operation("Union", "Union", "UnionDescription", "Union_32x.ico", string.Empty),
-			new Operation("UnionAll", "UnionAll", "UnionAllDescription", "Union_all_32x.ico", string.Empty)
+			new Operation("Apply", "Apply", "ApplyDescription", "Apply_32x.ico", ""),
+			new Operation("Broadcast", "Broadcast", "BroadcastDescription", "Broadcast_32x.ico", ""),
+			new Operation("ComputeToControlNode", "ComputeToControlNode", "ComputeToControlNodeDescription", "Compute_to_control_32x.ico", ""),
+			new Operation("ConstTableGet", "ConstTableGet", "ConstTableGetDescription", "Const_table_get_32x.ico", ""),
+			new Operation("ControlToComputeNodes", "ControlToComputeNodes", "ControlToComputeNodesDescription", "Control_to_compute_32x.ico", ""),
+			new Operation("ExternalBroadcast", "ExternalBroadcast", "ExternalBroadcastDescription", "External_broadcast_32x.ico", ""),
+			new Operation("ExternalExport", "ExternalExport", "ExternalExportDescription", "External_export_32x.ico", ""),
+			new Operation("ExternalLocalStreaming", "ExternalLocalStreaming", "ExternalLocalStreamingDescription", "External_local_streaming_32x.ico", ""),
+			new Operation("ExternalRoundRobin", "ExternalRoundRobin", "ExternalRoundRobinDescription", "External_round_robin_32x.ico", ""),
+			new Operation("ExternalShuffle", "ExternalShuffle", "ExternalShuffleDescription", "External_shuffle_32x.ico", ""),
+			new Operation("Get", "Get", "GetDescription", "Get_32x.ico", ""),
+			new Operation("GbApply", "GbApply", "GbApplyDescription", "Apply_32x.ico", ""),
+			new Operation("GbAgg", "GbAgg", "GbAggDescription", "Group_by_aggregate_32x.ico", ""),
+			new Operation("Join", "Join", "JoinDescription", "Join_32x.ico", ""),
+			new Operation("LocalCube", "LocalCube", "LocalCubeDescription", "Intrinsic_32x.ico", ""),
+			new Operation("Project", "Project", "ProjectDescription", "Project_32x.ico", ""),
+			new Operation("Shuffle", "Shuffle", "ShuffleDescription", "Shuffle_32x.ico", ""),
+			new Operation("SingleSourceRoundRobin", "SingleSourceRoundRobin", "SingleSourceRoundRobinDescription", "Single_source_round_robin_32x.ico", ""),
+			new Operation("SingleSourceShuffle", "SingleSourceShuffle", "SingleSourceShuffleDescription", "Single_source_shuffle_32x.ico", ""),
+			new Operation("Trim", "Trim", "TrimDescription", "Trim_32x.ico", ""),
+			new Operation("Union", "Union", "UnionDescription", "Union_32x.ico", ""),
+			new Operation("UnionAll", "UnionAll", "UnionAllDescription", "Union_all_32x.ico", "")
 		});
 		LogicalOperations = DictionaryFromList(new Operation[79]
 		{
@@ -207,12 +207,12 @@ internal static class OperationTable
 			new Operation("DeletedScan", "LogicalOpDeletedScan"),
 			new Operation("DistinctSort", "LogicalOpDistinctSort"),
 			new Operation("Distinct", "LogicalOpDistinct"),
-			new Operation("DistributeStreams", "LogicalOpDistributeStreams", "DistributeStreamsDescription", "Parallelism_distribute.ico", string.Empty),
+			new Operation("DistributeStreams", "LogicalOpDistributeStreams", "DistributeStreamsDescription", "Parallelism_distribute.ico", ""),
 			new Operation("EagerSpool", "LogicalOpEagerSpool"),
 			new Operation("Filter", "LogicalOpFilter"),
 			new Operation("FlowDistinct", "LogicalOpFlowDistinct"),
 			new Operation("FullOuterJoin", "LogicalOpFullOuterJoin"),
-			new Operation("GatherStreams", "LogicalOpGatherStreams", "GatherStreamsDescription", "Parallelism_32x.ico", string.Empty),
+			new Operation("GatherStreams", "LogicalOpGatherStreams", "GatherStreamsDescription", "Parallelism_32x.ico", ""),
 			new Operation("IndexScan", "LogicalOpIndexScan"),
 			new Operation("IndexSeek", "LogicalOpIndexSeek"),
 			new Operation("InnerApply", "LogicalOpInnerApply"),
@@ -246,7 +246,7 @@ internal static class OperationTable
 			new Operation("RemoteQuery", "LogicalOpRemoteQuery"),
 			new Operation("RemoteScan", "LogicalOpRemoteScan"),
 			new Operation("RemoteUpdate", "LogicalOpRemoteUpdate"),
-			new Operation("RepartitionStreams", "LogicalOpRepartitionStreams", "RepartitionStreamsDescription", "Parallelism_repartition.ico", string.Empty),
+			new Operation("RepartitionStreams", "LogicalOpRepartitionStreams", "RepartitionStreamsDescription", "Parallelism_repartition.ico", ""),
 			new Operation("RIDLookup", "LogicalOpRIDLookup"),
 			new Operation("RightAntiSemiJoin", "LogicalOpRightAntiSemiJoin"),
 			new Operation("RightDiffAll", "LogicalOpRightDiffAll"),
@@ -273,15 +273,15 @@ internal static class OperationTable
 		});
 		Statements = DictionaryFromList(new Operation[2]
 		{
-			new Operation("SELECT", null, null, "Result_32x.ico", string.Empty),
-			new Operation("COND", null, null, "If_32x.ico", string.Empty)
+			new Operation("SELECT", null, null, "Result_32x.ico", ""),
+			new Operation("COND", null, null, "If_32x.ico", "")
 		});
 		CursorTypes = DictionaryFromList(new Operation[4]
 		{
-			new Operation("Dynamic", "Dynamic", "DynamicDescription", "Dynamic_32x.ico", string.Empty),
-			new Operation("FastForward", "FastForward", "FastForwardDescription", "Cursor_catch_all_32x.ico", string.Empty),
-			new Operation("Keyset", "Keyset", "KeysetDescription", "Keyset_32x.ico", string.Empty),
-			new Operation("Snapshot", "Snapshot", "SnapshotDescription", "Snapshot_32x.ico", string.Empty)
+			new Operation("Dynamic", "Dynamic", "DynamicDescription", "Dynamic_32x.ico", ""),
+			new Operation("FastForward", "FastForward", "FastForwardDescription", "Cursor_catch_all_32x.ico", ""),
+			new Operation("Keyset", "Keyset", "KeysetDescription", "Keyset_32x.ico", ""),
+			new Operation("Snapshot", "Snapshot", "SnapshotDescription", "Snapshot_32x.ico", "")
 		});
 	}
 

@@ -81,9 +81,9 @@ public static partial class ExtensionMembers
 	/// Returns the bool? boolean value.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool AsBool(this bool? flag)
+	public static bool AsBool(this bool? @this)
 	{
-		return flag ?? false;
+		return @this ?? false;
 	}
 
 
@@ -92,9 +92,9 @@ public static partial class ExtensionMembers
 	/// Returns the int boolean value.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool AsBool(this int flag)
+	public static bool AsBool(this int @this)
 	{
-		return flag != 0;
+		return @this != 0;
 	}
 
 
@@ -104,9 +104,9 @@ public static partial class ExtensionMembers
 	/// Returns the uint boolean value.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool AsBool(this uint flag)
+	public static bool AsBool(this uint @this)
 	{
-		return flag != 0;
+		return @this != 0;
 	}
 
 
@@ -121,11 +121,7 @@ public static partial class ExtensionMembers
 
 
 
-	public static TResult AwaiterResult<TResult>(this Task<Task<TResult>> @this)
-	{
-		return @this.Unwrap().GetAwaiter().GetResult();
-	}
-
+	public static bool Cancelled(this CancellationToken @this) => @this.IsCancellationRequested;
 
 
 	// ---------------------------------------------------------------------------------
@@ -133,9 +129,9 @@ public static partial class ExtensionMembers
 	/// Returns the decrypted ConnectionString of an <see cref="IVsDataConnection"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string DecryptedConnectionString(this IVsDataConnection value)
+	public static string DecryptedConnectionString(this IVsDataConnection @this)
 	{
-		return DataProtection.DecryptString(value.EncryptedConnectionString);
+		return DataProtection.DecryptString(@this.EncryptedConnectionString);
 	}
 
 
@@ -146,9 +142,9 @@ public static partial class ExtensionMembers
 	/// <see cref="IVsDataExplorerConnection"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string DecryptedConnectionString(this IVsDataExplorerConnection value)
+	public static string DecryptedConnectionString(this IVsDataExplorerConnection @this)
 	{
-		return DataProtection.DecryptString(value.EncryptedConnectionString);
+		return DataProtection.DecryptString(@this.EncryptedConnectionString);
 	}
 
 
@@ -169,9 +165,9 @@ public static partial class ExtensionMembers
 	/// Formats time span for display in statistics output.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FmtStats(this TimeSpan value, bool trim = false)
+	public static string FmtStats(this TimeSpan @this, bool trim = false)
 	{
-		string result = value.ToString();
+		string result = @this.ToString();
 
 		if (!string.IsNullOrEmpty(result))
 		{
@@ -206,22 +202,22 @@ public static partial class ExtensionMembers
 	/// Format a long byte size down to it's byte unit by decimal places.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static (string, float) FmtByteSize(this long value, int decimalPlaces = 3)
+	public static (string, float) FmtByteSize(this long @this, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
-		if (value < 0)
+		if (@this < 0)
 		{
-			(str, newValue) = (-value).FmtByteSize(decimalPlaces);
+			(str, newValue) = (-@this).FmtByteSize(decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
 
 		int i = 0;
-		newValue = value;
+		newValue = @this;
 
-		while (value > 999999L && Math.Round(newValue, decimalPlaces) >= 1000)
+		while (@this > 999999L && Math.Round(newValue, decimalPlaces) >= 1000)
 		{
 			newValue /= 1024;
 			i++;
@@ -243,22 +239,22 @@ public static partial class ExtensionMembers
 	/// Format a float byte size down to it's byte unit by decimal places.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static (string, float) FmtByteSize(this float value, int decimalPlaces = 3)
+	public static (string, float) FmtByteSize(this float @this, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
-		if (value < 0)
+		if (@this < 0)
 		{
-			(str, newValue) = (-value).FmtByteSize(decimalPlaces);
+			(str, newValue) = (-@this).FmtByteSize(decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
 
 		int i = 0;
-		newValue = value;
+		newValue = @this;
 
-		while (value > 999999.999 && Math.Round(newValue, decimalPlaces) >= 1000)
+		while (@this > 999999.999 && Math.Round(newValue, decimalPlaces) >= 1000)
 		{
 			newValue /= 1024;
 			i++;
@@ -280,20 +276,20 @@ public static partial class ExtensionMembers
 	/// Formats a long into superscipt exponential notation by decimal places
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static (string, float) FmtExpSize(this long value, int maxDigits = 4, int decimalPlaces = 3)
+	public static (string, float) FmtExpSize(this long @this, int maxDigits = 4, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
-		if (value < 0)
+		if (@this < 0)
 		{
-			(str, newValue) = (-value).FmtExpSize(maxDigits, decimalPlaces);
+			(str, newValue) = (-@this).FmtExpSize(maxDigits, decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
 
 		int i = 0;
-		newValue = value;
+		newValue = @this;
 		while (Math.Floor(newValue) >= Math.Pow(10, maxDigits))
 		{
 			newValue /= 10;
@@ -304,7 +300,7 @@ public static partial class ExtensionMembers
 		}
 
 		if (i <= 1)
-			return (value.ToString(), value);
+			return (@this.ToString(), @this);
 
 		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))
 			decimalPlaces = 0;
@@ -320,20 +316,20 @@ public static partial class ExtensionMembers
 	/// Formats a float into superscipt exponential notation by decimal places
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static (string, float) FmtExpSize(this float value, int maxDigits = 4, int decimalPlaces = 3)
+	public static (string, float) FmtExpSize(this float @this, int maxDigits = 4, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
-		if (value < 0)
+		if (@this < 0)
 		{
-			(str, newValue) = (-value).FmtExpSize(maxDigits, decimalPlaces);
+			(str, newValue) = (-@this).FmtExpSize(maxDigits, decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
 
 		int i = 0;
-		newValue = (float)value;
+		newValue = (float)@this;
 		while (Math.Floor(newValue) >= Math.Pow(10, maxDigits))
 		{
 			newValue /= 10;
@@ -344,7 +340,7 @@ public static partial class ExtensionMembers
 		}
 
 		if (i <= 1)
-			return (value.ToString(), value);
+			return (@this.ToString(), @this);
 
 		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))
 			decimalPlaces = 0;
@@ -360,9 +356,9 @@ public static partial class ExtensionMembers
 	/// Formats a resource string format string given arguments.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FmtRes(this string value, params object[] args)
+	public static string FmtRes(this string @this, params object[] args)
 	{
-		return string.Format(CultureInfo.CurrentCulture, value, args);
+		return string.Format(CultureInfo.CurrentCulture, @this, args);
 
 	}
 
@@ -373,9 +369,9 @@ public static partial class ExtensionMembers
 	/// Formats time span ticks for display in statistics output.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FmtStats(this long ticks, bool trim = false)
+	public static string FmtStats(this long @this, bool trim = false)
 	{
-		TimeSpan value = new(ticks);
+		TimeSpan value = new(@this);
 
 		return value.FmtStats(trim);
 	}
@@ -387,66 +383,9 @@ public static partial class ExtensionMembers
 	/// Formats time span for display in a window statusbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FmtStatus(this TimeSpan value)
+	public static string FmtStatus(this TimeSpan @this)
 	{
-		return new TimeSpan(value.Days, value.Hours, value.Minutes, value.Seconds, 0).ToString();
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Formats time ticks for display in a window statusbar.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string FmtStatus(this long ticks)
-	{
-		TimeSpan value = new(ticks);
-
-		return value.FmtStatus();
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Concatenates exception message with inner exception.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	internal static string GetExceptionMessage(this Exception ex)
-	{
-		string text = string.Empty;
-		if (ex != null)
-		{
-			text = ex.Message;
-			if (ex.InnerException != null)
-			{
-				text = text + " " + ex.InnerException.Message;
-			}
-		}
-		return text;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Performs an extended get of a connection descriptor's value
-	/// if it's underlying connection properties object implements the dynamic
-	/// <see cref="ICustomTypeDescriptor"/> interface.
-	/// </summary>
-	/// <returns>The descriptor's current value</returns>
-	// ---------------------------------------------------------------------------------
-	public static object GetValueX(this PropertyDescriptor descriptor, IVsDataConnectionProperties connectionProperties)
-	{
-		object component = connectionProperties;
-
-		if (connectionProperties is ICustomTypeDescriptor customTypeDescriptor)
-		{
-			component = customTypeDescriptor.GetPropertyOwner(descriptor);
-		}
-
-		return descriptor.GetValue(component);
+		return new TimeSpan(@this.Days, @this.Hours, @this.Minutes, @this.Seconds, 0).ToString();
 	}
 
 
@@ -484,41 +423,6 @@ public static partial class ExtensionMembers
 			exi = exi.InnerException;
 		}
 		return false;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Checks if an exception contains a native database exception.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	internal static bool HasSqlException(this Exception @this)
-	{
-		IBsNativeDbException exceptionSvc = ApcManager.GetService<SBsNativeDbException, IBsNativeDbException>();
-		return exceptionSvc.HasSqlException(@this);
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Checks if an exception is a native database exception.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	internal static bool IsSqlException(this Exception @this)
-	{
-		IBsNativeDbException exceptionSvc = ApcManager.GetService<SBsNativeDbException, IBsNativeDbException>();
-		return exceptionSvc.IsSqlException(@this);
-	}
-
-
-
-	public static TResult Peek<TResult>(this Task<TResult> @this)
-	{
-		if (!@this.IsCompleted && !@this.IsCanceled && !@this.IsFaulted)
-			return default;
-
-		return @this.Result;
 	}
 
 
@@ -580,9 +484,9 @@ public static partial class ExtensionMembers
 	/// an unencrypted string.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void SetConnectionString(this IVsDataConnection value, string connectionString)
+	public static void SetConnectionString(this IVsDataConnection @this, string connectionString)
 	{
-		value.EncryptedConnectionString = DataProtection.EncryptString(connectionString);
+		@this.EncryptedConnectionString = DataProtection.EncryptString(connectionString);
 	}
 
 
@@ -596,11 +500,11 @@ public static partial class ExtensionMembers
 	/// <param name="index"></param>
 	/// <returns>The new value of <see cref="ComboBox.SelectedIndex"/> else -1.</returns>
 	// ---------------------------------------------------------------------------------
-	public static int SetSelectedIndexX(this ComboBox comboBox, int index)
+	public static int SetSelectedIndexX(this ComboBox @this, int index)
 	{
-		comboBox.SelectedIndex = index;
+		@this.SelectedIndex = index;
 
-		return comboBox.SelectedIndex;
+		return @this.SelectedIndex;
 	}
 
 
@@ -616,121 +520,24 @@ public static partial class ExtensionMembers
 	/// The method returns the assigned object if found so that inline assignments in series can also cast the object.
 	/// eg.string str = (string)combo.SetSelectedValueX(obj);</remarks>
 	// ---------------------------------------------------------------------------------
-	public static object SetSelectedValueX(this ComboBox comboBox, object value)
+	public static object SetSelectedValueX(this ComboBox @this, object value)
 	{
 		if (value == null)
 		{
-			comboBox.SelectedIndex = -1;
+			@this.SelectedIndex = -1;
 			return null;
 		}
 
 		int result;
 
 		if (value is string str)
-			result = comboBox.FindStringExact(str);
+			result = @this.FindStringExact(str);
 		else
-			result = comboBox.FindStringExact(value.ToString());
+			result = @this.FindStringExact(value.ToString());
 
-		comboBox.SelectedIndex = result;
+		@this.SelectedIndex = result;
 
 		return result == -1 ? null : value;
-	}
-
-
-
-	public static TResult SyncAwait<TResult>(this Task<TResult> @this, int msTimeout, CancellationToken cancellationToken, long maxTimeout = 0)
-	{
-		long startTimeEpoch = DateTime.Now.UnixMilliseconds();
-		long currentTimeEpoch = startTimeEpoch;
-
-		while (!@this.Wait(msTimeout, cancellationToken))
-		{
-			if (cancellationToken.IsCancellationRequested)
-				return default;
-
-			if (maxTimeout != 0L && currentTimeEpoch - startTimeEpoch > maxTimeout)
-			{
-				throw new TimeoutException($"Timed out waiting for ExecuteAsync() to complete. Timeout (ms): {currentTimeEpoch - startTimeEpoch}.");
-			}
-
-			Application.DoEvents();
-
-			if (maxTimeout != 0L)
-				currentTimeEpoch = DateTime.Now.UnixMilliseconds();
-		}
-
-		return @this.Result;
-	}
-
-
-	[SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
-	public static async Task<bool> WaitAsync(this Task @this, int millisecondsTimeout, CancellationToken cancellationToken)
-	{
-		return await Cmd.AwaitableAsync(@this.Wait(millisecondsTimeout, cancellationToken));
-	}
-
-
-		// ---------------------------------------------------------------------------------
-		/// <summary>
-		/// Converts a SecureString to a char array.
-		/// </summary>
-		// ---------------------------------------------------------------------------------
-		private static char[] ToCharArray(this SecureString secureString)
-	{
-		char[] array = new char[secureString.Length];
-		IntPtr intPtr = Marshal.SecureStringToGlobalAllocUnicode(secureString);
-		try
-		{
-			Marshal.Copy(intPtr, array, 0, secureString.Length);
-			return array;
-		}
-		finally
-		{
-			Marshal.ZeroFreeGlobalAllocUnicode(intPtr);
-		}
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts a secure string to it's readable string.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string ToReadable(this SecureString secureString)
-	{
-		return new string(secureString.ToCharArray());
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts an IEnumerable char array to a SecureString.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static SecureString ToSecure(this IEnumerable<char> charArray)
-	{
-		SecureString secureString = new SecureString();
-		foreach (char item in charArray)
-		{
-			secureString.AppendChar(item);
-		}
-
-		secureString.MakeReadOnly();
-		return secureString;
-	}
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts a string to a SecureString.
-	/// </summary>
-	/// <param name="unsecureString"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	public static SecureString ToSecure(this string unsecureString)
-	{
-		return unsecureString.ToCharArray().ToSecure();
 	}
 
 
@@ -752,9 +559,9 @@ public static partial class ExtensionMembers
 	/// Converts a long timestamp to a UTC DateTime.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static DateTime ToUtcDateTime(this long timestamp)
+	public static DateTime ToUtcDateTime(this long @this)
 	{
-		DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
+		DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(@this);
 		return offset.UtcDateTime;
 	}
 
@@ -765,11 +572,22 @@ public static partial class ExtensionMembers
 	/// Converts a DateTime to it's long unix milliseconds timestamp.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static long UnixMilliseconds(this DateTime value)
+	public static long UnixMilliseconds(this DateTime @this)
 	{
-		return ((DateTimeOffset)value).ToUnixTimeMilliseconds();
+		return ((DateTimeOffset)@this).ToUnixTimeMilliseconds();
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Converts a DateTime to it's long unix seconds timestamp.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static long UnixSeconds(this DateTime @this)
+	{
+		return ((DateTimeOffset)@this).ToUnixTimeSeconds();
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -782,27 +600,27 @@ public static partial class ExtensionMembers
 	/// and strings if they will have no impact on the final DatsetKey. 
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ValidateKeys(this IVsDataConnectionProperties site)
+	public static bool ValidateKeys(this IVsDataConnectionProperties @this)
 	{
 		bool modified = false;
 		// First the DatasetId. If it's equal to the Dataset we clear it because, by
 		// default the trimmed filepath (Dataset) can be used.
 
-		string database = site.ContainsKey(SysConstants.C_KeyDatabase)
-			? (string)site[SysConstants.C_KeyDatabase] : null;
+		string database = @this.ContainsKey(SysConstants.C_KeyDatabase)
+			? (string)@this[SysConstants.C_KeyDatabase] : null;
 
 		if (database != null && string.IsNullOrWhiteSpace(database))
 		{
 			modified = true;
 			database = null;
-			site.Remove(SysConstants.C_KeyDatabase);
+			@this.Remove(SysConstants.C_KeyDatabase);
 		}
 
 		string dataset = database != null
 			? Path.GetFileNameWithoutExtension(database) : null;
 
-		string datasetId = site.ContainsKey(SysConstants.C_KeyExDatasetId)
-			? (string)site[SysConstants.C_KeyExDatasetId] : null;
+		string datasetId = @this.ContainsKey(SysConstants.C_KeyExDatasetId)
+			? (string)@this[SysConstants.C_KeyExDatasetId] : null;
 
 		if (datasetId != null)
 		{
@@ -811,7 +629,7 @@ public static partial class ExtensionMembers
 				// DatasetId exists and is invalid (empty). Delete it.
 				modified = true;
 				datasetId = null;
-				site.Remove(SysConstants.C_KeyExDatasetId);
+				@this.Remove(SysConstants.C_KeyExDatasetId);
 			}
 
 			if (datasetId != null && dataset != null && datasetId == dataset)
@@ -819,7 +637,7 @@ public static partial class ExtensionMembers
 				// If the DatasetId is equal to the Dataset it's also not needed. Delete it.
 				modified = true;
 				datasetId = null;
-				site.Remove(SysConstants.C_KeyExDatasetId);
+				@this.Remove(SysConstants.C_KeyExDatasetId);
 			}
 		}
 
@@ -827,14 +645,14 @@ public static partial class ExtensionMembers
 		// and the default derived value of the datasetKey.
 		string derivedDatasetId = datasetId ?? (dataset ?? null);
 
-		string dataSource = site.ContainsKey(SysConstants.C_KeyDataSource)
-			? (string)site[SysConstants.C_KeyDataSource] : null;
+		string dataSource = @this.ContainsKey(SysConstants.C_KeyDataSource)
+			? (string)@this[SysConstants.C_KeyDataSource] : null;
 
 		if (dataSource != null && string.IsNullOrWhiteSpace(dataSource))
 		{
 			modified = true;
 			dataSource = null;
-			site.Remove(SysConstants.C_KeyDataSource);
+			@this.Remove(SysConstants.C_KeyDataSource);
 		}
 
 
@@ -847,14 +665,14 @@ public static partial class ExtensionMembers
 		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived
 		// Datsetkey, it's also not needed.
 
-		string connectionName = site.ContainsKey(SysConstants.C_KeyExConnectionName)
-			? (string)site[SysConstants.C_KeyExConnectionName] : null;
+		string connectionName = @this.ContainsKey(SysConstants.C_KeyExConnectionName)
+			? (string)@this[SysConstants.C_KeyExConnectionName] : null;
 
 		if (connectionName != null && string.IsNullOrWhiteSpace(connectionName))
 		{
 			modified = true;
 			connectionName = null;
-			site.Remove(SysConstants.C_KeyExConnectionName);
+			@this.Remove(SysConstants.C_KeyExConnectionName);
 		}
 
 		if (connectionName != null)
@@ -866,13 +684,13 @@ public static partial class ExtensionMembers
 			if (connectionName == derivedConnectionName || connectionName == derivedAlternateConnectionName)
 			{
 				modified = true;
-				site.Remove(SysConstants.C_KeyExConnectionName);
+				@this.Remove(SysConstants.C_KeyExConnectionName);
 			}
 			else if (datasetId != null)
 			{
 				// If ConnectionName exists the DatasetId is not needed. Delete it.
 				modified = true;
-				site.Remove(SysConstants.C_KeyExDatasetId);
+				@this.Remove(SysConstants.C_KeyExDatasetId);
 			}
 		}
 

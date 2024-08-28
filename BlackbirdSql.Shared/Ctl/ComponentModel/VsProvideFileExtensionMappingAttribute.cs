@@ -34,7 +34,7 @@ class VsProvideFileExtensionMappingAttribute(Type factoryType, string defaultNam
 		{
 			key = context.CreateKey(EditorRegKey);
 
-			key.SetValue(string.Empty, _DefaultName);
+			key.SetValue("", _DefaultName);
 			key.SetValue("DisplayName", string.Format(CultureInfo.InvariantCulture, "#{0}", NameResourceID));
 			key.SetValue("EditorGUID", FactoryType.GUID.ToString("B"));
 			key.SetValue("Package", context.ComponentType.GUID.ToString("B"));

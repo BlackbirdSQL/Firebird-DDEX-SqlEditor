@@ -22,7 +22,7 @@ namespace BlackbirdSql.Shared.Ctl.Commands;
 /// Base class for Editor Extension commands.
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractCommand
+public abstract class AbstractCommand : IBsCommand
 {
 
 	// --------------------------------------------------------
@@ -36,9 +36,9 @@ public abstract class AbstractCommand
 
 
 
-	public AbstractCommand(IBsTabbedEditorPane editorPane)
+	public AbstractCommand(IBsTabbedEditorPane tabbedEditor)
 	{
-		_TabbedEditorPane = editorPane;
+		_TabbedEditor = tabbedEditor;
 	}
 
 
@@ -54,7 +54,7 @@ public abstract class AbstractCommand
 
 
 	private AuxilliaryDocData _AuxDocData = null;
-	private IBsTabbedEditorPane _TabbedEditorPane;
+	private IBsTabbedEditorPane _TabbedEditor;
 
 
 
@@ -76,10 +76,10 @@ public abstract class AbstractCommand
 			if (_AuxDocData != null)
 				return _AuxDocData;
 
-			if (EditorPane == null)
+			if (TabbedEditor == null)
 				return null;
 
-			_AuxDocData = EditorPane.AuxDocData;
+			_AuxDocData = TabbedEditor.AuxDocData;
 
 			return _AuxDocData;
 		}
@@ -88,7 +88,7 @@ public abstract class AbstractCommand
 
 	protected IBsModelCsb CachedLiveMdlCsb => CachedStrategy?.LiveMdlCsb;
 
-	protected string CachedLiveQualifiedName => CachedLiveMdlCsb?.AdornedQualifiedTitle ?? string.Empty;
+	protected string CachedLiveQualifiedName => CachedLiveMdlCsb?.AdornedQualifiedTitle ?? "";
 
 	protected IBsModelCsb CachedMdlCsb => CachedStrategy?.MdlCsb;
 
@@ -107,10 +107,10 @@ public abstract class AbstractCommand
 	}
 
 
-	public IBsTabbedEditorPane EditorPane
+	public IBsTabbedEditorPane TabbedEditor
 	{
-		get { return _TabbedEditorPane; }
-		set { _TabbedEditorPane = value; }
+		get { return _TabbedEditor; }
+		set { _TabbedEditor = value; }
 	}
 
 

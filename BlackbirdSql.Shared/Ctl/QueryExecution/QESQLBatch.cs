@@ -12,6 +12,8 @@ using System.Windows.Forms;
 using System.Windows.Shapes;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Model;
+using BlackbirdSql.Data.Model;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
@@ -143,6 +145,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	}
 
 
+	private QueryManager QryMgr => _QryMgr;
+
 	public long RowsAffected => _RowsAffected;
 
 
@@ -175,9 +179,9 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			if (_ExecutionState == EnBatchState.Cancelling)
 				return true;
 
-			// Tracer.Trace(GetType(), "QESQLBatch.Cancel", "Cancelled: {0}.", cancelToken.IsCancellationRequested);
+			// Tracer.Trace(GetType(), "QESQLBatch.Cancel", "Cancelled: {0}.", cancelToken.Cancelled());
 
-			if (!cancelToken.IsCancellationRequested)
+			if (!cancelToken.Cancelled())
 				return false;
 
 			_ExecutionState = EnBatchState.Cancelling;
@@ -252,7 +256,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			}
 			catch (Exception ex)
 			{
-				if (cancelToken.IsCancellationRequested)
+				if (cancelToken.Cancelled())
 					Diag.Expected(ex);
 				throw;
 			}
@@ -321,8 +325,11 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		}
 		catch (Exception ex)
 		{
-			if (!cancelToken.IsCancellationRequested)
+			if (!cancelToken.Cancelled())
 				Diag.Expected(ex);
+
+			ex.SetServer(QryMgr.Strategy.DisplayServerName);
+			ex.SetDatabase(QryMgr.Strategy.DatasetDisplayName);
 
 			result = HandleExecutionExceptions(ex, _SqlStatement.Index, cancelToken);
 		}
@@ -354,17 +361,20 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		BatchErrorMessageEventArgs args = new BatchErrorMessageEventArgs(message, "");
 		RaiseErrorMessage(args);
 
-		_QryMgr.IsCancelling = true;
-		_QryMgr.IsFaulted = true;
-		_QryMgr.IsPrompting = true;
-		_QryMgr.RaiseShowWindowFrame();
+		QryMgr.SetState(EnQueryState.Cancelling, true);
+		QryMgr.SetState(EnQueryState.Faulted, true);
+		QryMgr.SetState(EnQueryState.Prompting, true);
+		RdtManager.AsyeuShowWindowFrame(QryMgr.DocCookie);
+
+		string server = ex.GetServer();
+		string database = ex.GetDatabase();
 
 		message = statementIndex < 0
-			? ex.Message
-			: Resources.BatchErrorMessage.FmtRes(statementIndex+1, ex.Message);
+			? Resources.BatchParseErrorDialogMessage.FmtRes(server, database, ex.Message)
+			: Resources.BatchErrorDialogMessage.FmtRes(server, database, statementIndex+1, ex.Message);
 
 		MessageCtl.ShowEx(ex, message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-		_QryMgr.IsPrompting = false;
+		QryMgr.SetState(EnQueryState.Prompting, false);
 	}
 
 
@@ -374,6 +384,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "Exception: {0}.", exception.Message);
 
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
+
+		
 
 		if (exception.IsSqlException() || (statementIndex == -1 && exception is ArgumentException))
 		{
@@ -440,7 +452,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			_ContainsErrors = true;
 
 			if (ErrorMessageEvent != null)
-				RaiseErrorMessage(new(text, string.Empty, -1, _TextSpan));
+				RaiseErrorMessage(new(text, "", -1, _TextSpan));
 		}
 		else
 		{
@@ -464,12 +476,12 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				_ContainsErrors = true;
 
 				if (ErrorMessageEvent != null)
-					RaiseErrorMessage(new(text, string.Empty, line, _TextSpan));
+					RaiseErrorMessage(new(text, "", line, _TextSpan));
 			}
 		}
 
-		_QryMgr.IsCancelling = true;
-		_QryMgr.IsFaulted = true;
+		QryMgr.SetState(EnQueryState.Cancelling, true);
+		QryMgr.SetState(EnQueryState.Faulted, true);
 	}
 
 
@@ -521,6 +533,9 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		}
 		catch (Exception ex)
 		{
+			ex.SetServer(QryMgr.Strategy.DisplayServerName);
+			ex.SetDatabase(QryMgr.Strategy.DatasetDisplayName);
+
 			result = HandleExecutionExceptions(ex, -1, default);
 		}
 
@@ -590,14 +605,14 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 							}
 							catch (Exception ex)
 							{
-								if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+								if (ex is OperationCanceledException || cancelToken.Cancelled())
 									Diag.Expected(ex);
 								else
 									throw;
 							}
 						}
 
-						if (cancelToken.IsCancellationRequested)
+						if (cancelToken.Cancelled())
 						{
 							result = EnScriptExecutionResult.Cancel;
 							break;
@@ -644,13 +659,13 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 						}
 						catch (Exception ex)
 						{
-							if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+							if (ex is OperationCanceledException || cancelToken.Cancelled())
 								Diag.Expected(ex);
 							else
 								throw;
 						}
 
-						if (cancelToken.IsCancellationRequested)
+						if (cancelToken.Cancelled())
 						{
 							result = EnScriptExecutionResult.Cancel;
 							break;
@@ -688,6 +703,9 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		{
 			Diag.Expected(ex);
 
+			ex.SetServer(QryMgr.Strategy.DisplayServerName);
+			ex.SetDatabase(QryMgr.Strategy.DatasetDisplayName);
+
 			result = HandleExecutionExceptions(ex, statementIndex, cancelToken);
 		}
 		finally
@@ -712,7 +730,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 						}
 						catch (Exception ex)
 						{
-							if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+							if (ex is OperationCanceledException || cancelToken.Cancelled())
 								Diag.Expected(ex);
 							else
 								throw;
@@ -761,7 +779,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 		if ((_SpecialActions & EnSpecialActions.ExecutionPlansMask) != 0
-			&& !cancelToken.IsCancellationRequested && SpecialActionEvent != null
+			&& !cancelToken.Cancelled() && SpecialActionEvent != null
 			&& IsExecutionPlanResultSet(dataReader, out EnSpecialActions batchSpecialAction)
 			&& (_SpecialActions & batchSpecialAction) != 0)
 		{

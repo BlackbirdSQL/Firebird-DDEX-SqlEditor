@@ -207,12 +207,12 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 
 				autoExecute = ExtensionInstance.EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2, isClone, out _);
 
-				TabbedEditorPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker, isClone, autoExecute);
+				TabbedEditorPane tabbedEditor = CreateTabbedEditorPane(vsTextLines2, moniker, isClone, autoExecute);
 
 
-				pDocView = Marshal.GetIUnknownForObject(editorPane);
+				pDocView = Marshal.GetIUnknownForObject(tabbedEditor);
 				pDocData = Marshal.GetIUnknownForObject(vsTextLines2);
-				caption = string.Empty;
+				caption = "";
 
 				cmdUIGuid = VSConstants.GUID_TextEditorFactory;
 
@@ -224,7 +224,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				___(vsUserData2.SetData(ref clsidDetectLang, false));
 
 				if (isClone)
-					Task.Run(editorPane.CloseCloneAsync).Forget();
+					Task.Run(tabbedEditor.CloseCloneAsync).Forget();
 			}
 			catch (Exception ex)
 			{

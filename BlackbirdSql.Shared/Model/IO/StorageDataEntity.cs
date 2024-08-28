@@ -132,9 +132,9 @@ public class StorageDataEntity
 	protected void InitVariables()
 	{
 		TypeDbNull = Type.GetType("System.DBNull");
-		StringValue = string.Empty;
+		StringValue = "";
 		TypeString = StringValue.GetType();
-		SqlStringValue = string.Empty;
+		SqlStringValue = "";
 		TypeSqlString = SqlStringValue.GetType();
 		Int16Value = 0;
 		TypeInt16 = Int16Value.GetType();

@@ -227,7 +227,7 @@ public class StorageDataReader
 	public async Task<bool> ReadAsync(CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "ReadAsync()", "ASYNC ReadAsync()");
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return false;
 
 		if (_TableReader != null)
@@ -244,7 +244,7 @@ public class StorageDataReader
 			}
 			catch (Exception ex)
 			{
-				if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+				if (ex is OperationCanceledException || cancelToken.Cancelled())
 					return false;
 				throw;
 			}
@@ -302,7 +302,7 @@ public class StorageDataReader
 			}
 			catch (Exception ex)
 			{
-				if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+				if (ex is OperationCanceledException || cancelToken.Cancelled())
 					return null;
 				throw;
 			}
@@ -353,7 +353,7 @@ public class StorageDataReader
 
 		byte[] result = await GetValueAsync<byte[]>(iCol, cancelToken);
 
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return [];
 
 		if (result.Length > maxNumBytesToReturn)
@@ -417,7 +417,7 @@ public class StorageDataReader
 
 		string result = await GetValueAsync<string>(iCol, cancelToken);
 
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return "";
 
 		if (result.Length > maxCharsToReturn)
@@ -509,7 +509,7 @@ public class StorageDataReader
 		}
 		catch (Exception ex)
 		{
-			if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+			if (ex is OperationCanceledException || cancelToken.Cancelled())
 			{
 				Diag.Expected(ex);
 

@@ -35,20 +35,20 @@ public class CommandToggleResultsPane : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (!ExecutionLocked && EditorPane != null)
+		if (!ExecutionLocked && TabbedEditor != null)
 		{
-			if (EditorPane.ActiveTab is EditorCodeTab)
+			if (TabbedEditor.ActiveTab is EditorCodeTab)
 			{
-				bool splitterHidden = !EditorPane.IsSplitterVisible;
-				EditorPane.IsSplitterVisible = splitterHidden;
+				bool splitterHidden = !TabbedEditor.IsSplitterVisible;
+				TabbedEditor.IsSplitterVisible = splitterHidden;
 
 				if (splitterHidden)
-					EditorPane.SplittersVisible = splitterHidden;
+					TabbedEditor.SplittersVisible = splitterHidden;
 			}
 			else
 			{
-				EditorPane.IsSplitterVisible = false;
-				EditorPane.ActivateCodeTab();
+				TabbedEditor.IsSplitterVisible = false;
+				TabbedEditor.ActivateCodeTab();
 			}
 		}
 

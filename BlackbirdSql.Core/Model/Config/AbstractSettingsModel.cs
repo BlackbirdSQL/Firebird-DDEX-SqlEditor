@@ -384,7 +384,7 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 	{
 		if (value == null)
 		{
-			return string.Empty;
+			return "";
 		}
 
 		XmlSerializer val = new XmlSerializer(value!.GetType());

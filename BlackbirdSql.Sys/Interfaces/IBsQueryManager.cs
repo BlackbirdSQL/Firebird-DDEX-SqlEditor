@@ -11,6 +11,7 @@ public interface IBsQueryManager : IDisposable
 {
 	IDbConnection DataConnection { get; }
 	ConnectionState DataConnectionState { get; }
+	string BatchSeparator { get; }
 	int StatementCount { get; }
 	long ExecutionTimeout { get; }
 	bool IsWithActualPlan { get; }
@@ -27,6 +28,10 @@ public interface IBsQueryManager : IDisposable
 	bool CommitTransactions(bool validate);
 	void CloseConnection();
 	void DisposeTransaction();
+
+	bool DsqlCommit();
+	bool DsqlRollback();
+
+
 	bool RollbackTransactions(bool validate);
-	void RaiseShowWindowFrame();
 }

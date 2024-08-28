@@ -641,7 +641,7 @@ public abstract class Reflect
 		// Tracer.Trace(typeof(Reflect), "GetPropertyValue(object)", "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+			bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
 		PropertyInfo propertyInfo = GetPropertyInfo(containerClassInstance, propertyName, bindingFlags);
 
@@ -650,6 +650,7 @@ public abstract class Reflect
 
 		return GetPropertyInfoValue(containerClassInstance, propertyInfo);
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -1258,7 +1259,7 @@ public abstract class Reflect
 		// Tracer.Trace(typeof(Reflect), "SetPropertyValue()", "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 		PropertyInfo propInfo = GetPropertyInfo(containerClassInstance, propertyName, bindingFlags);
 

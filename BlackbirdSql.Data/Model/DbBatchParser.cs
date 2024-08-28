@@ -158,6 +158,8 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	public EnSqlStatementAction CurrentAction => _ActionArray[(int)_ExecutionType][_CurrentActionIndex];
 
 
+	private string BatchSeparator => _QryMgr.BatchSeparator;
+
 	private DataTable EstimatedPlanTable
 	{
 		get
@@ -255,27 +257,8 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	public async Task<bool> CommitTransactionsAsync(CancellationToken cancelToken)
 	{
 		if (_LocalConnection == null)
-		{
-			FbTransaction transaction = (FbTransaction)_QryMgr.Transaction;
+			return _QryMgr.DsqlCommit();
 
-			try
-			{
-				if (transaction != null && transaction.HasTransactions())
-				{
-					await transaction.CommitAsync(cancelToken);
-					_QryMgr.DisposeTransaction();
-
-					return true;
-				}
-			}
-			catch
-			{
-				_QryMgr.DisposeTransaction();
-			}
-
-
-			return false;
-		}
 
 		if (_LocalTransaction == null)
 			return false;
@@ -339,31 +322,8 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	public async Task<bool> RollbackTransactionsAsync(CancellationToken cancelToken)
 	{
 		if (_LocalConnection == null)
-		{
-			FbTransaction transaction = (FbTransaction)_QryMgr.Transaction;
+			return _QryMgr.DsqlRollback();
 
-			try
-			{
-				if (transaction != null && transaction.HasTransactions())
-				{
-					await transaction.RollbackAsync(cancelToken);
-					_QryMgr.DisposeTransaction();
-
-					return true;
-				}
-			}
-			catch
-			{
-				try
-				{
-					_QryMgr.DisposeTransaction();
-				}
-				catch { }
-			}
-
-
-			return false;
-		}
 
 		if (_LocalTransaction == null)
 			return false;
@@ -398,6 +358,13 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	int IBsNativeDbBatchParser.Parse()
 	{
 		_ScriptParser = new(_Script);
+
+		if (BatchSeparator != ";")
+		{
+			object stringParser = Reflect.GetFieldValue(_ScriptParser, "_parser");
+			Reflect.SetPropertyValue(stringParser, "Tokens", new[] { BatchSeparator });
+		}
+
 
 		_StatementCount = _ScriptParser.Parse();
 

@@ -37,8 +37,8 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 		private FolderBrowserFolder _StartLocation;
 		private FolderBrowserStyles _PublicOptions = FolderBrowserStyles.RestrictToFilesystem;
 		private readonly Native.EnBrowseInfos _PrivateOptions = Native.EnBrowseInfos.NewDialogStyle;
-		private string _Title = string.Empty;
-		private string _DirectoryPath = string.Empty;
+		private string _Title = "";
+		private string _DirectoryPath = "";
 		private string _InitialDirectory;
 
 		private CallbackDelegate _BrowserCallback;
@@ -108,7 +108,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 		{
 			set
 			{
-				_Title = (value ?? string.Empty);
+				_Title = (value ?? "");
 			}
 		}
 

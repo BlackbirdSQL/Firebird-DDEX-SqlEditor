@@ -47,7 +47,7 @@ internal class DslRawTriggerDependencies : AbstractDslSchema
 		string generatorSelector = "IS NULL";
 
 		string transientRestrictions = restrictions != null && !string.IsNullOrEmpty(restrictions[2])
-			? $"WHERE trg.rdb$relation_name = '{restrictions[2]}'" : string.Empty;
+			? $"WHERE trg.rdb$relation_name = '{restrictions[2]}'" : "";
 
 		if (MajorVersionNumber >= 3)
 		{

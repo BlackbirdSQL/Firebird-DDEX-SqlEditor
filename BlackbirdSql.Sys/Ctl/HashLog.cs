@@ -59,7 +59,7 @@ public static class HashLog
 
 		if (args == null || args.Length == 0)
 		{
-			return string.Empty;
+			return "";
 		}
 
 		object[] array = new object[args.Length];
@@ -75,7 +75,7 @@ public static class HashLog
 	{
 		if (argsList == null)
 		{
-			return string.Empty;
+			return "";
 		}
 
 		return Join(separator, argsList.ToArray());
@@ -120,7 +120,7 @@ public static class HashLog
 			string text = (string)original;
 			if (string.IsNullOrEmpty(text))
 			{
-				return string.Empty;
+				return "";
 			}
 
 			return HashLogObject(LogObject.CreateSensitiveData(text));

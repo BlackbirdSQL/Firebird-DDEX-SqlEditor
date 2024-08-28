@@ -189,8 +189,8 @@ internal sealed class RelOpTypeParser : AbstractXmlPlanParser
 			ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper();
 			ExpandableObjectWrapper expandableObjectWrapper2 = new ExpandableObjectWrapper();
 			ExpandableObjectWrapper expandableObjectWrapper3 = new ExpandableObjectWrapper();
-			string value = string.Empty;
-			string value2 = string.Empty;
+			string value = "";
+			string value2 = "";
 			bool flag = false;
 			RunTimeInformationTypeRunTimeCountersPerThread[] runTimeInformation = relOpType.RunTimeInformation;
 			foreach (RunTimeInformationTypeRunTimeCountersPerThread runTimeInformationTypeRunTimeCountersPerThread in runTimeInformation)

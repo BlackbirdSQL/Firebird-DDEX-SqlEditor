@@ -73,9 +73,9 @@ public static class EnNativeSettingsTypeExtensions
 	// Exceptions:
 	//   T:System.ArgumentOutOfRangeException:
 	//     Thrown when one or more arguments are outside the required range.
-	public static Type GetDotNetTypeX(this EnNativeSettingsType nativeSettingsType)
+	public static Type GetDotNetTypeX(this EnNativeSettingsType @this)
 	{
-		return nativeSettingsType switch
+		return @this switch
 		{
 			EnNativeSettingsType.Int32 => typeof(int),
 			EnNativeSettingsType.Int64 => typeof(long),
@@ -85,7 +85,7 @@ public static class EnNativeSettingsTypeExtensions
 			EnNativeSettingsType.UInt64 => typeof(ulong),
 			_ => ((Func<Type>)(() =>
 			{
-				ArgumentOutOfRangeException exbb = new("nativeSettingsType", nativeSettingsType, null);
+				ArgumentOutOfRangeException exbb = new("nativeSettingsType", @this, null);
 				Diag.Dug(exbb);
 				throw exbb;
 			}))(),

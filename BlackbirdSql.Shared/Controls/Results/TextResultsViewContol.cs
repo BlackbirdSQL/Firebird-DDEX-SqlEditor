@@ -4,6 +4,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Ctl.IO;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -35,11 +36,11 @@ public class TextResultsViewContol : ShellTextViewControl, IOleCommandTarget, IV
 		base.Dispose(disposing);
 	}
 
-	int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint commandNumber, OLECMD[] commands, IntPtr oleText)
+	int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
 		if (guidGroup.Equals(VS.CLSID_CTextViewCommandGroup))
 		{
-			switch ((VSConstants.VSStd2KCmdID)commands[0].cmdID)
+			switch ((VSConstants.VSStd2KCmdID)prgCmds[0].cmdID)
 			{
 				case VSConstants.VSStd2KCmdID.PARAMINFO:
 				case VSConstants.VSStd2KCmdID.COMPLETEWORD:
@@ -59,16 +60,16 @@ public class TextResultsViewContol : ShellTextViewControl, IOleCommandTarget, IV
 		}
 
 		if (guidGroup.Equals(VSConstants.CMDSETID.StandardCommandSet97_guid)
-			&& (commands[0].cmdID == (int)VSConstants.VSStd97CmdID.SetNextStatement
-			|| commands[0].cmdID == (int)VSConstants.VSStd97CmdID.ViewForm))
+			&& (prgCmds[0].cmdID == (int)VSConstants.VSStd97CmdID.SetNextStatement
+			|| prgCmds[0].cmdID == (int)VSConstants.VSStd97CmdID.ViewForm))
 		{
 			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 		}
 
 		if (guidGroup.Equals(VSConstants.CMDSETID.StandardCommandSet2K_guid)
-			&& commands[0].cmdID == (int)VSConstants.VSStd2KCmdID.DOUBLECLICK)
+			&& prgCmds[0].cmdID == (int)VSConstants.VSStd2KCmdID.DOUBLECLICK)
 		{
-			commands[0].cmdf |= (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
+			prgCmds[0].cmdf |= (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 			return VSConstants.S_OK;
 		}
 
@@ -76,7 +77,7 @@ public class TextResultsViewContol : ShellTextViewControl, IOleCommandTarget, IV
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			return nextTarget.QueryStatus(ref guidGroup, commandNumber, commands, oleText);
+			return nextTarget.QueryStatus(ref guidGroup, cCmds, prgCmds, pCmdText);
 		}
 
 		return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;

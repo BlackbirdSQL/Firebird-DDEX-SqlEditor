@@ -17,6 +17,8 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 
 namespace BlackbirdSql.Shared.Controls.Tabs;
@@ -26,13 +28,13 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	IVsWindowFrameNotify3, IOleCommandTarget, IVsToolboxActiveUserHook, IVsToolboxPageChooser,
 	IVsDefaultToolboxTabState, IVsToolboxUser
 {
-	public AbstruseEditorTab(IBsTabbedEditorPane editorPane, Guid logicalView, EnEditorTabType editorTabType)
+	public AbstruseEditorTab(IBsTabbedEditorPane tabbedEditor, Guid logicalView, EnEditorTabType editorTabType)
 	{
-		_CmdTarget = editorPane;
-		_WindowPaneServiceProvider = editorPane;
+		_CmdTarget = tabbedEditor;
+		_WindowPaneServiceProvider = tabbedEditor;
 		_LogicalView = logicalView;
 		_EditorTabType = editorTabType;
-		_TabbedEditorPane = editorPane;
+		_TabbedEditor = tabbedEditor;
 	}
 
 
@@ -40,7 +42,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	private readonly System.IServiceProvider _WindowPaneServiceProvider;
 	private Guid _LogicalView;
 	private EnEditorTabType _EditorTabType;
-	private readonly IBsTabbedEditorPane _TabbedEditorPane;
+	private readonly IBsTabbedEditorPane _TabbedEditor;
 
 
 
@@ -79,7 +81,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	protected System.IServiceProvider WindowPaneServiceProvider => _WindowPaneServiceProvider;
 
-	protected IBsTabbedEditorPane EditorPane => _TabbedEditorPane;
+	protected IBsTabbedEditorPane TabbedEditor => _TabbedEditor;
 
 	protected string DocumentMoniker
 	{
@@ -215,11 +217,11 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		get
 		{
-			return EditorPane.TabbedEditorUiCtl.SplitViewContainer.SplitterBar.GetTabButtonVisibleStatus(LogicalView);
+			return TabbedEditor.TabbedEditorUiCtl.SplitViewContainer.SplitterBar.GetTabButtonVisibleStatus(LogicalView);
 		}
 		set
 		{
-			EditorPane.TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(LogicalView, value);
+			TabbedEditor.TabbedEditorUiCtl.SplitViewContainer.SplitterBar.SetTabButtonVisibleStatus(LogicalView, value);
 		}
 	}
 
@@ -339,7 +341,8 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 		object view = GetView();
 
-		if (view is IVsCodeWindow vsCodeWindow && view is IOleCommandTarget oleCommandTarget && view is Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider && _TextEditor == null)
+		if (view is IVsCodeWindow vsCodeWindow && view is IOleCommandTarget oleCommandTarget
+			&& view is IOleServiceProvider serviceProvider && _TextEditor == null)
 		{
 			_TextEditor = new TextEditor(serviceProvider, _WindowPaneServiceProvider, vsCodeWindow, oleCommandTarget);
 			_CmdTarget = _TextEditor;
@@ -393,7 +396,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	protected virtual string GetPhysicalViewString()
 	{
-		return string.Empty;
+		return "";
 	}
 
 	public virtual IVsFindTarget GetFindTarget()
@@ -448,7 +451,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			_SavedSelection = null;
 			if (__(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
 			{
-				using ServiceProvider serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)pvar);
+				using ServiceProvider serviceProvider = new ServiceProvider((IOleServiceProvider)pvar);
 				if (serviceProvider.GetService(typeof(SVsTrackSelectionEx)) is IVsTrackSelectionEx vsTrackSelectionEx
 					&& __(vsTrackSelectionEx.GetCurrentSelection(out var ppHier, out var _, out var _, out var ppSC))
 					&& ppSC != IntPtr.Zero)
@@ -545,7 +548,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			}
 			if (_SavedSelection != null && __(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
 			{
-				using ServiceProvider serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)pvar);
+				using ServiceProvider serviceProvider = new ServiceProvider((IOleServiceProvider)pvar);
 				(serviceProvider.GetService(typeof(SVsTrackSelectionEx)) as IVsTrackSelectionEx).OnSelectChange(_SavedSelection);
 				_SavedSelection = null;
 			}
@@ -554,7 +557,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			if (!__(hr))
 				return;
 
-			ServiceProvider serviceProvider2 = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)pvar2);
+			ServiceProvider serviceProvider2 = new ServiceProvider((IOleServiceProvider)pvar2);
 			using (serviceProvider2)
 			{
 				IVsHierarchy o = null;
@@ -700,9 +703,9 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		Diag.ThrowIfNotOnUIThread();
 
 		int hresult = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar);
-		AbstractTabbedEditorPane editorPane = pvar as AbstractTabbedEditorPane;
+		AbstractTabbedEditorPane tabbedEditor = pvar as AbstractTabbedEditorPane;
 
-		if (__(hresult) && editorPane == null)
+		if (__(hresult) && tabbedEditor == null)
 		{
 			if (pvar is IVsWindowFrameNotify3 vsWindowFrameNotify)
 			{
@@ -723,15 +726,15 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IOleCommandTarget.Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		int num = _TabbedEditorPane.OnExec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+		int num = _TabbedEditor.OnExec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
 		if (num == 0)
 			return num;
 
-		if (AbstractTabbedEditorPane.ToolbarManager.TryGetCommandHandler(_TabbedEditorPane.GetType(),
+		if (AbstractTabbedEditorPane.CmdMapper.TryGetCommandHandler(_TabbedEditor.GetType(),
 			new GuidId(pguidCmdGroup, nCmdID), out var commandHandler))
 		{
-			return commandHandler.OnExec(_TabbedEditorPane, nCmdexecopt, pvaIn, pvaOut);
+			return commandHandler.OnExec(_TabbedEditor, nCmdexecopt, pvaIn, pvaOut);
 		}
 		if (_CmdTarget == null || _CmdTarget is AbstractTabbedEditorPane)
 			return 0;
@@ -743,19 +746,19 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		int hresult = _TabbedEditorPane.OnQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+		int hresult = _TabbedEditor.OnQueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
 		if (hresult == VSConstants.S_OK)
 			return hresult;
 
 		hresult = (int)Microsoft.VisualStudio.OLE.Interop.Constants.MSOCMDERR_E_NOTSUPPORTED;
 
-		for (int i = 0; i < prgCmds.Length; i++)
+		for (int i = 0; i < cCmds; i++)
 		{
-			if (AbstractTabbedEditorPane.ToolbarManager.TryGetCommandHandler(_TabbedEditorPane.GetType(),
+			if (AbstractTabbedEditorPane.CmdMapper.TryGetCommandHandler(_TabbedEditor.GetType(),
 				new GuidId(pguidCmdGroup, prgCmds[i].cmdID), out var commandHandler))
 			{
-				return commandHandler.OnQueryStatus(_TabbedEditorPane, ref prgCmds[i], pCmdText);
+				return commandHandler.OnQueryStatus(_TabbedEditor, ref prgCmds[i], pCmdText);
 			}
 		}
 
@@ -770,7 +773,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				}
 			}
 		}
-		if (pguidCmdGroup == VSConstants.CMDSETID.StandardCommandSet2K_guid)
+		else if (pguidCmdGroup == VSConstants.CMDSETID.StandardCommandSet2K_guid)
 		{
 			for (int k = 0; k < cCmds; k++)
 			{

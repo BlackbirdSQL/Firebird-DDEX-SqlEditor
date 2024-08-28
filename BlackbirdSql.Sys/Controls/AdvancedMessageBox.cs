@@ -109,6 +109,7 @@ public partial class AdvancedMessageBox : Form
 	private bool _DoBeep = true;
 	private readonly ToolStripDropDown _Dropdown = new ToolStripDropDown();
 	private Exception _ExMessage = null;
+	private string _Message = null;
 	private Icon _FormIcon;
 	private readonly ArrayList _HelpUrlArray = new ArrayList(5);
 	private int _HelpUrlCount;
@@ -174,6 +175,12 @@ public partial class AdvancedMessageBox : Form
 	{
 		get { return _ExMessage; }
 		set { _ExMessage = value; }
+	}
+
+	public string Message
+	{
+		get { return _Message; }
+		set { _Message = value; }
 	}
 
 	public Icon FormIcon
@@ -340,9 +347,7 @@ public partial class AdvancedMessageBox : Form
 	public string BuildAdvancedInfo<T>() where T : class
 	{
 		if (_ExMessage == null)
-		{
-			return string.Empty;
-		}
+			return "";
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.Append(Environment.NewLine);
@@ -378,9 +383,9 @@ public partial class AdvancedMessageBox : Form
 				stringBuilder2.AppendFormat(" ({0})", innerException.Source);
 			}
 
-			if (innerException is DbException dbex && dbex.HasSqlException())
+			if (innerException.HasSqlException())
 			{
-				IList<object> errors = dbex.GetErrors();
+				IList<object> errors = innerException.GetErrors();
 
 				if (errors != null)
 				{
@@ -546,29 +551,36 @@ public partial class AdvancedMessageBox : Form
 		try
 		{
 			bool flag = false;
-			if (ex is DbException exf && exf.IsSqlException())
+			if (ex.IsSqlException())
 			{
-				if (exf.GetServer() != null && exf.GetServer().Length > 0)
+				string str = ex.GetServer();
+				if (!string.IsNullOrEmpty(str))
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlServerName, exf.GetServer()));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlServerName, str));
+					str = ex.GetDatabase();
+					if (!string.IsNullOrEmpty(str))
+						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlDatabaseName, str));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlError, exf.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlError, ex.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlSeverity, exf.GetClass().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlSeverity, ex.GetClass().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlState, exf.GetState().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlState, ex.GetState().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				if (exf.GetProcedure() != null && exf.GetProcedure().Length > 0)
+
+				str = ex.GetProcedure();
+				if (!string.IsNullOrEmpty(str))
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlProcedure, exf.GetProcedure()));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlProcedure, str));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				if (exf.GetLineNumber() != 0)
+				int lineno = ex.GetLineNumber();
+				if (lineno != 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlLineNumber, exf.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlLineNumber, lineno.ToString(CultureInfo.CurrentCulture)));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
@@ -607,7 +619,7 @@ public partial class AdvancedMessageBox : Form
 		StringBuilder stringBuilder = new StringBuilder("?");
 		if (ex == null)
 		{
-			return string.Empty;
+			return "";
 		}
 
 		if (ex.HelpLink != null && ex.HelpLink.Length > 0)
@@ -617,7 +629,7 @@ public partial class AdvancedMessageBox : Form
 				return ex.HelpLink;
 			}
 
-			return string.Empty;
+			return "";
 		}
 
 		MethodInfo method = ex.GetType().GetMethod("get_Data");
@@ -629,14 +641,14 @@ public partial class AdvancedMessageBox : Form
 				return string.Format(CultureInfo.CurrentCulture, "https://www.microsoft.com/products/ee/transform.aspx?ProdName=Microsoft%20SQL%20Server&ProdVer={0}.00.0000.00&EvtSrc=MSSQLServer&EvtID={1}", AssemblyVersionInfo.HighestSqlMajorVersionString, Uri.EscapeUriString(((FbException)ex).Number.ToString(CultureInfo.CurrentCulture)));
 			}
 			*/
-			return string.Empty;
+			return "";
 		}
 
 		try
 		{
 			if (ex.Data == null || ex.Data.Count == 0)
 			{
-				return string.Empty;
+				return "";
 			}
 
 			foreach (DictionaryEntry datum in ex.Data)
@@ -651,7 +663,7 @@ public partial class AdvancedMessageBox : Form
 					text = datum.Value.ToString();
 					if (string.Compare(text, 0, C_HttpPrefixKey, 0, C_HttpPrefixKey.Length, ignoreCase: true, CultureInfo.CurrentCulture) != 0)
 					{
-						text = string.Empty;
+						text = "";
 					}
 				}
 				else if (string.Compare((string)datum.Key, 0, C_PrefixKey, 0, C_PrefixKey.Length, ignoreCase: true, CultureInfo.CurrentCulture) == 0)
@@ -672,7 +684,7 @@ public partial class AdvancedMessageBox : Form
 
 			if (text == null && num == 0)
 			{
-				return string.Empty;
+				return "";
 			}
 
 			if (num == 0)
@@ -686,7 +698,7 @@ public partial class AdvancedMessageBox : Form
 		{
 		}
 
-		return string.Empty;
+		return "";
 	}
 
 
@@ -695,7 +707,7 @@ public partial class AdvancedMessageBox : Form
 	{
 		if (_ExMessage == null)
 		{
-			return string.Empty;
+			return "";
 		}
 
 		StringBuilder stringBuilder = new StringBuilder();
@@ -745,9 +757,9 @@ public partial class AdvancedMessageBox : Form
 				if (innerException.Source != null && innerException.Source.Length > 0 && (num != 1 || Caption != innerException.Source))
 				{
 					stringBuilder2.Append(' ');
-					if (innerException is DbException dbInnerException && dbInnerException.HasSqlException())
+					if (innerException.HasSqlException())
 					{
-						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSourceNumber, NativeDb.DataProviderName, dbInnerException.GetErrorCode()));
+						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSourceNumber, NativeDb.DataProviderName, innerException.GetErrorCode()));
 					}
 					else
 					{
@@ -798,7 +810,7 @@ public partial class AdvancedMessageBox : Form
 
 		try
 		{
-			if (ex is DbException exf && exf.HasSqlException())
+			if (ex.HasSqlException())
 			{
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append("---------------");
@@ -807,28 +819,37 @@ public partial class AdvancedMessageBox : Form
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append(Environment.NewLine);
 
-				if (exf.GetServer() != null && exf.GetServer().Length > 0)
+				string str = ex.GetServer();
+
+				if (!string.IsNullOrEmpty(str))
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlServerName, exf.GetServer()));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlServerName, str));
+					str = ex.GetDatabase();
+					if (!string.IsNullOrEmpty(str))
+						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlDatabaseName, str));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlError, exf.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlError, ex.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlSeverity, exf.GetClass().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlSeverity, ex.GetClass().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlState, exf.GetState().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlState, ex.GetState().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
 
-				if (exf.GetProcedure() != null && exf.GetProcedure().Length > 0)
+				str = ex.GetProcedure();
+
+				if (!string.IsNullOrEmpty(str))
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlProcedure, exf.GetProcedure()));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlProcedure, str));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				if (exf.GetLineNumber() != 0)
+				int lineno = ex.GetLineNumber();
+
+				if (lineno != 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlLineNumber, exf.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlLineNumber, lineno.ToString(CultureInfo.CurrentCulture)));
 					stringBuilder.Append(Environment.NewLine);
 				}
 			}
@@ -1085,104 +1106,111 @@ public partial class AdvancedMessageBox : Form
 	{
 		try
 		{
-			int num = 0;
-			int num2 = 0;
+			int depth = 0;
 			_Dropdown.Items.Clear();
-			for (Exception innerException = _ExMessage.InnerException; innerException != null; innerException = innerException.InnerException)
-			{
-				num2++;
-			}
 
-			if (_MaxMessages > 0 && num2 > _MaxMessages - 1)
-			{
-				num2 = _MaxMessages - 1;
-			}
+			for (Exception ex = _ExMessage.InnerException; ex != null; ex = ex.InnerException)
+				depth++;
 
-			if (num2 > 0)
+			if (_MaxMessages > 0 && depth > _MaxMessages - 1)
+				depth = _MaxMessages - 1;
+
+
+			if (depth > 0)
 			{
-				for (int i = 0; i < num2; i++)
+				for (int j = 0; j < depth; j++)
 				{
 					pnlAdditional.ColumnStyles.Insert(0, new ColumnStyle(SizeType.Absolute, 20f));
 					pnlAdditional.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 				}
 
-				pnlAdditional.ColumnCount = num2 + 1;
-				pnlAdditional.RowCount = num2;
+				pnlAdditional.ColumnCount = depth + 1;
+				pnlAdditional.RowCount = depth;
 			}
 
+			int i = 0;
 			Label label = lblAdditionalInfo;
-			bool visible = pnlAdditional.Visible = num2 > 0;
+			bool visible = pnlAdditional.Visible = depth > 0;
 			label.Visible = visible;
-			Exception innerException2 = _ExMessage;
-			while (innerException2 != null && (_MaxMessages < 0 || num < _MaxMessages))
+			Exception exception = _ExMessage;
+
+
+			while (exception != null && (_MaxMessages < 0 || i < _MaxMessages))
 			{
 				StringBuilder stringBuilder = new StringBuilder();
-				string text = innerException2.Message != null && innerException2.Message.Length != 0 ? innerException2.Message : ControlsResources.AdvancedMessageBox_CantComplete;
+
+				string text = "";
+
+				if (i == 0 && !string.IsNullOrEmpty(Message))
+					text = Message;
+				else
+					text = exception.Message != null && exception.Message.Length != 0 ? exception.Message : ControlsResources.AdvancedMessageBox_CantComplete;
+
 				if (_ShowHelpButton)
 				{
-					string text2 = BuildHelpURL(innerException2);
-					bool num3 = text2.Length > 0;
-					_HelpUrlArray.Add(text2);
-					text2 = text.Length <= 50 ? text : string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_AddEllipsis, text[..50]);
+					string helpUrl = BuildHelpURL(exception);
+					bool hasHelp = helpUrl.Length > 0;
+					_HelpUrlArray.Add(helpUrl);
+					helpUrl = text.Length <= 50 ? text : string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_AddEllipsis, text[..50]);
 					ToolStripItem toolStripItem;
-					if (num3)
+					if (hasHelp)
 					{
-						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_HelpMenuText, text2), null, ItemHelp_Click);
+						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_HelpMenuText, helpUrl), null, ItemHelp_Click);
 						_HelpUrlCount++;
 					}
 					else
 					{
-						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_NoHelpMenuText, text2), null, ItemHelp_Click);
+						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_NoHelpMenuText, helpUrl), null, ItemHelp_Click);
 						toolStripItem.Enabled = false;
 					}
 
-					toolStripItem.Tag = num;
+					toolStripItem.Tag = i;
 					toolStripItem.MouseEnter += OnHelpButtonMouseEnter;
 					toolStripItem.MouseLeave += OnHelpButtonMouseLeave;
 				}
 
 				stringBuilder.Remove(0, stringBuilder.Length);
 				stringBuilder.Append(text);
-				int num4 = 0;
 
-				if (innerException2 is DbException dbInnerException2 && dbInnerException2.HasSqlException())
-				{
-					num4 = dbInnerException2.ErrorCode;
-				}
-				else
-				{
-					dbInnerException2 = null;
-				}
+				int errorCode = exception.GetErrorCode();
 
-				if (innerException2.Source != null && innerException2.Source.Length > 0 && (num != 0 || Caption != innerException2.Source))
+
+				if (exception.Source != null && exception.Source.Length > 0 && (i != 0 || Caption != exception.Source))
 				{
 					stringBuilder.Append(' ');
-					string arg = (dbInnerException2 != null) ? innerException2.Source : NativeDb.DataProviderName;
+					string arg = (exception is DbException) ? exception.Source : NativeDb.DataProviderName;
 
-					if (num4 > 0)
-						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSourceNumber, arg, num4));
+					if (errorCode > 0)
+					{
+						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture,
+							ControlsResources.AdvancedMessageBox_ErrorSourceNumber, arg, errorCode));
+					}
 					else
-						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSource, arg));
+					{
+						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture,
+							ControlsResources.AdvancedMessageBox_ErrorSource, arg));
+					}
 				}
-				else if (num4 > 0)
+				else if (errorCode > 0)
 				{
 					stringBuilder.Append(' ');
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorNumber, num4));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture,
+						ControlsResources.AdvancedMessageBox_ErrorNumber, errorCode));
 				}
 
-				if (num == 0)
+				if (i == 0)
 				{
 					lblTopMessage.Text = stringBuilder.ToString();
 					lblTopMessage.LinkArea = new LinkArea(0, 0);
-					lblTopMessage.Tag = innerException2;
+					lblTopMessage.Tag = exception;
 				}
 				else
 				{
-					AddAdditionalInfoMessage(num - 1, stringBuilder.ToString(), innerException2);
+					AddAdditionalInfoMessage(i - 1, stringBuilder.ToString(), exception);
 				}
 
-				innerException2 = innerException2.InnerException;
-				num++;
+				exception = exception.InnerException;
+				i++;
 			}
 
 			if (Location.Y + GetPreferredSize(Size.Empty).Height > Screen.PrimaryScreen.WorkingArea.Bottom)

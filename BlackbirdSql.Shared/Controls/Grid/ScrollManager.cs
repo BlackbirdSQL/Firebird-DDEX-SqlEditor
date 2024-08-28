@@ -277,7 +277,7 @@ public sealed class ScrollManager
 		RecalcAll(m_SARect);
 	}
 
-	public bool EnsureRowIsVisbleWithoutClientRedraw(long nRowIndex, bool bMakeRowTheTopOne, out int yDelta)
+	public bool EnsureRowIsVisibleNoRedraw(long nRowIndex, bool bMakeRowTheTopOne, out int yDelta)
 	{
 		yDelta = 0;
 		if (nRowIndex < m_firstScrollableRowIndex)
@@ -317,7 +317,7 @@ public sealed class ScrollManager
 
 	public void EnsureRowIsVisible(long nRowIndex, bool bMakeRowTheTopOne)
 	{
-		if (EnsureRowIsVisbleWithoutClientRedraw(nRowIndex, bMakeRowTheTopOne, out var yDelta))
+		if (EnsureRowIsVisibleNoRedraw(nRowIndex, bMakeRowTheTopOne, out var yDelta))
 		{
 			Native.RECTEx rectScrollRegion = Native.RECTEx.FromXYWH(0, m_SARect.Y, m_SARect.Right, m_SARect.Height);
 			Native.ScrollWindow(m_hWnd, 0, yDelta, ref rectScrollRegion, ref rectScrollRegion);
@@ -353,7 +353,7 @@ public sealed class ScrollManager
 		}
 		else
 		{
-			EnsureRowIsVisbleWithoutClientRedraw(nRowIndex, bMakeRowTheTopOne: true, out var _);
+			EnsureRowIsVisibleNoRedraw(nRowIndex, bMakeRowTheTopOne: true, out var _);
 		}
 
 		EnsureColumnIsVisible(nColIndex, bMakeFirstColFullyVisible, bRedraw);

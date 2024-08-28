@@ -295,7 +295,7 @@ public static class DbProviderFactoriesEx
 			bool firstCycle = true;
 			int badCount = 0;
 			int validationCount = remainingProviders.Count;
-			string invariant = string.Empty;
+			string invariant = "";
 			DbProviderFactory providerFactory = null;
 
 			string fmt;

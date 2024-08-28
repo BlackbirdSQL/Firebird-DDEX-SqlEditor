@@ -1,9 +1,12 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using BlackbirdSql.Data.Model;
 using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.RpcContracts;
 
 
 
@@ -30,56 +33,145 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	public static IBsNativeDbException _Instance = null;
 
 
+
+	public byte GetErrorClass_(object error)
+	{
+		if (error is FbError fbError)
+			return fbError.Class;
+
+		return 0;
+	}
+
+
+
+	public ICollection<object> GetErrorEnumerator_(IList<object> errors)
+	{
+		if (errors == null)
+			return null;
+
+		return errors;
+	}
+
+
+
+	public int GetErrorLineNumber_(object error)
+	{
+		if (error is FbError fbError)
+			return fbError.LineNumber;
+
+		return -1;
+	}
+
+
+
+	public string GetErrorMessage_(object error)
+	{
+		if (error is FbError fbError)
+			return fbError.Message;
+
+		return (string)Reflect.GetPropertyValue(error, "Message");
+	}
+
+
+	public int GetErrorNumber_(object error)
+	{
+		if (error is FbError fbError)
+			return fbError.Number;
+
+		return -1;
+	}
+
+
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the class byte value from a Firebird exception.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public byte GetExceptionClass_(Exception @this)
+	{
+		if (@this is not FbException exception)
+			return 0;
+
+		FbErrorCollection errors = exception.Errors;
+
+
+		if (errors.Count <= 0)
+			return 0;
+
+		return errors.ElementAt(0).Class;
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the error number from a Firebird exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public int GetErrorCode(Exception @this)
+	public int GetExceptionErrorCode_(Exception @this)
 	{
-		FbErrorCollection errors;
 		int errorCode;
+		int dbErrorCode = 0;
+
+		if (@this is DbException dbException)
+			dbErrorCode = dbException.ErrorCode;
 
 		if (@this is not FbException exception)
 		{
 			// Tracer.Trace(GetType(), "GetErrorCode()", "exceptionType: {0}.", @this.GetType().Name);
 
 			if (@this.GetType().Name != "IscException")
-				return -1;
+				return dbErrorCode;
 
-			errors = (FbErrorCollection)Reflect.GetPropertyValue(@this, "Errors");
 			errorCode = (int)Reflect.GetPropertyValue(@this, "ErrorCode");
-		}
-		else
-		{
-			errors = exception.Errors;
-			errorCode = exception.ErrorCode;
-		}
 
-		if (errors == null || errors.Count <= 0)
-		{
+			if (errorCode == 0)
+			{
+				Reflect.InvokeMethod(@this, "BuildErrorCode");
+				errorCode = (int)Reflect.GetPropertyValue(@this, "ErrorCode");
+			}
+
+			if (errorCode == 0)
+				errorCode = dbErrorCode;
+
 			return errorCode;
 		}
 
-		return errors.ElementAt(0).Number;
+		errorCode = exception.ErrorCode;
+
+		if (errorCode != 0)
+			return errorCode;
+
+		FbErrorCollection errors = exception.Errors;
+
+		if (errors == null || errors.Count == 0)
+			return dbErrorCode;
+
+		errorCode = errors.ElementAt(0).Number;
+
+		return errorCode != 0 ? errorCode : dbErrorCode;
 	}
 
-	public IList<object> GetErrors(Exception @this)
-	{
-		FbErrorCollection errors;
 
+
+	public IList<object> GetExceptionErrors_(Exception @this)
+	{
 		if (@this is not FbException exception)
 		{
 			// Tracer.Trace(GetType(), "GetErrors()", "exceptionType: {0}.", @this.GetType().Name);
 
 			if (@this.GetType().Name != "IscException")
 				return [];
-			errors = (FbErrorCollection)Reflect.GetPropertyValue(@this, "Errors");
+
+			return (IList<object>)Reflect.GetPropertyValue(@this, "Errors");
+
 		}
-		else
-		{
-			errors = exception.Errors;
-		}
+
+		FbErrorCollection errors = exception.Errors;
 
 		IList<object> objects;
 
@@ -94,8 +186,10 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 
 			return objects;
 		}
+
 		// Convert the collection to a list of error objects. The BlackbirdSql extension
 		// doesn't know about FbError.
+
 		objects =
 		[
 			// Tracer.Trace(GetType(), "GetErrors()", "Error count: {0}.", errors.Count);
@@ -106,59 +200,18 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	}
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the class byte value from a Firebird exception.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public byte GetClass(Exception @this)
-	{
-		FbErrorCollection errors;
-
-		if (@this is not FbException exception)
-		{
-			// Tracer.Trace(GetType(), "GetClass()", "exceptionType: {0}.", @this.GetType().Name);
-
-			if (@this.GetType().Name != "IscException")
-				return 0;
-			errors = (FbErrorCollection)Reflect.GetPropertyValue(@this, "Errors");
-		}
-		else
-		{
-			errors = exception.Errors;
-		}
-
-
-		if (errors.Count <= 0)
-			return 0;
-
-		return errors.ElementAt(0).Class;
-	}
-
-
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the source line number of a Firebird exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public int GetLineNumber(Exception @this)
+	public int GetExceptionLineNumber_(Exception @this)
 	{
-		FbErrorCollection errors;
-
 		if (@this is not FbException exception)
-		{
-			// Tracer.Trace(GetType(), "GetLineNumber()", "exceptionType: {0}.", @this.GetType().Name);
+			return -1;
 
-			if (@this.GetType().Name != "IscException")
-				return -1;
-
-			errors = (FbErrorCollection)Reflect.GetPropertyValue(@this, "Errors");
-		}
-		else
-		{
-			errors = exception.Errors;
-		}
+		FbErrorCollection errors = exception.Errors;
 
 		if (errors.Count <= 0)
 			return -1;
@@ -172,12 +225,30 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	/// Gets the method name of a Firebird excerption.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public string GetProcedure(Exception @this)
+	public string GetExceptionProcedure_(Exception @this)
 	{
 		if (@this is not FbException exception)
-			return null;
+			return "";
 
-		return exception.TargetSite.Name;
+		return exception.TargetSite?.Name ?? "";
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the connection name or datasetid from a Firebird exception.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public string GetExceptionDatabase_(Exception @this)
+	{
+		if (@this == null)
+			return "";
+
+		if (@this.Data.Contains("Database"))
+			return (string)@this.Data["Database"];
+
+		return "";
 	}
 
 
@@ -187,15 +258,15 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	/// Gets the server name from a Firebird exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public string GetServer(Exception @this)
+	public string GetExceptionServer_(Exception @this)
 	{
 		if (@this == null)
-			return null;
+			return "";
 
 		if (@this.Data.Contains("Server"))
 			return (string)@this.Data["Server"];
 
-		return null;
+		return "";
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -203,7 +274,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	/// Returns the sql exception state of a Firebird exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public string GetState(Exception @this)
+	public string GetExceptionState_(Exception @this)
 	{
 		string result;
 
@@ -226,6 +297,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 
 		return result;
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -300,12 +372,13 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	}
 
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if an exception is a Firebird exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool HasSqlException(Exception @this)
+	public bool HasSqlException_(Exception @this)
 	{
 		if (HasExceptionType<FbException>(@this))
 			return true;
@@ -316,18 +389,20 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 
 	}
 
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if an exception is a Firebird exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool IsSqlException(Exception @this)
+	public bool IsSqlException_(Exception @this)
 	{
 		// Tracer.Trace(GetType(), "IsSqlException()", "exceptionType: {0}.", @this.GetType().Name);
 
 		if (@this is FbException exception)
 		{
-			if (GetErrorCode(exception) == 335544727)
+			if (GetExceptionErrorCode_(exception) == IscCodes.isc_net_write_err)
 				return false;
 
 			return true;
@@ -338,18 +413,31 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Sets the database name in a Firebird exception.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public void SetExceptionDatabase_(Exception @this, string value)
+	{
+		if (@this == null)
+			return;
+
+		@this.Data["Database"] = value;
+	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets the server name in a Firebird exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public void SetServer(Exception @this, string value)
+	public void SetExceptionServer_(Exception @this, string value)
 	{
 		if (@this == null)
 			return;
 
 		@this.Data["Server"] = value;
 	}
-
 }

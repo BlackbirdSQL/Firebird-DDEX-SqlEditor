@@ -13,7 +13,7 @@ internal class LsbLineScanner : IScanner
 	{
 		_BabelScanner = new LineScanner
 		{
-			BatchSeparator = PersistentSettings.EditorContextBatchSeparator
+			BatchSeparator = PersistentSettings.EditorExecutionBatchSeparator
 		};
 	}
 

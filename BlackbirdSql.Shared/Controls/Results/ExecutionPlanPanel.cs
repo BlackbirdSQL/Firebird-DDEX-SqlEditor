@@ -74,11 +74,11 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 		base.Dispose(disposing);
 	}
 
-	int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint cmdID, OLECMD[] oleCmd, IntPtr oleText)
+	int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		return ((IOleCommandTarget)ExecutionPlanCtl).QueryStatus(ref guidGroup, cmdID, oleCmd, oleText);
+		return ((IOleCommandTarget)ExecutionPlanCtl).QueryStatus(ref guidGroup, cCmds, prgCmds, pCmdText);
 	}
 
 	int IOleCommandTarget.Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr vIn, IntPtr vOut)

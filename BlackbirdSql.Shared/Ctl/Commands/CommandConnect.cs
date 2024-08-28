@@ -17,7 +17,7 @@ public class CommandConnect : AbstractCommand
 	{
 	}
 
-	public CommandConnect(IBsTabbedEditorPane editorPane) : base(editorPane)
+	public CommandConnect(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
 	}
 

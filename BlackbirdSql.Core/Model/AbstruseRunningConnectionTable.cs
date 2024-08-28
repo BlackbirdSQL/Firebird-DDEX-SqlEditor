@@ -222,7 +222,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	private bool AsyncLoading => _AsyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Inactive
 			&& _AsyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Shutdown
 			&& _AsyncPayloadLauncher != null && !_AsyncPayloadLauncher.IsCompleted
-			&& !_AsyncPayloadLauncherToken.IsCancellationRequested;
+			&& !_AsyncPayloadLauncherToken.Cancelled();
 
 
 	private bool AsyncPending => _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Pending;
@@ -242,7 +242,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			lock (_LockObject)
 			{
 				return _LoadingSyncCardinal > 0 ||
-					(_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.IsCancellationRequested);
+					(_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.Cancelled());
 			}
 		}
 	}
@@ -524,7 +524,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// </param>
 	/// <param name="outUniqueConnectionName">
 	/// Out | The unique resulting proposed ConnectionName. If null is returned then whatever was
-	/// provided in proposedConnectionName is correct and remains as is. If string.Empty is
+	/// provided in proposedConnectionName is correct and remains as is. If "" is
 	/// returned then whatever was provided in proposedConnectionName is good but changes the
 	/// existing name. If a value is returned then proposedConnectionName was
 	/// ambiguous and outUniqueConnectionName must be used in it's place.
@@ -532,7 +532,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// </param>
 	/// <param name="outUniqueDatasetId">
 	/// Out | The unique resulting proposed DatsetId. If null is returned then whatever was
-	/// provided in proposedDatasetId is correct and remains as is. If string.Empty is
+	/// provided in proposedDatasetId is correct and remains as is. If "" is
 	/// returned then whatever was provided in proposedDatasetId is good but changes the
 	/// existing name. If a value is returned then proposedDatasetId was ambiguous and
 	/// outUniqueDatasetId must be used in it's place. outUniqueConnectionName and
@@ -616,7 +616,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				return false;
 
 
-			if (_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.IsCancellationRequested && probject != null)
+			if (_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.Cancelled() && probject != null)
 			{
 				// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Abort - is probject.");
 
@@ -643,7 +643,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// The following for brevity.
 		TaskCreationOptions creationOptions = TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent;
-		CancellationToken cancellationToken = _AsyncPayloadLauncherToken;
+		CancellationToken cancelToken = _AsyncPayloadLauncherToken;
 
 		// Fire and remember.
 
@@ -653,7 +653,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		// Run on new thread in thread pool.
 		// Fire and remember.
 
-		async Task<bool> payloadAsync() => await InternalLoadApplicationConnectionsAsync(cancellationToken, probject);
+		async Task<bool> payloadAsync() => await InternalLoadApplicationConnectionsAsync(cancelToken, probject);
 
 
 		// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Queueing InternalLoadApplicationConnectionsAsync.");
@@ -689,7 +689,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// Solution's projects.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void InternalLoadApplicationConnections(CancellationToken cancellationToken, bool isSync, object probject)
+	private void InternalLoadApplicationConnections(CancellationToken cancelToken, bool isSync, object probject)
 	{
 		// Tracer.Trace(GetType(), "InternalLoadApplicationConnections()");
 
@@ -730,7 +730,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				throw ex;
 			}
 
-			if (!isSync && (_AsyncPayloadLauncher == null || cancellationToken.IsCancellationRequested))
+			if (!isSync && (_AsyncPayloadLauncher == null || cancelToken.Cancelled()))
 			{
 				lock (_LockObject)
 					_Probjects.Clear();
@@ -762,7 +762,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// asynchronously.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private async Task<bool> InternalLoadApplicationConnectionsAsync(CancellationToken cancellationToken, object probject)
+	private async Task<bool> InternalLoadApplicationConnectionsAsync(CancellationToken cancelToken, object probject)
 	{
 		// Tracer.Trace(GetType(), "InternalLoadApplicationConnectionsAsync()");
 
@@ -771,7 +771,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		try
 		{
 
-			if (cancellationToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 			{
 				result = false;
 			}
@@ -787,7 +787,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 
 			// Check again.
-			if (cancellationToken.IsCancellationRequested || ApcManager.SolutionClosing)
+			if (cancelToken.Cancelled() || ApcManager.SolutionClosing)
 			{
 				result = false;
 			}
@@ -811,7 +811,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				// thread to register connections for each project.
 
 
-				// Tracer.Trace(GetType(), "InternalLoadApplicationConnectionsAsync()", "Calling InternalLoadApplicationConnections(), _AsyncPayloadLauncherToken.IsCancellationRequested: {0}.", _AsyncPayloadLauncherToken.IsCancellationRequested);
+				// Tracer.Trace(GetType(), "InternalLoadApplicationConnectionsAsync()", "Calling InternalLoadApplicationConnections(), _AsyncPayloadLauncherToken.Cancelled(): {0}.", _AsyncPayloadLauncherToken.Cancelled());
 
 
 				BeginLoadData(true);
@@ -965,11 +965,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			// For (1) we create a dummy awaitable which will be cancelled once (1) is complete.
 			// If (2) is required we launch an async task which we fire and forget.
 
-			CancellationToken cancellationToken = SyncEnter();
+			CancellationToken cancelToken = SyncEnter();
 
 
 			// Load the SE and FlameRobin connections and possibly application connections.
-			result = InternalLoadConnectionsSync(cancellationToken);
+			result = InternalLoadConnectionsSync(cancelToken);
 
 			// Load the Application connections asynchronously if we're not on the main thread
 			// with a fire and forget async task.
@@ -1007,7 +1007,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// or else on UICONTEXT.SolutionExists.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool InternalLoadConnectionsSync(CancellationToken cancellationToken)
+	private bool InternalLoadConnectionsSync(CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "InternalLoadConnectionsSync()");
 
@@ -1585,18 +1585,18 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// Executes the sync configuration loader's wait task.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool PayloadSyncWaiter(CancellationToken cancellationToken)
+	private bool PayloadSyncWaiter(CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "SyncPayloadTask()");
 
-		if (_SyncPayloadLauncher == null || cancellationToken.IsCancellationRequested)
+		if (_SyncPayloadLauncher == null || cancelToken.Cancelled())
 			return false;
 
 		_SyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
 
 		int waitTime = 0;
 
-		while (!cancellationToken.IsCancellationRequested)
+		while (!cancelToken.Cancelled())
 		{
 			if (waitTime >= 15000)
 			{
@@ -1904,7 +1904,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			rows = _InternalConnectionsTable.Select()
 				.Where(x => search.Equals(x["DataSourceLc"])
-					&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])).ToArray();
+					&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])
+					&& !Cmd.IsNullValue(x[C_KeyPort])
+					&& port == Convert.ToInt32(x[C_KeyPort])).ToArray();
 		}
 
 		if (rows.Length > 0)
@@ -2171,13 +2173,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 
 		// The following for brevity.
-		CancellationToken cancellationToken = _SyncPayloadLauncherToken;
+		CancellationToken cancelToken = _SyncPayloadLauncherToken;
 		TaskCreationOptions creationOptions = TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent;
 		TaskScheduler scheduler = TaskScheduler.Default;
 
 		// For brevity. Create the payload.
 		bool payload() =>
-			PayloadSyncWaiter(cancellationToken);
+			PayloadSyncWaiter(cancelToken);
 
 		// Start up the payload launcher with tracking.
 		// Fire and remember - switch to thread pool
@@ -2189,7 +2191,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// Tracer.Trace(GetType(), "InternalLoadConnections()", "SyncPayloadTask created. Calling LoadConfiguredConnectionsImpl()");
 
-		return cancellationToken;
+		return cancelToken;
 	}
 
 
@@ -2392,7 +2394,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			&& _SyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Shutdown
 			&& _SyncPayloadLauncher != null && !_SyncPayloadLauncher.IsCompleted
 			&& !_SyncPayloadLauncher.IsCanceled && !_SyncPayloadLauncher.IsFaulted
-			&& _SyncPayloadLauncherTokenSource != null && !_SyncPayloadLauncherToken.IsCancellationRequested)
+			&& _SyncPayloadLauncherTokenSource != null && !_SyncPayloadLauncherToken.Cancelled())
 		{
 			if (waitTime >= 15000)
 			{

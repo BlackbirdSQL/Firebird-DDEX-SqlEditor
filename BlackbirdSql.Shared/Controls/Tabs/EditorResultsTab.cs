@@ -14,8 +14,8 @@ namespace BlackbirdSql.Shared.Controls.Tabs;
 public class EditorResultsTab: AbstractEditorTab
 {
 
-	public EditorResultsTab(IBsTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
-		: base(editorPane, logicalView, editorTabType)
+	public EditorResultsTab(IBsTabbedEditorPane tabbedEditor, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
+		: base(tabbedEditor, logicalView, editorTabType)
 	{
 
 	}

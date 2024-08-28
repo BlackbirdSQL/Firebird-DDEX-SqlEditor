@@ -19,7 +19,7 @@ public class CommandDisconnect : AbstractCommand
 	{
 	}
 
-	public CommandDisconnect(IBsTabbedEditorPane editorPane) : base(editorPane)
+	public CommandDisconnect(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
 	}
 

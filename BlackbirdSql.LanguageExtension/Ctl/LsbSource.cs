@@ -214,7 +214,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 		args.Result &= result;
 
-		return await Cmd.AwaitableAsync(result);
+		return await Task.FromResult(result);
 	}
 
 
@@ -263,16 +263,16 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			if (metadataProviderProvider != null)
 			{
 				parseOptions = metadataProviderProvider.CreateParseOptions();
-				parseOptions.BatchSeparator = auxDocData.QryMgr.LiveSettings.EditorContextBatchSeparator;
+				parseOptions.BatchSeparator = auxDocData.QryMgr.LiveSettings.EditorExecutionBatchSeparator;
 			}
 			else
 			{
-				parseOptions = new ParseOptions(auxDocData.QryMgr.LiveSettings.EditorContextBatchSeparator);
+				parseOptions = new ParseOptions(auxDocData.QryMgr.LiveSettings.EditorExecutionBatchSeparator);
 			}
 		}
 		else
 		{
-			parseOptions = new ParseOptions(auxDocData.QryMgr.LiveSettings.EditorContextBatchSeparator);
+			parseOptions = new ParseOptions(auxDocData.QryMgr.LiveSettings.EditorExecutionBatchSeparator);
 		}
 		return _ParseManager.ExecuteParseRequest(text, parseOptions, binder, Moniker);
 	}
@@ -337,7 +337,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 				int num2 = 0;
 				if (num >= 0 && num == ScanToNonWhitespaceChar(i))
 				{
-					SetText(i, num, i, num + length, string.Empty);
+					SetText(i, num, i, num + length, "");
 					num2 = length;
 				}
 				if (i == span.iEndLine)

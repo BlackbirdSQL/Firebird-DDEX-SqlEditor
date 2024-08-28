@@ -2,13 +2,14 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 
 
@@ -24,9 +25,9 @@ public interface IBsAsyncPackage
 	IDisposable DisposableWaitCursor { get; set; }
 	IVsSolution VsSolution { get; }
 	IBsEventsManager EventsManager { get; }
-	Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; }
-	IAsyncServiceContainer ServiceContainer { get; }
-	IServiceContainer SyncServiceContainer { get; }
+	IOleServiceProvider OleServiceProvider { get; }
+
+
 
 	delegate void LoadSolutionOptionsDelegate(Stream stream);
 	delegate void SaveSolutionOptionsDelegate(Stream stream);
@@ -38,12 +39,12 @@ public interface IBsAsyncPackage
 
 	// IVsDataConnectionDialog CreateConnectionDialogHandler();
 
-	Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token);
-	Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress);
+	Task FinalizeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress);
+	Task<TInterface> GetLocalServiceInstanceAsync<TService, TInterface>(CancellationToken token)
+		where TInterface : class;
 	TInterface GetService<TService, TInterface>() where TInterface : class;
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
 	void OutputLoadStatistics();
 	void SaveUserPreferences();
-	object ServicesCreatorCallback(IServiceContainer container, Type serviceType);
 	Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType);
 }

@@ -27,17 +27,17 @@ public class PropertiesWindowManager : IDisposable
 	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
-	private TabbedEditorPane EditorPane { get; set; }
+	private TabbedEditorPane TabbedEditor { get; set; }
 
 	private EditorUIControl TabbedEditorUiCtl { get; set; }
 
 	public QueryManager QryMgr { get; private set; }
 
-	public PropertiesWindowManager(TabbedEditorPane editorPane)
+	public PropertiesWindowManager(TabbedEditorPane tabbedEditor)
 	{
-		EditorPane = editorPane;
-		QryMgr = editorPane.AuxDocData.QryMgr;
-		TabbedEditorUiCtl = editorPane.TabbedEditorUiCtl;
+		TabbedEditor = tabbedEditor;
+		QryMgr = tabbedEditor.AuxDocData.QryMgr;
+		TabbedEditorUiCtl = tabbedEditor.TabbedEditorUiCtl;
 
 		RegistererEventHandlers();
 	}
@@ -49,7 +49,7 @@ public class PropertiesWindowManager : IDisposable
 		QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
 		QryMgr.StatusChangedEvent += OnConnectionChanged;
 		TabbedEditorUiCtl.TabActivatedEvent += OnTabActivated;
-		ResultsHandler displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
+		ResultsHandler displaySQLResultsControl = TabbedEditor.EnsureDisplayResultsControl();
 		// displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent += OnExecutionPlanPanelAdded;
 		// displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent += OnExecutionPlanPanelRemoved;
 	}
@@ -61,7 +61,7 @@ public class PropertiesWindowManager : IDisposable
 		QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
 		QryMgr.StatusChangedEvent -= OnConnectionChanged;
 		TabbedEditorUiCtl.TabActivatedEvent -= OnTabActivated;
-		ResultsHandler displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
+		ResultsHandler displaySQLResultsControl = TabbedEditor.EnsureDisplayResultsControl();
 		// displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent -= OnExecutionPlanPanelAdded;
 		// displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent -= OnExecutionPlanPanelRemoved;
 	}
@@ -78,12 +78,12 @@ public class PropertiesWindowManager : IDisposable
 
 	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
 	{
-		if (!args.Launched || args.SyncToken.IsCancellationRequested)
+		if (!args.Launched || args.SyncToken.Cancelled())
 			return true;
 
 		await RefreshPropertyWindowAsync();
 
-		return await Cmd.AwaitableAsync(true);
+		return await Task.FromResult(true);
 	}
 
 	private void OnConnectionChanged(object sender, QueryStateChangedEventArgs args)
@@ -125,7 +125,7 @@ public class PropertiesWindowManager : IDisposable
 	private void OnGraphSelectionChanged(object sender, GraphEventArgs e)
 	{
 		IDisplay displayObject = e.DisplayObject;
-		if (displayObject != null && displayObject.Selected && TabbedEditorUiCtl.ActiveTab == EditorPane.EditorTabExecutionPlan)
+		if (displayObject != null && displayObject.Selected && TabbedEditorUiCtl.ActiveTab == TabbedEditor.EditorTabExecutionPlan)
 		{
 			ArrayList arrayList = new(1)
 			{

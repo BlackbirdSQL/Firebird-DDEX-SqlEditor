@@ -165,7 +165,7 @@ public class ColumnInfo : IBsColumnInfo
 		}
 		catch (Exception ex)
 		{
-			if (ex is OperationCanceledException || cancelToken.IsCancellationRequested)
+			if (ex is OperationCanceledException || cancelToken.Cancelled())
 				return false;
 			throw;
 		}

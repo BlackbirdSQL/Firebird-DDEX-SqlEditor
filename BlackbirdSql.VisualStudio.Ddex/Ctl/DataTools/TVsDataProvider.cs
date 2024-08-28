@@ -466,7 +466,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 		{
 			if (_Name == null)
 			{
-				string text = GetProperty(string.Empty) as string;
+				string text = GetProperty("") as string;
 				text ??= Guid.ToString("B", CultureInfo.InvariantCulture);
 				lock (_LockObject)
 				{
@@ -541,7 +541,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 				{
 					text = resourceId;
 				}
-				text ??= string.Empty;
+				text ??= "";
 				lock (_LockObject)
 				{
 					_Description ??= text;
@@ -894,8 +894,8 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 		if (!resourceId.Trim().StartsWith("#", StringComparison.Ordinal))
 		{
 			string name = resourceId;
-			string text = string.Empty;
-			string assemblyString = string.Empty;
+			string text = "";
+			string assemblyString = "";
 			int num = 0;
 			int num2 = resourceId.IndexOf(',', num);
 			if (num2 > 0)
@@ -906,7 +906,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 				if (num2 == -1)
 				{
 					text = resourceId.Substring(num).Trim();
-					assemblyString = string.Empty;
+					assemblyString = "";
 				}
 				else
 				{
@@ -1297,7 +1297,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 	/// </summary>
 	public Assembly GetMainAssembly()
 	{
-		return GetAssembly(string.Empty);
+		return GetAssembly("");
 	}
 
 
@@ -1471,7 +1471,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 		{
 			array = new string[subKeyCount-1];
 			for (int i = 1; i < subKeyCount; i++)
-				array[i-1] = ExtensionData.ImplementationValues[$"{typeName}{(i==0?"":i)}"].Name ?? string.Empty;
+				array[i-1] = ExtensionData.ImplementationValues[$"{typeName}{(i==0?"":i)}"].Name ?? "";
 		}
 		if (array == null || array.Length == 0)
 		{

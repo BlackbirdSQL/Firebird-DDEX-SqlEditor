@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
@@ -13,7 +12,7 @@ using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using EntityFramework.Firebird;
 using FirebirdSql.Data.FirebirdClient;
-using FirebirdSql.Data.Isql;
+using FirebirdSql.Data.Services;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -39,6 +38,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 	private static IBsNativeDatabaseEngine _Instance = null;
 	public static IBsNativeDatabaseEngine EnsureInstance() => _Instance ??= new DatabaseEngineService();
+
 	public string AssemblyQualifiedName_ => typeof(FirebirdClientFactory).AssemblyQualifiedName;
 	public Assembly ClientFactoryAssembly_ => typeof(FirebirdClientFactory).Assembly;
 	public string ClientVersion_ => $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
@@ -88,15 +88,43 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 
 
+	/// <summary>
+	/// Adds a parameter suffixed with an index to DbCommand.Parameters.
+	/// </summary>
+	/// <returns>The index of the parameter in DbCommand.Parameters else -1.</returns>
+	public int AddCommandParameter_(DbCommand @this, string name, int index, object value)
+	{
+		return ((FbCommand)@this).AddParameter(name, index, value);
+	}
+
+
+
 	public void AsyncEnsureLinkageLoading_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
 	{
 		LinkageParser.AsyncEnsureLoading(root, delay, multiplier);
 	}
 
 
+
 	public DbConnection CastToNativeConnection_(object connection)
 	{
 		return connection as FbConnection;
+	}
+
+
+
+	public object CreateDatabaseInfoObject_(DbConnection @this)
+	{
+		FbDatabaseInfo info = new((FbConnection)@this);
+
+		return info;
+	}
+
+
+
+	public IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
+	{
+		return new DbBatchParser(executionType, qryMgr, script);
 	}
 
 
@@ -107,18 +135,15 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	}
 
 
+
 	/// <summary>
 	/// Creates a Firebird connection using a connection string.
 	/// </summary>
-	public IDbConnection CreateDbConnection_(string  connectionString)
+	public IDbConnection CreateDbConnection_(string connectionString)
 	{
 		return new FbConnection(connectionString);
 	}
 
-	public IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
-	{
-		return new DbBatchParser(executionType, qryMgr, script);
-	}
 
 
 	public IBsNativeDbStatementWrapper CreateDbStatementWrapper_(IBsNativeDbBatchParser owner, object statement, int index)
@@ -147,324 +172,43 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 
 
-	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Decorates a DDL raw script to it's executable form.
+	/// Gets the connection datasource.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public string GetDecoratedDdlSource_(IVsDataExplorerNode node, EnModelTargetType targetType)
+	public string GetConnectionDataSource_(IDbConnection @this)
 	{
-		// Tracer.Trace(typeof(Moniker), "GetDecoratedDdlSource()");
+		if (@this is not FbConnection connection)
+			return "";
 
-		IVsDataObject obj = node.Object;
-
-		if (obj == null)
-			return "Node has no object";
-
-		string prop = GetNodeScriptProperty(obj).ToUpper();
-		string src = ((string)obj.Properties[prop]).Replace("\r\n", "\n").Replace("\r", "\n");
-
-		string dirtysrc = "";
-
-		while (src != dirtysrc)
-		{
-			dirtysrc = src;
-			src = dirtysrc.Replace("\n\n\n", "\n\n");
-		}
-
-
-		switch (node.NodeBaseType())
-		{
-			case EnModelObjectType.Function:
-				return GetDecoratedDdlSourceFunction(src, node, obj, targetType);
-			case EnModelObjectType.StoredProcedure:
-				return GetDecoratedDdlSourceProcedure(src, node, obj, targetType);
-			case EnModelObjectType.Table:
-				return GetDecoratedDdlSourceTable(src);
-			case EnModelObjectType.Trigger:
-				return GetDecoratedDdlSourceTrigger(src, obj, targetType);
-			case EnModelObjectType.View:
-				return GetDecoratedDdlSourceView(src, node, obj, targetType);
-			default:
-				return src;
-		}
+		return connection.DataSource;
 	}
 
 
 
-	private static string GetDecoratedDdlSourceFunction(string src, IVsDataExplorerNode node,
-		IVsDataObject obj, EnModelTargetType targetType)
+	/// <summary>
+	/// Parses and converts a server version string to it's Version format.
+	/// </summary>
+	public string GetConnectionDataSourceVersion_(IDbConnection @this)
 	{
-		int direction;
-		string flddef;
-		string script = "";
-		string strout = "";
+		if (@this is not FbConnection connection)
+			return "";
 
-		IVsDataExplorerChildNodeCollection nodes = node.GetChildren(false);
+		if (connection.State != ConnectionState.Open)
+			return "";
 
-
-		foreach (IVsDataExplorerNode child in nodes)
-		{
-			if (child.Object == null)
-				continue;
-
-			if (child.Object.Type.Name != "FunctionParameter" && child.Object.Type.Name != "FunctionReturnValue")
-				continue;
-
-			direction = (short)child.Object.Properties["ORDINAL_POSITION"] == 0 ? 1 : 0;
-
-			flddef = (direction == 0 ? child.Object.Properties["ARGUMENT_NAME"] + " " : "")
-					+ DbTypeHelper.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
-					child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
-					child.Object.Properties["NUMERIC_SCALE"]);
-
-			if (direction == 0) // In
-				script += (script != "" ? ",\n\t" : "\n\t(") + flddef;
-
-			if (direction > 0) // Out
-				strout += (strout != "" ? ",\n\t" : "") + flddef;
-		}
-
-		if (script != "")
-			script += ")";
-
-		if (strout != "")
-			strout = $"\nRETURNS {strout}";
-
-		if (strout != "")
-			script += strout;
-
-		if (targetType == EnModelTargetType.AlterScript)
-			script = $"ALTER FUNCTION {obj.Properties["FUNCTION_NAME"]}{script}\n";
-		else
-			script = $"CREATE FUNCTION {obj.Properties["FUNCTION_NAME"]}{script}\n";
-
-		src = $"{script}AS\n{src}";
-
-		return WrapScriptWithTerminators(src);
+		return "Firebird " + FbServerProperties.ParseServerVersion(connection.ServerVersion);
 	}
 
 
 
-	private static string GetDecoratedDdlSourceProcedure(string src, IVsDataExplorerNode node,
-		IVsDataObject obj, EnModelTargetType targetType)
+	public int GetConnectionPacketSize_(DbConnection @this)
 	{
-		int direction;
-		string flddef;
-		string script = "";
-		string strout = "";
-
-		IVsDataExplorerChildNodeCollection nodes = node.GetChildren(false);
-
-
-		foreach (IVsDataExplorerNode child in nodes)
-		{
-			if (child.Object == null || child.Object.Type.Name != "StoredProcedureParameter")
-				continue;
-			direction = Convert.ToInt32(child.Object.Properties["PARAMETER_DIRECTION"]);
-
-			flddef = child.Object.Properties["PARAMETER_NAME"] + " "
-					+ DbTypeHelper.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
-					child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
-					child.Object.Properties["NUMERIC_SCALE"]);
-
-			if (direction == 0 || direction == 3) // In
-			{
-				if (targetType == EnModelTargetType.AlterScript)
-					script += (script != "" ? ",\n\t" : "\n\t(") + flddef;
-				else
-					script += (script != "" ? "\n" : "\n-- The following input parameters need to be initialized after the BEGIN statement\n")
-						+ "DECLARE VARIABLE " + flddef + ";";
-			}
-			if (direction > 0) // Out
-				strout += (strout != "" ? ",\n\t" : "\n\t(") + flddef;
-		}
-		if (script != "" && targetType == EnModelTargetType.AlterScript)
-			script += ")";
-		if (strout != "")
-			strout = $"\nRETURNS{strout})";
-
-		if (strout != "" && targetType == EnModelTargetType.AlterScript)
-			script += strout;
-
-		if (targetType == EnModelTargetType.AlterScript)
-			script = $"ALTER PROCEDURE {obj.Properties["PROCEDURE_NAME"]}{script}\n";
-		else
-			strout = $"EXECUTE BLOCK{strout}\n";
-
-		if (targetType == EnModelTargetType.AlterScript)
-			src = $"{script}AS\n{src}";
-		else
-			src = $"{strout}AS{script}\n-- End of parameter declarations\n{src}";
-
-		return WrapScriptWithTerminators(src);
+		return ((FbConnection)@this).PacketSize;
 	}
 
 
-
-	private static string GetDecoratedDdlSourceTable(string src)
-	{
-		src = $"SELECT * FROM {src.ToUpperInvariant()}";
-		return src;
-	}
-
-
-
-	private static string GetDecoratedDdlSourceTrigger(string src, IVsDataObject obj,
-		EnModelTargetType targetType)
-	{
-		string script;
-		string active = (bool)obj.Properties["IS_INACTIVE"] ? "INACTIVE" : "ACTIVE";
-
-		if (targetType == EnModelTargetType.AlterScript)
-			script = $"ALTER TRIGGER {obj.Properties["TRIGGER_NAME"]}";
-		else
-			script = $"CREATE TRIGGER {obj.Properties["TRIGGER_NAME"]} FOR {obj.Properties["TABLE_NAME"]}";
-
-		src = $"{script} {active}\n"
-			+ $"{GetTriggerEventType((long)obj.Properties["TRIGGER_TYPE"])} POSITION {(short)obj.Properties["PRIORITY"]}\n"
-			+ src;
-		return WrapScriptWithTerminators(src);
-	}
-
-
-
-	private static string GetDecoratedDdlSourceView(string src, IVsDataExplorerNode node,
-		IVsDataObject obj, EnModelTargetType targetType)
-	{
-		if (targetType != EnModelTargetType.AlterScript)
-			return src;
-
-		string script = "";
-		IVsDataExplorerChildNodeCollection nodes = node.GetChildren(false);
-
-		foreach (IVsDataExplorerNode child in nodes)
-			script += (script != "" ? ",\n\t" : "\n\t(") + child.Object.Properties["COLUMN_NAME"];
-
-		if (script != "")
-			script += ")";
-
-		src = $"ALTER VIEW {obj.Properties["VIEW_NAME"]}{script}\nAS\n{src}";
-		return src;
-	}
-
-
-
-	public byte GetErrorClass_(object error)
-	{
-		return ((FbError)error).Class;
-	}
-
-	public int GetErrorLineNumber_(object error)
-	{
-		return ((FbError)error).LineNumber;
-	}
-
-
-
-	public string GetErrorMessage_(object error)
-	{
-		return ((FbError)error).Message;
-	}
-
-
-	public int GetErrorNumber_(object error)
-	{
-		return ((FbError)error).Number;
-	}
 
 	public IBsNativeDbLinkageParser GetLinkageParserInstance_(IVsDataExplorerConnection root) => LinkageParser.GetInstance(root);
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the Source script of a node if it exists else null.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static string GetNodeScriptProperty(IVsDataObject obj)
-	{
-		if (obj != null)
-			return GetNodeScriptProperty(obj.Type.Name);
-
-		return null;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the Source script of a node if it exists else null.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static string GetNodeScriptProperty(string type)
-	{
-		if (type.EndsWith("Column") || type.EndsWith("Trigger")
-			 || type == "Index" || type == "ForeignKey")
-		{
-			return "Expression";
-		}
-		else if (type == "Table")
-		{
-			return "Table_Name";
-		}
-		else if (type == "View")
-		{
-			return "Definition";
-		}
-		else if (type == "StoredProcedure" || type == "Function")
-		{
-			return "Source";
-		}
-
-		return type;
-	}
-
-
-	public int GetObjectTypeIdentifierLength_(string typeName)
-	{
-		return DslObjectTypes.GetIdentifierLength(typeName);
-	}
-
-
-	public ICollection<object> GetErrorEnumerator_(IList<object> errors)
-	{
-		if (errors == null)
-			return null;
-
-		return errors;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------
-	private static string GetTriggerEventType(long eventType)
-	{
-		return eventType switch
-		{
-			1 => "BEFORE INSERT",
-			2 => "AFTER INSERT",
-			3 => "BEFORE UPDATE",
-			4 => "AFTER UPDATE",
-			5 => "BEFORE DELETE",
-			6 => "AFTER DELETE",
-			17 => "BEFORE INSERT OR UPDATE",
-			18 => "AFTER INSERT OR UPDATE",
-			25 => "BEFORE INSERT OR DELETE",
-			26 => "AFTER INSERT OR DELETE",
-			27 => "BEFORE UPDATE OR DELETE",
-			28 => "AFTER UPDATE OR DELETE",
-			113 => "BEFORE INSERT OR UPDATE OR DELETE",
-			114 => "AFTER INSERT OR UPDATE OR DELETE",
-			8192 => "ON CONNECT",
-			8193 => "ON DISCONNECT",
-			8194 => "ON TRANSACTION BEGIN",
-			8195 => "ON TRANSACTION COMMIT",
-			8196 => "ON TRANSACTION ROLLBACK",
-			_ => "",
-		};
-	}
 
 
 
@@ -485,16 +229,6 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		return dbInfo.GetActiveTransactionsCount() > 0;
 	}
 
-
-	public bool IsSupportedCommandType_(object command)
-	{
-		return command is IBsNativeDbStatementWrapper || command is FbCommand || command is FbBatchExecution;
-	}
-
-	public bool IsSupportedConnection_(IDbConnection connection)
-	{
-		return connection is FbConnection;
-	}
 
 
 	public bool LockLoadedParser_(string originalString, string updatedString) =>
@@ -544,17 +278,86 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 
 
-	public void UnlockLoadedParser_() => LinkageParser.UnlockLoadedParser();
-
-
-
-	public bool TransactionCompleted_(IDbTransaction @this)
+	public (bool, bool) OpenOrVerifyConnection_(IDbConnection @this)
 	{
-		if (@this?.Connection == null)
-			return true;
+		if (@this is not FbConnection connection)
+			return (false, false);
 
-		return (bool)Reflect.GetPropertyValue(@this, "IsCompleted");
+		if (connection.State != ConnectionState.Open)
+		{
+			connection.Open();
+			return (true, false);
+		}
+
+		FbDatabaseInfo info = new(connection);
+		bool result = info.GetActiveTransactionsCount() > 0;
+
+		return (true, result);
 	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Opens or verifies a connection. The Connection must exists.
+	/// Throws an exception on failure.
+	/// Do not call before ensuring IsComplete.
+	/// The cardinal must be either zero, if no keepalive reads are required, or an
+	/// incremental value that can be used to execute a select statement unique from
+	/// the previous call to this method.
+	/// </summary>
+	/// <returns>
+	/// Boolean tuple with Item1: True if open / verification succeeded and
+	/// Item2: HasTransactions.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public async Task<(bool, bool)> OpenOrVerifyConnectionAsync_(IDbConnection @this,
+		IDbTransaction transaction, CancellationToken cancelToken)
+	{
+		if (@this is not FbConnection connection)
+		{
+			ArgumentException ex = new("IDbConnection is not of type FbConnection");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (connection.State != ConnectionState.Open)
+		{
+			await connection.OpenAsync(cancelToken);
+			return (true, false);
+		}
+
+
+		FbDatabaseInfo info = new(connection);
+
+		if (transaction == null)
+		{
+			_ = await info.GetDatabaseSizeInPagesAsync(cancelToken);
+			return (true, false);
+		}
+
+
+		bool hasTransactions = await info.GetActiveTransactionsCountAsync(cancelToken) > 0;
+
+		return (true, hasTransactions);
+	}
+
+
+
+	/// <summary>
+	/// Parses and converts a server version string to it's Version format.
+	/// </summary>
+	public Version ParseConnectionServerVersion_(IDbConnection @this)
+	{
+		if (@this is not FbConnection connection)
+			return new();
+
+		if (connection.State != ConnectionState.Open)
+			return new();
+
+		return FbServerProperties.ParseServerVersion(connection.ServerVersion);
+	}
+
 
 
 	public async Task<bool> ReaderCloseAsync_(IDataReader @this, CancellationToken cancelToken)
@@ -576,10 +379,14 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		return true;
 	}
 
+
+
 	public async Task<DataTable> ReaderGetSchemaTableAsync_(IDataReader @this, CancellationToken cancelToken)
 	{
 		return await ((FbDataReader)@this).GetSchemaTableAsync(cancelToken);
 	}
+
+
 
 	public async Task<bool> ReaderNextResultAsync_(IDataReader @this, CancellationToken cancelToken)
 	{
@@ -589,7 +396,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		}
 		catch (Exception ex)
 		{
-			if (cancelToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 			{
 				Diag.Expected(ex);
 
@@ -604,6 +411,8 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 			throw;
 		}
 	}
+
+
 
 	public async Task<bool> ReaderReadAsync_(IDataReader @this, CancellationToken cancelToken)
 	{
@@ -613,7 +422,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		}
 		catch (Exception ex)
 		{
-			if (cancelToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 			{
 				Diag.Expected(ex);
 
@@ -630,9 +439,17 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	}
 
 
-	private static string WrapScriptWithTerminators(string script)
+
+	public bool TransactionCompleted_(IDbTransaction @this)
 	{
-		return $"SET TERM GO ;\n{script}\nGO\nSET TERM ; GO";
+		if (@this?.Connection == null)
+			return true;
+
+		return (bool)Reflect.GetPropertyValue(@this, "IsCompleted");
 	}
+
+
+
+	public void UnlockLoadedParser_() => LinkageParser.UnlockLoadedParser();
 
 }

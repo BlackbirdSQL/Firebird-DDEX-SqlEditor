@@ -336,19 +336,19 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 
 				@object = DataSources.DependentRow[CoreConstants.C_KeyExDatasetKey];
-				if (!Cmd.IsNullValue(@object) && (string)@object != string.Empty)
+				if (!Cmd.IsNullValue(@object) && (string)@object != "")
 					Site[CoreConstants.C_KeyExDatasetKey] = (string)@object;
 				else
 					Site.Remove(CoreConstants.C_KeyExDatasetKey);
 
 				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionKey];
-				if (!Cmd.IsNullValue(@object) && (string)@object != string.Empty)
+				if (!Cmd.IsNullValue(@object) && (string)@object != "")
 					Site[CoreConstants.C_KeyExConnectionKey] = (string)@object;
 				else
 					Site.Remove(CoreConstants.C_KeyExConnectionKey);
 
 				@object = DataSources.DependentRow[CoreConstants.C_KeyExDataset];
-				if (!Cmd.IsNullValue(@object) && (string)@object != string.Empty)
+				if (!Cmd.IsNullValue(@object) && (string)@object != "")
 					Site[CoreConstants.C_KeyExDataset] = (string)@object;
 				else
 					Site.Remove(CoreConstants.C_KeyExDataset);

@@ -2,9 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorToolbarCommandHandler<T>
 
 using System;
-using BlackbirdSql.Shared.Controls;
 using BlackbirdSql.Shared.Ctl;
-using BlackbirdSql.Shared.Ctl.Commands;
 using BlackbirdSql.Shared.Interfaces;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -13,10 +11,10 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.EditorExtension.Ctl;
 
 
-public sealed class ToolbarCommandHandler<TCommand> : IBsToolbarCommandHandler where TCommand : AbstractCommand, new()
+public sealed class CommandHandler<TCommand> : IBsCommandHandler where TCommand : IBsCommand, new()
 {
 
-	public ToolbarCommandHandler(Guid clsidCmdSet, uint cmdId)
+	public CommandHandler(Guid clsidCmdSet, uint cmdId)
 	{
 		_Clsid = new GuidId(clsidCmdSet, cmdId);
 	}
@@ -27,11 +25,11 @@ public sealed class ToolbarCommandHandler<TCommand> : IBsToolbarCommandHandler w
 
 	public GuidId Clsid => _Clsid;
 
-	public int OnQueryStatus(IBsTabbedEditorPane editorPane, ref OLECMD prgCmd, IntPtr pCmdText)
+	public int OnQueryStatus(IBsTabbedEditorPane tabbedEditor, ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		TCommand cmd = new()
 		{
-			EditorPane = editorPane
+			TabbedEditor = tabbedEditor
 		};
 
 		int result = cmd.QueryStatus(ref prgCmd, pCmdText);
@@ -39,11 +37,11 @@ public sealed class ToolbarCommandHandler<TCommand> : IBsToolbarCommandHandler w
 		return result;
 	}
 
-	public int OnExec(IBsTabbedEditorPane editorPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	public int OnExec(IBsTabbedEditorPane tabbedEditor, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		TCommand cmd = new()
 		{
-			EditorPane = editorPane
+			TabbedEditor = tabbedEditor
 		};
 
 		int result = cmd.Exec(nCmdexecopt, pvaIn, pvaOut);

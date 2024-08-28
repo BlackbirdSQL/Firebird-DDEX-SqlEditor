@@ -77,14 +77,14 @@ internal abstract class AbstractDslSchema
 
 
 
-	public async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	public async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken = default)
 	{
 		// Tracer.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
 
 		DataTable dataTable = new (collectionName);
-		FbCommand command = await BuildCommandAsync(connection, collectionName, ParseRestrictions(restrictions), cancellationToken);
+		FbCommand command = await BuildCommandAsync(connection, collectionName, ParseRestrictions(restrictions), cancelToken);
 
-		if (cancellationToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return dataTable;
 
 		try
@@ -97,7 +97,7 @@ internal abstract class AbstractDslSchema
 				}
 				catch (Exception ex)
 				{
-					if (cancellationToken.IsCancellationRequested)
+					if (cancelToken.Cancelled())
 						return dataTable;
 					Diag.Dug(ex, collectionName);
 					throw;
@@ -110,11 +110,11 @@ internal abstract class AbstractDslSchema
 			await Task.CompletedTask.ConfigureAwait(false);
 		}
 
-		if (cancellationToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return dataTable;
 
 		TrimStringFields(dataTable);
-		if (cancellationToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return dataTable;
 		ProcessResult(dataTable, connection.ConnectionString, restrictions);
 

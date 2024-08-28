@@ -147,7 +147,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 			ColumnInfo columnInfo = new ColumnInfo();
 			await columnInfo.InitializeAsync(_StorageReader, i, cancelToken);
 
-			if (cancelToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 				return false;
 
 			_ColumnInfoArray.Add(columnInfo);
@@ -163,7 +163,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 		{
 			await InitStorageAsync(storageReader, cancelToken);
 
-			if (cancelToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 				return false;
 
 			return true;
@@ -217,7 +217,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 
 		_AsyncWorkerTask = Task.Factory.StartNew(payloadAsync, default, creationOptions, TaskScheduler.Default).Unwrap();
 
-		return await Cmd.AwaitableAsync(true);
+		return await Task.FromResult(true);
 
 	}
 
@@ -226,7 +226,8 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 		_DataStorageEnabled = false;
 
 		if (_AsyncWorkerTask == null || _AsyncWorkerTask.IsCompleted
-			|| _AsyncWorkerCancelTokenSource == null || _AsyncWorkerCancelTokenSource.IsCancellationRequested)
+			|| _AsyncWorkerCancelTokenSource == null
+			|| _AsyncWorkerCancelTokenSource.IsCancellationRequested)
 		{
 			return;
 		}
@@ -252,7 +253,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 
 		await SerializeDataAsync(cancelToken);
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	public virtual async Task<bool> SerializeDataAsync(CancellationToken cancelToken)
@@ -263,14 +264,14 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 
 		object[] array = new object[_ColumnInfoArray.Count];
 
-		while (_DataStorageEnabled && !cancelToken.IsCancellationRequested && await _StorageReader.ReadAsync(cancelToken))
+		while (_DataStorageEnabled && !cancelToken.Cancelled() && await _StorageReader.ReadAsync(cancelToken))
 		{ 
 			_OffsetsArray.Add(_CurrentOffset);
 			if (!_HasBlobs)
 			{
 				_StorageReader.GetValues(array);
 			}
-			for (int i = 0; i < _ColumnInfoArray.Count && !cancelToken.IsCancellationRequested; i++)
+			for (int i = 0; i < _ColumnInfoArray.Count && !cancelToken.Cancelled(); i++)
 			{
 				if (_HasBlobs)
 				{
@@ -307,7 +308,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 					}
 				}
 
-				if (cancelToken.IsCancellationRequested)
+				if (cancelToken.Cancelled())
 					break;
 
 				type = array[i] != null ? array[i].GetType() : DiskDataEntity.TypeDbNull;
@@ -570,7 +571,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 				}
 			}
 
-			if (cancelToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 				break;
 
 			_FsWriter.FlushBuffer();
@@ -581,12 +582,12 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 		}
 		_DataStorageEnabled = false;
 
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return false;
 
 		await OnStorageNotifyAsync(_RowCount, true, cancelToken);
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	public void DeleteRow(long index)
@@ -623,6 +624,6 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 
 	protected virtual async Task<bool> OnStorageNotifyAsync(long rowCount, bool storedAllData, CancellationToken cancelToken)
 	{
-		return await (StorageNotifyEventAsync?.Invoke(rowCount, storedAllData, cancelToken) ?? Cmd.AwaitableAsync(false));
+		return await (StorageNotifyEventAsync?.Invoke(rowCount, storedAllData, cancelToken) ?? Task.FromResult(false));
 	}
 }

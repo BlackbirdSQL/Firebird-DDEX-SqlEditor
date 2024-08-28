@@ -270,8 +270,6 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			// any of them with a tab switch the next time the project is loaded will cause the edm
 			// sub-system to fail for the duratiuon of the ide session.
 
-			IVsWindowFrame frame;
-
 			foreach (KeyValuePair<ProjectItem, (uint, string)> pair in openItems)
 			{
 				if (pair.Key.IsDirty)
@@ -287,14 +285,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 					continue;
 				}
 
-				frame = RdtManager.GetWindowFrame(pair.Value.Item2);
-				if (frame == null)
-					continue;
-
-				if (!__(frame.IsOnScreen(out int pfOnScreen)))
-					continue;
-
-				if (pfOnScreen.AsBool())
+				if (RdtManager.WindowFrameIsOnScreen(pair.Value.Item2))
 				{
 					closeEdmx = false;
 					break;
@@ -419,9 +410,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private bool ValidateSolutionConfigureDbProvider(ProjectItem config, bool invalidate)
 	{
-		if (_TaskHandler.UserCancellation.IsCancellationRequested)
+		if (_TaskHandler.UserCancellation.Cancelled())
 			_ValidationTokenSource?.Cancel();
-		if (_ValidationToken.IsCancellationRequested)
+		if (_ValidationToken.Cancelled())
 			return false;
 
 
@@ -492,9 +483,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private bool ValidateSolutionConfigureEntityFramework(ProjectItem config, bool invalidate)
 	{
-		if (_TaskHandler.UserCancellation.IsCancellationRequested)
+		if (_TaskHandler.UserCancellation.Cancelled())
 			_ValidationTokenSource?.Cancel();
-		if (_ValidationToken.IsCancellationRequested)
+		if (_ValidationToken.Cancelled())
 			return false;
 
 		Diag.ThrowIfNotOnUIThread();
@@ -604,7 +595,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		try
 		{
-			if (projects.Count == 0 || userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested
+			if (projects.Count == 0 || userCancellationToken.Cancelled() || asyncCancellationToken.Cancelled()
 				|| ApcManager.SolutionObject == null)
 			{
 				return false;
@@ -625,18 +616,18 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 				stopwatch.Stop();
 
 
-				if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+				if (userCancellationToken.Cancelled() || asyncCancellationToken.Cancelled())
 					i = projects.Count - 1;
 
 				TaskHandlerProgress((i + 1) * 100 / projects.Count, stopwatch.Elapsed.Milliseconds);
 
-				if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+				if (userCancellationToken.Cancelled() || asyncCancellationToken.Cancelled())
 					break;
 
 				i++;
 			}
 
-			if (userCancellationToken.IsCancellationRequested)
+			if (userCancellationToken.Cancelled())
 			{
 				UpdateStatusBar("Cancelled BlackbirdSql solution validation", true);
 				return false;
@@ -679,9 +670,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private void ValidateSolutionRecursiveProject(Project project)
 	{
-		if (_TaskHandler.UserCancellation.IsCancellationRequested)
+		if (_TaskHandler.UserCancellation.Cancelled())
 			_ValidationTokenSource?.Cancel();
-		if (_ValidationToken.IsCancellationRequested)
+		if (_ValidationToken.Cancelled())
 			return;
 
 		Diag.ThrowIfNotOnUIThread();
@@ -739,10 +730,10 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		{
 			foreach (ProjectItem item in project.ProjectItems)
 			{
-				if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				if (_TaskHandler.UserCancellation.Cancelled())
 					_ValidationTokenSource?.Cancel();
 
-				if (_ValidationToken.IsCancellationRequested)
+				if (_ValidationToken.Cancelled())
 				{
 					break;
 				}
@@ -769,7 +760,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private bool ValidateSolutionRecursiveProjectItemEdmx(ProjectItem item)
 	{
-		if (_TaskHandler != null && _TaskHandler.UserCancellation.IsCancellationRequested)
+		if (_TaskHandler != null && _TaskHandler.UserCancellation.Cancelled())
 			return false;
 
 		Diag.ThrowIfNotOnUIThread();
@@ -780,9 +771,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 			foreach (ProjectItem subitem in item.ProjectItems)
 			{
-				if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				if (_TaskHandler.UserCancellation.Cancelled())
 					_ValidationTokenSource?.Cancel();
-				if (_ValidationToken.IsCancellationRequested)
+				if (_ValidationToken.Cancelled())
 				{
 					success = false;
 					break;
@@ -797,9 +788,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		// Tracer.Trace(item.ContainingProject.Name + " checking projectitem: " + item.Name + ":" + item.Kind);
 
-		if (_TaskHandler.UserCancellation.IsCancellationRequested)
+		if (_TaskHandler.UserCancellation.Cancelled())
 			_ValidationTokenSource?.Cancel();
-		if (_ValidationToken.IsCancellationRequested)
+		if (_ValidationToken.Cancelled())
 			return false;
 
 		try
@@ -874,9 +865,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private bool ValidateSolutionUpdateEdmx(ProjectItem edmx, bool invalidate)
 	{
-		if (_TaskHandler.UserCancellation.IsCancellationRequested)
+		if (_TaskHandler.UserCancellation.Cancelled())
 			_ValidationTokenSource?.Cancel();
-		if (_ValidationToken.IsCancellationRequested)
+		if (_ValidationToken.Cancelled())
 			return false;
 
 		Diag.ThrowIfNotOnUIThread();

@@ -60,7 +60,7 @@ public class TDataProvider
 		}
 		_ConnectionPropertiesTypes = new Dictionary<string, Type>
 		{
-			{ string.Empty, connectionPropertiesType }
+			{ "", connectionPropertiesType }
 		};
 	}
 
@@ -74,7 +74,7 @@ public class TDataProvider
 		}
 		_ConnectionUIControlTypes = new Dictionary<string, Type>
 		{
-			{ string.Empty, connectionUIControlType }
+			{ "", connectionUIControlType }
 		};
 	}
 
@@ -155,7 +155,7 @@ public class TDataProvider
 			};
 			Dictionary<string, Type> dictionary3 = new Dictionary<string, Type>
 			{
-				{ string.Empty, typeof(TConnectionUIProperties) }
+				{ "", typeof(TConnectionUIProperties) }
 			};
 				_BlackbirdSqlDataProvider = new (NativeDb.Invariant, Resources.DataProvider_Ddex, Resources.DataProvider_Ddex_Short,
 				Resources.DataProvider_Ddex_Description, NativeDb.ConnectionType, dictionary, dictionary2, dictionary3);
@@ -225,7 +225,7 @@ public class TDataProvider
 		string text;
 		if ((_ConnectionUIControlTypes != null && dataSource != null
 			&& _ConnectionUIControlTypes.ContainsKey(text = dataSource.Name))
-			|| _ConnectionUIControlTypes.ContainsKey(text = string.Empty))
+			|| _ConnectionUIControlTypes.ContainsKey(text = ""))
 		{
 			return Activator.CreateInstance(_ConnectionUIControlTypes[text]) as IDataConnectionUIControl;
 		}
@@ -240,7 +240,7 @@ public class TDataProvider
 	public virtual IDataConnectionProperties CreateConnectionProperties(TDataSource dataSource)
 	{
 		string text;
-		if (_ConnectionPropertiesTypes != null && ((dataSource != null && _ConnectionPropertiesTypes.ContainsKey(text = dataSource.Name)) || _ConnectionPropertiesTypes.ContainsKey(text = string.Empty)))
+		if (_ConnectionPropertiesTypes != null && ((dataSource != null && _ConnectionPropertiesTypes.ContainsKey(text = dataSource.Name)) || _ConnectionPropertiesTypes.ContainsKey(text = "")))
 		{
 			return Activator.CreateInstance(_ConnectionPropertiesTypes[text]) as IDataConnectionProperties;
 		}

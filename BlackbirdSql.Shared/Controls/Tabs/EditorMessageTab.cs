@@ -16,8 +16,8 @@ namespace BlackbirdSql.Shared.Controls.Tabs;
 public class EditorMessageTab : AbstractEditorTab
 {
 
-	public EditorMessageTab(IBsTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
-		: base(editorPane, logicalView, editorTabType)
+	public EditorMessageTab(IBsTabbedEditorPane tabbedEditor, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
+		: base(tabbedEditor, logicalView, editorTabType)
 	{
 		_EditorLogicalView = editorLogicalView;
 	}

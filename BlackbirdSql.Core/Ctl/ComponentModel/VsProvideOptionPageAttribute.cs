@@ -152,7 +152,7 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 
 			if (ProvidesLocalizedCategoryName)
 			{
-				key.SetValue(string.Empty, string.Format(CultureInfo.InvariantCulture, "#{0}", CategoryResourceID));
+				key.SetValue("", string.Format(CultureInfo.InvariantCulture, "#{0}", CategoryResourceID));
 				key.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 			}
 
@@ -163,12 +163,12 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 
 			if (ProvidesLocalizedCategoryName)
 			{
-				key1.SetValue(string.Empty, string.Format(CultureInfo.InvariantCulture, "#{0}", SubCategoryResourceID));
+				key1.SetValue("", string.Format(CultureInfo.InvariantCulture, "#{0}", SubCategoryResourceID));
 				key1.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 
 				if (SubSubCategoryName != null)
 				{
-					key2.SetValue(string.Empty, string.Format(CultureInfo.InvariantCulture, "#{0}", SubSubCategoryResourceID));
+					key2.SetValue("", string.Format(CultureInfo.InvariantCulture, "#{0}", SubSubCategoryResourceID));
 					key2.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 				}
 			}
@@ -179,7 +179,7 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 			else
 				keyd = key2.CreateSubkey(PageName);
 
-			keyd.SetValue(string.Empty, base.PageNameResourceId);
+			keyd.SetValue("", base.PageNameResourceId);
 			keyd.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 			keyd.SetValue("Page", base.PageType.GUID.ToString("B"));
 			keyd.SetValue(C_IsServerAware, IsServerAware ? 1 : 0);
@@ -267,7 +267,7 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 		key.SetValue("Package", package);
 		if (!string.IsNullOrEmpty(name) && name != "#0")
 		{
-			key.SetValue(string.Empty, name);
+			key.SetValue("", name);
 		}
 		if (!string.IsNullOrEmpty(description) && description != "#0")
 		{

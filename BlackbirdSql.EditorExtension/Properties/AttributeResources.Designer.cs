@@ -1475,15 +1475,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The default batch separator for the database engine..
-        /// </summary>
-        internal static string OptionDescriptionContextBatchSeparator {
-            get {
-                return ResourceManager.GetString("OptionDescriptionContextBatchSeparator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The position of the status base in the editor window..
         /// </summary>
         internal static string OptionDescriptionContextStatusBarPosition {
@@ -1498,6 +1489,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         internal static string OptionDescriptionExecutionAsynchronous {
             get {
                 return ResourceManager.GetString("OptionDescriptionExecutionAsynchronous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The initial statement terminator (batch separator) for multi-statement scripts. Usually &quot;;&quot; or &quot;GO&quot;..
+        /// </summary>
+        internal static string OptionDescriptionExecutionBatchSeparator {
+            get {
+                return ResourceManager.GetString("OptionDescriptionExecutionBatchSeparator", resourceCulture);
             }
         }
         
@@ -2024,15 +2024,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SQL Batch Separator.
-        /// </summary>
-        internal static string OptionDisplayContextBatchSeparator {
-            get {
-                return ResourceManager.GetString("OptionDisplayContextBatchSeparator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Status bar position.
         /// </summary>
         internal static string OptionDisplayContextStatusBarPosition {
@@ -2047,6 +2038,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         internal static string OptionDisplayExecutionAsynchronous {
             get {
                 return ResourceManager.GetString("OptionDisplayExecutionAsynchronous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initial statement terminator.
+        /// </summary>
+        internal static string OptionDisplayExecutionBatchSeparator {
+            get {
+                return ResourceManager.GetString("OptionDisplayExecutionBatchSeparator", resourceCulture);
             }
         }
         

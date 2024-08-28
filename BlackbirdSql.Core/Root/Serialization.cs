@@ -55,7 +55,7 @@ public static class Serialization
 	public static string Serialize64(string value, bool lowerCase = true)
 	{
 		if (value == null)
-			return string.Empty;
+			return "";
 
 		if (lowerCase)
 			value = value.ToLowerInvariant();
@@ -81,7 +81,7 @@ public static class Serialization
 	{
 		if (value == null)
 		{
-			return string.Empty;
+			return "";
 		}
 
 		using MemoryStream memoryStream = new MemoryStream();

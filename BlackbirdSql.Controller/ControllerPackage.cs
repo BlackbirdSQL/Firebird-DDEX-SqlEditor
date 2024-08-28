@@ -88,6 +88,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 
 
+
 	// =========================================================================================================
 	#region Fields - ControllerPackage
 	// =========================================================================================================
@@ -97,6 +98,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 
 	#endregion Fields
+
 
 
 
@@ -129,51 +131,10 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 
 
+
 	// =========================================================================================================
 	#region Method Implementations - ControllerPackage
 	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Asynchronous initialization of the package. The class must register services it
-	/// requires using the ServicesCreatorCallback method.
-	/// </summary>
-	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-	{
-
-		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
-			return;
-
-
-		ProgressAsync(progress, "Initializing ApcManager...").Forget();
-		
-		await base.InitializeAsync(cancellationToken, progress);
-
-
-
-		ProgressAsync(progress, "ApcManager requesting Event propogatation...").Forget();
-
-		// First try.
-		Task.Run(ApcInstance.AdviseUnsafeEventsAsync).Forget();
-		Task.Run(ApcInstance.RegisterProjectEventHandlersAsync).Forget();
-
-		ProgressAsync(progress, "ApcManager requesting Event propogation... Done.").Forget();
-
-		
-
-		ProgressAsync(progress, "ApcManager loading service...").Forget();
-		
-		ServiceContainer.AddService(typeof(IBsPackageController), ServicesCreatorCallbackAsync, promote: true);
-
-		ProgressAsync(progress, "ApcManager loading service... Done.").Forget();
-		
-
-
-		ProgressAsync(progress, "Initializing ApcManager ... Done.").Forget();
-		
-	}
-
 
 
 	// ---------------------------------------------------------------------------------
@@ -183,11 +144,11 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	/// It is the final descendent package class's responsibility to initiate the call
 	/// to FinalizeAsync.
 	/// </summary>
-	public override async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+	public override async Task FinalizeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
+		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState)
 			return;
 
 
@@ -201,7 +162,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 		ProgressAsync(progress, "Finalizing ApcManager. Advising Events... Done.").Forget();
 
-		await base.FinalizeAsync(cancellationToken, progress);
+		await base.FinalizeAsync(cancelToken, progress);
 
 
 
@@ -231,33 +192,57 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	/// creates an instance of the service.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override async Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token)
+	public override async Task<TInterface> GetLocalServiceInstanceAsync<TService, TInterface>(CancellationToken token)
+		 where TInterface : class
 	{
-		if (serviceType == null)
-		{
-			ArgumentNullException ex = new("serviceType");
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Type serviceType = typeof(TService);
 
-		else if (serviceType == typeof(IBsPackageController))
-		{
-			try
-			{
-				return PackageController.Instance;
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw ex;
-			}
-		}
-		else if (serviceType.IsInstanceOfType(this))
-		{
-			return this;
-		}
+		if (serviceType == typeof(IBsPackageController))
+			return PackageController.Instance as TInterface;
 
-		return await base.CreateServiceInstanceAsync(serviceType, token);
+		return await base.GetLocalServiceInstanceAsync<TService, TInterface>(token);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Asynchronous initialization of the package. The class must register services it
+	/// requires using the ServicesCreatorCallback method.
+	/// </summary>
+	protected override async Task InitializeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
+	{
+
+		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState)
+			return;
+
+
+		ProgressAsync(progress, "Initializing ApcManager...").Forget();
+
+		await base.InitializeAsync(cancelToken, progress);
+
+
+
+		ProgressAsync(progress, "ApcManager requesting Event propogatation...").Forget();
+
+		// First try.
+		Task.Run(ApcInstance.AdviseUnsafeEventsAsync).Forget();
+		Task.Run(ApcInstance.RegisterProjectEventHandlersAsync).Forget();
+
+		ProgressAsync(progress, "ApcManager requesting Event propogation... Done.").Forget();
+
+
+
+		ProgressAsync(progress, "ApcManager loading service...").Forget();
+
+		AddService(typeof(IBsPackageController), ServicesCreatorCallbackAsync, promote: false);
+
+		ProgressAsync(progress, "ApcManager loading service... Done.").Forget();
+
+
+
+		ProgressAsync(progress, "Initializing ApcManager ... Done.").Forget();
+
 	}
 
 
@@ -274,15 +259,14 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	public override async Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType)
 	{
 		if (serviceType == typeof(IBsPackageController))
-		{
-			return await CreateServiceInstanceAsync(serviceType, token);
-		}
+			return await GetLocalServiceInstanceAsync<IBsPackageController, IBsPackageController>(token);
 
 		return await base.ServicesCreatorCallbackAsync(container, token, serviceType);
 	}
 
 
 	#endregion Method Implementations
+
 
 
 

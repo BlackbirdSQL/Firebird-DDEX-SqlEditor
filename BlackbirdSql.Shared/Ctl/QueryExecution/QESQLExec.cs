@@ -212,7 +212,7 @@ public class QESQLExec : AbstractQESQLExec
 				}
 				catch (Exception e)
 				{
-					if (!cancelToken.IsCancellationRequested)
+					if (!cancelToken.Cancelled())
 						Diag.Expected(e);
 					scriptExecutionResult = EnScriptExecutionResult.Failure;
 				}
@@ -267,7 +267,7 @@ public class QESQLExec : AbstractQESQLExec
 
 		lock (_LockObject)
 		{
-			if (cancelToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 			{
 				_ExecResult = EnScriptExecutionResult.Cancel;
 			}
@@ -302,7 +302,7 @@ public class QESQLExec : AbstractQESQLExec
 				lock (_LockObject)
 				{
 					// Tracer.Trace(GetType(), "ProcessBatchStatementAsync()", "execState = {0}", _ExecState);
-					if (cancelToken.IsCancellationRequested || _AsyncExecState == EnLauncherPayloadLaunchState.Discarded)
+					if (cancelToken.Cancelled() || _AsyncExecState == EnLauncherPayloadLaunchState.Discarded)
 					{
 						scriptExecutionResult = EnScriptExecutionResult.Cancel;
 					}

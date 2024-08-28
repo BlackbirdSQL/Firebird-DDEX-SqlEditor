@@ -21,82 +21,63 @@ namespace BlackbirdSql.Sys.Interfaces;
 // =========================================================================================================
 public interface IBsNativeDbException
 {
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the error number from a native database exception.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	int GetErrorCode(Exception exception);
+	byte GetErrorClass_(object error);
+	ICollection<object> GetErrorEnumerator_(IList<object> errors);
+	int GetErrorLineNumber_(object error);
+	string GetErrorMessage_(object error);
+	int GetErrorNumber_(object error);
 
-
-	IList<object> GetErrors(Exception exception);
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the class byte value from a native database exception.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	byte GetClass(Exception exception);
+	byte GetExceptionClass_(Exception exception);
 
+	int GetExceptionErrorCode_(Exception @this);
+	IList<object> GetExceptionErrors_(Exception exception);
 
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the source line number of a native database exception.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	int GetLineNumber(Exception exception);
+	int GetExceptionLineNumber_(Exception exception);
 
-
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the method name of a native database exception.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	string GetProcedure(Exception exception);
+	string GetExceptionProcedure_(Exception exception);
 
+	/// <summary>
+	/// Gets the connection name or datasetid from a native database exception.
+	/// </summary>
+	string GetExceptionDatabase_(Exception exception);
 
-
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the server name from a native database exception.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	string GetServer(Exception exception);
+	string GetExceptionServer_(Exception exception);
 
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Returns the sql exception state of a native database exception.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	string GetState(Exception @this);
+	string GetExceptionState_(Exception @this);
 
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if an exception contains a native database exception.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	bool HasSqlException(Exception exception);
+	bool HasSqlException_(Exception exception);
 
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if an exception is a native database exception.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	bool IsSqlException(Exception exception);
+	bool IsSqlException_(Exception exception);
 
+	/// <summary>
+	/// Sets the database name in a native database exception.
+	/// </summary>
+	void SetExceptionDatabase_(Exception exception, string value);
 
-
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets the server name in a native database exception.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	void SetServer(Exception exception, string value);
+	void SetExceptionServer_(Exception exception, string value);
 
 }

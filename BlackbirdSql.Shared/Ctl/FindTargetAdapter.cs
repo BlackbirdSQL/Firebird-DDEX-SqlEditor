@@ -18,13 +18,13 @@ namespace BlackbirdSql.Shared.Ctl;
 public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 {
 
-	public FindTargetAdapter(AbstractTabbedEditorPane editorPane)
+	public FindTargetAdapter(AbstractTabbedEditorPane tabbedEditor)
 	{
-		EditorPane = editorPane;
+		TabbedEditor = tabbedEditor;
 	}
 
 
-	protected AbstractTabbedEditorPane EditorPane { get; set; }
+	protected AbstractTabbedEditorPane TabbedEditor { get; set; }
 
 
 
@@ -129,7 +129,7 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)((System.IServiceProvider)EditorPane).GetService(typeof(SVsWindowFrame));
+		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)((System.IServiceProvider)TabbedEditor).GetService(typeof(SVsWindowFrame));
 
 		if (vsWindowFrame != null)
 		{
@@ -153,7 +153,7 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 
 	protected virtual void ActivateTabForNavigateTo()
 	{
-		EditorUIControl tabControl = EditorPane.TabbedEditorUiCtl;
+		EditorUIControl tabControl = TabbedEditor.TabbedEditorUiCtl;
 
 		foreach (AbstruseEditorTab tab in tabControl.Tabs)
 		{
@@ -187,7 +187,7 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 
 	private IVsFindTarget GetFindTarget(bool ensureTabs)
 	{
-		AbstractEditorUIControl tabControl = EditorPane.TabbedEditorUiCtl;
+		AbstractEditorUIControl tabControl = TabbedEditor.TabbedEditorUiCtl;
 
 		if (tabControl == null || tabControl.Tabs == null)
 			return null;
@@ -196,7 +196,7 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 
 		if (ensureTabs && tabControl.Tabs.Count == 0)
 		{
-			EditorPane.EnsureTabs(activateTextView: true);
+			TabbedEditor.EnsureTabs(activateTextView: true);
 		}
 
 		AbstruseEditorTab activeTab = tabControl.ActiveTab;
@@ -217,7 +217,7 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 				break;
 			}
 		}
-		if (vsFindTarget == EditorPane)
+		if (vsFindTarget == TabbedEditor)
 		{
 			return null;
 		}

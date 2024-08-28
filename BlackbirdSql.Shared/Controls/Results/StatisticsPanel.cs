@@ -89,10 +89,10 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		// Tracer.Trace(GetType(), ".Initialize", "", null);
 		base.Initialize(sp);
-		_FirstGridPanel.Dock = DockStyle.Fill;
-		_FirstGridPanel.Height = ClientRectangle.Height;
-		_FirstGridPanel.Tag = -1;
-		Controls.Add(_FirstGridPanel);
+		_MultiControlPnl.Dock = DockStyle.Fill;
+		_MultiControlPnl.Height = ClientRectangle.Height;
+		_MultiControlPnl.Tag = -1;
+		Controls.Add(_MultiControlPnl);
 	}
 
 	public override void Clear()
@@ -153,18 +153,18 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		{
 			Diag.Expected(ex);
 
-			MessageCtl.ShowEx(ex, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Hand, null);
+			MessageCtl.ShowEx(ex, "", MessageBoxButtons.OK, MessageBoxIcon.Hand, null);
 
 			return;
 		}
 
-		if (_FirstGridPanel.HostedControlsCount == 0)
+		if (_MultiControlPnl.HostedControlsCount == 0)
 		{
-			_FirstGridPanel.HostedControlsMinInitialSize = C_MinNumberOfVisibleRows * (statisticsDlgGridControl.RowHeight + 1) + statisticsDlgGridControl.HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
-			_FirstGridPanel.HostedControlsMinSize = statisticsDlgGridControl.RowHeight + 1 + statisticsDlgGridControl.HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
+			_MultiControlPnl.HostedControlsMinInitialSize = C_MinNumberOfVisibleRows * (statisticsDlgGridControl.RowHeight + 1) + statisticsDlgGridControl.HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
+			_MultiControlPnl.HostedControlsMinSize = statisticsDlgGridControl.RowHeight + 1 + statisticsDlgGridControl.HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
 		}
 		statisticsDlgGridControl.EndInit();
-		_FirstGridPanel.AddControl(statisticsDlgGridControl, limitMaxControlHeightToClientArea: false);
+		_MultiControlPnl.AddControl(statisticsDlgGridControl, limitMaxControlHeightToClientArea: false);
 		_GridControls.Add(statisticsDlgGridControl);
 	}
 
@@ -541,9 +541,9 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		}
 	}
 
-	int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint cmds, OLECMD[] oleCmd, IntPtr cmdText)
+	int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		CommandID commandID = new CommandID(guidGroup, (int)oleCmd[0].cmdID);
+		CommandID commandID = new CommandID(guidGroup, (int)prgCmds[0].cmdID);
 		MenuCommand menuCommand = MenuService.FindCommand(commandID);
 
 		if (menuCommand == null)
@@ -578,11 +578,11 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 								}
 							}
 						}
-						oleCmd[0].cmdf = (uint)menuCommand.OleStatus;
+						prgCmds[0].cmdf = (uint)menuCommand.OleStatus;
 						return 0;
 					}
 			}
-			oleCmd[0].cmdf = (uint)menuCommand.OleStatus;
+			prgCmds[0].cmdf = (uint)menuCommand.OleStatus;
 			return 0;
 		}
 		return (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP;

@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Events;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -61,16 +62,16 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 	/// </summary>
 	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
-	public int QueryStatus(ref Guid guidGroup, uint nCmdId, OLECMD[] oleCmd, IntPtr oleText)
+	public int QueryStatus(ref Guid guidGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
 		if (guidGroup.Equals(VS.CLSID_CTextViewCommandGroup) && _RecongizableCommands != null)
 		{
 			int[] recongizableCommands = _RecongizableCommands;
 			for (int i = 0; i < recongizableCommands.Length; i++)
 			{
-				if (recongizableCommands[i] == (int)nCmdId)
+				if (recongizableCommands[i] == (int)cCmds)
 				{
-					oleCmd[0].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
+					prgCmds[0].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 					return VSConstants.S_OK;
 				}
 			}
@@ -83,7 +84,7 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 
 		Diag.ThrowIfNotOnUIThread();
 
-		return _NextTarget.QueryStatus(ref guidGroup, nCmdId, oleCmd, oleText);
+		return _NextTarget.QueryStatus(ref guidGroup, cCmds, prgCmds, pCmdText);
 	}
 
 	public int Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr vIn, IntPtr vOut)

@@ -117,8 +117,6 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	// Editor ContextSettingsModel
 	public static EnStatusBarPosition EditorContextStatusBarPosition =>
 		(EnStatusBarPosition)GetSetting("EditorContextStatusBarPosition", EnStatusBarPosition.Bottom);
-	public static string EditorContextBatchSeparator =>
-		(string)GetSetting("EditorContextBatchSeparator", SharedConstants.C_DefaultBatchSeparator);
 
 
 	// Editor ExecutionSettingsModel
@@ -126,6 +124,21 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	public static int EditorExecutionSetRowCount => (int)GetSetting("EditorExecutionGeneralSetRowCount", SharedConstants.C_DefaultSetRowCount);
 	public static EnBlobSubType EditorExecutionSetBlobDisplay => (EnBlobSubType)GetSetting("EditorExecutionGeneralSetBlobDisplay", SharedConstants.C_DefaultSetBlobDisplay);
 	public static int EditorExecutionTimeout => (int)GetSetting("EditorExecutionGeneralExecutionTimeout", SharedConstants.C_DefaultExecutionTimeout);
+
+	public static string EditorExecutionBatchSeparator
+	{
+		get
+		{
+			string value = (string)GetSetting("EditorExecutionGeneralBatchSeparator", SharedConstants.C_DefaultBatchSeparator);
+
+			value = value.Replace(" ", "");
+
+			if (value == "")
+				value = ";";
+
+			return value;
+		}
+	}
 
 	// Editor ExecutionAdvancedSettingsModel
 	public static bool EditorExecutionSetCount => (bool)GetSetting("EditorExecutionAdvancedSetCount", SharedConstants.C_DefaultSetCount);

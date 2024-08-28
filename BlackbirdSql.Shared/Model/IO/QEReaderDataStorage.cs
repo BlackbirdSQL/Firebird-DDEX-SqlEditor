@@ -94,7 +94,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 		await ConsumeDataWithoutStoringAsync(canceltoken);
 
-		return !canceltoken.IsCancellationRequested;
+		return !canceltoken.Cancelled();
 	}
 
 	public void Dispose()
@@ -151,7 +151,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 		await _StorageReader.GetSchemaTableAsync(cancelToken);
 
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return false;
 
 		int fieldCount = _StorageReader.FieldCount;
@@ -161,7 +161,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 			ColumnInfo columnInfo = new ColumnInfo();
 			await columnInfo.InitializeAsync(_StorageReader, i, cancelToken);
 
-			if (cancelToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 				return false;
 
 			_ColumnInfoArray.Add(columnInfo);
@@ -190,7 +190,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 		await GetDataFromReaderAsync(cancelToken);
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	public void InitiateStopStoringData()
@@ -203,20 +203,20 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 		// Tracer.Trace(GetType(), "QEReaderDataStorage.ConsumeDataWithoutStoring", "", null);
 		_IsClosed = false;
 
-		while (_DataStorageEnabled && !cancelToken.IsCancellationRequested
+		while (_DataStorageEnabled && !cancelToken.Cancelled()
 			&& await _StorageReader.ReadAsync(cancelToken));
 
 		_DataStorageEnabled = false;
 		await OnStorageNotifyAsync(-1L, true, cancelToken);
 		_IsClosed = true;
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	private async Task<bool> GetDataFromReaderAsync(CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
-		while (_DataStorageEnabled && !cancelToken.IsCancellationRequested
+		while (_DataStorageEnabled && !cancelToken.Cancelled()
 			&& await _StorageReader.ReadAsync(cancelToken))
 		{
 			Interlocked.Increment(ref _RowCount);
@@ -227,7 +227,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 		await OnStorageNotifyAsync(_RowCount, true, cancelToken);
 		_IsClosed = true;
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	private async Task<bool> OnStorageNotifyAsync(long i64RowsInStorage, bool bStoredAllData, CancellationToken cancelToken)

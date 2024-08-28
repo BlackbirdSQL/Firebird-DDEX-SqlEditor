@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Shared.Controls.Grid;
-using BlackbirdSql.Shared.Controls.Widgets;
 using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
@@ -298,7 +297,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 	{
 		get
 		{
-			if (m_selMgr.CurrentSelectionBlockIndex < 0)
+			if (_SelectionMgr.CurrentSelectionBlockIndex < 0)
 			{
 				return new BlockOfCells(0L, 0)
 				{
@@ -307,7 +306,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 				};
 			}
 
-			return m_selMgr.SelectedBlocks[m_selMgr.CurrentSelectionBlockIndex];
+			return _SelectionMgr.SelectedBlocks[_SelectionMgr.CurrentSelectionBlockIndex];
 		}
 	}
 
@@ -434,11 +433,11 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 				textBrush = m_foreBrush;
 			}
 
-			if (m_selMgr.IsCellSelected(nRow, nCol) && ContainsFocus)
+			if (_SelectionMgr.IsCellSelected(nRow, nCol) && ContainsFocus)
 			{
 				bkBrush = _selectedCellFocusedBrush;
 			}
-			else if (m_selMgr.IsCellSelected(nRow, nCol) && !ContainsFocus)
+			else if (_SelectionMgr.IsCellSelected(nRow, nCol) && !ContainsFocus)
 			{
 				bkBrush = _inactiveSelectedCellBrush;
 			}
@@ -545,7 +544,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 	public void SetSelectedCellsAndCurrentCell(BlockOfCellsCollection cells, long currentRow, int currentColumn)
 	{
 		SelectedCellsInternal(cells, bSet: true);
-		m_selMgr.SetCurrentCell(currentRow, currentColumn);
+		_SelectionMgr.SetCurrentCell(currentRow, currentColumn);
 	}
 
 	public void HandleMouseWheelDirectly(IntPtr wParam, IntPtr lParam)

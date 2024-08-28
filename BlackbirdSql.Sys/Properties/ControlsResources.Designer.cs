@@ -277,6 +277,15 @@ namespace BlackbirdSql.Sys.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Database Name: {0}.
+        /// </summary>
+        internal static string AdvancedMessageBox_SqlDatabaseName {
+            get {
+                return ResourceManager.GetString("AdvancedMessageBox_SqlDatabaseName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error Number: {0}.
         /// </summary>
         internal static string AdvancedMessageBox_SqlError {

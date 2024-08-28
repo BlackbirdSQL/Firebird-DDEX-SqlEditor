@@ -226,15 +226,15 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 	// Schema factory to handle custom collections asynchronously
 	async Task<DataTable> IBsNativeProviderSchemaFactory.GetSchemaAsync(IDbConnection connection, string collectionName,
-		string[] restrictions, CancellationToken cancellationToken)
+		string[] restrictions, CancellationToken cancelToken)
 	{
-		return await GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
+		return await GetSchemaAsync(connection, collectionName, restrictions, cancelToken);
 	}
 
 
 
 	public static async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions,
-		CancellationToken cancellationToken)
+		CancellationToken cancelToken)
 	{
 		// Tracer.Trace(typeof(ProviderSchemaFactoryService), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
 
@@ -275,17 +275,17 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			default:
 				try
 				{
-					return await ((FbConnection)connection).GetSchemaAsync(collectionName, restrictions, cancellationToken);
+					return await ((FbConnection)connection).GetSchemaAsync(collectionName, restrictions, cancelToken);
 				}
 				catch (Exception)
 				{
-					if (cancellationToken.IsCancellationRequested)
+					if (cancelToken.Cancelled())
 						return new DataTable();
 					throw;
 				}
 		}
 
-		if (cancellationToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return new DataTable();
 
 
@@ -320,7 +320,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
 
-		if (cancellationToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return new DataTable();
 
 		if (xmlStream == null)
@@ -350,7 +350,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			Thread.CurrentThread.CurrentCulture = oldCulture;
 		}
 
-		if (cancellationToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 		{
 			return new DataTable();
 		}
@@ -366,7 +366,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			throw;
 		}
 
-		if (cancellationToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 		{
 			return new DataTable();
 		}
@@ -393,13 +393,13 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		switch (collection[0]["PopulationMechanism"].ToString())
 		{
 			case "PrepareCollection":
-				table = await PrepareCollectionAsync(connection, collectionName, schemaCollection, restrictions, cancellationToken);
+				table = await PrepareCollectionAsync(connection, collectionName, schemaCollection, restrictions, cancelToken);
 				break;
 			case "DataTable":
 				table = ds.Tables[collection[0]["PopulationString"].ToString()].Copy();
 				break;
 			case "SQLCommand":
-				table = await SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
+				table = await SqlCommandSchemaAsync(connection, collectionName, restrictions, cancelToken);
 				break;
 			default:
 				NotSupportedException ex = new(Resources.ExceptionUnsupportedPopulationMechanism.FmtRes(collection[0]["PopulationMechanism"].ToString()));
@@ -490,7 +490,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 
 
-	private static async Task<DataTable> PrepareCollectionAsync(IDbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancellationToken)
+	private static async Task<DataTable> PrepareCollectionAsync(IDbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancelToken)
 	{
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollectionAsync", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
@@ -560,7 +560,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				throw ex;
 		}
 
-		return await dslSchema.GetSchemaAsync(connection, schemaCollection, restrictions, cancellationToken);
+		return await dslSchema.GetSchemaAsync(connection, schemaCollection, restrictions, cancelToken);
 	}
 
 
@@ -571,7 +571,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		Diag.Dug(exbb);
 		throw exbb;
 	}
-	private static async Task<DataTable> SqlCommandSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	private static async Task<DataTable> SqlCommandSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken = default)
 	{
 		await Cmd.AwaitableAsync();
 

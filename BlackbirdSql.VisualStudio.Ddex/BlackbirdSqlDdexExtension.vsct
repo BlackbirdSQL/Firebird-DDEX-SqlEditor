@@ -15,12 +15,21 @@
 				</Strings>
 			</Menu>
 
+			<!-- Commandwell Menu -->
+			<!--
+			<Menu guid="CommandSetGuid" id="MenuIdReusableWell" type="Menu">
+				<Strings>
+					<ButtonText>ReusableCmds</ButtonText>
+				</Strings>
+			</Menu>
+			-->
+
 			<!-- The SqlEditor Toolbar -->
 			<Menu guid="CommandSetGuid" id="ToolbarIdEditorWindow" type="Toolbar">
 				<CommandFlag>DefaultDocked</CommandFlag>
 				<Strings>
 					<ButtonText>Editor Toolbar</ButtonText>
-					<CommandName>EditorToolbar</CommandName>
+					<CommandName>CmdEditorToolbar</CommandName>
 				</Strings>
 			</Menu>
 
@@ -28,7 +37,7 @@
 			<Menu guid="CommandSetGuid" id="ContextIdResultsWindow" type="Context">
 				<Strings>
 					<ButtonText>Results Context Menu</ButtonText>
-					<CommandName>Results Context</CommandName>
+					<CommandName>CmdResultsContext</CommandName>
 				</Strings>
 			</Menu>
 
@@ -39,7 +48,7 @@
 				<CommandFlag>TextIsAnchorCommand</CommandFlag>
 				<Strings>
 					<ButtonText>Results To Menu Controller</ButtonText>
-					<CommandName>ResultsToMenuController</CommandName>
+					<CommandName>CmdResultsToMenuController</CommandName>
 				</Strings>
 			</Menu>
 		</Menus>
@@ -57,7 +66,7 @@
 					<ToolTipText>Select Database</ToolTipText>
 					<CanonicalName>DatabaseSelect</CanonicalName>
 					<LocCanonicalName>DatabaseSelect</LocCanonicalName>
-					<CommandName>DatabaseSelect</CommandName>
+					<CommandName>CmdDatabaseSelect</CommandName>
 				</Strings>
 			</Combo>
 		</Combos>
@@ -119,7 +128,7 @@
 
 			
 			<Group guid="CommandSetGuid" id="GrpIdReusableWell" priority="0xf600">
-				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_VIEW" />
 			</Group>
 		</Groups>
 
@@ -137,8 +146,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ExecuteQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ExecuteQuery</LocCanonicalName>
 					<ButtonText>Execute Query</ButtonText>
-					<CommandName>ExecuteQuery</CommandName>
+					<CommandName>CmdExecuteQuery</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdCancelQuery" priority="0x0200" type="Button">
@@ -148,7 +159,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.CancelQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.CancelQuery</LocCanonicalName>
 					<ButtonText>Cancel Query</ButtonText>
+					<CommandName>CmdCancelQuery</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdToggleTTS" priority="0x0300" type="Button">
@@ -158,7 +172,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ToggleTTS</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ToggleTTS</LocCanonicalName>
 					<ButtonText>Toggle TTS</ButtonText>
+					<CommandName>CmdToggleTTS</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdTransactionCommit" priority="0x0400" type="Button">
@@ -168,7 +185,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.TransactionCommit</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.TransactionCommit</LocCanonicalName>
 					<ButtonText>Commit</ButtonText>
+					<CommandName>CmdTransactionCommit</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdTransactionRollback" priority="0x0500" type="Button">
@@ -178,7 +198,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.TransactionRollback</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.TransactionRollback</LocCanonicalName>
 					<ButtonText>Rollback</ButtonText>
+					<CommandName>CmdTransactionRollback</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdConnect" priority="0x0100" type="Button">
@@ -188,7 +211,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.Connect</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.Connect</LocCanonicalName>
 					<ButtonText>Connect</ButtonText>
+					<CommandName>CmdConnect</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdDisconnect" priority="0x0200" type="Button">
@@ -198,7 +224,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.Disconnect</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.Disconnect</LocCanonicalName>
 					<ButtonText>Disconnect</ButtonText>
+					<CommandName>CmdDisconnect</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdModifyConnection" priority="0x0300" type="Button">
@@ -208,7 +237,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ModifyConnection</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ModifyConnection</LocCanonicalName>
 					<ButtonText>Modify Connection</ButtonText>
+					<CommandName>CmdModifyConnection</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0100" type="Button">
@@ -218,7 +250,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.NewQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.NewQuery</LocCanonicalName>
 					<ButtonText>New Query</ButtonText>
+					<CommandName>CmdNewQuery</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdCloneQuery" priority="0x0200" type="Button">
@@ -228,7 +263,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.CloneQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.CloneQuery</LocCanonicalName>
 					<ButtonText>Clone To New Query</ButtonText>
+					<CommandName>CmdCloneQuery</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdShowEstimatedPlan" priority="0x0100" type="Button">
@@ -238,7 +276,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ShowEstimatedPlan</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ShowEstimatedPlan</LocCanonicalName>
 					<ButtonText>Show Estimated Execution Plan</ButtonText>
+					<CommandName>CmdShowEstimatedPlan</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdToggleExecutionPlan" priority="0x0200" type="Button">
@@ -248,7 +289,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ToggleExecutionPlan</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ToggleExecutionPlan</LocCanonicalName>
 					<ButtonText>Include Actual Execution Plan on next Execution</ButtonText>
+					<CommandName>CmdToggleExecutionPlan</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0300" type="Button">
@@ -258,17 +302,23 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ToggleClientstatistics</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ToggleClientstatistics</LocCanonicalName>
 					<ButtonText>Include Client Statistics on next Execution</ButtonText>
+					<CommandName>CmdToggleClientstatistics</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdQuerySettings2" priority="0x0100" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdQuerySettingsToolbar" priority="0x0100" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdToolbarAdditional" />
 				<Icon guid="ImagesGuid" id="ImgQuerySettings" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ExecutionSettings</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ExecutionSettings</LocCanonicalName>
 					<ButtonText>Execution Settings</ButtonText>
+					<CommandName>CmdExecutionSettings</CommandName>
 				</Strings>
 			</Button>
 
@@ -280,8 +330,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ResultsAsGrid</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ResultsAsGrid</LocCanonicalName>
 					<ButtonText>Results As Grid</ButtonText>
-					<CommandName>ResultsAsGrid</CommandName>
+					<CommandName>CmdResultsAsGrid</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdResultsAsText" priority="0x0200" type="Button">
@@ -291,8 +343,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ResultsAsText</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ResultsAsText</LocCanonicalName>
 					<ButtonText>Results As Text</ButtonText>
-					<CommandName>ResultsAsText</CommandName>
+					<CommandName>CmdResultsAsText</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdResultsAsFile" priority="0x0300" type="Button">
@@ -302,8 +356,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ResultsAsFile</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ResultsAsFile</LocCanonicalName>
 					<ButtonText>Results To File</ButtonText>
-					<CommandName>ResultsAsFile</CommandName>
+					<CommandName>CmdResultsAsFile</CommandName>
 				</Strings>
 			</Button>
 
@@ -319,7 +375,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
-					<ButtonText>Intellisense Enabled</ButtonText>
+					<CanonicalName>BlackbirdSql.ToggleIntellisense</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ToggleIntellisense</LocCanonicalName>
+					<ButtonText>Intellisense Enable</ButtonText>
+					<CommandName>CmdToggleIntellisense</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdQuerySettings" priority="0x0040" type="Button">
@@ -328,7 +387,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ContextExecutionSettings</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ContextExecutionSettings</LocCanonicalName>
 					<ButtonText>Execution Settings...</ButtonText>
+					<CommandName>CmdContextExecutionSettings</CommandName>
 				</Strings>
 			</Button>
 
@@ -342,8 +404,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.NewQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.NewQuery</LocCanonicalName>
 					<ButtonText>New Sql Query</ButtonText>
-					<CommandName>CommandNewQueryUniversal</CommandName>
+					<CommandName>CmdNewQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewDesignerQuery" priority="0x0125" type="Button">
@@ -354,8 +418,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.NewDesignerQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.NewDesignerQuery</LocCanonicalName>
 					<ButtonText>New Designer Query</ButtonText>
-					<CommandName>CommandNewDesignerQueryUniversal</CommandName>
+					<CommandName>CmdNewDesignerQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdValidateSolution" priority="0x0130" type="Button">
@@ -366,8 +432,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.ValidateSolution</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.ValidateSolution</LocCanonicalName>
 					<ButtonText>Validate Solution Configurations</ButtonText>
-					<CommandName>CommandValidateSolutionUniversal</CommandName>
+					<CommandName>CmdValidateSolutionUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdTraceRct" priority="0x0135" type="Button">
@@ -378,8 +446,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.TraceRct</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.TraceRct</LocCanonicalName>
 					<ButtonText>Debug Trace Rct</ButtonText>
-					<CommandName>CommandTraceRctUniversal</CommandName>
+					<CommandName>CmdTraceRctUniversal</CommandName>
 				</Strings>
 			</Button>
 
@@ -394,8 +464,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.OpenTextObject</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.OpenTextObject</LocCanonicalName>
 					<ButtonText>Open SQL Query</ButtonText>
-					<CommandName>CommandTextOpenScriptUniversal</CommandName>
+					<CommandName>CmdTextOpenScriptUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdOpenAlterTextObject" priority="0x0130" type="Button">
@@ -406,8 +478,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.OpenAlterTextObject</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.OpenAlterTextObject</LocCanonicalName>
 					<ButtonText>Open Alter SQL Query</ButtonText>
-					<CommandName>CommandTextOpenAlterScriptUniversal</CommandName>
+					<CommandName>CmdTextOpenAlterScriptUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0135" type="Button">
@@ -418,8 +492,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.NewQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.NewQuery</LocCanonicalName>
 					<ButtonText>New Sql Query</ButtonText>
-					<CommandName>CommandNewQueryUniversal</CommandName>
+					<CommandName>CmdNewQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdRetrieveDesignerData" priority="0x0150" type="Button">
@@ -430,8 +506,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.RetrieveDesignerData</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.RetrieveDesignerData</LocCanonicalName>
 					<ButtonText>Retrieve Design Data</ButtonText>
-					<CommandName>CommandRetrieveDesignerUniversal</CommandName>
+					<CommandName>CmdRetrieveDesignerUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewDesignerQuery" priority="0x0160" type="Button">
@@ -442,8 +520,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.NewDesignerQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.NewDesignerQuery</LocCanonicalName>
 					<ButtonText>New Designer Query</ButtonText>
-					<CommandName>CommandNewDesignerQueryUniversal</CommandName>
+					<CommandName>CmdNewDesignerQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 
@@ -458,8 +538,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.OpenTextObject</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.OpenTextObject</LocCanonicalName>
 					<ButtonText>Open SQL Query</ButtonText>
-					<CommandName>CommandTextOpenScriptUniversal</CommandName>
+					<CommandName>CmdTextOpenScriptUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0135" type="Button">
@@ -470,8 +552,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.NewQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.NewQuery</LocCanonicalName>
 					<ButtonText>New Sql Query</ButtonText>
-					<CommandName>CommandNewQueryUniversal</CommandName>
+					<CommandName>CmdNewQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdRetrieveDesignerData" priority="0x0150" type="Button">
@@ -482,8 +566,10 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.RetrieveDesignerData</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.RetrieveDesignerData</LocCanonicalName>
 					<ButtonText>Retrieve Design Data</ButtonText>
-					<CommandName>CommandRetrieveDesignerUniversal</CommandName>
+					<CommandName>CmdRetrieveDesignerUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewDesignerQuery" priority="0x0170" type="Button">
@@ -494,41 +580,43 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
+					<CanonicalName>BlackbirdSql.NewDesignerQuery</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.NewDesignerQuery</LocCanonicalName>
 					<ButtonText>New Designer Query</ButtonText>
-					<CommandName>CommandNewDesignerQueryUniversal</CommandName>
+					<CommandName>CmdNewDesignerQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 
 		<!-- GrpIdReusableWell -->
 
-			<Button guid="CommandSetGuid" id="CmdIdCycleToNextTab" priority="0x0110" type="Button">
+			<!--
+			<Button guid="CommandSetGuid" id="CmdIdOleCycleToNextTab" priority="0x0110" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdReusableWell" />
 				<CommandFlag>CommandWellOnly</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
-				<!-- 
-				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
-				<CommandFlag>DefaultDisabled</CommandFlag>
-				-->
 				<Strings>
-					<ButtonText>CycleToNextTab</ButtonText>
-					<CommandName>CommandCycleToNextEditorTab</CommandName>
+					<CanonicalName>BlackbirdSql.OleCycleToNextTab</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.OleCycleToNextTab</LocCanonicalName>
+					<ButtonText>OleCycleToNextTab</ButtonText>
+					<CommandName>CmdOleCycleToNextEditorTab</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdCycleToPrevious" priority="0x0120" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdOleCycleToPreviousTab" priority="0x0120" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdReusableWell" />
 				<CommandFlag>CommandWellOnly</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
-				<!-- 
-				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
-				<CommandFlag>DefaultDisabled</CommandFlag>
-				-->
 				<Strings>
-					<ButtonText>CycleToPreviousTab</ButtonText>
-					<CommandName>CommandCycleToPreviousEditorTab</CommandName>
+					<CanonicalName>BlackbirdSql.OleCycleToPreviousTab</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.OleCycleToPreviousTab</LocCanonicalName>
+					<ButtonText>OleCycleToPreviousTab</ButtonText>
+					<CommandName>CmdOleCycleToPreviousEditorTab</CommandName>
 				</Strings>
 			</Button>
+			-->
 		</Buttons>
 
 
@@ -538,12 +626,15 @@
 		</Bitmaps>
 	</Commands>
 
+	<!--
 	<KeyBindings>
-		<KeyBinding guid="CommandSetGuid" id="CmdIdExecuteQuery" key1="E" mod1="Control Shift" editor="DslEditorFactoryGuid" />
-		<KeyBinding guid="CommandSetGuid" id="CmdIdCycleToNextTab" key1="VK_F6" editor="DslEditorFactoryGuid" />
-		<KeyBinding guid="CommandSetGuid" id="CmdIdCycleToPrevious" key1="VK_F6" mod1="Shift" editor="DslEditorFactoryGuid" />
+		<KeyBinding guid="CommandSetGuid" id="CmdIdExecuteQuery" key1="E" mod1="Control Shift" editor="EditorFactoryGuid"  />
+		<KeyBinding guid="CommandSetGuid" id="CmdIdOleCycleToNextTab" key1="VK_F6" editor="EditorFactoryGuid" />
+		<KeyBinding guid="CommandSetGuid" id="CmdIdOleCycleToPreviousTab" key1="J" mod1="Control Shift" editor="EditorFactoryGuid" />
 	</KeyBindings>
+	-->
 
+	
 	<CommandPlacements>
 
 		<!-- Placement for group. The parent of a group is a menu, context menu or toolbar. 
@@ -576,6 +667,7 @@
 			<Parent guid="CommandSetGuid" id="GrpIdEditorWindowContext"/>
 		</CommandPlacement>
 
+		
 		<!-- Context menu results window context select items -->
 		<CommandPlacement guid="CMDSETID_StandardCommandSet97" id="cmdidCopy" priority="0x0101" >
 			<Parent guid="CommandSetGuid" id="GrpIdResultsWindowContextSelect"/>
@@ -599,21 +691,27 @@
 		</CommandPlacement>
 
 		<!-- 
-		<CommandPlacement guid="CommandSetGuid" id="GrpIdReusableWell" priority="0xf600">
-			<Parent guid="CommandSetGuid" id="MenuIdToplevel" />
+		<CommandPlacement guid="CommandSetGuid" id="GrpIdReusableWell" priority="0x0100">
+			<Parent guid="CommandSetGuid" id="MenuIdReusableWell"/>
 		</CommandPlacement>
 		-->
 	</CommandPlacements>
 
+
+
+	
 
 	<Symbols>
 		<!-- This is the package guid. -->
 		<GuidSymbol name="AsyncPackageGuid" value="{7787981E-E42A-412F-A42B-9AD07A7DE169}" />
 
 		<!-- Editor guids -->
-		<GuidSymbol name="DslEditorFactoryGuid" value="{D5797F62-22B1-41BC-9B8C-E248EE895966}" />
-		<GuidSymbol name="DslEditorEncodedFactoryGuid" value="{A548D241-D8B6-4219-9B07-C69733805F73}" />
+		<GuidSymbol name="EditorFactoryGuid" value="{D5797F62-22B1-41BC-9B8C-E248EE895966}" />
+		<GuidSymbol name="EditorEncodedFactoryGuid" value="{A548D241-D8B6-4219-9B07-C69733805F73}" />
+		<GuidSymbol name="CodeEditorFactoryGuid" value="{8B382828-6202-11d1-8870-0000F87579D2}" />
 
+
+					
 		<!-- Server Explorer guid -->
 		<GuidSymbol name="SeRootGuid" value="{74D21310-2AEE-11D1-8BFB-00A0C90F26F7}">
 			<!-- server explorer - root node -->
@@ -637,6 +735,7 @@
 		<GuidSymbol name="CommandSetGuid" value="{C6972FD9-9586-438A-800E-1E72AC1FE4E6}">
 			<!-- 49665 -->
 			<IDSymbol name="MenuIdToplevel" value="0xC201" />
+
 			<!-- 20480 -->
 			<IDSymbol name="ToolbarIdEditorWindow" value="0x5000" />
 			<!-- 20481 unused -->
@@ -666,7 +765,6 @@
 			<!-- 20995 -->
 			<IDSymbol name="CtlrIdResultsToToolbar" value="0x5203" />
 			<!-- 20996 -->
-
 			<IDSymbol name="CtlrIdExecuteToolbar" value="0x5205" />
 
 			<IDSymbol name="GrpIdResultsToController" value="0x5300" />
@@ -674,7 +772,6 @@
 			<IDSymbol name="GrpIdEditorWindowContext" value="0x5400" />
 			<IDSymbol name="GrpIdResultsWindowContextSelect" value="0x5401" />
 			<IDSymbol name="GrpIdResultsWindowContextPrint" value="0x5402" />
-
 			<IDSymbol name="ContextIdResultsWindow" value="0x5403" />
 			<IDSymbol name="ContextIdMessageWindow" value="0x5404" />
 			<IDSymbol name="ContextIdExecutionPlanWindow" value="0x5405" />
@@ -735,11 +832,9 @@
 			<!-- 802 -->
 			<IDSymbol name="CmdIdCopyWithHeaders" value="0x0322" />
 			<!-- 803 -->
-			<IDSymbol name="CmdIdCycleToNextTab" value="0x0323" />
+			<IDSymbol name="CmdIdOleCycleToNextTab" value="0x0323" />
 			<!-- 804 -->
-			<IDSymbol name="CmdIdCycleToPrevious" value="0x0324" />
-			<!-- 806 -->
-			<IDSymbol name="CmdIdExecuteQueryBatch" value="0x0326" />
+			<IDSymbol name="CmdIdOleCycleToPreviousTab" value="0x0324" />
 			<!-- 807 -->
 			<IDSymbol name="CmdIdDisconnectAllQueries" value="0x0327" />
 			<!-- 808 -->
@@ -760,9 +855,11 @@
 			<IDSymbol name="CmdIdTransactionCommit" value="0x033B" />
 			<IDSymbol name="CmdIdTransactionRollback" value="0x033C" />
 			<IDSymbol name="CmdIdToggleTTS" value="0x033D" />
-			<IDSymbol name="CmdIdQuerySettings2" value="0x033E" />
+			<IDSymbol name="CmdIdQuerySettingsToolbar" value="0x033E" />
 		</GuidSymbol>
 
+
+		
 		<GuidSymbol name="ImagesGuid" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >
 			<IDSymbol name="ImgExecuteQuery" value="1" />
 			<IDSymbol name="ImgExecuteQueryNoResult" value="2" />

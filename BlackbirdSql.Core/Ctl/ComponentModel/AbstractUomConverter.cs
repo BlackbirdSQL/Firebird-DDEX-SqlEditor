@@ -27,7 +27,7 @@ namespace BlackbirdSql.Core.Ctl.ComponentModel;
 public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, IDisposable
 {
 	private IBsSettingsModel _Model = null;
-	private string _PropertyName = string.Empty;
+	private string _PropertyName = "";
 	private int _Min = int.MinValue, _Max = int.MaxValue;
 	private object _DefaultValue, _CurrentValue;
 	private int _MinLen = -1, _MaxLen = -1;

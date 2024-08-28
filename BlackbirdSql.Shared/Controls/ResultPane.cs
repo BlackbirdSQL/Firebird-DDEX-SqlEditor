@@ -4,6 +4,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Controls.Results;
 using BlackbirdSql.Shared.Events;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -47,12 +48,12 @@ public class ResultPane : WindowPane, IOleCommandTarget
 		_WindowPanel.Location = new Point(0, 0);
 	}
 
-	public int QueryStatus(ref Guid guidGroup, uint cmdId, OLECMD[] oleCmd, IntPtr oleText)
+	public int QueryStatus(ref Guid guidGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
 		if (_CmdTarget != null)
-			return _CmdTarget.QueryStatus(ref guidGroup, cmdId, oleCmd, oleText);
+			return _CmdTarget.QueryStatus(ref guidGroup, cCmds, prgCmds, pCmdText);
 
 		return (int)Constants.OLECMDERR_E_NOTSUPPORTED;
 	}

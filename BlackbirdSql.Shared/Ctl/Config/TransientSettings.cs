@@ -157,12 +157,6 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 		set { this["EditorContextStatusBarPosition"] = value; }
 	}
 
-	public new string EditorContextBatchSeparator
-	{
-		get { return (string)this["EditorContextBatchSeparator"]; }
-		set { this["EditorContextBatchSeparator"] = value; }
-	}
-
 
 	// Editor TabAndStatusBarSettingsModel
 	public new EnExecutionTimeMethod EditorStatusBarExecutionTimeMethod
@@ -229,11 +223,31 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 		get { return (EnBlobSubType)this["EditorExecutionGeneralSetBlobDisplay"]; }
 		set { this["EditorExecutionGeneralSetBlobDisplay"] = value; }
 	}
+
 	public new int EditorExecutionTimeout
 	{
 		get { return (int)this["EditorExecutionGeneralExecutionTimeout"]; }
 		set { this["EditorExecutionGeneralExecutionTimeout"] = value; }
 	}
+
+	public new string EditorExecutionBatchSeparator
+	{
+		get
+		{
+			string value = (string)this["EditorExecutionGeneralBatchSeparator"];
+			value = value.Replace(" ", "");
+
+			if (value == "")
+				value = ";";
+
+			return value;
+		}
+		set
+		{
+			this["EditorExecutionGeneralBatchSeparator"] = value;
+		}
+	}
+
 
 	// Editor ExecutionAdvancedSettingsModel
 	public new bool EditorExecutionSetCount

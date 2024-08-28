@@ -225,7 +225,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		if (tempFilename == null)
 		{
-			MessageCtl.ShowEx(string.Empty, Resources.ExCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx("", Resources.ExCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return false;
 		}
 
@@ -234,7 +234,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		{
 			initialScript ??= node != null
 				? node.GetDecoratedDdlSource(targetType)
-				: string.Empty;
+				: "";
 
 			streamWriter = new StreamWriter(tempFilename);
 			streamWriter.Write(initialScript);
@@ -242,15 +242,15 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			streamWriter.Close();
 			streamWriter = null;
 
-			RdtManager.InflightMonikerStack = moniker;
+			RdtManager.PushInflightMonikerStack = moniker;
 			RdtManager.InflightMonikerCsbTable.Add(moniker, csa);
 
 			OpenAsMiscellaneousFile(tempFilename, filename + NativeDb.Extension, new Guid(SystemData.C_EditorFactoryGuid),
-				string.Empty, VSConstants.LOGVIEWID_Primary);
+				"", VSConstants.LOGVIEWID_Primary);
 		}
 		catch
 		{
-			_ = RdtManager.InflightMonikerStack;
+			_ = RdtManager.PopInflightMonikerStack;
 			RdtManager.InflightMonikerCsbTable.Remove(moniker);
 		}
 		finally
@@ -277,7 +277,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		string tempFileName = Path.GetTempFileName();
 		if (tempFileName == null)
 		{
-			MessageCtl.ShowEx(string.Empty, Resources.ExCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx("", Resources.ExCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return;
 		}
 		StreamWriter streamWriter = null;
@@ -289,7 +289,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			streamWriter.Close();
 			streamWriter = null;
 			OpenAsMiscellaneousFile(tempFileName, pbstrItemName, new Guid(SystemData.C_EditorFactoryGuid),
-				string.Empty, VSConstants.LOGVIEWID_Primary);
+				"", VSConstants.LOGVIEWID_Primary);
 		}
 		finally
 		{
@@ -447,7 +447,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		if (alreadyLoaded)
 			return;
 
-		IBsTabbedEditorPane lastFocusedSqlEditor = ((IBsEditorPackage)ApcManager.PackageInstance).LastFocusedSqlEditor;
+		IBsTabbedEditorPane lastFocusedSqlEditor = ((IBsEditorPackage)ApcManager.PackageInstance).CurrentTabbedEditor;
 
 		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
 
@@ -461,7 +461,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 
 
-	private async Task<bool> OnSqlQueryLoadedAsync(AbstractCommand command, int delay)
+	private async Task<bool> OnSqlQueryLoadedAsync(IBsCommand command, int delay)
 	{
 		// Tracer.Trace(GetType(), "OnSqlQueryLoadedAsync()");
 

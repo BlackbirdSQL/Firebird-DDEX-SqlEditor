@@ -113,6 +113,12 @@ public class ExecutionSettingsModel : AbstractSettingsModel<ExecutionSettingsMod
 	[DefaultValue(SharedConstants.C_DefaultExecutionTimeout)]
 	public EnGlobalizedExecutionTimeout ExecutionTimeout { get; set; } = SharedConstants.C_DefaultExecutionTimeout;
 
+	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayExecutionBatchSeparator")]
+	[GlobalizedDescription("OptionDescriptionExecutionBatchSeparator")]
+	[DefaultValue(SharedConstants.C_DefaultBatchSeparator)]
+	public string BatchSeparator { get; set; } = SharedConstants.C_DefaultBatchSeparator;
+
 	[GlobalizedCategory("OptionCategoryObsolete")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetRowCount")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetRowCount")]

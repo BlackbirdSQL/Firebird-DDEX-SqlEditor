@@ -6,13 +6,15 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Controls.PropertiesWindow;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
-using BlackbirdSql.Shared.Interfaces;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
 
 
@@ -38,7 +40,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 	/// <summary>
 	/// Default .ctor.
 	/// </summary>
-	public ConnectionStrategy() : base()
+	public ConnectionStrategy(uint docCookie) : base(docCookie)
 	{
 	}
 
@@ -52,21 +54,14 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// _KeepAliveCancelTokenSource?.Dispose();
 		// _KeepAliveCancelTokenSource = null;
 
-		if (_OnInvalidateToolbar != null)
-			InvalidateToolbarEvent -= _OnInvalidateToolbar;
-
 		if (_OnNotifyConnectionState != null)
 			NotifyConnectionStateEvent -= _OnNotifyConnectionState;
 
-		_InvalidateToolbarEvent = null;
 		_NotifyConnectionStateEvent = null;
 		_OnNotifyConnectionState = null;
-		_OnInvalidateToolbar = null;
 
 		return true;
 	}
-
-
 
 
 	#endregion Constructors / Destructors
@@ -83,12 +78,9 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 	private CancellationTokenSource _KeepAliveCancelTokenSource = null;
 	private long _KeepAliveConnectionStartTimeEpoch = long.MinValue;
 	private ConnectedPropertiesWindow _PropertiesWindowObject;
+	private IVsWindowFrame _Frame = null;
 
-
-	private EventHandler _InvalidateToolbarEvent = null;
 	private NotifyConnectionStateEventHandler _NotifyConnectionStateEvent = null;
-
-	private EventHandler _OnInvalidateToolbar = null;
 	private NotifyConnectionStateEventHandler _OnNotifyConnectionState = null;
 
 	#endregion Fields
@@ -102,11 +94,10 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 	// =========================================================================================================
 
 
-
-	private event EventHandler InvalidateToolbarEvent
+	private long KeepAliveConnectionStartTimeEpoch
 	{
-		add { _InvalidateToolbarEvent += value; }
-		remove { _InvalidateToolbarEvent -= value; }
+		get { lock (_LockObject) return _KeepAliveConnectionStartTimeEpoch; }
+		set { lock (_LockObject) _KeepAliveConnectionStartTimeEpoch = value; }
 	}
 
 
@@ -206,7 +197,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 
 
 
-	public bool Initialize(IBsCsb csb, EventHandler onInvalidateToolbar, NotifyConnectionStateEventHandler onNotifyConnectionState)
+	public bool Initialize(IBsCsb csb, NotifyConnectionStateEventHandler onNotifyConnectionState)
 	{
 		if (csb != null)
 			SetDatabaseCsb(new ModelCsb(csb), true);
@@ -218,13 +209,10 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 
 		CancellationToken cancelToken = _KeepAliveCancelTokenSource.Token;
 
-		_OnInvalidateToolbar = onInvalidateToolbar;
 		_OnNotifyConnectionState = onNotifyConnectionState;
 
-		InvalidateToolbarEvent += _OnInvalidateToolbar;
 		NotifyConnectionStateEvent += _OnNotifyConnectionState;
-
-		
+				
 		// Fire and forget.
 		Task.Factory.StartNew(() => KeepAliveMonitoringAsync(cancelToken),
 			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
@@ -246,7 +234,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		long validationCardinal = 0L;
 
 
-		while (!cancelToken.IsCancellationRequested)
+		while (!cancelToken.Cancelled())
 		{
 			try
 			{
@@ -256,7 +244,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 				if (!result)
 					break;
 
-				Thread.Sleep(100);
+				Thread.Sleep(500);
 			}
 			catch (Exception ex)
 			{
@@ -266,6 +254,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 			}
 		}
 
+		_Frame = null;
 		_KeepAliveCancelTokenSource?.Dispose();
 		_KeepAliveCancelTokenSource = null;
 
@@ -290,17 +279,17 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// No connection open or query manager locked.
 		// =================================================================
 
-		if (cancelToken.IsCancellationRequested || !connected ||
+		if (cancelToken.Cancelled() || !connected ||
 			!RaiseNotifyConnectionState(EnNotifyConnectionState.RequestIsUnlocked, false))
 		{
-			if (!cancelToken.IsCancellationRequested && !connected)
+			if (!cancelToken.Cancelled() && !connected)
 				RaiseNotifyConnectionState(EnNotifyConnectionState.ConfirmedClosed, false);
 
-			_KeepAliveConnectionStartTimeEpoch = long.MinValue;
+			KeepAliveConnectionStartTimeEpoch = long.MinValue;
 			validationCardinal = 0L;
 			connectionId = long.MinValue;
 
-			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
+			return (!cancelToken.Cancelled(), connectionId, validationCardinal);
 		}
 
 
@@ -318,23 +307,23 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// Another process killed the connection unexpectedly.
 		// -----------------------------------------------------------------
 
-		if (cancelToken.IsCancellationRequested || Connection == null)
+		if (cancelToken.Cancelled() || Connection == null)
 		{
 			validationCardinal = 0L;
-			_KeepAliveConnectionStartTimeEpoch = long.MinValue;
+			KeepAliveConnectionStartTimeEpoch = long.MinValue;
 			connectionId = long.MinValue;
 
 			// ConnectionChangedEventArgs args = new(null, null);
 			// OnConnectionChanged(this, args);
 
-			if (!cancelToken.IsCancellationRequested)
+			if (!cancelToken.Cancelled())
 			{
 
-				RaiseInvalidateToolbar();
+				await RdtManager.InvalidateToolbarAsync(DocCookie);
 				RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyDead, hasTransactions);
 			}
 
-			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
+			return (!cancelToken.Cancelled(), connectionId, validationCardinal);
 		}
 
 
@@ -348,13 +337,13 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// The connection changed. Reset all counters.
 		// -----------------------------------------------------------------
 
-		if (cancelToken.IsCancellationRequested || connectionId < 0 || connectionId != MdlCsb.ConnectionId)
+		if (cancelToken.Cancelled() || connectionId < 0 || connectionId != MdlCsb.ConnectionId)
 		{
-			_KeepAliveConnectionStartTimeEpoch = long.MinValue;
+			KeepAliveConnectionStartTimeEpoch = long.MinValue;
 			validationCardinal = 0L;
 			connectionId = MdlCsb.ConnectionId;
 
-			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
+			return (!cancelToken.Cancelled(), connectionId, validationCardinal);
 		}
 
 
@@ -362,7 +351,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// -----------------------------------------------------------------
 		// Drift detection. Refresh connection and reset counters.
 		// -----------------------------------------------------------------
-		if (!cancelToken.IsCancellationRequested && !hasTransactions && RctManager.Loaded && MdlCsb.IsInvalidated)
+		if (!cancelToken.Cancelled() && !hasTransactions && RctManager.Loaded && MdlCsb.IsInvalidated)
 		{
 			Csb csaRegistered = RctManager.CloneRegistered(MdlCsb);
 
@@ -383,13 +372,13 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 					await VerifyOpenConnectionAsync(cancelToken);
 
 
-				if (!cancelToken.IsCancellationRequested)
-					RaiseInvalidateToolbar();
+				if (!cancelToken.Cancelled())
+					await RdtManager.InvalidateToolbarAsync(DocCookie);
 
-				_KeepAliveConnectionStartTimeEpoch = long.MinValue;
+				KeepAliveConnectionStartTimeEpoch = long.MinValue;
 				validationCardinal = 0L;
 
-				return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
+				return (!cancelToken.Cancelled(), connectionId, validationCardinal);
 			}
 		}
 
@@ -400,11 +389,11 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// Check validation modulus.
 		// =================================================================
 
-		if ((validationCardinal % LibraryData.C_ConnectionValidationModulus) != 0
-			|| cancelToken.IsCancellationRequested
+		if ((validationCardinal % LibraryData.C_KeepAliveValidationModulus) != 0L
+			|| cancelToken.Cancelled()
 			|| !RaiseNotifyConnectionState(EnNotifyConnectionState.RequestIsUnlocked, false))
 		{
-			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
+			return (!cancelToken.Cancelled(), connectionId, validationCardinal);
 		}
 
 
@@ -415,44 +404,43 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// =================================================================
 
 
-		validationCardinal = 0L;
+		long connectionLifeTime = !hasTransactions ? MdlCsb.ConnectionLifeTime : 0L;
 
-		int connectionLifeTime = !hasTransactions ? MdlCsb.ConnectionLifeTime : 0;
 
-		if (connectionLifeTime > 0)
+		if (connectionLifeTime > 0L)
 		{
-			if (_KeepAliveConnectionStartTimeEpoch == long.MinValue)
+			if (KeepAliveConnectionStartTimeEpoch == long.MinValue)
 			{
-				_KeepAliveConnectionStartTimeEpoch = DateTime.Now.UnixMilliseconds();
+				KeepAliveConnectionStartTimeEpoch = DateTime.Now.UnixSeconds();
 			}
 			else
 			{
-				long currentTimeEpoch = DateTime.Now.UnixMilliseconds();
+				long currentTimeEpoch = DateTime.Now.UnixSeconds();
 
-				if (currentTimeEpoch - _KeepAliveConnectionStartTimeEpoch > (connectionLifeTime * 1000))
+				if (currentTimeEpoch - KeepAliveConnectionStartTimeEpoch > (connectionLifeTime))
 				{
 					validationCardinal = 0L;
-					_KeepAliveConnectionStartTimeEpoch = long.MinValue;
+					KeepAliveConnectionStartTimeEpoch = long.MinValue;
 
 					// Sanity check.
-					if (!LiveTransactions && !cancelToken.IsCancellationRequested)
+					if (!LiveTransactions && !cancelToken.Cancelled())
 					{
 						CloseConnection();
 
-						if (!cancelToken.IsCancellationRequested)
+						if (!cancelToken.Cancelled())
 							RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyAutoClosed, false);
 					}
 
-					if (!cancelToken.IsCancellationRequested)
-						RaiseInvalidateToolbar();
+					if (!cancelToken.Cancelled())
+						await RdtManager.InvalidateToolbarAsync(DocCookie);
 
-					return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
+					return (!cancelToken.Cancelled(), connectionId, validationCardinal);
 				}
 			}
 		}
 		else
 		{
-			_KeepAliveConnectionStartTimeEpoch = long.MinValue;
+			KeepAliveConnectionStartTimeEpoch = long.MinValue;
 		}
 
 
@@ -463,18 +451,50 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		// =================================================================
 
 
-		if (!connected || cancelToken.IsCancellationRequested)
-			return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
+		if (!connected || cancelToken.Cancelled() || DocCookie == 0)
+		{
+			validationCardinal = 0L;
+			return (!cancelToken.Cancelled(), connectionId, validationCardinal);
+		}
+
+
+
+		// Offscreen Modulus validation if not onscreen.
+
+
+		if ((validationCardinal % LibraryData.C_KeepAliveOffscreenModulus) != 0)
+		{
+			bool onScreen = false;
+
+			_Frame ??= await RdtManager.GetWindowFrameAsync(DocCookie);
+
+			try
+			{
+				onScreen = _Frame != null && __(_Frame.IsOnScreen(out int pfOnScreen)) && pfOnScreen.AsBool();
+			}
+			catch (Exception ex)
+			{
+				Diag.DebugDug(ex);
+			}
+
+			if (!onScreen)
+				return (!cancelToken.Cancelled(), connectionId, validationCardinal);
+		}
+
+
+		validationCardinal = 0L;
+
 
 		// Remember the connection id because a new connection may be
 		// created while we're asynchronously checking.
+
 
 		connectionId = MdlCsb.ConnectionId;
 
 		await VerifyOpenConnectionAsync(cancelToken);
 
 
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return (false, connectionId, validationCardinal);
 
 		// If we're on the same connection after returning from an async call
@@ -494,18 +514,18 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 			}
 		}
 		else if (hasTransactions != HasTransactions)
-		{
-			RaiseInvalidateToolbar();
+		{ 
+			await RdtManager.InvalidateToolbarAsync(DocCookie);
 		}
 
-		return (!cancelToken.IsCancellationRequested, connectionId, validationCardinal);
+		return (!cancelToken.Cancelled(), connectionId, validationCardinal);
 	}
 
 
 
 	public void ResetKeepAliveTimeEpoch()
 	{
-		_KeepAliveConnectionStartTimeEpoch = long.MinValue;
+		KeepAliveConnectionStartTimeEpoch = long.MinValue;
 	}
 
 
@@ -582,12 +602,6 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 	// =========================================================================================================
 	#region Event Handling - ConnectionStrategy
 	// =========================================================================================================
-
-
-	protected override void RaiseInvalidateToolbar()
-	{
-		_InvalidateToolbarEvent?.Invoke(this, new EventArgs());
-	}
 
 
 	protected override bool RaiseNotifyConnectionState(EnNotifyConnectionState state, bool ttsDiscarded)

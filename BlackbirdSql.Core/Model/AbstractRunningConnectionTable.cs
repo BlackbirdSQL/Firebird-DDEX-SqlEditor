@@ -160,7 +160,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// </param>
 	/// <param name="outUniqueConnectionName">
 	/// Out | The unique resulting proposed ConnectionName. If null is returned then whatever was
-	/// provided in proposedConnectionName is correct and remains as is. If string.Empty is
+	/// provided in proposedConnectionName is correct and remains as is. If "" is
 	/// returned then whatever was provided in proposedConnectionName is good but changes the
 	/// existing name. If a value is returned then proposedConnectionName was
 	/// ambiguous and outUniqueConnectionName must be used in it's place.
@@ -168,7 +168,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// </param>
 	/// <param name="outUniqueDatasetId">
 	/// Out | The unique resulting proposed DatsetId. If null is returned then whatever was
-	/// provided in proposedDatasetId is correct and remains as is. If string.Empty is
+	/// provided in proposedDatasetId is correct and remains as is. If "" is
 	/// returned then whatever was provided in proposedDatasetId is good but changes the
 	/// existing name. If a value is returned then proposedDatasetId was ambiguous and
 	/// outUniqueDatasetId must be used in it's place. outUniqueConnectionName and
@@ -263,7 +263,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			{
 				// Does it change the existing?
 				if (existingConnectionName != null && existingConnectionName != proposedConnectionName)
-					outUniqueConnectionName = string.Empty;
+					outUniqueConnectionName = "";
 				else
 					outUniqueConnectionName = null;
 			}
@@ -283,7 +283,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 				existingDatasetId ??= GetDerivedDatasetIdFromConnectionName(dataSource, existingConnectionName);
 
 				if (existingDatasetId != null && existingDatasetId != proposedDatasetId)
-					outUniqueDatasetId = string.Empty;
+					outUniqueDatasetId = "";
 				else
 					outUniqueDatasetId = null;
 			}
@@ -302,7 +302,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 	/// <summary>
 	/// Attempts to extract a connectionName's equivalent datasetId. If it doesn't exist
-	/// and connectionName is not null then returns string.Empty to indicate there is an
+	/// and connectionName is not null then returns "" to indicate there is an
 	/// existing but it's value is imaginary, otherwise returns null.
 	/// </summary>
 	private string GetDerivedDatasetIdFromConnectionName(string dataSource, string connectionName)
@@ -312,8 +312,8 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		string[] split = S_DatasetKeyFormat.FmtRes(dataSource, "\n").Split('\n');
 
-		if ((split[0] == string.Empty || connectionName.StartsWith(split[0], StringComparison.InvariantCulture))
-			&& (split[1] == string.Empty || connectionName.EndsWith(split[1], StringComparison.InvariantCulture))
+		if ((split[0] == "" || connectionName.StartsWith(split[0], StringComparison.InvariantCulture))
+			&& (split[1] == "" || connectionName.EndsWith(split[1], StringComparison.InvariantCulture))
 			&& connectionName.Length > split[0].Length + split[1].Length)
 		{
 			int start = split[0].Length;
@@ -322,7 +322,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			return connectionName.Substring(start, len);
 		}
 
-		return string.Empty;
+		return "";
 	}
 
 

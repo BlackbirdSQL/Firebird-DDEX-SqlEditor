@@ -83,7 +83,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 			if (definedValuesListTypeDefinedValue.Items == null || definedValuesListTypeDefinedValue.Items.Length == 0)
 			{
 				stringBuilder.Append(text);
-				expandableObjectWrapper[text] = string.Empty;
+				expandableObjectWrapper[text] = "";
 				continue;
 			}
 			object obj = ConvertToObjectWrapper(definedValuesListTypeDefinedValue.Items);
@@ -113,7 +113,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 
 	public static ExpandableObjectWrapper Convert(WarningsType item)
 	{
-		string displayName = string.Empty;
+		string displayName = "";
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
 		ProcessSpillOccurred(expandableObjectWrapper, ref displayName);
 		ProcessColumnWithNoStatistics(expandableObjectWrapper, ref displayName);
@@ -346,7 +346,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 	{
 		if (item.ScalarOperator == null)
 		{
-			return string.Empty;
+			return "";
 		}
 		return item.ScalarOperator.ScalarString;
 	}
@@ -380,7 +380,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		object obj2 = expandableObjectWrapper["RangeExpressions"];
 		if (obj != null && obj2 != null)
 		{
-			string text = string.Empty;
+			string text = "";
 			switch (item.ScanType)
 			{
 			case EnCompareOpType.EQ:

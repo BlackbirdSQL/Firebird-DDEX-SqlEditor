@@ -220,7 +220,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 		_StorageReaderSchemaTable = await storageDataReader.GetSchemaTableAsync(cancelToken);
 
 
-		if (_IsStopping || cancelToken.IsCancellationRequested)
+		if (_IsStopping || cancelToken.Cancelled())
 		{
 			_IsStopping = false;
 
@@ -253,7 +253,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 		_StorageNotifyEventAsync = OnStorageNotifyAsync;
 		_QeStorage.StorageNotifyEventAsync += _StorageNotifyEventAsync;
 
-		if (_IsStopping || cancelToken.IsCancellationRequested)
+		if (_IsStopping || cancelToken.Cancelled())
 		{
 			_IsStopping = false;
 			_QeStorage.InitiateStopStoringData();
@@ -392,7 +392,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 		await obj.StartConsumingDataWithoutStoringAsync(cancelToken);
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	public async Task<bool> StartRetrievingDataAsync(int nMaxNumCharsToDisplay, int nMaxNumXmlCharsToDisplay, CancellationToken cancelToken)
@@ -417,7 +417,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 		await _QeStorage.StartStoringDataAsync(cancelToken);
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	public bool IsCellDataNull(long iRow, int iCol)
@@ -527,7 +527,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 	private async Task<bool> OnStorageNotifyAsync(long storageRowCount, bool storedAllData, CancellationToken cancelToken)
 	{
-		if (MoreRowsAvailableEventAsync != null && !cancelToken.IsCancellationRequested)
+		if (MoreRowsAvailableEventAsync != null && !cancelToken.Cancelled())
 		{
 			_CachedMoreInfoEventArgs.SetEventInfo(storedAllData, storageRowCount, cancelToken);
 			await MoreRowsAvailableEventAsync(this, _CachedMoreInfoEventArgs);
@@ -535,12 +535,12 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 		}
 
 
-		if (storedAllData || cancelToken.IsCancellationRequested)
+		if (storedAllData || cancelToken.Cancelled())
 		{
 			lock (_LockLocal)
 				_StoredAllData = true;
 		}
 
-		return !cancelToken.IsCancellationRequested && !storedAllData;
+		return !cancelToken.Cancelled() && !storedAllData;
 	}
 }

@@ -18,8 +18,10 @@ namespace BlackbirdSql.Shared;
 // =========================================================================================================
 public static class LibraryData
 {
-	public const int C_ConnectionValidationModulus = 20; // Approx 2 seconds.
 	public const int C_ChangeDatabaseErrorNumber = 5701;
+	public const long C_KeepAliveOffscreenModulus = 16L; // Approx 8 seconds.
+	public const long C_KeepAliveValidationModulus = 4L; // Approx 2 seconds.
+
 	public const string C_ShowPlanNamespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan";
 
 

@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Enums;
@@ -34,7 +33,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
 
-using OleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 
 
@@ -110,7 +109,6 @@ namespace BlackbirdSql.EditorExtension;
 [ProvideEditorLogicalView(typeof(EditorFactoryResults), VSConstants.LOGVIEWID.TextView_string)]
 
 
-
 #endregion Class Attributes
 
 
@@ -120,7 +118,7 @@ namespace BlackbirdSql.EditorExtension;
 // =========================================================================================================
 public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEditorPackage,
 	IVsTextMarkerTypeProvider, IVsFontAndColorDefaultsProvider, IVsBroadcastMessageEvents,
-	OleServiceProvider
+	IOleServiceProvider
 {
 
 	// ---------------------------------------------------------------------------------
@@ -194,6 +192,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 
+
 	// =========================================================================================================
 	#region Constants & Fields - EditorExtensionPackage
 	// =========================================================================================================
@@ -238,17 +237,17 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	public bool EnableSpatialResultsTab { get; set; }
 
-	public override IBsEventsManager EventsManager => _EventsManager;
+	public new IBsEventsManager EventsManager => _EventsManager;
 
 	public bool HasAuxillaryDocData => (_AuxDocDataTable?.Count ?? 0) > 0;
 
-	public IBsTabbedEditorPane LastFocusedSqlEditor { get; set; }
+	public IBsTabbedEditorPane CurrentTabbedEditor { get; set; }
 
 	public object LockLocal => _LockLocal;
 
 
-
 	#endregion Property accessors
+
 
 
 
@@ -260,60 +259,17 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Asynchronous initialization of the package. The class must register services it
-	/// requires using the ServicesCreatorCallback method.
-	/// </summary>
-	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-	{
-		ProgressAsync(progress, "InitialIzing Editor ...").Forget();
-
-		await base.InitializeAsync(cancellationToken, progress);
-
-		ProgressAsync(progress, "Initializing Editor. Proffering services...").Forget();
-
-		if (await GetServiceAsync(typeof(IProfferService)) is not IProfferService profferSvc)
-			throw Diag.ExceptionService(typeof(IProfferService));
-
-		Guid rguidMarkerService = PackageData.CLSID_EditorMarkerService;
-		___(profferSvc.ProfferService(ref rguidMarkerService, this, out _MarkerServiceCookie));
-
-		Guid rguidService = PackageData.CLSID_FontAndColorService;
-		___(profferSvc.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
-
-		ProgressAsync(progress, "Initializing Editor. Proffering services... Done.").Forget();
-
-		ProgressAsync(progress, "Initializing Editor. Registering Designer Explorer services...").Forget();
-
-		ServiceContainer.AddService(typeof(IBsDesignerExplorerServices), ServicesCreatorCallbackAsync, promote: true);
-		// ServiceContainer.AddService(typeof(IBDesignerOnlineServices), ServicesCreatorCallbackAsync, promote: true);
-		// Services.AddService(typeof(ISqlEditorStrategyProvider), ServicesCreatorCallbackAsync, promote: true);
-
-		ProgressAsync(progress, "Initializing Editor. Registering Designer Explorer services... Done.").Forget();
-
-		ProgressAsync(progress, "Initializing Editor. Initializing Tabbed Toolbar manager...").Forget();
-
-		InitializeTabbedEditorToolbarHandlerManager();
-
-		ProgressAsync(progress, "Initializing  Editor. Initializing Tabbed Toolbar manager... Done.").Forget();
-
-		ProgressAsync(progress, "Initializing Editor ... Done.").Forget();
-
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Final asynchronous initialization tasks for the package that must occur after
 	/// all descendents and ancestors have completed their InitializeAsync() tasks.
 	/// It is the final descendent package class's responsibility to initiate the call
 	/// to FinalizeAsync.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+	public override async Task FinalizeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
+		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState)
 			return;
 
 
@@ -333,23 +289,25 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		ProgressAsync(progress, "Finalizing Editor. Registering Editor factories... Done.").Forget();
 
 
-		ProgressAsync(progress, "Finalizing Editor. Registering OLE commands...").Forget();
-
-		await RegisterOleCommandsAsync();
-
-		ProgressAsync(progress, "Finalizing Editor. Registering OLE commands... Done.").Forget();
-
-
 		ProgressAsync(progress, "Finalizing Editor. Advising Broadcast messages....").Forget();
 
 		___((GetGlobalService(typeof(SVsShell)) as IVsShell).AdviseBroadcastMessages(this, out _BroadcastMessageEventsCookie));
 
 		ProgressAsync(progress, "Finalizing Editor. Advising Broadcast messages... Done.").Forget();
 
-		await base.FinalizeAsync(cancellationToken, progress);
+		await base.FinalizeAsync(cancelToken, progress);
+
+
+		ProgressAsync(progress, "Finalizing Editor. Registering OLE commands...").Forget();
+
+		// This just will not fire. There is somethig in the extension's package hierarchy that
+		// is causing this to fail, so handling SplitNext and SplitPrev in TabbedEditor.
+		// await RegisterOleCommandsAsync();
+
+		ProgressAsync(progress, "Finalizing Editor. Registering OLE commands... Done.").Forget();
+
 
 		ProgressAsync(progress, "Finalizing Editor... Done.").Forget();
-
 	}
 
 
@@ -362,36 +320,65 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	/// creates an instance of the service.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override async Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token)
+	public override async Task<TInterface> GetLocalServiceInstanceAsync<TService, TInterface>(CancellationToken token)
+		 where TInterface : class
 	{
-		if (serviceType == null)
-		{
-			ArgumentNullException ex = new("serviceType");
-			Diag.Dug(ex);
-			throw ex;
-		}
-		else if (serviceType == typeof(IBsDesignerExplorerServices))
-		{
-			object service = new DesignerExplorerServices()
-				?? throw Diag.ExceptionService(serviceType);
+		Type serviceType = typeof(TService);
 
-			return service;
-		}
+		if (serviceType == typeof(IBsDesignerExplorerServices))
+			return new DesignerExplorerServices() as TInterface;
+
 		/*
 		else if (serviceType == typeof(IBDesignerOnlineServices))
-		{
-			object service = new DesignerOnlineServices()
-				?? throw Diag.ExceptionService(serviceType);
-
-			return service;
-		}
+			return new DesignerOnlineServices() as TInterface;
 		*/
-		else if (serviceType.IsInstanceOfType(this))
-		{
-			return this;
-		}
 
-		return await base.CreateServiceInstanceAsync(serviceType, token);
+		return await base.GetLocalServiceInstanceAsync<TService, TInterface>(token);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Asynchronous initialization of the package. The class must register services it
+	/// requires using the ServicesCreatorCallback method.
+	/// </summary>
+	protected override async Task InitializeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
+	{
+		ProgressAsync(progress, "InitialIzing Editor ...").Forget();
+
+
+		await base.InitializeAsync(cancelToken, progress);
+
+		ProgressAsync(progress, "Initializing Editor. Proffering services...").Forget();
+
+		if (await GetServiceAsync(typeof(IProfferService)) is not IProfferService profferSvc)
+			throw Diag.ExceptionService(typeof(IProfferService));
+
+		Guid rguidMarkerService = PackageData.CLSID_EditorMarkerService;
+		___(profferSvc.ProfferService(ref rguidMarkerService, this, out _MarkerServiceCookie));
+
+		Guid rguidService = PackageData.CLSID_FontAndColorService;
+		___(profferSvc.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
+
+		ProgressAsync(progress, "Initializing Editor. Proffering services... Done.").Forget();
+
+		ProgressAsync(progress, "Initializing Editor. Registering Designer Explorer services...").Forget();
+
+		AddService(typeof(IBsDesignerExplorerServices), ServicesCreatorCallbackAsync, promote: false);
+		// AddService(typeof(IBDesignerOnlineServices), ServicesCreatorCallbackAsync, promote: false);
+		// AddService(typeof(ISqlEditorStrategyProvider), ServicesCreatorCallbackAsync, promote: false);
+
+		ProgressAsync(progress, "Initializing Editor. Registering Designer Explorer services... Done.").Forget();
+
+		ProgressAsync(progress, "Initializing Editor. Initializing Tabbed Toolbar manager...").Forget();
+
+		InitializeTabbedEditorToolbarHandlerManager();
+
+		ProgressAsync(progress, "Initializing  Editor. Initializing Tabbed Toolbar manager... Done.").Forget();
+
+		ProgressAsync(progress, "Initializing Editor ... Done.").Forget();
+
 	}
 
 
@@ -408,12 +395,13 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	public override async Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType)
 	{
 
-		if (serviceType == typeof(IBsDesignerExplorerServices)
-			/* || serviceType == typeof(IBDesignerOnlineServices) */)
-		{
-			return await CreateServiceInstanceAsync(serviceType, token);
-		}
+		if (serviceType == typeof(IBsDesignerExplorerServices))
+			return await GetLocalServiceInstanceAsync<IBsDesignerExplorerServices, IBsDesignerExplorerServices>(token);
 
+		/*
+		else if (serviceType == typeof(IBsDesignerOnlineServices))
+			return await GetLocalServiceInstanceAsync<IBsDesignerOnlineServices, IBsDesignerOnlineServices>(token);
+		*/
 
 		return await base.ServicesCreatorCallbackAsync(container, token, serviceType);
 	}
@@ -475,7 +463,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 			// Accessing the stack and pop.
-			string inflightMoniker = RdtManager.InflightMonikerStack;
+			string inflightMoniker = RdtManager.PopInflightMonikerStack;
 
 
 			IBsModelCsb csa = null;
@@ -528,7 +516,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 			bool createConnection = (creationFlags & EnCreationFlags.CreateConnection) > 0;
 
-			auxDocData.CreateQueryManager(createConnection ? csa : null);
+			auxDocData.CreateQueryManager(createConnection ? csa : null, cookie);
 
 
 			AuxDocDataTable.Add(docData, auxDocData);
@@ -635,50 +623,50 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	private static void InitializeTabbedEditorToolbarHandlerManager()
 	{
-		ToolbarCommandMapper toolbarMgr = AbstractTabbedEditorPane.ToolbarManager;
+		CommandMapper cmdMapper = AbstractTabbedEditorPane.CmdMapper;
 
-		if (toolbarMgr == null)
+		if (cmdMapper == null)
 			return;
 
 		Guid clsid = CommandProperties.ClsidCommandSet;
 
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandDatabaseSelect>(clsid, (uint)EnCommandSet.CmbIdDatabaseSelect));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandDatabaseList>(clsid, (uint)EnCommandSet.CmbIdDatabaseList));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandExecuteQuery>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandCancelQuery>(clsid, (uint)EnCommandSet.CmdIdCancelQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandConnect>(clsid, (uint)EnCommandSet.CmdIdConnect));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandDisconnect>(clsid, (uint)EnCommandSet.CmdIdDisconnect));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandDisconnectAllQueries>(clsid, (uint)EnCommandSet.CmdIdDisconnectAllQueries));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandModifyConnection>(clsid, (uint)EnCommandSet.CmdIdModifyConnection));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandShowEstimatedPlan>(clsid, (uint)EnCommandSet.CmdIdShowEstimatedPlan));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandCloneQueryWindow>(clsid, (uint)EnCommandSet.CmdIdCloneQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandToggleExecutionPlan>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandToggleClientStatistics>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandNewQuery>(clsid, (uint)EnCommandSet.CmdIdNewQuery));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandTransactionCommit>(clsid, (uint)EnCommandSet.CmdIdTransactionCommit));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandTransactionRollback>(clsid, (uint)EnCommandSet.CmdIdTransactionRollback));
-		toolbarMgr.AddMapping(typeof(TabbedEditorPane),
-			new ToolbarCommandHandler<CommandToggleTTS>(clsid, (uint)EnCommandSet.CmdIdToggleTTS));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandDatabaseSelect>(clsid, (uint)EnCommandSet.CmbIdDatabaseSelect));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandDatabaseList>(clsid, (uint)EnCommandSet.CmbIdDatabaseList));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandExecuteQuery>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandCancelQuery>(clsid, (uint)EnCommandSet.CmdIdCancelQuery));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandConnect>(clsid, (uint)EnCommandSet.CmdIdConnect));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandDisconnect>(clsid, (uint)EnCommandSet.CmdIdDisconnect));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandDisconnectAllQueries>(clsid, (uint)EnCommandSet.CmdIdDisconnectAllQueries));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandModifyConnection>(clsid, (uint)EnCommandSet.CmdIdModifyConnection));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandShowEstimatedPlan>(clsid, (uint)EnCommandSet.CmdIdShowEstimatedPlan));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandCloneQueryWindow>(clsid, (uint)EnCommandSet.CmdIdCloneQuery));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandToggleExecutionPlan>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandToggleClientStatistics>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandNewQuery>(clsid, (uint)EnCommandSet.CmdIdNewQuery));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandTransactionCommit>(clsid, (uint)EnCommandSet.CmdIdTransactionCommit));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandTransactionRollback>(clsid, (uint)EnCommandSet.CmdIdTransactionRollback));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandToggleTTS>(clsid, (uint)EnCommandSet.CmdIdToggleTTS));
 	}
 
 
 
-	int OleServiceProvider.QueryService(ref Guid serviceGuid, ref Guid interfaceGuid, out IntPtr service)
+	int IOleServiceProvider.QueryService(ref Guid serviceGuid, ref Guid interfaceGuid, out IntPtr service)
 	{
 		if (interfaceGuid == typeof(IVsTextMarkerTypeProvider).GUID && serviceGuid == PackageData.CLSID_EditorMarkerService)
 		{
@@ -692,9 +680,18 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 			return VSConstants.S_OK;
 		}
 
-		service = IntPtr.Zero;
+		object serviceObject = ((Package)this).QueryService(serviceGuid);
 
-		return VSConstants.E_NOINTERFACE;
+		if (serviceObject == null)
+		{
+			service = IntPtr.Zero;
+			return VSConstants.E_NOINTERFACE;
+		}
+
+		GetServicePointer(interfaceGuid, serviceObject, out service);
+
+		return VSConstants.S_OK;
+
 	}
 
 
@@ -720,34 +717,8 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 
-	private async Task RegisterOleCommandsAsync()
-	{
-		if (await GetServiceAsync(typeof(IMenuCommandService)) is not OleMenuCommandService oleMenuCommandSvc)
-			throw Diag.ExceptionService(typeof(OleMenuCommandService));
-
-		Guid clsid = CommandProperties.ClsidCommandSet;
-
-		CommandID id = new CommandID(clsid, (int)EnCommandSet.CmdIdNewQuery);
-		OleMenuCommand cmd = new(OnNewQuery, id);
-		cmd.BeforeQueryStatus += OnBeforeQueryStatus;
-		oleMenuCommandSvc.AddCommand(cmd);
-
-		CommandID id2 = new CommandID(clsid, (int)EnCommandSet.CmdIdCycleToNextTab);
-		OleMenuCommand cmd2 = new(OnCycleToNextEditorTab, id2);
-		cmd2.BeforeQueryStatus += OnBeforeQueryStatus;
-		oleMenuCommandSvc.AddCommand(cmd2);
-
-		CommandID id3 = new CommandID(clsid, (int)EnCommandSet.CmdIdCycleToPrevious);
-		OleMenuCommand cmd3 = new(OnCycleToPreviousEditorTab, id3);
-		cmd3.BeforeQueryStatus += OnBeforeQueryStatus;
-		oleMenuCommandSvc.AddCommand(cmd3);
-	}
-
-
-
 	public void RemoveAuxilliaryDocData(object docData)
 	{
-		// Tracer.Trace(GetType(), "RemoveAuxilliaryDocData()");
 
 		lock (_LockLocal)
 		{
@@ -808,70 +779,6 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	}
 
 
-
-	public bool TryGetTabbedEditorService(uint docCookie, bool activateIfOpen, out IBsEditorPaneServiceProvider tabbedEditorService)
-	{
-		// Tracer.Trace(GetType(), "TryGetTabbedEditorService()", "ENTER!!!");
-
-		IVsUIShellOpenDocument shellOpenDocumentSvc = ApcInstance.EnsureService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
-
-
-		Guid rguidEditorType = new(SystemData.C_MandatedSqlEditorFactoryGuid);
-		uint[] pitemidOpen = new uint[1];
-		IVsUIHierarchy pHierCaller = null;
-
-		RunningDocumentInfo docInfo;
-
-		lock (RdtManager.LockGlobal)
-			docInfo = RdtManager.GetDocumentInfo(docCookie);
-
-		string mkDocument = docInfo.Moniker;
-
-		if (!docInfo.IsDocumentInitialized)
-		{
-			Diag.Dug(new COMException($"Document for moniker {mkDocument} using document cookie {docCookie} is not initialized."));
-			tabbedEditorService = null;
-			return false;
-		}
-
-		__VSIDOFLAGS openDocumentFlags = activateIfOpen ? __VSIDOFLAGS.IDO_ActivateIfOpen : 0;
-
-		int hresult = shellOpenDocumentSvc.IsSpecificDocumentViewOpen(pHierCaller, uint.MaxValue,
-			mkDocument, ref rguidEditorType, null, (uint)openDocumentFlags,
-			out _, out pitemidOpen[0], out IVsWindowFrame ppWindowFrame, out int pfOpen);
-
-
-		if (!__(hresult) || !pfOpen.AsBool() || ppWindowFrame == null)
-		{
-			Diag.Dug(new COMException($"Failed to find window frame for moniker {mkDocument} using document cookie {docCookie}."));
-			tabbedEditorService = null;
-			return false;
-		}
-
-
-		if (!__(ppWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
-		{
-			Diag.Dug(new COMException($"Failed to get window frame DocView property for moniker {mkDocument} using document cookie {docCookie}."));
-			tabbedEditorService = null;
-			return false;
-		}
-
-		if (pvar is not IBsEditorPaneServiceProvider editorPane)
-		{
-			Diag.Dug(new COMException($"Window frame DocView property is not of type IBsEditorPaneServiceProvider for moniker {mkDocument} using document cookie {docCookie}."));
-			tabbedEditorService = null;
-			return false;
-		}
-
-
-		tabbedEditorService = editorPane;
-
-		// Tracer.Trace(GetType(), "TryGetTabbedEditorService()", "DONE!!!");
-
-		return true;
-	}
-
-
 	#endregion Methods and Implementations
 
 
@@ -882,8 +789,13 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	// =========================================================================================================
 
 
-	private void OnBeforeQueryStatus(object sender, EventArgs e)
+	/// <summary>
+	/// Deprecated.
+	/// </summary>
+	protected void OnBeforeQueryStatus(object sender, EventArgs e)
 	{
+		// Diag.DebugTrace("OnBeforeQueryStatus()");
+
 		if (sender is OleMenuCommand oleMenuCommand)
 		{
 			oleMenuCommand.Enabled = true;
@@ -903,33 +815,44 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 
 
-	private void OnCycleToNextEditorTab(object sender, EventArgs e)
+	/// <summary>
+	/// Deprecated.
+	/// </summary>
+	protected void OnCycleToNextEditorTab(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnCycleToNextEditorTab()");
-		LastFocusedSqlEditor?.ActivateNextTab();
+		// Diag.DebugTrace("OnCycleToNextEditorTab()");
+
+		CurrentTabbedEditor?.ActivateNextTab();
 	}
 
 
 
-	private void OnCycleToPreviousEditorTab(object sender, EventArgs e)
+	/// <summary>
+	/// Deprecated.
+	/// </summary>
+	protected void OnCycleToPreviousEditorTab(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnCycleToPreviousEditorTab()");
-		LastFocusedSqlEditor?.ActivatePreviousTab();
+		// Diag.DebugTrace("OnCycleToPreviousEditorTab()");
+
+		CurrentTabbedEditor?.ActivatePreviousTab();
 	}
 
 
 
-	private void OnNewQuery(object sender, EventArgs e)
+	/// <summary>
+	/// Deprecated.
+	/// </summary>
+	protected void OnNewQuery(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnNewQuery()");
+		// Diag.DebugTrace("OnNewQuery()");
 
 		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 		{
-			DesignerExplorerServices.OpenNewMiscellaneousSqlFile(Resources.NewQueryBaseName, string.Empty);
-			IBsTabbedEditorPane lastFocusedSqlEditor = LastFocusedSqlEditor;
+			DesignerExplorerServices.OpenNewMiscellaneousSqlFile(Resources.NewQueryBaseName, "");
+			IBsTabbedEditorPane tabbedEditor = CurrentTabbedEditor;
 
-			if (lastFocusedSqlEditor != null)
-				new CommandNewQuery(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
+			if (tabbedEditor != null)
+				new CommandNewQuery(tabbedEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
 		}
 	}
 

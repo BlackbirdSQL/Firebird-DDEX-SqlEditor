@@ -27,16 +27,15 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	  </Compile>
-	  <Compile Include="Root\DbConnectionService.cs" />
-	  <Compile Include="Root\DbCommandService.cs" />
 	  <Compile Include="Root\DatabaseInfoService.cs" />
 	  <Compile Include="Ctl\StringParser.cs" />
 	  <Compile Include="Root\DatabaseEngineService.cs" />
 	  <Compile Include="Root\DataConstants.cs" />
+	  <Compile Include="Root\DbExceptionService.cs" />
+	  <Compile Include="Root\DbServerExplorerService.cs" />
 	  <Compile Include="Root\ExtensionMembers.cs" />
 	  <Compile Include="GlobalSuppressions.cs" />
 	  <Compile Include="LibraryData.cs" />
-	  <Compile Include="Root\DbExceptionService.cs" />
 	  <Compile Include="Model\AbstractLinkageParser.cs" />
 	  <Compile Include="Model\AbstruseLinkageParser.cs" />
 	  <Compile Include="Model\BinaryEncoding.cs" />

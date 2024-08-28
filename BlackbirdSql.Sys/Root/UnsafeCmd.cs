@@ -91,7 +91,7 @@ public abstract class UnsafeCmd
 			VSSAVEFILENAMEW[] array = new VSSAVEFILENAMEW[1];
 			try
 			{
-				string empty = string.Empty;
+				string empty = "";
 				char[] array2 = new char[num];
 				intPtr = Marshal.AllocCoTaskMem(array2.Length * 2);
 				Marshal.Copy(array2, 0, intPtr, array2.Length);
@@ -145,7 +145,7 @@ public abstract class UnsafeCmd
 			catch (Exception e2)
 			{
 				Diag.Dug(e2);
-				MessageCtl.ShowEx(string.Empty, e2);
+				MessageCtl.ShowEx("", e2);
 				return null;
 			}
 			finally

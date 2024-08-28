@@ -89,7 +89,7 @@ public static class SqlTracer
 
 	public static bool TraceEvent(TraceEventType eventType, EnSqlTraceId traceId)
 	{
-		return TraceEvent(eventType, traceId, string.Empty);
+		return TraceEvent(eventType, traceId, "");
 	}
 
 	public static bool TraceEvent(TraceEventType eventType, EnSqlTraceId traceId, string message)
@@ -125,7 +125,7 @@ public static class SqlTracer
 
 	public static bool TraceException(EnSqlTraceId traceId, Exception exception, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", [CallerMemberName] string memberName = "")
 	{
-		return TraceException(TraceEventType.Error, traceId, exception, string.Empty, lineNumber, fileName, memberName);
+		return TraceException(TraceEventType.Error, traceId, exception, "", lineNumber, fileName, memberName);
 	}
 
 	public static bool TraceException(EnSqlTraceId traceId, Exception exception, string message, [CallerLineNumber] int lineNumber = 0, [CallerFilePath] string fileName = "", [CallerMemberName] string memberName = "")
@@ -161,7 +161,7 @@ public static class SqlTracer
 
 	public static bool TraceHResult(EnSqlTraceId traceId, int hr)
 	{
-		return TraceHResult(traceId, hr, string.Empty);
+		return TraceHResult(traceId, hr, "");
 	}
 
 	public static bool TraceHResult(EnSqlTraceId traceId, int hr, string message)

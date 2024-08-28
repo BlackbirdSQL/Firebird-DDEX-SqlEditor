@@ -23,7 +23,7 @@ public abstract class AbstractGlobalizedDescriptionAttribute : DescriptionAttrib
 			}
 			catch (Exception)
 			{
-				return string.Empty;
+				return "";
 			}
 		}
 	}

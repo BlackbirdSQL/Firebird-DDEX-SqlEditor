@@ -2,24 +2,26 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Data.Common;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Sys.Enums;
+using Microsoft.VisualStudio.Data.Services;
 
 
 
 namespace BlackbirdSql.Sys.Interfaces;
 
-[Guid(LibraryData.C_NativeDbCommandServiceGuid)]
+[Guid(LibraryData.C_NativeDbServerExplorerServiceGuid)]
 
 
 // =========================================================================================================
-//										IBsNativeDbCommand Interface
+//										IBsNativeDbServerExplorerService Interface
 //
 /// <summary>
-/// Interface for native DbException extension methods service.
+/// Interface for native db Server Explorer service.
 /// </summary>
 // =========================================================================================================
-public interface IBsNativeDbCommand
+public interface IBsNativeDbServerExplorerService
 {
-	int AddParameter(DbCommand @this, string name, int index, object value);
+	string GetDecoratedDdlSource_(IVsDataExplorerNode node, EnModelTargetType targetType);
+	int GetObjectTypeIdentifierLength_(string typeName);
 }

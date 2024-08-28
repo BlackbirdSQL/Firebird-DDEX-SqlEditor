@@ -117,8 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BatchErrorDialogMessage" xml:space="preserve">
+    <value>Server: {0}
+Database: {1}
+Statement #{2}: {3}</value>
+  </data>
   <data name="BatchErrorMessage" xml:space="preserve">
     <value>Statement #{0}: {1}</value>
+  </data>
+  <data name="BatchParseErrorDialogMessage" xml:space="preserve">
+    <value>Server: {0}
+Database: {1}
+Script parse error:
+{2}</value>
   </data>
   <data name="BatchParseErrorMessage" xml:space="preserve">
     <value>Script parse error:

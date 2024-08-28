@@ -518,8 +518,8 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 	{
 		// Tracer.Trace(GetType(), "OnMoreRowsAvailable()", "_ColumnCount: {0}, _MaxColSizes.Count: {1}", _ColumnCount, _MaxColSizes.Count);
 
-		if (args.CancelToken.IsCancellationRequested)
-			return await Cmd.AwaitableAsync(false);
+		if (args.CancelToken.Cancelled())
+			return await Task.FromResult(false);
 
 		if (args.AllRows)
 		{
@@ -534,7 +534,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 			_Results.Clear();
 			_MaxColSizes.Clear();
 
-			return await Cmd.AwaitableAsync(false);
+			return await Task.FromResult(false);
 		}
 
 		long iRow = args.NewRowsNumber - 1;
@@ -577,7 +577,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 		// Tracer.Trace(GetType(), "OnMoreRowsAvailable", "Row string: {0}", _RowBuilder.ToString());
 
-		return !args.CancelToken.IsCancellationRequested;
+		return !args.CancelToken.Cancelled();
 	}
 
 
@@ -589,7 +589,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 		await args.ResultSet.InitializeAsync(true, args.CancelToken);
 
-		if (args.CancelToken.IsCancellationRequested)
+		if (args.CancelToken.Cancelled())
 			return false;
 
 		if (DiscardResults)
@@ -611,7 +611,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 		await _ResultSet.StartRetrievingDataAsync(_MaxCharsPerColumn, _ResultsControl.LiveSettings.EditorResultsGridMaxCharsPerColumnXml, args.CancelToken);
 
-		return !args.CancelToken.IsCancellationRequested;
+		return !args.CancelToken.Cancelled();
 	}
 
 	public override void OnFinishedProcessingResultSet(object sender, EventArgs args)

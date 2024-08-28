@@ -624,7 +624,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// multiplier.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD003:Avoid awaiting foreign Tasks", Justification = "<Pending>")]
+	[SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
 	private async Task<bool> DelayAsync(int delay, int multiplier, CancellationToken userToken)
 	{
 		// Tracer.Trace(GetType(), "DelayAsync()", "Entering - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
@@ -636,7 +636,7 @@ public class LinkageParser : AbstractLinkageParser
 
 		for (i = 0; i < multiplier; i++)
 		{
-			if (userToken.IsCancellationRequested || _AsyncPayloadLauncher == null)
+			if (userToken.Cancelled() || _AsyncPayloadLauncher == null)
 			{
 				break;
 			}
@@ -644,7 +644,7 @@ public class LinkageParser : AbstractLinkageParser
 
 			try
 			{
-				await _AsyncPayloadLauncher.WaitAsync(delay, userToken);
+				_AsyncPayloadLauncher.Wait(delay, userToken);
 			}
 			catch // (OperationCanceledException ex)
 			{
@@ -654,7 +654,7 @@ public class LinkageParser : AbstractLinkageParser
 		// Tracer.Trace(GetType(), "DelayAsync()", "Exiting - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
 
 
-		return !userToken.IsCancellationRequested && _AsyncPayloadLauncher != null;
+		return await Task.FromResult(!userToken.Cancelled() && _AsyncPayloadLauncher != null);
 	}
 
 
@@ -763,7 +763,7 @@ public class LinkageParser : AbstractLinkageParser
 
 		try
 		{
-			if (userCancellationToken.IsCancellationRequested)
+			if (userCancellationToken.Cancelled())
 			{
 				_Enabled = false;
 			}
@@ -773,7 +773,7 @@ public class LinkageParser : AbstractLinkageParser
 				{
 					await PopulateLinkageTablesAsync(userCancellationToken, "AsyncId", asyncProcessId);
 				}
-				else if (userCancellationToken.IsCancellationRequested)
+				else if (userCancellationToken.Cancelled())
 				{
 					_Enabled = false;
 				}
@@ -858,7 +858,7 @@ public class LinkageParser : AbstractLinkageParser
 				}
 				await GetRawGeneratorSchemaAsync(connection, cancelToken);
 
-				if (cancelToken.IsCancellationRequested)
+				if (cancelToken.Cancelled())
 					_Enabled = false;
 
 				if (!IsTransient)
@@ -891,7 +891,7 @@ public class LinkageParser : AbstractLinkageParser
 				}
 				await GetRawTriggerDependenciesSchemaAsync(connection, cancelToken);
 
-				if (AsyncActive && cancelToken.IsCancellationRequested)
+				if (AsyncActive && cancelToken.Cancelled())
 					_Enabled = false;
 
 				if (!IsTransient)
@@ -925,7 +925,7 @@ public class LinkageParser : AbstractLinkageParser
 				}
 				await GetRawTriggerSchemaAsync(connection, cancelToken);
 
-				if (cancelToken.IsCancellationRequested)
+				if (cancelToken.Cancelled())
 					_Enabled = false;
 
 				if (!IsTransient)
@@ -973,7 +973,7 @@ public class LinkageParser : AbstractLinkageParser
 
 				BuildSequenceTable();
 
-				if (cancelToken.IsCancellationRequested)
+				if (cancelToken.Cancelled())
 					_Enabled = false;
 
 				if (!IsTransient)
@@ -1213,7 +1213,7 @@ public class LinkageParser : AbstractLinkageParser
 					// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_SyncWaitAsyncTask.Cancelled "); //, ex.Message);
 				}
 
-				if ((_TaskHandler.UserCancellation.IsCancellationRequested || disabling) && AsyncPending)
+				if ((_TaskHandler.UserCancellation.Cancelled() || disabling) && AsyncPending)
 				{
 					pendingTimeout -= 100;
 

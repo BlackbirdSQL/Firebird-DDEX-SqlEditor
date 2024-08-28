@@ -34,7 +34,6 @@ public interface IBsEditorTransientSettings
 
 	// Editor ContextSettingsModel
 	EnStatusBarPosition EditorContextStatusBarPosition { get; set; }
-	string EditorContextBatchSeparator { get; set; }
 
 
 	// Editor TabAndStatusBarSettingsModel
@@ -54,6 +53,7 @@ public interface IBsEditorTransientSettings
 	int EditorExecutionSetRowCount { get; set; }
 	EnBlobSubType EditorExecutionSetBlobDisplay { get; set; }
 	int EditorExecutionTimeout { get; set; }
+	string EditorExecutionBatchSeparator { get; set; }
 
 	// Editor ExecutionAdvancedSettingsModel
 	bool EditorExecutionSetCount { get; set; }

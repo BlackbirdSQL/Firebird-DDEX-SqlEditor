@@ -80,10 +80,15 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 			{
 				return VSConstants.E_FAIL;
 			}
-			if (guidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && (nCmdId - 935 <= 1 || nCmdId == 1107 || nCmdId == 1915))
+
+			if (guidCmdGroup == VSConstants.GUID_VSStandardCommandSet97
+				&& (nCmdId - (uint)VSConstants.VSStd97CmdID.GotoDefn <= 1
+				|| nCmdId == (uint)VSConstants.VSStd97CmdID.GotoRef
+				|| nCmdId == (uint)VSConstants.VSStd97CmdID.FindReferences))
 			{
 				return VSConstants.E_FAIL;
 			}
+
 			if (guidCmdGroup == VSConstants.VSStd2K)
 			{
 				switch (cmdId)
@@ -161,15 +166,18 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 						}
 				}
 			}
-			if (guidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdId == 1915)
+			if (guidCmdGroup == VSConstants.GUID_VSStandardCommandSet97
+				&& nCmdId == (uint)VSConstants.VSStd97CmdID.FindReferences)
 			{
 				HandleGotoReference();
 				return true;
 			}
+
 			if (guidCmdGroup == _ClsidSqlLanguageServiceCommands && nCmdId == 70)
 			{
 				return true;
 			}
+
 			return base.HandlePreExec(ref guidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
 		}
 

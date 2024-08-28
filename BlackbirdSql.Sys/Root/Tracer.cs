@@ -107,7 +107,7 @@ public class Tracer : IBsTrace // , IBExportable
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "")
 	{
-		LogExCatch(t, e, string.Empty, sourceLineNumber, memberName, sourceFilePath);
+		LogExCatch(t, e, "", sourceLineNumber, memberName, sourceFilePath);
 	}
 
 
@@ -128,7 +128,7 @@ public class Tracer : IBsTrace // , IBExportable
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "")
 	{
-		Diag.Dug(e, string.Empty, memberName, sourceFilePath, sourceLineNumber);
+		Diag.Dug(e, "", memberName, sourceFilePath, sourceLineNumber);
 		SqlTracer.TraceException(EnSqlTraceId.SqlEditorAndLanguageServices, e, 76, "TraceUtils.cs", "LogExThrow");
 	}
 

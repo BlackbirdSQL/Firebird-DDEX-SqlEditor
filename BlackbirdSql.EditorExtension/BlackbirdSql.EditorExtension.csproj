@@ -84,7 +84,7 @@
 		<Compile Include="Root\AbstruseEditorFactory.cs" />
 		<Compile Include="Root\EditorFactoryEncoded.cs" />
 		<Compile Include="Root\EditorFactory.cs" />
-		<Compile Include="Ctl\ToolbarCommandHandler.cs" />
+		<Compile Include="Ctl\CommandHandler.cs" />
 		<Compile Include="Root\EditorFactoryResults.cs" />
 		<Compile Include="Events\MonitorSelectionEventArgs.cs" />
 	</ItemGroup>

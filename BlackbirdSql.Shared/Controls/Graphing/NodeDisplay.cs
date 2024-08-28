@@ -78,14 +78,14 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		{
 			if (NodeOriginal.Operation == Operation.Unknown)
 			{
-				return string.Empty;
+				return "";
 			}
 			string text = NodeOriginal["PhysicalOp"] as string;
 			if (text == null)
 			{
 				if (NodeOriginal.Operation == null)
 				{
-					return string.Empty;
+					return "";
 				}
 				text = NodeOriginal.Operation.DisplayName;
 			}
@@ -184,7 +184,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 			double num = NodeOriginal.RelativeCost * 100.0;
 			if (HasPDWCost && num <= 0.0)
 			{
-				return string.Empty;
+				return "";
 			}
 			return ControlsResources.Graphing_OperatorDisplayCost.FmtRes(NodeOriginal.Cost, (int)Math.Round(num));
 		}
@@ -424,7 +424,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 
 	string ICustomTypeDescriptor.GetClassName()
 	{
-		return string.Empty;
+		return "";
 	}
 
 	public override void UpdateBoundingRectangle(Graphics graphics)
@@ -639,7 +639,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 
 	private string GetObjectNameForDisplay(object objectProperty)
 	{
-		string result = string.Empty;
+		string result = "";
 		if (objectProperty != null)
 		{
 			result = objectProperty.ToString();

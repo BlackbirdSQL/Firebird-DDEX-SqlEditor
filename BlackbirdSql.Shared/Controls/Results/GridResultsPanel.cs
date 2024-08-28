@@ -164,10 +164,10 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		try
 		{
 			base.Initialize(rawServiceProvider);
-			_FirstGridPanel.Dock = DockStyle.Fill;
-			_FirstGridPanel.Height = ClientRectangle.Height;
-			_FirstGridPanel.Tag = -1;
-			Controls.Add(_FirstGridPanel);
+			_MultiControlPnl.Dock = DockStyle.Fill;
+			_MultiControlPnl.Height = ClientRectangle.Height;
+			_MultiControlPnl.Tag = -1;
+			Controls.Add(_MultiControlPnl);
 			if (m_brushNullObjects == null)
 			{
 				Color color = Color.FromKnownColor(KnownColor.Info);
@@ -184,11 +184,11 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		base.Clear();
 
-		if (_FirstGridPanel != null)
+		if (_MultiControlPnl != null)
 		{
-			for (int i = 0; i < _FirstGridPanel.HostedControlsCount; i++)
+			for (int i = 0; i < _MultiControlPnl.HostedControlsCount; i++)
 			{
-				if (_FirstGridPanel.GetHostedControl(i) is GridResultsGrid gridResultsGrid)
+				if (_MultiControlPnl.GetHostedControl(i) is GridResultsGrid gridResultsGrid)
 				{
 					gridResultsGrid.AdjustSelectionForButtonClickEvent -= OnAdjustSelectionForButtonClick;
 					gridResultsGrid.GridSpecialEvent -= new GridSpecialEventHandler(OnSpecialGridEvent);
@@ -238,12 +238,12 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		if (m_includeColumnHeaders)
 		{
 			grid.GetHeaderInfo(1, out string text, out Bitmap _);
-			stringBuilder.Append(text ?? string.Empty);
+			stringBuilder.Append(text ?? "");
 			for (int i = 2; i <= numberOfDataColumns; i++)
 			{
 				grid.GetHeaderInfo(i, out text, out Bitmap _);
 				stringBuilder.Append(value);
-				stringBuilder.Append(text ?? string.Empty);
+				stringBuilder.Append(text ?? "");
 			}
 
 			writer.WriteLine(stringBuilder.ToString());
@@ -295,13 +295,13 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		((Control)(object)gridResultsGrid).Font = curGridFont;
 		gridResultsGrid.HeaderFont = curGridFont;
 		gridResultsGrid.SetIncludeHeadersOnDragAndDrop(m_includeColumnHeaders);
-		if (_FirstGridPanel.HostedControlsCount == 0)
+		if (_MultiControlPnl.HostedControlsCount == 0)
 		{
-			_FirstGridPanel.HostedControlsMinInitialSize = SharedConstants.C_DefaultInitialMinNumberOfVisibleRows * (gridResultsGrid.RowHeight + 1) + gridResultsGrid.HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(gridResultsGrid.BorderStyle);
-			_FirstGridPanel.HostedControlsMinSize = ((Control)(object)gridResultsGrid).GetPreferredSize(((Control)(object)gridResultsGrid).Size).Height;
+			_MultiControlPnl.HostedControlsMinInitialSize = SharedConstants.C_DefaultInitialMinNumberOfVisibleRows * (gridResultsGrid.RowHeight + 1) + gridResultsGrid.HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(gridResultsGrid.BorderStyle);
+			_MultiControlPnl.HostedControlsMinSize = ((Control)(object)gridResultsGrid).GetPreferredSize(((Control)(object)gridResultsGrid).Size).Height;
 		}
 
-		_FirstGridPanel.AddControl((Control)(object)gridResultsGrid, limitMaxControlHeightToClientArea: false);
+		_MultiControlPnl.AddControl((Control)(object)gridResultsGrid, limitMaxControlHeightToClientArea: false);
 		((Control)(object)gridResultsGrid).BackColor = curBkColor;
 		cont.Initialize(gridResultsGrid);
 		cont.GridCtl.SetBkAndForeColors(curBkColor, curFkColor);
@@ -816,9 +816,9 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		return null;
 	}
 
-	public int QueryStatus(ref Guid guidGroup, uint nCmdId, OLECMD[] oleCmd, IntPtr oleText)
+	public int QueryStatus(ref Guid guidGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		CommandID commandID = new CommandID(guidGroup, (int)oleCmd[0].cmdID);
+		CommandID commandID = new CommandID(guidGroup, (int)prgCmds[0].cmdID);
 		MenuCommand menuCommand = MenuService.FindCommand(commandID);
 
 		if (menuCommand == null)
@@ -855,7 +855,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 							}
 						}
 
-						oleCmd[0].cmdf = (uint)menuCommand.OleStatus;
+						prgCmds[0].cmdf = (uint)menuCommand.OleStatus;
 						return VSConstants.S_OK;
 					}
 			}
@@ -875,7 +875,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 					break;
 			}
 
-			oleCmd[0].cmdf = (uint)menuCommand.OleStatus;
+			prgCmds[0].cmdf = (uint)menuCommand.OleStatus;
 			return VSConstants.S_OK;
 		}
 

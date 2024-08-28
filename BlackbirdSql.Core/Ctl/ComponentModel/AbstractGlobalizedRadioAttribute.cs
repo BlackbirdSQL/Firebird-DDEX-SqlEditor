@@ -27,7 +27,7 @@ public abstract class AbstractGlobalizedRadioAttribute : DescriptionAttribute
 			}
 			catch (Exception)
 			{
-				return string.Empty;
+				return "";
 			}
 		}
 	}

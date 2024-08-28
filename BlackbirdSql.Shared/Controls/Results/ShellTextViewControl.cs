@@ -457,7 +457,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 	int IVsCodeWindow.GetEditorCaption(READONLYSTATUS status, out string baseEditorCaption)
 	{
-		baseEditorCaption = string.Empty;
+		baseEditorCaption = "";
 		return VSConstants.E_NOTIMPL;
 	}
 

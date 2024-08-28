@@ -39,7 +39,7 @@ public sealed class CopyToClipboardEventArgs : EventArgs
 
 	public CopyToClipboardEventArgs()
 	{
-		m_clipboardText = string.Empty;
+		m_clipboardText = "";
 		m_eventHandled = false;
 	}
 }

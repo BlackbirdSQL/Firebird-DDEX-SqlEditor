@@ -331,7 +331,7 @@ public abstract class VS
 	public static DialogResult SafeShowMessageBox(string title, string text,
 		MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
-		return SafeShowMessageBox(title, text, string.Empty, buttons, icon);
+		return SafeShowMessageBox(title, text, "", buttons, icon);
 	}
 
 

@@ -152,7 +152,7 @@ public class TConnectionUIProperties : TConnectionProperties
 				// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}", ConnectionSource);
 			}
 
-			OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
+			OnPropertyChanged(new PropertyChangedEventArgs(""));
 		}
 		catch (Exception ex)
 		{

@@ -19,7 +19,7 @@ public class CommandDisconnectAllQueries : AbstractCommand
 	{
 	}
 
-	public CommandDisconnectAllQueries(IBsTabbedEditorPane editorPane) : base(editorPane)
+	public CommandDisconnectAllQueries(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
 	}
 
@@ -37,7 +37,7 @@ public class CommandDisconnectAllQueries : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		foreach (AuxilliaryDocData value in EditorPane.ExtensionInstance.AuxDocDataTable.Values)
+		foreach (AuxilliaryDocData value in TabbedEditor.ExtensionInstance.AuxDocDataTable.Values)
 		{
 			QueryManager qryMgr = value.QryMgr;
 

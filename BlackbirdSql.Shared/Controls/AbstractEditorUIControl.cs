@@ -28,15 +28,15 @@ namespace BlackbirdSql.Shared.Controls;
 public abstract class AbstractEditorUIControl : Control, IServiceProvider
 {
 
-	public AbstractEditorUIControl(IBsTabbedEditorPane editorPane, Guid toolbarGuid, uint mnuIdTabbedEditorToolbar)
+	public AbstractEditorUIControl(IBsTabbedEditorPane tabbedEditor, Guid toolbarGuid, uint mnuIdTabbedEditorToolbar)
 		: base()
 	{
 		SuspendLayout();
 
 		try
 		{
-			EditorPane = editorPane;
-			_Provider = editorPane;
+			TabbedEditor = tabbedEditor;
+			_Provider = tabbedEditor;
 			InitializeComponent();
 
 
@@ -143,7 +143,7 @@ public abstract class AbstractEditorUIControl : Control, IServiceProvider
 
 	private ToolbarHost _ToolbarHostCtl;
 
-	protected IBsTabbedEditorPane EditorPane { get; private set; }
+	protected IBsTabbedEditorPane TabbedEditor { get; private set; }
 
 	public AbstruseEditorTab ActiveTab
 	{
@@ -261,7 +261,7 @@ public abstract class AbstractEditorUIControl : Control, IServiceProvider
 
 
 
-	public void InitializeToolbarHost(AbstractTabbedEditorPane editorPane, Guid clsidCmdSet, uint menuIdTabbedEditorToolbar)
+	public void InitializeToolbarHost(AbstractTabbedEditorPane tabbedEditor, Guid clsidCmdSet, uint menuIdTabbedEditorToolbar)
 	{
 		if (_ToolbarHostCtl == null)
 		{
@@ -290,10 +290,10 @@ public abstract class AbstractEditorUIControl : Control, IServiceProvider
 
 			PerformLayout();
 
-			if (editorPane != null && Guid.Empty != clsidCmdSet &&
+			if (tabbedEditor != null && Guid.Empty != clsidCmdSet &&
 				Package.GetGlobalService(typeof(SVsUIShell)) as SVsUIShell is IVsUIShell4 uiShell)
 			{
-				_ToolbarHostCtl.SetToolbar(uiShell, clsidCmdSet, menuIdTabbedEditorToolbar, editorPane);
+				_ToolbarHostCtl.SetToolbar(uiShell, clsidCmdSet, menuIdTabbedEditorToolbar, tabbedEditor);
 			}
 		}
 	}

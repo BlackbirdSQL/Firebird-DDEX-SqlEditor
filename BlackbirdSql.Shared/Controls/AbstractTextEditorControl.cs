@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
 using System.Windows.Forms;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Controls.Grid;
 using BlackbirdSql.Shared.Ctl.IO;
 using BlackbirdSql.Shared.Events;
@@ -18,6 +19,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 
 
@@ -273,13 +275,13 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
-	public virtual int QueryStatus(ref Guid guidGroup, uint nCmdId, OLECMD[] oleCmd, IntPtr oleText)
+	public virtual int QueryStatus(ref Guid guidGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
 		if (_TextCmdTarget != null)
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			return _TextCmdTarget.QueryStatus(ref guidGroup, nCmdId, oleCmd, oleText);
+			return _TextCmdTarget.QueryStatus(ref guidGroup, cCmds, prgCmds, pCmdText);
 		}
 
 		return (int)Constants.MSOCMDERR_E_UNKNOWNGROUP;
@@ -530,7 +532,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 
 		Diag.ThrowIfNotOnUIThread();
 
-		_OleServiceProvider = new ServiceProvider(serviceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+		_OleServiceProvider = new ServiceProvider(serviceProvider as IOleServiceProvider);
 		bool flag = true;
 		if (EditorHandle == IntPtr.Zero)
 		{

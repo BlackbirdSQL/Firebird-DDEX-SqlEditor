@@ -57,7 +57,7 @@ public class ExpandableObjectWrapper : AbstractObjectParser, ICustomTypeDescript
 	public PropertyDescriptorCollection Properties => properties;
 
 	public ExpandableObjectWrapper()
-		: this(null, null, string.Empty)
+		: this(null, null, "")
 	{
 	}
 
@@ -95,7 +95,7 @@ public class ExpandableObjectWrapper : AbstractObjectParser, ICustomTypeDescript
 		string text = item.ToString();
 		if (!(text != item.GetType().ToString()))
 		{
-			return string.Empty;
+			return "";
 		}
 		return text;
 	}

@@ -11,25 +11,25 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 
 public class DescriptionControl : UserControl
 {
-	private string title = string.Empty;
+	private string title = "";
 
-	private string queryText = string.Empty;
+	private string queryText = "";
 
-	private string toolTipQueryText = string.Empty;
+	private string toolTipQueryText = "";
 
-	private string clusteredMode = string.Empty;
+	private string clusteredMode = "";
 
 	private bool isClusteredMode;
 
 	private bool hasMissingIndex;
 
-	private string missingIndexCaption = string.Empty;
+	private string missingIndexCaption = "";
 
-	private string missingIndexQueryText = string.Empty;
+	private string missingIndexQueryText = "";
 
-	private string missingIndexImpact = string.Empty;
+	private string missingIndexImpact = "";
 
-	private string missingIndexDatabase = string.Empty;
+	private string missingIndexDatabase = "";
 
 	private int missingIndexBorder;
 
@@ -135,7 +135,7 @@ public class DescriptionControl : UserControl
 	{
 		if (string.IsNullOrEmpty(strSource))
 		{
-			return string.Empty;
+			return "";
 		}
 		if (strSource.Length <= C_MaxTooltipLength)
 		{
@@ -247,7 +247,7 @@ public class DescriptionControl : UserControl
 	{
 		if (line == null)
 		{
-			return string.Empty;
+			return "";
 		}
 		return whitespaceExpression.Replace(line, " ");
 	}

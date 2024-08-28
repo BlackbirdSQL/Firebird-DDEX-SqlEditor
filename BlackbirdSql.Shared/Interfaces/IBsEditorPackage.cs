@@ -11,14 +11,11 @@ public interface IBsEditorPackage
 {
 	Dictionary<object, AuxilliaryDocData> AuxDocDataTable { get; }
 
-	IBsTabbedEditorPane LastFocusedSqlEditor { get; set; }
+	IBsTabbedEditorPane CurrentTabbedEditor { get; set; }
 
 	AuxilliaryDocData GetAuxilliaryDocData(object docData);
 
 
 	public DialogResult ShowExecutionSettingsDialog(AuxilliaryDocData auxDocData,
 		FormStartPosition startPosition);
-
-
-	bool TryGetTabbedEditorService(uint docCookie, bool activateIfOpen, out IBsEditorPaneServiceProvider tabbedEditorService);
 }

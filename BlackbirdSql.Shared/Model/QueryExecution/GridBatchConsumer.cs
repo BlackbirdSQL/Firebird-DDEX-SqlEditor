@@ -51,7 +51,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 
 			await args.ResultSet.InitializeAsync(false, args.CancelToken);
 
-			if (args.CancelToken.IsCancellationRequested)
+			if (args.CancelToken.Cancelled())
 				return false;
 
 			_GridContainer = new ResultSetAndGridContainer(args.ResultSet, printColumnHeaders: true, _MaxCharsPerColumn);
@@ -81,7 +81,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 
 		// Tracer.Trace(GetType(), "OnNewResultSetAsync()", "Completed");
 
-		return !args.CancelToken.IsCancellationRequested;
+		return !args.CancelToken.Cancelled();
 	}
 
 	public override void OnStatementCompleted(object sender, BatchStatementCompletedEventArgs args)

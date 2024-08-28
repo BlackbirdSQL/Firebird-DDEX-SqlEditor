@@ -24,6 +24,6 @@ public interface IBsNativeProviderSchemaFactory
 
 
 	Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName,
-		string[] restrictions, CancellationToken cancellationToken);
+		string[] restrictions, CancellationToken cancelToken);
 
 }

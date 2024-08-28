@@ -189,6 +189,9 @@
   <data name="AdvancedMessageBox_NoHelpMenuText" xml:space="preserve">
     <value>No Help Available For: "{0}"</value>
   </data>
+  <data name="AdvancedMessageBox_SqlDatabaseName" xml:space="preserve">
+    <value>Database Name: {0}</value>
+  </data>
   <data name="AdvancedMessageBox_SqlError" xml:space="preserve">
     <value>Error Number: {0}</value>
   </data>

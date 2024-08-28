@@ -79,7 +79,7 @@ public class LsbColorableItem : IVsColorableItem, IVsMergeableUIItem
 
 	public int GetDescription(out string pbstrDesc)
 	{
-		pbstrDesc = string.Empty;
+		pbstrDesc = "";
 		return 0;
 	}
 

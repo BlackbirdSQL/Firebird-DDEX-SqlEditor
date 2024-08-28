@@ -34,7 +34,7 @@ public static class NativeDbExtensionMembers
 	/// <returns>The index of the parameter in DbCommand.Parameters else -1.</returns>
 	public static int AddParameter(this DbCommand @this, string name, int index, object value)
 	{
-		return NativeDb.DbCommandSvc.AddParameter(@this, name, index, value);
+		return NativeDb.DatabaseEngineSvc.AddCommandParameter_(@this, name, index, value);
 	}
 
 	public static bool Completed(this IDbTransaction @this)
@@ -42,21 +42,7 @@ public static class NativeDbExtensionMembers
 		return NativeDb.DatabaseEngineSvc.TransactionCompleted_(@this);
 	}
 
-	public static DbCommand CreateDatabaseCommand(this DbConnection @this, string cmd /*, transaction*/)
-	{
-		return NativeDb.DbConnectionSvc.CreateDbCommand( @this, cmd );
-	}
 
-	public static object CreateDatabaseInfoObject(this DbConnection @this)
-	{
-		return NativeDb.DbConnectionSvc.CreateDatabaseInfoObject(@this);
-	}
-
-
-	public static string GetDataSource(this DbConnection @this)
-	{
-		return NativeDb.DbConnectionSvc.GetDataSource(@this);
-	}
 
 	public static string GetDecoratedDdlSource(this IVsDataExplorerNode @this, EnModelTargetType targetType)
 	{
@@ -70,13 +56,13 @@ public static class NativeDbExtensionMembers
 	// ---------------------------------------------------------------------------------
 	public static int GetErrorCode(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.GetErrorCode(@this);
+		return NativeDb.DbExceptionSvc.GetExceptionErrorCode_(@this);
 	}
 
 
 	public static IList<object> GetErrors(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.GetErrors(@this);
+		return NativeDb.DbExceptionSvc.GetExceptionErrors_(@this);
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -84,9 +70,19 @@ public static class NativeDbExtensionMembers
 	/// Gets the class byte value from a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static byte GetClass(this DbException @this)
+	public static byte GetClass(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.GetClass(@this);
+		return NativeDb.DbExceptionSvc.GetExceptionClass_(@this);
+	}
+
+
+
+	/// <summary>
+	/// Gets the connection datasource.
+	/// </summary>
+	public static string GetDataSource(this IDbConnection @this)
+	{
+		return NativeDb.DatabaseEngineSvc.GetConnectionDataSource_(@this);
 	}
 
 
@@ -96,7 +92,7 @@ public static class NativeDbExtensionMembers
 	/// </summary>
 	public static string GetDataSourceVersion(this IDbConnection @this)
 	{
-		return NativeDb.DbConnectionSvc.GetDataSourceVersion(@this);
+		return NativeDb.DatabaseEngineSvc.GetConnectionDataSourceVersion_(@this);
 	}
 
 
@@ -151,6 +147,18 @@ public static class NativeDbExtensionMembers
 	public static long GetCurrentMemory(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetCurrentMemory(@this);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the connection name or datasetid from a native database exception.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string GetDatabase(this Exception @this)
+	{
+		return NativeDb.DbExceptionSvc.GetExceptionDatabase_(@this);
 	}
 
 
@@ -275,15 +283,15 @@ public static class NativeDbExtensionMembers
 	/// Gets the source line number of a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static int GetLineNumber(this DbException @this)
+	public static int GetLineNumber(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.GetLineNumber(@this);
+		return NativeDb.DbExceptionSvc.GetExceptionLineNumber_(@this);
 	}
 
 
 	public static int GetPacketSize(this DbConnection @this)
 	{
-		return NativeDb.DbConnectionSvc.GetPacketSize(@this);
+		return NativeDb.DatabaseEngineSvc.GetConnectionPacketSize_(@this);
 	}
 
 
@@ -293,9 +301,9 @@ public static class NativeDbExtensionMembers
 	/// Gets the method name of a native database excerption.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetProcedure(this DbException @this)
+	public static string GetProcedure(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.GetProcedure(@this);
+		return NativeDb.DbExceptionSvc.GetExceptionProcedure_(@this);
 	}
 
 
@@ -305,18 +313,11 @@ public static class NativeDbExtensionMembers
 	/// Gets the server name from a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetServer(this DbException @this)
+	public static string GetServer(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.GetServer(@this);
+		return NativeDb.DbExceptionSvc.GetExceptionServer_(@this);
 	}
 
-
-
-	public static async Task<DataTable> GetSchemaAsync(this DbConnection @this, string collectionName,
-		string[] restrictions, CancellationToken cancellationToken)
-	{
-		return await NativeDb.DbConnectionSvc.GetSchemaAsync(@this, collectionName, restrictions, cancellationToken);
-	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -324,11 +325,23 @@ public static class NativeDbExtensionMembers
 	/// Returns the sql exception state of a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetState(this DbException @this)
+	public static string GetState(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.GetState(@this);
+		return NativeDb.DbExceptionSvc.GetExceptionState_(@this);
 	}
 
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Checks if an exception is a native database exception.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	internal static bool IsSqlException(this Exception @this)
+	{
+		return NativeDb.DbExceptionSvc.IsSqlException_(@this);
+	}
 
 
 
@@ -337,7 +350,7 @@ public static class NativeDbExtensionMembers
 	/// </summary>
 	public static Version ParseServerVersion(this IDbConnection @this)
 	{
-		return NativeDb.DbConnectionSvc.ParseServerVersion(@this);
+		return NativeDb.DatabaseEngineSvc.ParseConnectionServerVersion_(@this);
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -352,17 +365,19 @@ public static class NativeDbExtensionMembers
 	// ---------------------------------------------------------------------------------
 	public static (bool, bool) OpenOrVerify(this IDbConnection @this)
 	{
-		return NativeDb.DbConnectionSvc.OpenOrVerifyConnection(@this);
+		return NativeDb.DatabaseEngineSvc.OpenOrVerifyConnection_(@this);
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Opens or verifies a connection. The Connection must exists.
 	/// Throws an exception on failure.
-	/// Always use this method to open connections because it disposes of the connection
-	/// and invokes ConnectionChangedEvent on failure.
 	/// Do not call before ensuring IsComplete.
+	/// The cardinal must be either zero, if no keepalive reads are required, or an
+	/// incremental value that can be used to execute a select statement unique from
+	/// the previous call to this method.
 	/// </summary>
 	/// <returns>
 	/// Boolean tuple with Item1: True if open / verification succeeded and
@@ -370,10 +385,10 @@ public static class NativeDbExtensionMembers
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	public static async Task<(bool, bool)> OpenOrVerifyAsync(this IDbConnection @this,
-		IDbTransaction transaction, bool keepAlive, CancellationToken cancelToken)
+		IDbTransaction transaction, CancellationToken cancelToken)
 	{
-		return await NativeDb.DbConnectionSvc.OpenOrVerifyConnectionAsync(@this, transaction,
-			keepAlive, cancelToken);
+		return await NativeDb.DatabaseEngineSvc.OpenOrVerifyConnectionAsync_(@this,
+			transaction, cancelToken);
 	}
 
 
@@ -388,20 +403,23 @@ public static class NativeDbExtensionMembers
 	/// Checks if an exception is a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	internal static bool HasSqlException(this DbException @this)
+	internal static bool HasSqlException(this Exception @this)
 	{
-		return NativeDb.DbExceptionSvc.HasSqlException(@this);
+		return NativeDb.DbExceptionSvc.HasSqlException_(@this);
 	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Checks if an exception is a native database exception.
+	/// Sets the database name in a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	internal static bool IsSqlException(this DbException @this)
+	public static void SetDatabase(this Exception @this, string value)
 	{
-		return NativeDb.DbExceptionSvc.IsSqlException(@this);
+		NativeDb.DbExceptionSvc.SetExceptionDatabase_(@this, value);
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -409,9 +427,9 @@ public static class NativeDbExtensionMembers
 	/// Sets the server name in a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void SetServer(this DbException @this, string value)
+	public static void SetServer(this Exception @this, string value)
 	{
-		NativeDb.DbExceptionSvc.SetServer(@this, value);
+		NativeDb.DbExceptionSvc.SetExceptionServer_(@this, value);
 	}
 
 

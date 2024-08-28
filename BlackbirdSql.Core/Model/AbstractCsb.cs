@@ -856,7 +856,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			Host = datasource.ToLowerInvariant(),
 			UserName = csa.UserID.ToLowerInvariant(),
 			Port = csa.Port,
-			Password = safeUrl ? string.Empty : csa.Password.ToLowerInvariant()
+			Password = safeUrl ? "" : csa.Password.ToLowerInvariant()
 		};
 
 		// Append the serialized database path and dot separated equivalency connection properties as the url path.
@@ -903,7 +903,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				value = csa[key];
 
 				if (value == null)
-					stringValue = string.Empty;
+					stringValue = "";
 				else if (value.GetType() == typeof(byte[]))
 					stringValue = Encoding.Default.GetString((byte[])value);
 				else
@@ -1031,8 +1031,6 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			DataSource = server;
 		}
 	}
-
-
 
 
 

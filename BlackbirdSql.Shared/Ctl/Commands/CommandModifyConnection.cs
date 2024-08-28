@@ -21,7 +21,7 @@ public class CommandModifyConnection : AbstractCommand
 	{
 	}
 
-	public CommandModifyConnection(IBsTabbedEditorPane editorPane) : base(editorPane)
+	public CommandModifyConnection(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
 	}
 

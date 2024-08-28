@@ -17,90 +17,90 @@ namespace BlackbirdSql.Shared.Ctl.Commands;
 public class ViewCommandFilter : AbstractViewCommandFilter
 {
 
-	public ViewCommandFilter(IBsTabbedEditorPane windowPane)
+	public ViewCommandFilter(IBsTabbedEditorPane tabbedEditor)
 	{
-		WindowPane = windowPane;
+		TabbedEditor = tabbedEditor;
 	}
 
 
 
 
-	private IBsTabbedEditorPane WindowPane { get; set; }
+	private IBsTabbedEditorPane TabbedEditor { get; set; }
 
 
 
-	private AbstractCommand CreateCommand(IBsTabbedEditorPane window, EnCommandSet cmdId)
+	private IBsCommand CreateCommand(IBsTabbedEditorPane tabbedEditor, EnCommandSet cmdId)
 	{
-		AbstractCommand command = null;
+		IBsCommand command = null;
 
 		switch (cmdId)
 		{
 			case EnCommandSet.CmdIdConnect:
-				command = new CommandConnect(window);
+				command = new CommandConnect(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdDisconnect:
-				command = new CommandDisconnect(window);
+				command = new CommandDisconnect(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdDisconnectAllQueries:
-				command = new CommandDisconnectAllQueries(window);
+				command = new CommandDisconnectAllQueries(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdModifyConnection:
-				command = new CommandModifyConnection(window);
+				command = new CommandModifyConnection(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdExecuteQuery:
-				command = new CommandExecuteQuery(window);
+				command = new CommandExecuteQuery(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdCancelQuery:
-				command = new CommandCancelQuery(window);
+				command = new CommandCancelQuery(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdShowEstimatedPlan:
-				command = new CommandShowEstimatedPlan(window);
+				command = new CommandShowEstimatedPlan(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdToggleClientStatistics:
-				command = new CommandToggleClientStatistics(window);
+				command = new CommandToggleClientStatistics(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdToggleExecutionPlan:
-				command = new CommandToggleExecutionPlan(window);
+				command = new CommandToggleExecutionPlan(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdToggleIntellisense:
-				command = new CommandToggleIntellisense(window);
+				command = new CommandToggleIntellisense(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdQuerySettings:
-			case EnCommandSet.CmdIdQuerySettings2:
-				command = new CommandQuerySettings(window);
+			case EnCommandSet.CmdIdQuerySettingsToolbar:
+				command = new CommandQuerySettings(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdResultsAsText:
-				command = new CommandResultsAsText(window);
+				command = new CommandResultsAsText(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdResultsAsGrid:
-				command = new CommandResultsAsGrid(window);
+				command = new CommandResultsAsGrid(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdResultsAsFile:
-				command = new CommandResultsAsFile(window);
+				command = new CommandResultsAsFile(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdToggleResultsPane:
-				command = new CommandToggleResultsPane(window);
+				command = new CommandToggleResultsPane(tabbedEditor);
 				break;
 			case EnCommandSet.CmbIdDatabaseSelect:
-				command = new CommandDatabaseSelect(window);
+				command = new CommandDatabaseSelect(tabbedEditor);
 				break;
 			case EnCommandSet.CmbIdDatabaseList:
-				command = new CommandDatabaseList(window);
+				command = new CommandDatabaseList(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdCloneQuery:
-				command = new CommandCloneQueryWindow(window);
+				command = new CommandCloneQueryWindow(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdNewQuery:
-				command = new CommandNewQuery(window);
+				command = new CommandNewQuery(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdTransactionCommit:
-				command = new CommandTransactionCommit(window);
+				command = new CommandTransactionCommit(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdTransactionRollback:
-				command = new CommandTransactionRollback(window);
+				command = new CommandTransactionRollback(tabbedEditor);
 				break;
 			case EnCommandSet.CmdIdToggleTTS:
-				command = new CommandToggleTTS(window);
+				command = new CommandToggleTTS(tabbedEditor);
 				break;
 		}
 
@@ -113,7 +113,7 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 
 		if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 		{
-			AbstractCommand command = CreateCommand(WindowPane, (EnCommandSet)cmdId);
+			IBsCommand command = CreateCommand(TabbedEditor, (EnCommandSet)cmdId);
 
 			if (command != null)
 				return command.Exec(nCmdexecopt, pvaIn, pvaOut);
@@ -136,7 +136,7 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 
 			if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 			{
-				AbstractCommand command = CreateCommand(WindowPane, cmdId);
+				IBsCommand command = CreateCommand(TabbedEditor, cmdId);
 
 				if (command != null)
 					hresult = command.QueryStatus(ref prgCmds[i], pCmdText);
@@ -151,7 +151,7 @@ public class ViewCommandFilter : AbstractViewCommandFilter
 						break;
 					case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
 					case VSConstants.VSStd2KCmdID.SURROUNDWITH:
-						auxDocData = WindowPane.AuxDocData;
+						auxDocData = TabbedEditor.AuxDocData;
 
 						if (auxDocData != null && auxDocData.QryMgr != null && !auxDocData.QryMgr.IsLocked)
 						{

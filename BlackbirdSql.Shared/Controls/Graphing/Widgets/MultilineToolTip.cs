@@ -181,7 +181,7 @@ public class MultilineToolTip : ToolTip
 		{
 			if (Current == null)
 			{
-				return string.Empty;
+				return "";
 			}
 			return Current.Text;
 		}

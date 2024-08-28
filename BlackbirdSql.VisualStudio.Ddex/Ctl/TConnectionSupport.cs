@@ -158,7 +158,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectionS
 				async () =>
 				{
 
-					await Cmd.AwaitableAsync(640);
+					await Task.Delay(640);
 
 					lock (_LockLocal)
 						_PasswordPromptCancelled = false;

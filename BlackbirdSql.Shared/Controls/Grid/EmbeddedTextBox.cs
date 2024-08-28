@@ -158,7 +158,7 @@ public class EmbeddedTextBox : TextBox, IBsGridEmbeddedControl, IBsGridEmbeddedC
 			}
 			else if (ke.KeyCode == Keys.Back || ke.KeyCode == Keys.Delete)
 			{
-				Text = string.Empty;
+				Text = "";
 				flag = true;
 			}
 
@@ -174,7 +174,7 @@ public class EmbeddedTextBox : TextBox, IBsGridEmbeddedControl, IBsGridEmbeddedC
 		if (!ReadOnly)
 		{
 			Text = c.ToString();
-			SelectedText = string.Empty;
+			SelectedText = "";
 			Select(1, 0);
 		}
 	}

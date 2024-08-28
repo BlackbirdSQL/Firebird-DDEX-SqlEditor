@@ -2,6 +2,25 @@
 
 ## Change log
 
+### v14.5.1.0 Minor enhancements and code cleanup.
+
+#### New / Enhancements
+- Enabled the IDE SplitNext (F6) and SpitPrev (Shift-F6) global commands with AutoScroll. Grids in multiple resultset queries will automatically scroll into view when they receive focus.
+- Moved the initial statement terminator (batch separator) user option to `SqlEditor > Query Execution > General` so that it now appears in the __Live Settings__ of a query. Setting the option within a query affects multi-statement script parsing only. 
+- Enabled the `Commit` and `Rollback` SQL statements in SqlEditor scripts. These statements were previously disabled.
+- Code cleanup: Converted calls to the `RdtManager` `ShowWindowFrame()` and `InvalidateToolbar()` methods to direct calls instead of using an event driven mechanism. This includes calls to the Async versions of these methods.
+- Code cleanup: Converted all references to the `this` object in extension members to the name __@this__.
+- Code cleanup: Converted all references to `string.Empty` to it's functionally equivalent constant `""`.
+- Code cleanup: Moved all native db script parsing of server explorer nodes into a separate `IBsNativeDbServerExplorerService` service. This is to unclutter the `IBsNativeDatabaseEngine` service. Also moved the handling of native db error types into the `IBsNativeDbException` service.
+- Code cleanup: Dropped the `IBsNativeDbCommand`, `IBsNativeDbConnection` and `IBsNativeDbConnectionWrapper` services, as equivalent functionality was already available in the remaining native database services.
+#### Fixes
+- Fixed issues with the IBsDbExceptionService. Database exceptions were themselves throwing exceptions when the exception were of type `IscException`. This caused error information loss when a critical Firebird connection error was displayed in the __Advanced Message Box__ detailed information popup. Isc exceptions are typically raised when when a connection fails due to a broken network connection or server shutdown. Also cofigured the service to recognize an `FbException` with error code `isc_net_write_err` as a critical error and not an SQL error.
+- Removed second attempt to prevent a disconnect of connections that have been idle for 90+ minutes and have active transactions. Executing a mutating low-overhead `SELECT` statement on the database every 25 minutes fails to prevent the connection shutdown. The shutdown can be prevented by giving the connection a large `ConnectionLifetime`. The property has an upper limit of `int.MaxValue` seconds.
+
+__Tip:__ To manage your __BlackbirdSql SqlEditor__ Text Editor and Intellisense settings, navigate to the __Text Editor__ section in __User Options__. There you will find the settings for all text editors, including the BlackbirdSql editor, which is located under the __FB-SQL__ language sub-menu. All other settings are located under the __BlackbirdSQL Server Tools__ User Options section.
+__Tip:__ You can change the terminator as many times as you require within a multi-statement SQL script. It is not necessary to reset it to it's original initial value at the end of your script. As soon as you re-execute the query the terminator is reset to it's value in __User Options__ or the query's __Live (Transient) Settings__.
+
+
 ### v14.5.0.3 Patch for Type A Type B project validity exception.
 
 #### New / Enhancements
@@ -69,7 +88,7 @@ Solution merges typically occur by default when a solution is directly opened fr
 - Resolved issue where Visual Studio creates clone duplicates of query windows after a solution merge. The clones are removed immediately after being loaded.
 - Implemented asynchronous db reader data retrieval on query `string` and `blob` grid column data types. This means that there is no syncronous blocking of the IDE during long-running multi-statement (batch) query execution.
 #### Fixes
-- The `CancellationToken` has been removed from all `DbDataReader.GetValueAsync<T>()` method calls. The FirebirdClient has a bug which causes it to temporarily crash on `CancellationToken.IsCancellationRequested` when accessing blob types. 
+- The `CancellationToken` has been removed from all `DbDataReader.GetValueAsync<T>()` method calls. The FirebirdClient has a bug which causes it to temporarily crash on `CancellationToken.Cancelled()` when accessing blob types. 
 - The database connection dropdown list in SqlEditor no longer gives the option to commit or rollback when there are active transactions. Prompting the user to commit / rollback / cancel after making a selection was susceptible to unavoidable deadlocks so it has been removed from that specific control.
 - Resolved a bug where the `KeepAlive Monitor` was receiving an `Idle connection` response back from the `Query Manager` during execution, and could close a connection if it's `Lifetime` was set and was exceeded during a long running query.
 - Resolved several glitches where invalidated variables were accessed during a solution closing or merging state.

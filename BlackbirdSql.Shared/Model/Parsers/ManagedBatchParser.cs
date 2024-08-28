@@ -82,7 +82,7 @@ public class ManagedBatchParser : IDisposable
 	private int _Current = -1;
 	private bool _SubstitutionEnabled = true;
 	private bool _RecognizeOnlyVariables = false;
-	private string _Delimiter = null;
+	private string _Delimiter = ";";
 
 
 
@@ -128,16 +128,16 @@ public class ManagedBatchParser : IDisposable
 		// ------------------------------------------------------------------------------- //
 
 		if (await _Executor.BatchParseCallbackAsync(_BatchParser, cancelToken, syncToken) != EnScriptExecutionResult.Success)
-			return !cancelToken.IsCancellationRequested;
+			return !cancelToken.Cancelled();
 
 
 		IBsNativeDbStatementWrapper sqlStatement = null;
 		EnParserAction result = EnParserAction.Continue;
 
-		while (_BatchParser.CurrentAction != EnSqlStatementAction.Completed && !cancelToken.IsCancellationRequested)
+		while (_BatchParser.CurrentAction != EnSqlStatementAction.Completed && !cancelToken.Cancelled())
 		{
 
-			while (result == EnParserAction.Continue && !cancelToken.IsCancellationRequested)
+			while (result == EnParserAction.Continue && !cancelToken.Cancelled())
 			{
 				result = _BatchParser.GetNextStatement(ref sqlStatement);
 
@@ -168,10 +168,10 @@ public class ManagedBatchParser : IDisposable
 				break;
 
 			// Call statistics output
-			if (!syncToken.IsCancellationRequested)
+			if (!syncToken.Cancelled())
 				RaiseDataLoadedEvent(cancelToken);
 
-			if (cancelToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 				break;
 
 			// Tracer.Trace(GetType(), "Parse()", "AdvanceToNextAction for ParserAction: {0}, Statement: {1}.",
@@ -185,7 +185,7 @@ public class ManagedBatchParser : IDisposable
 
 		// Tracer.Trace(GetType(), "ParseAsync()", "Completed");
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 
@@ -210,7 +210,7 @@ public class ManagedBatchParser : IDisposable
 
 	private void RaiseDataLoadedEvent(CancellationToken cancelToken)
 	{
-		QueryDataEventArgs args = new(_ExecutionType, cancelToken.IsCancellationRequested ? EnSqlStatementAction.Cancelled : _BatchParser.CurrentAction,
+		QueryDataEventArgs args = new(_ExecutionType, cancelToken.Cancelled() ? EnSqlStatementAction.Cancelled : _BatchParser.CurrentAction,
 			/* _OutputMode, _QryMgr.IsWithActualPlan, */ _QryMgr.IsWithClientStats, _BatchParser.TotalRowsSelected,
 			_BatchParser.StatementCount, /* _BatchConsumer.CurrentErrorCount, _BatchConsumer.CurrentMessageCount, */
 			_QryMgr.QueryExecutionStartTime, DateTime.Now);

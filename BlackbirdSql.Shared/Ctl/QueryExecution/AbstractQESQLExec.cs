@@ -193,7 +193,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 		// Tracer.Trace(GetType(), "ExecuteAsync()", "ExecuteAsync() Launched.");
 
-		return await Cmd.AwaitableAsync(true);
+		return await Task.FromResult(true);
 	}
 
 
@@ -201,8 +201,6 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 	public async Task<EnScriptExecutionResult> BatchParseCallbackAsync(IBsNativeDbBatchParser batchParser,
 		CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		await Cmd.AwaitableAsync();
-
 		// ------------------------------------------------------------------------------- //
 		// ************ Execution Point (7) - QESQLExec.BatchParseCallback() ************* //
 		// ------------------------------------------------------------------------------- //
@@ -212,11 +210,11 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		if (result != EnScriptExecutionResult.Success)
 			_ExecResult = result;
 
-		RaiseScriptParsedEvent(cancelToken.IsCancellationRequested
+		RaiseScriptParsedEvent(cancelToken.Cancelled()
 			? EnSqlStatementAction.Cancelled : batchParser.CurrentAction,
 			batchParser.TotalRowsSelected, batchParser.StatementCount, cancelToken);
 
-		return result;
+		return await Task.FromResult(result);
 	}
 
 
@@ -258,7 +256,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		}
 		finally
 		{
-			if (!syncToken.IsCancellationRequested)
+			if (!syncToken.Cancelled())
 				await QryMgr.Strategy.VerifyOpenConnectionAsync(default);
 
 			await RaiseExecutionCompletedAsync(_ExecResult, true, cancelToken, syncToken);
@@ -274,7 +272,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 	private async Task<bool> ExecuteImplAsync(CancellationToken cancelToken, CancellationToken syncToken)
 	{
 		// Tracer.Trace(GetType(), "ExecuteAsync()");
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 		{
 			_ExecResult = EnScriptExecutionResult.Cancel;
 
@@ -336,7 +334,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		}
 
 
-		if (_ExecOptionHasChanged && !syncToken.IsCancellationRequested)
+		if (_ExecOptionHasChanged && !syncToken.Cancelled())
 			ProcessExecOptions(_Conn);
 
 		if (_ExecResult == EnScriptExecutionResult.Halted)
@@ -361,7 +359,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 	{
 		// Tracer.Trace(GetType(), "ExecuteScriptAsync()");
 
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return false;
 
 		_CurrentConn = _Conn;
@@ -374,12 +372,8 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 				_SqlCmdParser.Cleanup(QryMgr, /* _BatchConsumer, */ _ExecutionType, /* ExecLiveSettings.EditorResultsOutputMode, */ _TextSpan.Text);
 
 
-			string batchDelimiter = SharedConstants.C_DefaultBatchSeparator;
+			string batchDelimiter = ExecLiveSettings.EditorExecutionBatchSeparator;
 
-			if (ExecLiveSettings.EditorContextBatchSeparator != null && ExecLiveSettings.EditorContextBatchSeparator.Length > 0)
-			{
-				batchDelimiter = ExecLiveSettings.EditorContextBatchSeparator;
-			}
 
 			_SqlCmdParser.SetBatchDelimiter(batchDelimiter);
 			_SqlCmdParser.SetParseMode(EnParseMode.RecognizeOnlyBatchDelimiter);
@@ -415,7 +409,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 				EnQESQLScriptProcessingMessageType.FatalError);
 		}
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 
@@ -515,7 +509,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 		args.Result &= result;
 
-		return await Cmd.AwaitableAsync(result);
+		return await Task.FromResult(result);
 	}
 
 
@@ -524,7 +518,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		int statementCount, CancellationToken cancelToken)
 	{
 		QueryDataEventArgs args = new(_ExecutionType,
-			cancelToken.IsCancellationRequested ? EnSqlStatementAction.Cancelled : EnSqlStatementAction.ProcessQuery,
+			cancelToken.Cancelled() ? EnSqlStatementAction.Cancelled : EnSqlStatementAction.ProcessQuery,
 			_QryMgr.IsWithClientStats, totalRowsSelected, statementCount, _QryMgr.QueryExecutionStartTime, DateTime.Now);
 
 		BatchScriptParsedEvent?.Invoke(this, args);

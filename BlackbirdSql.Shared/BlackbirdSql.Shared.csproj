@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 		<Compile Include="Ctl\AbstractDesignerServices.cs" />
+		<Compile Include="Ctl\Commands\CommandOleCycleToPrevious.cs" />
 		<Compile Include="Enums\EnCreationFlags.cs" />
 		<Compile Include="Events\DatabaseChangeEventArgs.cs" />
 		<Compile Include="Events\ExecutionStartedEventArgs.cs" />
@@ -47,6 +48,10 @@
 		<Compile Include="Events\QueryStateChangedEventArgs.cs" />
 		<Compile Include="Model\ModelCsb.cs" />
 		<Compile Include="Interfaces\IBsModelCsb.cs" />
+		<Compile Include="Enums\EnResultMessageType.cs" />
+		<Compile Include="Events\LiveSettingsEventArgs.cs" />
+		<Compile Include="Ctl\Commands\CommandOleCycleToNext.cs" />
+		<Compile Include="Interfaces\IBsCommand.cs" />
 		<Compile Include="Properties\SqlCmdResources.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -415,7 +420,7 @@
 		<Compile Include="Controls\PropertiesWindow\PropertiesWindowManager.cs" />
 		<Compile Include="Controls\PropertiesWindow\ConnectedPropertiesWindow.cs" />
 		<Compile Include="Controls\Widgets\StatusBarManager.cs" />
-		<Compile Include="Controls\Widgets\MultiControlPanel.cs" />
+		<Compile Include="Controls\Results\MultiControlPanel.cs" />
 		<Compile Include="Controls\Widgets\QESplitter.cs" />
 		<Compile Include="Controls\Results\AbstractGridResultsPanel.cs" />
 		<Compile Include="Controls\Results\AbstractResultsPanel.cs" />
@@ -438,7 +443,7 @@
 		<Compile Include="Controls\Results\VSTextEditorPanel.cs" />
 		<Compile Include="Controls\ResultPane.cs" />
 		<Compile Include="Controls\AbstractTextEditorControl.cs" />
-		<Compile Include="Controls\Widgets\Splitter.cs" />
+		<Compile Include="Controls\Widgets\SplitterControl.cs" />
 		<Compile Include="Controls\Widgets\SplitViewContainer.cs" />
 		<Compile Include="Controls\Widgets\SplitViewSplitterStrip.cs" />
 		<Compile Include="Controls\Tabs\EditorCodeTab.cs" />
@@ -485,7 +490,7 @@
 		<Compile Include="Ctl\IO\SortingArray.cs" />
 		<Compile Include="Ctl\Commands\ViewCommandFilter.cs" />
 		<Compile Include="Ctl\TextSpanEx.cs" />
-		<Compile Include="Ctl\ToolbarCommandMapper.cs" />
+		<Compile Include="Ctl\CommandMapper.cs" />
 		<Compile Include="Ctl\TextEditorProxy.cs" />
 		<Compile Include="Ctl\VsColorUtilities.cs" />
 		<Compile Include="Ctl\VsTextMarker.cs" />
@@ -510,7 +515,7 @@
 		<Compile Include="Interfaces\IBsExtendedCommandHandler.cs" />
 		<Compile Include="Interfaces\IBsTabbedEditorPane.cs" />
 		<Compile Include="Interfaces\IBsEditorPaneServiceProvider.cs" />
-		<Compile Include="Interfaces\IBsToolbarCommandHandler.cs" />
+		<Compile Include="Interfaces\IBsCommandHandler.cs" />
 		<Compile Include="Interfaces\IBsTextEditor.cs" />
 		<Compile Include="Interfaces\IBsTextEditorEvents.cs" />
 		<Compile Include="Interfaces\IBsTextSpan.cs" />

@@ -18,7 +18,7 @@ public class CommandExecuteQuery : AbstractCommand
 		// Tracer.Trace();
 	}
 
-	public CommandExecuteQuery(IBsTabbedEditorPane editorPane) : base(editorPane)
+	public CommandExecuteQuery(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
 		// Tracer.Trace();
 	}
@@ -49,7 +49,7 @@ public class CommandExecuteQuery : AbstractCommand
 		// ----------------------------------------------------------------------------------- //
 		// *************** Execution Point (0) - CommandExecuteQuery.OnExec() **************** //
 		// ----------------------------------------------------------------------------------- //
-		EditorPane.AsyncExecuteQuery(executionType);
+		TabbedEditor.AsyncExecuteQuery(executionType);
 
 		return VSConstants.S_OK;
 	}

@@ -14,7 +14,7 @@ using System.Windows.Forms;
 namespace BlackbirdSql.Shared.Controls.Widgets;
 
 
-public class Splitter : Control
+public class SplitterControl : Control
 {
 	private class SplitRenderer : Form
 	{
@@ -36,9 +36,9 @@ public class Splitter : Control
 		public Control target;
 	}
 
-	private class SplitterMessageFilter(Splitter splitter) : IMessageFilter
+	private class SplitterMessageFilter(SplitterControl splitter) : IMessageFilter
 	{
-		private readonly Splitter _Owner = splitter;
+		private readonly SplitterControl _Owner = splitter;
 
 		[SecuritySafeCritical]
 		[SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
@@ -603,7 +603,7 @@ public class Splitter : Control
 		}
 	}
 
-	public Splitter()
+	public SplitterControl()
 	{
 		SetStyle(ControlStyles.Selectable, value: false);
 		TabStop = false;

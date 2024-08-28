@@ -321,9 +321,9 @@ public sealed class RctManager : RunningConnectionTable
 		// Sanity checks.
 
 		// The following for brevity.
-		CancellationToken cancellationToken = default;
+		CancellationToken cancelToken = default;
 
-		async Task<bool> payloadAsync() => await InitializeServerExplorerModelsAsync(cancellationToken);
+		async Task<bool> payloadAsync() => await InitializeServerExplorerModelsAsync(cancelToken);
 
 		// Tracer.Trace(GetType(), "AsyncInitializeServerExplorerModels()", "Queueing InitializeServerExplorerModelsAsync.");
 
@@ -616,7 +616,7 @@ public sealed class RctManager : RunningConnectionTable
 	public static string AdornConnectionStringFromRegistration(string connectionString)
 	{
 		if (connectionString == null)
-			return string.Empty;
+			return "";
 
 		if (ShutdownState || EnsuredInstance == null)
 			return connectionString;
@@ -679,7 +679,7 @@ public sealed class RctManager : RunningConnectionTable
 		catch (Exception ex)
 		{
 			Diag.Expected(ex);
-			return string.Empty;
+			return "";
 		}
 
 		return AdornConnectionStringFromRegistration(connectionString);
@@ -792,7 +792,7 @@ public sealed class RctManager : RunningConnectionTable
 		result = isSettings ? EnConnectionSource.Application : EnConnectionSource.EntityDataModel;
 
 		// Probably nothing
-		if (objectType == string.Empty && objectKind == string.Empty)
+		if (objectType == "" && objectKind == "")
 		{
 			Diag.Dug(new ApplicationException($"ConnectionSource not discovered. Using: {result.ToUpper()}. ActiveWindowType: {ApcManager.ActiveWindowType}. ActiveWindowObjectType is null, ActiveWindowObjectKind is null."));
 		}
@@ -1049,11 +1049,11 @@ public sealed class RctManager : RunningConnectionTable
 	/// [Async launch]: Loads server explorer models on thread pool.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static async Task<bool> InitializeServerExplorerModelsAsync(CancellationToken cancellationToken)
+	private static async Task<bool> InitializeServerExplorerModelsAsync(CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "InitializeServerExplorerModelsAsync()");
 
-		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
+		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState)
 			return false;
 
 		bool result = false;
@@ -1092,7 +1092,7 @@ public sealed class RctManager : RunningConnectionTable
 
 		DbProviderFactoriesEx.InvalidatedProviderFactoryRecovery();
 
-		return await Cmd.AwaitableAsync(result);
+		return await Task.FromResult(result);
 
 	}
 
@@ -1608,8 +1608,8 @@ public sealed class RctManager : RunningConnectionTable
 			"GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}, createnew: {4}, storedConnectionSource: {5}, changedTargetDatasetKey: {6}, uniqueDatasetKey : {7}, uniqueConnectionName: {8}, uniqueDatasetId: {9}.",
 			proposedConnectionName, proposedDatasetId, dataSource, dataset, createNew, storedConnectionSource,
 			changedTargetDatasetKey ?? "Null", uniqueDatasetKey ?? "Null",
-			uniqueConnectionName == null ? "Null" : (uniqueConnectionName == string.Empty ? "string.Empty" : uniqueConnectionName),
-			uniqueDatasetId == null ? "Null" : (uniqueDatasetId == string.Empty ? "string.Empty" : uniqueDatasetId));
+			uniqueConnectionName == null ? "Null" : (uniqueConnectionName == "" ? """" : uniqueConnectionName),
+			uniqueDatasetId == null ? "Null" : (uniqueDatasetId == "" ? """" : uniqueDatasetId));
 		*/
 
 		// If we're in the EDM and the stored connection source is not ServerExplorer we have to create it in the SE to get past the EDM bug.
@@ -1728,7 +1728,7 @@ public sealed class RctManager : RunningConnectionTable
 		// If it's an SE connection and it's not the SE modifying warn if the connection name is being modified.
 		else if (connectionSource != EnConnectionSource.ServerExplorer
 			&& storedConnectionSource == EnConnectionSource.ServerExplorer &&
-			(uniqueConnectionName == string.Empty || uniqueDatasetId == string.Empty))
+			(uniqueConnectionName == "" || uniqueDatasetId == ""))
 		{
 			// The target connection name will change.
 			caption = ControlsResources.RctManager_CaptionConnectionNameChange;

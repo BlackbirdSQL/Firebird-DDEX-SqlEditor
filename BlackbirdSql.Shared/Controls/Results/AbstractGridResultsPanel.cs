@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 using BlackbirdSql.Shared.Controls.Grid;
-using BlackbirdSql.Shared.Controls.Widgets;
 using BlackbirdSql.Shared.Properties;
 using BlackbirdSql.Sys;
 
@@ -26,21 +25,21 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 
 	protected Control _lastFocusedControl;
 
-	protected MultiControlPanel _FirstGridPanel = new MultiControlPanel();
+	protected MultiControlPanel _MultiControlPnl = new ();
 
 	protected PageSettings _cachedPageSettings;
 
 	protected PrinterSettings _cachedPrinterSettings;
 
-	public Control BottomControl => _FirstGridPanel.GetHostedControl(_FirstGridPanel.HostedControlsCount - 1);
+	public Control BottomControl => _MultiControlPnl.GetHostedControl(_MultiControlPnl.HostedControlsCount - 1);
 
 	public Control TopControl
 	{
 		get
 		{
-			if (_FirstGridPanel.HostedControlsCount > 0)
+			if (_MultiControlPnl.HostedControlsCount > 0)
 			{
-				return _FirstGridPanel.GetHostedControl(0);
+				return _MultiControlPnl.GetHostedControl(0);
 			}
 
 			return null;
@@ -48,6 +47,8 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 	}
 
 	public Control LastFocusedControl => _lastFocusedControl;
+
+	public MultiControlPanel MultiControlPnl => _MultiControlPnl;
 
 	private PrintDocument CurrentGridPrintDocument
 	{
@@ -78,16 +79,16 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 	{
 		get
 		{
-			if (_FirstGridPanel == null)
+			if (_MultiControlPnl == null)
 			{
 				InvalidOperationException ex = new(ControlsResources.ExMultiPanelGridContainerIsNotAvailable);
 				Diag.Dug(ex);
 				throw ex;
 			}
 
-			for (int i = 0; i < _FirstGridPanel.HostedControlsCount; i++)
+			for (int i = 0; i < _MultiControlPnl.HostedControlsCount; i++)
 			{
-				Control hostedControl = _FirstGridPanel.GetHostedControl(i);
+				Control hostedControl = _MultiControlPnl.GetHostedControl(i);
 				if (hostedControl.Focused)
 				{
 					return (GridControl)(object)(hostedControl is GridControl ? hostedControl : null);
@@ -160,7 +161,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 			catch (Exception e)
 			{
 				Diag.Dug(e);
-				MessageCtl.ShowEx(string.Empty, e);
+				MessageCtl.ShowEx("", e);
 			}
 		}
 	}
@@ -189,7 +190,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		catch (Exception e)
 		{
 			Diag.Dug(e);
-			MessageCtl.ShowEx(string.Empty, e);
+			MessageCtl.ShowEx("", e);
 		}
 		finally
 		{
@@ -246,7 +247,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 
 	public override void Clear()
 	{
-		_FirstGridPanel.Clear();
+		_MultiControlPnl.Clear();
 		_lastFocusedControl = null;
 	}
 }

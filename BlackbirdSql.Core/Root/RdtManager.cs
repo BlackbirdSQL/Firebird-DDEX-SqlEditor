@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Interfaces;
@@ -13,6 +14,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
+using static Microsoft.VisualStudio.Threading.SingleThreadedSynchronizationContext;
 
 
 
@@ -72,6 +74,24 @@ public sealed class RdtManager : AbstractRdtManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Contains the registered fbsql++:// monikers of active editor documents in the
+	/// Rdt that were spawned from SE nodes.
+	/// The value is the Csb csb of the SE ConnectionNode the moniker was spawned
+	/// from.
+	/// Once an AuxilliaryDocData has used what it needs from the csb it should set it
+	/// to null but leave the entry intact.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static Dictionary<string, IBsCsb> InflightMonikerCsbTable => _InflightMonikerCsbTable ??= [];
+
+
+	public static IEnumerable<RunningDocumentInfo> Enumerator => Instance.Rdt;
+
+	public static object LockGlobal => _LockGlobal;
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Operates as a push/pop stack. Whenever inflight documents are added by the shell
 	/// their monikers are assigned here against our internal fbsql++:// url document
 	/// moniker for an SE node.
@@ -79,7 +99,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// against a new AuxilliaryDocData object.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string InflightMonikerStack
+	public static string PopInflightMonikerStack
 	{
 		get
 		{
@@ -100,6 +120,21 @@ public sealed class RdtManager : AbstractRdtManager
 
 			return moniker;
 		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Operates as a push/pop stack. Whenever inflight documents are added by the shell
+	/// their monikers are assigned here against our internal fbsql++:// url document
+	/// moniker for an SE node.
+	/// This allows the Editor to do a single pass pop to associate an SE ConnectionNode
+	/// against a new AuxilliaryDocData object.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string PushInflightMonikerStack
+	{
 		set
 		{
 			_InflightMonikers ??= [];
@@ -114,23 +149,6 @@ public sealed class RdtManager : AbstractRdtManager
 		}
 	}
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Contains the registered fbsql++:// monikers of active editor documents in the
-	/// Rdt that were spawned from SE nodes.
-	/// The value is the Csb csb of the SE ConnectionNode the moniker was spawned
-	/// from.
-	/// Once an AuxilliaryDocData has used what it needs from the csb it should set it
-	/// to null but leave the entry intact.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static Dictionary<string, IBsCsb> InflightMonikerCsbTable => _InflightMonikerCsbTable ??= [];
-
-
-	public static IEnumerable<RunningDocumentInfo> Enumerator => Instance.Rdt;
-
-	public static object LockGlobal => _LockGlobal;
 
 	public static bool ServiceAvailable => Instance.RdtSvc != null;
 
@@ -204,6 +222,38 @@ public sealed class RdtManager : AbstractRdtManager
 		toolbarHost.ForceUpdateUI();
 
 		Application.DoEvents();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// [Launch ensure UI thread]: Switches to the document's window.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void AsyeuShowWindowFrame(uint cookie)
+	{
+		if (cookie == 0)
+			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and wait.
+
+			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+				ShowFrame(cookie);
+
+				return true;
+			});
+
+		}
+		else
+		{
+			ShowFrame(cookie);
+		}
 	}
 
 
@@ -289,6 +339,23 @@ public sealed class RdtManager : AbstractRdtManager
 		Instance.HandsOnDocumentImpl(cookie, moniker);
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Invalidates the document window's toolbar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static async Task InvalidateToolbarAsync(uint dwCookie)
+	{
+		if (dwCookie == 0)
+			return;
+
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		AsyeuInvalidateToolbarImpl(dwCookie);
+	}
+
+
+
 	public static bool IsDirty(uint cookie) =>
 		Instance.IsDirtyImpl(cookie);
 
@@ -358,6 +425,23 @@ public sealed class RdtManager : AbstractRdtManager
 
 	public static bool ShouldKeepDocDataAliveOnClose(uint docCookie) =>
 		Instance.ShouldKeepDocDataAliveOnCloseImpl(docCookie);
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Switches to the document's window.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static async Task ShowWindowFrameAsync(uint cookie)
+	{
+		if (cookie == 0)
+			return;
+
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		ShowFrame(cookie);
+	}
 
 
 
@@ -438,11 +522,25 @@ public sealed class RdtManager : AbstractRdtManager
 	}
 
 
-	public static IVsWindowFrame GetWindowFrame(string mkDocument) =>
-		Instance.GetWindowFrameImpl(mkDocument);
-
-	public static IVsWindowFrame GetWindowFrame(uint dwCookie) =>
+	private static IVsWindowFrame GetWindowFrame(uint dwCookie) =>
 		Instance.GetWindowFrameImpl(Instance.RdtSvc4.GetDocumentMoniker(dwCookie));
+
+
+
+	public static async Task<IVsWindowFrame> GetWindowFrameAsync(uint cookie)
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		try
+		{
+			return GetWindowFrame(cookie);
+		}
+		catch (Exception ex)
+		{
+			Diag.DebugDug(ex);
+			return null;
+		}
+	}
 
 
 
@@ -455,7 +553,20 @@ public sealed class RdtManager : AbstractRdtManager
 		Instance.RdtSvc.UnregisterDocumentLockHolder(dwLHCookie);
 
 
-	#endregion Methods
+	public static bool WindowFrameIsOnScreen(string mkDocument)
+	{
+		IVsWindowFrame frame = Instance.GetWindowFrameImpl(mkDocument);
 
+		if (frame == null)
+			return false;
+
+		if (!__(frame.IsOnScreen(out int pfOnScreen)))
+			return false;
+
+		return pfOnScreen.AsBool();
+	}
+
+
+	#endregion Methods
 
 }

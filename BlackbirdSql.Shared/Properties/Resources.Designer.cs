@@ -61,11 +61,34 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Server: {0}
+        ///Database: {1}
+        ///Statement #{2}: {3}.
+        /// </summary>
+        internal static string BatchErrorDialogMessage {
+            get {
+                return ResourceManager.GetString("BatchErrorDialogMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Statement #{0}: {1}.
         /// </summary>
         internal static string BatchErrorMessage {
             get {
                 return ResourceManager.GetString("BatchErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server: {0}
+        ///Database: {1}
+        ///Script parse error:
+        ///{2}.
+        /// </summary>
+        internal static string BatchParseErrorDialogMessage {
+            get {
+                return ResourceManager.GetString("BatchParseErrorDialogMessage", resourceCulture);
             }
         }
         

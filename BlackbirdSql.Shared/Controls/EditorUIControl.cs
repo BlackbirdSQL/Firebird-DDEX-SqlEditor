@@ -15,8 +15,8 @@ namespace BlackbirdSql.Shared.Controls;
 public class EditorUIControl : AbstractEditorUIControl
 {
 
-	public EditorUIControl(IBsTabbedEditorPane editorPane, Guid toolbarGuid, uint toolbarId)
-		: base(editorPane, toolbarGuid, toolbarId)
+	public EditorUIControl(IBsTabbedEditorPane tabbedEditor, Guid toolbarGuid, uint toolbarId)
+		: base(tabbedEditor, toolbarGuid, toolbarId)
 	{
 
 	}
@@ -81,7 +81,7 @@ public class EditorUIControl : AbstractEditorUIControl
 
 		_StatusBar.Height += 4;
 
-		_StatusBarMgr.Initialize(_StatusBar, rowCountValid: true, EditorPane);
+		_StatusBarMgr.Initialize(_StatusBar, rowCountValid: true, TabbedEditor);
 
 		return _StatusBar;
 	}

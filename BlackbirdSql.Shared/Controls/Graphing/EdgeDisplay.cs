@@ -177,7 +177,7 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 
 	string ICustomTypeDescriptor.GetClassName()
 	{
-		return string.Empty;
+		return "";
 	}
 
 	public override bool HitTest(Point point)

@@ -36,8 +36,8 @@ public class EventProviderVersionTwo(Guid id) : EventProvider(id)
 			int num2 = IsStart ? 1 : 0;
 			ptr2->DataPointer = (ulong)&num2;
 			ptr2->Size = 4u;
-			ptr2[1].Size = (uint)(((EventContext ?? string.Empty).Length + 1) * 2);
-			fixed (char* ptr3 = EventContext ?? string.Empty)
+			ptr2[1].Size = (uint)(((EventContext ?? "").Length + 1) * 2);
+			fixed (char* ptr3 = EventContext ?? "")
 			{
 				ptr2[1].DataPointer = (ulong)ptr3;
 				result = WriteEvent(ref eventDescriptor, num, (IntPtr)ptr);
@@ -72,8 +72,8 @@ public class EventProviderVersionTwo(Guid id) : EventProvider(id)
 			EventData* ptr2 = (EventData*)ptr;
 			ptr2->DataPointer = (ulong)&traceId;
 			ptr2->Size = 4u;
-			ptr2[1].Size = (uint)(((message ?? string.Empty).Length + 1) * 2);
-			fixed (char* ptr3 = message ?? string.Empty)
+			ptr2[1].Size = (uint)(((message ?? "").Length + 1) * 2);
+			fixed (char* ptr3 = message ?? "")
 			{
 				ptr2[1].DataPointer = (ulong)ptr3;
 				result = WriteEvent(ref eventDescriptor, num, (IntPtr)ptr);

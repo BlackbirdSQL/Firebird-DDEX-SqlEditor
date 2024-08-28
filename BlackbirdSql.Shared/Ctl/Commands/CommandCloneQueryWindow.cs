@@ -15,11 +15,11 @@ namespace BlackbirdSql.Shared.Ctl.Commands;
 
 public class CommandCloneQueryWindow : AbstractCommand
 {
-	public CommandCloneQueryWindow() : base()
+	public CommandCloneQueryWindow()
 	{
 	}
 
-	public CommandCloneQueryWindow(IBsTabbedEditorPane editorPane) : base(editorPane)
+	public CommandCloneQueryWindow(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
 	}
 
@@ -39,12 +39,12 @@ public class CommandCloneQueryWindow : AbstractCommand
 
 			IBsDesignerExplorerServices service = ApcManager.EnsureService<IBsDesignerExplorerServices>();
 
-			string baseName = EditorPane.WindowBaseName;
+			string baseName = TabbedEditor.WindowBaseName;
 
-			TextSpanEx textSpanInfo = EditorPane.GetSelectedCodeEditorTextSpan();
+			TextSpanEx textSpanInfo = TabbedEditor.GetSelectedCodeEditorTextSpan();
 			if (textSpanInfo.Text == null || textSpanInfo.Text.Length == 0)
 			{
-				textSpanInfo = EditorPane.GetAllCodeEditorTextSpan();
+				textSpanInfo = TabbedEditor.GetAllCodeEditorTextSpan();
 			}
 
 			service.CloneQuery(CachedStrategy?.CurrentDatasetKey, baseName, textSpanInfo.Text);

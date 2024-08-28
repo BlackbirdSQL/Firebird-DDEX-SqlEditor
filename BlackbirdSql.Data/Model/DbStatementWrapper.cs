@@ -263,7 +263,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 					}
 					catch (Exception ex)
 					{
-						if (cancelToken.IsCancellationRequested)
+						if (cancelToken.Cancelled())
 						{
 							Diag.Expected(ex);
 
@@ -290,7 +290,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 				case SqlStatementType.Rollback:
 
-					await RollbackTransactionsAsync(cancelToken);
+					await RollbackTransactionsAsync(true, cancelToken);
 					AfterStatementExecution(null, statement.Text, statementType, -1);
 					break;
 
@@ -359,7 +359,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		}
 		catch
 		{
-			await RollbackTransactionsAsync(cancelToken);
+			await RollbackTransactionsAsync(autoCommit, cancelToken);
 			// CloseConnection();
 
 			throw;
@@ -381,13 +381,13 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 			}
 		}
 
-		if (ExecutionType == EnSqlExecutionType.QueryWithPlan && !cancelToken.IsCancellationRequested)
+		if (ExecutionType == EnSqlExecutionType.QueryWithPlan && !cancelToken.Cancelled())
 			await GeneratePlanAsync(cancelToken);
 
 
 		// DisposeCommand();
-		if (!cancelToken.IsCancellationRequested)
-			await CommitTransactionsAsync(false, cancelToken);
+		if (!cancelToken.Cancelled())
+			await CommitTransactionsAsync(autoCommit, cancelToken);
 		// CloseConnection();
 
 		return rowsSelected;
@@ -413,7 +413,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 			}
 			catch (Exception ex)
 			{
-				if (cancelToken.IsCancellationRequested)
+				if (cancelToken.Cancelled())
 				{
 					Diag.Expected(ex);
 
@@ -475,7 +475,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		}
 		catch (Exception ex)
 		{
-			if (cancelToken.IsCancellationRequested)
+			if (cancelToken.Cancelled())
 			{
 				Diag.Expected(ex);
 
@@ -491,7 +491,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 			throw;
 		}
 
-		if (!cancelToken.IsCancellationRequested && autoCommit && (bool)Reflect.GetPropertyValue(_Command, "IsDDLCommand"))
+		if (!cancelToken.Cancelled() && autoCommit && (bool)Reflect.GetPropertyValue(_Command, "IsDDLCommand"))
 		{
 			await CommitTransactionsAsync(autoCommit, cancelToken);
 		}
@@ -501,15 +501,15 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 	private async Task<bool> CommitTransactionsAsync(bool force, CancellationToken cancelToken)
 	{
-		if (_CanCommit)
+		if (force || _CanCommit)
 			return await _Owner.CommitTransactionsAsync(cancelToken);
 
 		return false;
 	}
 
-	private async Task<bool> RollbackTransactionsAsync(CancellationToken cancelToken)
+	private async Task<bool> RollbackTransactionsAsync(bool force, CancellationToken cancelToken)
 	{
-		if (_CanCommit)
+		if (force || _CanCommit)
 			return await _Owner.RollbackTransactionsAsync(cancelToken);
 
 		return false;
@@ -554,7 +554,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 			enumerator.MoveNext();
 			_Csb ??= new(_Owner.Connection.ConnectionString)
 			{
-				Database = enumerator.Current.Text.Replace("'", string.Empty)
+				Database = enumerator.Current.Text.Replace("'", "")
 			};
 
 			while (enumerator.MoveNext())
@@ -563,12 +563,12 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 				{
 					case "USER":
 						enumerator.MoveNext();
-						_Csb.UserID = enumerator.Current.Text.Replace("'", string.Empty);
+						_Csb.UserID = enumerator.Current.Text.Replace("'", "");
 						break;
 
 					case "PASSWORD":
 						enumerator.MoveNext();
-						_Csb.Password = enumerator.Current.Text.Replace("'", string.Empty);
+						_Csb.Password = enumerator.Current.Text.Replace("'", "");
 						break;
 
 					case "PAGE_SIZE":
@@ -622,7 +622,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 			enumerator.MoveNext();
 
 			_Csb ??= new(_Owner.Connection.ConnectionString);
-			_Csb.Database = enumerator.Current.Text.Replace("'", string.Empty);
+			_Csb.Database = enumerator.Current.Text.Replace("'", "");
 
 			while (enumerator.MoveNext())
 			{
@@ -630,12 +630,12 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 				{
 					case "USER":
 						enumerator.MoveNext();
-						_Csb.UserID = enumerator.Current.Text.Replace("'", string.Empty);
+						_Csb.UserID = enumerator.Current.Text.Replace("'", "");
 						break;
 
 					case "PASSWORD":
 						enumerator.MoveNext();
-						_Csb.Password = enumerator.Current.Text.Replace("'", string.Empty);
+						_Csb.Password = enumerator.Current.Text.Replace("'", "");
 						break;
 
 					case "CACHE":
@@ -644,7 +644,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 					case "ROLE":
 						enumerator.MoveNext();
-						_Csb.Role = enumerator.Current.Text.Replace("'", string.Empty);
+						_Csb.Role = enumerator.Current.Text.Replace("'", "");
 						break;
 
 					default:

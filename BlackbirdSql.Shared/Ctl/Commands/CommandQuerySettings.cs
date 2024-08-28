@@ -32,7 +32,7 @@ public class CommandQuerySettings(IBsTabbedEditorPane editorWindow)
 			return VSConstants.S_OK;
 
 
-		EditorPane.ExtensionInstance.ShowExecutionSettingsDialog(CachedAuxDocData, FormStartPosition.CenterParent);
+		TabbedEditor.ExtensionInstance.ShowExecutionSettingsDialog(CachedAuxDocData, FormStartPosition.CenterParent);
 
 		return VSConstants.S_OK;
 	}

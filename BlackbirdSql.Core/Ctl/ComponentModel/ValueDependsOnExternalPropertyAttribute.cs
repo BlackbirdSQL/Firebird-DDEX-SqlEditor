@@ -23,6 +23,6 @@ internal sealed class ValueDependsOnExternalPropertyAttribute : Attribute
 	public ValueDependsOnExternalPropertyAttribute(string sourceName, string propertyName = null)
 	{
 		m_sourceName = sourceName;
-		m_propertyName = propertyName ?? string.Empty;
+		m_propertyName = propertyName ?? "";
 	}
 }

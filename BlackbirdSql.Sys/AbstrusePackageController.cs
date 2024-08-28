@@ -1254,9 +1254,10 @@ public abstract class AbstrusePackageController : IBsPackageController
 			{
 				await Task.Delay(50);
 
-#pragma warning disable CS4014
-				ThreadHelper.JoinableTaskFactory.RunAsync(() => OnAfterLoadProjectAsync(project));
-#pragma warning restore CS4014
+				// Fire and forget.
+				Task.Factory.StartNew(() => OnAfterLoadProjectAsync(project),
+					default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
+					TaskScheduler.Default).Forget();
 
 				return;
 			}
@@ -1380,9 +1381,10 @@ public abstract class AbstrusePackageController : IBsPackageController
 			{
 				await Task.Delay(50);
 
-#pragma warning disable CS4014
-				ThreadHelper.JoinableTaskFactory.RunAsync(() => OnAfterOpenProjectAsync(project, fAdded));
-#pragma warning restore CS4014
+				// Fire and forget.
+				Task.Factory.StartNew(() => OnAfterOpenProjectAsync(project, fAdded),
+					default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
+					TaskScheduler.Default).Forget();
 
 				return;
 			}

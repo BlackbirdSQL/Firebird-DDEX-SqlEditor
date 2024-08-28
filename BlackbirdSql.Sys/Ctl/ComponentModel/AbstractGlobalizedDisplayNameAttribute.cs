@@ -23,7 +23,7 @@ public abstract class AbstractGlobalizedDisplayNameAttribute(string resourceName
 			}
 			catch (Exception)
 			{
-				return string.Empty;
+				return "";
 			}
 		}
 	}

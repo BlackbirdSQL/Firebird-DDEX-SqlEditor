@@ -14,9 +14,9 @@ public delegate void BatchMessageEventHandler(object sender, BatchMessageEventAr
 
 public class BatchMessageEventArgs : EventArgs
 {
-	private readonly string _Message = string.Empty;
+	private readonly string _Message = "";
 
-	private readonly string _DetailedMessage = string.Empty;
+	private readonly string _DetailedMessage = "";
 
 	public string Message => _Message;
 

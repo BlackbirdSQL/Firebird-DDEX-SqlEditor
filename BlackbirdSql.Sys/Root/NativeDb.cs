@@ -19,6 +19,8 @@ using Microsoft.VisualStudio.Shell.Design;
 using Microsoft.VisualStudio.Shell.Interop;
 using VSLangProj;
 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 
 namespace BlackbirdSql;
@@ -44,9 +46,8 @@ public static class NativeDb
 	private static IBsNativeDatabaseEngine _DatabaseEngineSvc = null;
 	private static IBsNativeProviderSchemaFactory _ProviderSchemaFactorySvc = null;
 	private static IBsNativeDatabaseInfo _DatabaseInfoSvc = null;
-	private static IBsNativeDbCommand _DbCommandSvc = null;
 	private static IBsNativeDbException _DbExceptionSvc = null;
-	private static IBsNativeDbConnection _DbConnectionSvc = null;
+	private static IBsNativeDbServerExplorerService _DbServerExplorerSvc = null;
 
 	private static Type _CsbType = null;
 
@@ -136,24 +137,17 @@ public static class NativeDb
 		set { _DatabaseInfoSvc = value; }
 	}
 
-	public static IBsNativeDbCommand DbCommandSvc
-	{
-		get { return _DbCommandSvc; }
-		set { _DbCommandSvc = value; }
-	}
-
-	public static IBsNativeDbConnection DbConnectionSvc
-	{
-		get { return _DbConnectionSvc; }
-		set { _DbConnectionSvc = value; }
-	}
-
 	public static IBsNativeDbException DbExceptionSvc
 	{
 		get { return _DbExceptionSvc; }
 		set { _DbExceptionSvc = value; }
 	}
 
+	public static IBsNativeDbServerExplorerService DbServerExplorerSvc
+	{
+		get { return _DbServerExplorerSvc; }
+		set { _DbServerExplorerSvc = value; }
+	}
 
 
 	public static string AssemblyQualifiedName => DatabaseEngineSvc.AssemblyQualifiedName_;
@@ -294,7 +288,7 @@ public static class NativeDb
 
 	public static string GetDecoratedDdlSource(IVsDataExplorerNode node, EnModelTargetType targetType)
 	{
-		return DatabaseEngineSvc.GetDecoratedDdlSource_(node, targetType);
+		return DbServerExplorerSvc.GetDecoratedDdlSource_(node, targetType);
 	}
 
 
@@ -363,7 +357,7 @@ public static class NativeDb
 
 			if (serviceProvider == null)
 			{
-				serviceProvider = new((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)ApcManager.Dte);
+				serviceProvider = new((IOleServiceProvider)ApcManager.Dte);
 				dynamicTypeService = serviceProvider.GetService(typeof(DynamicTypeService)) as DynamicTypeService;
 				Diag.ThrowIfServiceUnavailable(dynamicTypeService, typeof(DynamicTypeService));
 
@@ -411,7 +405,7 @@ public static class NativeDb
 	{
 		if (serviceProvider == null)
 		{
-			ServiceProvider oleServiceProvider = new((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)ApcManager.Dte);
+			ServiceProvider oleServiceProvider = new((IOleServiceProvider)ApcManager.Dte);
 			serviceProvider = oleServiceProvider.GetService(typeof(IDesignerHost));
 			Diag.ThrowIfServiceUnavailable(dynamicTypeService, typeof(DynamicTypeService));
 			throw new ArgumentNullException("serviceProvider");
@@ -473,21 +467,14 @@ public static class NativeDb
 	*/
 
 
-	public static byte GetErrorClass(object error) => DatabaseEngineSvc.GetErrorClass_(error);
-	public static int GetErrorLineNumber(object error) => DatabaseEngineSvc.GetErrorLineNumber_(error);
-	public static string GetErrorMessage(object error) => DatabaseEngineSvc.GetErrorMessage_(error);
-	public static int GetErrorNumber(object error) => DatabaseEngineSvc.GetErrorNumber_(error);
-	public static int GetObjectTypeIdentifierLength(string typeName) => DatabaseEngineSvc.GetObjectTypeIdentifierLength_(typeName);
+	public static byte GetErrorClass(object error) => DbExceptionSvc.GetErrorClass_(error);
+	public static int GetErrorLineNumber(object error) => DbExceptionSvc.GetErrorLineNumber_(error);
+	public static string GetErrorMessage(object error) => DbExceptionSvc.GetErrorMessage_(error);
+	public static int GetErrorNumber(object error) => DbExceptionSvc.GetErrorNumber_(error);
+	public static int GetObjectTypeIdentifierLength(string typeName) => DbServerExplorerSvc.GetObjectTypeIdentifierLength_(typeName);
 	public static Version ParseServerVersion(IDbConnection connection) => connection.ParseServerVersion();
-	public static ICollection<object> GetErrorEnumerator(IList<object> errors) => DatabaseEngineSvc.GetErrorEnumerator_(errors);
-
-
-	public static bool IsSupportedCommandType(object command) => DatabaseEngineSvc.IsSupportedCommandType_(command);
-
-	public static bool IsSupportedConnection(IDbConnection connection) => DatabaseEngineSvc.IsSupportedConnection_(connection);
-
+	public static ICollection<object> GetErrorEnumerator(IList<object> errors) => DbExceptionSvc.GetErrorEnumerator_(errors);
 	public static bool LockLoadedParser(string originalString, string updatedString) => DatabaseEngineSvc.LockLoadedParser_(originalString, updatedString);
-
 	public static void UnlockLoadedParser() => DatabaseEngineSvc.UnlockLoadedParser_();
 
 

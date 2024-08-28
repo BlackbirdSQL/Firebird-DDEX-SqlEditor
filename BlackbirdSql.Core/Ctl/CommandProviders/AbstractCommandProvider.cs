@@ -76,7 +76,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				cmd.Enabled = ApcManager.CanValidateSolution && !ApcManager.SolutionValidating;
 
 				if (cmd.Visible && !command.Properties.Contains("GotText")
-					&& (label = GlobalizeLabel(cmd, EnNodeSystemType.Global)) != string.Empty)
+					&& (label = GlobalizeLabel(cmd, EnNodeSystemType.Global)) != "")
 				{
 					cmd.Properties["GotText"] = true;
 					cmd.Properties["Text"] = label;
@@ -126,7 +126,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				node = Site.ExplorerConnection.ConnectionNode;
 
 				if (cmd.Visible && !command.Properties.Contains("GotText")
-					&& (label = GlobalizeLabel(cmd, node)) != string.Empty)
+					&& (label = GlobalizeLabel(cmd, node)) != "")
 				{
 					cmd.Properties["GotText"] = true;
 					cmd.Properties["Text"] = label;
@@ -150,7 +150,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				nodeSystemType = node.NodeSystemType();
 
 				if (cmd.Visible && !command.Properties.Contains("GotText")
-					&& (label = GlobalizeLabel(cmd, nodeSystemType)) != string.Empty)
+					&& (label = GlobalizeLabel(cmd, nodeSystemType)) != "")
 				{
 					cmd.Properties["GotText"] = true;
 					cmd.Properties["Text"] = label;
@@ -195,7 +195,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				cmd.Enabled = cmd.Visible && scriptNode.CanOpen();
 
 				if (cmd.Visible && !command.Properties.Contains("GotText")
-					&& (label = GlobalizeLabel(cmd, scriptNode)) != string.Empty)
+					&& (label = GlobalizeLabel(cmd, scriptNode)) != "")
 				{
 					cmd.Properties["GotText"] = true;
 					cmd.Properties["Text"] = label;
@@ -224,7 +224,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				cmd.Visible = cmd.Enabled = (scriptNode != null) && scriptNode.CanAlter();
 
 				if (cmd.Visible && !command.Properties.Contains("GotText")
-					&& (label = GlobalizeLabel(cmd, scriptNode)) != string.Empty)
+					&& (label = GlobalizeLabel(cmd, scriptNode)) != "")
 				{
 					cmd.Properties["GotText"] = true;
 					cmd.Properties["Text"] = label;
@@ -271,7 +271,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				cmd.Enabled = cmd.Visible = designerNode != null;
 
 				if (cmd.Visible && !command.Properties.Contains("GotText")
-					&& (label = GlobalizeLabel(cmd, designerNode)) != string.Empty)
+					&& (label = GlobalizeLabel(cmd, designerNode)) != "")
 				{
 					cmd.Properties["GotText"] = true;
 					cmd.Properties["Text"] = label;
@@ -334,9 +334,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	public static string GlobalizeLabel(DataViewMenuCommand cmd, IVsDataExplorerNode node)
 	{
 		if (!cmd.Visible)
-			return string.Empty;
+			return "";
 
-		string text = string.Empty;
+		string text = "";
 		EnModelObjectType type = node.NodeBaseType();
 
 		if (cmd.CommandID.Equals(CommandProperties.NewQuery))
@@ -354,9 +354,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	public static string GlobalizeLabel(DataViewMenuCommand cmd, EnNodeSystemType nodeSystemType)
 	{
 		if (!cmd.Visible)
-			return string.Empty;
+			return "";
 
-		string text = string.Empty;
+		string text = "";
 		string type = nodeSystemType.ToString();
 
 		if (cmd.CommandID.Equals(CommandProperties.NewDesignerQuery))
@@ -443,7 +443,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		// Show the diagram pane if enabled.
 		if (PersistentSettings.ShowDiagramPane)
 		{
-			CommandID cmd = new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.ShowGraphicalPane);
+			CommandID cmd = new CommandID(VSConstants.GUID_VSStandardCommandSet97,
+				(int)VSConstants.VSStd97CmdID.ShowGraphicalPane);
 			// Delay 10 ms to give Editor WindowFrame and QueryDesignerDocument time to breath.
 			host.PostExecuteCommand(cmd, 10);
 		}

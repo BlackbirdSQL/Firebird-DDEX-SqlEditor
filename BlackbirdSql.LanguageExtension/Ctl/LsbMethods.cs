@@ -38,7 +38,7 @@ public class LsbMethods : Methods
 	{
 		get
 		{
-			string result = string.Empty;
+			string result = "";
 			if (_Methods[0].ShouldShowParentheses)
 			{
 				result = ((!_Methods[0].IsVarArg) ? ")" : ((_Methods[0].Parameters.Count > 0) ? ", ...)" : "...)"));

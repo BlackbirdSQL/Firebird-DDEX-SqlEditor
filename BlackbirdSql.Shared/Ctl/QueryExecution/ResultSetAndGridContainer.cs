@@ -137,7 +137,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.StartRetrievingData", "nMaxNumCharsToDisplay = {0}, nMaxNumXmlCharsToDisplay={1}", nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay);
 		await _ResultSet.StartRetrievingDataAsync(nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay, cancelToken);
 
-		return !cancelToken.IsCancellationRequested;
+		return !cancelToken.Cancelled();
 	}
 
 	public void UpdateGrid()
@@ -148,8 +148,8 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	private async Task<bool> OnMoreRowsAvailableFromStorageAsync(object sender, MoreRowsAvailableEventArgs args)
 	{
-		if (args.CancelToken.IsCancellationRequested)
-			return await Cmd.AwaitableAsync(false);
+		if (args.CancelToken.Cancelled())
+			return await Task.FromResult(false);
 
 		if (args.NewRowsNumber == C_NumOfFirstRowsToInitialResizeColumns || args.AllRows)
 		{
@@ -170,7 +170,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 			}
 		}
 
-		return await Cmd.AwaitableAsync(true);
+		return await Task.FromResult(true);
 	}
 
 	private void SelectFirstCellInTheGrid()

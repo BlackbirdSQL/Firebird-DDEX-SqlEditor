@@ -17,6 +17,8 @@ using Microsoft.VisualStudio.Shell.Design;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 
 namespace BlackbirdSql.Core;
@@ -90,7 +92,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 		{
 			if (_DynamicTypeService == null)
 			{
-				ServiceProvider serviceProvider = new((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)dte2);
+				ServiceProvider serviceProvider = new((IOleServiceProvider)dte2);
 
 				// Store a reference so that VS doesn't forget about us.
 				_DynamicTypeService = serviceProvider.GetService(typeof(DynamicTypeService)) as DynamicTypeService;

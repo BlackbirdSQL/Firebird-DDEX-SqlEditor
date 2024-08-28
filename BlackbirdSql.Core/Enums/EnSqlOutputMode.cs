@@ -8,5 +8,6 @@ public enum EnSqlOutputMode
 {
 	ToGrid,
 	ToText,
-	ToFile
+	ToFile,
+	Undefined
 }

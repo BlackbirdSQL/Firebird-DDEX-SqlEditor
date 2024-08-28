@@ -241,7 +241,7 @@ public abstract class AbstractEventsManager : IBsEventsManager
 			completed = true;
 			text = $"Completed. Validation took {elapsed}ms.";
 		}
-		else if (_TaskHandler.UserCancellation.IsCancellationRequested)
+		else if (_TaskHandler.UserCancellation.Cancelled())
 		{
 			completed = true;
 			text = $"Cancelled. {progress}% completed. Validation took {elapsed}ms.";

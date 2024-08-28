@@ -22,8 +22,6 @@ public static class CoreConstants
 	#region Engine Miscellaneous constants - CoreConstants
 	// ---------------------------------------------------------------------------------
 
-	public const int C_KeepAliveModulus = 750; // Approx 25 minutes.
-
 
 	#endregion Engine Miscellaneous constants
 

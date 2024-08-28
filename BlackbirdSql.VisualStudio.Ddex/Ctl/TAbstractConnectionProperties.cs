@@ -169,6 +169,8 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 						if (type == typeof(int))
 							sobj = Convert.ToInt32(obj).ToString();
+						else if (type == typeof(short))
+							sobj = Convert.ToInt16(obj).ToString();
 						else if (type == typeof(long))
 							sobj = Convert.ToInt64(obj).ToString();
 						else
@@ -233,7 +235,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 		lock (_LockObject)
 			ConnectionStringBuilder?.Clear();
 
-		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
+		OnPropertyChanged(new PropertyChangedEventArgs(""));
 	}
 
 
@@ -278,7 +280,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 				// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}, connectionString: {1}", ConnectionSource, ConnectionStringBuilder.ConnectionString);
 			}
 
-			OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
+			OnPropertyChanged(new PropertyChangedEventArgs(""));
 		}
 		catch (Exception ex)
 		{

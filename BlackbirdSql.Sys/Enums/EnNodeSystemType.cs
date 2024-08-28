@@ -28,40 +28,40 @@ public static class EnNodeSystemTypeExtensions
 	/// <summary>
 	/// Determines the IsSystemObject type of a node.
 	/// </summary>
-	public static EnNodeSystemType NodeSystemType(this IVsDataExplorerNode node)
+	public static EnNodeSystemType NodeSystemType(this IVsDataExplorerNode @this)
 	{
-		if (node == null)
+		if (@this == null)
 			return EnNodeSystemType.Undefined;
-		if (node == node.ExplorerConnection.ConnectionNode)
+		if (@this == @this.ExplorerConnection.ConnectionNode)
 			return EnNodeSystemType.Global;
 
 		IVsDataObject @object;
 
-		if (node.Object == null)
+		if (@this.Object == null)
 		{
-			if (node.Name.StartsWith("User"))
+			if (@this.Name.StartsWith("User"))
 				return EnNodeSystemType.User;
-			if (node.Name.StartsWith("System"))
+			if (@this.Name.StartsWith("System"))
 				return EnNodeSystemType.System;
 
-			if (node.Parent.Object != null)
-				@object = node.Parent.Object;
+			if (@this.Parent.Object != null)
+				@object = @this.Parent.Object;
 			else
 				return EnNodeSystemType.Global;
 		}
 		else
 		{
-			@object = node.Object;
+			@object = @this.Object;
 		}
 
 
 		if (@object.Type.Name.EndsWith("Column") || @object.Type.Name.EndsWith("Parameter")
 			|| @object.Type.Name.EndsWith("ReturnValue"))
 		{
-			if (node.Parent != null && node.Parent.Object != null)
-				@object = node.Parent.Object;
-			else if (node.Parent.Parent != null && node.Parent.Parent.Object != null)
-				@object = node.Parent.Parent.Object;
+			if (@this.Parent != null && @this.Parent.Object != null)
+				@object = @this.Parent.Object;
+			else if (@this.Parent.Parent != null && @this.Parent.Parent.Object != null)
+				@object = @this.Parent.Parent.Object;
 			else
 				return EnNodeSystemType.Global;
 

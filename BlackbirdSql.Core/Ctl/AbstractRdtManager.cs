@@ -524,7 +524,7 @@ public abstract class AbstractRdtManager : IDisposable
 			}
 		}
 
-		return string.Empty;
+		return "";
 	}
 
 	protected void SetFocusToActiveDocument()
@@ -993,7 +993,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 	protected bool TryGetFileNameFromCookie(uint docCookie, out string fileName)
 	{
-		fileName = string.Empty;
+		fileName = "";
 		if (RdtSvc != null)
 		{
 			Diag.ThrowIfNotOnUIThread();

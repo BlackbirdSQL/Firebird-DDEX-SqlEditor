@@ -128,7 +128,7 @@ public class StringParser
 		{
 			string text2 = _Source[num..];
 
-			if (!(text2.Trim() == string.Empty))
+			if (!(text2.Trim() == ""))
 			{
 				FbStatement statement = Reflect.CreateInstance<FbStatement>([text2, rawResult.ToString()]);
 

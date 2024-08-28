@@ -10,6 +10,8 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 
 namespace BlackbirdSql.Shared.Controls.Tabs;
@@ -18,8 +20,8 @@ namespace BlackbirdSql.Shared.Controls.Tabs;
 public class EditorCodeTab : AbstractEditorTab
 {
 
-	public EditorCodeTab(IBsTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
-		: base(editorPane, logicalView, editorTabType)
+	public EditorCodeTab(IBsTabbedEditorPane tabbedEditor, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
+		: base(tabbedEditor, logicalView, editorTabType)
 	{
 		_EditorLogicalView = editorLogicalView;
 	}
@@ -71,7 +73,7 @@ public class EditorCodeTab : AbstractEditorTab
 			__VSSPECIFICEDITORFLAGS flags = __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen
 				| __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor;
 
-			___(vsUIShellOpenDocument.OpenDocumentViaProjectWithSpecific(documentMoniker, (uint)flags, ref editorGuid, null, ref rguidLogicalView, out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP, out IVsUIHierarchy ppHierOpen, out array[0], out IVsWindowFrame ppWindowFrame));
+			___(vsUIShellOpenDocument.OpenDocumentViaProjectWithSpecific(documentMoniker, (uint)flags, ref editorGuid, null, ref rguidLogicalView, out IOleServiceProvider ppSP, out IVsUIHierarchy ppHierOpen, out array[0], out IVsWindowFrame ppWindowFrame));
 
 			SetFrameProperties(vsWindowFrame, ppWindowFrame);
 

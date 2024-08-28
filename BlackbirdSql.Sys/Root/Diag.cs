@@ -316,11 +316,9 @@ public static class Diag
 		if (message != "")
 			message += ":";
 
-		IBsNativeDbException exceptionSvc = ApcManager.GetService<SBsNativeDbException, IBsNativeDbException>();
-
-		if (exceptionSvc != null && ex is DbException exf && exceptionSvc.HasSqlException(exf))
+		if (ex is DbException exd && exd.HasSqlException())
 		{
-			message += Environment.NewLine + $"{NativeDb.DbEngineName} error code: {exceptionSvc.GetErrorCode(exf)}, Class: {exceptionSvc.GetClass(exf)}, Proc: {exceptionSvc.GetProcedure(exf)}, Line: {exceptionSvc.GetLineNumber(exf)}.";
+			message += Environment.NewLine + $"{NativeDb.DbEngineName} error code: {exd.GetErrorCode()}, Class: {exd.GetClass()}, Proc: {exd.GetProcedure()}, Line: {exd.GetLineNumber()}.";
 		}
 		if (ex.StackTrace != null)
 		{
@@ -365,6 +363,32 @@ public static class Diag
 	}
 
 
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Raises excepton for ServiceUnavailableException
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static async Task<TResult> ThrowExceptionServiceUnavailableAsync<TResult>(Type serviceType,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+		where TResult : class
+#else
+	public static ServiceUnavailableException ExceptionService(Type type,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		if (serviceType != null)
+			throw ExceptionService(serviceType, memberName, sourceFilePath, sourceLineNumber);
+
+		return await Task.FromResult<TResult>(null);
+	}
 
 
 
@@ -792,11 +816,10 @@ public static class Diag
 		if (message != "")
 			message += ":";
 
-		IBsNativeDbException exceptionSvc = ApcManager.GetService<SBsNativeDbException, IBsNativeDbException>();
 
-		if (exceptionSvc != null && ex is DbException exf && exceptionSvc.HasSqlException(exf))
+		if (ex is DbException exd && exd.HasSqlException())
 		{
-			message += Environment.NewLine + $"{NativeDb.DbEngineName}  error code:  {exceptionSvc.GetErrorCode(exf)} , Class:  {exceptionSvc.GetClass(exf)}, Proc: {exceptionSvc.GetProcedure(exf)}, Line: {exceptionSvc.GetLineNumber(exf)}.";
+			message += Environment.NewLine + $"{NativeDb.DbEngineName}  error code:  {exd.GetErrorCode()} , Class:  {exd.GetClass()}, Proc: {exd.GetProcedure()}, Line: {exd.GetLineNumber()}.";
 		}
 
 		message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
@@ -1047,7 +1070,7 @@ public static class Diag
 			}
 
 			if (!enableTaskLog && taskHandler == null)
-				return await Cmd.AwaitableAsync(false);
+				return await Task.FromResult(false);
 
 			string[] arr = text.Split('\n');
 
@@ -1083,7 +1106,7 @@ public static class Diag
 			}
 
 			if (taskHandler == null)
-				return await Cmd.AwaitableAsync(enableTaskLog);
+				return await Task.FromResult(enableTaskLog);
 
 			lock (_LockGlobal)
 			{
@@ -1107,7 +1130,7 @@ public static class Diag
 			throw ex;
 		}
 
-		return await Cmd.AwaitableAsync(true);
+		return await Task.FromResult(true);
 	}
 
 
@@ -1234,7 +1257,7 @@ public static class Diag
 			throw ex;
 		}
 
-		outputMsg ??= string.Empty;
+		outputMsg ??= "";
 
 
 		try

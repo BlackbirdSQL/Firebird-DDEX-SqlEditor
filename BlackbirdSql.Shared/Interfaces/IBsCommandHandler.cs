@@ -10,11 +10,11 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.Shared.Interfaces;
 
 
-public interface IBsToolbarCommandHandler
+public interface IBsCommandHandler
 {
 	GuidId Clsid { get; }
 
-	int OnQueryStatus(IBsTabbedEditorPane editorPane, ref OLECMD prgCmd, IntPtr pCmdText);
+	int OnQueryStatus(IBsTabbedEditorPane tabbedEditor, ref OLECMD prgCmd, IntPtr pCmdText);
 
-	int OnExec(IBsTabbedEditorPane editorPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
+	int OnExec(IBsTabbedEditorPane tabbedEditor, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 }

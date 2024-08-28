@@ -240,7 +240,7 @@ public class GraphControl : GraphCtrl
 			float width = g.MeasureString(caption, BoldFont).Width;
 			float num = caption != "|" ? LineHeight : 0;
 			float val = additionalText != null ? g.MeasureString(additionalText, BoldFont).Width : 0f;
-			float num2 = additionalText != null && additionalText != string.Empty ? LineHeight : 0;
+			float num2 = additionalText != null && additionalText != "" ? LineHeight : 0;
 			propertyNameWidth = 0f;
 			propertyValueWidth = 0f;
 			int num3 = -1;
@@ -265,7 +265,7 @@ public class GraphControl : GraphCtrl
 				propertyNameWidth *= num5;
 				propertyValueWidth *= num5;
 			}
-			string text2 = Description != null ? GetPropertyText(Description) : string.Empty;
+			string text2 = Description != null ? GetPropertyText(Description) : "";
 			descriptionHeight = text2.Length > 0 ? (float)Math.Ceiling(g.MeasureString(text2, Font, num4).Height) : 0f;
 			float num6 = num + descriptionHeight + num2;
 			if (Properties.Count > 0)
@@ -339,7 +339,7 @@ public class GraphControl : GraphCtrl
 				e.Graphics.DrawString(GetPropertyText(Description), Font, brush, layoutRectangle2, stringFormat);
 				num3 = layoutRectangle2.Bottom;
 			}
-			if (additionalText != null && additionalText != string.Empty)
+			if (additionalText != null && additionalText != "")
 			{
 				RectangleF layoutRectangle3 = RectangleF.FromLTRB(num, num3, num2, num3 + LineHeight);
 				stringFormat.Alignment = StringAlignment.Near;
@@ -406,14 +406,14 @@ public class GraphControl : GraphCtrl
 				object value = property.GetValue(Tag);
 				if (value == null)
 				{
-					return string.Empty;
+					return "";
 				}
 				return property.Converter.ConvertToString(value).Trim();
 			}
 			catch (TargetInvocationException ex)
 			{
 				Trace.TraceError(ex.Message);
-				return string.Empty;
+				return "";
 			}
 		}
 
@@ -1203,7 +1203,7 @@ public class GraphControl : GraphCtrl
 
 	protected virtual string GetAdditionalTextOnToolTip(object displayObject)
 	{
-		return string.Empty;
+		return "";
 	}
 
 	private void InvokePaint(PaintEventArgs e)

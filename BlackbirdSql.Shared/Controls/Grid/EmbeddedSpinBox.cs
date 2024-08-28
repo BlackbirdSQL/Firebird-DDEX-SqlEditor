@@ -221,7 +221,7 @@ public class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridEmb
 			}
 			else if (ke.KeyCode == Keys.Back || ke.KeyCode == Keys.Delete)
 			{
-				Text = string.Empty;
+				Text = "";
 				flag = true;
 			}
 

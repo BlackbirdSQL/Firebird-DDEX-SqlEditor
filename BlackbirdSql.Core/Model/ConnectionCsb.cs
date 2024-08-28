@@ -224,7 +224,6 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 
 	private long _ConnectionId = 0;
-	private int _KeepAliveCardinal = 0;
 
 	protected ConnectionChangedDelegate _ConnectionChangedEvent;
 
@@ -517,8 +516,6 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 		if (connection != null)
 			DisposeConnection();
 
-		_KeepAliveCardinal = 0;
-
 		DataConnection = newConnection;
 		_ConnectionId++;
 	}
@@ -590,6 +587,9 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 	/// Always use this method to open connections because it disposes of the connection
 	/// and invokes ConnectionChangedEvent on failure.
 	/// Do not call before ensuring IsComplete.
+	/// The cardinal must be either zero, if no keepalive reads are required, or an
+	/// incremental value that can be used to execute a select statement unique from
+	/// the previous call to this method.
 	/// </summary>
 	/// <returns>
 	/// Boolean tuple with Item1: True if open / verification succeeded and
@@ -611,13 +611,10 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 			return (isOpen, hasTransactions);
 		}
 
-		bool keepAlive = (_KeepAliveCardinal % C_KeepAliveModulus) == 0;
-		if (keepAlive)
-			_KeepAliveCardinal = 1;
 
 		try
 		{
-			(isOpen, hasTransactions) = await connection.OpenOrVerifyAsync(DataTransaction, keepAlive, cancelToken);
+			(isOpen, hasTransactions) = await connection.OpenOrVerifyAsync(DataTransaction, cancelToken);
 		}
 		catch (Exception ex)
 		{
@@ -629,7 +626,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 			throw ex;
 		}
 
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return (isOpen, hasTransactions);
 
 		if (connection.State != ConnectionState.Open)
@@ -644,8 +641,6 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 			throw exd;
 		}
 
-		if (hasTransactions)
-			_KeepAliveCardinal++;
 
 		return (isOpen, hasTransactions);
 	}
@@ -725,7 +720,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 	public virtual string ToFullString()
 	{
-		return ConnectionString ?? string.Empty;
+		return ConnectionString ?? "";
 	}
 
 

@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 using static BlackbirdSql.Sys.Interfaces.IBsPackageController;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 
 
@@ -37,7 +38,7 @@ public static class ApcManager
 		get
 		{
 			if (IdeShutdownState || SolutionClosing)
-				return string.Empty;
+				return "";
 
 			EnvDTE.Document document;
 
@@ -50,15 +51,15 @@ public static class ApcManager
 				if (ex.HResult == VSConstants.E_NOINTERFACE)
 					ShutdownDte();
 
-				return string.Empty;
+				return "";
 			}
 			catch
 			{
-				return string.Empty;
+				return "";
 			}
 
 			if (document == null)
-				return string.Empty;
+				return "";
 
 			try
 			{
@@ -66,7 +67,7 @@ public static class ApcManager
 			}
 			catch
 			{
-				return string.Empty;
+				return "";
 			}
 		}
 	}
@@ -149,17 +150,17 @@ public static class ApcManager
 			{
 				EnvDTE.Window window = ActiveWindow;
 				if (window == null)
-					return string.Empty;
+					return "";
 
 				string kind = window.ObjectKind;
 				if (kind == null)
-					return string.Empty;
+					return "";
 
 				return kind.ToUpper();
 			}
 			catch
 			{
-				return string.Empty;
+				return "";
 			}
 		}
 	}
@@ -175,22 +176,22 @@ public static class ApcManager
 			{
 				EnvDTE.Window window = ActiveWindow;
 				if (window == null)
-					return string.Empty;
+					return "";
 
 				if (window.Object == null)
-					return string.Empty;
+					return "";
 
 				return window.Object.GetType().FullName;
 			}
 			catch
 			{
-				return string.Empty;
+				return "";
 			}
 		}
 	}
 
 
-	public static string ActiveWindowType => ActiveWindow?.GetType().FullName ?? string.Empty;
+	public static string ActiveWindowType => ActiveWindow?.GetType().FullName ?? "";
 
 
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
@@ -221,7 +222,7 @@ public static class ApcManager
 	public static IBsAsyncPackage PackageInstance => Instance?.PackageInstance;
 
 
-	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance?.PackageInstance;
+	public static IServiceProvider ServiceProvider => (IServiceProvider)Instance?.PackageInstance;
 
 	public static Solution SolutionObject => IdeShutdownState ? null : Instance.SolutionObject;
 
@@ -229,18 +230,10 @@ public static class ApcManager
 
 	public static IVsTaskStatusCenterService StatusCenterService => Instance?.StatusCenterService;
 
-	public static IVsDataExplorerConnectionManager ExplorerConnectionManager
-	{
-		get
-		{
-			IVsDataExplorerConnectionManager manager =
-				(OleServiceProvider?.QueryService<IVsDataExplorerConnectionManager>()
-					as IVsDataExplorerConnectionManager)
-				?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
-
-			return manager;
-		}
-	}
+	public static IVsDataExplorerConnectionManager ExplorerConnectionManager =>
+		(OleServiceProvider?.QueryService<IVsDataExplorerConnectionManager>()
+			as IVsDataExplorerConnectionManager)
+		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
 
 	public static IDisposable DisposableWaitCursor
 	{
@@ -248,8 +241,8 @@ public static class ApcManager
 		set { PackageInstance.DisposableWaitCursor = value; }
 	}
 
-	public static Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider
-		=> Instance?.PackageInstance?.OleServiceProvider;
+	public static IOleServiceProvider OleServiceProvider =>
+		Instance?.PackageInstance?.OleServiceProvider;
 
 	public static string ProviderGuid => Instance?.ProviderGuid;
 
@@ -281,15 +274,8 @@ public static class ApcManager
 	}
 
 
-	public static async Task<TInterface> EnsureServiceAsync<TService, TInterface>() where TInterface : class
-	{
-		TInterface @interface = await Instance?.GetServiceAsync<TService, TInterface>(); 
-		Diag.ThrowIfServiceUnavailable(@interface, typeof(TInterface));
-
-		return @interface;
-	}
-
-
+	public static async Task<TInterface> EnsureServiceAsync<TService, TInterface>() where TInterface : class =>
+		await Instance?.GetServiceAsync<TService, TInterface>();
 
 
 	public static TInterface GetService<TService, TInterface>() where TInterface : class

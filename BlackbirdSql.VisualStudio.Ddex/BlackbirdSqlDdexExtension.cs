@@ -2,11 +2,14 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.ComponentModel;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Extensions;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension;
@@ -23,6 +26,7 @@ using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
+
 using Task = System.Threading.Tasks.Task;
 
 
@@ -85,8 +89,8 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 [VsPackageRegistration]
 
 // Register services
-[ProvideService(typeof(IBsPackageController), IsAsyncQueryable = true,
-	ServiceName = ExtensionData.C_PackageControllerServiceName)]
+// [ProvideService(typeof(IBsPackageController), IsAsyncQueryable = true,
+//	ServiceName = ExtensionData.C_PackageControllerServiceName)]
 [ProvideService(typeof(IBsProviderObjectFactory), IsAsyncQueryable = true,
 	ServiceName = ExtensionData.C_ProviderObjectFactoryServiceName)]
 
@@ -153,6 +157,18 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 
 	// =========================================================================================================
+	#region Fields - BlackbirdSqlDdexExtension
+	// =========================================================================================================
+
+
+	#endregion Fields
+
+
+
+
+
+
+	// =========================================================================================================
 	#region Property accessors - BlackbirdSqlDdexExtension
 	// =========================================================================================================
 
@@ -185,6 +201,76 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Final asynchronous initialization tasks for the package that must occur after
+	/// all descendents and ancestors have completed their InitializeAsync() tasks.
+	/// It is the final descendent package class's responsibility to initiate the call
+	/// to FinalizeAsync.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override async Task FinalizeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
+	{
+		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState)
+			return;
+
+		ProgressAsync(progress, "Finalizing phase launched. Switching to main thread...").Forget();
+
+		await JoinableTaskFactory.SwitchToMainThreadAsync(cancelToken);
+
+		long elapsed = _S_Stopwatch.ElapsedTicks;
+
+		ProgressAsync(progress, "Finalizing phase launched. Switch to main thread... Done.",
+			_EnStatisticsStage.MainThreadLoadEnd, elapsed).Forget();
+
+
+
+		// Descendents have completed their final async initialization now we perform ours.
+		await base.FinalizeAsync(cancelToken, progress);
+
+
+		elapsed = _S_Stopwatch.ElapsedTicks;
+		_S_Stopwatch = null;
+
+		ProgressAsync(progress, "Finalization phase completed.",
+			_EnStatisticsStage.InitializationEnd, elapsed).Forget();
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Creates a service instance of the specified type if this class has access to the
+	/// final class type of the service being added.
+	/// The class requiring and adding the service may not necessarily be the class that
+	/// creates an instance of the service.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override async Task<TInterface> GetLocalServiceInstanceAsync<TService, TInterface>(CancellationToken token)
+		 where TInterface : class
+	{
+		Type serviceType = typeof(TService);
+
+		if (serviceType == typeof(IBsProviderObjectFactory) || serviceType == typeof(IVsDataProviderObjectFactory))
+			return new TProviderObjectFactory() as TInterface;
+
+		else if (serviceType == typeof(IBsDataConnectionDlgHandler))
+			return new TDataConnectionDlgHandler() as TInterface;
+
+		else if (serviceType == typeof(IBsDataConnectionPromptDialogHandler))
+			return new TConnectionPromptDialogHandler() as TInterface;
+
+		else if (serviceType.IsInstanceOfType(this))
+			return this as TInterface;
+
+
+		return await base.GetLocalServiceInstanceAsync<TService, TInterface>(token);
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets a service interface from this service provider.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -197,13 +283,21 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 		ThreadHelper.JoinableTaskFactory.Run(async delegate
 		{
-			instance = await CreateServiceInstanceAsync(type, default) as TInterface;
+			instance = await GetLocalServiceInstanceAsync<TService, TInterface>(default);
 		});
 
 
 		// Tracer.Trace(GetType(), "GetService()", "TService: {0}, TInterface: {1}, instance: {2}", type, typeof(TInterface), instance );
 
-		instance ??= ((AsyncPackage)this).GetService<TService, TInterface>();
+		try
+		{
+			instance ??= ((IServiceProvider)this).GetService<TService, TInterface>(true);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 
 		return instance;
 	}
@@ -218,16 +312,20 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
 	public async override Task<TInterface> GetServiceAsync<TService, TInterface>()
 	{
-		Type type = typeof(TService);
+		TInterface svc = await GetLocalServiceInstanceAsync<TService, TInterface>(default);
 
-		object svc = await CreateServiceInstanceAsync(type, default);
+		try
+		{
+			svc ??= await ((IAsyncServiceProvider)this).GetServiceAsync<TService, TInterface>(true);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 
-
-		svc ??= await ((AsyncPackage)this).GetServiceAsync<TService, TInterface>();
-
-		return (TInterface)svc;
+		return svc;
 	}
-
 
 
 
@@ -236,14 +334,14 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// Asynchronous initialization of the package
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+	protected override async Task InitializeAsync(CancellationToken cancelToken, IProgress<ServiceProgressData> progress)
 	{
 		ProgressAsync(progress, "Initializing extension...").Forget();
 
 		_S_Stopwatch.Start();
 
 
-		await base.InitializeAsync(cancellationToken, progress);
+		await base.InitializeAsync(cancelToken, progress);
 
 
 		ProgressAsync(progress, "Extension registering DDEX Provider services...").Forget();
@@ -252,9 +350,9 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 			return;
 
 		// Add provider object and schema factories
-		ServiceContainer.AddService(typeof(IBsProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
-		ServiceContainer.AddService(typeof(IBsDataConnectionDlgHandler), ServicesCreatorCallbackAsync, promote: true);
-		ServiceContainer.AddService(typeof(IBsDataConnectionPromptDialogHandler), ServicesCreatorCallbackAsync, promote: true);
+		AddService(typeof(IBsProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
+		AddService(typeof(IBsDataConnectionDlgHandler), ServicesCreatorCallbackAsync, promote: false);
+		AddService(typeof(IBsDataConnectionPromptDialogHandler), ServicesCreatorCallbackAsync, promote: false);
 
 		ProgressAsync(progress, "Extension registering DDEX Provider services... Done.").Forget();
 
@@ -278,83 +376,9 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 			_EnStatisticsStage.MainThreadLoadStart, elapsed).Forget();
 
 		// We are the final descendent package class so call FinalizeAsync().
-		await FinalizeAsync(cancellationToken, progress);
+		await FinalizeAsync(cancelToken, progress);
 
 		ProgressAsync(progress, "Extension Initialization complete... Loaded.").Forget();
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Final asynchronous initialization tasks for the package that must occur after
-	/// all descendents and ancestors have completed their InitializeAsync() tasks.
-	/// It is the final descendent package class's responsibility to initiate the call
-	/// to FinalizeAsync.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-	{
-		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
-			return;
-
-		ProgressAsync(progress, "Finalizing phase launched. Switching to main thread...").Forget();
-
-		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-
-		long elapsed = _S_Stopwatch.ElapsedTicks;
-
-		ProgressAsync(progress, "Finalizing phase launched. Switch to main thread... Done.",
-			_EnStatisticsStage.MainThreadLoadEnd, elapsed).Forget();
-
-
-
-		// Descendents have completed their final async initialization now we perform ours.
-		await base.FinalizeAsync(cancellationToken, progress);
-
-		elapsed = _S_Stopwatch.ElapsedTicks;
-		_S_Stopwatch = null;
-
-		ProgressAsync(progress, "Finalization phase completed.",
-			_EnStatisticsStage.InitializationEnd, elapsed).Forget();
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Creates a service instance of the specified type if this class has access to the
-	/// final class type of the service being added.
-	/// The class requiring and adding the service may not necessarily be the class that
-	/// creates an instance of the service.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override async Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token)
-	{
-		if (serviceType == null)
-		{
-			ArgumentNullException ex = new("serviceType");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (serviceType == typeof(IBsProviderObjectFactory) || serviceType == typeof(IVsDataProviderObjectFactory))
-		{
-			return new TProviderObjectFactory();
-		}
-		if (serviceType == typeof(IBsDataConnectionDlgHandler))
-		{
-			return new TDataConnectionDlgHandler();
-		}
-		if (serviceType == typeof(IBsDataConnectionPromptDialogHandler))
-		{
-			return new TConnectionPromptDialogHandler();
-		}
-
-
-		return await base.CreateServiceInstanceAsync(serviceType, token);
-
 	}
 
 
@@ -370,8 +394,14 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// ---------------------------------------------------------------------------------
 	public override async Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType)
 	{
-		if (serviceType == typeof(IBsProviderObjectFactory))
-			return await CreateServiceInstanceAsync(serviceType, token);
+		if (serviceType == typeof(IBsProviderObjectFactory) || serviceType == typeof(IVsDataProviderObjectFactory))
+			return await GetLocalServiceInstanceAsync<IVsDataProviderObjectFactory, IVsDataProviderObjectFactory>(token);
+
+		else if (serviceType == typeof(IBsDataConnectionDlgHandler))
+			return await GetLocalServiceInstanceAsync<IBsDataConnectionDlgHandler, IBsDataConnectionDlgHandler>(token);
+
+		else if (serviceType == typeof(IBsDataConnectionPromptDialogHandler))
+			return await GetLocalServiceInstanceAsync<IBsDataConnectionPromptDialogHandler, IBsDataConnectionPromptDialogHandler>(token);
 
 
 		return await base.ServicesCreatorCallbackAsync(container, token, serviceType);
@@ -415,7 +445,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 			return null;
 		};
 	}
-
 
 
 	#endregion Methods

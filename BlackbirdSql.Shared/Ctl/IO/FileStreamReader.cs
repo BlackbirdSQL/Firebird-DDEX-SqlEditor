@@ -306,7 +306,7 @@ public class FileStreamReader : IBsFileStreamReader, IDisposable
 			if (5 == num)
 			{
 				IsNull = false;
-				sVal = string.Empty;
+				sVal = "";
 			}
 			else
 			{

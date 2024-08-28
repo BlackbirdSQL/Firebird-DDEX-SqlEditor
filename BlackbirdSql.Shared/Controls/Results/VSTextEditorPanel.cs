@@ -294,16 +294,16 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 		}
 	}
 
-	public int QueryStatus(ref Guid guidGroup, uint cmdId, OLECMD[] oleCmd, IntPtr oleText)
+	public int QueryStatus(ref Guid guidGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		int num = TextViewCtl.QueryStatus(ref guidGroup, cmdId, oleCmd, oleText);
+		int num = TextViewCtl.QueryStatus(ref guidGroup, cCmds, prgCmds, pCmdText);
 
 		if (num == 0)
 			return num;
 
-		CommandID commandID = new CommandID(guidGroup, (int)oleCmd[0].cmdID);
+		CommandID commandID = new CommandID(guidGroup, (int)prgCmds[0].cmdID);
 		MenuCommand menuCommand = MenuService.FindCommand(commandID);
 		if (menuCommand == null)
 		{
@@ -319,7 +319,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 				menuCommand.Enabled = true;
 			}
 
-			oleCmd[0].cmdf = (uint)menuCommand.OleStatus;
+			prgCmds[0].cmdf = (uint)menuCommand.OleStatus;
 			return VSConstants.S_OK;
 		}
 

@@ -80,8 +80,6 @@ public sealed class AuxilliaryDocData : IDisposable
 					_QryMgr.ExecutionStartedEventAsync -= OnQueryExecutionStartedAsync;
 					_QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
 					_QryMgr.NotifyConnectionStateEvent -= OnNotifyConnectionState;
-					_QryMgr.InvalidateToolbarEvent -= OnInvalidateToolbar;
-					_QryMgr.ShowWindowFrameEvent -= OnShowWindowFrame;
 
 					_QryMgr.Dispose();
 					_QryMgr = null;
@@ -138,57 +136,6 @@ public sealed class AuxilliaryDocData : IDisposable
 	// =========================================================================================================
 
 
-	public object MetadataProviderProvider { get; }
-
-	/*
-	public IBsConnectionStrategyFactory StrategyFactory
-	{
-		get
-		{
-			lock (_LockLocal)
-				return _StrategyFactory;
-		}
-		set
-		{
-			if (value == null)
-			{
-				ArgumentNullException ex = new("value");
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			lock (_LockLocal)
-			{
-				_StrategyFactory?.Dispose();
-				_StrategyFactory = value;
-
-				if (_QryMgr != null)
-				{
-					_QryMgr.Strategy = _StrategyFactory.CreateConnectionStrategy();
-					_QryMgr.Strategy.InitializeKeepAlive(_QryMgr.OnInvalidateToolbar, _QryMgr.OnQueryIsLocked);
-				}
-			}
-		}
-	}
-	*/
-
-	public string[] CommandDatabaseList
-	{
-		get { return _CommandDatabaseList; }
-		set { _CommandDatabaseList = value; }
-	}
-
-
-	public uint DocCookie
-	{
-		get { return _DocCookie; }
-		set { _DocCookie = value; }
-	}
-
-
-	public object DocData => _DocData;
-
-
 	public bool ClientStatisticsEnabled
 	{
 		get
@@ -208,13 +155,68 @@ public sealed class AuxilliaryDocData : IDisposable
 	}
 
 
+	public string[] CommandDatabaseList
+	{
+		get { return _CommandDatabaseList; }
+		set { _CommandDatabaseList = value; }
+	}
+
+
+	public long CommandRctStamp
+	{
+		get
+		{
+			return _CommandRctStamp;
+		}
+		set
+		{
+			if (_CommandRctStamp == value)
+				return;
+
+			_CommandDatabaseList = null;
+			_CommandRctStamp = value;
+		}
+	}
+
+
+	public string CommandSelectedName
+	{
+		get
+		{
+			return _CommandSelectedName;
+		}
+		set
+		{
+			if (_CommandSelectedName == value)
+				return;
+
+			_CommandDatabaseList = null;
+			_CommandSelectedName = value;
+		}
+	}
+
+
+	public uint DocCookie
+	{
+		get
+		{
+			return _DocCookie;
+		}
+		set
+		{
+			_DocCookie = value;
+
+			if (QryMgr != null)
+				QryMgr.DocCookie = value;
+		}
+	}
+
+
+	public object DocData => _DocData;
 
 	public EnSqlExecutionType ExecutionType => QryMgr.LiveSettings.ExecutionType;
 
 	public IBsEditorPackage ExtensionInstance => _ExtensionInstance;
-
-
-	public string InflightMoniker => _InflightMoniker;
 
 
 	public bool HasActualPlan
@@ -226,11 +228,10 @@ public sealed class AuxilliaryDocData : IDisposable
 
 	public bool HasExecutionPlan => QryMgr.LiveSettings.HasExecutionPlan;
 
+	public bool HasClone => _CloneCardinal > 0;
 
-	public bool HasClone
-	{
-		get { return _CloneCardinal > 0; }
-	}
+
+	public string InflightMoniker => _InflightMoniker;
 
 
 	public bool? IntellisenseEnabled
@@ -261,10 +262,14 @@ public sealed class AuxilliaryDocData : IDisposable
 	}
 
 
+	public string InternalMoniker
+	{
+		get { return _InternalDocumentMoniker; }
+		set { _InternalDocumentMoniker = value; }
+	}
+
+
 	public bool IsOnline => false;
-
-
-	public EnEditorMode Mode => EnEditorMode.Standard;
 
 
 	/// <summary>
@@ -293,11 +298,11 @@ public sealed class AuxilliaryDocData : IDisposable
 
 	public IBsEditorTransientSettings LiveSettings => QryMgr.LiveSettings;
 
-	public string InternalMoniker
-	{
-		get { return _InternalDocumentMoniker; }
-		set { _InternalDocumentMoniker = value; }
-	}
+
+	public object MetadataProviderProvider { get; }
+
+
+	public EnEditorMode Mode => EnEditorMode.Standard;
 
 
 	public QueryManager QryMgr
@@ -305,31 +310,6 @@ public sealed class AuxilliaryDocData : IDisposable
 		get { lock (_LockLocal) return _QryMgr; }
 	}
 
-
-	public QueryManager CreateQueryManager(IBsCsb csb = null)
-	{
-		try
-		{
-			ConnectionStrategy strategy = new();
-
-			_QryMgr = new QueryManager(strategy);
-			_QryMgr.StatusChangedEvent += OnQueryManagerStatusChanged;
-			_QryMgr.ExecutionStartedEventAsync += OnQueryExecutionStartedAsync;
-			_QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
-			_QryMgr.NotifyConnectionStateEvent += OnNotifyConnectionState;
-			_QryMgr.InvalidateToolbarEvent += OnInvalidateToolbar;
-			_QryMgr.ShowWindowFrameEvent += OnShowWindowFrame;
-
-			strategy.Initialize(csb, OnInvalidateToolbar, OnNotifyConnectionState);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-
-		return _QryMgr;
-	}
 
 	public EnSqlOutputMode SqlOutputMode
 	{
@@ -349,41 +329,8 @@ public sealed class AuxilliaryDocData : IDisposable
 			if (LiveSettings.EditorResultsOutputMode != value)
 			{
 				LiveSettings.EditorResultsOutputMode = value;
-				SqlExecutionModeChangedEvent?.Invoke(this, new(value));
+				OutputModeChangedEvent?.Invoke(this, new(LiveSettings));
 			}
-		}
-	}
-
-
-	public long CommandRctStamp
-	{
-		get
-		{
-			return _CommandRctStamp;
-		}
-		set
-		{
-			if (_CommandRctStamp == value)
-				return;
-
-			_CommandDatabaseList = null;
-			_CommandRctStamp = value;
-		}
-	}
-
-	public string CommandSelectedName
-	{
-		get
-		{
-			return _CommandSelectedName;
-		}
-		set
-		{
-			if (_CommandSelectedName == value)
-				return;
-
-			_CommandDatabaseList = null;
-			_CommandSelectedName = value;
 		}
 	}
 
@@ -413,7 +360,6 @@ public sealed class AuxilliaryDocData : IDisposable
 			lock (_LockLocal)
 			{
 				IVsUserData vsUserData = DocData as IVsUserData;
-				// Tracer.Trace(GetType(), "AuxilliaryDocData.GetIVsUserData", "value of IVsUserData returned is {0}", vsUserData);
 				return vsUserData;
 			}
 		}
@@ -422,8 +368,8 @@ public sealed class AuxilliaryDocData : IDisposable
 
 
 
-	public event EventHandler<SqlExecutionModeChangedEventArgs> SqlExecutionModeChangedEvent;
-	public event EventHandler<LiveSettingsChangedEventArgs> LiveSettingsChangedEvent;
+	public event EventHandler<LiveSettingsEventArgs> OutputModeChangedEvent;
+	public event EventHandler<LiveSettingsEventArgs> LiveSettingsChangedEvent;
 
 
 	#endregion Property Accessors
@@ -446,38 +392,6 @@ public sealed class AuxilliaryDocData : IDisposable
 
 	public int CloneAdd() => ++_CloneCardinal;
 	public int CloneRemove() => --_CloneCardinal;
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// [Launch ensure UI thread]: Switches toi the query's window.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public void AsyeuShowWindowFrame()
-	{
-		if (DocCookie == 0)
-			return;
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			// Fire and wait.
-
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-				RdtManager.ShowFrame(_DocCookie);
-
-				return true;
-			});
-
-		}
-		else
-		{
-			RdtManager.ShowFrame(_DocCookie);
-		}
-	}
 
 
 
@@ -506,6 +420,31 @@ public sealed class AuxilliaryDocData : IDisposable
 
 		persistData.SetDocDataDirty(0);
 	}
+
+
+	public QueryManager CreateQueryManager(IBsCsb csb, uint docCookie)
+	{
+		try
+		{
+			ConnectionStrategy strategy = new(docCookie);
+
+			_QryMgr = new QueryManager(strategy, docCookie);
+			_QryMgr.StatusChangedEvent += OnQueryManagerStatusChanged;
+			_QryMgr.ExecutionStartedEventAsync += OnQueryExecutionStartedAsync;
+			_QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
+			_QryMgr.NotifyConnectionStateEvent += OnNotifyConnectionState;
+
+			strategy.Initialize(csb, OnNotifyConnectionState);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		return _QryMgr;
+	}
+
 
 
 	public IBsErrorTaskFactory GetErrorTaskFactory() => null;
@@ -555,29 +494,13 @@ public sealed class AuxilliaryDocData : IDisposable
 
 
 		bool inAutomation = UnsafeCmd.IsInAutomationFunction();
-
-		/*
-		bool isClone = false;
-		bool isHost = false;
-
-		if (HasClone)
-		{
-			if (_ExtensionInstance.TryGetTabbedEditorService(DocCookie,
-				false, out IBsEditorPaneServiceProvider windowPane))
-			{
-				isHost = !windowPane.IsClone;
-				isClone = windowPane.IsClone;
-			}
-		}
-		*/
-
 		DialogResult dialogResult = DialogResult.Yes;
 
 		if (QryMgr.IsExecuting)
 		{
 			if (!inAutomation)
 			{
-				AsyeuShowWindowFrame();
+				RdtManager.AsyeuShowWindowFrame(_DocCookie);
 				msgResource ??= Resources.MsgAbortExecutionAndClose;
 				dialogResult = MessageCtl.ShowEx(msgResource,
 					Resources.MsgQueryAbort_IsExecutingCaption,
@@ -606,7 +529,7 @@ public sealed class AuxilliaryDocData : IDisposable
 
 			if (!inAutomation)
 			{
-				AsyeuShowWindowFrame();
+				RdtManager.AsyeuShowWindowFrame(_DocCookie);
 
 				msgResource ??= Resources.MsgQueryAbort_UncommittedTransactionsClose;
 
@@ -656,7 +579,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		if (!inAutomation)
 		{
 
-			string names = string.Empty;
+			string names = "";
 
 			List<string> sortList = [];
 			List<string> savedList = [];
@@ -683,13 +606,13 @@ public sealed class AuxilliaryDocData : IDisposable
 			savedList.Sort(StringComparer.InvariantCultureIgnoreCase);
 
 			if (sortList.Count > 0 && savedList.Count > 0)
-				sortList.Add(string.Empty);
+				sortList.Add("");
 
 			foreach (string str in savedList)
 				sortList.Add(str);
 
 			foreach (string name in sortList)
-				names += (names != string.Empty ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.FmtRes(name);
+				names += (names != "" ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.FmtRes(name);
 
 			dialogResult = MessageCtl.ShowEx(Resources.MsgQueryAbort_IsExecutingList.FmtRes(names),
 				Resources.MsgQueryAbort_IsExecutingCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
@@ -719,7 +642,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		if (!inAutomation)
 		{
 
-			string names = string.Empty;
+			string names = "";
 
 			List<string> sortList = [];
 			List<string> savedList = [];
@@ -746,14 +669,14 @@ public sealed class AuxilliaryDocData : IDisposable
 			savedList.Sort(StringComparer.InvariantCultureIgnoreCase);
 
 			if (sortList.Count > 0 && savedList.Count > 0)
-				sortList.Add(string.Empty);
+				sortList.Add("");
 
 			foreach (string str in savedList)
 				sortList.Add(str);
 
 
 			foreach (string name in sortList)
-				names += (names != string.Empty ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.FmtRes(name);
+				names += (names != "" ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.FmtRes(name);
 
 			dialogResult = MessageCtl.ShowEx(Resources.MsgQueryAbort_UncommittedTransactionsList.FmtRes(names),
 				Resources.MsgQueryAbort_UncommittedTransactionsCaption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
@@ -836,14 +759,6 @@ public sealed class AuxilliaryDocData : IDisposable
 	// =========================================================================================================
 
 
-	public void OnInvalidateToolbar(object sender, EventArgs args)
-	{
-		if (DocCookie != 0)
-			RdtManager.AsyeuInvalidateToolbar(_DocCookie);
-	}
-
-
-
 	public bool OnNotifyConnectionState(object sender, NotifyConnectionStateEventArgs args)
 	{
 		bool isUnlocked = QryMgr?.NotifyConnectionState(args.State) ?? false;
@@ -874,7 +789,7 @@ public sealed class AuxilliaryDocData : IDisposable
 
 
 		string msg;
-		string ttsMsg = args.TtsDiscarded ? Resources.WarnQueryTtsDiscarded.FmtRes(indent) : string.Empty;
+		string ttsMsg = args.TtsDiscarded ? Resources.WarnQueryTtsDiscarded.FmtRes(indent) : "";
 
 
 		switch (args.State)
@@ -938,7 +853,7 @@ public sealed class AuxilliaryDocData : IDisposable
 			else
 			{
 				Guid riidKey = VS.CLSID_PropSqlVersion;
-				vsUserData.SetData(ref riidKey, string.Empty);
+				vsUserData.SetData(ref riidKey, "");
 			}
 
 			return;
@@ -949,10 +864,10 @@ public sealed class AuxilliaryDocData : IDisposable
 
 	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
 	{
-		// if (args.CancelToken.IsCancellationRequested)
+		// if (args.CancelToken.Cancelled())
 		//	return;
 
-		if (!args.SyncToken.IsCancellationRequested)
+		if (!args.SyncToken.Cancelled())
 		{
 			string connectionUrl = null;
 			IDbConnection connection = QryMgr.Strategy.Connection;
@@ -981,7 +896,7 @@ public sealed class AuxilliaryDocData : IDisposable
 
 		_ConnectionUrlAtExecutionStart = null;
 
-		return await Cmd.AwaitableAsync(true);
+		return await Task.FromResult(true);
 	}
 
 
@@ -992,36 +907,10 @@ public sealed class AuxilliaryDocData : IDisposable
 		else
 			_ConnectionUrlAtExecutionStart = null;
 
-		return await Cmd.AwaitableAsync(true);
+		return await Task.FromResult(true);
 	}
-
-
-
-	public void OnShowWindowFrame(object sender, EventArgs args) => AsyeuShowWindowFrame();
 
 
 	#endregion Event Handling
 
-
-
-
-	// =========================================================================================================
-	#region Sub-Classes - AuxilliaryDocData
-	// =========================================================================================================
-
-
-	public class LiveSettingsChangedEventArgs(IBsEditorTransientSettings liveSettings) : EventArgs
-	{
-		public IBsEditorTransientSettings LiveSettings { get; private set; } = liveSettings;
-	}
-
-
-
-	public class SqlExecutionModeChangedEventArgs(EnSqlOutputMode executionMode) : EventArgs
-	{
-		public EnSqlOutputMode SqlOutputMode { get; private set; } = executionMode;
-	}
-
-
-	#endregion Sub-Classes
 }

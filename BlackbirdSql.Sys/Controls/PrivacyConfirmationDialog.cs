@@ -76,7 +76,7 @@ public partial class PrivacyConfirmationDialog : Form
 				if (num2 < 0)
 				{
 					stringToUnescape = m_url[(num + 1)..];
-					stringToUnescape2 = string.Empty;
+					stringToUnescape2 = "";
 				}
 				else
 				{
@@ -87,7 +87,7 @@ public partial class PrivacyConfirmationDialog : Form
 			else if (num2 < 0 || num2 > num3)
 			{
 				stringToUnescape = m_url.Substring(num + 1, num3 - num - 1);
-				stringToUnescape2 = string.Empty;
+				stringToUnescape2 = "";
 			}
 			else
 			{

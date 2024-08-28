@@ -19,8 +19,8 @@ namespace BlackbirdSql.Shared.Controls.Tabs;
 public abstract class AbstractEditorTab : AbstruseEditorTab
 {
 
-	public AbstractEditorTab(IBsTabbedEditorPane editorPane, Guid logicalView, EnEditorTabType editorTabType)
-		: base(editorPane, logicalView, editorTabType)
+	public AbstractEditorTab(IBsTabbedEditorPane tabbedEditor, Guid logicalView, EnEditorTabType editorTabType)
+		: base(tabbedEditor, logicalView, editorTabType)
 	{
 
 	}
@@ -96,7 +96,7 @@ public abstract class AbstractEditorTab : AbstruseEditorTab
 
 			hresult = shellSvc.CreateDocumentWindow(createFlags, documentMoniker, uiHierarchy, pitemid, ppunkDocView,
 				ppunkDocDataExisting, ref pguidEditorType, pbstrPhysicalView, ref pguidCmdUI, ApcManager.OleServiceProvider,
-				string.Empty, string.Empty, null, out ppWindowFrame);
+				"", "", null, out ppWindowFrame);
 			___(hresult);
 
 			IVsWindowFrame vsWindowFrame = WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame

@@ -619,14 +619,14 @@
   <data name="OptionCategoryTextTabs" xml:space="preserve">
     <value>Tab Behavior</value>
   </data>
-  <data name="OptionDescriptionContextBatchSeparator" xml:space="preserve">
-    <value>The default batch separator for the database engine.</value>
-  </data>
   <data name="OptionDescriptionContextStatusBarPosition" xml:space="preserve">
     <value>The position of the status base in the editor window.</value>
   </data>
   <data name="OptionDescriptionExecutionAsynchronous" xml:space="preserve">
     <value>Enable asynchronous query execution?</value>
+  </data>
+  <data name="OptionDescriptionExecutionBatchSeparator" xml:space="preserve">
+    <value>The initial statement terminator (batch separator) for multi-statement scripts. Usually ";" or "GO".</value>
   </data>
   <data name="OptionDescriptionExecutionCostLimit" xml:space="preserve">
     <value>Overrides the currently configured query governor cost limit value for the current connection. Valid range: 'Min[imum]', 'Default' or 0 to 'Max[imum]' or 100000. (Case insensitive)</value>
@@ -802,14 +802,14 @@
   <data name="OptionDialogResultsDirectory" xml:space="preserve">
     <value>Select the folder to be used as the default for saving query results.</value>
   </data>
-  <data name="OptionDisplayContextBatchSeparator" xml:space="preserve">
-    <value>SQL Batch Separator</value>
-  </data>
   <data name="OptionDisplayContextStatusBarPosition" xml:space="preserve">
     <value>Status bar position</value>
   </data>
   <data name="OptionDisplayExecutionAsynchronous" xml:space="preserve">
     <value>Asynchronous execution?</value>
+  </data>
+  <data name="OptionDisplayExecutionBatchSeparator" xml:space="preserve">
+    <value>Initial statement terminator</value>
   </data>
   <data name="OptionDisplayExecutionCostLimit" xml:space="preserve">
     <value>SET QUERY_GOVERNOR_COST_LIMIT</value>

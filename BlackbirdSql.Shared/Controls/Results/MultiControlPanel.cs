@@ -4,11 +4,12 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using BlackbirdSql.Shared.Controls.Widgets;
 using BlackbirdSql.Shared.Events;
 
 
 
-namespace BlackbirdSql.Shared.Controls.Widgets;
+namespace BlackbirdSql.Shared.Controls.Results;
 
 
 public sealed class MultiControlPanel : Panel
@@ -52,7 +53,7 @@ public sealed class MultiControlPanel : Panel
 			for (int num3 = Controls.Count - 1; num3 >= 0; num3--)
 			{
 				control = Controls[num3];
-				if (control is not QESplitter && control is not Splitter)
+				if (control is not QESplitter && control is not SplitterControl)
 				{
 					control.Height += ClientSize.Height - num;
 					num = control.Bounds.Bottom;

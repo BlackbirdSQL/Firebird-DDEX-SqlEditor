@@ -2,7 +2,6 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
@@ -12,7 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Events;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -68,33 +66,33 @@ public interface IBsNativeDatabaseEngine
 	string RootObjectTypeName_ { get; }
 
 
-	void AsyncEnsureLinkageLoading_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1);
 
+	int AddCommandParameter_(DbCommand @this, string name, int index, object value);
+	void AsyncEnsureLinkageLoading_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1);
 	DbConnection CastToNativeConnection_(object connection);
+	object CreateDatabaseInfoObject_(DbConnection @this);
 	IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script);
-	DbCommand CreateDbCommand_(string cmdText = null);
 	IDbConnection CreateDbConnection_(string connectionString);
+	DbCommand CreateDbCommand_(string cmdText = null);
 	IBsNativeDbStatementWrapper CreateDbStatementWrapper_(IBsNativeDbBatchParser owner, object statement, int index);
 	bool DisposeLinkageParserInstance_(IVsDataExplorerConnection root, bool disposing);
-	byte GetErrorClass_(object error);
-	int GetErrorLineNumber_(object error);
-	string GetErrorMessage_(object error);
-	int GetErrorNumber_(object error);
-	string GetDecoratedDdlSource_(IVsDataExplorerNode node, EnModelTargetType targetType);
-	ICollection<object> GetErrorEnumerator_(IList<object> errors);
+	string GetConnectionDataSource_(IDbConnection @this);
+	string GetConnectionDataSourceVersion_(IDbConnection @this);
+	int GetConnectionPacketSize_(DbConnection @this);
 	IBsNativeDbLinkageParser GetLinkageParserInstance_(IVsDataExplorerConnection root);
-	int GetObjectTypeIdentifierLength_(string typeName);
 	bool HasTransactions_(IDbTransaction @this);
-	bool IsSupportedCommandType_(object command);
-	bool IsSupportedConnection_(IDbConnection connection);
 	bool LockLoadedParser_(string originalString, string updatedString);
 	bool MatchesEntityFrameworkAssembly_(string assemblyName);
 	bool MatchesInvariantAssembly_(string assemblyName);
+	(bool, bool) OpenOrVerifyConnection_(IDbConnection @this);
+	Task<(bool, bool)> OpenOrVerifyConnectionAsync_(IDbConnection @this,
+		IDbTransaction transaction, CancellationToken cancelToken);
+	Version ParseConnectionServerVersion_(IDbConnection @this);
 	Task<bool> ReaderCloseAsync_(IDataReader @this, CancellationToken cancelToken);
 	Task<DataTable> ReaderGetSchemaTableAsync_(IDataReader @this, CancellationToken cancelToken);
 	Task<bool> ReaderNextResultAsync_(IDataReader @this, CancellationToken cancelToken);
 	Task<bool> ReaderReadAsync_(IDataReader @this, CancellationToken cancelToken);
+
 	bool TransactionCompleted_(IDbTransaction transacttion);
 	void UnlockLoadedParser_();
-
 }

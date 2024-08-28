@@ -379,7 +379,7 @@ public sealed class StatusBarManager : IDisposable
 	private void ResetDatasetId()
 	{
 		string datasetId = QryMgr.Strategy.LiveAdornedTitle;
-		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetId ?? string.Empty;
+		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetId ?? "";
 	}
 
 
@@ -405,7 +405,7 @@ public sealed class StatusBarManager : IDisposable
 
 		((ToolStripItem)(object)_ServerNamePanel).Text = text;
 		((ToolStripItem)(object)_UserNamePanel).Text = displayUserName;
-		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetId ?? string.Empty;
+		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetId ?? "";
 		if (!QryMgr.QueryExecutionEndTime.HasValue || !QryMgr.QueryExecutionStartTime.HasValue)
 		{
 			((ToolStripItem)(object)_ExecutionTimePanel).Text = "00:00:00";
@@ -517,7 +517,7 @@ public sealed class StatusBarManager : IDisposable
 			case EnState.ExecutionOk:
 				_GeneralPanel.SetOneImage(S_ExecSuccessBitmap);
 				toolStripItem.Text =
-					ControlsResources.StatusBar_QueryCompletedSuccessfully.FmtRes(!QryMgr.QueryExecutionEndTime.HasValue ? string.Empty : QryMgr.QueryExecutionEndTime);
+					ControlsResources.StatusBar_QueryCompletedSuccessfully.FmtRes(!QryMgr.QueryExecutionEndTime.HasValue ? "" : QryMgr.QueryExecutionEndTime);
 				ResetDatasetId();
 				break;
 			case EnState.ExecutionTimedOut:
@@ -536,7 +536,7 @@ public sealed class StatusBarManager : IDisposable
 				break;
 			case EnState.Unknown:
 				_GeneralPanel.SetOneImage(null);
-				toolStripItem.Text = string.Empty;
+				toolStripItem.Text = "";
 				break;
 		}
 
@@ -681,7 +681,7 @@ public sealed class StatusBarManager : IDisposable
 	{
 		// Tracer.Trace(GetType(), "OnQueryExecutionCompletedAsync()", "a.ExecResult: {0}.", a.ExecutionResult);
 
-		if (a.SyncToken.IsCancellationRequested)
+		if (a.SyncToken.Cancelled())
 			return true;
 
 		// await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -718,7 +718,7 @@ public sealed class StatusBarManager : IDisposable
 
 		EnqueUpdateAction(updateAction);
 
-		return await Cmd.AwaitableAsync(true);
+		return await Task.FromResult(true);
 	}
 
 
@@ -744,7 +744,7 @@ public sealed class StatusBarManager : IDisposable
 
 		EnqueUpdateAction(updateAction);
 
-		return await Cmd.AwaitableAsync(true);
+		return await Task.FromResult(true);
 	}
 
 

@@ -19,25 +19,21 @@ namespace BlackbirdSql.Shared.Interfaces
 	public interface IBsGridControl2 : IBsGridControl
 	{
 		int NumberOfCharsToShow { get; set; }
-
 		BlockOfCells CurrentSelectedBlock { get; }
-
 		bool ContainsFocus { get; }
+		ScrollManager ScrollMgr { get; }
+		SelectionManager SelectionMgr { get; }
+
 
 		event AdjustSelectionForButtonClickEventHandler AdjustSelectionForButtonClickEvent;
 
+
 		void SetSelectedCellsAndCurrentCell(BlockOfCellsCollection cells, long currentRow, int currentColumn);
-
 		void SetBkAndForeColors(Color bkColor, Color foreColor);
-
 		void SetSelectedCellColor(Color selectedCellColor);
-
 		void SetInactiveSelectedCellColor(Color inactiveSelectedCellColor);
-
 		void SetIncludeHeadersOnDragAndDrop(bool includeHeaders);
-
 		void InitialColumnResize();
-
 		bool Focus();
 	}
 }

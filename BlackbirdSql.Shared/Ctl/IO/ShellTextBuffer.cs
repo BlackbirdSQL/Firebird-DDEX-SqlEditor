@@ -11,6 +11,8 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 
 namespace BlackbirdSql.Shared.Ctl.IO;
@@ -210,7 +212,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		Initialize(textStream, new ServiceProvider(serviceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
+		Initialize(textStream, new ServiceProvider(serviceProvider as IOleServiceProvider));
 	}
 
 	public ShellTextBuffer()
@@ -225,7 +227,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			Diag.ThrowException(ex);
 		}
 
-		if (serviceProvider is not Microsoft.VisualStudio.OLE.Interop.IServiceProvider)
+		if (serviceProvider is not IOleServiceProvider)
 		{
 			Exception ex2 = new ArgumentException("", "serviceProvider");
 			Diag.ThrowException(ex2);
@@ -233,7 +235,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 		Diag.ThrowIfNotOnUIThread();
 
-		ServiceProvider serviceProvider2 = new ServiceProvider(serviceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+		ServiceProvider serviceProvider2 = new ServiceProvider(serviceProvider as IOleServiceProvider);
 		ILocalRegistry obj = (ILocalRegistry)serviceProvider2.GetService(typeof(ILocalRegistry));
 		if (obj == null)
 		{

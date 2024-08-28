@@ -18,10 +18,10 @@ using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Properties;
 using BlackbirdSql.Sys.Enums;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Shell;
-using Newtonsoft.Json.Linq;
+using Microsoft.VisualStudio.Threading;
 
 
 
@@ -46,8 +46,9 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	/// <summary>
 	/// Default .ctor.
 	/// </summary>
-	public AbstractConnectionStrategy()
+	public AbstractConnectionStrategy(uint docCookie)
 	{
+		_DocCookie = docCookie;
 	}
 
 
@@ -88,6 +89,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	private int _EventCardinal = 0;
 
+	private uint _DocCookie = 0;
 	private IBsModelCsb _MdlCsb;
 	private bool _Disposed = false;
 	private bool? _HasTransactions;
@@ -112,16 +114,22 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 
 	public virtual string AdornedDisplayName =>
-		MdlCsb?.AdornedDisplayName ?? string.Empty;
+		MdlCsb?.AdornedDisplayName ?? "";
 
 	public string AdornedQualifiedName =>
-		MdlCsb?.AdornedQualifiedName ?? string.Empty;
+		MdlCsb?.AdornedQualifiedName ?? "";
 
 	public string AdornedQualifiedTitle =>
-		MdlCsb?.AdornedQualifiedTitle ?? string.Empty;
+		MdlCsb?.AdornedQualifiedTitle ?? "";
 
 	public string AdornedTitle =>
-		MdlCsb?.AdornedTitle ?? string.Empty;
+		MdlCsb?.AdornedTitle ?? "";
+
+	public uint DocCookie
+	{
+		get { lock (_LockObject) return _DocCookie; }
+		set { lock (_LockObject) _DocCookie = value; }
+	}
 
 	public DbConnection Connection => _MdlCsb?.DataConnection;
 
@@ -130,10 +138,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	public long RctStamp => _RctStamp;
 
 	public virtual string LiveAdornedDisplayName =>
-		LiveMdlCsb?.AdornedDisplayName ?? string.Empty;
+		LiveMdlCsb?.AdornedDisplayName ?? "";
 
 	public virtual string LiveAdornedTitle =>
-		LiveMdlCsb?.AdornedTitle ?? string.Empty;
+		LiveMdlCsb?.AdornedTitle ?? "";
 
 	public IBsModelCsb LiveMdlCsb
 	{
@@ -159,15 +167,15 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	public IBsModelCsb MdlCsb => _MdlCsb;
 
 	public virtual string DatasetDisplayName =>
-		MdlCsb?.DisplayName ?? string.Empty;
+		MdlCsb?.DisplayName ?? "";
 
 
 	public virtual string DisplayServerName =>
-		MdlCsb?.DataSource ?? string.Empty;
+		MdlCsb?.DataSource ?? "";
 
 
 	public virtual string DisplayUserName =>
-		MdlCsb?.UserID ?? string.Empty;
+		MdlCsb?.UserID ?? "";
 
 
 	/// <summary>
@@ -335,6 +343,18 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	// =========================================================================================================
 
 
+	/// <summary>
+	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
+	/// </summary>
+	protected int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	/// <summary>
+	/// <see cref="ErrorHandler.Succeeded"/> token.
+	/// </summary>
+	protected bool __(int hr) => ErrorHandler.Succeeded(hr);
+
 
 
 
@@ -355,7 +375,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return null;
 
 
@@ -422,7 +442,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				throw;
 			}
 
-			if (!cancelToken.IsCancellationRequested)
+			if (!cancelToken.Cancelled())
 				_HasTransactions = hasTransactions;
 
 			return Connection;
@@ -458,12 +478,12 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			throw;
 		}
 
-		if (cancelToken.IsCancellationRequested)
+		if (cancelToken.Cancelled())
 			return Connection;
 
 		_HasTransactions = hasTransactions;
 
-		RaiseInvalidateToolbar();
+		RdtManager.InvalidateToolbarAsync(DocCookie).Forget();
 
 		return Connection;
 	}
@@ -506,7 +526,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	public virtual string GetEditorCaption(bool ignoreSettings)
 	{
-		StringBuilder stringBuilder = new StringBuilder(string.Empty, 80);
+		StringBuilder stringBuilder = new StringBuilder("", 80);
 		if (PersistentSettings.EditorStatusTabTextIncludeServerName || ignoreSettings)
 		{
 			stringBuilder.Append(DisplayServerName);
@@ -788,6 +808,13 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Verifies or opens a connection. The cardinal must be either zero, if no
+	/// keepalive reads are required, or an incremental value that can be used to
+	/// execute a select statement unique from the previous call to this method.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public async Task<bool> VerifyOpenConnectionAsync(CancellationToken cancelToken)
 	{
 		bool isOpen;
@@ -804,7 +831,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			Diag.Expected(ex);
 		}
 
-		if (!cancelToken.IsCancellationRequested)
+		if (!cancelToken.Cancelled())
 			LiveTransactions = liveTransactions;
 
 		return true;
@@ -904,10 +931,6 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			EventExit();
 		}
 	}
-
-
-
-	protected abstract void RaiseInvalidateToolbar();
 
 
 	#endregion Event Handling

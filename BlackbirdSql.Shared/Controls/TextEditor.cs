@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
@@ -13,6 +14,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 
@@ -127,7 +129,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		}
 	}
 
-	public TextEditor(Microsoft.VisualStudio.OLE.Interop.IServiceProvider vsServices, System.IServiceProvider tabbedEditorServices, IVsCodeWindow codeWindow, IOleCommandTarget commandTarget)
+	public TextEditor(IOleServiceProvider vsServices, System.IServiceProvider tabbedEditorServices, IVsCodeWindow codeWindow, IOleCommandTarget commandTarget)
 	{
 		_CodeWindow = codeWindow;
 		_CmdTarget = commandTarget;
@@ -241,7 +243,8 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 			if (hresult == (int)OleConstants.OLECMDERR_E_NOTSUPPORTED || hresult == (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP)
 			{
-				if (VSConstants.GUID_VSStandardCommandSet97.Equals(pguidCmdGroup) && nCmdID == 332)
+				if (VSConstants.GUID_VSStandardCommandSet97.Equals(pguidCmdGroup)
+					&& nCmdID == (uint)VSConstants.VSStd97CmdID.ViewForm)
 				{
 					_TabbedEditorService?.Activate(VSConstants.LOGVIEWID_Designer, EnTabViewMode.Default);
 					hresult = VSConstants.S_OK;
@@ -269,9 +272,9 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 			{
 				for (int i = 0; i < cCmds; i++)
 				{
-					if (prgCmds[i].cmdID == 332)
+					if (prgCmds[i].cmdID == (uint)VSConstants.VSStd97CmdID.ViewForm)
 					{
-						prgCmds[i].cmdf = 2u;
+						prgCmds[i].cmdf = (uint)OLECMDF.OLECMDF_ENABLED;
 						num = 0;
 					}
 				}

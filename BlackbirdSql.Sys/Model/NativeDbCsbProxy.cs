@@ -527,9 +527,17 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 					return value;
 			}
 		}
+		else if (propertyType == typeof(long))
+		{
+			return Convert.ToInt64(value);
+		}
 		else if (propertyType == typeof(int))
 		{
 			return Convert.ToInt32(value);
+		}
+		else if (propertyType == typeof(short))
+		{
+			return Convert.ToInt16(value);
 		}
 		else if (propertyType == typeof(bool))
 		{
@@ -612,6 +620,8 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 				if (propertyType == typeof(int))
 					storedValue = Convert.ToInt32(enumValue);
+				else if (propertyType == typeof(short))
+					storedValue = Convert.ToInt16(enumValue);
 				else if (propertyType == typeof(long))
 					storedValue = Convert.ToInt64(enumValue);
 				else

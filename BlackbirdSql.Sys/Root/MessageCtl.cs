@@ -164,20 +164,20 @@ public class MessageCtl
 	private readonly string[] _ButtonTextArray = new string[5];
 	private int _ButtonCount;
 	private DialogResult _DefaultDialogResult = DialogResult.OK;
-	private string _CheckBoxRegistryValue = string.Empty;
+	private string _CheckBoxRegistryValue = "";
 	private bool _CheckBoxRegistryMeansDoNotShowDialog = true;
 	private RegistryKey _CheckBoxRegistryKey;
 	private bool _UseOwnerFont;
-	private string _Text = string.Empty;
-	private string _HelpLink = string.Empty;
+	private string _Text = "";
+	private string _HelpLink = "";
 	private readonly Exception _ExContainer = new ApplicationException();
 	private Exception _InnerException;
 	private bool _Beep = true;
 	private bool _ShowToolBar = true;
 	private bool _ShowCheckBox;
 	private bool _IsCheckBoxChecked;
-	private string _Caption = string.Empty;
-	private string _CheckBoxText = string.Empty;
+	private string _Caption = "";
+	private string _CheckBoxText = "";
 	private int _MessageLevelCount = -1;
 	private Bitmap _CustomSymbol;
 	private Font _MessageFont;
@@ -451,7 +451,7 @@ public class MessageCtl
 
 	public DialogResult Show(IWin32Window owner)
 	{
-		if (_ExMessage == null && (Text == null || Text.Length == 0))
+		if (_ExMessage == null && string.IsNullOrEmpty(Text))
 		{
 			ArgumentNullException ex = new("Message");
 			Diag.Dug(ex);
@@ -564,6 +564,7 @@ public class MessageCtl
 		messageBoxForm.SetButtonText(_ButtonTextArray);
 		messageBoxForm.Buttons = _Buttons;
 		messageBoxForm.Caption = _Caption;
+		messageBoxForm.Message = Text;
 		messageBoxForm.ExMessage = _ExMessage;
 		messageBoxForm.Symbol = _Symbol;
 		messageBoxForm.DefaultButton = _DefaultButton;
@@ -674,7 +675,7 @@ public class MessageCtl
 	// ShowExceptionInDialog
 	public static void ShowEx(string message, Exception ex)
 	{
-		ShowEx(ex, string.Empty, null, null, MessageBoxButtons.OK, MessageBoxIcon.Hand, null, -1);
+		ShowEx(ex, "", null, null, MessageBoxButtons.OK, MessageBoxIcon.Hand, null, -1);
 
 		// VS.SafeShowMessageBox(null, string.Format(CultureInfo.CurrentCulture, "{0} {1}", message, e.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 	}
@@ -699,13 +700,13 @@ public class MessageCtl
 
 	public static DialogResult ShowEx(Exception ex, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
-		return ShowEx(ex, string.Empty, null, null, buttons, icon, null, -1);
+		return ShowEx(ex, "", null, null, buttons, icon, null, -1);
 	}
 
 
 	public static DialogResult ShowEx(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
-		return ShowEx(ex, string.Empty, caption, null, buttons, icon, null, -1);
+		return ShowEx(ex, "", caption, null, buttons, icon, null, -1);
 	}
 
 	public static DialogResult ShowEx(Exception ex, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
@@ -716,7 +717,7 @@ public class MessageCtl
 
 	public static DialogResult ShowEx(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner)
 	{
-		return ShowEx(ex, string.Empty, caption, null, buttons, icon, owner, -1);
+		return ShowEx(ex, "", caption, null, buttons, icon, owner, -1);
 	}
 
 	public static DialogResult ShowEx(Exception ex, string text, string caption, string helpLink, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner, int exceptionLevel, MessageBoxShownDelegate messageBoxShownDelegate = null)
