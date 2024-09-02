@@ -120,10 +120,10 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 
 	// Editor GeneralSettingsModel
-	public new bool EditorEnableIntellisense
+	public new EnIntellisensePolicy EditorIntellisensePolicy
 	{
-		get { return (bool)this["EditorGeneralEnableIntellisense"]; }
-		set { this["EditorGeneralEnableIntellisense"] = value; }
+		get { return (EnIntellisensePolicy)this["EditorGeneralIntellisensePolicy"]; }
+		set { this["EditorGeneralIntellisensePolicy"] = value; }
 	}
 
 	public new bool EditorPromptSave

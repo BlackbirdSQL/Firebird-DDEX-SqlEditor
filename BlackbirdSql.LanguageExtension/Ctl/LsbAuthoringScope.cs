@@ -78,7 +78,7 @@ internal class LsbAuthoringScope : Microsoft.VisualStudio.Package.AuthoringScope
 			case ParseReason.CompleteWord:
 			case ParseReason.DisplayMemberList:
 			case ParseReason.MethodTip:
-				LsbSource source = LanguageExtensionPackage.Instance.LanguageService.GetSource(view) as LsbSource;
+				LsbSource source = LanguageExtensionPackage.Instance.LsbLanguageSvc.GetSource(view) as LsbSource;
 
 				// TraceUtils.Trace(GetType(), "GetDeclarations()", "GetDeclarations() started... (ThreadName = " + Thread.CurrentThread.Name + ")");
 				LsbDeclarations declarations;

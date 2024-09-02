@@ -799,6 +799,60 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ◉ Active Query Only.
+        /// </summary>
+        internal static string EnIntellisensePolicy_ActiveOnly_Selected {
+            get {
+                return ResourceManager.GetString("EnIntellisensePolicy_ActiveOnly_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Active Query Only.
+        /// </summary>
+        internal static string EnIntellisensePolicy_ActiveOnly_Unselected {
+            get {
+                return ResourceManager.GetString("EnIntellisensePolicy_ActiveOnly_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ All Queries.
+        /// </summary>
+        internal static string EnIntellisensePolicy_All_Selected {
+            get {
+                return ResourceManager.GetString("EnIntellisensePolicy_All_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ All Queries.
+        /// </summary>
+        internal static string EnIntellisensePolicy_All_Unselected {
+            get {
+                return ResourceManager.GetString("EnIntellisensePolicy_All_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Disabled.
+        /// </summary>
+        internal static string EnIntellisensePolicy_Disabled_Selected {
+            get {
+                return ResourceManager.GetString("EnIntellisensePolicy_Disabled_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Disabled.
+        /// </summary>
+        internal static string EnIntellisensePolicy_Disabled_Unselected {
+            get {
+                return ResourceManager.GetString("EnIntellisensePolicy_Disabled_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ◉ Read Committed.
         /// </summary>
         internal static string EnIsolationLevel_ReadCommitted_Selected {
@@ -1682,20 +1736,20 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar..
-        /// </summary>
-        internal static string OptionDescriptionGeneralEnableIntellisense {
-            get {
-                return ResourceManager.GetString("OptionDescriptionGeneralEnableIntellisense", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Executes a table select or view definition query automatically on open..
         /// </summary>
         internal static string OptionDescriptionGeneralExecuteQueryOnOpen {
             get {
                 return ResourceManager.GetString("OptionDescriptionGeneralExecuteQueryOnOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines the behavior of Intellisense for hidden windows. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar..
+        /// </summary>
+        internal static string OptionDescriptionGeneralIntellisensePolicy {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralIntellisensePolicy", resourceCulture);
             }
         }
         
@@ -2231,20 +2285,20 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to  Enable Intellisense.
-        /// </summary>
-        internal static string OptionDisplayGeneralEnableIntellisense {
-            get {
-                return ResourceManager.GetString("OptionDisplayGeneralEnableIntellisense", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Auto-execute select query.
         /// </summary>
         internal static string OptionDisplayGeneralExecuteQueryOnOpen {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralExecuteQueryOnOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Intellisense policy.
+        /// </summary>
+        internal static string OptionDisplayGeneralIntellisensePolicy {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralIntellisensePolicy", resourceCulture);
             }
         }
         
@@ -2348,7 +2402,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use single tab.
+        ///   Looks up a localized string similar to Multi-grid result sets.
         /// </summary>
         internal static string OptionDisplayResultsGridSingleTab {
             get {

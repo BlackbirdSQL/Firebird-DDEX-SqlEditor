@@ -2,7 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorToolbarCommandHandler<T>
 
 using System;
-using BlackbirdSql.Shared.Ctl;
+using System.ComponentModel.Design;
 using BlackbirdSql.Shared.Interfaces;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -14,16 +14,16 @@ namespace BlackbirdSql.EditorExtension.Ctl;
 public sealed class CommandHandler<TCommand> : IBsCommandHandler where TCommand : IBsCommand, new()
 {
 
-	public CommandHandler(Guid clsidCmdSet, uint cmdId)
+	public CommandHandler(Guid clsidCmdSet, int cmdId)
 	{
-		_Clsid = new GuidId(clsidCmdSet, cmdId);
+		_CmdId = new (clsidCmdSet, cmdId);
 	}
 
 
 
-	private readonly GuidId _Clsid;
+	private readonly CommandID _CmdId;
 
-	public GuidId Clsid => _Clsid;
+	public CommandID CmdId => _CmdId;
 
 	public int OnQueryStatus(IBsTabbedEditorPane tabbedEditor, ref OLECMD prgCmd, IntPtr pCmdText)
 	{

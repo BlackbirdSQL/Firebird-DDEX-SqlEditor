@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
+using BlackbirdSql.LanguageExtension.Services;
 using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
@@ -337,7 +338,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	private bool ShouldEnableIntellisense()
 	{
-		if (!LanguageExtensionPackage.Instance.LanguageService.Prefs.EnableAzureIntellisense)
+		if (!LanguageExtensionPackage.Instance.LsbLanguageSvc.Prefs.EnableAzureIntellisense)
 		{
 			return !IsCloudConnection;
 		}

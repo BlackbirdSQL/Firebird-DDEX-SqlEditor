@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Controls.PropertiesWindow;
 using BlackbirdSql.Shared.Controls.Results;
 using BlackbirdSql.Shared.Controls.Tabs;
@@ -457,7 +458,18 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			if (frame == null)
 				return null;
 
-			string text = Path.GetFileNameWithoutExtension(GetDocumentMoniker(frame));
+			string text;
+			string moniker = GetDocumentMoniker(frame);
+
+			try
+			{
+				text = Cmd.GetFileNameWithoutExtension(moniker);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex, $"Moniker: {moniker}.");
+				throw;
+			}
 
 			___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out object pHierarchy));
 			if (pHierarchy is not IVsHierarchy vsHierarchy)
@@ -471,7 +483,15 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 			___(vsHierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_Name, out object pName));
 
-			text = Path.GetFileNameWithoutExtension((string)pName);
+			try
+			{
+				text = Cmd.GetFileNameWithoutExtension((string)pName);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex, $"File name: {(string)pName}.");
+				throw;
+			}
 
 			return text;
 		}
@@ -1078,16 +1098,19 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 	private string GetCurrentWorkingDirectory()
 	{
-		string result = null;
+		string result;
+
 		try
 		{
-			result = Path.GetDirectoryName(DocumentMoniker);
-			return result;
+			result = Cmd.GetDirectoryName(DocumentMoniker);
 		}
-		catch
+		catch (Exception ex)
 		{
-			return result;
+			Diag.Dug(ex, $"DocumentMoniker: {DocumentMoniker}.");
+			throw;
 		}
+
+		return result;
 	}
 
 
@@ -1650,17 +1673,6 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			}
 
 		}
-		else if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97)
-		{
-			if (ReferenceEquals(this, ExtensionInstance.CurrentTabbedEditor))
-			{
-
-				if (nCmdID == (uint)VSConstants.VSStd97CmdID.SplitNext)
-					command = new CommandOleCycleToNext(this);
-				else if (nCmdID == (uint)VSConstants.VSStd97CmdID.SplitPrev)
-					command = new CommandOleCycleToPrevious(this);
-			}
-		}
 
 		if (command != null)
 			return command.Exec(nCmdexecopt, pvaIn, pvaOut);
@@ -1713,16 +1725,6 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 					case EnCommandSet.CmdIdToggleResultsPane:
 						command = new CommandToggleResultsPane(this);
 						break;
-				}
-			}
-			else if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97)
-			{
-				if (ReferenceEquals(this, ExtensionInstance.CurrentTabbedEditor))
-				{
-					if (cmdID == (uint)VSConstants.VSStd97CmdID.SplitNext)
-						command = new CommandOleCycleToNext(this);
-					else if (cmdID == (uint)VSConstants.VSStd97CmdID.SplitPrev)
-						command = new CommandOleCycleToPrevious(this);
 				}
 			}
 
@@ -1780,11 +1782,11 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 
 
-	protected override void RaiseShow(int fShow)
+	protected override void RaiseShow(__FRAMESHOW fShow)
 	{
 		base.RaiseShow(fShow);
 
-		if (_IsFirstTimeToShow && fShow == 1)
+		if (_IsFirstTimeToShow && fShow == __FRAMESHOW.FRAMESHOW_WinShown)
 		{
 			if (IsClone)
 			{
@@ -1847,6 +1849,16 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 					default, TaskCreationOptions.PreferFairness, TaskScheduler.Default).Forget();
 			}
 		}
+		else if (fShow == __FRAMESHOW.FRAMESHOW_TabDeactivated &&
+			ReferenceEquals(this, ExtensionInstance.CurrentTabbedEditor))
+		{
+			ExtensionInstance.CurrentTabbedEditor = null;
+			AuxilliaryDocData auxDocdata = AuxDocData;
+
+			if (auxDocdata != null)
+				auxDocdata.IntellisenseActive = auxDocdata.IntellisenseEnabled != null && auxDocdata.IntellisenseEnabled.Value;
+		}
+
 	}
 
 

@@ -160,18 +160,19 @@ public sealed class StatusBarManager : IDisposable
 
 	public void Initialize(StatusStrip statusStrip, bool rowCountValid, IBsTabbedEditorPane editorWindowPane)
 	{
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c9: Expected O, but got Unknown
 		EditorWindowPane = editorWindowPane;
 		QryMgr.StatusChangedEvent += OnStatusChanged;
 		QryMgr.ExecutionStartedEventAsync += OnExecutionStartedAsync;
 		QryMgr.ExecutionCompletedEventAsync += OnExecutionCompletedAsync;
-		// Tracer.Trace(GetType(), "StatusBarManager.Initialize", "_RowCountValid = {0}", rowCountValid);
+
 		_StatusStrip = statusStrip;
 		_StatusStrip.LayoutStyle = ToolStripLayoutStyle.Table;
 		_RowCountValid = rowCountValid;
+
 		_GeneralPanel.SetParent(_StatusStrip);
+
 		((ToolStripStatusLabel)(object)_GeneralPanel).Spring = true;
+
 		_StatusStrip.RenderMode = ToolStripRenderMode.Professional;
 		_StatusStrip.Renderer = new EditorStatusStripRenderer(_StatusStrip);
 

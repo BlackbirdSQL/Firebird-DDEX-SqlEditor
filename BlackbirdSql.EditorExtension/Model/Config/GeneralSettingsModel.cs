@@ -68,6 +68,18 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 
 
 	[TypeConverter(typeof(GlobalEnumConverter))]
+	public enum EnGlobalizedIntellisensePolicy
+	{
+		[GlobalizedRadio("EnIntellisensePolicy_ActiveOnly")]
+		ActiveOnly,
+		[GlobalizedRadio("EnIntellisensePolicy_All")]
+		All,
+		[GlobalizedRadio("EnIntellisensePolicy_Disabled")]
+		Disabled
+	}
+
+
+	[TypeConverter(typeof(GlobalEnumConverter))]
 	public enum EnGlobalizedLanguageService
 	{
 		[GlobalizedRadio("EnLanguageService_SSDT")]
@@ -90,11 +102,10 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayGeneralEnableIntellisense")]
-	[GlobalizedDescription("OptionDescriptionGeneralEnableIntellisense")]
-	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[DefaultValue(true)]
-	public bool EnableIntellisense { get; set; } = true;
+	[GlobalizedDisplayName("OptionDisplayGeneralIntellisensePolicy")]
+	[GlobalizedDescription("OptionDescriptionGeneralIntellisensePolicy")]
+	[DefaultValue(EnGlobalizedIntellisensePolicy.ActiveOnly)]
+	public EnGlobalizedIntellisensePolicy IntellisensePolicy { get; set; } = EnGlobalizedIntellisensePolicy.ActiveOnly;
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]

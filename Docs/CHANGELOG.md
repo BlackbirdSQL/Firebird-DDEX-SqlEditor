@@ -3,6 +3,18 @@
 ## Change log
 
 
+### v14.5.1.3 Minor enhancements and code cleanup.
+
+#### New / Enhancements
+- Replaced the `Enable Intellisense` SqlEditor user option with `Intellisense Policy`, which provides a radio button choice of `Active Query Only`, `All Queries` and `Disabled`. The default policy is `Active Query Only` which displays only the current active query's `Intellisense` messages. The option applies to only __BlackbirdSql__ SqlEditor queries. This eliminates the ambiguity caused by Intellisense messages when multiple query windows with the same or similar names are open.
+- Added an n/nn (Statement n of Total nn) grid identifier to the upper left cell of grids for queries with multiple result sets.
+- Code cleanup: Removed the `GuidId` class because the built-in `CommandID` class is functionally equivalent.
+- Code cleanup: Moved the __SplitNext__ and __SplitPrev__ built-in `VSStandardCommandSet97` commands into the `CommandMapper` as `IBsCommandHandler` type interfaces. This provides for a uniform system of handling global commands that is in line with the handling of internal extension commands.
+- Code cleanup: Separated __Action__ `QueryManager` states as a subset of the new __Operation__ state in the state syncronicity stack, due to subtle differences in their behavior during push/pop stack operations. __Virtual__ states are cleared when the last __Action__ state is popped. When the __Operation__ state is popped, __Virtual__ states are only cleared if no __Action__ states exist in the stack. __Virtual__ states become volatile whenever an __Operation__ or __Action__ state is pushed onto the stack, as was their behavior previously. The __Operation__ state marker is set as the second to last enum marker in the `EnQueryState` enum.
+#### Fixes
+- Fixed bug where the FileDialog selection was not being correctly assigned in the Connection Dialog.
+
+
 ### v14.5.1.1 Minor enhancements and code cleanup.
 
 #### New / Enhancements

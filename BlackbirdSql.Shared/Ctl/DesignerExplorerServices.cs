@@ -210,8 +210,17 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 		Directory.CreateDirectory(tempDirectory);
 
+		string filename;
 
-		string filename = Path.GetFileName(moniker);
+		try
+		{
+			filename = Cmd.GetFileName(moniker);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, $"Moniker: {moniker}.");
+			throw;
+		}
 
 		if (filename.EndsWith(NativeDb.Extension, StringComparison.OrdinalIgnoreCase))
 			filename = filename.TrimSuffix(NativeDb.Extension, StringComparison.OrdinalIgnoreCase);
@@ -447,13 +456,13 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		if (alreadyLoaded)
 			return;
 
-		IBsTabbedEditorPane lastFocusedSqlEditor = ((IBsEditorPackage)ApcManager.PackageInstance).CurrentTabbedEditor;
+		IBsTabbedEditorPane currentTabbedEditor = ((IBsEditorPackage)ApcManager.PackageInstance).CurrentTabbedEditor;
 
 		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
 
-		if (lastFocusedSqlEditor != null)
+		if (currentTabbedEditor != null)
 		{
-			CommandExecuteQuery command = new (lastFocusedSqlEditor);
+			CommandExecuteQuery command = new (currentTabbedEditor);
 
 			_ = Task.Run(() => OnSqlQueryLoadedAsync(command, 50));
 		}

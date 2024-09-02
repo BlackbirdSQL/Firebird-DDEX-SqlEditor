@@ -250,7 +250,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				txtUserName.Text = SysConstants.C_DefaultUserID;
 
 			if (Site != null && Site.TryGetValue("Database", out value))
-				txtDatabase.Text = (string)value;
+				txtDatabase.Text = Cmd.CleanPath((string)value);
 			else
 				txtDatabase.Text = SysConstants.C_DefaultDatabase;
 
@@ -609,6 +609,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			throw ex;
 		}
 
+		// Tracer.Trace(GetType(), "SetCursorPositionFromSite()", "enableCursorEvents: {0}.", enableCursorEvents);
+
 		if (!enableCursorEvents)
 			EventCursorEnter(false, true);
 
@@ -860,7 +862,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				}
 
 				// Tracer.Trace(GetType(), "OnAccept()", "ValidateSiteProperties(): success: {0}, addInternally: {1}, modifyInternally: {2}\nrestoreConnectionString: {3}.",
-				 //	success, addInternally, modifyInternally, restoreConnectionString);
+				//	success, addInternally, modifyInternally, restoreConnectionString);
 
 
 				// This only applies if the ConnectionSource is SqlEditor.
@@ -928,9 +930,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	private void OnCmdGetFileClick(object sender, EventArgs e)
 	{
 		if (openFileDialog.ShowDialog() == DialogResult.OK)
-		{
-			cmbDatabase.Text = openFileDialog.FileName;
-		}
+			txtDatabase.Text = Cmd.CleanPath(openFileDialog.FileName);
 	}
 
 
@@ -1176,7 +1176,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		if (Site == null || !EventInputEnter())
 			return;
 
-		// Tracer.Trace(GetType(), "OnInputChanged()", "Container: {0}.", Container);
+		// Tracer.Trace(GetType(), "OnInputChanged()", "Sender: {0}.", ((Control)sender)?.Name);
 
 		// Disable property property events because we're going to invoke
 		// OnPropertyChanged afterwards.
@@ -1195,7 +1195,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			else if (sender.Equals(txtDatabase))
 			{
 				propertyName = SysConstants.C_KeyDatabase;
-				Site[propertyName] = txtDatabase.Text.Trim();
+				Site[propertyName] = Cmd.CleanPath(txtDatabase.Text);
 			}
 			else if (sender.Equals(txtUserName))
 			{

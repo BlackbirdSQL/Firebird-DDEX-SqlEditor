@@ -2,7 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.ITabbedEditorToolbarCommandHandler
 
 using System;
-using BlackbirdSql.Shared.Ctl;
+using System.ComponentModel.Design;
 using Microsoft.VisualStudio.OLE.Interop;
 
 
@@ -12,7 +12,7 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 public interface IBsCommandHandler
 {
-	GuidId Clsid { get; }
+	CommandID CmdId { get; }
 
 	int OnQueryStatus(IBsTabbedEditorPane tabbedEditor, ref OLECMD prgCmd, IntPtr pCmdText);
 

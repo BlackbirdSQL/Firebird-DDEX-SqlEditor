@@ -186,7 +186,6 @@ public class Moniker
 
 	private string _Database = null;
 	private string _DataSource = null;
-	private string _DocumentMoniker = null;
 	private readonly bool _IsClone = false;
 	private readonly bool _IsUnique = false;
 	private readonly string _ObjectName = "";
@@ -230,15 +229,6 @@ public class Moniker
 
 
 	/// <summary>
-	/// For document monikers, true if reopening a document opens it into a new window,
-	/// otherwise for false the same window is used.
-	/// </summary>
-
-	public string DocumentMoniker => _DocumentMoniker ??= BuildDocumentMoniker(true);
-
-
-
-	/// <summary>
 	/// The dot delimited node object identifier.
 	/// </summary>
 	private string ObjectName => _ObjectName;
@@ -250,35 +240,11 @@ public class Moniker
 	public EnModelObjectType ObjectType => _ObjectType;
 
 
-	public object[] OriginalIdentifier
-	{
-		get
-		{
-			object[] nodeIdentifier = Identifier;
-
-			string[] identifier = new string[nodeIdentifier.Length + 2];
-
-			identifier[0] = identifier[1] = "";
-
-			for (int i = 0; i < nodeIdentifier.Length; i++)
-			{
-				identifier[i + 2] = nodeIdentifier[i]?.ToString();
-			}
-
-			return identifier;
-		}
-	}
-
-
 	/// <summary>
 	/// The IDE window target type of the data object.
 	/// </summary>
 	[DefaultValue(EnModelTargetType.Unknown)]
 	private EnModelTargetType TargetType => _TargetType;
-
-
-
-	public long UniqueId => _UniqueId;
 
 
 	#endregion Property accessors
@@ -388,7 +354,18 @@ public class Moniker
 
 		if (_IsUnique)
 		{
-			string testname = Path.GetFileName(filenameNoExtension);
+			string testname;
+
+			try
+			{
+				testname = Cmd.GetFileName(filenameNoExtension);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex, $"Serialized database url: {filenameNoExtension}.");
+				throw;
+			}
+
 			string basename = Cmd.GetUniqueIdentifierPrefix(testname);
 
 			// Test if a clone's parent has a suffix. If it does see if we can use the parent's
@@ -402,7 +379,7 @@ public class Moniker
 			}
 
 			testname = string.Format(CultureInfo.InvariantCulture, "{0}{1}", basename, extension);
-			filenameNoExtension = Path.Combine(Path.GetDirectoryName(filename), basename);
+			filenameNoExtension = Path.Combine(Cmd.GetDirectoryName(filename), basename);
 
 			for (int i = 2; i < 1000; i++)
 			{
@@ -449,71 +426,6 @@ public class Moniker
 		identifierArray = moniker.Identifier;
 
 		return moniker.BuildDocumentMoniker(true);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Appends the ServerExplorer and SqlTemporaryFiles folders to the provided
-	/// application root directory.
-	/// </summary>
-	/// <param name="appDataPath">
-	/// The root temporary application directory path to save to.
-	/// </param>
-	// ---------------------------------------------------------------------------------
-	private string ConstructFullTemporaryDirectory(string appDataPath)
-	{
-		string path = appDataPath;
-
-		path = Path.Combine(path, SystemData.C_ServiceFolder);
-		path = Path.Combine(path, SystemData.C_TempSqlFolder);
-
-		// Tracer.Trace(typeof(Moniker), "ConstructFullTemporaryDirectory()", "TemporaryDirectory: {0}", path);
-
-		return path;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Converts a moniker into a valid file path for saving to and reading from disk.
-	/// </summary>
-	/// <param name="appDataPath">
-	/// The root temporary application directory path to save to.
-	/// </param>
-	/// <returns>
-	/// The file path in the format tempAppFolderPath\ObjectName[server(serializedDatabasePath.ObjectType)].fbsql
-	/// </returns>
-	// ---------------------------------------------------------------------------------
-	public string ToPath(string appDataPath)
-	{
-		string str = Serialization.Serialize64(Database.ToLowerInvariant());
-		// string str = JsonConvert.SerializeObject(Database.ToLowerInvariant());
-
-		string moniker = SysConstants.S_DatasetKeyFormat.FmtRes(DataSource, str);
-
-		moniker = moniker.Replace("\\", "."); // "{backslash}");
-		moniker = moniker.Replace("/", "."); // "{slash}");
-		moniker = moniker.Replace(":", "{colon}");
-		moniker = moniker.Replace("*", "{asterisk}");
-		moniker = moniker.Replace("?", "{questionmark}");
-		moniker = moniker.Replace("\"", "{quote}");
-		moniker = moniker.Replace("<", "{openbracket}");
-		moniker = moniker.Replace(">", "{closebracket}");
-		moniker = moniker.Replace("|", "{bar}");
-
-		moniker = $"{ObjectName}[{moniker}.{ObjectType}]{NativeDb.Extension}";
-
-		string path = ConstructFullTemporaryDirectory(appDataPath);
-
-		path = Path.Combine(path, moniker);
-
-		// Tracer.Trace(GetType(), "ToPath()", path);
-
-
-		return path;
 	}
 
 

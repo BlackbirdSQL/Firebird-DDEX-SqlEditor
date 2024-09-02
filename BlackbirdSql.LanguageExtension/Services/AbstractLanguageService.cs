@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Babel;
+using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.LanguageExtension.Ctl;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
 using BlackbirdSql.LanguageExtension.Properties;
@@ -19,6 +20,8 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 using CasingStyle = Microsoft.SqlServer.Management.SqlParser.MetadataProvider.CasingStyle;
 using MetadataDisplayInfoProvider = Microsoft.SqlServer.Management.SqlParser.MetadataProvider.MetadataDisplayInfoProvider;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Shell;
 
 
 
@@ -32,7 +35,7 @@ namespace BlackbirdSql.LanguageExtension.Services;
 /// BlackbirdSql Language Service base class. This class abstraction handles all legacy SSDT functionality.
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractLanguageService : LanguageService, IVsLanguageBlock
+public abstract class AbstractLanguageService : LanguageService, IBsLanguageService, IVsLanguageBlock
 {
 
 	// ---------------------------------------------------------
@@ -374,18 +377,28 @@ public abstract class AbstractLanguageService : LanguageService, IVsLanguageBloc
 
 	public void RefreshIntellisense(bool currentWindowOnly)
 	{
-		IVsTextView lastActiveTextView = LastActiveTextView;
-		LsbSource source = GetSource(lastActiveTextView) as LsbSource;
+		IVsTextView textView = LastActiveTextView;
+		LsbSource lastSrc = GetSource(textView) as LsbSource;
 
-		foreach (LsbSource source2 in GetSources())
+		foreach (LsbSource src in GetSources())
 		{
-			source2.IsDirty = true;
+			src.IsDirty = true;
 
-			source2.Reset();
+			src.Reset();
 
-			if (!currentWindowOnly && source2 != source)
-				source2.GetTaskProvider().Tasks.Clear();
+
+			if (!currentWindowOnly || src == lastSrc)
+				src.GetTaskProvider().Tasks.Clear();
 		}
+	}
+
+
+
+	public async Task RefreshIntellisenseAsync(bool currentWindowOnly)
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		RefreshIntellisense(currentWindowOnly);
 	}
 
 	public override ImageList GetImageList()

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,6 +24,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Threading;
 
 
 
@@ -119,6 +121,7 @@ public sealed class AuxilliaryDocData : IDisposable
 	private int _CloneCardinal = 0;
 	private readonly IBsEditorPackage _ExtensionInstance = null;
 	private string _InflightMoniker;
+	private bool _IntellisenseActive = false;
 	private bool? _IntellisenseEnabled;
 	private string _InternalDocumentMoniker;
 	private QueryManager _QryMgr;
@@ -234,29 +237,89 @@ public sealed class AuxilliaryDocData : IDisposable
 	public string InflightMoniker => _InflightMoniker;
 
 
-	public bool? IntellisenseEnabled
+	public bool IntellisenseActive
 	{
 		get
 		{
 			lock (_LockLocal)
-			{
-				if (!_IntellisenseEnabled.HasValue)
-					_IntellisenseEnabled = PersistentSettings.EditorEnableIntellisense;
-
-				return _IntellisenseEnabled;
-			}
+				return _IntellisenseActive;
 		}
 		set
 		{
 			lock (_LockLocal)
 			{
-				IVsUserData vsUserData = VsUserData;
-				if (vsUserData != null)
+				bool activeOnly = PersistentSettings.EditorIntellisensePolicy == EnIntellisensePolicy.ActiveOnly;
+
+				// If not active only and user data already set to value, exit.
+
+				if (!activeOnly && _IntellisenseActive == value)
+					return;
+
+
+				// If active only alter the value if not current.
+
+				if (value)
 				{
-					Guid riidKey = VS.CLSID_PropIntelliSenseEnabled;
-					___(vsUserData.SetData(ref riidKey, value));
-					_IntellisenseEnabled = value;
+					value = PersistentSettings.EditorIntellisensePolicy != EnIntellisensePolicy.ActiveOnly;
+
+					if (!value)
+					{
+						IBsTabbedEditorPane currentTabbedEditor = ((IBsEditorPackage)ApcManager.PackageInstance).CurrentTabbedEditor;
+
+						if (ReferenceEquals(this, currentTabbedEditor?.AuxDocData))
+							value = true;
+					}
 				}
+
+				// _IntellisenseActive tracks the user data setting so set only if not equal.
+
+				if (_IntellisenseActive == value)
+					return;
+
+				_IntellisenseActive = value;
+
+				IVsUserData vsUserData = VsUserData;
+
+				if (vsUserData == null)
+				{
+					_IntellisenseActive = false;
+					return;
+				}
+
+				Guid riidKey = VS.CLSID_PropIntelliSenseEnabled;
+
+				___(vsUserData.SetData(ref riidKey, value));
+
+
+
+				// If not active only, we're done.
+
+				if (PersistentSettings.EditorIntellisensePolicy != EnIntellisensePolicy.ActiveOnly)
+					return;
+
+				((IBsLanguagePackage)ApcManager.PackageInstance).LanguageSvc?.RefreshIntellisense(value);
+			}
+		}
+	}
+
+
+	public bool? IntellisenseEnabled
+	{
+		get
+		{
+			lock (_LockLocal)
+				return _IntellisenseEnabled;
+		}
+		set
+		{
+			lock (_LockLocal)
+			{
+				_IntellisenseEnabled = value;
+
+				bool enabled = value != null && value.Value;
+
+				if (enabled != _IntellisenseActive)
+					IntellisenseActive = enabled;
 			}
 		}
 	}
@@ -771,7 +834,16 @@ public sealed class AuxilliaryDocData : IDisposable
 
 		if (IsVirtualWindow)
 		{
-			name = Path.GetFileName(InflightMoniker);
+			try
+			{
+				name = Cmd.GetFileName(InflightMoniker);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex, $"Inflight moniker: {InflightMoniker}.");
+				throw;
+			}
+
 			name = Resources.QueryGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, name);
 		}
 		else

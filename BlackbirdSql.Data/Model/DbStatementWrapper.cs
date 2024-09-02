@@ -96,6 +96,8 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 	public long RowsSelected => _RowsSelected;
 
+	public int StatementCount => _Owner.StatementCount;
+
 	public long TotalRowsSelected => _Owner.TotalRowsSelected;
 
 	public DbDataReader CurrentActionReader => CurrentAction == EnSqlStatementAction.ProcessQuery

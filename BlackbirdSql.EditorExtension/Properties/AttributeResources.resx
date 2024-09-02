@@ -363,6 +363,24 @@
   <data name="EnExecutionTimeout_None_Unselected" xml:space="preserve">
     <value>◎ No timeout</value>
   </data>
+  <data name="EnIntellisensePolicy_ActiveOnly_Selected" xml:space="preserve">
+    <value>◉ Active Query Only</value>
+  </data>
+  <data name="EnIntellisensePolicy_ActiveOnly_Unselected" xml:space="preserve">
+    <value>◎ Active Query Only</value>
+  </data>
+  <data name="EnIntellisensePolicy_All_Selected" xml:space="preserve">
+    <value>◉ All Queries</value>
+  </data>
+  <data name="EnIntellisensePolicy_All_Unselected" xml:space="preserve">
+    <value>◎ All Queries</value>
+  </data>
+  <data name="EnIntellisensePolicy_Disabled_Selected" xml:space="preserve">
+    <value>◉ Disabled</value>
+  </data>
+  <data name="EnIntellisensePolicy_Disabled_Unselected" xml:space="preserve">
+    <value>◎ Disabled</value>
+  </data>
   <data name="EnIsolationLevel_ReadCommitted_Selected" xml:space="preserve">
     <value>◉ Read Committed</value>
   </data>
@@ -688,11 +706,11 @@
   <data name="OptionDescriptionExecutionTimeout" xml:space="preserve">
     <value>The maximum time in minutes to wait for an async query request to complete. Async query requests include DbCommand.ExecuteAsync(), DbReader.ReadAsync and DbReader.NextResultAsync().</value>
   </data>
-  <data name="OptionDescriptionGeneralEnableIntellisense" xml:space="preserve">
-    <value>Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar.</value>
-  </data>
   <data name="OptionDescriptionGeneralExecuteQueryOnOpen" xml:space="preserve">
     <value>Executes a table select or view definition query automatically on open.</value>
+  </data>
+  <data name="OptionDescriptionGeneralIntellisensePolicy" xml:space="preserve">
+    <value>Determines the behavior of Intellisense for hidden windows. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar.</value>
   </data>
   <data name="OptionDescriptionGeneralLanguageService" xml:space="preserve">
     <value>The mandated language service the editor must use. Requires IDE restart.</value>
@@ -871,11 +889,11 @@
   <data name="OptionDisplayExecutionTimeout" xml:space="preserve">
     <value>Execution timeout</value>
   </data>
-  <data name="OptionDisplayGeneralEnableIntellisense" xml:space="preserve">
-    <value> Enable Intellisense</value>
-  </data>
   <data name="OptionDisplayGeneralExecuteQueryOnOpen" xml:space="preserve">
     <value>Auto-execute select query</value>
+  </data>
+  <data name="OptionDisplayGeneralIntellisensePolicy" xml:space="preserve">
+    <value> Intellisense policy</value>
   </data>
   <data name="OptionDisplayGeneralLanguageService" xml:space="preserve">
     <value>Language Service</value>
@@ -911,7 +929,7 @@
     <value> Auto-collapse grid results</value>
   </data>
   <data name="OptionDisplayResultsGridSingleTab" xml:space="preserve">
-    <value>Use single tab</value>
+    <value>Multi-grid result sets</value>
   </data>
   <data name="OptionDisplayResultsGridSwitchToResults" xml:space="preserve">
     <value>  Auto-switch to grid results</value>

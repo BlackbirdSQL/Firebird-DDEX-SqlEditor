@@ -32,6 +32,8 @@ public interface IBsNativeDbStatementWrapper : IDisposable
 	int Index { get; }
 	long RowsSelected { get; }
 
+	int StatementCount { get; }
+
 	long TotalRowsSelected { get; }
 
 	bool IsSpecialAction { get; }

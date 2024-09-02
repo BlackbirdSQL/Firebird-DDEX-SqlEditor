@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
 using BlackbirdSql.EditorExtension.Events;
 using BlackbirdSql.EditorExtension.Properties;
 using BlackbirdSql.Shared.Controls;
+using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
@@ -85,7 +85,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	protected override void Dispose(bool disposing)
 	{
 		Controller.OnAfterAttributeChangeExEvent -= OnAfterAttributeChangeEx;
-		Controller.OnAfterDocumentWindowHideEvent -= OnAfterDocumentWindowHide;
 		Controller.OnAfterSaveAsyncEvent -= OnAfterSaveAsync;
 		Controller.OnBeforeDocumentWindowShowEvent -= OnBeforeDocumentWindowShow;
 		Controller.OnBeforeLastDocumentUnlockEvent -= OnBeforeLastDocumentUnlock;
@@ -104,15 +103,16 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	public override void Initialize()
 	{
+		// Tracer.Trace(GetType(), "Initialize()");
+
 		Controller.OnAfterAttributeChangeExEvent += OnAfterAttributeChangeEx;
-		Controller.OnAfterDocumentWindowHideEvent += OnAfterDocumentWindowHide;
 		Controller.OnAfterSaveAsyncEvent += OnAfterSaveAsync;
 		Controller.OnBeforeDocumentWindowShowEvent += OnBeforeDocumentWindowShow;
 		Controller.OnBeforeLastDocumentUnlockEvent += OnBeforeLastDocumentUnlock;
 		Controller.OnElementValueChangedEvent += OnElementValueChanged;
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 		Controller.OnSelectionChangedEvent += OnSelectionChanged;
-		
+
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -432,7 +432,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			try
 			{
 				if (item.Hierarchy == hierarchy && !string.IsNullOrWhiteSpace(item.Moniker)
-					&& Path.GetExtension(item.Moniker).Equals(NativeDb.Extension, StringComparison.OrdinalIgnoreCase)
+					&& Cmd.GetExtension(item.Moniker).Equals(NativeDb.Extension, StringComparison.OrdinalIgnoreCase)
 					&& item.DocData != null)
 				{
 					AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(item.DocData);
@@ -444,7 +444,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 					{
 						if (auxDocData.IsVirtualWindow)
 						{
-							name = Path.GetFileName(auxDocData.InflightMoniker);
+							name = Cmd.GetFileName(auxDocData.InflightMoniker);
 							name = Resources.QueryGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, name);
 						}
 						else
@@ -479,7 +479,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			try
 			{
 				if (item.Hierarchy == hierarchy && !string.IsNullOrWhiteSpace(item.Moniker)
-					&& Path.GetExtension(item.Moniker).Equals(NativeDb.Extension, StringComparison.OrdinalIgnoreCase)
+					&& Cmd.GetExtension(item.Moniker).Equals(NativeDb.Extension, StringComparison.OrdinalIgnoreCase)
 					&& item.DocData != null)
 				{
 					AuxilliaryDocData auxDocData = EditorPackage.GetAuxilliaryDocData(item.DocData);
@@ -491,7 +491,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 					{
 						if (auxDocData.IsVirtualWindow)
 						{
-							name = Path.GetFileName(auxDocData.InflightMoniker);
+							name = Cmd.GetFileName(auxDocData.InflightMoniker);
 							name = Resources.QueryGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, name);
 						}
 						else
@@ -612,7 +612,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 		// If no intellisense, no need to fix targeting.
-		bool resetIntellisense = auxDocData.IntellisenseEnabled.AsBool();
+		bool resetIntellisense = auxDocData.IntellisenseActive;
 
 		// Tracer.Trace(GetType(), "OnAfterAttributeChangeEx()", "AuxilliaryDocData exists. \nOld mk: {0}\nNew mk: {1}",
 		//	pszMkDocumentOld, pszMkDocumentNew);
@@ -633,34 +633,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		// Tracer.Trace(GetType(), "OnAfterAttributeChangeEx()", "DONE!!! Intellisense and RdtEvents disabled");
 
 		return VSConstants.S_OK;
-	}
-
-
-
-	private int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
-	{
-		// Tracer.Trace(GetType(), "OnAfterDocumentWindowHide()");
-
-		if (!ApcManager.IdeShutdownState)
-			return VSConstants.S_OK;
-
-		RunningDocumentInfo docInfo;
-
-		lock (RdtManager.LockGlobal)
-			docInfo = RdtManager.GetDocumentInfo(docCookie);
-
-		if (docInfo.IsDocumentInitialized
-			&& __(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar)))
-		{
-			if (pvar is TabbedEditorPane sqlEditorTabbedEditorPane
-				&& sqlEditorTabbedEditorPane == EditorPackage.CurrentTabbedEditor)
-			{
-				EditorPackage.CurrentTabbedEditor = null;
-			}
-		}
-
-		return VSConstants.S_OK;
-
 	}
 
 
@@ -692,6 +664,8 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 	private int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
 	{
+		// Tracer.Trace(GetType(), "OnBeforeDocumentWindowShow()");
+
 		Diag.ThrowIfNotOnUIThread();
 
 		RunningDocumentInfo docInfo = RdtManager.GetDocumentInfo(docCookie);
@@ -702,8 +676,14 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		if (!__(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar)))
 			return VSConstants.S_OK;
 
-		if (pvar is TabbedEditorPane tabbedEditor)
-			EditorPackage.CurrentTabbedEditor = tabbedEditor;
+		if (pvar is not TabbedEditorPane tabbedEditor)
+			return VSConstants.S_OK;
+
+		EditorPackage.CurrentTabbedEditor = tabbedEditor;
+		AuxilliaryDocData auxDocdata = tabbedEditor.AuxDocData;
+
+		if (auxDocdata != null)
+			auxDocdata.IntellisenseActive = auxDocdata.IntellisenseEnabled != null && auxDocdata.IntellisenseEnabled.Value;
 
 		return VSConstants.S_OK;
 	}

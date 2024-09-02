@@ -560,6 +560,9 @@ The Query Processor estimates that implementing the following index could improv
   <data name="Grid_StartEditCell" xml:space="preserve">
     <value>Start editing the cell</value>
   </data>
+  <data name="Grid_StatementLabel" xml:space="preserve">
+    <value>{0}/{1}</value>
+  </data>
   <data name="Grid_ToolTipUrl" xml:space="preserve">
     <value>{0} - Click to follow.
 Click and hold to select this cell.</value>

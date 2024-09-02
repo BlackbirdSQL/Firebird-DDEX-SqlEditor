@@ -22,6 +22,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Properties\EnIntellisense" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Compile Include="Ctl\AbstractDesignerServices.cs" />
 		<Compile Include="Ctl\Commands\CommandOleCycleToPrevious.cs" />
 		<Compile Include="Enums\EnCreationFlags.cs" />
@@ -38,6 +42,7 @@
 		<Compile Include="Enums\EnQueryState.cs" />
 		<Compile Include="Events\NotifyConnectionStateEventArgs.cs" />
 		<Compile Include="Enums\EnNotifyConnectionState.cs" />
+		<Compile Include="Interfaces\IBsLanguagePackage.cs" />
 		<Compile Include="Interfaces\IBsEditorTransientSettings.cs" />
 		<Compile Include="Controls\Dialogs\FileEncodingDialog.Designer.cs">
 			<DependentUpon>FileEncodingDialog.cs</DependentUpon>
@@ -46,12 +51,14 @@
 		<Compile Include="Ctl\Commands\CommandTransactionRollback.cs" />
 		<Compile Include="Ctl\Commands\CommandToggleTTS.cs" />
 		<Compile Include="Events\QueryStateChangedEventArgs.cs" />
+		<Compile Include="Interfaces\IBsLanguageService.cs" />
 		<Compile Include="Model\ModelCsb.cs" />
 		<Compile Include="Interfaces\IBsModelCsb.cs" />
 		<Compile Include="Enums\EnResultMessageType.cs" />
 		<Compile Include="Events\LiveSettingsEventArgs.cs" />
 		<Compile Include="Ctl\Commands\CommandOleCycleToNext.cs" />
 		<Compile Include="Interfaces\IBsCommand.cs" />
+		<Compile Include="Enums\EnIntellisensePolicy.cs" />
 		<Compile Include="Properties\SqlCmdResources.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -483,7 +490,6 @@
 		<Compile Include="Ctl\Commands\CommandToggleResultsPane.cs" />
 		<Compile Include="Ctl\ConnectionPointCookie.cs" />
 		<Compile Include="Ctl\FindTargetAdapter.cs" />
-		<Compile Include="Ctl\GuidId.cs" />
 		<Compile Include="Ctl\Marker.cs" />
 		<Compile Include="Ctl\Commands\MenuCommandsService.cs" />
 		<Compile Include="Ctl\Commands\MenuCommandTextChanges.cs" />
@@ -577,6 +583,7 @@
 
 	<ItemGroup>
 		<None Include="Controls\Graphing\CustomZoomDlg.resx" />
+		<None Include="Enums\EnIntellisensePolicy.cs" />
 		<EmbeddedResource Include="Controls\Graphing\PropertyViewDlg.resx" />
 		<EmbeddedResource Include="Properties\AttributeResources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>

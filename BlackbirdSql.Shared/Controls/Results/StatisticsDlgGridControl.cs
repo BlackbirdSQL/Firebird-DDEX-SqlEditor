@@ -17,7 +17,7 @@ public class StatisticsDlgGridControl : DlgGridControl
 
 	private SolidBrush _selectedCellBrush;
 
-	private SolidBrush _inactiveSelectedCellBrush;
+	private SolidBrush _InactiveSelectedCellBrush;
 
 	private SolidBrush _highlightedCellBrush;
 
@@ -26,7 +26,7 @@ public class StatisticsDlgGridControl : DlgGridControl
 		_bkBrush = new SolidBrush(bkColor);
 		_fgBrush = new SolidBrush(fgColor);
 		_selectedCellBrush = new SolidBrush(selectedCellColor);
-		_inactiveSelectedCellBrush = new SolidBrush(inactiveSelectedCellColor);
+		_InactiveSelectedCellBrush = new SolidBrush(inactiveSelectedCellColor);
 		_highlightedCellBrush = new SolidBrush(highlightedCellColor);
 		BackColor = bkColor;
 	}
@@ -47,7 +47,7 @@ public class StatisticsDlgGridControl : DlgGridControl
 		}
 		else if (_SelectionMgr.IsCellSelected(nRow, nCol) && !ContainsFocus)
 		{
-			bkBrush = _inactiveSelectedCellBrush;
+			bkBrush = _InactiveSelectedCellBrush;
 		}
 	}
 
@@ -84,8 +84,8 @@ public class StatisticsDlgGridControl : DlgGridControl
 
 	public void SetInactiveSelectedCellColor(Color inactiveSelectedCellFocusedColor)
 	{
-		_inactiveSelectedCellBrush?.Dispose();
-		_inactiveSelectedCellBrush = new SolidBrush(inactiveSelectedCellFocusedColor);
+		_InactiveSelectedCellBrush?.Dispose();
+		_InactiveSelectedCellBrush = new SolidBrush(inactiveSelectedCellFocusedColor);
 		if (IsHandleCreated)
 		{
 			Invalidate();
@@ -122,10 +122,10 @@ public class StatisticsDlgGridControl : DlgGridControl
 				_selectedCellBrush.Dispose();
 				_selectedCellBrush = null;
 			}
-			if (_inactiveSelectedCellBrush != null)
+			if (_InactiveSelectedCellBrush != null)
 			{
-				_inactiveSelectedCellBrush.Dispose();
-				_inactiveSelectedCellBrush = null;
+				_InactiveSelectedCellBrush.Dispose();
+				_InactiveSelectedCellBrush = null;
 			}
 			if (_highlightedCellBrush != null)
 			{

@@ -1229,8 +1229,6 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			public override AccessibleObject Navigate(AccessibleNavigation navdir)
 			{
-				//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004b: Expected O, but got Unknown
 				if (m_acc != null)
 				{
 					int childCount = GetChildCount();
@@ -1291,8 +1289,6 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			public override AccessibleObject GetChild(int index)
 			{
-				//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0021: Expected O, but got Unknown
 				if (m_acc != null)
 				{
 					IAccessible val = (IAccessible)m_acc.get_accChild(index + 1);
@@ -2240,7 +2236,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	public void SetHeaderInfo(int nColIndex, string strText, Bitmap bmp)
 	{
-		int uIColumnIndexByStorageIndex = GetUIColumnIndexByStorageIndex(nColIndex);
+		int uIColumnIndexByStorageIndex = nColIndex == 0 ? 0 : GetUIColumnIndexByStorageIndex(nColIndex);
+
 		if (m_gridHeader[uIColumnIndexByStorageIndex].Type == EnGridColumnHeaderType.CheckBox || m_gridHeader[uIColumnIndexByStorageIndex].Type == EnGridColumnHeaderType.TextAndCheckBox)
 		{
 			InvalidOperationException ex = new(string.Format(ControlsResources.ExShouldSetHeaderStateForCheckBox, nColIndex));

@@ -136,10 +136,6 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public static void SelectAllCellInGrid(GridControl grid)
 	{
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Expected O, but got Unknown
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0029: Expected O, but got Unknown
 		// Tracer.Trace(typeof(GridResultsPanel), "GridResultsTabPanel.SelectAllCellInGrid", "", null);
 		BlockOfCellsCollection val = [];
 		BlockOfCells val2 = new BlockOfCells(0L, 1);
@@ -304,7 +300,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		_MultiControlPnl.AddControl((Control)(object)gridResultsGrid, limitMaxControlHeightToClientArea: false);
 		((Control)(object)gridResultsGrid).BackColor = curBkColor;
 		cont.Initialize(gridResultsGrid);
-		cont.GridCtl.SetBkAndForeColors(curBkColor, curFkColor);
+		cont.GridCtl.SetBgAndFgColors(curBkColor, curFkColor);
 		cont.GridCtl.SetSelectedCellColor(selectedCellColor);
 		cont.GridCtl.SetInactiveSelectedCellColor(inactiveSelectedCellColor);
 		return gridResultsGrid;
@@ -333,7 +329,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 		foreach (ResultSetAndGridContainer gridContainer in m_gridContainers)
 		{
-			gridContainer.GridCtl.SetBkAndForeColors(bkColor, fkColor);
+			gridContainer.GridCtl.SetBgAndFgColors(bkColor, fkColor);
 		}
 	}
 
@@ -402,6 +398,8 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		}
 	}
 
+
+
 	private void OnGridGotFocus(object sender, EventArgs e)
 	{
 		GridControl val = (GridControl)(sender is GridControl ? sender : null);
@@ -410,6 +408,8 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			_lastFocusedControl = (Control)(object)val;
 		}
 	}
+
+
 
 	private void OnKeyPressedOnCell(object sender, KeyPressedOnCellEventArgs a)
 	{
@@ -432,6 +432,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		}
 	}
 
+
 	private void OnAdjustSelectionForButtonClick(object sender, AdjustSelectionForButtonClickEventArgs e)
 	{
 		GridResultsGrid grid = (GridResultsGrid)sender;
@@ -450,8 +451,6 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	private void OnSpecialGridEvent(object sender, GridSpecialEventArgs e)
 	{
-		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000f: Expected O, but got Unknown
 		if (e.EventType == 0)
 		{
 			GridControl grid = (GridControl)sender;
@@ -592,33 +591,27 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		GridResultsGrid gridResultsGrid = sender as GridResultsGrid;
 		long rowIndex = args.RowIndex;
 		int columnIndex = args.ColumnIndex;
-		if (columnIndex > 0 && gridResultsGrid.GridStorage is QueryResultSet qEResultSet && rowIndex < qEResultSet.TotalNumberOfRows && columnIndex < qEResultSet.TotalNumberOfColumns)
+
+		if (columnIndex > 0 && gridResultsGrid.GridStorage is QueryResultSet qEResultSet
+			&& rowIndex < qEResultSet.TotalNumberOfRows && columnIndex < qEResultSet.TotalNumberOfColumns)
 		{
 			if (qEResultSet.IsCellDataNull(rowIndex, columnIndex))
-			{
 				args.BKBrush = m_brushNullObjects;
-			}
 			else
-			{
-				args.BKBrush = gridResultsGrid.BackGroundBrush;
-			}
+				args.BKBrush = gridResultsGrid.BgBrush;
 		}
 	}
 
 	private void SelectBlockOfCellsAsColumnSelection(GridResultsGrid grid, int clickedColumnStorageIndex)
 	{
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Expected O, but got Unknown
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Expected O, but got Unknown
 		QueryResultSet qEResultSet = (QueryResultSet)(object)grid.GridStorage;
+
 		if (!qEResultSet.StoredAllData)
-		{
 			return;
-		}
 
 		BlockOfCells currentSelectedBlock = grid.CurrentSelectedBlock;
 		long rowCount = qEResultSet.RowCount;
+
 		if (currentSelectedBlock.IsEmpty || rowCount <= 0)
 		{
 			SelectWholeRowOrColumn((GridControl)(object)grid, clickedColumnStorageIndex, bRow: false);
@@ -628,6 +621,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		int uIColumnIndexByStorageIndex = grid.GetUIColumnIndexByStorageIndex(clickedColumnStorageIndex);
 		int num2;
 		int num3;
+
 		if (currentSelectedBlock.OriginalX >= uIColumnIndexByStorageIndex)
 		{
 			num2 = uIColumnIndexByStorageIndex;
@@ -644,19 +638,19 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			Width = num3 - num2 + 1,
 			Height = rowCount
 		};
+
 		BlockOfCellsCollection val2 =
 		[
 			val
 		];
+
 		grid.SetSelectedCellsAndCurrentCell(val2, 0L, currentSelectedBlock.OriginalX);
 	}
 
+
+
 	private void SelectBlockOfCellsAsRowSelection(GridResultsGrid grid, long clickedRowIndex)
 	{
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Expected O, but got Unknown
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Expected O, but got Unknown
 		BlockOfCells currentSelectedBlock = grid.CurrentSelectedBlock;
 		if (currentSelectedBlock.IsEmpty)
 		{
@@ -745,12 +739,6 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	private void SelectWholeRowOrColumn(GridControl grid, long nIndex, bool bRow)
 	{
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Expected O, but got Unknown
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Expected O, but got Unknown
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Expected O, but got Unknown
 		// Tracer.Trace(GetType(), "GridResultsTabPanel.SelectWholeRowOrColumn", "nIndex = {0}, bRow = {1}", nIndex, bRow);
 		QueryResultSet qEResultSet = (QueryResultSet)(object)grid.GridStorage;
 		if (!qEResultSet.StoredAllData)
@@ -804,7 +792,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		string fileNameUsingSaveDialog = UnsafeCmd.GetFileNameUsingSaveDialog(Cmd.CreateVsFilterString(saveFormats.FilterString), ControlsResources.Grid_SaveGridResults, DefaultResultsDirectory, fileEncodingDlg, out int filterIndex);
 		if (fileNameUsingSaveDialog != null)
 		{
-			DefaultResultsDirectory = Path.GetDirectoryName(fileNameUsingSaveDialog);
+			DefaultResultsDirectory = Cmd.GetDirectoryName(fileNameUsingSaveDialog);
 			StreamWriter result = new StreamWriter(fileNameUsingSaveDialog, append: false, fileEncodingDlg.Encoding)
 			{
 				AutoFlush = false

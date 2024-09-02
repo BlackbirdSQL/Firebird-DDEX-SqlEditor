@@ -277,7 +277,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 				try
 				{
-					if (!Path.GetExtension(pair.Value.Item2).Equals(".edmx", StringComparison.OrdinalIgnoreCase))
+					if (!Cmd.GetExtension(pair.Value.Item2).Equals(".edmx", StringComparison.OrdinalIgnoreCase))
 						continue;
 				}
 				catch
@@ -306,7 +306,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			{
 				try
 				{
-					if (Path.GetExtension(pair.Value.Item2).Equals(".edmx", StringComparison.OrdinalIgnoreCase))
+					if (Cmd.GetExtension(pair.Value.Item2).Equals(".edmx", StringComparison.OrdinalIgnoreCase))
 					{
 						continue;
 					}
@@ -574,7 +574,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		// To keep the UI thread free and to allow it to perform status
 		// updates we move off of the UI thread and then make calls back
 		// to the UI thread for each top-level project validation.
-		string solutionName = Path.GetFileNameWithoutExtension(solution.FileName);
+		string solutionName = Cmd.GetFileNameWithoutExtension(solution.FileName);
 
 		_ = Task.Run(() => ValidateSolutionAsync(solutionName));
 	}
@@ -1067,10 +1067,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		{
 			docInfo = RdtManager.GetDocumentInfo(docCookie);
 
-			if (string.IsNullOrEmpty(docInfo.Moniker))
-				return VSConstants.S_OK;
-
-			string ext = Path.GetExtension(docInfo.Moniker);
+			string ext = Cmd.GetExtension(docInfo.Moniker);
 
 			if (!ext.Equals(".edmx", StringComparison.CurrentCultureIgnoreCase))
 				return VSConstants.S_OK;

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -626,9 +627,9 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 		if (hresult == VSConstants.S_OK)
 			return hresult;
 
-		GuidId guidId = new GuidId(pguidCmdGroup, nCmdID);
+		CommandID cmdId = new (pguidCmdGroup, (int)nCmdID);
 
-		if (CmdMapper.TryGetCommandHandler(GetType(), guidId, out IBsCommandHandler commandHandler))
+		if (CmdMapper.TryGetCommandHandler(GetType(), cmdId, out IBsCommandHandler commandHandler))
 		{
 			hresult = commandHandler.OnExec((IBsTabbedEditorPane)this, nCmdexecopt, pvaIn, pvaOut);
 
@@ -1106,10 +1107,9 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 		for (int i = 0; i < cCmds; i++)
 		{
-			uint cmdID = prgCmds[i].cmdID;
-			GuidId guidId = new GuidId(pguidCmdGroup, cmdID);
+			CommandID cmdId = new (pguidCmdGroup, (int)prgCmds[i].cmdID);
 
-			if (CmdMapper.TryGetCommandHandler(GetType(), guidId, out IBsCommandHandler commandHandler))
+			if (CmdMapper.TryGetCommandHandler(GetType(), cmdId, out IBsCommandHandler commandHandler))
 			{
 				return commandHandler.OnQueryStatus((IBsTabbedEditorPane)this, ref prgCmds[i], pCmdText);
 			}
@@ -1617,14 +1617,16 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	int IVsWindowFrameNotify3.OnShow(int fShow)
 	{
-		switch ((__FRAMESHOW)fShow)
+		__FRAMESHOW fShowStatus = (__FRAMESHOW)fShow;
+
+		switch (fShowStatus)
 		{
 			case __FRAMESHOW.FRAMESHOW_WinShown:
 				using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 				{
 					EnsureTabs();
 					EnsureToolbarAssociatedWithTabs();
-					RaiseShow(fShow);
+					RaiseShow(fShowStatus);
 				}
 
 				// TODO: Attempt to focus the textview on first show.
@@ -1637,9 +1639,18 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 				_FirstTimeShowEventHandled = true;
 
 				break;
+
 			case __FRAMESHOW.FRAMESHOW_TabActivated:
+				RaiseShow(fShowStatus);
+
+				foreach (AbstruseEditorTab tab in _TabbedEditorUICtl.Tabs)
+					((IVsWindowFrameNotify3)tab).OnShow(fShow);
+
+				break;
+
 			case __FRAMESHOW.FRAMESHOW_TabDeactivated:
-				RaiseShow(fShow);
+				RaiseShow(fShowStatus);
+
 
 				foreach (AbstruseEditorTab tab in _TabbedEditorUICtl.Tabs)
 					((IVsWindowFrameNotify3)tab).OnShow(fShow);
@@ -1699,7 +1710,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 
 
-	protected virtual void RaiseShow(int fShow)
+	protected virtual void RaiseShow(__FRAMESHOW fShow)
 	{
 	}
 

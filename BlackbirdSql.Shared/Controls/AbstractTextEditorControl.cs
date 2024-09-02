@@ -479,10 +479,6 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 
 	public void GetCoordinatesForPopupMenu(object[] vIn, out int x, out int y)
 	{
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
 		Point mousePosition = MousePosition;
 		if (vIn != null && vIn.Length == 1 && vIn[0] != null)
 		{

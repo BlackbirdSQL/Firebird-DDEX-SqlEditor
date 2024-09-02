@@ -732,10 +732,11 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			return num;
 
 		if (AbstractTabbedEditorPane.CmdMapper.TryGetCommandHandler(_TabbedEditor.GetType(),
-			new GuidId(pguidCmdGroup, nCmdID), out var commandHandler))
+			new (pguidCmdGroup, (int)nCmdID), out IBsCommandHandler commandHandler))
 		{
 			return commandHandler.OnExec(_TabbedEditor, nCmdexecopt, pvaIn, pvaOut);
 		}
+
 		if (_CmdTarget == null || _CmdTarget is AbstractTabbedEditorPane)
 			return 0;
 
@@ -756,7 +757,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		for (int i = 0; i < cCmds; i++)
 		{
 			if (AbstractTabbedEditorPane.CmdMapper.TryGetCommandHandler(_TabbedEditor.GetType(),
-				new GuidId(pguidCmdGroup, prgCmds[i].cmdID), out var commandHandler))
+				new (pguidCmdGroup, (int)prgCmds[i].cmdID), out IBsCommandHandler commandHandler))
 			{
 				return commandHandler.OnQueryStatus(_TabbedEditor, ref prgCmds[i], pCmdText);
 			}

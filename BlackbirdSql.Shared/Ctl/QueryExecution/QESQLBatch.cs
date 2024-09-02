@@ -275,6 +275,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			_NoResultsExpected = _SqlStatement.CurrentActionReader == null || !_SqlStatement.CurrentActionReader.HasRows;
 
 			int statementIndex = _SqlStatement.Index;
+			int statementCount = _SqlStatement.StatementCount;
 			long rowsSelected = _SqlStatement.RowsSelected;
 			long totalRowsSelected = _SqlStatement.TotalRowsSelected;
 			bool isSpecialAction = _SqlStatement.IsSpecialAction;
@@ -311,8 +312,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				//	_SqlStatement.ExecutionType, _SqlStatement.CurrentAction, _NoResultsExpected,
 				//	rowsAffected, totalRowsAffected, isSpecialAction);
 
-				result = await ProcessReaderAsync(conn, dataReader, isSpecialAction, statementIndex, rowsSelected,
-					totalRowsSelected, true, cancelToken);
+				result = await ProcessReaderAsync(conn, dataReader, isSpecialAction, statementIndex,
+					statementCount, rowsSelected, totalRowsSelected, true, cancelToken);
 
 				if (!CheckCancelled(cancelToken) && !isSpecialAction
 					&& _SqlStatement.CurrentAction == EnSqlStatementAction.ProcessQuery)
@@ -547,7 +548,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
 	public async Task<EnScriptExecutionResult> ProcessReaderAsync(IDbConnection conn, IDataReader dataReader,
-		bool isSpecialAction, int statementIndex, long rowsSelected, long totalRowsSelected, bool canComplete, CancellationToken cancelToken)
+		bool isSpecialAction, int statementIndex, int statementCount, long rowsSelected, long totalRowsSelected,
+		bool canComplete, CancellationToken cancelToken)
 	{
 		// Tracer.Trace(GetType(), "ProcessReaderAsync()", "Entry conn.State = {0}", conn.State);
 
@@ -626,7 +628,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 					// ------------------------------------------------------------------------------- //
 					// ************* Output Point (1) - QESQLBatch.ProcessReaderAsync() ************** //
 					// ------------------------------------------------------------------------------- //
-					processingResult = await ProcessResultSetAsync(dataReader, cancelToken);
+					processingResult = await ProcessResultSetAsync(dataReader, statementIndex, statementCount, cancelToken);
 
 					if (processingResult == EnScriptExecutionResult.Cancel)
 					{
@@ -763,7 +765,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 
-	protected async Task<EnScriptExecutionResult> ProcessResultSetAsync(IDataReader dataReader, CancellationToken cancelToken)
+	protected async Task<EnScriptExecutionResult> ProcessResultSetAsync(IDataReader dataReader,
+		int statementIndex, int statementCount, CancellationToken cancelToken)
 	{
 		if (dataReader == null)
 		{
@@ -795,7 +798,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		lock (_LockLocal)
 		{
-			_ActiveResultSet = new QueryResultSet(dataReader);
+			_ActiveResultSet = new QueryResultSet(dataReader, statementIndex, statementCount);
 		}
 
 		try

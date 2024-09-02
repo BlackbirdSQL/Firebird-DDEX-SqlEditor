@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using BlackbirdSql.Sys.Enums;
+using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
@@ -25,6 +26,20 @@ namespace BlackbirdSql;
 // =========================================================================================================
 public abstract class Cmd
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constants - Cmd
+	// ---------------------------------------------------------------------------------
+
+
+	private static readonly char[] _S_InvalidPathChars = ['\a', '\b', '\f', '\n', '\r', '\t', '\v', '\0'];
+
+
+	#endregion Constants
+
+
+
+
 
 	// ---------------------------------------------------------------------------------
 	#region Property Accessors - Cmd
@@ -185,6 +200,33 @@ public abstract class Cmd
 			throw ex;
 		}
 	}
+
+
+	public static string CleanPath(string path)
+	{
+		if (string.IsNullOrWhiteSpace(path))
+			return "";
+
+		path = string.Concat(path.Split(_S_InvalidPathChars));
+
+		return string.Concat(path.Split(Path.GetInvalidPathChars())).Trim();
+	}
+
+
+	public static string GetExtension(string path) =>
+		string.IsNullOrWhiteSpace(path) ? "" : Path.GetExtension(CleanPath(path));
+
+
+	public static string GetDirectoryName(string path) =>
+		string.IsNullOrWhiteSpace(path) ? "" : Path.GetDirectoryName(CleanPath(path));
+
+
+	public static string GetFileName(string path) =>
+		string.IsNullOrWhiteSpace(path) ? "" : Path.GetFileName(CleanPath(path));
+
+	public static string GetFileNameWithoutExtension(string path) =>
+		string.IsNullOrWhiteSpace(path) ? "" : Path.GetFileNameWithoutExtension(CleanPath(path));
+
 
 
 

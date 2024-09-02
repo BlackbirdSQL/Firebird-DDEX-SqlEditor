@@ -11,6 +11,8 @@ using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model.QueryExecution;
 using BlackbirdSql.Shared.Properties;
+using EnvDTE;
+using static System.Net.Mime.MediaTypeNames;
 
 
 
@@ -80,10 +82,15 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		GridColumnInfo gridColumnInfo = new()
 		{
 			ColumnType = 2,
-			ColumnWidth = 6,
+			ColumnWidth = 7,
 			WidthType = EnGridColumnWidthType.InAverageFontChar
 		};
+
 		_GridCtl.AddColumn(gridColumnInfo);
+
+		if (ResultSet.StatementIndex > -1 && ResultSet.StatementCount > 1)
+			_GridCtl.SetHeaderInfo(0, ControlsResources.Grid_StatementLabel.FmtRes(ResultSet.StatementIndex+1, ResultSet.StatementCount), null);
+
 		for (int i = 0; i < _ResultSet.NumberOfDataColumns; i++)
 		{
 			gridColumnInfo = new GridColumnInfo();
@@ -97,11 +104,10 @@ public sealed class ResultSetAndGridContainer : IDisposable
 			}
 
 			_GridCtl.AddColumn(gridColumnInfo);
+
 			string text = _ResultSet.ColumnNames[i];
 			if (text == null || text.Length == 0)
-			{
 				text = ControlsResources.Grid_ResultsNoColumnTitle;
-			}
 
 			_GridCtl.SetHeaderInfo(i + 1, text, null);
 		}

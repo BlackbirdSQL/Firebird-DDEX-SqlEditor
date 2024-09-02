@@ -51,6 +51,9 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 	private IDataReader _DataReader;
 
+	private readonly int _StatementIndex = -1;
+	private readonly int _StatementCount = -1;
+
 	private readonly MoreRowsAvailableEventArgs _CachedMoreInfoEventArgs = new MoreRowsAvailableEventArgs();
 
 	public static string SXmlTypeNameOnServer = "xml";
@@ -68,6 +71,12 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 		}
 	}
+
+
+	public int StatementIndex => _StatementIndex;
+
+	public int StatementCount => _StatementCount;
+
 
 	public int TotalNumberOfColumns
 	{
@@ -193,8 +202,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 		// Tracer.Trace(GetType(), ".ctor");
 	}
 
-	public QueryResultSet(IDataReader reader)
-		: this()
+	public QueryResultSet(IDataReader reader, int statementIndex, int statementCount) : this()
 	{
 		if (reader == null)
 		{
@@ -203,6 +211,8 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 		}
 
 		_DataReader = reader;
+		_StatementIndex = statementIndex;
+		_StatementCount = statementCount;
 	}
 
 	public async Task<bool> InitializeAsync(bool forwardOnly, CancellationToken cancelToken)

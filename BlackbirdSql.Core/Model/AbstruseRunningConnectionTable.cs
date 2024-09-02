@@ -1317,7 +1317,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
 						continue;
 
-					path = xmlNode.InnerText.Trim();
+					path = Cmd.CleanPath(xmlNode.InnerText);
 
 					if ((xmlNode = xmlDatabase.SelectSingleNode("charset")) == null)
 						continue;

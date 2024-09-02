@@ -91,7 +91,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 	// Editor GeneralSettingsModel
 
-	public static bool EditorEnableIntellisense => (bool)GetSetting("EditorGeneralEnableIntellisense", true);
+	public static EnIntellisensePolicy EditorIntellisensePolicy => (EnIntellisensePolicy)GetSetting("EditorGeneralIntellisensePolicy", EnIntellisensePolicy.ActiveOnly);
 	public static bool EditorExecuteQueryOnOpen => (bool)GetSetting("EditorGeneralExecuteQueryOnOpen", true);
 	public static EnLanguageService EditorLanguageService => (EnLanguageService)GetSetting("EditorGeneralLanguageService",
 		EnLanguageService.SSDT);

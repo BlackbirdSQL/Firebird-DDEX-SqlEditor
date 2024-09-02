@@ -28,12 +28,12 @@ namespace BlackbirdSql.Shared.Interfaces
 		event AdjustSelectionForButtonClickEventHandler AdjustSelectionForButtonClickEvent;
 
 
+		bool Focus();
+		void InitialColumnResize();
 		void SetSelectedCellsAndCurrentCell(BlockOfCellsCollection cells, long currentRow, int currentColumn);
-		void SetBkAndForeColors(Color bkColor, Color foreColor);
+		void SetBgAndFgColors(Color bkColor, Color foreColor);
 		void SetSelectedCellColor(Color selectedCellColor);
 		void SetInactiveSelectedCellColor(Color inactiveSelectedCellColor);
 		void SetIncludeHeadersOnDragAndDrop(bool includeHeaders);
-		void InitialColumnResize();
-		bool Focus();
 	}
 }

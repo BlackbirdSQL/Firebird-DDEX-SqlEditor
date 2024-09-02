@@ -19,17 +19,21 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Shared.Controls.Results;
 
 
+// =========================================================================================================
+//
+//										GridResultsGrid Class
+//
+/// <summary>
+/// Grid results control.
+/// </summary>
+// =========================================================================================================
 public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBsStatusBarContributer
 {
 
-	static GridResultsGrid()
-	{
-		s_xmlCellTooltip = "";
-		s_selectAllCellsTooltip = "";
-		s_selectWholeRowTooltip = "";
-		s_selectWholeColumnTooltip = "";
-		PreloadStringsFromResources();
-	}
+	// ------------------------------------------
+	#region Constructors / Destructors - GridResultsGrid
+	// ------------------------------------------
+
 
 	public GridResultsGrid()
 	{
@@ -37,6 +41,557 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 	}
 
 
+
+	static GridResultsGrid()
+	{
+		_S_XmlCellTooltip = "";
+		_S_SelectAllCellsTooltip = "";
+		_S_SelectWholeRowTooltip = "";
+		_S_SelectWholeColumnTooltip = "";
+
+		PreloadStringsFromResources();
+	}
+
+
+
+	protected override void Dispose(bool bDisposing)
+	{
+		base.Dispose(bDisposing);
+		DisposeBrushes();
+	}
+
+
+
+	private void DisposeBrushes()
+	{
+		if (_BgBrush != null)
+		{
+			_BgBrush.Dispose();
+			_BgBrush = null;
+		}
+
+		if (_FgBrush != null)
+		{
+			_FgBrush.Dispose();
+			_FgBrush = null;
+		}
+
+		if (_SelectedCellFocusedBrush != null)
+		{
+			_SelectedCellFocusedBrush.Dispose();
+			_SelectedCellFocusedBrush = null;
+		}
+
+		if (_InactiveSelectedCellBrush != null)
+		{
+			_InactiveSelectedCellBrush.Dispose();
+			_InactiveSelectedCellBrush = null;
+		}
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+	// =========================================================================================================
+	#region Fields - GridResultsGrid
+	// =========================================================================================================
+
+
+	private SolidBrush _BgBrush = new SolidBrush(SystemColors.Window);
+	private readonly StringBuilder _CellMetricsString = new(50);
+	private SolidBrush _FgBrush = new SolidBrush(SystemColors.WindowText);
+	private bool _ForceHeadersOnDragAndDrop;
+	private SolidBrush _InactiveSelectedCellBrush = new SolidBrush(SystemColors.InactiveCaption);
+	private bool _IncludeHeadersOnDragAndDrop;
+	private int _NumberOfCharsToShow = SharedConstants.C_DefaultMaxCharsPerColumnForGrid;
+	private readonly StringBuilder _SbCustomClipboardText = new(SharedConstants.C_DefaultMaxCharsPerColumnForGrid);
+	private SolidBrush _SelectedCellFocusedBrush = new SolidBrush(SystemColors.Highlight);
+
+	private static string _S_SelectAllCellsTooltip;
+	private static string _S_SelectWholeColumnTooltip;
+	private static string _S_SelectWholeRowTooltip;
+	private static string _S_XmlCellTooltip;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - GridResultsGrid
+	// =========================================================================================================
+
+
+	public SolidBrush BgBrush => _BgBrush;
+
+
+	public BlockOfCells CurrentSelectedBlock
+	{
+		get
+		{
+			if (_SelectionMgr.CurrentSelectionBlockIndex < 0)
+			{
+				return new BlockOfCells(0L, 0)
+				{
+					Width = 0,
+					Height = 0L
+				};
+			}
+
+			return _SelectionMgr.SelectedBlocks[_SelectionMgr.CurrentSelectionBlockIndex];
+		}
+	}
+
+
+	public bool ForceHeadersOnDragAndDrop
+	{
+		get { return _ForceHeadersOnDragAndDrop; }
+		set { _ForceHeadersOnDragAndDrop = value; }
+	}
+
+
+	public bool IncludeHeadersOnDragAndDrop
+	{
+		get { return _IncludeHeadersOnDragAndDrop; }
+		set { _IncludeHeadersOnDragAndDrop = value; }
+	}
+
+
+	public int NumberOfCharsToShow
+	{
+		get
+		{
+			return _NumberOfCharsToShow;
+		}
+		set
+		{
+			_NumberOfCharsToShow = Math.Min(value, 43679);
+			foreach (AbstractGridColumn column in m_Columns)
+			{
+				(column as GridHyperlinkColumnWithLimit)?.SetMaxNumOfChars(_NumberOfCharsToShow);
+			}
+		}
+	}
+
+
+
+	// bool IBsGridControl2.ContainsFocus => ContainsFocus;
+
+
+
+	public event AdjustSelectionForButtonClickEventHandler AdjustSelectionForButtonClickEvent;
+
+
+
+	#endregion Property Accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - GridResultsGrid
+	// =========================================================================================================
+
+
+	private static void PreloadStringsFromResources()
+	{
+		_S_XmlCellTooltip = ControlsResources.Grid_XMLCellTooltip;
+		_S_SelectAllCellsTooltip = ControlsResources.Grid_SelectAllCellsTooltip;
+		_S_SelectWholeRowTooltip = ControlsResources.Grid_SelectWholeColumnTooltip;
+		_S_SelectWholeColumnTooltip = ControlsResources.Grid_SelectWholeRowTooltip;
+	}
+
+
+
+	void IBsStatusBarContributer.GetColumnAndRowNumber(out long rowNumber, out long columnNumber)
+	{
+		GetCurrentCell(out rowNumber, out var columnIndex);
+		columnNumber = columnIndex;
+		rowNumber++;
+	}
+
+
+
+	public override Size GetPreferredSize(Size proposedSize)
+	{
+		long rowCount = GridStorage != null ? GridStorage.RowCount : 0;
+
+		if (rowCount == 0L)
+			rowCount = 1L;
+
+		if (rowCount > SharedConstants.C_DefaultInitialMinNumberOfVisibleRows)
+			rowCount = SharedConstants.C_DefaultInitialMinNumberOfVisibleRows;
+
+		if (rowCount <= SharedConstants.C_DefaultInitialMinNumberOfVisibleRows)
+		{
+			bool flag = false;
+			if (IsHandleCreated)
+			{
+				Native.SCROLLINFOEx sCROLLINFO = new (bInitWithAllMask: true);
+				Native.GetScrollInfo(Handle, 0, sCROLLINFO);
+				flag = sCROLLINFO.nMax > sCROLLINFO.nPage;
+			}
+
+			proposedSize.Height = (int)rowCount * (RowHeight + 1) + HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(BorderStyle);
+			if (flag)
+			{
+				proposedSize.Height += SystemInformation.HorizontalScrollBarHeight;
+			}
+		}
+
+		return proposedSize;
+	}
+
+
+
+	protected override GridTextColumn AllocateTextColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
+	{
+		GridHyperlinkColumnWithLimit gridHyperlinkColumnWithLimit = new GridHyperlinkColumnWithLimit(ci, nWidthInPixels, colIndex, isRealHyperlink: false);
+		gridHyperlinkColumnWithLimit.SetMaxNumOfChars(_NumberOfCharsToShow);
+		return gridHyperlinkColumnWithLimit;
+	}
+
+
+
+	protected override GridButtonColumn AllocateButtonColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
+	{
+		GridButtonColumn gridButtonColumn = base.AllocateButtonColumn(ci, nWidthInPixels, colIndex);
+		if (gridButtonColumn != null && colIndex == 0)
+		{
+			gridButtonColumn.IsLineIndexButton = true;
+		}
+
+		return gridButtonColumn;
+	}
+
+
+
+	protected override GridHyperlinkColumn AllocateHyperlinkColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
+	{
+		// Tracer.Trace(GetType(), "GridHyperlinkColumn.AllocateHyperlinkColumn", "ci = {0}, nWidthInPixels = {1}, colIndex = {2}", ci, nWidthInPixels, colIndex);
+		GridHyperlinkColumnWithLimit gridHyperlinkColumnWithLimit = new GridHyperlinkColumnWithLimit(ci, nWidthInPixels, colIndex, isRealHyperlink: true);
+		LinkLabel linkLabel = new LinkLabel();
+		gridHyperlinkColumnWithLimit.TextBrush = new SolidBrush(linkLabel.LinkColor);
+		gridHyperlinkColumnWithLimit.SetMaxNumOfChars(_NumberOfCharsToShow);
+		return gridHyperlinkColumnWithLimit;
+	}
+
+
+
+	protected override void GetCellGDIObjects(AbstractGridColumn gridColumn, long nRow, int nCol, ref SolidBrush bkBrush, ref SolidBrush textBrush)
+	{
+		base.GetCellGDIObjects(gridColumn, nRow, nCol, ref bkBrush, ref textBrush);
+		if (!SystemInformation.HighContrast && nCol > 0)
+		{
+			if (m_Columns[nCol].ColumnType != 5)
+			{
+				textBrush = _FgBrush;
+			}
+
+			if (_SelectionMgr.IsCellSelected(nRow, nCol) && ContainsFocus)
+			{
+				bkBrush = _SelectedCellFocusedBrush;
+			}
+			else if (_SelectionMgr.IsCellSelected(nRow, nCol) && !ContainsFocus)
+			{
+				bkBrush = _InactiveSelectedCellBrush;
+			}
+		}
+	}
+
+
+
+	protected override string GetCellStringForResizeToShowAll(long rowIndex, int storageColIndex, out TextFormatFlags tff)
+	{
+		string cellStringForResizeToShowAll = base.GetCellStringForResizeToShowAll(rowIndex, storageColIndex, out tff);
+		if (cellStringForResizeToShowAll == null)
+		{
+			return cellStringForResizeToShowAll;
+		}
+
+		_CellMetricsString.Length = 0;
+		_CellMetricsString.Append(cellStringForResizeToShowAll);
+		GridHyperlinkColumnWithLimit.AdjustCellString(_CellMetricsString, removeCR: true);
+		if (_CellMetricsString.Length > _NumberOfCharsToShow)
+		{
+			_CellMetricsString.Length = _NumberOfCharsToShow;
+		}
+
+		return _CellMetricsString.ToString().TrimEnd(null);
+	}
+
+
+
+	protected override string GetTextBasedColumnStringForClipboardText(long rowIndex, int colIndex)
+	{
+		_SbCustomClipboardText.Length = 0;
+		_SbCustomClipboardText.Append(m_gridStorage.GetCellDataAsString(rowIndex, m_Columns[colIndex].ColumnIndex));
+		if (m_Columns[colIndex].ColumnType != 5)
+		{
+			GridHyperlinkColumnWithLimit.AdjustCellString(_SbCustomClipboardText, removeCR: true);
+			if (_SbCustomClipboardText.Length > _NumberOfCharsToShow)
+			{
+				_SbCustomClipboardText.Length = _NumberOfCharsToShow;
+			}
+		}
+
+		return _SbCustomClipboardText.ToString();
+	}
+
+
+
+	protected override bool AdjustSelectionForButtonCellMouseClick()
+	{
+		if (AdjustSelectionForButtonClickEvent != null)
+		{
+			AdjustSelectionForButtonClickEvent(this, new(m_captureTracker.RowIndex, m_captureTracker.ColumnIndex));
+			return true;
+		}
+
+		return base.AdjustSelectionForButtonCellMouseClick();
+	}
+
+
+
+	public void SetSelectedCellsAndCurrentCell(BlockOfCellsCollection cells, long currentRow, int currentColumn)
+	{
+		SelectedCellsInternal(cells, bSet: true);
+		_SelectionMgr.SetCurrentCell(currentRow, currentColumn);
+	}
+
+
+
+	public void HandleMouseWheelDirectly(IntPtr wParam, IntPtr lParam)
+	{
+		Point p = new Point((short)(int)lParam, (int)lParam >> 16);
+		p = PointToClient(p);
+		OnMouseWheel(new MouseEventArgs(MouseButtons.None, 0, p.X, p.Y, (int)wParam >> 16));
+	}
+
+
+
+	public void SetBgAndFgColors(Color bkColor, Color foreColor)
+	{
+		_BgBrush?.Dispose();
+
+		_FgBrush?.Dispose();
+
+		_BgBrush = new SolidBrush(bkColor);
+		_FgBrush = new SolidBrush(foreColor);
+		BackColor = bkColor;
+		foreach (AbstractGridColumn column in m_Columns)
+		{
+			(column as GridHyperlinkColumnWithLimit)?.SetNewTextBrush(_FgBrush);
+		}
+
+		if (IsHandleCreated)
+		{
+			Invalidate();
+		}
+	}
+
+
+
+	public void SetSelectedCellColor(Color selectedCellFocusedColor)
+	{
+		_SelectedCellFocusedBrush?.Dispose();
+
+		_SelectedCellFocusedBrush = new SolidBrush(selectedCellFocusedColor);
+		if (IsHandleCreated)
+		{
+			Invalidate();
+		}
+	}
+
+
+
+	public void SetInactiveSelectedCellColor(Color inactiveSelectedCellFocusedColor)
+	{
+		_InactiveSelectedCellBrush?.Dispose();
+
+		_InactiveSelectedCellBrush = new SolidBrush(inactiveSelectedCellFocusedColor);
+		if (IsHandleCreated)
+		{
+			Invalidate();
+		}
+	}
+
+
+
+	public void SetIncludeHeadersOnDragAndDrop(bool includeHeaders)
+	{
+		_IncludeHeadersOnDragAndDrop = includeHeaders;
+	}
+
+
+
+
+
+
+	public void InitialColumnResize()
+	{
+		if (InvokeRequired)
+		{
+			Invoke(new MethodInvoker(InitialColumnResizeInternal));
+		}
+		else
+		{
+			InitialColumnResizeInternal();
+		}
+	}
+
+
+
+	private void InitialColumnResizeInternal()
+	{
+		if (Visible)
+			return;
+
+		try
+		{
+			if (!IsHandleCreated)
+			{
+				CreateHandle();
+			}
+
+			int numberOfCharsToShow = NumberOfCharsToShow;
+			NumberOfCharsToShow = SharedConstants.C_DefaultInitialMaxCharsPerColumnForGrid;
+			for (int i = 1; i < ColumnsNumber; i++)
+			{
+				ResizeColumnToShowAllContents(i);
+			}
+
+			NumberOfCharsToShow = numberOfCharsToShow;
+			if (Parent != null && GetPreferredSize(Size).Height != Height)
+			{
+				(Parent.Parent as MultiControlPanel)?.ResizeControlsToPreferredHeight(limitMaxControlHeightToClientArea: false);
+			}
+
+			Show();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+	}
+
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - GridResultsGrid
+	// =========================================================================================================
+
+
+	protected override bool OnBeforeGetClipboardTextForCells(StringBuilder clipboardText, long startRow, long endRow, int startCol, int endCol)
+	{
+		if (_ForceHeadersOnDragAndDrop || _IncludeHeadersOnDragAndDrop && startCol >= 0 && startCol < endCol)
+		{
+			for (int i = startCol; i <= endCol; i++)
+			{
+				if (i == startCol)
+				{
+					clipboardText.Append(m_gridHeader[i].Text);
+				}
+				else
+				{
+					clipboardText.AppendFormat("{0}{1}", ColumnsSeparator, m_gridHeader[i].Text);
+				}
+			}
+
+			clipboardText.Append(NewLineCharacters);
+		}
+
+		return false;
+	}
+
+
+
+	protected override void OnKeyPressedOnCell(long nCurRow, int nCurCol, Keys key, Keys mod)
+	{
+		base.OnKeyPressedOnCell(nCurRow, nCurCol, key, mod);
+		if (mod == Keys.Control && key == Keys.C)
+		{
+			Clipboard.SetDataObject(GetDataObject(bOnlyCurrentSelBlock: true));
+		}
+	}
+
+
+
+	protected override void OnMouseButtonDoubleClicked(EnHitTestResult htArea, long rowIndex, int colIndex, Rectangle cellRect, MouseButtons btn, EnGridButtonArea headerArea)
+	{
+		// Tracer.Trace(GetType(), "SqlManagerUIDlgGrid.OnMouseButtonDoubleClicked", "", null);
+		if (m_gridStorage != null && htArea == EnHitTestResult.ColumnResize && btn == MouseButtons.Left && (m_Columns[colIndex].ColumnType == 2 || m_Columns[colIndex].ColumnType == 1))
+		{
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "GridResultsGrid.OnMouseButtonDoubleClicked", "auto resizing column {0}", colIndex);
+			ResizeColumnToShowAllContentsInternal(colIndex);
+		}
+	}
+
+
+
+	protected override void OnMouseDown(MouseEventArgs mevent)
+	{
+		if (mevent.Button == MouseButtons.Right && !ContainsFocus)
+		{
+			Focus();
+		}
+
+		base.OnMouseDown(mevent);
+	}
+
+
+
+	protected override bool OnTooltipDataNeeded(EnHitTestResult ht, long rowNumber, int colNumber, ref string toolTipText)
+	{
+		switch (ht)
+		{
+			case EnHitTestResult.HyperlinkCell:
+				toolTipText = _S_XmlCellTooltip;
+				return true;
+			case EnHitTestResult.HeaderButton:
+				if (colNumber == 0)
+				{
+					toolTipText = _S_SelectAllCellsTooltip;
+					return true;
+				}
+
+				toolTipText = _S_SelectWholeRowTooltip;
+				return true;
+			case EnHitTestResult.ButtonCell:
+				if (colNumber == 0)
+				{
+					toolTipText = _S_SelectWholeColumnTooltip;
+					return true;
+				}
+
+				break;
+		}
+
+		return false;
+	}
+
+
+	#endregion Event Handling
+
+
+
+
+
+	// =========================================================================================================
+	#region Sub-Classes - GridResultsGrid
+	// =========================================================================================================
 
 
 	private class GridHyperlinkColumnWithLimit : GridHyperlinkColumn
@@ -227,457 +782,6 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 		}
 	}
 
-	private SolidBrush m_bkBrush = new SolidBrush(SystemColors.Window);
 
-	private SolidBrush m_foreBrush = new SolidBrush(SystemColors.WindowText);
-
-	private SolidBrush _selectedCellFocusedBrush = new SolidBrush(SystemColors.Highlight);
-
-	private SolidBrush _inactiveSelectedCellBrush = new SolidBrush(SystemColors.InactiveCaption);
-
-	private readonly StringBuilder cellStringForMeasue = new(50);
-
-	private static string s_xmlCellTooltip;
-
-	private static string s_selectAllCellsTooltip;
-
-	private static string s_selectWholeRowTooltip;
-
-	private static string s_selectWholeColumnTooltip;
-
-	private int _NumberOfCharsToShow = SharedConstants.C_DefaultMaxCharsPerColumnForGrid;
-
-	private readonly StringBuilder m_sbCustomClipboardText = new(SharedConstants.C_DefaultMaxCharsPerColumnForGrid);
-
-	private bool m_includeColumnHeadersForDnD;
-
-	private bool m_forceHeaders;
-
-	public bool IncludeHeadersOnDragAndDrop
-	{
-		get
-		{
-			return m_includeColumnHeadersForDnD;
-		}
-		set
-		{
-			m_includeColumnHeadersForDnD = value;
-		}
-	}
-
-	public bool ForceHeadersOnDragAndDrop
-	{
-		get
-		{
-			return m_forceHeaders;
-		}
-		set
-		{
-			m_forceHeaders = value;
-		}
-	}
-
-	public int NumberOfCharsToShow
-	{
-		get
-		{
-			return _NumberOfCharsToShow;
-		}
-		set
-		{
-			_NumberOfCharsToShow = Math.Min(value, 43679);
-			foreach (AbstractGridColumn column in m_Columns)
-			{
-				(column as GridHyperlinkColumnWithLimit)?.SetMaxNumOfChars(_NumberOfCharsToShow);
-			}
-		}
-	}
-
-	public BlockOfCells CurrentSelectedBlock
-	{
-		get
-		{
-			if (_SelectionMgr.CurrentSelectionBlockIndex < 0)
-			{
-				return new BlockOfCells(0L, 0)
-				{
-					Width = 0,
-					Height = 0L
-				};
-			}
-
-			return _SelectionMgr.SelectedBlocks[_SelectionMgr.CurrentSelectionBlockIndex];
-		}
-	}
-
-	public SolidBrush BackGroundBrush => m_bkBrush;
-
-	public event AdjustSelectionForButtonClickEventHandler AdjustSelectionForButtonClickEvent;
-
-	private static void PreloadStringsFromResources()
-	{
-		s_xmlCellTooltip = ControlsResources.Grid_XMLCellTooltip;
-		s_selectAllCellsTooltip = ControlsResources.Grid_SelectAllCellsTooltip;
-		s_selectWholeRowTooltip = ControlsResources.Grid_SelectWholeColumnTooltip;
-		s_selectWholeColumnTooltip = ControlsResources.Grid_SelectWholeRowTooltip;
-	}
-
-
-	void IBsStatusBarContributer.GetColumnAndRowNumber(out long rowNumber, out long columnNumber)
-	{
-		GetCurrentCell(out rowNumber, out var columnIndex);
-		columnNumber = columnIndex;
-		rowNumber++;
-	}
-
-	public override Size GetPreferredSize(Size proposedSize)
-	{
-		long rowCount = GridStorage != null ? GridStorage.RowCount : 0;
-
-		if (rowCount == 0L)
-			rowCount = 1L;
-
-		if (rowCount > SharedConstants.C_DefaultInitialMinNumberOfVisibleRows)
-			rowCount = SharedConstants.C_DefaultInitialMinNumberOfVisibleRows;
-
-		if (rowCount <= SharedConstants.C_DefaultInitialMinNumberOfVisibleRows)
-		{
-			bool flag = false;
-			if (IsHandleCreated)
-			{
-				Native.SCROLLINFOEx sCROLLINFO = new (bInitWithAllMask: true);
-				Native.GetScrollInfo(Handle, 0, sCROLLINFO);
-				flag = sCROLLINFO.nMax > sCROLLINFO.nPage;
-			}
-
-			proposedSize.Height = (int)rowCount * (RowHeight + 1) + HeaderHeight + 1 + Cmd.GetExtraSizeForBorderStyle(BorderStyle);
-			if (flag)
-			{
-				proposedSize.Height += SystemInformation.HorizontalScrollBarHeight;
-			}
-		}
-
-		return proposedSize;
-	}
-
-	protected override GridTextColumn AllocateTextColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
-	{
-		GridHyperlinkColumnWithLimit gridHyperlinkColumnWithLimit = new GridHyperlinkColumnWithLimit(ci, nWidthInPixels, colIndex, isRealHyperlink: false);
-		gridHyperlinkColumnWithLimit.SetMaxNumOfChars(_NumberOfCharsToShow);
-		return gridHyperlinkColumnWithLimit;
-	}
-
-	protected override GridButtonColumn AllocateButtonColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
-	{
-		GridButtonColumn gridButtonColumn = base.AllocateButtonColumn(ci, nWidthInPixels, colIndex);
-		if (gridButtonColumn != null && colIndex == 0)
-		{
-			gridButtonColumn.IsLineIndexButton = true;
-		}
-
-		return gridButtonColumn;
-	}
-
-	protected override GridHyperlinkColumn AllocateHyperlinkColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
-	{
-		// Tracer.Trace(GetType(), "GridHyperlinkColumn.AllocateHyperlinkColumn", "ci = {0}, nWidthInPixels = {1}, colIndex = {2}", ci, nWidthInPixels, colIndex);
-		GridHyperlinkColumnWithLimit gridHyperlinkColumnWithLimit = new GridHyperlinkColumnWithLimit(ci, nWidthInPixels, colIndex, isRealHyperlink: true);
-		LinkLabel linkLabel = new LinkLabel();
-		gridHyperlinkColumnWithLimit.TextBrush = new SolidBrush(linkLabel.LinkColor);
-		gridHyperlinkColumnWithLimit.SetMaxNumOfChars(_NumberOfCharsToShow);
-		return gridHyperlinkColumnWithLimit;
-	}
-
-	protected override bool OnTooltipDataNeeded(EnHitTestResult ht, long rowNumber, int colNumber, ref string toolTipText)
-	{
-		switch (ht)
-		{
-			case EnHitTestResult.HyperlinkCell:
-				toolTipText = s_xmlCellTooltip;
-				return true;
-			case EnHitTestResult.HeaderButton:
-				if (colNumber == 0)
-				{
-					toolTipText = s_selectAllCellsTooltip;
-					return true;
-				}
-
-				toolTipText = s_selectWholeRowTooltip;
-				return true;
-			case EnHitTestResult.ButtonCell:
-				if (colNumber == 0)
-				{
-					toolTipText = s_selectWholeColumnTooltip;
-					return true;
-				}
-
-				break;
-		}
-
-		return false;
-	}
-
-	protected override void Dispose(bool bDisposing)
-	{
-		base.Dispose(bDisposing);
-		DisposeBrushes();
-	}
-
-	protected override void GetCellGDIObjects(AbstractGridColumn gridColumn, long nRow, int nCol, ref SolidBrush bkBrush, ref SolidBrush textBrush)
-	{
-		base.GetCellGDIObjects(gridColumn, nRow, nCol, ref bkBrush, ref textBrush);
-		if (!SystemInformation.HighContrast && nCol > 0)
-		{
-			if (m_Columns[nCol].ColumnType != 5)
-			{
-				textBrush = m_foreBrush;
-			}
-
-			if (_SelectionMgr.IsCellSelected(nRow, nCol) && ContainsFocus)
-			{
-				bkBrush = _selectedCellFocusedBrush;
-			}
-			else if (_SelectionMgr.IsCellSelected(nRow, nCol) && !ContainsFocus)
-			{
-				bkBrush = _inactiveSelectedCellBrush;
-			}
-		}
-	}
-
-	protected override void OnMouseDown(MouseEventArgs mevent)
-	{
-		if (mevent.Button == MouseButtons.Right && !ContainsFocus)
-		{
-			Focus();
-		}
-
-		base.OnMouseDown(mevent);
-	}
-
-	protected override string GetCellStringForResizeToShowAll(long rowIndex, int storageColIndex, out TextFormatFlags tff)
-	{
-		string cellStringForResizeToShowAll = base.GetCellStringForResizeToShowAll(rowIndex, storageColIndex, out tff);
-		if (cellStringForResizeToShowAll == null)
-		{
-			return cellStringForResizeToShowAll;
-		}
-
-		cellStringForMeasue.Length = 0;
-		cellStringForMeasue.Append(cellStringForResizeToShowAll);
-		GridHyperlinkColumnWithLimit.AdjustCellString(cellStringForMeasue, removeCR: true);
-		if (cellStringForMeasue.Length > _NumberOfCharsToShow)
-		{
-			cellStringForMeasue.Length = _NumberOfCharsToShow;
-		}
-
-		return cellStringForMeasue.ToString().TrimEnd(null);
-	}
-
-	protected override void OnMouseButtonDoubleClicked(EnHitTestResult htArea, long rowIndex, int colIndex, Rectangle cellRect, MouseButtons btn, EnGridButtonArea headerArea)
-	{
-		// Tracer.Trace(GetType(), "SqlManagerUIDlgGrid.OnMouseButtonDoubleClicked", "", null);
-		if (m_gridStorage != null && htArea == EnHitTestResult.ColumnResize && btn == MouseButtons.Left && (m_Columns[colIndex].ColumnType == 2 || m_Columns[colIndex].ColumnType == 1))
-		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "GridResultsGrid.OnMouseButtonDoubleClicked", "auto resizing column {0}", colIndex);
-			ResizeColumnToShowAllContentsInternal(colIndex);
-		}
-	}
-
-	protected override void OnKeyPressedOnCell(long nCurRow, int nCurCol, Keys key, Keys mod)
-	{
-		base.OnKeyPressedOnCell(nCurRow, nCurCol, key, mod);
-		if (mod == Keys.Control && key == Keys.C)
-		{
-			Clipboard.SetDataObject(GetDataObject(bOnlyCurrentSelBlock: true));
-		}
-	}
-
-	protected override string GetTextBasedColumnStringForClipboardText(long rowIndex, int colIndex)
-	{
-		m_sbCustomClipboardText.Length = 0;
-		m_sbCustomClipboardText.Append(m_gridStorage.GetCellDataAsString(rowIndex, m_Columns[colIndex].ColumnIndex));
-		if (m_Columns[colIndex].ColumnType != 5)
-		{
-			GridHyperlinkColumnWithLimit.AdjustCellString(m_sbCustomClipboardText, removeCR: true);
-			if (m_sbCustomClipboardText.Length > _NumberOfCharsToShow)
-			{
-				m_sbCustomClipboardText.Length = _NumberOfCharsToShow;
-			}
-		}
-
-		return m_sbCustomClipboardText.ToString();
-	}
-
-	protected override bool OnBeforeGetClipboardTextForCells(StringBuilder clipboardText, long startRow, long endRow, int startCol, int endCol)
-	{
-		if (m_forceHeaders || m_includeColumnHeadersForDnD && startCol >= 0 && startCol < endCol)
-		{
-			for (int i = startCol; i <= endCol; i++)
-			{
-				if (i == startCol)
-				{
-					clipboardText.Append(m_gridHeader[i].Text);
-				}
-				else
-				{
-					clipboardText.AppendFormat("{0}{1}", ColumnsSeparator, m_gridHeader[i].Text);
-				}
-			}
-
-			clipboardText.Append(NewLineCharacters);
-		}
-
-		return false;
-	}
-
-	protected override bool AdjustSelectionForButtonCellMouseClick()
-	{
-		if (AdjustSelectionForButtonClickEvent != null)
-		{
-			AdjustSelectionForButtonClickEvent(this, new(m_captureTracker.RowIndex, m_captureTracker.ColumnIndex));
-			return true;
-		}
-
-		return base.AdjustSelectionForButtonCellMouseClick();
-	}
-
-	public void SetSelectedCellsAndCurrentCell(BlockOfCellsCollection cells, long currentRow, int currentColumn)
-	{
-		SelectedCellsInternal(cells, bSet: true);
-		_SelectionMgr.SetCurrentCell(currentRow, currentColumn);
-	}
-
-	public void HandleMouseWheelDirectly(IntPtr wParam, IntPtr lParam)
-	{
-		Point p = new Point((short)(int)lParam, (int)lParam >> 16);
-		p = PointToClient(p);
-		OnMouseWheel(new MouseEventArgs(MouseButtons.None, 0, p.X, p.Y, (int)wParam >> 16));
-	}
-
-	public void SetBkAndForeColors(Color bkColor, Color foreColor)
-	{
-		m_bkBrush?.Dispose();
-
-		m_foreBrush?.Dispose();
-
-		m_bkBrush = new SolidBrush(bkColor);
-		m_foreBrush = new SolidBrush(foreColor);
-		BackColor = bkColor;
-		foreach (AbstractGridColumn column in m_Columns)
-		{
-			(column as GridHyperlinkColumnWithLimit)?.SetNewTextBrush(m_foreBrush);
-		}
-
-		if (IsHandleCreated)
-		{
-			Invalidate();
-		}
-	}
-
-	public void SetSelectedCellColor(Color selectedCellFocusedColor)
-	{
-		_selectedCellFocusedBrush?.Dispose();
-
-		_selectedCellFocusedBrush = new SolidBrush(selectedCellFocusedColor);
-		if (IsHandleCreated)
-		{
-			Invalidate();
-		}
-	}
-
-	public void SetInactiveSelectedCellColor(Color inactiveSelectedCellFocusedColor)
-	{
-		_inactiveSelectedCellBrush?.Dispose();
-
-		_inactiveSelectedCellBrush = new SolidBrush(inactiveSelectedCellFocusedColor);
-		if (IsHandleCreated)
-		{
-			Invalidate();
-		}
-	}
-
-	public void SetIncludeHeadersOnDragAndDrop(bool includeHeaders)
-	{
-		m_includeColumnHeadersForDnD = includeHeaders;
-	}
-
-	private void DisposeBrushes()
-	{
-		if (m_bkBrush != null)
-		{
-			m_bkBrush.Dispose();
-			m_bkBrush = null;
-		}
-
-		if (m_foreBrush != null)
-		{
-			m_foreBrush.Dispose();
-			m_foreBrush = null;
-		}
-
-		if (_selectedCellFocusedBrush != null)
-		{
-			_selectedCellFocusedBrush.Dispose();
-			_selectedCellFocusedBrush = null;
-		}
-
-		if (_inactiveSelectedCellBrush != null)
-		{
-			_inactiveSelectedCellBrush.Dispose();
-			_inactiveSelectedCellBrush = null;
-		}
-	}
-
-	public void InitialColumnResize()
-	{
-		if (InvokeRequired)
-		{
-			Invoke(new MethodInvoker(InitialColumnResizeInternal));
-		}
-		else
-		{
-			InitialColumnResizeInternal();
-		}
-	}
-
-	private void InitialColumnResizeInternal()
-	{
-		if (Visible)
-			return;
-
-		try
-		{
-			if (!IsHandleCreated)
-			{
-				CreateHandle();
-			}
-
-			int numberOfCharsToShow = NumberOfCharsToShow;
-			NumberOfCharsToShow = SharedConstants.C_DefaultInitialMaxCharsPerColumnForGrid;
-			for (int i = 1; i < ColumnsNumber; i++)
-			{
-				ResizeColumnToShowAllContents(i);
-			}
-
-			NumberOfCharsToShow = numberOfCharsToShow;
-			if (Parent != null && GetPreferredSize(Size).Height != Height)
-			{
-				(Parent.Parent as MultiControlPanel)?.ResizeControlsToPreferredHeight(limitMaxControlHeightToClientArea: false);
-			}
-
-			Show();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-	}
-
-	bool IBsGridControl2.Focus()
-	{
-		return Focus();
-	}
-
-	bool IBsGridControl2.ContainsFocus => ContainsFocus;
+	#endregion Sub-Classes
 }

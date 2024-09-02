@@ -10,6 +10,9 @@ using BlackbirdSql.Core;
 using BlackbirdSql.LanguageExtension.Ctl.ComponentModel;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
 using BlackbirdSql.LanguageExtension.Services;
+using BlackbirdSql.Shared.Enums;
+using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -58,7 +61,7 @@ namespace BlackbirdSql.LanguageExtension;
 // =========================================================================================================
 #region							LanguageExtensionPackage Class Declaration
 // =========================================================================================================
-public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleComponent
+public abstract class LanguageExtensionPackage : AbstractCorePackage, IBsLanguagePackage, IOleComponent
 {
 
 	// ----------------------------------------------------------
@@ -132,7 +135,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 
 	private uint _ComponentID;
-	private LsbLanguageService _LanguageService;
+	private LsbLanguageService _LsbLanguageSvc;
 	private LsbLanguagePreferences _UserPreferences = null;
 
 
@@ -155,18 +158,24 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 
 
-	public LsbLanguageService LanguageService
+	public IBsLanguageService LanguageSvc => LsbLanguageSvc;
+
+
+	public LsbLanguageService LsbLanguageSvc
 	{
 		get
 		{
-			if (_LanguageService == null)
+			if (_LsbLanguageSvc == null)
 			{
+				if (PersistentSettings.EditorLanguageService != EnLanguageService.FbSql)
+					return null;
+
 				ThreadHelper.Generic.Invoke(delegate
 				{
 					GetService(typeof(LsbLanguageService));
 				});
 			}
-			return _LanguageService;
+			return _LsbLanguageSvc;
 		}
 	}
 
@@ -255,11 +264,14 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 		if (serviceType == typeof(LanguageService) || serviceType == typeof(LsbLanguageService))
 		{
-			if (_LanguageService != null)
-				return _LanguageService as TInterface;
+			if (_LsbLanguageSvc != null)
+				return _LsbLanguageSvc as TInterface;
 
-			_LanguageService = new LsbLanguageService(this);
-			_LanguageService.SetSite(this);
+			if (PersistentSettings.EditorLanguageService != EnLanguageService.FbSql)
+				return null;
+
+			_LsbLanguageSvc = new LsbLanguageService(this);
+			_LsbLanguageSvc.SetSite(this);
 
 
 			if (_ComponentID == 0 && await GetServiceAsync(typeof(SOleComponentManager)) is IOleComponentManager oleComponentManager)
@@ -272,7 +284,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 				oleComponentManager.FRegisterComponent(this, array, out _ComponentID);
 			}
 
-			return _LanguageService as TInterface;
+			return _LsbLanguageSvc as TInterface;
 		}
 
 
@@ -345,7 +357,7 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IOleCompon
 
 	public int FDoIdle(uint grfidlef)
 	{
-		Instance.LanguageService?.OnIdle((grfidlef & 1) != 0);
+		Instance.LsbLanguageSvc?.OnIdle((grfidlef & 1) != 0);
 		return 0;
 	}
 

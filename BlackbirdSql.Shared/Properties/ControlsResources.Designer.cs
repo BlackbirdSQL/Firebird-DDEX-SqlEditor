@@ -1380,6 +1380,15 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}/{1}.
+        /// </summary>
+        internal static string Grid_StatementLabel {
+            get {
+                return ResourceManager.GetString("Grid_StatementLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} - Click to follow.
         ///Click and hold to select this cell..
         /// </summary>

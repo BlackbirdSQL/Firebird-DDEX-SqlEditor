@@ -1591,25 +1591,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
-	{
-		if (_OnAfterDocumentWindowHideEvent == null)
-			return VSConstants.S_OK;
-
-		// Fire and wait.
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			return ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-				return _OnAfterDocumentWindowHideEvent(docCookie, pFrame);
-			});
-		}
-
-		return _OnAfterDocumentWindowHideEvent(docCookie, pFrame); 
-	}
+	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame) =>
+		_OnAfterDocumentWindowHideEvent?.Invoke(docCookie, pFrame) ?? VSConstants.E_NOTIMPL;
 
 
 

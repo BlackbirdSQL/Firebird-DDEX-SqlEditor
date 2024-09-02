@@ -378,8 +378,16 @@ public sealed class RdtManager : AbstractRdtManager
 
 		foreach (KeyValuePair<string, IBsCsb> pair in _InflightMonikerCsbTable)
 		{
-			if (Path.GetFileName(pair.Key) == filename)
-				return true;
+			try
+			{
+				if (Cmd.GetFileName(pair.Key) == filename)
+					return true;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex, $"Inflight moniker: {pair.Key}.");
+				throw;
+			}
 		}
 
 		return false;

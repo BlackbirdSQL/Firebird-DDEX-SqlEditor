@@ -50,27 +50,12 @@ public sealed class QueryManager : IBsQueryManager
 	/// </summary>
 	public QueryManager(ConnectionStrategy strategy, uint docCookie)
 	{
-		_SqlExec = new QESQLExec(this);
-
 		_Strategy = strategy;
-		_Strategy.ConnectionChangedEvent += OnConnectionChanged;
-		_Strategy.ConnectionStateChangedEvent += OnConnectionStateChanged;
-		_Strategy.DatabaseChangedEvent += OnDatabaseChanged;
-
 		_DocCookie = docCookie;
 
-		/*
-		SetStateForConnection(_Strategy.MdlCsb, DataConnection);
+		_SqlExec = new QESQLExec(this);
 
-		bool open = DataConnectionState == ConnectionState.Open;
-
-		EnQueryState state = open
-			? EnQueryState.Connected : EnQueryState.Connection;
-
-		RaiseStateChanged(_StateFlags, state, open, prevState, prevPrevState);
-		*/
-
-		RegisterSqlExecWithEvenHandlers();
+		RegisterEvenHandlers();
 	}
 
 
@@ -93,34 +78,24 @@ public sealed class QueryManager : IBsQueryManager
 			BatchExecutionCompletedEventAsync = null;
 			ErrorMessageEvent = null;
 			StatusChangedEvent = null;
+
 			try
 			{
 				if (IsExecuting)
-				{
 					Cancel(true);
-				}
 			}
 			catch (Exception ex)
 			{
 				Diag.Dug(ex);
 			}
 
-			if (_SqlExec != null)
-			{
-				UnRegisterSqlExecWithEventHandlers();
-				_SqlExec.Dispose();
-				_SqlExec = null;
-			}
+			UnRegisterEventHandlers();
 
-			if (_Strategy != null)
-			{
-				_Strategy.ConnectionChangedEvent -= OnConnectionChanged;
-				_Strategy.ConnectionStateChangedEvent -= OnConnectionStateChanged;
-				_Strategy.DatabaseChangedEvent -= OnDatabaseChanged;
+			_SqlExec.Dispose();
+			_SqlExec = null;
 
-				_Strategy.Dispose();
-				_Strategy = null;
-			}
+			_Strategy.Dispose();
+			_Strategy = null;
 		}
 	}
 
@@ -240,11 +215,17 @@ public sealed class QueryManager : IBsQueryManager
 		}
 	}
 
+
 	public string BatchSeparator => LiveSettings.EditorExecutionBatchSeparator;
 
 	public long ExecutionTimeout => LiveSettings.EditorExecutionTimeout * 60000L;
 
 	public bool HadTransactions => _HadTransactions;
+
+
+	private	bool HasActiveActions => _StateStack.Count > 0
+		&& _StateStack[^1] > EnQueryState.ActionMarker;
+
 
 	public bool HasTransactions => Strategy?.HasTransactions ?? false;
 
@@ -399,9 +380,11 @@ public sealed class QueryManager : IBsQueryManager
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// [Launch async]: Executes a query.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public bool AsyncExecute(IBsTextSpan textSpan, EnSqlExecutionType executionType)
 	{
 		// Tracer.Trace(GetType(), "AsyncExecute()", " Enter. : ExecutionOptions.EstimatedPlanOnly: " + LiveSettings.EstimatedPlanOnly);
@@ -417,11 +400,11 @@ public sealed class QueryManager : IBsQueryManager
 
 		if (textSpan == null || string.IsNullOrWhiteSpace(textSpan.Text))
 		{
-			SetStateValue(true, EnQueryState.Faulted);
-			SetStateValue(true, EnQueryState.Prompting);
+			SetStateValue(EnQueryState.Faulted, true);
+			SetStateValue(EnQueryState.Prompting, true);
 			ArgumentException ex = new("Query is empty");
 			MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			SetStateValue(false, EnQueryState.Prompting);
+			SetStateValue(EnQueryState.Prompting, false);
 
 			EventExecutingExit();
 			return false;
@@ -479,7 +462,7 @@ public sealed class QueryManager : IBsQueryManager
 
 			IDbConnection existingConnection = connection;
 
-			SetStateValue(true, EnQueryState.Connecting);
+			SetStateValue(EnQueryState.Connecting, true);
 			await RdtManager.InvalidateToolbarAsync(DocCookie);
 
 			try
@@ -492,9 +475,9 @@ public sealed class QueryManager : IBsQueryManager
 
 				try
 				{
-					SetStateValue(true, EnQueryState.Cancelling);
-					SetStateValue(true, EnQueryState.Faulted);
-					SetStateValue(true, EnQueryState.Prompting);
+					SetStateValue(EnQueryState.Cancelling, true);
+					SetStateValue(EnQueryState.Faulted, true);
+					SetStateValue(EnQueryState.Prompting, true);
 
 					await RdtManager.InvalidateToolbarAsync(DocCookie);
 					await RdtManager.ShowWindowFrameAsync(DocCookie);
@@ -512,8 +495,8 @@ public sealed class QueryManager : IBsQueryManager
 				}
 				finally
 				{
-					SetStateValue(false, EnQueryState.Prompting);
-					SetStateValue(false, EnQueryState.Connecting);
+					SetStateValue(EnQueryState.Prompting, false);
+					SetStateValue(EnQueryState.Connecting, false);
 
 					await RaiseExecutionCompletedAsync(EnScriptExecutionResult.Failure, executionType,
 						LiveSettings.EditorResultsOutputMode, false, LiveSettings.WithClientStats,
@@ -526,8 +509,8 @@ public sealed class QueryManager : IBsQueryManager
 
 			if (connection == null || cancelToken.Cancelled())
 			{
-				SetStateValue(false, EnQueryState.Connecting);
-				SetStateValue(true, EnQueryState.Cancelling);
+				SetStateValue(EnQueryState.Connecting, false);
+				SetStateValue(EnQueryState.Cancelling, true);
 
 				await RaiseExecutionStartedAsync(textSpan.Text, executionType, false, connection,
 					cancelToken, syncToken);
@@ -541,7 +524,7 @@ public sealed class QueryManager : IBsQueryManager
 			// If it's the same connection, IsConnecting will not be reset, so we have to do it.
 
 			if (existingConnection != null && ReferenceEquals(existingConnection, connection))
-				SetStateValue(false, EnQueryState.Connecting);
+				SetStateValue(EnQueryState.Connecting, false);
 		}
 
 		_HadTransactions = LiveTransactions;
@@ -613,7 +596,7 @@ public sealed class QueryManager : IBsQueryManager
 
 		// ExecutionCompletedEventHandler executionCompletedHandler = null;
 
-		SetStateValue(true, EnQueryState.Cancelling);
+		SetStateValue(EnQueryState.Cancelling, true);
 
 		Task<bool> task = null;
 
@@ -728,7 +711,7 @@ public sealed class QueryManager : IBsQueryManager
 		if (!IsConnected || !EventLockEnter())
 			return false;
 
-		SetStateValue(true, EnQueryState.Connecting);
+		SetStateValue(EnQueryState.Connecting, true);
 		bool result = false;
 
 		try
@@ -737,7 +720,7 @@ public sealed class QueryManager : IBsQueryManager
 		}
 		finally
 		{
-			SetStateValue(false, EnQueryState.Connecting);
+			SetStateValue(EnQueryState.Connecting, false);
 			EventLockExit();
 		}
 
@@ -779,7 +762,7 @@ public sealed class QueryManager : IBsQueryManager
 		if (!EventLockEnter())
 			return false;
 
-		SetStateValue(true, EnQueryState.Connecting);
+		SetStateValue(EnQueryState.Connecting, true);
 
 		IDbConnection connection = null;
 
@@ -794,8 +777,8 @@ public sealed class QueryManager : IBsQueryManager
 				}
 				catch (Exception ex)
 				{
-					SetStateValue(true, EnQueryState.Faulted);
-					SetStateValue(true, EnQueryState.Prompting);
+					SetStateValue(EnQueryState.Faulted, true);
+					SetStateValue(EnQueryState.Prompting, true);
 					await RdtManager.ShowWindowFrameAsync(DocCookie);
 
 					string server = Strategy?.MdlCsb?.DataSource;
@@ -803,12 +786,12 @@ public sealed class QueryManager : IBsQueryManager
 						ex.SetServer(server);
 
 					MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-					SetStateValue(false, EnQueryState.Prompting);
+					SetStateValue(EnQueryState.Prompting, false);
 				}
 				finally
 				{
 					if (connection == null)
-						SetStateValue(false, EnQueryState.Connecting);
+						SetStateValue(EnQueryState.Connecting, false);
 
 					EventLockExit();
 				}
@@ -832,7 +815,7 @@ public sealed class QueryManager : IBsQueryManager
 		if (!EventLockEnter())
 			return false;
 
-		SetStateValue(true, EnQueryState.Connecting);
+		SetStateValue(EnQueryState.Connecting, true);
 
 		bool result = false;
 
@@ -842,8 +825,8 @@ public sealed class QueryManager : IBsQueryManager
 		}
 		catch (Exception ex)
 		{
-			SetStateValue(true, EnQueryState.Faulted);
-			SetStateValue(true, EnQueryState.Prompting);
+			SetStateValue(EnQueryState.Faulted, true);
+			SetStateValue(EnQueryState.Prompting, true);
 
 			string str = Strategy?.DisplayServerName;
 			if (!string.IsNullOrWhiteSpace(str))
@@ -855,12 +838,12 @@ public sealed class QueryManager : IBsQueryManager
 			}
 
 			MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			SetStateValue(false, EnQueryState.Prompting);
+			SetStateValue(EnQueryState.Prompting, false);
 		}
 		finally
 		{
 			if (!result)
-				SetStateValue(false, EnQueryState.Connecting);
+				SetStateValue(EnQueryState.Connecting, false);
 			EventLockExit();
 		}
 
@@ -876,12 +859,12 @@ public sealed class QueryManager : IBsQueryManager
 
 		if (!IsConnected && state == EnNotifyConnectionState.ConfirmedOpen)
 		{
-			SetStateValue(true, EnQueryState.Connected);
+			SetStateValue(EnQueryState.Connected, true);
 			RdtManager.AsyeuInvalidateToolbar(DocCookie);
 		}
 		else if (IsConnected && state == EnNotifyConnectionState.ConfirmedClosed)
 		{
-			SetStateValue(false, EnQueryState.Connected);
+			SetStateValue(EnQueryState.Connected, false);
 			RdtManager.AsyeuInvalidateToolbar(DocCookie);
 		}
 
@@ -893,6 +876,18 @@ public sealed class QueryManager : IBsQueryManager
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Pops a disabled state off the stack and ensures syncronicity
+	/// between the changing states of a query document.
+	/// Also ensures that program logic does not violate the single push
+	/// (enable) to single pop (disable) pairing of a state.
+	/// </summary>
+	/// <param name="value">The state being disabled.</param>
+	/// <returns>
+	/// A tuple of the two previous states that are queued to be popped.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
 	private (EnQueryState, EnQueryState) PopStateStack(EnQueryState value)
 	{
 		EnQueryState prevState = EnQueryState.None;
@@ -930,25 +925,12 @@ public sealed class QueryManager : IBsQueryManager
 
 		_StateStack.RemoveAt(i);
 
-		// If there are no more actions (ignoring Executing) in the stack, clear the virtual flags.
-		if (_StateStack.Count == 0 || value > EnQueryState.ActionMarker)
+		// If there are no more actions (besides Executing) in the stack, clear the virtual flags.
+
+		if (value > EnQueryState.OperationMarker && !HasActiveActions)
 		{
-			bool actionFound = false;
-
-			foreach (EnQueryState querystate in _StateStack)
-			{
-				if (querystate > EnQueryState.ActionMarker && querystate != EnQueryState.Executing)
-				{
-					actionFound = true;
-					break;
-				}
-			}
-
-			if (!actionFound)
-			{
-				for (uint state = 1; state < (uint)EnQueryState.VirtualMarker; state *= 2)
+			for (uint state = 1; state < (uint)EnQueryState.VirtualMarker; state *= 2)
 					_StateFlags &= ~state;
-			}
 		}
 
 		/*
@@ -967,6 +949,19 @@ public sealed class QueryManager : IBsQueryManager
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Pushes an enabled state onto the stack and ensures syncronicity
+	/// between the changing states of a query document.
+	/// Also ensures that program logic does not violate the single push
+	/// (enable) to single pop (disable) pairing of a state.
+	/// </summary>
+	/// <param name="value">The state being enabled.</param>
+	/// <returns>
+	/// A tuple of the two previously enabled states that are queued to be
+	/// popped.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
 	private (EnQueryState, EnQueryState) PushStateStack(EnQueryState value)
 	{
 		EnQueryState prevState = EnQueryState.None;
@@ -974,6 +969,13 @@ public sealed class QueryManager : IBsQueryManager
 
 		if (value < EnQueryState.VirtualMarker)
 			return (prevState, prevPrevState);
+
+
+		foreach (EnQueryState queryState in _StateStack)
+		{
+			if (queryState == value)
+				Diag.ThrowException(new ApplicationException($"Requested State to push is already on the stack. Requested: {value}."));
+		}
 
 
 		int i;
@@ -985,11 +987,19 @@ public sealed class QueryManager : IBsQueryManager
 			_StateStack.Add(value);
 
 		}
-		else
+		else if (value > EnQueryState.OperationMarker)
 		{
-			// Fixed states before any action states.
+			// Pure Operation states before any Action operation states.
 
 			for (i = _StateStack.Count; i > 0 && _StateStack[i - 1] > EnQueryState.ActionMarker; i--) ;
+
+			_StateStack.Insert(i, value);
+		}
+		else
+		{
+			// Fixed states before any Operation/Action states.
+
+			for (i = _StateStack.Count; i > 0 && _StateStack[i - 1] > EnQueryState.OperationMarker; i--) ;
 
 			_StateStack.Insert(i, value);
 		}
@@ -1026,29 +1036,12 @@ public sealed class QueryManager : IBsQueryManager
 
 
 
-
-	private void RegisterSqlExecWithEvenHandlers()
-	{
-		lock (_LockLocal)
-		{
-			_SqlExec.ExecutionCompletedEventAsync += OnExecutionCompletedAsync;
-			_SqlExec.BatchExecutionCompletedEventAsync += OnBatchExecutionCompletedAsync;
-			_SqlExec.BatchExecutionStartEvent += OnBatchExecutionStart;
-			_SqlExec.BatchDataLoadedEvent += OnBatchDataLoaded;
-			_SqlExec.BatchScriptParsedEvent += OnBatchScriptParsed;
-			_SqlExec.BatchStatementCompletedEvent += OnBatchStatementCompleted;
-			_SqlExec.ErrorMessageEvent += OnErrorMessage;
-		}
-	}
-
-
-
 	public bool RollbackTransactions(bool validate)
 	{
 		if (!IsConnected || !EventLockEnter())
 			return false;
 
-		SetStateValue(true, EnQueryState.Connecting);
+		SetStateValue(EnQueryState.Connecting, true);
 		bool result = false;
 
 		try
@@ -1057,7 +1050,7 @@ public sealed class QueryManager : IBsQueryManager
 		}
 		finally
 		{
-			SetStateValue(false, EnQueryState.Connecting);
+			SetStateValue(EnQueryState.Connecting, false);
 			EventLockExit();
 		}
 
@@ -1081,14 +1074,14 @@ public sealed class QueryManager : IBsQueryManager
 		{
 			Diag.Expected(ex);
 
-			SetStateValue(true, EnQueryState.Faulted);
-			SetStateValue(true, EnQueryState.Connecting);
-			SetStateValue(true, EnQueryState.Prompting);
+			SetStateValue(EnQueryState.Faulted, true);
+			SetStateValue(EnQueryState.Connecting, true);
+			SetStateValue(EnQueryState.Prompting, true);
 
 			MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessibleEx.FmtRes(selectedQualifiedName), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 
-			SetStateValue(false, EnQueryState.Prompting);
-			SetStateValue(false, EnQueryState.Connecting);
+			SetStateValue(EnQueryState.Prompting, false);
+			SetStateValue(EnQueryState.Connecting, false);
 			return true;
 		}
 		catch (Exception ex)
@@ -1104,56 +1097,20 @@ public sealed class QueryManager : IBsQueryManager
 	}
 
 
-	public void SetState(EnQueryState state, bool value)
-	{
-		SetStateValue(value, state);
-	}
-
-
-	/*
-	private void SetStateForConnection(IBsModelCsb csb, IDbConnection newConnection)
-	{
-		IsCancelling = false;
-
-		bool isOnline = csb != null;
-
-		if (isOnline)
-			IsOnline = true;
-		
-		if (newConnection != null)
-		{
-			if (newConnection is DbConnection dbConnection)
-			{
-				dbConnection.StateChange += OnConnectionStateChanged;
-			}
-
-			// IsExecuting = newConnection.State == ConnectionState.Executing;
-			IsConnected = newConnection.State == ConnectionState.Open;
-			IsConnecting = newConnection.State == ConnectionState.Connecting;
-		}
-		else
-		{
-			// IsExecuting = false;
-			IsConnecting = false;
-			IsConnected = false;
-		}
-
-		if (!isOnline)
-			IsOnline = false;
-
-	}
-	*/
+	public void SetState(EnQueryState state, bool value) => SetStateValue(state, value);
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets the status flag of a status setting. If a secondary flag is provided the
 	/// QueryStatusChangedEventArgs will include it in a single OnStatusChanged event.
 	/// </summary>
-	private void SetStateValue(bool value, EnQueryState stateFlag)
+	// ---------------------------------------------------------------------------------
+	private void SetStateValue(EnQueryState stateFlag, bool value)
 	{
 		if (stateFlag == EnQueryState.Online && value && !IsOnline)
-			SetStateValue(true, EnQueryState.DatabaseChanged);
+			SetStateValue(EnQueryState.DatabaseChanged, true);
 
 		bool current;
 		uint currentFlags = 0u;
@@ -1192,23 +1149,7 @@ public sealed class QueryManager : IBsQueryManager
 		finally
 		{
 			if (stateFlag == EnQueryState.Connected && value)
-				SetStateValue(false, EnQueryState.Connecting);
-		}
-	}
-
-
-
-	private void UnRegisterSqlExecWithEventHandlers()
-	{
-		lock (_LockLocal)
-		{
-			_SqlExec.ExecutionCompletedEventAsync -= OnExecutionCompletedAsync;
-			_SqlExec.BatchExecutionCompletedEventAsync -= OnBatchExecutionCompletedAsync;
-			_SqlExec.BatchExecutionStartEvent -= OnBatchExecutionStart;
-			_SqlExec.BatchDataLoadedEvent -= OnBatchDataLoaded;
-			_SqlExec.BatchScriptParsedEvent -= OnBatchScriptParsed;
-			_SqlExec.BatchStatementCompletedEvent -= OnBatchStatementCompleted;
-			_SqlExec.ErrorMessageEvent -= OnErrorMessage;
+				SetStateValue(EnQueryState.Connecting, false);
 		}
 	}
 
@@ -1249,7 +1190,7 @@ public sealed class QueryManager : IBsQueryManager
 				return true;
 		}
 
-		SetStateValue(true, EnQueryState.Executing);
+		SetStateValue(EnQueryState.Executing, true);
 		RdtManager.AsyeuInvalidateToolbar(DocCookie);
 
 		return true;
@@ -1280,7 +1221,7 @@ public sealed class QueryManager : IBsQueryManager
 				return;
 		}
 
-		SetStateValue(false, EnQueryState.Executing);
+		SetStateValue(EnQueryState.Executing, false);
 	}
 
 
@@ -1385,12 +1326,12 @@ public sealed class QueryManager : IBsQueryManager
 
 			if (previousConnection != null && previousConnection.State == ConnectionState.Open)
 			{
-				SetStateValue(false, EnQueryState.Connected);
+				SetStateValue(EnQueryState.Connected, false);
 			}
 
 			if (currentConnection != null && currentConnection.State == ConnectionState.Open)
 			{
-				SetStateValue(true, EnQueryState.Connected);
+				SetStateValue(EnQueryState.Connected, true);
 			}
 
 			/*
@@ -1427,20 +1368,20 @@ public sealed class QueryManager : IBsQueryManager
 				ConnectionState originalState = args.OriginalState;
 
 				if (currentState == ConnectionState.Connecting)
-					SetStateValue(true, EnQueryState.Connecting);
+					SetStateValue(EnQueryState.Connecting, true);
 
 				switch (currentState)
 				{
 					case ConnectionState.Broken:
 
 						hasTransactions = Strategy?.HasTransactions ?? false;
-						SetStateValue(false, EnQueryState.Connected);
+						SetStateValue(EnQueryState.Connected, false);
 						LiveSettingsApplied = false;
 
 						break;
 
 					case ConnectionState.Closed:
-						SetStateValue(false, EnQueryState.Connected);
+						SetStateValue(EnQueryState.Connected, false);
 						LiveSettingsApplied = false;
 
 						// if (IsExecuting)
@@ -1451,7 +1392,7 @@ public sealed class QueryManager : IBsQueryManager
 					case ConnectionState.Open:
 						if (originalState == ConnectionState.Closed || originalState == ConnectionState.Connecting)
 						{
-							SetStateValue(true, EnQueryState.Connected);
+							SetStateValue(EnQueryState.Connected, true);
 							LiveSettingsApplied = false;
 						}
 
@@ -1465,14 +1406,15 @@ public sealed class QueryManager : IBsQueryManager
 	}
 
 
+
 	private void OnDatabaseChanged(object sender, DatabaseChangeEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "OnDatabaseChanged()", "IN");
 
 		if (args.PreviousCsb != null)
-			SetStateValue(false, EnQueryState.Online);
+			SetStateValue(EnQueryState.Online, false);
 
-		SetStateValue(args.CurrentCsb != null, EnQueryState.Online);
+		SetStateValue(EnQueryState.Online, args.CurrentCsb != null);
 	}
 
 
@@ -1482,12 +1424,15 @@ public sealed class QueryManager : IBsQueryManager
 		BatchDataLoadedEvent?.Invoke(sender, eventArgs);
 	}
 
+
+
 	private void OnBatchScriptParsed(object sender, QueryDataEventArgs eventArgs)
 	{
 		_StatementCount = eventArgs.StatementCount;
 
 		BatchScriptParsedEvent?.Invoke(sender, eventArgs);
 	}
+
 
 
 	private async Task<bool> OnExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
@@ -1527,7 +1472,7 @@ public sealed class QueryManager : IBsQueryManager
 		args.Result &= result;
 
 		EventExecutingExit();
-		SetStateValue(false, EnQueryState.Cancelling);
+		SetStateValue(EnQueryState.Cancelling, false);
 
 		RdtManager.InvalidateToolbarAsync(DocCookie).Forget();
 
@@ -1545,7 +1490,12 @@ public sealed class QueryManager : IBsQueryManager
 	}
 
 
-	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	private void OnBatchStatementCompleted(object sender, BatchStatementCompletedEventArgs args) =>
 		BatchStatementCompletedEvent?.Invoke(sender, args);
 
@@ -1620,6 +1570,46 @@ public sealed class QueryManager : IBsQueryManager
 			return;
 
 		StatusChangedEvent?.Invoke(this, new(stateFlags, stateFlag, newValue, prevState, prevPrevState));
+	}
+
+
+
+	private void RegisterEvenHandlers()
+	{
+		lock (_LockLocal)
+		{
+			_Strategy.ConnectionChangedEvent += OnConnectionChanged;
+			_Strategy.ConnectionStateChangedEvent += OnConnectionStateChanged;
+			_Strategy.DatabaseChangedEvent += OnDatabaseChanged;
+
+			_SqlExec.ExecutionCompletedEventAsync += OnExecutionCompletedAsync;
+			_SqlExec.BatchExecutionCompletedEventAsync += OnBatchExecutionCompletedAsync;
+			_SqlExec.BatchExecutionStartEvent += OnBatchExecutionStart;
+			_SqlExec.BatchDataLoadedEvent += OnBatchDataLoaded;
+			_SqlExec.BatchScriptParsedEvent += OnBatchScriptParsed;
+			_SqlExec.BatchStatementCompletedEvent += OnBatchStatementCompleted;
+			_SqlExec.ErrorMessageEvent += OnErrorMessage;
+		}
+	}
+
+
+
+	private void UnRegisterEventHandlers()
+	{
+		lock (_LockLocal)
+		{
+			_Strategy.ConnectionChangedEvent -= OnConnectionChanged;
+			_Strategy.ConnectionStateChangedEvent -= OnConnectionStateChanged;
+			_Strategy.DatabaseChangedEvent -= OnDatabaseChanged;
+
+			_SqlExec.ExecutionCompletedEventAsync -= OnExecutionCompletedAsync;
+			_SqlExec.BatchExecutionCompletedEventAsync -= OnBatchExecutionCompletedAsync;
+			_SqlExec.BatchExecutionStartEvent -= OnBatchExecutionStart;
+			_SqlExec.BatchDataLoadedEvent -= OnBatchDataLoaded;
+			_SqlExec.BatchScriptParsedEvent -= OnBatchScriptParsed;
+			_SqlExec.BatchStatementCompletedEvent -= OnBatchStatementCompleted;
+			_SqlExec.ErrorMessageEvent -= OnErrorMessage;
+		}
 	}
 
 

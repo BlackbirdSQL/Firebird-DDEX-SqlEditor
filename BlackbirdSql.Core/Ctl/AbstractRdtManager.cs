@@ -905,11 +905,19 @@ public abstract class AbstractRdtManager : IDisposable
 			{
 				___(persistFileFormat.GetCurFile(out string ppszFilename, out _));
 
-				if (!string.IsNullOrEmpty(ppszFilename) && (string.Compare(ppszFilename, mkDocument,
-					ignoreCase: true, CultureInfo.CurrentCulture) == 0 || Cmd.IsSamePath(ppszFilename, mkDocument)))
+				try
 				{
-					result = vsWindowFrame;
-					break;
+					if (!string.IsNullOrEmpty(ppszFilename) && (string.Compare(ppszFilename, mkDocument,
+						ignoreCase: true, CultureInfo.CurrentCulture) == 0 || Cmd.IsSamePath(ppszFilename, mkDocument)))
+					{
+						result = vsWindowFrame;
+						break;
+					}
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex, $"Frame file: {ppszFilename}, Moniker: {mkDocument}.");
+					throw;
 				}
 			}
 		}

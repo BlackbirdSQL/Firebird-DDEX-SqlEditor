@@ -45,7 +45,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			if (!auxDocData.IntellisenseEnabled.HasValue)
 				auxDocData.IntellisenseEnabled = _IntelliSenseEnabled;
 			else
-				_IntelliSenseEnabled = auxDocData.IntellisenseEnabled.Value;
+				_IntelliSenseEnabled = auxDocData.IntellisenseActive;
 
 			auxDocData.QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
 			auxDocData.QryMgr.BatchExecutionCompletedEventAsync += OnBatchExecutionCompletedAsync;
@@ -159,7 +159,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 		AuxilliaryDocData auxDocData = ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
 
-		if (auxDocData != null && auxDocData.IntellisenseEnabled.AsBool())
+		if (auxDocData != null && auxDocData.IntellisenseActive)
 		{
 			// TODO: MetadataProviderProvider always null atm.
 			metadataProviderProvider = (IBsMetadataProviderProvider)auxDocData.MetadataProviderProvider;

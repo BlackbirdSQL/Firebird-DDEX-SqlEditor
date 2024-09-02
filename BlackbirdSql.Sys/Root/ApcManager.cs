@@ -63,7 +63,7 @@ public static class ApcManager
 
 			try
 			{
-				return Path.GetExtension(document.FullName);
+				return Cmd.GetExtension(document.FullName);
 			}
 			catch
 			{

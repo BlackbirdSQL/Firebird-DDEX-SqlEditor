@@ -78,17 +78,6 @@ public static partial class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns the bool? boolean value.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static bool AsBool(this bool? @this)
-	{
-		return @this ?? false;
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Returns the int boolean value.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -616,8 +605,19 @@ public static partial class ExtensionMembers
 			@this.Remove(SysConstants.C_KeyDatabase);
 		}
 
-		string dataset = database != null
-			? Path.GetFileNameWithoutExtension(database) : null;
+		string dataset;
+
+		try
+		{
+			dataset = database != null
+				? Cmd.GetFileNameWithoutExtension(database) : null;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, $"Database path: {database}.");
+			throw;
+		}
+
 
 		string datasetId = @this.ContainsKey(SysConstants.C_KeyExDatasetId)
 			? (string)@this[SysConstants.C_KeyExDatasetId] : null;

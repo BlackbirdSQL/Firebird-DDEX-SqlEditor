@@ -96,7 +96,7 @@ public static class HashLog
 	{
 		if (HashObjectNamesInLogs)
 		{
-			return Path.Combine(HashLogObject(LogObject.CreateSensitiveData(Path.GetDirectoryName(fileName))), Path.GetFileName(fileName));
+			return Path.Combine(HashLogObject(LogObject.CreateSensitiveData(Cmd.GetDirectoryName(fileName))), Cmd.GetFileName(fileName));
 		}
 
 		return fileName;

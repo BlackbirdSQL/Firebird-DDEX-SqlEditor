@@ -19,7 +19,7 @@ public class CustomizeCellGDIObjectsEventArgs : EventArgs
 
 	private int m_columnIndex;
 
-	private SolidBrush m_bkBrush;
+	private SolidBrush _BgBrush;
 
 	private SolidBrush m_textBrush;
 
@@ -33,11 +33,11 @@ public class CustomizeCellGDIObjectsEventArgs : EventArgs
 	{
 		get
 		{
-			return m_bkBrush;
+			return _BgBrush;
 		}
 		set
 		{
-			m_bkBrush = value;
+			_BgBrush = value;
 		}
 	}
 

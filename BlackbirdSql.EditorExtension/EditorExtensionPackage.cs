@@ -631,37 +631,44 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		Guid clsid = CommandProperties.ClsidCommandSet;
 
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandDatabaseSelect>(clsid, (uint)EnCommandSet.CmbIdDatabaseSelect));
+			new CommandHandler<CommandDatabaseSelect>(clsid, (int)EnCommandSet.CmbIdDatabaseSelect));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandDatabaseList>(clsid, (uint)EnCommandSet.CmbIdDatabaseList));
+			new CommandHandler<CommandDatabaseList>(clsid, (int)EnCommandSet.CmbIdDatabaseList));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandExecuteQuery>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
+			new CommandHandler<CommandExecuteQuery>(clsid, (int)EnCommandSet.CmdIdExecuteQuery));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandCancelQuery>(clsid, (uint)EnCommandSet.CmdIdCancelQuery));
+			new CommandHandler<CommandCancelQuery>(clsid, (int)EnCommandSet.CmdIdCancelQuery));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandConnect>(clsid, (uint)EnCommandSet.CmdIdConnect));
+			new CommandHandler<CommandConnect>(clsid, (int)EnCommandSet.CmdIdConnect));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandDisconnect>(clsid, (uint)EnCommandSet.CmdIdDisconnect));
+			new CommandHandler<CommandDisconnect>(clsid, (int)EnCommandSet.CmdIdDisconnect));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandDisconnectAllQueries>(clsid, (uint)EnCommandSet.CmdIdDisconnectAllQueries));
+			new CommandHandler<CommandDisconnectAllQueries>(clsid, (int)EnCommandSet.CmdIdDisconnectAllQueries));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandModifyConnection>(clsid, (uint)EnCommandSet.CmdIdModifyConnection));
+			new CommandHandler<CommandModifyConnection>(clsid, (int)EnCommandSet.CmdIdModifyConnection));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandShowEstimatedPlan>(clsid, (uint)EnCommandSet.CmdIdShowEstimatedPlan));
+			new CommandHandler<CommandShowEstimatedPlan>(clsid, (int)EnCommandSet.CmdIdShowEstimatedPlan));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandCloneQueryWindow>(clsid, (uint)EnCommandSet.CmdIdCloneQuery));
+			new CommandHandler<CommandCloneQueryWindow>(clsid, (int)EnCommandSet.CmdIdCloneQuery));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandToggleExecutionPlan>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
+			new CommandHandler<CommandToggleExecutionPlan>(clsid, (int)EnCommandSet.CmdIdToggleExecutionPlan));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandToggleClientStatistics>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
+			new CommandHandler<CommandToggleClientStatistics>(clsid, (int)EnCommandSet.CmdIdToggleClientStatistics));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandNewQuery>(clsid, (uint)EnCommandSet.CmdIdNewQuery));
+			new CommandHandler<CommandNewQuery>(clsid, (int)EnCommandSet.CmdIdNewQuery));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandTransactionCommit>(clsid, (uint)EnCommandSet.CmdIdTransactionCommit));
+			new CommandHandler<CommandTransactionCommit>(clsid, (int)EnCommandSet.CmdIdTransactionCommit));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandTransactionRollback>(clsid, (uint)EnCommandSet.CmdIdTransactionRollback));
+			new CommandHandler<CommandTransactionRollback>(clsid, (int)EnCommandSet.CmdIdTransactionRollback));
 		cmdMapper.AddMapping(typeof(TabbedEditorPane),
-			new CommandHandler<CommandToggleTTS>(clsid, (uint)EnCommandSet.CmdIdToggleTTS));
+			new CommandHandler<CommandToggleTTS>(clsid, (int)EnCommandSet.CmdIdToggleTTS));
+
+		Guid clsid97 = VSConstants.GUID_VSStandardCommandSet97;
+
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandOleCycleToNext>(clsid97, (int)VSConstants.VSStd97CmdID.SplitNext));
+		cmdMapper.AddMapping(typeof(TabbedEditorPane),
+			new CommandHandler<CommandOleCycleToPrevious>(clsid97, (int)VSConstants.VSStd97CmdID.SplitPrev));
 	}
 
 

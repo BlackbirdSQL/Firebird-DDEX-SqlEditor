@@ -361,8 +361,8 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 				text2 = ((text3[^1] != commitCharacter) ? text3 : text3[..^1]);
 			}
 			text = text2;
-			if (LanguageExtensionPackage.Instance.LanguageService is LsbLanguageService languageService
-				&& languageService.GetSource(textView) is LsbSource source)
+			if (LanguageExtensionPackage.Instance.LanguageSvc is LsbLanguageService languageSvc
+				&& languageSvc.GetSource(textView) is LsbSource source)
 			{
 				IWpfTextView wpfTextView = LanguageExtensionPackage.Instance.EditorAdaptersFactorySvc.GetWpfTextView(textView);
 				if (wpfTextView != null)

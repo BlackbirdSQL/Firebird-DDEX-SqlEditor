@@ -13,7 +13,7 @@ public class GridCell
 {
 	private SolidBrush m_textBrush;
 
-	private SolidBrush m_bkBrush;
+	private SolidBrush _BgBrush;
 
 	private int m_textCellType;
 
@@ -37,11 +37,11 @@ public class GridCell
 	{
 		get
 		{
-			return m_bkBrush;
+			return _BgBrush;
 		}
 		set
 		{
-			m_bkBrush = value;
+			_BgBrush = value;
 		}
 	}
 

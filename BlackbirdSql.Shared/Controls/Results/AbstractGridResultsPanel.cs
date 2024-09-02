@@ -113,8 +113,6 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 
 	protected bool GetCoordinatesForPopupMenuFromWM_Context(ref Message m, out int x, out int y, Control c)
 	{
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Expected O, but got Unknown
 		x = (short)(int)m.LParam;
 		y = (int)m.LParam >> 16;
 		if (c == null)

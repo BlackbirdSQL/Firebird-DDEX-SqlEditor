@@ -14,5 +14,6 @@ public interface IBsDataReaderHandler
 	EnScriptExecutionResult HandleExecutionExceptions(Exception exception, int statementIndex, CancellationToken cancelToken);
 
 	Task<EnScriptExecutionResult> ProcessReaderAsync(IDbConnection conn, IDataReader dataReader, bool isSpecialAction,
-		int statementIndex, long rowsSelected, long totalRowsSelected, bool canComplete, CancellationToken cancelToken);
+		int statementIndex, int statementCount, long rowsSelected, long totalRowsSelected, bool canComplete,
+		CancellationToken cancelToken);
 }

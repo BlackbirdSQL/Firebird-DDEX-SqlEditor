@@ -30,7 +30,7 @@ public class CommandToggleIntellisense : AbstractCommand
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 
-		if (CachedAuxDocData.IntellisenseEnabled.AsBool())
+		if (CachedAuxDocData.IntellisenseEnabled != null && CachedAuxDocData.IntellisenseEnabled.Value)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 
 		return VSConstants.S_OK;
@@ -39,7 +39,12 @@ public class CommandToggleIntellisense : AbstractCommand
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		if (!ExecutionLocked && CachedAuxDocData != null)
-			CachedAuxDocData.IntellisenseEnabled = !CachedAuxDocData.IntellisenseEnabled.AsBool();
+		{
+			bool enabled = CachedAuxDocData.IntellisenseEnabled != null
+				&& CachedAuxDocData.IntellisenseEnabled.Value;
+
+			CachedAuxDocData.IntellisenseEnabled = !enabled;
+		}
 
 		return VSConstants.S_OK;
 	}

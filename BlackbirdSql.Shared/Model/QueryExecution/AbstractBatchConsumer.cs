@@ -100,11 +100,13 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 		try
 		{
 			File.Delete(tempFileName);
+			return string.Format(CultureInfo.InvariantCulture, "{0}\\{1}.xml", Cmd.GetDirectoryName(tempFileName), Cmd.GetFileNameWithoutExtension(tempFileName));
 		}
 		catch
 		{
 		}
-		return string.Format(CultureInfo.InvariantCulture, "{0}\\{1}.xml", Path.GetDirectoryName(tempFileName), Path.GetFileNameWithoutExtension(tempFileName));
+
+		return "";
 	}
 
 

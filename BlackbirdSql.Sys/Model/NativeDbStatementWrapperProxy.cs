@@ -67,6 +67,8 @@ public class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
 
 	public long RowsSelected => _NativeObject.RowsSelected;
 
+	public int StatementCount => _NativeObject.StatementCount;
+
 	public long TotalRowsSelected => _NativeObject.TotalRowsSelected;
 
 	public DbDataReader CurrentActionReader => _NativeObject.CurrentActionReader;

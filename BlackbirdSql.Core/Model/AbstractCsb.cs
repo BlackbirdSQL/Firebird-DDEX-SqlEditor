@@ -283,7 +283,15 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	{
 		get
 		{
-			return (string.IsNullOrWhiteSpace(Database) ? "" : Path.GetFileNameWithoutExtension(Database));
+			try
+			{
+				return Cmd.GetFileNameWithoutExtension(Database);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex, $"Database path: {Database}.");
+				throw;
+			}
 		}
 	}
 

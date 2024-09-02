@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using BlackbirdSql.Shared.Interfaces;
 
 
@@ -12,7 +13,7 @@ namespace BlackbirdSql.Shared.Ctl;
 
 public class CommandMapper
 {
-	private readonly Dictionary<Type, Dictionary<GuidId, IBsCommandHandler>> _Mappings = [];
+	private readonly Dictionary<Type, Dictionary<CommandID, IBsCommandHandler>> _Mappings = [];
 
 
 
@@ -22,25 +23,25 @@ public class CommandMapper
 		{
 			_Mappings.Add(tabbedWindowPaneType, []);
 		}
-		Dictionary<GuidId, IBsCommandHandler> dictionary = _Mappings[tabbedWindowPaneType];
-		GuidId clsid = commandHandler.Clsid;
+		Dictionary<CommandID, IBsCommandHandler > dictionary = _Mappings[tabbedWindowPaneType];
+		CommandID cmdId = commandHandler.CmdId;
 
-		if (dictionary.ContainsKey(clsid))
-			_ = dictionary[clsid];
+		if (dictionary.ContainsKey(cmdId))
+			_ = dictionary[cmdId];
 		else
-			dictionary.Add(clsid, commandHandler);
+			dictionary.Add(cmdId, commandHandler);
 	}
 
 
 
-	public bool TryGetCommandHandler(Type tabbedWindowPaneType, GuidId clsid, out IBsCommandHandler commandHandler)
+	public bool TryGetCommandHandler(Type tabbedWindowPaneType, CommandID cmdId, out IBsCommandHandler commandHandler)
 	{
 		commandHandler = null;
 		bool result = false;
 
-		if (_Mappings.TryGetValue(tabbedWindowPaneType, out Dictionary<GuidId, IBsCommandHandler> dictionary))
+		if (_Mappings.TryGetValue(tabbedWindowPaneType, out Dictionary<CommandID, IBsCommandHandler> dictionary))
 		{
-			result = dictionary.TryGetValue(clsid, out commandHandler);
+			result = dictionary.TryGetValue(cmdId, out commandHandler);
 		}
 
 		return result;

@@ -1590,7 +1590,18 @@ public sealed class RctManager : RunningConnectionTable
 
 		string dataSource = (string)site[SysConstants.C_KeyDataSource];
 		string database = (string)site[SysConstants.C_KeyDatabase];
-		string dataset = (string.IsNullOrWhiteSpace(database) ? "" : Path.GetFileNameWithoutExtension(database));
+		string dataset;
+
+		try
+		{
+			dataset = Cmd.GetFileNameWithoutExtension(database);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, $"Database path: {database}.");
+			throw;
+		}
+
 
 		string connectionUrl = (site as IBsDataConnectionProperties).Csa.LiveDatasetMoniker;
 

@@ -504,7 +504,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 		if (fileNameUsingSaveDialog != null)
 		{
-			intialDirectory = Path.GetDirectoryName(fileNameUsingSaveDialog);
+			intialDirectory = Cmd.GetDirectoryName(fileNameUsingSaveDialog);
 			return new StreamWriter(fileNameUsingSaveDialog, append: false, fileEncodingDlg.Encoding, 8192)
 			{
 				AutoFlush = false
@@ -854,7 +854,6 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 	/*
 	private void ProcessSpecialActionOnBatchInt(EnQESQLBatchSpecialAction action, IGraph[] graphs, object dataSource)
 	{
-		//IL_00bf: Expected O, but got Unknown
 		// Tracer.Trace(GetType(), "ProcessSpecialActionOnBatchInt", "", null);
 		try
 		{
