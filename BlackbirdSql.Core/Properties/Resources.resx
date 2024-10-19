@@ -138,6 +138,12 @@
   <data name="CommandProvider_CancelExecution" xml:space="preserve">
     <value>SqlViewTextObjectCommandProvider_CancelExecution</value>
   </data>
+  <data name="CommandProvider_CreateStoredProcedureScript" xml:space="preserve">
+    <value>Open &amp;Create Procedure Source</value>
+  </data>
+  <data name="CommandProvider_CreateViewScript" xml:space="preserve">
+    <value>Open &amp;Create View Definition</value>
+  </data>
   <data name="CommandProvider_DeleteDatabaseConnection" xml:space="preserve">
     <value>Remove Connection</value>
   </data>
@@ -175,7 +181,7 @@
     <value>&amp;Open Script</value>
   </data>
   <data name="CommandProvider_OpenStoredProcedureScript" xml:space="preserve">
-    <value>&amp;Open Executable Procedure Source</value>
+    <value>&amp;Open Execute Procedure Script</value>
   </data>
   <data name="CommandProvider_OpenSystemScript" xml:space="preserve">
     <value>&amp;Open System Script</value>
@@ -190,7 +196,7 @@
     <value>&amp;Open User Script</value>
   </data>
   <data name="CommandProvider_OpenViewScript" xml:space="preserve">
-    <value>&amp;Open View Definition</value>
+    <value>&amp;Open View Query</value>
   </data>
   <data name="CommandProvider_PathTooLong" xml:space="preserve">
     <value>The document moniker path name is too long</value>

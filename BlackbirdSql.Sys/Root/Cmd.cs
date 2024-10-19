@@ -2,13 +2,12 @@
 using System;
 using System.IO;
 using System.Security;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
+using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
-using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
@@ -456,7 +455,7 @@ public abstract class Cmd
 		}
 		catch (UriFormatException ex5)
 		{
-			Tracer.Warning(typeof(Cmd), "IsSamePath()", "IsSamePath exception: {0}", ex5.Message);
+			Evs.Warning(typeof(Cmd), "IsSamePath()", $"IsSamePath exception: {ex5.Message}");
 		}
 
 		return false;

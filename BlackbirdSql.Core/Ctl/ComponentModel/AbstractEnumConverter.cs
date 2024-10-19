@@ -182,7 +182,9 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 				readOnly = pair.Value < 0 ? nNewValue == -pair.Value : nNewValue != pair.Value;
 
-				// Tracer.Trace($"Automator {_PropertyName} with new value {newValue} updating dependent: {pair.Key} using {pair.Value} from {fld.GetValue(attr)} to {readOnly}.");
+				// Evs.Debug(GetType(), "UpdateReadOnly()",
+				//	$"Automator {_PropertyName} with new value {newValue} updating dependent: {pair.Key} " +
+				//	$"using {pair.Value} from {oldValue} to {readOnly}.");
 
 				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != readOnly)
 				{
@@ -230,11 +232,11 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		if (context.PropertyDescriptor.Attributes[typeof(AutomatorAttribute)] is not AutomatorAttribute attr
 			|| attr.Automator != null)
 		{
-			// Tracer.Trace($"Property {name} is not an automator.");
+			// Evs.Debug(GetType(), "RegisterModel()", $"Property {name} is not an automator.");
 			return true;
 		}
 
-		// Tracer.Trace($"Property {name} IS an automator.");
+		// Evs.Debug(GetType(), "RegisterModel()", $"Property {name} IS an automator.");
 
 		if (prevModel != null)
 			prevModel.AutomatorPropertyValueChangedEvent -= OnAutomatorPropertyValueChanged;
@@ -242,7 +244,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		_IsAutomator = true;
 		_Model.AutomatorPropertyValueChangedEvent += OnAutomatorPropertyValueChanged;
 
-		// Tracer.Trace($"Registering automator {_PropertyName}.");
+		// Evs.Debug(GetType(), "RegisterModel()", $"Registering automator {_PropertyName}.");
 
 		_Dependents = new Dictionary<string, int>(model.PropertyWrappers.Count);
 
@@ -250,7 +252,8 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{
-				// Tracer.Trace($"Registering automator dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
+				// Evs.Debug(GetType(), "RegisterModel()",
+				//	$"Registering automator dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
 				_Dependents.Add(property.PropertyName, property.AutomatorEnableValue);
 			}
 		}

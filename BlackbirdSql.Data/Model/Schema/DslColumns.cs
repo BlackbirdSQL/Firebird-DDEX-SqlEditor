@@ -116,6 +116,8 @@ internal class DslColumns : AbstractDslSchema
 	protected readonly IDictionary<string, object> _RequiredColumns = new Dictionary<string, object>()
 	{
 		{ "ORDINAL_POSITION", "r.rdb$field_position" },
+		// Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL
+		{ "DIRECTION_FLAG", "1" },
 		{ "TRIGGER_NAME", "r_dep.rdb$dependent_name" }
 	};
 
@@ -135,10 +137,10 @@ internal class DslColumns : AbstractDslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "GetCommandText");
+		// Evs.Trace(GetType(), "GetCommandText");
 
-		var sql = new StringBuilder();
-		var where = new StringBuilder();
+		StringBuilder sql = new();
+		StringBuilder where = new();
 
 		if (MajorVersionNumber < 3 || _GeneratorSelector == null)
 		{
@@ -305,7 +307,7 @@ internal class DslColumns : AbstractDslSchema
         COLLATION_CATALOG varchar(10), COLLATION_SCHEMA varchar(10), COLLATION_NAME varchar(50),
         DESCRIPTION varchar(50), IN_PRIMARYKEY boolean, IS_UNIQUE boolean, IS_IDENTITY boolean, SEQUENCE_GENERATOR varchar(50),
         -- [returnClause]~0~ directly after TRIGGER_NAME varchar(50)
-		PARENT_TYPE varchar(15), ORDINAL_POSITION smallint, TRIGGER_NAME varchar(50){0})
+		PARENT_TYPE varchar(15), ORDINAL_POSITION smallint, DIRECTION_FLAG int, TRIGGER_NAME varchar(50){0})
 AS
 DECLARE PRIMARY_DEPENDENCYCOUNT int;
 DECLARE SEGMENT_FIELD varchar(50);
@@ -453,7 +455,7 @@ END",
 					intoClause);
 
 
-		// Tracer.Trace(GetType(), "GetCommandText()", "Sql: {0}", sql.ToString());
+		// Evs.Debug(GetType(), nameof(GetCommandText), $"Sql: {sql}");
 
 		return sql;
 	}
@@ -462,7 +464,7 @@ END",
 
 	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslColumns.ProcessResult");
+		// Evs.Trace(GetType(), "DslColumns.ProcessResult");
 		IBsNativeDbLinkageParser parser = null;
 
 		if (connectionString != null)
@@ -579,7 +581,7 @@ END",
 		schema.Columns.Remove("FIELD_TYPE");
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
 
-		// Tracer.Trace("Rows returned: " + schema.Rows.Count);
+		// Evs.Trace("Rows returned: " + schema.Rows.Count);
 
 	}
 

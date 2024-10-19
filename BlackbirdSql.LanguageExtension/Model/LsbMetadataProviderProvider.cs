@@ -314,9 +314,9 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		{
 			try
 			{
-				// Tracer.Trace(GetType(), "CreateMetadataProvider()", "Before Reset()");
+				// Evs.Trace(GetType(), nameof(CreateMetadataProvider), "Before Reset()");
 				base.BuildEvent.Reset();
-				// Tracer.Trace(GetType(), "CreateMetadataProvider()", "After Reset()");
+				// Evs.Trace(GetType(), nameof(CreateMetadataProvider), "After Reset()");
 
 				if (ServerConnection.State != ConnectionState.Open)
 				{
@@ -324,7 +324,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				}
 				// base.MetadataProvider = LsbMetadataProvider.CreateConnectedProvider(ServerConnection);
 				base.Binder = BinderProvider.CreateBinder(base.MetadataProvider);
-				// Tracer.Trace(GetType(), "CreateMetadataProvider()", "After metadata provider is created");
+				// Evs.Trace(GetType(), nameof(CreateMetadataProvider), "After metadata provider is created");
 			}
 			catch (Exception)
 			{

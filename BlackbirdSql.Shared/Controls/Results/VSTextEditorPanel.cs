@@ -53,7 +53,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 
 	protected override void Dispose(bool bDisposing)
 	{
-		// Tracer.Trace(GetType(), "VSTextEditorPanel.Dispose", "", null);
+		// Evs.Trace(GetType(), "VSTextEditorPanel.Dispose", "", null);
 		if (bDisposing && _TextViewCtl != null)
 		{
 			_TextViewCtl.Dispose();
@@ -173,7 +173,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 
 	public override void Initialize(object sp)
 	{
-		// Tracer.Trace(GetType(), "VSTextEditorTabPage.Initialize", "", null);
+		// Evs.Trace(GetType(), "VSTextEditorTabPage.Initialize", "", null);
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -221,7 +221,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 
 	public override void Clear()
 	{
-		// Tracer.Trace(GetType(), "VSTextEditorTabPage.Clear", "", null);
+		// Evs.Trace(GetType(), "VSTextEditorTabPage.Clear", "", null);
 		_TextViewCtl?.TextBuffer.Clear();
 
 		_TextWriter?.Reset();
@@ -285,7 +285,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 
 	private void CreateAndInitVSTextEditor()
 	{
-		// Tracer.Trace(GetType(), "VSTextEditorTabPage.CreateAndInitVSTextEditor", "", null);
+		// Evs.Trace(GetType(), "VSTextEditorTabPage.CreateAndInitVSTextEditor", "", null);
 		_TextViewCtl.CreateAndInitEditorWindow(_ObjServiceProvider);
 		if (_shouldBeReadOnly)
 		{
@@ -343,7 +343,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 
 	private void OnSaveAs(object sender, EventArgs a)
 	{
-		// Tracer.Trace(GetType(), "OnSaveAs()");
+		// Evs.Trace(GetType(), nameof(OnSaveAs));
 
 		Control textView = _TextViewCtl;
 		Cursor current = Cursor.Current;

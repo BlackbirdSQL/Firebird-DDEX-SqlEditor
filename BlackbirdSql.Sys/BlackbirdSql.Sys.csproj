@@ -31,6 +31,11 @@
 		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
+		<Compile Include="Ctl\Config\PersistentSettings.cs" />
+		<Compile Include="Ctl\Diagnostics\AbstractEvs.cs" />
+		<Compile Include="Enums\EnEventLevel.cs" />
+		<Compile Include="Enums\EnSourceLevels.cs" />
+		<Compile Include="Interfaces\IBsEventSource.cs" />
 		<Compile Include="Interfaces\IBsNativeDbException.cs" />
 		<Compile Include="Interfaces\IBsNativeDbServerExplorerService.cs" />
 		<Compile Include="Interfaces\SBsNativeDbException.cs" />
@@ -40,6 +45,8 @@
 		  <AutoGen>True</AutoGen>
 		  <DependentUpon>AttributeResources.resx</DependentUpon>
 		</Compile>
+		<Compile Include="Enums\EnEvsId.cs" />
+		<Compile Include="Ctl\Diagnostics\EvsProvider.cs" />
 		<Compile Include="Root\UnsafeExtensionMembers.cs" />
 		<Compile Include="Interfaces\IBsRunningConnectionTable.cs" />
 		<Compile Include="Root\ApcManager.cs" />
@@ -72,22 +79,21 @@
 		<Compile Include="Ctl\Describer.cs" />
 		<Compile Include="Ctl\DescriberDictionary.cs" />
 		<Compile Include="Ctl\EnumeratorDescribers.cs" />
-		<Compile Include="Ctl\HashLog.cs" />
+		<None Include="Ctl\HashLog.cs" />
 		<Compile Include="Root\Native.cs" />
 		<Compile Include="Root\NativeDb.cs" />
 		<Compile Include="Root\Diag.cs" />
-		<Compile Include="Ctl\Diagnostics\EventProviderVersionTwo.cs" />
+		<None Include="Ctl\Diagnostics\EventProviderVersionTwo.cs" />
 		<Compile Include="Enums\EnNullEquality.cs" />
 		<Compile Include="Interfaces\IBsEventsManager.cs" />
 		<Compile Include="Interfaces\IBsAsyncPackage.cs" />
 		<Compile Include="Interfaces\IBsPackageController.cs" />
 		<Compile Include="Interfaces\IBsNativeDbLinkageParser.cs" />
 		<Compile Include="Interfaces\IBsNativeProviderSchemaFactory.cs" />
-		<Compile Include="Ctl\Diagnostics\LogObject.cs" />
-		<Compile Include="Ctl\Diagnostics\SqlEtwProvider.cs" />
-		<Compile Include="Ctl\Diagnostics\SqlTracer.cs" />
+		<None Include="Ctl\Diagnostics\LogObject.cs" />
+		<None Include="Ctl\Diagnostics\EtwProvider.cs" />
 		<Compile Include="Root\NativeDbExtensionMembers.cs" />
-		<Compile Include="Root\Tracer.cs" />
+		<Compile Include="Evs.cs" />
 		<Compile Include="Enums\EnBlobSubType.cs" />
 		<Compile Include="Enums\EnConnectionSource.cs" />
 		<Compile Include="Enums\EnDbDataType.cs" />
@@ -124,7 +130,7 @@
 			<AutoGen>True</AutoGen>
 		</Compile>
 		<Compile Include="Interfaces\SBsNativeProviderSchemaFactory.cs" />
-		<Compile Include="Root\SysConstants.cs" />
+		<Compile Include="SysConstants.cs" />
 		<Compile Include="Model\NativeDatabaseInfoProxy.cs" />
 		<Compile Include="Model\NativeDbBatchParserProxy.cs" />
 		<Compile Include="Model\NativeDbStatementWrapperProxy.cs" />
@@ -138,11 +144,10 @@
 		<Compile Include="GlobalSuppressions.cs" />
 		<Compile Include="Extensions\Index.cs" />
 		<Compile Include="Interfaces\IBsModelPropertyWrapper.cs" />
-		<Compile Include="Interfaces\IBsPersistentSettings.cs" />
+		<Compile Include="Interfaces\IBsSettingsProvider.cs" />
 		<Compile Include="Interfaces\IBsSettingsModel.cs" />
 		<Compile Include="Interfaces\IBsSqlTraceTelemetryProvider.cs" />
 		<Compile Include="Interfaces\IBsTaskHandlerClient.cs" />
-		<Compile Include="Interfaces\IBsTrace.cs" />
 		<Compile Include="Extensions\Range.cs" />
 		<Compile Include="Root\Reflect.cs" />
 		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
@@ -195,6 +200,10 @@
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="System.Diagnostics.Tracing" />
 	</ItemGroup>
 
 </Project>

@@ -24,7 +24,7 @@ internal class DslProcedureParameters : DslColumns
 {
 	public DslProcedureParameters() : base()
 	{
-		// Tracer.Trace(GetType(), "DslProcedureParameters.DslProcedureParameters");
+		// Evs.Trace(GetType(), "DslProcedureParameters.DslProcedureParameters");
 
 		string packageName;
 
@@ -51,12 +51,13 @@ internal class DslProcedureParameters : DslColumns
 		_FromClause = "rdb$procedure_parameters r";
 
 		_RequiredColumns["ORDINAL_POSITION"] = "r.rdb$parameter_number";
+		// Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL
+		_RequiredColumns["DIRECTION_FLAG"] = "CAST(r.rdb$parameter_type AS integer)";
 
 		_AdditionalColumns.Add("PROCEDURE_CATALOG", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("PROCEDURE_SCHEMA", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("PROCEDURE_NAME", new("r.rdb$procedure_name", "varchar(50)"));
 		_AdditionalColumns.Add("PARAMETER_NAME", new("r.rdb$parameter_name", "varchar(50)"));
-		_AdditionalColumns.Add("PARAMETER_DIRECTION", new("CAST(r.rdb$parameter_type AS integer)", "int"));
 		_AdditionalColumns.Add("PACKAGE_NAME", new(packageName, "varchar(10)"));
 
 	}

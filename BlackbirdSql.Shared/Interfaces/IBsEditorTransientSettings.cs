@@ -29,7 +29,6 @@ public interface IBsEditorTransientSettings
 	bool EditorExecuteQueryOnOpen { get; set; }
 	bool EditorPromptSave { get; set; }
 	EnLanguageService EditorLanguageService { get; set; }
-	bool EditorTtsDefault { get; set; }
 
 
 	// Editor ContextSettingsModel

@@ -59,7 +59,7 @@ public sealed class EditorFactoryResults : AbstruseEditorFactory
 
 		try
 		{
-			// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "nCreateFlags = {0}, strMoniker = {1}, strPhysicalView = {2}, itemid = {3}", createFlags, moniker, physicalView, itemId);
+			// Evs.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "nCreateFlags = {0}, strMoniker = {1}, strPhysicalView = {2}, itemid = {3}", createFlags, moniker, physicalView, itemId);
 
 			if (!string.IsNullOrEmpty(physicalViewName))
 				return VSConstants.E_INVALIDARG;

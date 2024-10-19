@@ -56,14 +56,13 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	// ---------------------------------------------------------------------------------
 	public DescriberDictionary Describers_ => new(LibraryData.Describers, LibraryData.DescriberSynonyms);
 
-
 	public string EFConnectionFactory_ => LibraryData.C_EFConnectionFactory;
 	public string EFProvider_ => LibraryData.C_EFProvider;
 	public string EFProviderServices_ => LibraryData.C_EFProviderServices;
 	public Type EFProviderServicesType_ => typeof(FbProviderServices);
 	public string EFProviderServicesTypeFullName_ => LibraryData.C_EFProviderServicesTypeFullName;
 	public Assembly EntityFrameworkAssembly_ => typeof(FbProviderServices).Assembly;
-	public string[] EntityFrameworkVersions_ => LibraryData.S_EntityFrameworkVersions;
+	// public string[] EntityFrameworkVersions_ => LibraryData.S_EntityFrameworkVersions;
 	public string Extension_ => LibraryData.C_Extension;
 
 
@@ -362,7 +361,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 	public async Task<bool> ReaderCloseAsync_(IDataReader @this, CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "ReaderCloseAsync_()");
+		// Evs.Trace(GetType(), nameof(ReaderCloseAsync_));
 
 		try
 		{
@@ -374,7 +373,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 			throw;
 		}
 
-		// Tracer.Trace(GetType(), "ReaderCloseAsync_()", "Completed.");
+		// Evs.Trace(GetType(), nameof(ReaderCloseAsync_), "Completed.");
 
 		return true;
 	}

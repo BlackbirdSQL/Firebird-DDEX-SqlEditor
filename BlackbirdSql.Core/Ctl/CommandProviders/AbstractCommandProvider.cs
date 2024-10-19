@@ -56,7 +56,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected override MenuCommand CreateCommand(int itemId, CommandID commandId, object[] parameters)
 	{
-		// Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}", itemId, commandId);
+		// Evs.Debug(GetType(), "CreateCommand()", "itemId: {itemId}, commandId: {commandId}.");
 
 		string label;
 		MenuCommand command = null;
@@ -210,12 +210,46 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				});
 			command = cmd;
 		}
-		else if (commandId.Equals(CommandProperties.OpenAlterTextObject))
+		else if (commandId.Equals(CommandProperties.CreateTextObject))
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
 				// if (!command.Properties.Contains("GotText"))
-				//	Tracer.Trace(GetType(), "CreateCommand()", "OpenAlterTextObject");
+				//	Tracer.Trace(GetType(), "CreateCommand()", "CreateTextObject");
+
+				node = Site.ExplorerConnection.FindNode(itemId);
+
+				IVsDataExplorerNode scriptNode = node.ScriptNode();
+				EnModelObjectType objType = scriptNode.ModelObjectType();
+
+				cmd.Visible = cmd.Enabled = scriptNode != null && scriptNode.CanAlter()
+					&& (objType == EnModelObjectType.View
+					|| objType == EnModelObjectType.ViewColumn
+					|| objType == EnModelObjectType.StoredProcedure
+					|| objType == EnModelObjectType.StoredProcedureParameter);
+
+				if (cmd.Visible && !command.Properties.Contains("GotText")
+					&& (label = GlobalizeLabel(cmd, scriptNode)) != "")
+				{
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = label;
+				}
+
+				if (scriptNode != null)
+					itemId = scriptNode.ItemId;
+
+			}, delegate
+			{
+				OnOpenScript(itemId, EnModelTargetType.CreateScript);
+			});
+			command = cmd;
+		}
+		else if (commandId.Equals(CommandProperties.AlterTextObject))
+		{
+			cmd = new DataViewMenuCommand(itemId, commandId, delegate
+			{
+				// if (!command.Properties.Contains("GotText"))
+				//	Tracer.Trace(GetType(), "CreateCommand()", "AlterTextObject");
 
 				node = Site.ExplorerConnection.FindNode(itemId);
 
@@ -289,7 +323,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		}
 		else
 		{
-			// Tracer.Trace(GetType(), "CreateCommand()", "itemid: {0}, commandid: {1}.", itemId, commandId.ID);
 			command = base.CreateCommand(itemId, commandId, parameters);
 		}
 
@@ -304,7 +337,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	public static string GetResourceString(string commandFunction, string nodeType, string targetType)
 	{
 		string resource = $"CommandProvider_{commandFunction}{nodeType}{targetType}";
-		// Tracer.Trace(typeof(AbstractCommandProvider), "GetResourceString()", "resourceKey: {0}", resource);
+
+		// Evs.Debug(typeof(AbstractCommandProvider), "GetResourceString()", $"resourceKey: {resource}.");
+
 		try
 		{
 			return Resources.ResourceManager.GetString(resource);
@@ -343,7 +378,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			text = GetResourceString("New", "Sql", "Query");
 		else if (cmd.CommandID.Equals(CommandProperties.OpenTextObject))
 			text = GetResourceString("Open", type.ToString(), "Script");
-		else if (cmd.CommandID.Equals(CommandProperties.OpenAlterTextObject))
+		else if (cmd.CommandID.Equals(CommandProperties.CreateTextObject))
+			text = GetResourceString("Create", type.ToString(), "Script");
+		else if (cmd.CommandID.Equals(CommandProperties.AlterTextObject))
 			text = GetResourceString("Alter", type.ToString(), "Script");
 		else if (cmd.CommandID.Equals(CommandProperties.RetrieveDesignerData))
 			text = GetResourceString("Retrieve", type.ToString(), "DesignerData");
@@ -364,7 +401,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		else if (cmd.CommandID.Equals(CommandProperties.ValidateSolution))
 			text = GetResourceString("Validate", type, "Solution");
 
-		// Tracer.Trace(typeof(AbstractCommandProvider), "GlobalizeLabel(EnNodeSystemType)", "text: {0}", text);
+		// Evs.Debug(typeof(AbstractCommandProvider), "GlobalizeLabel(DataViewMenuCommand, EnNodeSystemType)",
+		//	$"text: {text}.");
 
 		return text;
 
@@ -392,7 +430,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected virtual void OnInterceptorDesignRetrieveData(int itemId)
 	{
-		// Tracer.Trace(GetType(), "OnInterceptorDesignRetrieveData()", "itemId: {0}.", itemId);
+		// Evs.Debug(GetType(), "OnInterceptorDesignRetrieveData()", $"itemId: {itemId}.");
 
 		Hostess host = new(Site.ServiceProvider);
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
@@ -461,7 +499,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected void OnInterceptorNewDesignerQuery(int itemId, EnNodeSystemType nodeSystemType)
 	{
-		// Tracer.Trace(GetType(), "OnInterceptorNewDesigner()", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
+		// Evs.Debug(GetType(), "OnInterceptorNewDesigner()", $"itemId: {itemId}, nodeSystemType: {nodeSystemType}.");
 
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
 		MenuCommand command = node.GetCommand(CommandProperties.NewQueryGlobal);
@@ -495,7 +533,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected void OnNewQuery(string baseName)
 	{
-		// Tracer.Trace(GetType(), "OnNewQuery()");
+		Evs.Trace(GetType(), nameof(OnNewQuery));
 
 		if (SystemData.C_MandatedSqlEditorFactoryGuid.Equals(SystemData.C_EditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
@@ -506,7 +544,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 			Csb csa = RctManager.CloneRegistered(Site.ExplorerConnection.ConnectionNode);
 
-			// Tracer.Trace(GetType(), "OnNewQuery()", "csa.DatasetKey: {0}.", csa.DatasetKey);
+			// Evs.Debug(GetType(), "OnNewQuery()", $"csa.DatasetKey: {csa.DatasetKey}.");
 
 			service.NewQuery(csa.DatasetKey, baseName, null);
 		}
@@ -521,7 +559,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected void OnOpenScript(int itemId, EnModelTargetType targetType)
 	{
-		// Tracer.Trace(GetType(), "OnOpen()", "itemId: {0}.", itemId);
+		Evs.Trace(GetType(), nameof(OnOpenScript), $"itemId: {itemId}.");
 
 		if (RctManager.ShutdownState)
 			return;

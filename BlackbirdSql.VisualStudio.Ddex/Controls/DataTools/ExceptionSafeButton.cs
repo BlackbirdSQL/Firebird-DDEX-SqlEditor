@@ -16,7 +16,7 @@ public class ExceptionSafeButton : Button
 		}
 		catch (Exception ex)
 		{
-			TDataConnectionDlg dataConnectionDialog = (TDataConnectionDlg)FindForm();
+			VxbConnectionDlg dataConnectionDialog = (VxbConnectionDlg)FindForm();
 			dataConnectionDialog.ShowError(null, ex);
 			dataConnectionDialog.DialogResult = DialogResult.None;
 		}

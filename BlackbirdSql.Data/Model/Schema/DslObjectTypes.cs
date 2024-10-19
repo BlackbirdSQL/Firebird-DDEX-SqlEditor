@@ -23,8 +23,6 @@ internal static class DslObjectTypes
 	public const string Root = "";
 	public const string Domain = "Domain";
 	public const string Database = "Database";
-	public const string Function = "Function";
-	public const string FunctionParameter = "FunctionParameter";
 	public const string Table = "Table";
 	public const string TableColumn = "TableColumn";
 	public const string TableIndex = "TableIndex";
@@ -43,13 +41,14 @@ internal static class DslObjectTypes
 	public const string StoredProcedure = "StoredProcedure";
 	public const string StoredProcedureParameter = "StoredProcedureParameter";
 	public const string StoredProcedureColumn = "StoredProcedureColumn";
-	public const string ScalarFunction = "ScalarFunction";
-	public const string ScalarFunctionParameter = "ScalarFunctionParameter";
+	public const string Function = "Function";
+	public const string FunctionParameter = "FunctionParameter";
+	public const string FunctionColumn = "FunctionColumn";
 
 
 
 	/// <summary>
-	/// Gets the identifier length used by <see cref="TObjectIdentifierResolver"/>.
+	/// Gets the identifier length used by <see cref="VxbObjectIdentifierResolver"/>.
 	/// </summary>
 	/// <param name="typeName"></param>
 	/// <returns></returns>
@@ -65,12 +64,10 @@ internal static class DslObjectTypes
 
 			case DslObjectTypes.Table:
 			case DslObjectTypes.Function:
-			case DslObjectTypes.ScalarFunction:
 			case DslObjectTypes.StoredProcedure:
 			case DslObjectTypes.View:
 				return 3;
 
-			case DslObjectTypes.FunctionParameter:
 			case DslObjectTypes.TableColumn:
 			case DslObjectTypes.TableIndex:
 			case DslObjectTypes.TableUniqueKey:
@@ -82,7 +79,8 @@ internal static class DslObjectTypes
 			case DslObjectTypes.ViewColumn:
 			case DslObjectTypes.StoredProcedureParameter:
 			case DslObjectTypes.StoredProcedureColumn:
-			case DslObjectTypes.ScalarFunctionParameter:
+			case DslObjectTypes.FunctionParameter:
+			case DslObjectTypes.FunctionColumn:
 				return 4;
 
 			case DslObjectTypes.TableIndexColumn:

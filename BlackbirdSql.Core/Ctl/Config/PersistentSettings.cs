@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Extensions;
@@ -17,13 +18,15 @@ namespace BlackbirdSql.Core.Ctl.Config;
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBsSettingsModel).
 /// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
-/// descendent tree from the top-level extension lib down to the Core.
+/// descendent tree from the top-level extension lib down to Sys.
 /// PersistentSettings can be either consumers or providers of options, or both.
-/// There is no point using services as this configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
+/// Property accessors should only be declared at the hierarchy level that they are first required. They do
+/// not need to be declared in PeristentSettings if they're only required in TransientSettings.
+/// There is no point using services as this hierarchy is fixed. ie:
+/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Shared > Core > Sys.
 /// </summary>
 // =========================================================================================================
-public abstract class PersistentSettings : IBsPersistentSettings
+public abstract class PersistentSettings : Sys.Ctl.Config.PersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
@@ -36,51 +39,23 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	/// Protected singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected PersistentSettings()
+	protected PersistentSettings() : base()
 	{
-		if (_Instance != null)
-		{
-			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes(GetType().FullName));
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-
-		_Instance = this;
 	}
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Private live .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected PersistentSettings(bool live)
+	protected PersistentSettings(bool transient) : base(transient)
 	{
 	}
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the singleton PersistentSettings instance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static IBsPersistentSettings Instance
+	protected PersistentSettings(IDictionary<string, object> transientStore) : base(transientStore)
 	{
-		get
-		{
-			if (_Instance == null)
-			{
-				NullReferenceException ex = new("Cannot instantiate PersistentSettings from abstract ancestor");
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			return _Instance;
-		}
 	}
-
-
-	protected abstract void Initialize();
 
 
 	#endregion Constructors / Destructors
@@ -90,13 +65,12 @@ public abstract class PersistentSettings : IBsPersistentSettings
 
 
 	// =========================================================================================================
-	#region Fields
+	#region Fields - PersistentSettings
 	// =========================================================================================================
 
-	protected static readonly object _LockGlobal = new object();
-	protected readonly object _LockObject = new object();
-	protected static IBsPersistentSettings _Instance = null;
-	protected static Dictionary<string, object> _SettingsStore = null;
+
+	private int _AssemblyId = -1;
+
 
 	#endregion Fields
 
@@ -108,49 +82,6 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	#region Property Accessors - PersistentSettings
 	// =========================================================================================================
 
-	public virtual object this[string name]
-	{
-		get
-		{
-			object value = null;
-
-			SettingsStore?.TryGetValue(name, out value);
-
-			return value;
-		}
-
-		set
-		{
-			SettingsStore[name] = value;
-		}
-	}
-
-
-	public static Dictionary<string, object> SettingsStore
-	{
-		get
-		{
-			lock (_LockGlobal)
-			{
-				if (_SettingsStore == null)
-					((PersistentSettings)Instance).Initialize();
-
-				return _SettingsStore;
-			}
-		}
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Flag indicating whether or not <see cref="Diag.Dug"/> calls are logged
-	/// </summary>
-	/// <remarks>
-	/// Exceptions are always logged.
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public static bool EnableDiagnostics => (bool)GetSetting("DdexGeneralEnableDiagnostics", true);
-
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -158,88 +89,14 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	/// be written to the output window.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableLoadStatistics => (bool)GetSetting("DdexGeneralEnableLoadStatistics", false);
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns a boolean indicating whether or not task results can be written to the
-	/// output window.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static bool EnableTaskLog => (bool)GetSetting("DdexGeneralEnableTaskLog", true);
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Flag indicating whether or not Tracer calls are logged
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static bool EnableTracer => (bool)GetSetting("DdexDebugEnableTracer", false);
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Flag indicating whether or not <see cref="Diag.Trace"/> calls are logged
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static bool EnableTrace => (bool)GetSetting("DdexDebugEnableTrace", false) | EnableTracer;
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Flag indicating whether or not diagnostics calls are logged to the log file.
-	/// </summary>
-	/// <remarks>
-	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public static bool EnableDiagnosticsLog => (bool)GetSetting("DdexDebugEnableDiagnosticsLog", false);
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Flag indicating whether or not the extrapolated TObjectSupport.xml, after
-	/// imports, must be saved to the diagnostics logfile directory.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static bool EnableSaveExtrapolatedXml => (bool)GetSetting("DdexDebugEnableSaveExtrapolatedXml", false);
-
-
-	/// <summary>
-	/// If enabled, closes edmx data models that have been left open when a solution closes.
-	/// </summary>
-	public static bool AutoCloseOffScreenEdmx => (bool)GetSetting("DdexGeneralAutoCloseOffScreenEdmx", true);
-
-	/// <summary>
-	/// If enabled, closes xsd datasets that have been left open when a solution closes.
-	/// </summary>
-	public static bool AutoCloseXsdDatasets => (bool)GetSetting("DdexGeneralAutoCloseXsdDatasets", false);
+	public static bool EnableLoadStatistics => (bool)GetPersistentSetting("DdexGeneralEnableLoadStatistics", false);
 
 
 	/// <summary>
 	/// Determines if configured connections in a solution's projects are included in selection lists when adding
 	/// a new connnection.
 	/// </summary>
-	public static bool IncludeAppConnections => (bool)GetSetting("DdexGeneralIncludeAppConnections", true);
-
-	/// <summary>
-	/// If enabled, disables asynchronous Trigger/Generator linkage and linkage will
-	/// only performed when it is actually required.
-	/// </summary>
-	public static bool OnDemandLinkage => (bool)GetSetting("DdexGeneralOnDemandLinkage", false);
-
-	/// <summary>
-	/// The maximum time a trigger linkage parser will wait before requesting an extension.
-	/// </summary>
-	public static int LinkageTimeout => (int)GetSetting("DdexGeneralLinkageTimeout", 30);
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// The log file path
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string LogFile => (string)GetSetting("DdexDebugLogFile", "/temp/vsdiag.log");
+	public static bool IncludeAppConnections => (bool)GetPersistentSetting("DdexGeneralIncludeAppConnections", true);
 
 
 	// ---------------------------------------------------------------------------------
@@ -248,7 +105,7 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	/// is initially retrieved.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ShowDiagramPane => (bool)GetSetting("DdexGeneralShowDiagramPane", true);
+	public static bool ShowDiagramPane => (bool)GetPersistentSetting("DdexGeneralShowDiagramPane", true);
 
 
 	// ---------------------------------------------------------------------------------
@@ -256,7 +113,7 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	/// If enabled performs a recovery of late loading provider factories.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ValidateProviderFactories => (bool)GetSetting("DdexGeneralValidateProviderFactories", false);
+	public static bool ValidateProviderFactories => (bool)GetPersistentSetting("DdexGeneralValidateProviderFactories", false);
 
 
 	#endregion Property Accessors
@@ -270,47 +127,44 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	// =========================================================================================================
 
 
-	protected static object GetSetting(string name, object defaultValue)
+	public override int GetEvsAssemblyId(Type type)
 	{
-		try
-		{
-			if (!SettingsStore.TryGetValue(name, out object value))
-				value = defaultValue;
+		int id = base.GetEvsAssemblyId(type);
 
-			return value;
-		}
-		catch (Exception ex)
+		if (id > 0)
+			return id;
+
+		--id;
+
+		if (type.Assembly.FullName == typeof(PersistentSettings).Assembly.FullName)
 		{
-			Diag.Dug(ex);
-			throw ex;
+			_AssemblyId = -id;
+			return _AssemblyId;
 		}
+
+		return id;
 	}
 
 
 
-	protected static bool HasSetting(string name)
-	{
-		return _SettingsStore != null && _SettingsStore.ContainsKey(name);
-	}
+	/*
+		/// <summary>
+		/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
+		/// Only implemented by packages that have settings models, ie. are options providers.
+		/// </summary>
+		public abstract void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
 
 
-
-	/// <summary>
-	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
-	/// Only implemented by packages that have settings models, ie. are options providers.
-	/// </summary>
-	public abstract void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
-
-
-	/// <summary>
-	/// Only implemented by packages that have settings models. Whenever a package
-	/// settings model is saved it fires the extension's OnSettingsSaved event.
-	/// That event handler then requests each package to populate SettingsEventArgs
-	/// if it has settings relevant to the model.
-	/// PopulateSettingsEventArgs is also called on loading by the extension without
-	/// a specific model specified for a universal request for settings.
-	/// </summary>
-	public abstract bool PopulateSettingsEventArgs(ref PropagateSettingsEventArgs args);
+		/// <summary>
+		/// Only implemented by packages that have settings models. Whenever a package
+		/// settings model is saved it fires the extension's OnSettingsSaved event.
+		/// That event handler then requests each package to populate SettingsEventArgs
+		/// if it has settings relevant to the model.
+		/// PopulateSettingsEventArgs is also called on loading by the extension without
+		/// a specific model specified for a universal request for settings.
+		/// </summary>
+		public abstract bool PopulateSettingsEventArgs(ref PropagateSettingsEventArgs args);
+		*/
 
 
 	#endregion Methods
@@ -323,12 +177,14 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	// =========================================================================================================
 
 
+	/*
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Settings saved event handler - only the final descendent class implements this.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public abstract void OnSettingsSaved(object sender);
+	*/
 
 
 
@@ -339,66 +195,12 @@ public abstract class PersistentSettings : IBsPersistentSettings
 	/// IOW these are push notifications of any settings loaded or saved throughout the
 	/// extension and an opportunity to update any live settings.
 	/// </summary>
-	public virtual void PropagateSettings(PropagateSettingsEventArgs e)
+	public override void PropagateSettings(PropagateSettingsEventArgs e)
 	{
-		foreach (MutablePair<string, object> pair in e.Arguments)
-			this[pair.Key] = pair.Value;
-
-		PropagateEquivalencyKeys(e);
-		PropagateDiagnosticsSettings(e);
+		base.PropagateSettings(e);
 	}
 
-
-	private void PropagateEquivalencyKeys(PropagateSettingsEventArgs e)
-	{
-		// Equivalency keys only on startup.
-
-		// if ((e.Package == null || e.Package == "Ddex") && (e.Group == null || e.Group == "Equivalency"))
-
-		if (e.Package == null && e.Group == null)
-		{
-			List<string> equivalencyKeys = [];
-
-			foreach (MutablePair<string, object> pair in e.Arguments)
-			{
-				if (pair.Key.StartsWith("DdexEquivalency") && (bool)pair.Value)
-					equivalencyKeys.Add(pair.Key[15..]);
-			}
-
-			if (equivalencyKeys.Count == 0)
-			{
-				ApplicationException ex = new("Could not extract Equivalency keys from User Options");
-				Diag.DebugDug(ex);
-				throw (ex);
-			}
-
-			NativeDb.EquivalencyKeys = [.. equivalencyKeys];
-
-		}
-	}
-
-
-	private void PropagateDiagnosticsSettings(PropagateSettingsEventArgs e)
-	{
-		if ((e.Package == null || e.Package == "Ddex") && (e.Group == null || e.Group == "General"))
-		{
-			Diag.SettingEnableTaskLog = EnableTaskLog;
-			Diag.SettingEnableDiagnostics = EnableDiagnostics;
-
-			NativeDb.OnDemandLinkage = OnDemandLinkage;
-			NativeDb.LinkageTimeout = LinkageTimeout;
-		}
-
-		if ((e.Package == null || e.Package == "Ddex") && (e.Group == null || e.Group == "Debug"))
-		{
-			Diag.SettingEnableTrace = EnableTrace;
-			Diag.SettingEnableTracer = EnableTracer;
-			Diag.SettingEnableDiagnosticsLog = EnableDiagnosticsLog;
-			Diag.SettingLogFile = LogFile;
-		}
-	}
 
 	#endregion Event handlers
-
 
 }

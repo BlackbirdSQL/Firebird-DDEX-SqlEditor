@@ -24,11 +24,16 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslForeignKeys : AbstractDslSchema
 {
+	internal DslForeignKeys() : base()
+	{
+	}
+
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslForeignKeys.DslForeignKeys");
+		// Evs.Trace(GetType(), "DslForeignKeys.DslForeignKeys");
 
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
@@ -134,7 +139,7 @@ ORDER BY TABLE_NAME, CONSTRAINT_NAME");
 
 	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslForeignKeys.ProcessResult");
+		// Evs.Trace(GetType(), "DslForeignKeys.ProcessResult");
 
 		schema.BeginLoadData();
 		schema.Columns.Add("IS_PRIMARY", typeof(bool));

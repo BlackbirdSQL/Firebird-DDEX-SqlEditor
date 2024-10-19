@@ -399,7 +399,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	int IVsCodeWindowEvents.OnCloseView(IVsTextView pView)
 	{
-		// Tracer.Trace(GetType(), "OnCloseView()");
+		// Evs.Trace(GetType(), nameof(OnCloseView));
 
 		if (_ConnectedViews != null && _ConnectedViews.TryGetValue(pView, out var value))
 		{

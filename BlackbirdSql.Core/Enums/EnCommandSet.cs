@@ -74,8 +74,9 @@ public enum EnCommandSet
 	CmdIdDisconnectAllQueries = 0x0327, // 807
 	CmdIdModifyConnection = 0x0328, // 808
 
+	CmdIdCreateTextObject = 0x0333, // 819
 	CmdIdOpenTextObject = 0x0334, // *820
-	CmdIdOpenAlterTextObject = 0x0335, // 821
+	CmdIdAlterTextObject = 0x0335, // 821
 	CmdIdRetrieveDesignerData = 0x0336, // 822
 	CmdIdResetPageOptions = 0x0337, // 823
 	CmdIdNewDesignerQuery = 0x0338, // 824

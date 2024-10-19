@@ -9,7 +9,6 @@ using BlackbirdSql.Core;
 using BlackbirdSql.EditorExtension.Events;
 using BlackbirdSql.EditorExtension.Properties;
 using BlackbirdSql.Shared.Controls;
-using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model;
 using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
@@ -103,7 +102,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	public override void Initialize()
 	{
-		// Tracer.Trace(GetType(), "Initialize()");
+		// Evs.Trace(GetType(), nameof(Initialize));
 
 		Controller.OnAfterAttributeChangeExEvent += OnAfterAttributeChangeEx;
 		Controller.OnAfterSaveAsyncEvent += OnAfterSaveAsync;
@@ -354,14 +353,14 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	{
 		IDictionary<ProjectItem, object> tempSqlItems = UnsafeCmd.GetOpenMiscProjectItems(projectHierarchy, [NativeDb.Extension], Path.GetTempPath());
 
-		// Tracer.Trace(GetType(), "CleanupTemporarySqlItems()", "Count: {0}.", tempSqlItems.Count);
+		// Evs.Trace(GetType(), nameof(CleanupTemporarySqlItems), "Count: {0}.", tempSqlItems.Count);
 
 		bool result = false;
 		ProjectItem item;
 
 		foreach (KeyValuePair<ProjectItem, object> pair in tempSqlItems)
 		{
-			// Tracer.Trace(GetType(), "CleanupTemporarySqlItems()", "Deleting project item: {0}.", projectItem.Name);
+			// Evs.Trace(GetType(), nameof(CleanupTemporarySqlItems), "Deleting project item: {0}.", projectItem.Name);
 
 			item = pair.Key;
 
@@ -514,7 +513,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	{
 		try
 		{
-			// Tracer.Trace(GetType(), "ResetDocumentStatusAsync()", "ENTER!!!");
+			// Evs.Trace(GetType(), nameof(ResetDocumentStatusAsync), "ENTER!!!");
 
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -522,7 +521,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			if (resetIntellisense)
 				auxDocData.IntellisenseEnabled = true;
 
-			// Tracer.Trace(GetType(), "ResetDocumentStatusAsync()", "Hack for title update");
+			// Evs.Trace(GetType(), nameof(ResetDocumentStatusAsync), "Hack for title update");
 			// HACK: to kickstart dirty state title update.
 			uint saveOpts = (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_ForceSave;
 			RdtManager.SaveDocuments(saveOpts, null, uint.MaxValue, auxDocData.DocCookie);
@@ -538,7 +537,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		{
 			Controller.EventRdtExit();
 
-			// Tracer.Trace(GetType(), "ResetDocumentStatusAsync()", "FINALLY: Intellisense and RdtEvents enabled.");
+			// Evs.Trace(GetType(), nameof(ResetDocumentStatusAsync), "FINALLY: Intellisense and RdtEvents enabled.");
 		}
 
 		return true;
@@ -614,7 +613,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		// If no intellisense, no need to fix targeting.
 		bool resetIntellisense = auxDocData.IntellisenseActive;
 
-		// Tracer.Trace(GetType(), "OnAfterAttributeChangeEx()", "AuxilliaryDocData exists. \nOld mk: {0}\nNew mk: {1}",
+		// Evs.Trace(GetType(), nameof(OnAfterAttributeChangeEx), "AuxilliaryDocData exists. \nOld mk: {0}\nNew mk: {1}",
 		//	pszMkDocumentOld, pszMkDocumentNew);
 
 		// Disable rdt events to avoid any recursion.
@@ -630,7 +629,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 		_ = Task.Factory.StartNew(payloadAsync, default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 
-		// Tracer.Trace(GetType(), "OnAfterAttributeChangeEx()", "DONE!!! Intellisense and RdtEvents disabled");
+		// Evs.Trace(GetType(), nameof(OnAfterAttributeChangeEx), "DONE!!! Intellisense and RdtEvents disabled");
 
 		return VSConstants.S_OK;
 	}
@@ -639,7 +638,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 	private IVsTask OnAfterSaveAsync(uint cookie, uint flags)
 	{
-		// Tracer.Trace(GetType(), "OnAfterSaveAsync()", "DocCookie: {0}.", cookie);
+		// Evs.Trace(GetType(), nameof(OnAfterSaveAsync), "DocCookie: {0}.", cookie);
 
 		RunningDocumentInfo docInfo = RdtManager.GetDocumentInfo(cookie);
 
@@ -664,7 +663,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 	private int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
 	{
-		// Tracer.Trace(GetType(), "OnBeforeDocumentWindowShow()");
+		// Evs.Trace(GetType(), nameof(OnBeforeDocumentWindowShow));
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -777,7 +776,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 	private int OnQueryCloseProject(IVsHierarchy hierarchy, int removing, ref int cancel)
 	{
-		// Tracer.Trace(GetType(), "OnQueryCloseProject()", "IVsProject: {0}.", hierarchy.Kind());
+		// Evs.Trace(GetType(), nameof(OnQueryCloseProject), "IVsProject: {0}.", hierarchy.Kind());
 
 		if (!RequestAbortExecutionsCloseAll(hierarchy) || !RequestDeactivateTtsCloseAll(hierarchy))
 		{

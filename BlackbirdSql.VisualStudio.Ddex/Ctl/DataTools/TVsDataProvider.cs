@@ -59,8 +59,8 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 
 			public object CreateInstance()
 			{
-				if (_TypeName == typeof(TConnectionUIProperties).FullName)
-					return new TConnectionUIProperties();
+				if (_TypeName == typeof(VxbConnectionUIProperties).FullName)
+					return new VxbConnectionUIProperties();
 
 				Assembly assembly = null;
 				if (_CodeBase != null)
@@ -401,12 +401,12 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 					|| objType == typeof(Microsoft.Data.ConnectionUI.IDataConnectionProperties))
 				{
 					return new TiiTypeActivator(this, objType, GetType().Assembly.CodeBase,
-						GetType().Assembly.FullName, typeof(TConnectionUIProperties).FullName,
+						GetType().Assembly.FullName, typeof(VxbConnectionUIProperties).FullName,
 						null, null, null, null, null);
 				}
 			}
 
-			// Tracer.Trace(GetType(), "GetTypeActivatorImpl()", "Activator not implemented for guid: {0}, object type: {1}.", clsid, objType.FullName);
+			// Evs.Trace(GetType(), nameof(GetTypeActivatorImpl), "Activator not implemented for guid: {0}, object type: {1}.", clsid, objType.FullName);
 
 			return null;
 		}
@@ -886,7 +886,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 			return null;
 		}
 
-		// Tracer.Trace(GetType(), "GetString(resourceId)", "resourceId: {0}", resourceId);
+		// Evs.Trace(GetType(), "GetString(resourceId)", "resourceId: {0}", resourceId);
 
 		return $"rescourceId: {resourceId}.";
 

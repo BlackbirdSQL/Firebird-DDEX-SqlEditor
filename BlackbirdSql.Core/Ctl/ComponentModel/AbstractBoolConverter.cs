@@ -32,7 +32,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBsAutomatorConv
 
 	public AbstractBoolConverter()
 	{
-		// Tracer.Trace(GetType(), ".ctor");
+		// Evs.Debug(typeof(AbstractBoolConverter), ".ctor");
 	}
 
 	public void Dispose()
@@ -108,7 +108,8 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBsAutomatorConv
 
 			if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr)
 			{
-				// Tracer.Trace($"Automator {_PropertyName} updating dependent: {pair.Key} from {fld.GetValue(attr)} to {(pair.Value ? bvalue : !bvalue)}.");
+				// Evs.Debug(GetType(), "UpdateReadOnly()",
+				//	$"Automator {_PropertyName} updating dependent: {pair.Key} from {bOldValue} to {(pair.Value ? bNewValue : !bNewValue)}.");
 
 				readOnly = pair.Value ? bNewValue : !bNewValue;
 
@@ -166,7 +167,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBsAutomatorConv
 		_IsAutomator = true;
 		_Model.AutomatorPropertyValueChangedEvent += OnAutomatorPropertyValueChanged;
 
-		// Tracer.Trace($"Registering automator {_PropertyName}.");
+		// Evs.Debug(GetType(), "RegisterModel()", $"Registering automator {_PropertyName}.");
 
 		_Dependents = new Dictionary<string, bool>(model.PropertyWrappers.Count);
 
@@ -174,7 +175,9 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBsAutomatorConv
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{
-				// Tracer.Trace($"Registering automator dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
+				// Evs.Debug(GetType(), "RegisterModel()",
+				//	$"Registering automator dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
+
 				_Dependents.Add(property.PropertyName, property.InvertAutomator);
 			}
 		}

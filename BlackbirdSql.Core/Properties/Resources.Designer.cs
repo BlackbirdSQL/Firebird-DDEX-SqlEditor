@@ -124,6 +124,24 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open &amp;Create Procedure Source.
+        /// </summary>
+        public static string CommandProvider_CreateStoredProcedureScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_CreateStoredProcedureScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open &amp;Create View Definition.
+        /// </summary>
+        public static string CommandProvider_CreateViewScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_CreateViewScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove Connection.
         /// </summary>
         public static string CommandProvider_DeleteDatabaseConnection {
@@ -232,7 +250,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Open Executable Procedure Source.
+        ///   Looks up a localized string similar to &amp;Open Execute Procedure Script.
         /// </summary>
         public static string CommandProvider_OpenStoredProcedureScript {
             get {
@@ -277,7 +295,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Open View Definition.
+        ///   Looks up a localized string similar to &amp;Open View Query.
         /// </summary>
         public static string CommandProvider_OpenViewScript {
             get {

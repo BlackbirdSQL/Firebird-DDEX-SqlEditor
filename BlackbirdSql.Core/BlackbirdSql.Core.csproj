@@ -34,6 +34,7 @@
 		</Compile>
 		<Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
 		<Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
+		<Compile Include="Evs.cs" />
 		<Compile Include="Enums\EnRctKeyType.cs" />
 		<Compile Include="Events\ConnectionChangedEventArgs.cs" />
 		<Compile Include="Interfaces\IBsCsb.cs" />
@@ -75,14 +76,13 @@
 		<Compile Include="Interfaces\IBsDataReaderHandler.cs" />
 		<Compile Include="Model\RctEventSink.cs" />
 		<Compile Include="Interfaces\IBsDataViewSupport.cs" />
-		<Compile Include="Root\CoreConstants.cs" />
+		<Compile Include="CoreConstants.cs" />
 		<Compile Include="Root\RdtManager.cs" />
 		<Compile Include="Model\AbstruseRunningConnectionTable.cs" />
 		<Compile Include="Root\RctManager.cs" />
 		<Compile Include="Model\RunningConnectionTable.cs" />
 		<Compile Include="Enums\EnSqlOutputFormat.cs" />
 		<Compile Include="Enums\EnSqlOutputMode.cs" />
-		<Compile Include="Interfaces\IBsTransientSettings.cs" />
 		<Compile Include="Model\AbstractCsb.cs" />
 		<Compile Include="Model\Csb.cs" />
 		<Compile Include="Properties\AttributeResources.Designer.cs">

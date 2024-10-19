@@ -3,12 +3,15 @@
 
 using System;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys;
+using BlackbirdSql.Sys.Ctl.Config;
+using BlackbirdSql.Sys.Ctl.Diagnostics;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio;
@@ -85,22 +88,10 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	public static string Context
 	{
-		get
-		{
-			return _Context;
-		}
-		set
-		{
-			_Context = value;
-		}
+		get { return _Context; }
+		set { _Context = value; }
 	}
 
-
-	private static bool _SettingEnableTaskLog = true;
-	public static bool SettingEnableTaskLog
-	{
-		set { _SettingEnableTaskLog = value; }
-	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -108,44 +99,17 @@ public static class Diag
 	/// output window.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableTaskLog => _TaskLogActive == 0
-		&& (_InternalActive > 0 || _SettingEnableTaskLog);
+	private static bool EnableTaskLog => _TaskLogActive == 0
+		&& (_InternalActive > 0 || PersistentSettings.EnableTaskLog);
 
-
-	private static bool _SettingEnableTrace = true;
-	public static bool SettingEnableTrace
-	{
-		set { _SettingEnableTrace = value; }
-	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Flag indicating whether or not <see cref="Diag.Trace"/> calls are logged
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableTrace => _SettingEnableTrace;
+	private static bool EnableTrace => PersistentSettings.EnableTrace;
 
-
-
-
-
-	private static bool _SettingEnableTracer = true;
-	public static bool SettingEnableTracer
-	{
-		set { _SettingEnableTracer = value; }
-	}
-
-	public static bool EnableTracer => _SettingEnableTracer;
-
-
-
-
-
-	private static bool _SettingEnableDiagnostics = true;
-	public static bool SettingEnableDiagnostics
-	{
-		set { _SettingEnableDiagnostics = value; }
-	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -155,14 +119,8 @@ public static class Diag
 	/// Exceptions are alweays logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableDiagnostics => _SettingEnableDiagnostics;
+	private static bool EnableDiagnostics => PersistentSettings.EnableDiagnostics;
 
-
-	private static bool _SettingEnableDiagnosticsLog = true;
-	public static bool SettingEnableDiagnosticsLog
-	{
-		set { _SettingEnableDiagnosticsLog = value; }
-	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -172,21 +130,15 @@ public static class Diag
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableDiagnosticsLog => _InternalActive > 0 || _SettingEnableDiagnosticsLog;
+	private static bool EnableDiagnosticsLog => _InternalActive > 0 || PersistentSettings.EnableDiagnosticsLog;
 
-
-	private static string _SettingLogFile = "/temp/vsdiag.log";
-	public static string SettingLogFile
-	{
-		set { _SettingLogFile = value; }
-	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// The log file path
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string LogFile => _SettingLogFile;
+	public static string LogFile => PersistentSettings.LogFile;
 
 
 	#endregion Property accessors
@@ -205,18 +157,12 @@ public static class Diag
 	/// The common Diag diagnostics method
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void Dug(bool isException, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void Dug(bool isException = false, string message = "Debug trace",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
+
 		if (_IgnoreSettings == 0 && !isException && !EnableDiagnostics && !EnableTrace)
 			return;
 
@@ -238,12 +184,12 @@ public static class Diag
 
 			try
 			{
-				if ((pos = sourceFilePath.IndexOf("\\BlackbirdSql")) == -1)
-					pos = sourceFilePath.IndexOf("\\BlackbirdDsl");
+				if ((pos = sourcePath.IndexOf("\\BlackbirdSql")) == -1)
+					pos = sourcePath.IndexOf("\\BlackbirdDsl");
 
 
 				if (pos != -1)
-					sourceFilePath = sourceFilePath[(pos + 1)..];
+					sourcePath = sourcePath[(pos + 1)..];
 
 				if (_TaskLogActive > 0)
 				{
@@ -254,13 +200,13 @@ public static class Diag
 					string prefix = isException ? ":EXCEPTION: " : " ";
 
 					str = _Context + ":" + prefix + DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   "
-						+ memberName + " :: " + sourceFilePath + " :: " + sourceLineNumber +
+						+ memberName + " :: " + sourcePath + " :: " + line +
 						(message == "" ? "" : Environment.NewLine + "\t" + message) + Environment.NewLine;
 				}
 			}
 			catch (Exception ex)
 			{
-				str = $"{ex.Message} sourceFilePath: {sourceFilePath} memberName: {memberName} sourceLineNumber: {sourceLineNumber} message: {message}";
+				str = $"{ex.Message} sourcePath: {sourcePath} memberName: {memberName} sourceLineNumber: {line} message: {message}";
 			}
 
 			try
@@ -298,19 +244,13 @@ public static class Diag
 	/// Diagnostics method for Exceptions only
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void Dug(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1,
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "",
 		int exceptionType = 0)
-#else
-	public static void Dug(Exception ex, string message = "",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
 	{
+
 		message ??= "";
 
 		if (message != "")
@@ -333,7 +273,7 @@ public static class Diag
 			? $"[DEBUG {ex.GetType()}] "
 			: (exceptionType == 2 ? $"[EXPECTED {ex.GetType()}] " : $"[{ex.GetType()}] ");
 
-		Dug(true, prefix + ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
+		Dug(true, prefix + ex.Message + " " + message, line, memberName, sourcePath);
 
 	}
 
@@ -344,20 +284,13 @@ public static class Diag
 	/// Diagnostics method for ServiceUnavailableException
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static ServiceUnavailableException ExceptionService(Type type,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static ServiceUnavailableException ExceptionService(Type type,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		ServiceUnavailableException ex = new(type);
-		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+		Dug(ex, "", line, memberName, sourcePath);
 
 		return ex;
 	}
@@ -373,19 +306,19 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
 	public static async Task<TResult> ThrowExceptionServiceUnavailableAsync<TResult>(Type serviceType,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 		where TResult : class
 #else
 	public static ServiceUnavailableException ExceptionService(Type type,
 		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		string sourcePath = "[Release: SourcePath Unavailable]",
 		int sourceLineNumber = -1)
 #endif
 	{
 		if (serviceType != null)
-			throw ExceptionService(serviceType, memberName, sourceFilePath, sourceLineNumber);
+			throw ExceptionService(serviceType, line, memberName, sourcePath);
 
 		return await Task.FromResult<TResult>(null);
 	}
@@ -397,20 +330,13 @@ public static class Diag
 	/// Raises excepton for ServiceUnavailableException
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void ThrowIfServiceUnavailable(object service, Type type,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static ServiceUnavailableException ExceptionService(Type type,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		if (service == null)
-			throw ExceptionService(type, memberName, sourceFilePath, sourceLineNumber);
+			throw ExceptionService(type, line, memberName, sourcePath);
 	}
 
 
@@ -420,20 +346,13 @@ public static class Diag
 	/// Diagnostics method for TypeAccessException
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static TypeAccessException ExceptionInstance(Type type,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static ServiceUnavailableException ExceptionService(Type type,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		TypeAccessException ex = new($"The singleton instance for {type.FullName} has not been initialized.");
-		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+		Dug(ex, "", line, memberName, sourcePath);
 
 		return ex;
 	}
@@ -445,20 +364,13 @@ public static class Diag
 	/// Throws an exception for TypeAccessException
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void ThrowIfInstanceNull(object instance, Type type,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static ServiceUnavailableException ExceptionService(Type type,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		if (instance == null)
-			throw ExceptionInstance(type, memberName, sourceFilePath, sourceLineNumber);
+			throw ExceptionInstance(type, line, memberName, sourcePath);
 	}
 
 
@@ -468,19 +380,12 @@ public static class Diag
 	/// Diagnostics method for OnUiThread
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static object ThrowException(Exception ex,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void ThrowException(Exception ex,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
-		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+		Dug(ex, "", line, memberName, sourcePath);
 
 		throw ex;
 	}
@@ -491,17 +396,10 @@ public static class Diag
 	/// Diagnostics method for ErrorHandler.ThrowOnFailure
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static int ThrowOnFailure(int hr,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static int ThrowOnFailure(int hr,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		try
 		{
@@ -510,7 +408,7 @@ public static class Diag
 		catch (Exception ex)
 		{
 			Stack();
-			// Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+			// Dug(ex, "", line, memberName, sourcePath);
 			throw ex;
 		}
 	}
@@ -522,22 +420,15 @@ public static class Diag
 	/// Diagnostics method for OnUiThread
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static COMException ExceptionThreadOnUI(
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static ServiceUnavailableException ExceptionService(Type type,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		string message = string.Format(CultureInfo.CurrentCulture, "{0} may NOT be called on the UI thread.", memberName);
 		COMException ex = new(message, VSConstants.RPC_E_WRONG_THREAD);
 
-		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+		Dug(ex, "", line, memberName, sourcePath);
 
 		return ex;
 	}
@@ -549,20 +440,13 @@ public static class Diag
 	/// Raises an exception if OnUiThread.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void ThrowIfOnUIThread(
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static ServiceUnavailableException ExceptionService(Type type,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		if (ThreadHelper.CheckAccess())
-			throw ExceptionThreadOnUI(memberName, sourceFilePath, sourceLineNumber);
+			throw ExceptionThreadOnUI(line, memberName, sourcePath);
 	}
 
 
@@ -572,22 +456,15 @@ public static class Diag
 	/// Diagnostics method for NotOnUiThread
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static COMException ExceptionThreadNotUI(
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static ServiceUnavailableException ExceptionService(Type type,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		string message = string.Format(CultureInfo.CurrentCulture, "{0} must be called on the UI thread.", memberName);
 		COMException ex = new(message, VSConstants.RPC_E_WRONG_THREAD);
 
-		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+		Dug(ex, "", line, memberName, sourcePath);
 
 		return ex;
 	}
@@ -602,20 +479,13 @@ public static class Diag
 	/// thread trail by Intellisense.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void ThrowIfNotOnUIThread(
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static ServiceUnavailableException ExceptionService(Type type,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		if (!ThreadHelper.CheckAccess())
-			throw ExceptionThreadNotUI(memberName, sourceFilePath, sourceLineNumber);
+			throw ExceptionThreadNotUI(line, memberName, sourcePath);
 	}
 
 
@@ -629,20 +499,13 @@ public static class Diag
 	/// identified.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void Debug(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void Expected(Exception ex, string message = "",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 #if DEBUG
-		Dug(ex, message, memberName, sourceFilePath, sourceLineNumber, 1);
+		Dug(ex, message, line, memberName, sourcePath, 1);
 #endif
 	}
 
@@ -656,20 +519,13 @@ public static class Diag
 	/// connection or a temporarily inaccessible tab for text updates. 
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void Expected(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void Expected(Exception ex, string message = "",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 #if DEBUG
-		Dug(ex, message, memberName, sourceFilePath, sourceLineNumber, 2);
+		Dug(ex, message, line, memberName, sourcePath, 2);
 #endif
 	}
 
@@ -683,19 +539,12 @@ public static class Diag
 	/// For easy identification of temporary try/catch statements during debugging.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void Tug(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void Tug(Exception ex, string message = "",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
-		Dug(ex, message, memberName, sourceFilePath, sourceLineNumber);
+		Dug(ex, message, line, memberName, sourcePath);
 	}
 
 
@@ -706,17 +555,10 @@ public static class Diag
 	/// to prevent recursion or when package is not sited yet.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void DebugDug(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void DebugDug(Exception ex, string message = "",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		if (message != "")
 			message += ":";
@@ -737,7 +579,7 @@ public static class Diag
 
 		try
 		{
-			Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
+			Dug(true, ex.Message + " " + message, line, memberName, sourcePath);
 		}
 		catch { }
 
@@ -754,17 +596,10 @@ public static class Diag
 	/// Diagnostics method for full information stack trace
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void Stack(string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void Stack(string message = "",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		if (message != "")
 			message += ":";
@@ -778,7 +613,7 @@ public static class Diag
 
 		try
 		{
-			Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+			Dug(false, message, line, memberName, sourcePath);
 		}
 		catch { }
 
@@ -796,17 +631,10 @@ public static class Diag
 	/// Diagnostics method for full exception stack trace
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void StackException(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void Stack(Exception ex, string message = "",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		if (message != "")
 			message += ":";
@@ -824,7 +652,7 @@ public static class Diag
 
 		message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
 
-		Dug(true, message, memberName, sourceFilePath, sourceLineNumber);
+		Dug(true, message, line, memberName, sourcePath);
 
 	}
 
@@ -835,24 +663,17 @@ public static class Diag
 	/// Diagnostics method for full exception stack trace
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void StackException(string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void Stack(string message = "",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		if (message != "")
 			message += ":";
 
 		message += (message != "" ? Environment.NewLine : "") + "TRACE: " + Environment.StackTrace.ToString();
 
-		Dug(true, message, memberName, sourceFilePath, sourceLineNumber);
+		Dug(true, message, line, memberName, sourcePath);
 
 	}
 
@@ -864,17 +685,10 @@ public static class Diag
 	/// to prevent recursion or when package is not sited yet
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void DebugTrace(string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void DebugTrace(string message = "Debug trace",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		// if (!EnableTrace)
 		//	return;
@@ -887,7 +701,7 @@ public static class Diag
 
 		try
 		{
-			Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+			Dug(false, message, line, memberName, sourcePath);
 		}
 		catch { }
 
@@ -906,17 +720,10 @@ public static class Diag
 	/// prevent recursion or when package is not sited yet
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void DebugWarning(string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void DebugWarning(string message = "Debug trace",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		// if (!EnableTrace)
 		//	return;
@@ -929,7 +736,7 @@ public static class Diag
 
 		try
 		{
-			Dug(false, "WARNING: " + message, memberName, sourceFilePath, sourceLineNumber);
+			Dug(false, "WARNING: " + message, line, memberName, sourcePath);
 		}
 		catch { }
 
@@ -947,22 +754,15 @@ public static class Diag
 	/// Trace method for trace breadcrumbs during debug.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
 	public static void Trace(string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-#else
-	public static void Trace(string message = "Debug trace",
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourceFilePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 		if (!EnableTrace)
 			return;
 
-		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+		Dug(false, message, line, memberName, sourcePath);
 	}
 
 
@@ -1004,7 +804,7 @@ public static class Diag
 					str += "\n\tNode.Object is null.";
 				}
 
-				Tracer.Information(classType, method, str);
+				Evs.Info(classType, method, str);
 			}
 			catch (Exception ex)
 			{

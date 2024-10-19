@@ -176,6 +176,7 @@ public sealed class AuxilliaryDocData : IDisposable
 			if (_CommandRctStamp == value)
 				return;
 
+			_CommandSelectedName = null;
 			_CommandDatabaseList = null;
 			_CommandRctStamp = value;
 		}
@@ -382,7 +383,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		}
 		set
 		{
-			// Tracer.Trace(GetType(), "set_SqlOutputMode", "value = {0}", value);
+			// Evs.Trace(GetType(), "set_SqlOutputMode", "value = {0}", value);
 			if (QryMgr.IsLocked)
 			{
 				InvalidOperationException ex = new(Resources.ExSqlExecutionModeChangeFailed);
@@ -547,7 +548,7 @@ public sealed class AuxilliaryDocData : IDisposable
 
 	public bool RequestDeactivateQuery(string msgResource = null)
 	{
-		// Tracer.Trace(GetType(), "RequestDeactivateQuery()");
+		// Evs.Trace(GetType(), nameof(RequestDeactivateQuery));
 
 		if (QryMgr == null)
 			return true;
@@ -905,7 +906,7 @@ public sealed class AuxilliaryDocData : IDisposable
 			if (!args.IsStateConnected)
 				return;
 
-			// Tracer.Trace(GetType(), "OnQueryManagerStatusChanged()", "IN");
+			// Evs.Trace(GetType(), nameof(OnQueryManagerStatusChanged), "IN");
 
 			IVsUserData vsUserData = VsUserData;
 			if (args.Value)

@@ -1,0 +1,405 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataViewSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataViewSupport">
+
+	<!-- As per DataViewSupport.xsd xs:sequence applied so imports then definitions come first -->
+
+	<!-- Import data view support command and element definitions -->
+	<Import name="CommandsDefinitions" />
+	<Import name="StandardValuesDefinitions" />
+	<Import name="ElementsDefinitions" />
+
+	<!-- Views -->
+	<Views>
+		<View name="ByType">
+			<DisplayName>By Type</DisplayName>
+			<GlobalCommands>
+				<CommandListRef name="TplGlobalCommands" />
+			</GlobalCommands>
+			<ConnectionNode nodeId="Database" type="Database">
+				<InitialDisplayName>{Root.ConnectionKey}</InitialDisplayName>
+				<Properties>
+					<Property name="DataSource">
+						<DisplayName resource="Identifier_Name_DataSource" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_DataSource" />
+					</Property>
+					<Property name="Database">
+						<DisplayName resource="Identifier_Name_DatabasePath" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_DatabasePath" />
+					</Property>
+					<Property name="DatasetId">
+						<DisplayName resource="Identifier_Name_DatasetId" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_DatasetId" />
+					</Property>
+					<Property name="UserID">
+						<DisplayName resource="Identifier_Name_UserId" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_UserId" />
+					</Property>
+					<Property name="ClientVersion">
+						<DisplayName resource="Identifier_Name_ClientVersion" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_ClientVersion" />
+					</Property>
+					<Property name="ServerType">
+						<DisplayName resource="Identifier_Name_ServerType" />
+						<Category resource="Category_DataSourceInformation" />
+						<Description resource="Identifier_Desc_ServerType" />
+						<StandardValuesRef name="TplStandardValuesServerType" />
+					</Property>
+					<Property name="Port">
+						<DisplayName resource="Identifier_Name_ServerPort" />
+						<Category resource="Category_DataSourceInformation" />
+						<Description resource="Identifier_Desc_ServerPort" />
+					</Property>
+					<Property name="MemoryUsage">
+						<DisplayName resource="Identifier_Name_MemoryUsage" />
+						<Category resource="Category_DataSourceInformation" />
+						<Description resource="Identifier_Desc_MemoryUsage" />
+					</Property>
+					<Property name="ActiveUsers">
+						<DisplayName resource="Identifier_Name_ActiveUsers" />
+						<Category resource="Category_DataSourceInformation" />
+						<Description resource="Identifier_Desc_ActiveUsers" />
+					</Property>
+				</Properties>
+				<Commands>
+					<!--<CommandRef name="CommandNewQuery" />-->
+					<!--<CommandRef name="CommandUniversalDetachDatabase" />-->
+				</Commands>
+				<Children>
+					<StaticNode nodeId="Tables">
+						<DisplayName resource="Node_Name_Tables" />
+						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseTables.ico" assembly="" />
+						<Children>
+							<StaticNodeRef name="TplStaticNodeTablesTables" arguments="System,1,NoChildren"/>
+							<SelectionRef name="TplSelectionTables" arguments="User,0,WithChildren"/>
+						</Children>
+					</StaticNode>
+					<StaticNode nodeId="Views">
+						<DisplayName resource="Node_Name_Views" />
+						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseViews.ico" assembly="" />
+						<Children>
+							<Selection type="View" restrictions="null,null">
+								<SelectionNode nodeId="View">
+									<DisplayName>{View.VIEW_NAME}</DisplayName>
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.View.ico" when="NOT ({View.IS_SYSTEM_VIEW} = 99)" assembly="" />
+									<Properties>
+										<TypeDisplayName resource="Type_View" />
+										<Property name="VIEW_NAME">
+											<DisplayName resource="Identifier_Name_Name" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Identifier_Desc_Name" />
+										</Property>
+										<Property name="IS_SYSTEM_VIEW">
+											<DisplayName resource="Property_Name_ObjectSystemType" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_ObjectSystemType" />
+											<StandardValuesRef name="TplStandardValuesViewSystemType" />
+										</Property>
+										<Property name="DESCRIPTION">
+											<DisplayName resource="Property_Name_Description" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_Description" />
+										</Property>
+									</Properties>
+									<Commands>
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
+									</Commands>
+									<Children>
+										<SelectionRef name="TplSelectionColumn" arguments="ViewColumn,View,User,Empty,{View.VIEW_CATALOG},,{View.VIEW_SCHEMA},,{View.VIEW_NAME}" />
+									</Children>
+								</SelectionNode>
+							</Selection>
+						</Children>
+					</StaticNode>
+					<StaticNode nodeId="Procedures">
+						<DisplayName resource="Node_Name_Procedures" />
+						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseProcedures.ico" assembly="" />
+						<Children>
+							<Selection type="StoredProcedure" restrictions="null,null">
+								<SelectionNode nodeId="Procedure">
+									<DisplayName>{Procedure.PROCEDURE_NAME}</DisplayName>
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Procedure.ico" when="NOT ({Procedure.IS_SYSTEM_FLAG} = 99)" assembly="" />
+									<Properties>
+										<TypeDisplayName resource="Type_StoredProcedure" />
+										<Property name="PROCEDURE_NAME">
+											<DisplayName resource="Identifier_Name_Name" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Identifier_Desc_Name" />
+										</Property>
+										<Property name="IS_SYSTEM_FLAG">
+											<DisplayName resource="Property_Name_ObjectSystemType" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_ObjectSystemType" />
+											<StandardValuesRef name="TplStandardValuesProcedureSystemType" />
+										</Property>
+										<Property name="DESCRIPTION">
+											<DisplayName resource="Property_Name_Description" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_Description" />
+										</Property>
+										<Property name="SOURCE">
+											<DisplayName resource="Property_Name_Dsl" />
+											<Category resource="Category_Initialization" />
+											<Description resource="Property_Desc_Dsl" />
+										</Property>
+									</Properties>
+									<Commands>
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
+									</Commands>
+									<Children>
+										<StaticNode nodeId="StoredProcedureColumns">
+											<DisplayName resource="Node_Name_ProcedureColumns" />
+											<Children>
+												<!-- Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL -->
+												<Selection type="StoredProcedureColumn" restrictions="{Procedure.PROCEDURE_CATALOG},{Procedure.PROCEDURE_SCHEMA},{Procedure.PROCEDURE_NAME}" filter="DIRECTION_FLAG > 0">
+													<SelectionNode nodeId="Column">
+														<DisplayName>{Column.PARAMETER_NAME}</DisplayName>
+														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Column.DIRECTION_FLAG} = 1" assembly="" />
+														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" when="{Column.DIRECTION_FLAG} = 3" assembly="" />
+														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
+														<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Column,PARAMETER_NAME,Empty"/>
+														<Commands>
+															<CommandRef name="CommandOverrideRetrieveDataLocal" />
+														</Commands>
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</StaticNode>
+										<StaticNode nodeId="StoredProcedureParameters">
+											<DisplayName resource="Node_Name_ProcedureParameters" />
+											<Children>
+												<!-- Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL -->
+												<Selection type="StoredProcedureColumn" restrictions="{Procedure.PROCEDURE_CATALOG},{Procedure.PROCEDURE_SCHEMA},{Procedure.PROCEDURE_NAME}" filter="DIRECTION_FLAG = 0 OR DIRECTION_FLAG = 3">
+													<SelectionNode nodeId="Column">
+														<DisplayName>{Column.PARAMETER_NAME}</DisplayName>
+														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Column.DIRECTION_FLAG} = 0" assembly="" />
+														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" assembly="" />
+														<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Column,PARAMETER_NAME,Empty"/>
+														<Commands>
+															<CommandRef name="CommandOverrideRetrieveDataLocal" />
+														</Commands>
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</StaticNode>
+										<!-- Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL -->
+										<Selection type="StoredProcedureParameter" restrictions="{Procedure.PROCEDURE_CATALOG},{Procedure.PROCEDURE_SCHEMA},{Procedure.PROCEDURE_NAME}" filter="DIRECTION_FLAG > 0">
+											<SelectionNode nodeId="Parameter">
+												<DisplayName>{Parameter.PARAMETER_NAME}</DisplayName>
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Parameter.DIRECTION_FLAG} = 1" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" when="{Parameter.DIRECTION_FLAG} = 3" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
+												<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Parameter,PARAMETER_NAME,Empty"/>
+												<Commands>
+													<CommandRef name="CommandOverrideRetrieveDataLocal" />
+												</Commands>
+											</SelectionNode>
+										</Selection>
+										<!-- Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL -->
+										<Selection type="StoredProcedureParameter" restrictions="{Procedure.PROCEDURE_CATALOG},{Procedure.PROCEDURE_SCHEMA},{Procedure.PROCEDURE_NAME}"  filter="DIRECTION_FLAG = 0">
+											<SelectionNode nodeId="Parameter">
+												<DisplayName>{Parameter.PARAMETER_NAME}</DisplayName>
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" assembly="" />
+												<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Parameter,PARAMETER_NAME,Empty"/>
+												<Commands>
+													<CommandRef name="CommandOverrideRetrieveDataLocal" />
+												</Commands>
+											</SelectionNode>
+										</Selection>
+									</Children>
+								</SelectionNode>
+							</Selection>
+						</Children>
+					</StaticNode>
+					<StaticNode nodeId="Functions">
+						<DisplayName resource="Node_Name_Functions" />
+						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseFunctions.ico" assembly="" />
+						<Children>
+							<Selection type="Function" restrictions="null,null">
+								<SelectionNode nodeId="Function">
+									<DisplayName>{Function.FUNCTION_NAME}</DisplayName>
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Function.ico" when="NOT ({Function.IS_SYSTEM_FLAG} = 99)" assembly="" />
+									<Properties>
+										<TypeDisplayName resource="Type_Function" />
+										<Property name="FUNCTION_NAME">
+											<DisplayName resource="Identifier_Name_Name" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Identifier_Desc_Name" />
+										</Property>
+										<Property name="IS_SYSTEM_FLAG">
+											<DisplayName resource="Property_Name_ObjectSystemType" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_ObjectSystemType" />
+											<StandardValuesRef name="TplStandardValuesFunctionSystemType" />
+										</Property>
+										<Property name="DESCRIPTION">
+											<DisplayName resource="Property_Name_Description" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_Description" />
+										</Property>
+										<Property name="SOURCE">
+											<DisplayName resource="Property_Name_Dsl" />
+											<Category resource="Category_Initialization" />
+											<Description resource="Property_Desc_Dsl" />
+										</Property>
+									</Properties>
+									<Commands>
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
+									</Commands>
+									<Children>
+										<Selection type="FunctionColumn" restrictions="{Function.FUNCTION_CATALOG},{Function.FUNCTION_SCHEMA},{Function.FUNCTION_NAME}" filter="ORDINAL_POSITION = 0" >
+											<SelectionNode nodeId="Parameter">
+												<DisplayName>{Parameter.PSEUDO_NAME}</DisplayName>
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.ORDINAL_POSITION} > 0" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
+												<PropertiesRef name="TplPropertiesColumn" arguments="Function,Parameter,ARGUMENT_NAME,Empty"/>
+												<Commands>
+													<CommandRef name="CommandOverrideRetrieveDataLocal" />
+												</Commands>
+											</SelectionNode>
+										</Selection>
+										<Selection type="FunctionParameter" restrictions="{Function.FUNCTION_CATALOG},{Function.FUNCTION_SCHEMA},{Function.FUNCTION_NAME}" filter="ORDINAL_POSITION > 0">
+											<SelectionNode nodeId="Parameter">
+												<DisplayName>{Parameter.PSEUDO_NAME}</DisplayName>
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.ORDINAL_POSITION} > 0" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
+												<PropertiesRef name="TplPropertiesColumn" arguments="Function,Parameter,ARGUMENT_NAME,Empty"/>
+												<Commands>
+													<CommandRef name="CommandOverrideRetrieveDataLocal" />
+												</Commands>
+											</SelectionNode>
+										</Selection>
+									</Children>
+								</SelectionNode>
+							</Selection>
+						</Children>
+					</StaticNode>
+					<StaticNode nodeId="Sequences">
+						<DisplayName resource="Node_Name_Sequences" />
+						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseSequences.ico" assembly="" />
+						<Children>
+							<Selection type="Sequence" restrictions="null,null">
+								<SelectionNode nodeId="Sequence">
+									<DisplayName>{Sequence.SEQUENCE_GENERATOR}</DisplayName>
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.IdentityColumn.ico" assembly="" />
+									<Properties>
+										<TypeDisplayName resource="Type_Sequence" />
+										<Property name="SEQUENCE_GENERATOR">
+											<DisplayName resource="Identifier_Name_Name" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Identifier_Desc_Name" />
+										</Property>
+										<Property name="IDENTITY_SEED">
+											<DisplayName resource="Property_Name_Sequence_Seed" />
+											<Category resource="Category_Initialization" />
+											<Description resource="Property_Desc_Sequence_Seed" />
+										</Property>
+										<Property name="IDENTITY_INCREMENT">
+											<DisplayName resource="Property_Name_Sequence_Increment" />
+											<Category resource="Category_Initialization" />
+											<Description resource="Property_Desc_Sequence_Increment" />
+										</Property>
+										<Property name="IDENTITY_CURRENT">
+											<DisplayName resource="Property_Name_Sequence_Current" />
+											<Category resource="Category_Initialization" />
+											<Description resource="Property_Desc_Sequence_Current" />
+										</Property>
+										<Property name="DEPENDENCY_TRIGGER">
+											<DisplayName resource="Property_Name_Sequence_Trigger" />
+											<Category resource="Category_Dependencies" />
+											<Description resource="Property_Desc_Sequence_Trigger" />
+										</Property>
+										<Property name="DEPENDENCY_TABLE">
+											<DisplayName resource="Property_Name_Sequence_Table" />
+											<Category resource="Category_Dependencies" />
+											<Description resource="Property_Desc_Sequence_Table" />
+										</Property>
+										<Property name="DEPENDENCY_FIELD">
+											<DisplayName resource="Property_Name_Sequence_Field" />
+											<Category resource="Category_Dependencies" />
+											<Description resource="Property_Desc_Sequence_Field" />
+										</Property>
+									</Properties>
+								</SelectionNode>
+							</Selection>
+						</Children>
+					</StaticNode>
+					<StaticNode nodeId="Triggers">
+						<DisplayName resource="Node_Name_Triggers" />
+						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseTriggers.ico" assembly="" />
+						<Children>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="SystemTrigger,NoChildren,System,1"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="IdentityTrigger,WithChildren,User,0"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="StandardTrigger,WithChildren,User,0"/>
+						</Children>
+					</StaticNode>
+					<StaticNode nodeId="Domains">
+						<DisplayName resource="Node_Name_Domains" />
+						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseDomains.ico" assembly="" />
+						<Children>
+							<Selection type="Domain" restrictions="null,null">
+								<SelectionNode nodeId="Domain">
+									<DisplayName>{Domain.DOMAIN_NAME}</DisplayName>
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Domain.ico" assembly="" />
+									<Properties>
+										<TypeDisplayName resource="Type_Domain" />
+										<Property name="DOMAIN_NAME">
+											<DisplayName resource="Identifier_Name_Name" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Identifier_Desc_Name" />
+										</Property>
+										<Property name="DESCRIPTION">
+											<DisplayName resource="Property_Name_Description" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_Description" />
+										</Property>
+										<Property name="DOMAIN_DATA_TYPE">
+											<DisplayName resource="Property_Name_Column_ProviderDataType" />
+											<Category resource="Category_DataType" />
+											<Description resource="Property_Desc_Column_ProviderDataType" />
+											<StandardValuesRef name="TplStandardValuesColumnDataType"/>
+										</Property>
+										<Property name="DOMAIN_SIZE">
+											<DisplayName resource="Property_Name_Column_Length" />
+											<Category resource="Category_DataType" />
+											<Description resource="Property_Desc_Column_Length" />
+										</Property>
+										<Property name="NUMERIC_PRECISION">
+											<DisplayName resource="Property_Name_Column_Precision" />
+											<Category resource="Category_DataType" />
+											<Description resource="Property_Desc_Column_Precision" />
+										</Property>
+										<Property name="NUMERIC_SCALE">
+											<DisplayName resource="Property_Name_Column_Scale" />
+											<Category resource="Category_DataType" />
+											<Description resource="Property_Desc_Column_Scale" />
+										</Property>
+										<Property name="IS_NULLABLE">
+											<DisplayName resource="Property_Name_Column_Nullable" />
+											<Category resource="Category_DataType" />
+											<Description resource="Property_Desc_Column_Nullable" />
+										</Property>
+										<Property name="CHARACTER_SET_NAME">
+											<DisplayName resource="Property_Name_Column_CharacterSet" />
+											<Category resource="Category_DataType" />
+										</Property>
+										<Property name="COLLATION_NAME">
+											<DisplayName resource="Property_Name_Column_Collation" />
+											<Category resource="Category_DataType" />
+										</Property>
+									</Properties>
+								</SelectionNode>
+							</Selection>
+						</Children>
+					</StaticNode>
+				</Children>
+			</ConnectionNode>
+		</View>
+	</Views>
+	<!-- String Resources Definitions -->
+	<Resources baseName="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport" />
+</DataViewSupport>

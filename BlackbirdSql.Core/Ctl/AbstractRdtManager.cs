@@ -10,6 +10,7 @@ using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
+using BlackbirdSql.Sys.Ctl.Diagnostics;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -610,7 +611,7 @@ public abstract class AbstractRdtManager : IDisposable
 				{
 					if (!__(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var ppHier, out var pitemid, out ppunkDocData, out var pdwCookie)))
 					{
-						Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to find document {0}.", fileName);
+						Evs.Warning(GetType(), "TrySetDocDataDirty()", $"Failed to find document {fileName}.");
 						return false;
 					}
 
@@ -618,13 +619,13 @@ public abstract class AbstractRdtManager : IDisposable
 
 					if (!__(RdtSvc.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, pdwCookie)))
 					{
-						Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to unlock document {0}.", fileName);
+						Evs.Warning(GetType(), "TrySetDocDataDirty()", $"Failed to unlock document {fileName}.");
 						return false;
 					}
 
 					if (!__(RdtSvc.GetDocumentInfo(pdwCookie, out var _, out var _, out var _, out var _, out ppHier, out pitemid, out var ppunkDocData2)))
 					{
-						Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to get document info {0}.", fileName);
+						Evs.Warning(GetType(), "TrySetDocDataDirty()", $"Failed to get document info {fileName}.");
 						return false;
 					}
 
@@ -639,7 +640,7 @@ public abstract class AbstractRdtManager : IDisposable
 									return true;
 								}
 
-								Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to set docData dirty {0}.", fileName);
+								Evs.Warning(GetType(), "TrySetDocDataDirty()", $"Failed to set docData dirty {fileName}.");
 								return false;
 							}
 
@@ -878,7 +879,7 @@ public abstract class AbstractRdtManager : IDisposable
 		if (property != 0)
 		{
 			pvar = null;
-			Tracer.Warning(GetType(), "GetWindowDocView()", "Could not retrieve docView from frame {0}.", property);
+			Evs.Warning(GetType(), "GetWindowDocView()", $"Could not retrieve docView from frame {property}.");
 		}
 
 		return pvar;
@@ -923,7 +924,7 @@ public abstract class AbstractRdtManager : IDisposable
 		}
 
 		if (result == null)
-			Tracer.Warning(GetType(), "GetWindowFrame()", "FAILED to find window frame for mkDocument: {0}", mkDocument);
+			Evs.Warning(GetType(), "GetWindowFrame()", $"FAILED to find window frame for mkDocument: {mkDocument}");
 
 		return result;
 	}

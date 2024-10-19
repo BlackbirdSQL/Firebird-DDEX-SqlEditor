@@ -145,8 +145,15 @@ public abstract class AbstractCommand : IBsCommand
 
 			if (value != null)
 			{
-				CachedAuxDocData.CommandSelectedName = null;
-				return value;
+				if (StoredRctStamp != RctManager.Stamp)
+				{
+					StoredRctStamp = RctManager.Stamp;
+				}
+				else
+				{
+					CachedAuxDocData.CommandSelectedName = null;
+					return value;
+				}
 			}
 
 			return CachedLiveQualifiedName;

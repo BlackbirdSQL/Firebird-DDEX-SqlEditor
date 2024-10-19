@@ -53,7 +53,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	private LinkageParser(string connectionString, string[] restrictions) : base(connectionString, restrictions)
 	{
-		// Tracer.Trace(typeof(LinkageParser), ".ctor(string, string[]");
+		// Evs.Trace(typeof(LinkageParser), ".ctor(string, string[]");
 	}
 
 
@@ -65,7 +65,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	private LinkageParser(LinkageParser rhs) : base(rhs)
 	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection)");
+		// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection)");
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	private LinkageParser(IVsDataExplorerConnection root) : this(root, null)
 	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection)");
+		// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection)");
 	}
 
 
@@ -89,7 +89,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	private LinkageParser(IVsDataExplorerConnection root, LinkageParser rhs) : base(root, rhs)
 	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection, LinkageParser)");
+		// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection, LinkageParser)");
 		_TaskHandler = new(_ConnectionString);
 	}
 
@@ -97,7 +97,7 @@ public class LinkageParser : AbstractLinkageParser
 
 	protected override bool Dispose(bool disposing)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "Dispose(bool)");
+		// Evs.Trace(typeof(LinkageParser), "Dispose(bool)");
 
 		lock (_LockGlobal)
 		{
@@ -133,7 +133,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	private static LinkageParser CreateInstance(IVsDataExplorerConnection root, bool canCreate)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "canCreate: {0}.", canCreate);
+		// Evs.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "canCreate: {0}.", canCreate);
 
 		LinkageParser parser;
 
@@ -163,7 +163,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(string connectionString, string[] restrictions)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureLoaded()");
+		// Evs.Trace(typeof(LinkageParser), "EnsureLoaded()");
 
 		
 		LinkageParser parser;
@@ -229,7 +229,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(IDbConnection connection)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureLoaded()");
+		// Evs.Trace(typeof(LinkageParser), "EnsureLoaded()");
 
 		IVsDataExplorerConnection root = connection.ExplorerConnection(true);
 
@@ -255,7 +255,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(IVsDataExplorerConnection root)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureLoaded()");
+		// Evs.Trace(typeof(LinkageParser), "EnsureLoaded()");
 
 		LinkageParser parser = CreateInstance(root, true);
 
@@ -276,7 +276,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public override bool EnsureLoaded()
 	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
+		// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
 
 		if (IsTransient)
 			return true;
@@ -298,7 +298,7 @@ public class LinkageParser : AbstractLinkageParser
 	[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
 	public override bool EnsureLoadedRestricted()
 	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
+		// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
 
 		bool result = false;
 		// Fire and wait
@@ -321,7 +321,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser GetInstance(IVsDataExplorerConnection root)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "GetInstance(IVsDataConnection)");
+		// Evs.Trace(typeof(LinkageParser), "GetInstance(IVsDataConnection)");
 
 		return CreateInstance(root, false);
 	}
@@ -336,7 +336,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser GetInstanceOrTransient(string connectionString)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "GetInstance(connectionString)", "connectionString: {0}.", connectionString);
+		// Evs.Trace(typeof(LinkageParser), "GetInstance(connectionString)", "connectionString: {0}.", connectionString);
 
 		return (LinkageParser)FindInstanceOrTransient(connectionString);
 	}
@@ -473,7 +473,7 @@ public class LinkageParser : AbstractLinkageParser
 			string lockedConnectionUrl = ApcManager.CreateConnectionUrl(_LockedLoadedConnectionString);
 			string disposingConnectionUrl = ApcManager.CreateConnectionUrl(ConnectionString);
 
-			// Tracer.Trace(typeof(RctManager), "IsLockedLoaded", "\nlockedConnectionUrl: {0}, disposingConnectionUrl: {1}.", lockedConnectionUrl, disposingConnectionUrl);
+			// Evs.Trace(typeof(RctManager), "IsLockedLoaded", "\nlockedConnectionUrl: {0}, disposingConnectionUrl: {1}.", lockedConnectionUrl, disposingConnectionUrl);
 			_LockedLoadedConnectionString = null;
 
 			if (lockedConnectionUrl.Equals(disposingConnectionUrl))
@@ -519,7 +519,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser AsyncEnsureLoading(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+		// Evs.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
 
 		if (root == null)
 			return null;
@@ -562,7 +562,7 @@ public class LinkageParser : AbstractLinkageParser
 		if (!ClearToLoadAsync)
 			return false;
 
-		// Tracer.Trace(GetType(), "AsyncExecute()");
+		// Evs.Trace(GetType(), nameof(AsyncExecute));
 
 		int asyncProcessId = _AsyncProcessSeed < 99990 ? ++_AsyncProcessSeed : 90001;
 		_AsyncProcessSeed = asyncProcessId;
@@ -582,7 +582,7 @@ public class LinkageParser : AbstractLinkageParser
 		TaskCreationOptions creationOptions = TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent;
 		TaskScheduler scheduler = TaskScheduler.Default;
 
-		// Tracer.Trace(GetType(), "AsyncExecute()", "delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
+		// Evs.Trace(GetType(), nameof(AsyncExecute), "delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
 
 		// For brevity.
 		Task<bool> payloadAsync() =>
@@ -594,7 +594,7 @@ public class LinkageParser : AbstractLinkageParser
 
 		_TaskHandler.RegisterTask(_AsyncPayloadLauncher);
 
-		// Tracer.Trace(GetType(), "AsyncExecute()", "EXIT - AsyncTask registered - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+		// Evs.Trace(GetType(), nameof(AsyncExecute), "EXIT - AsyncTask registered - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 
 
 		return true;
@@ -627,7 +627,7 @@ public class LinkageParser : AbstractLinkageParser
 	[SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
 	private async Task<bool> DelayAsync(int delay, int multiplier, CancellationToken userToken)
 	{
-		// Tracer.Trace(GetType(), "DelayAsync()", "Entering - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
+		// Evs.Trace(GetType(), nameof(DelayAsync), "Entering - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
 
 		lock (_LockObject)
 			_AsyncPayloadLaunchState = EnLauncherPayloadLaunchState.Launching;
@@ -651,7 +651,7 @@ public class LinkageParser : AbstractLinkageParser
 			}
 		}
 
-		// Tracer.Trace(GetType(), "DelayAsync()", "Exiting - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
+		// Evs.Trace(GetType(), nameof(DelayAsync), "Exiting - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
 
 
 		return await Task.FromResult(!userToken.Cancelled() && _AsyncPayloadLauncher != null);
@@ -666,7 +666,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected override bool Disable()
 	{
-		// Tracer.Trace(GetType(), "Disable()");
+		// Evs.Trace(GetType(), nameof(Disable));
 
 		if (_Disabling)
 			return false;
@@ -726,7 +726,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static bool LockLoadedParser(string originalString, string updatedString)
 	{
-		// Tracer.Trace(typeof(RctManager), "LockLoadedParser()");
+		// Evs.Trace(typeof(RctManager), "LockLoadedParser()");
 
 		_LockedLoadedConnectionString = null;
 
@@ -741,7 +741,7 @@ public class LinkageParser : AbstractLinkageParser
 		if (!ApcManager.IsConnectionEquivalency(originalString, updatedString))
 			return false;
 
-		// Tracer.Trace(typeof(RctManager), "LockLoadedParser()", "LOCKING!!!\nParser TransientString: {0}\nupdatedString: {1}", parser.TransientString, updatedString);
+		// Evs.Trace(typeof(RctManager), "LockLoadedParser()", "LOCKING!!!\nParser TransientString: {0}\nupdatedString: {1}", parser.TransientString, updatedString);
 
 		_LockedLoadedConnectionString = updatedString;
 
@@ -759,7 +759,7 @@ public class LinkageParser : AbstractLinkageParser
 	{
 		bool result = false;
 
-		// Tracer.Trace(GetType(), "ExecuteAsync()", "delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
 
 		try
 		{
@@ -785,7 +785,7 @@ public class LinkageParser : AbstractLinkageParser
 		}
 		finally
 		{
-			// Tracer.Trace(GetType(), "PayloadAsyncExecute()", "Executing finally");
+			// Evs.Trace(GetType(), nameof(PayloadAsyncExecute), "Executing finally");
 
 			lock (_LockObject)
 			{
@@ -820,11 +820,11 @@ public class LinkageParser : AbstractLinkageParser
 	// ----------------------------------------------------------------------------------
 	private async Task<bool> PopulateLinkageTablesAsync(CancellationToken cancelToken, string idType, int id)
 	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "SyncCardinal: {0}, UIThread: {1}", _SyncCardinal, ThreadHelper.CheckAccess());
+		// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "SyncCardinal: {0}, UIThread: {1}", _SyncCardinal, ThreadHelper.CheckAccess());
 
 		if (_ConnectionString == null)
 		{
-			// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "Connection null SyncCardinal: {0}", _SyncCardinal);
+			// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "Connection null SyncCardinal: {0}", _SyncCardinal);
 			ObjectDisposedException ex = new(Resources.ExceptionConnectionStringNull);
 			Diag.Dug(ex);
 			return false;
@@ -835,7 +835,7 @@ public class LinkageParser : AbstractLinkageParser
 		try
 		{
 
-			// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "ENTER - _LinkStage: {0}", _LinkStage);
+			// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "ENTER - _LinkStage: {0}", _LinkStage);
 			if (!IsTransient)
 			{
 				_TaskHandler.Progress(Percent(_LinkStage), _LinkStage == EnLinkStage.Start ? 0 : C_Elapsed_Resuming, _TotalElapsed, _Enabled, AsyncActive);
@@ -847,7 +847,7 @@ public class LinkageParser : AbstractLinkageParser
 			{
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageGeneratorsBegin,
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageGeneratorsBegin,
 						Percent(_LinkStage + 1, true), C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
 				}
 
@@ -863,7 +863,7 @@ public class LinkageParser : AbstractLinkageParser
 
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageGeneratorsEnd,
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageGeneratorsEnd,
 						Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
 				}
 			}
@@ -880,7 +880,7 @@ public class LinkageParser : AbstractLinkageParser
 			{
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageTriggerDependenciesStart,
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageTriggerDependenciesStart,
 						Percent(_LinkStage + 1, true), C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
 				}
 
@@ -896,7 +896,7 @@ public class LinkageParser : AbstractLinkageParser
 
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageTriggerDependenciesEnd,
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageTriggerDependenciesEnd,
 						Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
 				}
 			}
@@ -914,7 +914,7 @@ public class LinkageParser : AbstractLinkageParser
 			{
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageTriggersBegin, Percent(_LinkStage + 1, true),
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageTriggersBegin, Percent(_LinkStage + 1, true),
 						C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
 				}
 
@@ -930,7 +930,7 @@ public class LinkageParser : AbstractLinkageParser
 
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageTriggersEnd, Percent(_LinkStage),
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageTriggersEnd, Percent(_LinkStage),
 						Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
 				}
 			}
@@ -967,7 +967,7 @@ public class LinkageParser : AbstractLinkageParser
 			{
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageSequencesBegin, Percent(_LinkStage + 1, true),
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageSequencesBegin, Percent(_LinkStage + 1, true),
 						C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
 				}
 
@@ -978,7 +978,7 @@ public class LinkageParser : AbstractLinkageParser
 
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageSequencesEnd, Percent(_LinkStage),
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageSequencesEnd, Percent(_LinkStage),
 						Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
 				}
 			}
@@ -1003,7 +1003,7 @@ public class LinkageParser : AbstractLinkageParser
 			{
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageLinkingBegin, Percent(_LinkStage + 1, true),
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageLinkingBegin, Percent(_LinkStage + 1, true),
 						C_Elapsed_StageCompleted, _TotalElapsed, _Enabled, AsyncActive);
 				}
 
@@ -1011,7 +1011,7 @@ public class LinkageParser : AbstractLinkageParser
 
 				if (!IsTransient)
 				{
-					_TaskHandler.Progress(Resources.LinkageParserStageLinkingEnd, Percent(_LinkStage),
+					_TaskHandler.Progress(ControlsResources.LinkageParser_StageLinkingEnd, Percent(_LinkStage),
 						Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
 				}
 			}
@@ -1029,7 +1029,7 @@ public class LinkageParser : AbstractLinkageParser
 		{
 			if (!IsTransient)
 			{
-				_TaskHandler.Progress(Resources.LinkageParserStageCompleted.FmtRes(_Triggers.Rows.Count),
+				_TaskHandler.Progress(ControlsResources.LinkageParser_StageCompleted.FmtRes(_Triggers.Rows.Count),
 					Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
 			}
 
@@ -1129,7 +1129,7 @@ public class LinkageParser : AbstractLinkageParser
 					_AsyncPayloadLauncher = null;
 				}
 
-				// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] SyncEnter()", "ENTER/EXIT SyncEnter - _SyncCardinal: {0} pausing: {1}, IsUiThread: {2}.", _SyncCardinal, pausing, ThreadHelper.CheckAccess());
+				// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] SyncEnter()", "ENTER/EXIT SyncEnter - _SyncCardinal: {0} pausing: {1}, IsUiThread: {2}.", _SyncCardinal, pausing, ThreadHelper.CheckAccess());
 
 				return _Enabled && !disabling;
 			}
@@ -1210,7 +1210,7 @@ public class LinkageParser : AbstractLinkageParser
 				}
 				catch // (OperationCanceledException ex)
 				{
-					// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_SyncWaitAsyncTask.Cancelled "); //, ex.Message);
+					// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_SyncWaitAsyncTask.Cancelled "); //, ex.Message);
 				}
 
 				if ((_TaskHandler.UserCancellation.Cancelled() || disabling) && AsyncPending)
@@ -1219,7 +1219,7 @@ public class LinkageParser : AbstractLinkageParser
 
 					if (pendingTimeout <= 0)
 					{
-						// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_AsyncPayloadLauncher Timeout");
+						// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_AsyncPayloadLauncher Timeout");
 						_AsyncPayloadLauncher = null;
 
 						if (!_Enabled || disabling)
@@ -1246,7 +1246,7 @@ public class LinkageParser : AbstractLinkageParser
 			throw ex;
 		}
 
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] SyncEnter()", "EXIT after Wait and exiting - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+		// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] SyncEnter()", "EXIT after Wait and exiting - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 
 
 		return _Enabled && !disabling;
@@ -1263,7 +1263,7 @@ public class LinkageParser : AbstractLinkageParser
 					return;
 			}
 
-		// Tracer.Trace(GetType(), "OnMessageBoxShown()", "Sender type: {0}", sender);
+		// Evs.Trace(GetType(), nameof(OnMessageBoxShown), "Sender type: {0}", sender);
 
 		if (_MessageBoxDlg.InvokeRequired)
 		{
@@ -1290,7 +1290,7 @@ public class LinkageParser : AbstractLinkageParser
 				return;
 		}
 
-		// Tracer.Trace(GetType(), "OnMessageBoxShown()", "Sender type: {0}", sender);
+		// Evs.Trace(GetType(), nameof(OnMessageBoxShown), "Sender type: {0}", sender);
 
 		if (((AdvancedMessageBox)sender).InvokeRequired)
 		{
@@ -1317,7 +1317,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static void UnlockLoadedParser()
 	{
-		// Tracer.Trace(typeof(RctManager), "UnlockLoadedParser()", "\n_LockedLoadedConnectionString: {0}", _LockedLoadedConnectionString);
+		// Evs.Trace(typeof(RctManager), "UnlockLoadedParser()", "\n_LockedLoadedConnectionString: {0}", _LockedLoadedConnectionString);
 
 		_LockedLoadedConnectionString = null;
 	}
@@ -1363,7 +1363,7 @@ public class LinkageParser : AbstractLinkageParser
 
 	private void OnMessageBoxShown(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnMessageBoxShown()", "Sender type: {0}", sender);
+		// Evs.Trace(GetType(), nameof(OnMessageBoxShown), "Sender type: {0}", sender);
 
 		ThreadStart threadParameters = new ThreadStart(delegate { ThreadSafeInitializeMessageBox(sender); });
 		Thread thread = new Thread(threadParameters);

@@ -441,7 +441,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 	private bool ContainsInternalKey(string keyword)
 	{
-		// Tracer.Trace(GetType(), "ContainsInternalKey()", "key: {0}", keyword);
+		// Evs.Trace(GetType(), nameof(ContainsInternalKey), "key: {0}", keyword);
 
 		return _InternalStore != null && _InternalStore.ContainsKey(keyword);
 	}
@@ -450,7 +450,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 	public override bool ContainsKey(string keyword)
 	{
-		// Tracer.Trace(GetType(), "ContainsKey()", "key: {0}", keyword);
+		// Evs.Trace(GetType(), nameof(ContainsKey), "key: {0}", keyword);
 
 		if (ContainsInternalKey(keyword))
 			return true;

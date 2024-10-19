@@ -96,9 +96,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
 
 		Controller.OnBuildDoneEvent -= OnBuildDone;
-		Controller.OnProjectInitializedEvent -= OnProjectInitialized;
 
 		/*
+		Controller.OnProjectInitializedEvent -= OnProjectInitialized;
 		Controller.OnAssemblyObsoleteEvent -= OnAssemblyObsolete;
 		Controller.OnDesignTimeOutputDeletedEvent -= OnDesignTimeOutputDeleted;
 		Controller.OnDesignTimeOutputDirtyEvent -= OnDesignTimeOutputDirty;
@@ -122,7 +122,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	public override void Initialize()
 	{
-		// Tracer.Trace(GetType(), "Initialize()");
+		Evs.Trace(GetType(), nameof(Initialize));
 
 		_TaskHandlerTaskName = "Validation";
 
@@ -134,9 +134,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 
 		Controller.OnBuildDoneEvent += OnBuildDone;
-		Controller.OnProjectInitializedEvent += OnProjectInitialized;
 
 		/*
+		Controller.OnProjectInitializedEvent += OnProjectInitialized;
 		Controller.OnAssemblyObsoleteEvent += OnAssemblyObsolete;
 		Controller.OnDesignTimeOutputDeletedEvent += OnDesignTimeOutputDeleted;
 		Controller.OnDesignTimeOutputDirtyEvent += OnDesignTimeOutputDirty;
@@ -497,7 +497,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		{
 			if (config.IsOpen)
 			{
-				Tracer.Warning(GetType(), "ConfigureEntityFramework()", "{0}: app.config file is open: app.config", config.ContainingProject.Name);
+				Evs.Warning(GetType(), "ConfigureEntityFramework()",
+					$"{config.ContainingProject.Name}: app.config file is open: app.config");
 				return false;
 			}
 
@@ -786,7 +787,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			return success;
 		}
 
-		// Tracer.Trace(item.ContainingProject.Name + " checking projectitem: " + item.Name + ":" + item.Kind);
+		// Evs.Debug(GetType(), "ValidateSolutionRecursiveProjectItemEdmx()",
+		//	$"Project: {item.ContainingProject.Name} checking projectitem: {item.Name}, kind: {item.Kind}.");
 
 		if (_TaskHandler.UserCancellation.Cancelled())
 			_ValidationTokenSource?.Cancel();
@@ -883,7 +885,10 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			if (edmx.IsOpen)
 			{
 				if (XmlParser.IsValidEdmx(path))
-					Tracer.Warning(GetType(), "UpdateEdmx()", "{0}: edmx file is open: {1}", edmx.ContainingProject.Name, edmx.Name);
+				{
+					Evs.Warning(GetType(), "UpdateEdmx()",
+						$"{edmx.ContainingProject.Name}: edmx file is open: {edmx.Name}");
+				}
 				return false;
 			}
 
@@ -982,13 +987,13 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	private void OnLoadSolutionOptions(Stream stream)
 	{
-		// Diag.DebugTrace("OnLoadSolutionOptions()");
+		Evs.Trace(GetType(), nameof(OnLoadSolutionOptions));
 
 		// Register configured connections.
 		// Check for loading here otherwise an exception will be thrown.
 		if (!RctManager.Loading)
 		{
-			RctManager.ResetVolatile();
+			RctManager.ClearVolatileConnections();
 			RctManager.LoadConfiguredConnections();
 		}
 
@@ -1005,11 +1010,11 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private int OnAfterCloseSolution(object pUnkReserved)
 	{
-		// Tracer.Trace(GetType(), "OnAfterCloseSolution()");
+		Evs.Trace(GetType(), nameof(OnAfterCloseSolution));
 
 		// Reset configured connections registration and the unique database connection
 		// DatasetKeys for rebuild on next soluton load.
-		RctManager.ResetVolatile();
+		RctManager.ClearVolatileConnections();
 
 		return VSConstants.S_OK;
 	}
@@ -1023,10 +1028,10 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private int OnAfterOpenProject(Project project, int fAdded)
 	{
-		// Tracer.Trace(GetType(), "OnAfterOpenProject()");
-
 		if (project.EditableObject() == null)
 			return VSConstants.S_OK;
+
+		Evs.Trace(GetType(), nameof(OnAfterOpenProject), $"Project: {project?.Name}.");
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);
 
@@ -1047,7 +1052,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/*
 	private void OnAssemblyObsolete(object sender, AssemblyObsoleteEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnAssemblyObsolete()");
+		// Evs.Trace(GetType(), nameof(OnAssemblyObsolete));
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
 	}
@@ -1056,6 +1061,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	private int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
 	{
+		Evs.Trace(GetType(), nameof(OnBeforeDocumentWindowShow));
+
 		Diag.ThrowIfNotOnUIThread();
 
 		if (!fFirstShow.AsBool())
@@ -1100,7 +1107,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	private void OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
 	{
-		// Tracer.Trace(GetType(), "OnBuildDone()");
+		Evs.Trace(GetType(), nameof(OnBuildDone));
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
 	}
@@ -1108,7 +1115,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	private int OnQueryCloseProject(IVsHierarchy hierarchy, int removing, ref int cancel)
 	{
-		// Tracer.Trace(GetType(), "OnQueryCloseProject()");
+		Evs.Trace(GetType(), nameof(OnQueryCloseProject));
 
 		if (removing.AsBool())
 			return VSConstants.S_OK;
@@ -1132,7 +1139,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/*
 	private void OnDesignTimeOutputDeleted(string bstrOutputMoniker)
 	{
-		// Tracer.Trace(GetType(), "OnDesignTimeOutputDeleted()", "bstrOutputMoniker: {0}.", bstrOutputMoniker);
+		// Evs.Trace(GetType(), nameof(OnDesignTimeOutputDeleted), $"bstrOutputMoniker: {bstrOutputMoniker}.");
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
 	}
@@ -1141,25 +1148,26 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	void OnDesignTimeOutputDirty(string bstrOutputMoniker)
 	{
-		// Tracer.Trace(GetType(), "OnDesignTimeOutputDirty()", "bstrOutputMoniker: {0}.", bstrOutputMoniker);
+		// Evs.Trace(GetType(), nameof(OnDesignTimeOutputDirty), $"bstrOutputMoniker: {bstrOutputMoniker}.");
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
 	}
-	*/
+
 
 
 	private void OnProjectInitialized(Project project)
 	{
-		// Tracer.Trace(GetType(), "OnProjectInitialized()", "Project: {0}.", project.Name);
+		// Evs.Trace(GetType(), nameof(OnProjectInitialized), $"Project: {project?.Name}.");
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);
 	}
 
 
-	/* 
+
 	private void OnProjectItemAdded(ProjectItem projectItem)
 	{
-		// Tracer.Trace(GetType(), "OnProjectItemAdded()", "Added Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);
+		// Evs.Trace(GetType(), nameof(OnProjectItemAdded),
+			$"Added Project: {projectItem.ContainingProject?.Name}, ProjectItem: {projectItem.Name}.");
 
 		if (!projectItem.ContainingProject.IsEditable())
 			return;
@@ -1171,7 +1179,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	
 	private void OnProjectItemRemoved(ProjectItem projectItem)
 	{
-		// Tracer.Trace(GetType(), "OnProjectItemRemoved()", "Removed Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);
+		// Evs.Trace(GetType(), nameof(OnProjectItemRemoved),
+			$"Removed Project: {projectItem.ContainingProject?.Name}, ProjectItem: {projectItem.Name}.");
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
 	}
@@ -1180,7 +1189,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	private void OnProjectItemRenamed(ProjectItem projectItem, string oldName)
 	{
-		// Tracer.Trace(GetType(), "OnProjectItemRenamed()", "Renamed Project: {0}, ProjectItem: {1}.", projectItem.ContainingProject?.Name, projectItem.Name);
+		// Evs.Trace(GetType(), nameof(OnProjectItemRenamed),
+			$"Renamed Project: {projectItem.ContainingProject?.Name}, ProjectItem: {projectItem.Name}.");
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
 	}
@@ -1194,7 +1204,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private void OnReferenceAdded(Reference reference)
 	{
-		// Tracer.Trace(GetType(), "OnReferenceAdded()", "Project: {0}, Reference: {1}.", reference.ContainingProject?.Name, reference.Name);
+		// Evs.Trace(GetType(), nameof(OnReferenceAdded),
+			$"Project: {reference.ContainingProject?.Name}, Reference: {reference.Name}.");
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies(reference.ContainingProject);
 	}
@@ -1209,7 +1220,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private void OnReferenceChanged(Reference reference)
 	{
-		// Tracer.Trace(GetType(), "OnReferenceChanged()", "Project: {0}.", reference.ContainingProject?.Name);
+		// Evs.Trace(GetType(), nameof(OnReferenceChanged), $"Project: {reference?.ContainingProject?.Name}.");
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies(reference.ContainingProject);
 	}
@@ -1224,7 +1235,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private void OnReferenceRemoved(Reference reference)
 	{
-		// Tracer.Trace(GetType(), "OnReferenceRemoved()", "Project: {0}.", reference.ContainingProject?.Name);
+		// Evs.Trace(GetType(), nameof(OnReferenceRemoved), $"Project: {reference?.ContainingProject?.Name}.");
 
 		NativeDb.AsyuiReindexEntityFrameworkAssemblies(reference.ContainingProject);
 	}

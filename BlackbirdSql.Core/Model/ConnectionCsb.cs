@@ -496,7 +496,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 	// ---------------------------------------------------------------------------------
 	public void CreateDataConnection()
 	{
-		// Tracer.Trace(GetType(), "CreateDataConnection()");
+		// Evs.Debug(GetType(), nameof(CreateDataConnection));
 
 
 		DbConnection connection = DataConnection;
@@ -533,7 +533,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 	// ---------------------------------------------------------------------------------
 	public (bool, bool) OpenOrVerifyConnection()
 	{
-		// Tracer.Trace(GetType(), "CreateDataConnection()");
+		// Evs.Debug(GetType(), nameof(OpenOrVerifyConnection));
 
 		DbConnection connection = DataConnection;
 
@@ -598,7 +598,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 	// ---------------------------------------------------------------------------------
 	public async Task<(bool, bool)> OpenOrVerifyConnectionAsync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "CreateDataConnection()");
+		// Evs.Debug(GetType(), nameof(OpenOrVerifyConnectionAsync));
 
 		DbConnection connection = DataConnection;
 
@@ -664,7 +664,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 	// ---------------------------------------------------------------------------------
 	protected bool RefreshDataConnection()
 	{
-		// Tracer.Trace(GetType(), "CreateDataConnection()");
+		// Evs.Debug(GetType(), nameof(RefreshDataConnection));
 
 		CloseConnection();
 
@@ -675,7 +675,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 		connection.ConnectionString = ConnectionString;
 
-		// Tracer.Trace(GetType(), "RefreshDataConnection()", "Connection refreshed with connectiongstring: {0}.", Csa.ConnectionString);
+		// Evs.Debug(GetType(), "RefreshDataConnection()", $"Connection refreshed with connectiongstring: {ConnectionString}.");
 
 		return true;
 	}

@@ -1,11 +1,9 @@
 ﻿//
 // Plagiarized from Community.VisualStudio.Toolkit extension
 //
-using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
+using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -24,9 +22,9 @@ public abstract class AbstractTransientSettingsPage<TPage, TModel> : AbstractSet
 	where TPage : AbstractSettingsPage<TModel> where TModel : AbstractSettingsModel<TModel>, new()
 
 {
-	public AbstractTransientSettingsPage(IBsTransientSettings transientSettings) : base()
+	public AbstractTransientSettingsPage(IBsSettingsProvider transientSettings) : base()
 	{
-		// Tracer.Trace(GetType(), ".ctor");
+		Evs.Trace(typeof(AbstractTransientSettingsPage<TPage, TModel>), ".ctor");
 
 		_Model = ThreadHelper.JoinableTaskFactory.Run(() => AbstractSettingsModel<TModel>.CreateInstanceAsync(transientSettings));
 

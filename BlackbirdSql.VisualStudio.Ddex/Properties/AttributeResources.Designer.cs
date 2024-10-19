@@ -313,6 +313,204 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ◉ Activity Tracing Only.
+        /// </summary>
+        public static string EnSourceLevels_ActivityTracing_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_ActivityTracing_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Activity Tracing Only.
+        /// </summary>
+        public static string EnSourceLevels_ActivityTracing_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_ActivityTracing_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ All.
+        /// </summary>
+        public static string EnSourceLevels_All_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_All_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ All.
+        /// </summary>
+        public static string EnSourceLevels_All_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_All_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Critical.
+        /// </summary>
+        public static string EnSourceLevels_Critical_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Critical_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Critical.
+        /// </summary>
+        public static string EnSourceLevels_Critical_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Critical_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Debug Only.
+        /// </summary>
+        public static string EnSourceLevels_DebugOnly_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_DebugOnly_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Debug Only.
+        /// </summary>
+        public static string EnSourceLevels_DebugOnly_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_DebugOnly_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Error.
+        /// </summary>
+        public static string EnSourceLevels_Error_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Error_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Error.
+        /// </summary>
+        public static string EnSourceLevels_Error_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Error_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Information.
+        /// </summary>
+        public static string EnSourceLevels_Information_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Information_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Information.
+        /// </summary>
+        public static string EnSourceLevels_Information_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Information_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Off.
+        /// </summary>
+        public static string EnSourceLevels_Off_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Off_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Off.
+        /// </summary>
+        public static string EnSourceLevels_Off_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Off_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Trace &amp; Debug Only.
+        /// </summary>
+        public static string EnSourceLevels_TraceDebug_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_TraceDebug_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Trace &amp; Debug Only.
+        /// </summary>
+        public static string EnSourceLevels_TraceDebug_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_TraceDebug_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Trace Only.
+        /// </summary>
+        public static string EnSourceLevels_TraceOnly_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_TraceOnly_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Trace Only.
+        /// </summary>
+        public static string EnSourceLevels_TraceOnly_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_TraceOnly_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Verbose.
+        /// </summary>
+        public static string EnSourceLevels_Verbose_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Verbose_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Verbose.
+        /// </summary>
+        public static string EnSourceLevels_Verbose_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Verbose_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◉ Warning.
+        /// </summary>
+        public static string EnSourceLevels_Warning_Selected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Warning_Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ◎ Warning.
+        /// </summary>
+        public static string EnSourceLevels_Warning_Unselected {
+            get {
+                return ResourceManager.GetString("EnSourceLevels_Warning_Unselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Debugging.
         /// </summary>
         public static string OptionCategoryDebugging {
@@ -385,11 +583,38 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables EventSource ActivityTracing events to be included in Diag.Trace() logging..
+        /// </summary>
+        public static string OptionDescriptionDebugEnableActivityLogging {
+            get {
+                return ResourceManager.GetString("OptionDescriptionDebugEnableActivityLogging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables Stop, Start, Suspend, Transfer and Resume event tracing..
+        /// </summary>
+        public static string OptionDescriptionDebugEnableActivityTracing {
+            get {
+                return ResourceManager.GetString("OptionDescriptionDebugEnableActivityTracing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enables diagnostics logging to a log file..
         /// </summary>
         public static string OptionDescriptionDebugEnableDiagnosticsLog {
             get {
                 return ResourceManager.GetString("OptionDescriptionDebugEnableDiagnosticsLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables EventSource (excluding ActivityTracing) events to be included in Diag.Trace() logging..
+        /// </summary>
+        public static string OptionDescriptionDebugEnableEventSourceLogging {
+            get {
+                return ResourceManager.GetString("OptionDescriptionDebugEnableEventSourceLogging", resourceCulture);
             }
         }
         
@@ -403,15 +628,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables Sql Tracer output to be directed to Diag.Trace()..
-        /// </summary>
-        public static string OptionDescriptionDebugEnableTracer {
-            get {
-                return ResourceManager.GetString("OptionDescriptionDebugEnableTracer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Location of diagnostics log file..
         /// </summary>
         public static string OptionDescriptionDebugLogFile {
@@ -421,11 +637,20 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saves the extrapolated IVsDataObjectSupport xml (TObjectSupport.xml), after imports, to the directory location of the diagnostics log file..
+        ///   Looks up a localized string similar to Saves the extrapolated IVsDataObjectSupport xml (VxbObjectSupport.xml), after imports, to the directory location of the diagnostics log file..
         /// </summary>
         public static string OptionDescriptionDebugSaveExtrapolatedXml {
             get {
                 return ResourceManager.GetString("OptionDescriptionDebugSaveExtrapolatedXml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
+        /// </summary>
+        public static string OptionDescriptionDebugSourceLevel {
+            get {
+                return ResourceManager.GetString("OptionDescriptionDebugSourceLevel", resourceCulture);
             }
         }
         
@@ -835,11 +1060,38 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable diagnostics logging.
+        ///   Looks up a localized string similar to Activity logging.
+        /// </summary>
+        public static string OptionDisplayDebugEnableActivityLogging {
+            get {
+                return ResourceManager.GetString("OptionDisplayDebugEnableActivityLogging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activity tracing.
+        /// </summary>
+        public static string OptionDisplayDebugEnableActivityTracing {
+            get {
+                return ResourceManager.GetString("OptionDisplayDebugEnableActivityTracing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Diagnostics logging.
         /// </summary>
         public static string OptionDisplayDebugEnableDiagnosticsLog {
             get {
                 return ResourceManager.GetString("OptionDisplayDebugEnableDiagnosticsLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event source logging.
+        /// </summary>
+        public static string OptionDisplayDebugEnableEventSourceLogging {
+            get {
+                return ResourceManager.GetString("OptionDisplayDebugEnableEventSourceLogging", resourceCulture);
             }
         }
         
@@ -853,20 +1105,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable trace.
+        ///   Looks up a localized string similar to Diagnostics tracing.
         /// </summary>
         public static string OptionDisplayDebugEnableTrace {
             get {
                 return ResourceManager.GetString("OptionDisplayDebugEnableTrace", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enable tracer.
-        /// </summary>
-        public static string OptionDisplayDebugEnableTracer {
-            get {
-                return ResourceManager.GetString("OptionDisplayDebugEnableTracer", resourceCulture);
             }
         }
         
@@ -876,6 +1119,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayDebugLogFile {
             get {
                 return ResourceManager.GetString("OptionDisplayDebugLogFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event trace level.
+        /// </summary>
+        public static string OptionDisplayDebugSourceLevel {
+            get {
+                return ResourceManager.GetString("OptionDisplayDebugSourceLevel", resourceCulture);
             }
         }
         

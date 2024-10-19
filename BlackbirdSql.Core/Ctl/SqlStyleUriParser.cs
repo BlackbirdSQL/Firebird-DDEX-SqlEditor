@@ -19,7 +19,7 @@ public class SqlStyleUriParser(GenericUriParserOptions options) : GenericUriPars
 
 		uriString = ReplaceProtocols(uriString, passiveProtocol, NativeDb.Protocol);
 
-		// Tracer.Trace(GetType(), "GetComponents()", "\nOriginal: {0}\nResult: {1}", originalString, uriString);
+		// Evs.Debug(GetType(), "GetComponents()", $"\nOriginal: {originalString}\nResult: {uriString}.");
 
 		return uriString;
 	}

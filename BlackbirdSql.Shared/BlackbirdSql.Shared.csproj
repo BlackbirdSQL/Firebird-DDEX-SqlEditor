@@ -28,10 +28,10 @@
 	<ItemGroup>
 		<Compile Include="Ctl\AbstractDesignerServices.cs" />
 		<Compile Include="Ctl\Commands\CommandOleCycleToPrevious.cs" />
+		<Compile Include="Evs.cs" />
 		<Compile Include="Enums\EnCreationFlags.cs" />
 		<Compile Include="Events\DatabaseChangeEventArgs.cs" />
 		<Compile Include="Events\ExecutionStartedEventArgs.cs" />
-		<Compile Include="Enums\EnCasingStyle.cs" />
 		<Compile Include="Ctl\Config\TransientSettings.cs" />
 		<Compile Include="Ctl\Commands\CommandNewQuery.cs" />
 		<Compile Include="Ctl\Config\PersistentSettings.cs" />
@@ -66,7 +66,7 @@
 		</Compile>
 		<Compile Include="Interfaces\IBsWindowPane.cs" />
 		<Compile Include="Model\QueryExecution\StatisticsPropertySet.cs" />
-		<Compile Include="Root\SharedConstants.cs" />
+		<Compile Include="SharedConstants.cs" />
 		<None Include="Controls\Graphing\ActualPlanDataReaderNodeBuilder.cs" />
 		<None Include="Controls\Graphing\CursorPlanTypeOperation.cs" />
 		<None Include="Controls\Graphing\CustomZoomDlg.cs" />

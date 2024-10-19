@@ -43,7 +43,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	public LinkageParserTaskHandler(string connectionString)
 	{
 
-		// Tracer.Trace(GetType(), "LinkageParserTaskHandle.LinkageParserTaskHandle");
+		// Evs.Trace(GetType(), "LinkageParserTaskHandle.LinkageParserTaskHandle");
 
 		_ConnectionString = connectionString;
 		// _DatasetKey = ApcManager.GetRegisterConnectionDatasetKey(root);
@@ -149,7 +149,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	public void PreRegister(bool canBeCancelled)
 	{
 		TaskHandlerOptions options = default;
-		options.Title = Resources.LinkageParserTaskHandlerTitle.FmtRes(DatasetKey);
+		options.Title = ControlsResources.LinkageParser_TaskHandlerTitle.FmtRes(DatasetKey);
 		options.ActionsAfterCompletion = CompletionActions.None;
 
 		_ProgressData = default;
@@ -192,7 +192,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 		{
 			_ProgressData.PercentComplete = 0;
 			if (_TaskHandler != null)
-				Diag.TaskHandlerProgress(this, Resources.LinkageParserStarted);
+				Diag.TaskHandlerProgress(this, ControlsResources.LinkageParser_Started);
 		}
 
 		Diag.TaskHandlerProgress(this, text);
@@ -251,12 +251,12 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 			if (elapsed == LinkageParser.C_Elapsed_Disabling)
 				return true;
 
-			text = Resources.LinkageParserUpdating;
+			text = ControlsResources.LinkageParser_Updating;
 		}
 		else if (progress == 100)
 		{
 			completed = true;
-			text = Resources.LinkageParserCompleted.FmtRes(progress, stage, totalElapsed);
+			text = ControlsResources.LinkageParser_Completed.FmtRes(progress, stage, totalElapsed);
 		}
 		else
 		{
@@ -266,29 +266,29 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 				if (!enabled)
 				{
 					completed = true;
-					text = Resources.LinkageParserCancelled.FmtRes(progress, stage, elapsed);
+					text = ControlsResources.LinkageParser_Cancelled.FmtRes(progress, stage, elapsed);
 				}
 				else
 				{
 					if (elapsed == LinkageParser.C_Elapsed_Resuming)
-						text = Resources.LinkageParserResumingAsync;
+						text = ControlsResources.LinkageParser_ResumingAsync;
 					else if (elapsed == LinkageParser.C_Elapsed_Disabling)
-						text = Resources.LinkageParserPausingAsync;
+						text = ControlsResources.LinkageParser_PausingAsync;
 					else if (elapsed == LinkageParser.C_Elapsed_StageCompleted)
-						text = Resources.LinkageParserPercentCompletedStage.FmtRes(progress, stage);
+						text = ControlsResources.LinkageParser_PercentCompletedStage.FmtRes(progress, stage);
 					else
-						text = Resources.LinkageParserPercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);
+						text = ControlsResources.LinkageParser_PercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);
 
 				}
 			}
 			else
 			{
 				if (elapsed == LinkageParser.C_Elapsed_Resuming)
-					text = Resources.LinkageParserSwitchedToUiThread;
+					text = ControlsResources.LinkageParser_SwitchedToUiThread;
 				else if (elapsed == LinkageParser.C_Elapsed_StageCompleted)
-					text = Resources.LinkageParserPercentCompletedStage.FmtRes(progress, stage);
+					text = ControlsResources.LinkageParser_PercentCompletedStage.FmtRes(progress, stage);
 				else
-					text = Resources.LinkageParserPercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);
+					text = ControlsResources.LinkageParser_PercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);
 			}
 
 		}
@@ -316,12 +316,12 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 		if (stage == EnLinkStage.Start)
 		{
 			// async = isAsync ? " (async)" : "";
-			text = Resources.LinkageParserUpdatingCatalog.FmtRes(catalog);
+			text = ControlsResources.LinkageParser_UpdatingCatalog.FmtRes(catalog);
 		}
 		else if (stage == EnLinkStage.Completed)
 		{
 			// async = isAsync ? " (async)" : "";
-			text = Resources.LinkageParserCompletedCatalog.FmtRes(catalog, totalElapsed);
+			text = ControlsResources.LinkageParser_CompletedCatalog.FmtRes(catalog, totalElapsed);
 		}
 		else
 		{
@@ -329,16 +329,16 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 			{
 				// If it's a user cancel request.
 				if (!enabled)
-					text = Resources.LinkageParserCancelledCatalog.FmtRes(catalog);
+					text = ControlsResources.LinkageParser_CancelledCatalog.FmtRes(catalog);
 				else
-					text = Resources.LinkageParserResumingCatalog.FmtRes(catalog);
+					text = ControlsResources.LinkageParser_ResumingCatalog.FmtRes(catalog);
 			}
 			else
 			{
 				if (!enabled)
-					text = Resources.LinkageParserCancelledCatalog.FmtRes(catalog);
+					text = ControlsResources.LinkageParser_CancelledCatalog.FmtRes(catalog);
 				else
-					text = Resources.LinkageParserCatalogSwitchedToUiThread.FmtRes(catalog);
+					text = ControlsResources.LinkageParser_CatalogSwitchedToUiThread.FmtRes(catalog);
 			}
 		}
 

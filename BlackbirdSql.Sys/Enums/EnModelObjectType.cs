@@ -184,7 +184,7 @@ public static class EnModelObjectTypeExtensions
 		if (@this == null || @this.Object == null)
 			return EnModelObjectType.Unknown;
 
-		// Tracer.Trace(typeof(EnModelObjectTypeExtensions), "ModelObjectType", "Node type for node '{0}' is {1}.", node.Name, node.Object.Type.Name.ToUpperInvariant());
+		// Evs.Trace(typeof(EnModelObjectTypeExtensions), "ModelObjectType", "Node type for node '{0}' is {1}.", node.Name, node.Object.Type.Name.ToUpperInvariant());
 
 		return @this.Object.Type.Name.ToUpperInvariant() switch
 		{
@@ -207,7 +207,7 @@ public static class EnModelObjectTypeExtensions
 			"STOREDPROCEDUREPARAMETER" => EnModelObjectType.StoredProcedureParameter,
 			"STOREDPROCEDURECOLUMN" => EnModelObjectType.StoredProcedureParameter,
 			"FUNCTIONPARAMETER" => EnModelObjectType.FunctionParameter,
-			"FUNCTIONRETURNVALUE" => EnModelObjectType.FunctionParameter,
+			"FUNCTIONCOLUMN" => EnModelObjectType.FunctionParameter,
 			"NEWQUERY" => EnModelObjectType.NewQuery,
 			"NEWSQLQUERY" => EnModelObjectType.NewQuery,
 			"NEWDESIGNERQUERY" => EnModelObjectType.NewDesignerQuery,
@@ -259,8 +259,11 @@ public static class EnModelObjectTypeExtensions
 		{
 			return EnModelObjectType.Column;
 		}
-		else if (@this.Object.Type.Name.EndsWith("Parameter")
-			|| @this.Object.Type.Name.EndsWith("ReturnValue"))
+		else if (@this.Object.Type.Name.StartsWith("StoredProcedure"))
+		{
+			return EnModelObjectType.StoredProcedureParameter;
+		}
+		else if (@this.Object.Type.Name.StartsWith("Function"))
 		{
 			return EnModelObjectType.FunctionParameter;
 		}

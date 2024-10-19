@@ -5,9 +5,9 @@ using System.ComponentModel;
 using System.Drawing;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
+using BlackbirdSql.Sys.Interfaces;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
@@ -38,7 +38,7 @@ public class TabAndStatusBarSettingsModel : AbstractSettingsModel<TabAndStatusBa
 	}
 
 
-	public TabAndStatusBarSettingsModel(IBsTransientSettings transientSettings)
+	public TabAndStatusBarSettingsModel(IBsSettingsProvider transientSettings)
 		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 	}

@@ -65,7 +65,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 	private static void OpenAsMiscellaneousFile(string path, string caption, Guid editor,
 		string physicalView, Guid logicalView)
 	{
-		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
+		// Evs.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -157,7 +157,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 	private static bool OpenMiscellaneousVirtualFile(string moniker, IVsDataExplorerNode node,
 		EnModelTargetType targetType, Csb csa, string initialScript)
 	{
-		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "ExplorerMoniker: {0}.", explorerMoniker);
+		// Evs.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "ExplorerMoniker: {0}.", explorerMoniker);
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -228,7 +228,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		string tempFilename = Path.Combine(tempDirectory, filename + NativeDb.Extension);
 
-		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousVirtialFile()", "filename: {0}, tempFilename: {1}, moniker: {2}.",
+		// Evs.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousVirtialFile()", "filename: {0}, tempFilename: {1}, moniker: {2}.",
 		//	filename, tempFilename, moniker);
 
 
@@ -276,7 +276,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 	public static void OpenNewMiscellaneousSqlFile(string baseName, string initialContent)
 	{
-		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
+		// Evs.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -327,7 +327,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		IList<string> identifierList = [baseName];
 		IList<string> identifierArray = new List<string>(identifierList); 
 
-		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenNewQueryEditor()", "csa.DataSource: {0}, csa.Database: {1}", csa.DataSource, csa.Database);
+		// Evs.Trace(typeof(DesignerExplorerServices), "OpenNewQueryEditor()", "csa.DataSource: {0}, csa.Database: {1}", csa.DataSource, csa.Database);
 
 		string mkDocument = Moniker.BuildDocumentMoniker(csb?.DataSource, csb?.Database, elementType, ref identifierArray, targetType, true, isClone);
 
@@ -389,7 +389,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
 		Diag.ThrowIfNotOnUIThread();
 
-		// Tracer.Trace(GetType(), "ViewCode()");
+		// Evs.Trace(GetType(), nameof(ViewCode));
 
 		Moniker moniker;
 		IList<string> identifierList;
@@ -408,7 +408,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 			throw;
 		}
 
-		// Tracer.Trace(GetType(), "ViewCode()", "\nDocumentMoniker: {0}.", moniker.DocumentMoniker);
+		// Evs.Trace(GetType(), nameof(ViewCode), "\nDocumentMoniker: {0}.", moniker.DocumentMoniker);
 
 
 		try
@@ -458,7 +458,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		IBsTabbedEditorPane currentTabbedEditor = ((IBsEditorPackage)ApcManager.PackageInstance).CurrentTabbedEditor;
 
-		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
+		// Evs.Trace(GetType(), nameof(OnSqlQueryLoaded), "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
 
 		if (currentTabbedEditor != null)
 		{
@@ -472,7 +472,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 	private async Task<bool> OnSqlQueryLoadedAsync(IBsCommand command, int delay)
 	{
-		// Tracer.Trace(GetType(), "OnSqlQueryLoadedAsync()");
+		// Evs.Trace(GetType(), nameof(OnSqlQueryLoadedAsync));
 
 		// Give editor time to breath.
 		if (delay > 0)

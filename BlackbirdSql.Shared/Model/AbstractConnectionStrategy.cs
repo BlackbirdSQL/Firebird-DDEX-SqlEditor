@@ -449,7 +449,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 
 
-		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
+		// Evs.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
 
 		_HasTransactions = false;
 
@@ -610,7 +610,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		// Tracer.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()");
+		// Evs.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()");
 
 		if (_MdlCsb == null)
 			return null;
@@ -631,7 +631,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 					if (Csb.GetIsComplete(connectionString))
 					{
-						// Tracer.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()", "ConnectionString result: {0}.", connectionString);
+						// Evs.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()", "ConnectionString result: {0}.", connectionString);
 						connectionString = RctManager.AdornConnectionStringFromRegistration(connectionString);
 
 						RctManager.UpdateRegisteredConnection(connectionString, EnConnectionSource.Session, true);
@@ -658,7 +658,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		// Tracer.Trace(typeof(AbstractConnectionStrategy), "PromptForConnection()");
+		// Evs.Trace(typeof(AbstractConnectionStrategy), "PromptForConnection()");
 
 		IBsDataConnectionDlgHandler connectionDialogHandler = ApcManager.EnsureService<IBsDataConnectionDlgHandler>();
 
@@ -902,7 +902,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	private void OnConnectionChanged(object sender, ConnectionChangedEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnPropertyAgentConnectionChanged()", "Current: {0}, Previous: {1}.", args.CurrentConnection != null, args.PreviousConnection != null);
+		// Evs.Trace(GetType(), nameof(OnPropertyAgentConnectionChanged), "Current: {0}, Previous: {1}.", args.CurrentConnection != null, args.PreviousConnection != null);
 
 		if (!EventEnter())
 			return;

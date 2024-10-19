@@ -34,7 +34,7 @@ public abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDisposa
 	/// <param name="connection"></param>
 	protected AbstruseLinkageParser()
 	{
-		// Tracer.Trace(typeof(AbstruseLinkageParser), $"StaticId:[{"0000"}] AbstruseLinkageParser(FbConnection)");
+		// Evs.Trace(typeof(AbstruseLinkageParser), $"StaticId:[{"0000"}] AbstruseLinkageParser(FbConnection)");
 		_Id = ++_IdSeed;
 	}
 

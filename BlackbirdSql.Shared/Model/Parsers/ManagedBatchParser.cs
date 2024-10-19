@@ -119,7 +119,7 @@ public class ManagedBatchParser : IDisposable
 
 	public async Task<bool> ParseAsync(CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "ParseAsync()");
+		// Evs.Trace(GetType(), nameof(ParseAsync));
 
 		_BatchParser = NativeDbBatchParserProxy.CreateInstance(_ExecutionType, _QryMgr, _Script);
 
@@ -147,7 +147,7 @@ public class ManagedBatchParser : IDisposable
 
 				_Current++;
 
-				// Tracer.Trace(GetType(), "ParseAsync()", "Calling BatchStatementCallbackAsync() for ParserAction: {0}, Statement: {1}.",
+				// Evs.Trace(GetType(), nameof(ParseAsync), "Calling BatchStatementCallbackAsync() for ParserAction: {0}, Statement: {1}.",
 				//	_BatchParser.CurrentAction, _BatchParser.Current);
 
 				// ------------------------------------------------------------------------------- //
@@ -155,13 +155,13 @@ public class ManagedBatchParser : IDisposable
 				// ------------------------------------------------------------------------------- //
 				result = await _Executor.BatchStatementCallbackAsync(sqlStatement, 1, cancelToken, syncToken);
 
-				// Tracer.Trace(GetType(), "ParseAsync()", "Done Calling BatchStatementCallbackAsync() for ParserAction: {0}, Statement: {1}.",
+				// Evs.Trace(GetType(), nameof(ParseAsync), "Done Calling BatchStatementCallbackAsync() for ParserAction: {0}, Statement: {1}.",
 				//	_BatchParser.CurrentAction, _BatchParser.Current);
 
 			}
 
 
-			// Tracer.Trace(GetType(), "ParseAsync()", "Calling OnBatchDataLoaded() for ParserAction: {0}, Statement: {1}.",
+			// Evs.Trace(GetType(), nameof(ParseAsync), "Calling OnBatchDataLoaded() for ParserAction: {0}, Statement: {1}.",
 			//	_BatchParser.CurrentAction, _BatchParser.Current);
 
 			if (result == EnParserAction.Abort)
@@ -174,7 +174,7 @@ public class ManagedBatchParser : IDisposable
 			if (cancelToken.Cancelled())
 				break;
 
-			// Tracer.Trace(GetType(), "Parse()", "AdvanceToNextAction for ParserAction: {0}, Statement: {1}.",
+			// Evs.Trace(GetType(), nameof(Parse), "AdvanceToNextAction for ParserAction: {0}, Statement: {1}.",
 			//	_BatchParser.CurrentAction, _BatchParser.Current);
 
 			_BatchParser.AdvanceToNextAction();
@@ -183,7 +183,7 @@ public class ManagedBatchParser : IDisposable
 			result = EnParserAction.Continue;
 		}
 
-		// Tracer.Trace(GetType(), "ParseAsync()", "Completed");
+		// Evs.Trace(GetType(), nameof(ParseAsync), "Completed");
 
 		return !cancelToken.Cancelled();
 	}

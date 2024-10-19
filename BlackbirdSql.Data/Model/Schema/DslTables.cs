@@ -30,11 +30,17 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslTables : AbstractDslSchema
 {
+	internal DslTables() : base()
+	{
+	}
+
+
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslTables.GetCommandText");
+		// Evs.Trace(GetType(), "DslTables.GetCommandText");
 
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
@@ -112,14 +118,14 @@ internal class DslTables : AbstractDslSchema
 
 		sql.Append(" ORDER BY IS_SYSTEM_FLAG, OWNER_NAME, TABLE_NAME");
 
-		// Tracer.Trace(GetType(), "GetCommandText()", sql.ToString());
+		// Evs.Trace(GetType(), nameof(GetCommandText), sql.ToString());
 
 		return sql;
 	}
 
 	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslTables.ProcessResult");
+		// Evs.Trace(GetType(), "DslTables.ProcessResult");
 
 		try
 		{

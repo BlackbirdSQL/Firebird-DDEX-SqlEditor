@@ -19,12 +19,12 @@ public class CommandDatabaseSelect : AbstractCommand
 
 	public CommandDatabaseSelect()
 	{
-		// Tracer.Trace();
+		// Evs.Trace();
 	}
 
 	public CommandDatabaseSelect(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
-		// Tracer.Trace();
+		// Evs.Trace();
 	}
 
 

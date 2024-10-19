@@ -12,6 +12,7 @@ using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model.Parsers;
 using BlackbirdSql.Shared.Properties;
+using BlackbirdSql.Sys.Ctl.Diagnostics;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.PlatformUI;
@@ -52,14 +53,14 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 	public void Dispose()
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.Dispose", "", null);
+		// Evs.Trace(GetType(), "QESQLExec.Dispose", "", null);
 		Dispose(true);
 	}
 
 
 	protected virtual bool Dispose(bool disposing)
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.Dispose", "bDisposing = {0}", bDisposing);
+		// Evs.Trace(GetType(), "QESQLExec.Dispose", "bDisposing = {0}", bDisposing);
 		if (!disposing)
 			return false;
 
@@ -191,7 +192,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		_AsyncExecTask = Task.Run(() => ExecuteAsync(cancelToken, syncToken));
 
 
-		// Tracer.Trace(GetType(), "ExecuteAsync()", "ExecuteAsync() Launched.");
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "ExecuteAsync() Launched.");
 
 		return await Task.FromResult(true);
 	}
@@ -225,7 +226,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 	protected virtual void Cleanup()
 	{
-		// Tracer.Trace(GetType(), "Cleanup()");
+		// Evs.Trace(GetType(), nameof(Cleanup));
 
 		lock (_LockObject)
 			_AsyncExecState = EnLauncherPayloadLaunchState.Inactive;
@@ -240,7 +241,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 	private async Task<bool> ExecuteAsync(CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "ExecuteAsync()");
+		// Evs.Trace(GetType(), nameof(ExecuteAsync));
 
 		bool result = false;
 
@@ -271,7 +272,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 	private async Task<bool> ExecuteImplAsync(CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "ExecuteAsync()");
+		// Evs.Trace(GetType(), nameof(ExecuteAsync));
 		if (cancelToken.Cancelled())
 		{
 			_ExecResult = EnScriptExecutionResult.Cancel;
@@ -303,7 +304,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		if (_ExecResult == EnScriptExecutionResult.Success)
 			await ExecuteScriptAsync(cancelToken, syncToken);
 
-		// Tracer.Trace(GetType(), "ExecuteAsync()", "ExecuteScriptAsync() Completed. _ExecResult: {0}, _AsyncExecState: {1}.", _ExecResult, _AsyncExecState);
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "ExecuteScriptAsync() Completed. _ExecResult: {0}, _AsyncExecState: {1}.", _ExecResult, _AsyncExecState);
 
 
 		bool discarded = false;
@@ -314,7 +315,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 		if (discarded)
 		{
-			Tracer.Warning(GetType(), "ExecuteScriptAsync()", "Execution was discarded.");
+			Evs.Warning(GetType(), "ExecuteScriptAsync()", "Execution was discarded.");
 			Cleanup();
 
 			if (_Conn != null && _Conn.State == ConnectionState.Open)
@@ -342,7 +343,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 
 
-		// Tracer.Trace(GetType(), "ExecuteAsync()", "Completed.");
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "Completed.");
 
 		return true;
 	}
@@ -357,7 +358,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 	// protected abstract Task<bool> ExecuteScriptAsync(CancellationToken cancelToken, CancellationToken syncToken);
 	private async Task<bool> ExecuteScriptAsync(CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "ExecuteScriptAsync()");
+		// Evs.Trace(GetType(), nameof(ExecuteScriptAsync));
 
 		if (cancelToken.Cancelled())
 			return false;
@@ -391,7 +392,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 			// ------------------------------------------------------------------------------- //
 			await _SqlCmdParser.ParseAsync(cancelToken, syncToken);
 
-			// Tracer.Trace(GetType(), "ExecuteScriptAsync()", "ParseAsync() Completed");
+			// Evs.Trace(GetType(), nameof(ExecuteScriptAsync), "ParseAsync() Completed");
 
 		}
 		catch (ThreadAbortException e)
@@ -422,7 +423,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 	/// <param name="dbConnection"></param>
 	private void ProcessExecOptions(IDbConnection dbConnection)
 	{
-		// Tracer.Trace(GetType(), "ProcessExecOptions()");
+		// Evs.Trace(GetType(), nameof(ProcessExecOptions));
 
 		_ExecOptionHasChanged = true;
 
@@ -457,7 +458,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 	protected void RaiseErrorMessage(string errorLine, string msg, EnQESQLScriptProcessingMessageType msgType)
 	{
-		// Tracer.Trace(GetType(), "OnErrorMessage()", "msg = {0}", msg);
+		// Evs.Trace(GetType(), nameof(OnErrorMessage), "msg = {0}", msg);
 		ErrorMessageEvent?.Invoke(this, new ErrorMessageEventArgs(errorLine, msg, msgType));
 	}
 
@@ -466,7 +467,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 	protected async virtual Task<bool> RaiseExecutionCompletedAsync(EnScriptExecutionResult execResult,
 		bool launched, CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "OnExecutionCompletedAsync()", "execResult = {0}", execResult);
+		// Evs.Trace(GetType(), nameof(OnExecutionCompletedAsync), "execResult = {0}", execResult);
 
 		EnSqlExecutionType executionType = EnSqlExecutionType.QueryOnly;
 		EnSqlOutputMode outputMode = EnSqlOutputMode.ToGrid;
@@ -528,7 +529,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 	private void RaiseScriptProcessingError(string msg, EnQESQLScriptProcessingMessageType msgType)
 	{
-		// Tracer.Trace(GetType(), "OnScriptProcessingError()", "msg = {0}", msg);
+		// Evs.Trace(GetType(), nameof(OnScriptProcessingError), "msg = {0}", msg);
 
 		switch (msgType)
 		{

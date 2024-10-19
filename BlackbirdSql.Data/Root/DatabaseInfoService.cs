@@ -131,7 +131,7 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 
 			if (dataLen == 0)
 			{
-				// Tracer.Trace(typeof(DbNativeExtensionMembers), "GetDatabaseInfo()", "Request: {0}, Entities affected: {1}, Value: {2}.", brequest, pairCount, result);
+				// Evs.Trace(typeof(DbNativeExtensionMembers), "GetDatabaseInfo()", "Request: {0}, Entities affected: {1}, Value: {2}.", brequest, pairCount, result);
 
 				results.Add(((long, long))(pairCount, result));
 
@@ -149,7 +149,7 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 
 			results.Add(((long, long))(pairCount, result));
 
-			// Tracer.Trace(typeof(DbNativeExtensionMembers), "GetDatabaseInfo()", "Request: {0}, Entities affected: {1}, Value: {2}.", brequest, pairCount, result);
+			// Evs.Trace(typeof(DbNativeExtensionMembers), "GetDatabaseInfo()", "Request: {0}, Entities affected: {1}, Value: {2}.", brequest, pairCount, result);
 		}
 
 		return results;

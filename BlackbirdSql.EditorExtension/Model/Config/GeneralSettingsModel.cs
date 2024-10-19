@@ -2,9 +2,9 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System.ComponentModel;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
+using BlackbirdSql.Sys.Interfaces;
 
 
 
@@ -30,7 +30,7 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 	}
 
 
-	public GeneralSettingsModel(IBsTransientSettings transientSettings)
+	public GeneralSettingsModel(IBsSettingsProvider transientSettings)
 		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 

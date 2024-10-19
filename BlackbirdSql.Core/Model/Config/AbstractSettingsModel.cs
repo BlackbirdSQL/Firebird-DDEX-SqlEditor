@@ -56,9 +56,9 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 
 	/// <summary>
-	/// Transient settings .ctor used by <see cref="CreateInstanceAsync(IBsTransientSettings)"/>.
+	/// Transient settings .ctor used by <see cref="CreateInstanceAsync(IBsSettingsProvider)"/>.
 	/// </summary>
-	protected AbstractSettingsModel(string package, string group, string propertyPrefix, IBsTransientSettings transientSettings)
+	protected AbstractSettingsModel(string package, string group, string propertyPrefix, IBsSettingsProvider transientSettings)
 		: this(package, group, propertyPrefix)
 	{
 		_TransientSettings = transientSettings;
@@ -106,7 +106,7 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 	/// Creates a new instance of the options class and loads the values from the store.
 	/// This is for transient settings. Save operations save to memory.
 	/// </summary>
-	public static async Task<TModel> CreateInstanceAsync(IBsTransientSettings transientSettings)
+	public static async Task<TModel> CreateInstanceAsync(IBsSettingsProvider transientSettings)
 	{
 		object[] args = [transientSettings];
 
@@ -135,7 +135,7 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 	private readonly string _SettingsGroup;
 	private readonly string _PropertyPrefix;
 
-	private readonly IBsTransientSettings _TransientSettings = null;
+	private readonly IBsSettingsProvider _TransientSettings = null;
 
 
 	private static AsyncLazy<TModel> _LazyInstance = null;
@@ -436,12 +436,17 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 		foreach (PropertyInfo property in properties)
 		{
-			// Tracer.Trace($"Validating property for model {typeof(TModel).Name} property: {property.Name}.");
+			// Evs.Debug(GetType(), "GetOptionProperties()",
+			//	$"Validating property for model {typeof(TModel).Name} property: {property.Name}.");
 
 			if ((!property.PropertyType.IsPublic && !property.PropertyType.IsNestedPublic)
 				|| !property.CanWrite || !property.CanRead)
 			{
-				// Tracer.Trace($"Ignored property for model {typeof(TModel).Name} property {property.Name} - IsPublic: {property.PropertyType.IsPublic} CanWrite: {property.CanWrite} CanRead: {property.CanRead}.");
+				// Evs.Debug(GetType(), "GetOptionProperties()",
+				//	$"Ignored property for model {typeof(TModel).Name} property {property.Name} - " +
+				//	$"IsPublic: {property.PropertyType.IsPublic} CanWrite: {property.CanWrite} " +
+				//	$"CanRead: {property.CanRead}.");
+
 				continue;
 			}
 
@@ -453,14 +458,18 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 				if (visibility.Visibility == DesignerSerializationVisibility.Hidden)
 				{
-					// Tracer.Trace($"IGNORED property for model {typeof(TModel).Name} property {property.Name} because Hidden.");
+					// Evs.Debug(GetType(), "GetOptionProperties()",
+					//	$"IGNORED property for model {typeof(TModel).Name} " +
+					//	$"property {property.Name} because Hidden.");
+
 					continue;
 				}
 			}
 
 			settings.Add(property);
 
-			// Tracer.Trace($"ADDED property for model {typeof(TModel).Name} property: {property.Name}.");
+			// Evs.Debug(GetType(), "GetOptionProperties()",
+			//	$"ADDED property for model {typeof(TModel).Name} property: {property.Name}.");
 		}
 
 		return settings;

@@ -46,8 +46,6 @@ public abstract class AbstractFileNameEditor : UITypeEditor
 				string initialPath = Path.GetDirectoryName(initialFullPath);
 				string initialFile = Path.GetFileName(initialFullPath);
 
-				// Tracer.Trace($"{initialPath} : {initialFile} : {initialFullPath}");
-
 				_OpenFileDialog.InitialDirectory = initialPath;
 				_OpenFileDialog.FileName = initialFile;
 			}
@@ -88,7 +86,6 @@ public abstract class AbstractFileNameEditor : UITypeEditor
 		{
 			if (_Context.PropertyDescriptor.Attributes[typeof(ParametersAttribute)] is ParametersAttribute paramsAttr)
 			{
-				// Tracer.Trace($"ParametersAttribute found for {context.PropertyDescriptor.Name}: {paramsAttr.Value1}.");
 				if (paramsAttr.Length > 0)
 				{
 					localTitle = false;

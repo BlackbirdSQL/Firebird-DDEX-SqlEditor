@@ -181,7 +181,7 @@ public class StatisticsSnapshot
 				_PurgeCount = infoList[i++].Item2 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._PurgeCount : 0);
 
 
-				_Transactions = info.GetActiveTransactionsCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._Transactions : 0);
+				_Transactions = info.GetActiveTransactionsCount(); // - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._Transactions : 0);
 
 
 				// NetworkStatistics

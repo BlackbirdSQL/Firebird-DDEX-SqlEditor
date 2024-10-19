@@ -9,7 +9,7 @@ namespace BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
 /// <summary>
 /// Localized dll globalized enum type convertor.
-/// Resources are in Common.GlobalizedDescriptionAttribute AttributeResources.resx.
+/// Resources are in Core.GlobalizedDescriptionAttribute AttributeResources.resx.
 /// This is because the enum converter uses GlobalizedDescriptionAttribute
 /// for it's globalized resource strings.
 /// </summary>

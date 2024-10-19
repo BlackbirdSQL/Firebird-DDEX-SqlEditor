@@ -58,7 +58,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		ResultPane statisticsPanel, /* ResultWindowPane executionPlanPanel,*/ ResultPane textPlanPanel,
 		ResultPane spatialPane, IBsTabbedEditorPane tabbedEditor)
 	{
-		// Tracer.Trace(typeof(ResultsHandler), ".ctor");
+		// Evs.Trace(typeof(ResultsHandler), ".ctor");
 
 		if (resultsGridPanel == null || messagePanel == null)
 		{
@@ -96,7 +96,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void Dispose(bool disposing)
 	{
-		// Tracer.Trace(GetType(), "Dispose(bool)");
+		// Evs.Trace(GetType(), "Dispose(bool)");
 		CleanupGrids();
 		UnhookEvents();
 
@@ -148,7 +148,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void Initialize(ResultPane gridResultsPanel, ResultPane messagePanel)
 	{
-		// Tracer.Trace(GetType(), "Initialize()");
+		// Evs.Trace(GetType(), nameof(Initialize));
 
 		ConfigureOutputMode(AuxDocData.SqlOutputMode);
 		ApplyLiveSettingsToBatchConsumer(_BatchConsumer, AuxDocData.LiveSettings);
@@ -339,7 +339,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 				Diag.ThrowException(ex);
 			}
 
-			// Tracer.Trace(GetType(), "DefaultResultsDirectory", "value = {0}", value);
+			// Evs.Trace(GetType(), "DefaultResultsDirectory", "value = {0}", value);
 			_DefaultResultsDirectory = value;
 
 			if (_DefaultResultsDirectory != value)
@@ -482,7 +482,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void ClearResultsTabs()
 	{
-		// Tracer.Trace(GetType(), "ClearResultsTabs", "", null);
+		// Evs.Trace(GetType(), "ClearResultsTabs", "", null);
 		ClearTabs();
 	}
 
@@ -490,7 +490,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public static StreamWriter GetTextWriterForResultsToFile(bool xmlResults, ref string intialDirectory)
 	{
-		// Tracer.Trace(typeof(VS), "GetTextWriterForQueryResultsToFile()");
+		// Evs.Trace(typeof(VS), "GetTextWriterForQueryResultsToFile()");
 
 		FileEncodingDialog fileEncodingDlg = new FileEncodingDialog();
 		string text = Properties.Resources.SqlExportFromGridFilterTabDelimitted;
@@ -518,7 +518,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void SetSite(object sp)
 	{
-		// Tracer.Trace(GetType(), "SetSite", "", null);
+		// Evs.Trace(GetType(), "SetSite", "", null);
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -534,7 +534,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public bool PrepareForExecution(bool prepareForParse)
 	{
-		// Tracer.Trace(GetType(), "PrepareForExecution", "prepareForParse = {0}", prepareForParse);
+		// Evs.Trace(GetType(), "PrepareForExecution", "prepareForParse = {0}", prepareForParse);
 		QryMgr.ResultsConsumer = BatchConsumer;
 		AbstractResultsWriter resultsWriter = null;
 
@@ -578,7 +578,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void SetGridResultsFont(Font f)
 	{
-		// Tracer.Trace(GetType(), "SetGridResultsFont", "", null);
+		// Evs.Trace(GetType(), "SetGridResultsFont", "", null);
 		if (f == null)
 		{
 			Exception ex = new ArgumentNullException("f");
@@ -594,7 +594,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void SetGridResultsColors(Color? bkColor, Color? fkColor)
 	{
-		// Tracer.Trace(GetType(), "SetGridResultsColors", "bkColor = {0}, fkColor = {1}", bkColor, fkColor);
+		// Evs.Trace(GetType(), "SetGridResultsColors", "bkColor = {0}, fkColor = {1}", bkColor, fkColor);
 		if (bkColor.HasValue)
 		{
 			_BkGridColor = bkColor.Value;
@@ -624,7 +624,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void SetGridSelectedCellColor(Color? selectedCellColor)
 	{
-		// Tracer.Trace(GetType(), "SetGridSelectedCellColor", "color = {0}", selectedCellColor);
+		// Evs.Trace(GetType(), "SetGridSelectedCellColor", "color = {0}", selectedCellColor);
 		if (selectedCellColor.HasValue)
 		{
 			_SelectedCellColor = selectedCellColor.Value;
@@ -645,7 +645,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void SetGridInactiveSelectedCellColor(Color? inactiveSelectedCellColor)
 	{
-		// Tracer.Trace(GetType(), "SetGridInactiveSelectedCellColor", "color = {0}", inactiveSelectedCellColor);
+		// Evs.Trace(GetType(), "SetGridInactiveSelectedCellColor", "color = {0}", inactiveSelectedCellColor);
 		if (inactiveSelectedCellColor.HasValue)
 		{
 			_InactiveCellColor = inactiveSelectedCellColor.Value;
@@ -666,7 +666,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void SetGridNullValueColor(Color? nullValueCellColor)
 	{
-		// Tracer.Trace(GetType(), "SetGridNullValueColor", "color = {0}", nullValueCellColor);
+		// Evs.Trace(GetType(), "SetGridNullValueColor", "color = {0}", nullValueCellColor);
 		if (nullValueCellColor.HasValue)
 		{
 			_NullValueCellColor = nullValueCellColor.Value;
@@ -686,7 +686,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void SetHeaderRowColor(Color? headerRowColor)
 	{
-		// Tracer.Trace(GetType(), "SetHeaderRowColor", "color = {0}", headerRowColor);
+		// Evs.Trace(GetType(), "SetHeaderRowColor", "color = {0}", headerRowColor);
 		if (headerRowColor.HasValue)
 		{
 			_HeaderRowColor = headerRowColor.Value;
@@ -712,7 +712,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void OnErrorMessage(object sender, ErrorMessageEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnErrorMessage()", "", null);
+		// Evs.Trace(GetType(), nameof(OnErrorMessage), "", null);
 
 		string msg = _HasMessages ? "\r\n" : "";
 
@@ -733,7 +733,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	protected virtual void OnHosted()
 	{
-		// Tracer.Trace(GetType(), "OnHosted()", "", null);
+		// Evs.Trace(GetType(), nameof(OnHosted), "", null);
 		_GridResultsPage.Initialize(_ObjServiceProvider);
 		_TextResultsPage.Initialize(_ObjServiceProvider);
 		_TextMessagesPage.Initialize(_ObjServiceProvider);
@@ -796,7 +796,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void AddGridContainer(ResultSetAndGridContainer grid)
 	{
-		// Tracer.Trace(GetType(), "AddGridContainer", "", null);
+		// Evs.Trace(GetType(), "AddGridContainer", "", null);
 
 
 		ThreadHelper.Generic.Invoke(delegate
@@ -817,7 +817,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void ProcessBatchSpecialAction(BatchSpecialActionEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "ProcessSpecialActionOnBatch", "", null);
+		// Evs.Trace(GetType(), "ProcessSpecialActionOnBatch", "", null);
 		// IGraph[] graphs = null;
 		// object dataSource = null;
 
@@ -835,7 +835,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		catch (Exception e)
 		{
 			// Execution plan visualizer is not supported yet. Just log the exception
-			// Tracer.Trace(GetType(), "ProcessSpecialActionOnBatch", "Execution plan visualizer under development. Exception: {0}", e.Message);
+			// Evs.Trace(GetType(), "ProcessSpecialActionOnBatch", "Execution plan visualizer under development. Exception: {0}", e.Message);
 		}
 		*/
 
@@ -854,7 +854,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 	/*
 	private void ProcessSpecialActionOnBatchInt(EnQESQLBatchSpecialAction action, IGraph[] graphs, object dataSource)
 	{
-		// Tracer.Trace(GetType(), "ProcessSpecialActionOnBatchInt", "", null);
+		// Evs.Trace(GetType(), "ProcessSpecialActionOnBatchInt", "", null);
 		try
 		{
 			if (_ExecutionPlanPage == null)
@@ -921,7 +921,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private bool ProcessSpecialActionOnBatchInt(EnSpecialActions action, object dataSource)
 	{
-		// Tracer.Trace(GetType(), "ProcessSpecialActionOnBatchInt", "Text plan source: " + dataSource, null);
+		// Evs.Trace(GetType(), "ProcessSpecialActionOnBatchInt", "Text plan source: " + dataSource, null);
 
 		try
 		{
@@ -1119,7 +1119,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void Clear()
 	{
-		// Tracer.Trace(GetType(), "Clear", "", null);
+		// Evs.Trace(GetType(), "Clear", "", null);
 		CheckAndCloseTextWriters();
 		_TextResultsPage.Clear();
 		_TextMessagesPage.Clear();
@@ -1142,7 +1142,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void RemoveStatisticsPage()
 	{
-		// Tracer.Trace(GetType(), "RemoveStatisticsTab", "", null);
+		// Evs.Trace(GetType(), "RemoveStatisticsTab", "", null);
 		if (_StatisticsPage != null && _StatisticsPane != null && _StatisticsPane.Contains(_StatisticsPage))
 		{
 			_StatisticsPane.Remove(_StatisticsPage);
@@ -1154,7 +1154,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 	/*
 	public void RemoveExecutionPlanPage()
 	{
-		// Tracer.Trace(GetType(), "RemoveExecutionPlanTab", "", null);
+		// Evs.Trace(GetType(), "RemoveExecutionPlanTab", "", null);
 		if (_ExecutionPlanPage != null)
 		{
 			if (_ExecutionPlanPane.Contains(_ExecutionPlanPage))
@@ -1172,7 +1172,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public void RemoveTextPlanPage()
 	{
-		// Tracer.Trace(GetType(), "RemoveTextPlanTab", "", null);
+		// Evs.Trace(GetType(), "RemoveTextPlanTab", "", null);
 		if (_TextPlanPage != null)
 		{
 			if (_TextPlanPane.Contains(_TextPlanPage))
@@ -1190,7 +1190,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void CleanupGrids()
 	{
-		// Tracer.Trace(GetType(), "CleanupGrids", "", null);
+		// Evs.Trace(GetType(), "CleanupGrids", "", null);
 		_GridCount = 0;
 		_GridResultsPage?.Clear();
 	}
@@ -1199,7 +1199,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void PrepareTabs(bool isParseOnly)
 	{
-		// Tracer.Trace(GetType(), "PrepareTabs", "", null);
+		// Evs.Trace(GetType(), "PrepareTabs", "", null);
 		ClearTabs();
 
 		TabbedEditor.CustomizeTabsForResultsSetting(isParseOnly);
@@ -1231,7 +1231,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void OutputQueryIntoMessages(string strScript)
 	{
-		// Tracer.Trace(GetType(), "OutputQueryIntoMessages", "", null);
+		// Evs.Trace(GetType(), "OutputQueryIntoMessages", "", null);
 		AddStringToMessages("/*------------------------", flush: false);
 		AddStringToMessages(strScript, flush: false);
 		AddStringToMessages("------------------------*/", flush: true);
@@ -1258,7 +1258,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void AddGridContainerInt(ResultSetAndGridContainer cont)
 	{
-		// Tracer.Trace(GetType(), "AddGridContainerInt", "", null);
+		// Evs.Trace(GetType(), "AddGridContainerInt", "", null);
 		if (_GridCount == C_MaxGridResultSets)
 		{
 			MarkAsCouldNotAddMoreGrids();
@@ -1282,7 +1282,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void ConfigureOutputMode(EnSqlOutputMode mode)
 	{
-		// Tracer.Trace(GetType(), "ConfigureOutputMode()");
+		// Evs.Trace(GetType(), nameof(ConfigureOutputMode));
 
 		if (_OutputMode == mode && _BatchConsumer != null)
 			return;
@@ -1314,7 +1314,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void ApplyLiveSettingsToBatchConsumer(AbstractBatchConsumer batchConsumer, IBsEditorTransientSettings liveSettings)
 	{
-		// Tracer.Trace(GetType(), "ApplyLiveSettingsToBatchConsumer()");
+		// Evs.Trace(GetType(), nameof(ApplyLiveSettingsToBatchConsumer));
 
 		batchConsumer.MaxCharsPerColumn = MaxCharsPerColumn;
 		batchConsumer.DiscardResults = ShouldDiscardResults;
@@ -1328,7 +1328,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private GridResultsPanel AllocateNewGridTabPage()
 	{
-		// Tracer.Trace(GetType(), "AllocateNewGridTabPage", "", null);
+		// Evs.Trace(GetType(), "AllocateNewGridTabPage", "", null);
 		GridResultsPanel gridResultsPanel = new(_DefaultResultsDirectory)
 		{
 			Name = "GridResultsPanel",
@@ -1346,7 +1346,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void ClearTabs()
 	{
-		// Tracer.Trace(GetType(), "ClearTabs", "", null);
+		// Evs.Trace(GetType(), "ClearTabs", "", null);
 		CleanupGrids();
 
 		/*
@@ -1364,7 +1364,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void FlushAllTextWriters()
 	{
-		// Tracer.Trace(GetType(), "FlushAllTextWriters", "", null);
+		// Evs.Trace(GetType(), "FlushAllTextWriters", "", null);
 
 		try
 		{
@@ -1404,7 +1404,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void CheckAndCloseTextWriters()
 	{
-		// Tracer.Trace(GetType(), "CheckAndCloseTextWriters()");
+		// Evs.Trace(GetType(), nameof(CheckAndCloseTextWriters));
 
 		if (_ResultsWriter != null && _ResultsWriter is FileStreamResultsWriter)
 		{
@@ -1444,7 +1444,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
 	public virtual void OnBatchDataLoaded(object sender, QueryDataEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnQueryDataLoaded()");
+		// Evs.Trace(GetType(), nameof(OnQueryDataLoaded));
 
 		if (args.StatementAction == EnSqlStatementAction.ProcessQuery
 			&& args.ExecutionType != EnSqlExecutionType.PlanOnly && args.WithClientStats)
@@ -1457,13 +1457,13 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public virtual void OnBatchScriptParsed(object sender, QueryDataEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnBatchScriptParsed()");
+		// Evs.Trace(GetType(), nameof(OnBatchScriptParsed));
 	}
 
 
 	public virtual void OnBatchStatementCompleted(object sender, BatchStatementCompletedEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnStatementCompleted()");
+		// Evs.Trace(GetType(), nameof(OnStatementCompleted));
 	}
 
 
@@ -1521,7 +1521,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnQueryExecutionCompletedAsync()");
+		// Evs.Trace(GetType(), nameof(OnQueryExecutionCompletedAsync));
 
 		/* Moved to OnBatchDataLoaded(()
 		if (!args.IsParseOnly && AuxDocData.ClientStatisticsEnabled && _ClientStatisticsCtl != null)
@@ -1737,7 +1737,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	private void UnhookEvents()
 	{
-		// Tracer.Trace(GetType(), "UnhookFromEvents", "", null);
+		// Evs.Trace(GetType(), "UnhookFromEvents", "", null);
 
 		if (_QryMgr != null)
 		{

@@ -2,7 +2,6 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Dynamic;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Model.Config;
@@ -17,10 +16,12 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBsSettingsModel).
 /// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
-/// descendent tree from the top-level extension lib down to the Core.
+/// descendent tree from the top-level extension lib down to Sys.
 /// PersistentSettings can be either consumers or providers of options, or both.
-/// There is no point using services as this configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
+/// Property accessors should only be declared at the hierarchy level that they are first required. They do
+/// not need to be declared in PeristentSettings if they're only required in TransientSettings.
+/// There is no point using services as this hierarchy is fixed. ie:
+/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Shared > Core > Sys.
 /// </summary>
 // =============================================================================================================
 public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
@@ -39,7 +40,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	}
 
 
-	public static IBsPersistentSettings CreateInstance()
+	public static IBsSettingsProvider CreateInstance()
 	{
 		return new PersistentSettings();
 	}
@@ -48,7 +49,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	/// <summary>
 	/// Gets the singleton PersistentSettings instance
 	/// </summary>
-	public new static IBsPersistentSettings Instance => _Instance ??= new PersistentSettings();
+	public new static IBsSettingsProvider Instance => _Instance ??= new PersistentSettings();
 
 
 
@@ -80,12 +81,32 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 
 
 	// =========================================================================================================
+	#region Fields - PersistentSettings
+	// =========================================================================================================
+
+
+	private int _AssemblyId = -1;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
 	#region Property Accessors - PersistentSettings
 	// =========================================================================================================
 
 
+	/// <summary>
+	/// Flag indicating whether or not the extrapolated VxbObjectSupport.xml, after
+	/// imports, must be saved to the diagnostics logfile directory.
+	/// </summary>
+	public static bool EnableSaveExtrapolatedXml => (bool)GetPersistentSetting("DdexDebugEnableSaveExtrapolatedXml", false);
 
-	public static bool ValidateSessionConnectionOnFormAccept => (bool)GetSetting("DdexGeneralValidateSessionConnectionOnFormAccept", true);
+
+	public static bool ValidateSessionConnectionOnFormAccept => (bool)GetPersistentSetting("DdexGeneralValidateSessionConnectionOnFormAccept", true);
 
 
 	#endregion Property Accessors
@@ -99,11 +120,30 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	// =========================================================================================================
 
 
+	public override int GetEvsAssemblyId(Type type)
+	{
+		int id = base.GetEvsAssemblyId(type);
+
+		if (id > 0)
+			return id;
+
+		--id;
+
+		if (type.Assembly.FullName == typeof(PersistentSettings).Assembly.FullName)
+		{
+			_AssemblyId = -id;
+			return _AssemblyId;
+		}
+
+		return id;
+	}
+
+
 	/// <summary>
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
-	public override void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
+	public override void RegisterSettingsEventHandlers(IBsSettingsProvider.SettingsSavedDelegate onSettingsSavedDelegate)
 	{
 		base.RegisterSettingsEventHandlers(onSettingsSavedDelegate);
 
@@ -132,10 +172,10 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	{
 		bool result = false;
 
-		// Tracer.Trace(GetType(), "PopulateSettingsEventArgs()", "Package: {0}, Group: {1}.", e.Package, e.Group);
+		// Evs.Trace(GetType(), nameof(PopulateSettingsEventArgs), "Package: {0}, Group: {1}.", e.Package, e.Group);
 
 		if (e.Package == null || e.Package != "Ddex")
-			result = base.PopulateSettingsEventArgs(ref e);
+			result |= base.PopulateSettingsEventArgs(ref e);
 
 
 		if (e.Package == null || e.Package == "Ddex")
@@ -179,9 +219,9 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	/// Settings saved event handler - only the final descendent class implements this.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override void OnSettingsSaved(object sender)
+	private void OnSettingsSaved(object sender)
 	{
-		// Tracer.Trace(GetType(), "OnSettingsSaved()", "sender: {0}", sender?.GetType().ToString() ?? "Null");
+		// Evs.Trace(GetType(), nameof(OnSettingsSaved), "sender: {0}", sender?.GetType().ToString() ?? "Null");
 
 		IBsSettingsModel model = (IBsSettingsModel)sender;
 

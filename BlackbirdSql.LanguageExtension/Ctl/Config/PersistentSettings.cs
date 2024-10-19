@@ -2,6 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using BlackbirdSql.LanguageExtension.Enums;
 using BlackbirdSql.LanguageExtension.Properties;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
@@ -17,10 +18,12 @@ namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBsSettingsModel).
 /// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
-/// descendent tree from the top-level extension lib down to the Core.
+/// descendent tree from the top-level extension lib down to Sys.
 /// PersistentSettings can be either consumers or providers of options, or both.
-/// There is no point using services as this configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Common > Core.
+/// Property accessors should only be declared at the hierarchy level that they are first required. They do
+/// not need to be declared in PeristentSettings if they're only required in TransientSettings.
+/// There is no point using services as this hierarchy is fixed. ie:
+/// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Shared > Core > Sys.
 /// </summary>
 // =============================================================================================================
 public abstract class PersistentSettings : Shared.Ctl.Config.PersistentSettings
@@ -46,9 +49,11 @@ public abstract class PersistentSettings : Shared.Ctl.Config.PersistentSettings
 
 
 	// =========================================================================================================
-	#region Fields
+	#region Fields - PersistentSettings
 	// =========================================================================================================
 
+
+	private int _AssemblyId = -1;
 
 
 	#endregion Fields
@@ -60,6 +65,36 @@ public abstract class PersistentSettings : Shared.Ctl.Config.PersistentSettings
 	// =========================================================================================================
 	#region Property Accessors - PersistentSettings
 	// =========================================================================================================
+
+
+	// LanguageService AdvancedPreferencesModel
+	public static bool LanguageServiceEnableIntellisense => (bool)GetPersistentSetting("LanguageServiceAdvancedEnableIntellisense", true);
+	public static bool LanguageServiceAutoOutlining => LanguageServiceEnableIntellisense
+		&& (bool)GetPersistentSetting("LanguageServiceAdvancedAutoOutlining", true);
+	public static bool LanguageServiceUnderlineErrors => LanguageServiceEnableIntellisense
+		&& (bool)GetPersistentSetting("LanguageServiceAdvancedUnderlineErrors", true);
+	public static int LanguageServiceMaxScriptSize => (int)GetPersistentSetting("LanguageServiceAdvancedMaxScriptSize", 1048576);
+	public static EnCasingStyle LanguageServiceTextCasing => (EnCasingStyle)GetPersistentSetting("LanguageServiceAdvancedTextCasing", EnCasingStyle.Uppercase);
+	// _DisplayInfoProvider.BuiltInCasing = Prefs.TextCasing == 0 ? CasingStyle.Uppercase : CasingStyle.Lowercase;
+
+
+
+	// Editor ExecutionSettingsModel
+
+	public static string EditorExecutionBatchSeparator
+	{
+		get
+		{
+			string value = (string)GetPersistentSetting("EditorExecutionGeneralBatchSeparator", SharedConstants.C_DefaultBatchSeparator);
+
+			value = value.Replace(" ", "");
+
+			if (value == "")
+				value = ";";
+
+			return value;
+		}
+	}
 
 
 
@@ -74,14 +109,33 @@ public abstract class PersistentSettings : Shared.Ctl.Config.PersistentSettings
 	// =========================================================================================================
 
 
+	public override int GetEvsAssemblyId(Type type)
+	{
+		int id = base.GetEvsAssemblyId(type);
+
+		if (id > 0)
+			return id;
+
+		--id;
+
+		if (type.Assembly.FullName == typeof(PersistentSettings).Assembly.FullName)
+		{
+			_AssemblyId = -id;
+			return _AssemblyId;
+		}
+
+		return id;
+	}
+
+
+
 	/// <summary>
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
-	public override void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
+	public override void RegisterSettingsEventHandlers(IBsSettingsProvider.SettingsSavedDelegate onSettingsSavedDelegate)
 	{
-		// There is no base. We're the first.
-		// base.RegisterSettingsEventHandlers(onSettingsSavedDelegate);
+		base.RegisterSettingsEventHandlers(onSettingsSavedDelegate);
 
 		try
 		{
@@ -106,9 +160,8 @@ public abstract class PersistentSettings : Shared.Ctl.Config.PersistentSettings
 	{
 		bool result = false;
 
-		// There is no base. We're the first ancestor that creates new settings.
-		// if (e.Package == null || e.Package != "LanguageService")
-		//	result = base.PopulateSettingsEventArgs(ref e);
+		if (e.Package == null || e.Package != "LanguageService")
+			result |= base.PopulateSettingsEventArgs(ref e);
 
 
 		if (e.Package == null || e.Package == "LanguageService")
@@ -134,12 +187,14 @@ public abstract class PersistentSettings : Shared.Ctl.Config.PersistentSettings
 	// =========================================================================================================
 
 
+	/*
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Settings saved event handler - only the final descendent class implements this.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	// public override void OnSettingsSaved(object sender);
+	public abstract void OnSettingsSaved(object sender);
+	*/
 
 
 	/// <summary>

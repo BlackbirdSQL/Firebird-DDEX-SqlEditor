@@ -65,6 +65,7 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 
 
 
+
 	// =========================================================================================================
 	#region Fields and Constants - RunningConnectionTable
 	// =========================================================================================================
@@ -315,7 +316,7 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 		}
 
 
-		// Tracer.Trace(GetType(), "TryGetHybridRowValue()", "hybridKey: {0}", hybridKey);
+		// Evs.Debug(GetType(), nameof(TryGetHybridRowValue), $"hybridKey: {hybridKey}");
 
 		InternalResolveDeadlocksAndEnsureLoaded(false);
 

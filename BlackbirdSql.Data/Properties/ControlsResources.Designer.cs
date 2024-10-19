@@ -61,11 +61,228 @@ namespace BlackbirdSql.Data.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &gt;  Cancelled. {0}% completed. {1} took {2}ms..
+        /// </summary>
+        internal static string LinkageParser_Cancelled {
+            get {
+                return ResourceManager.GetString("LinkageParser_Cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;  Cancelled {0} sequence linkage..
+        /// </summary>
+        internal static string LinkageParser_CancelledCatalog {
+            get {
+                return ResourceManager.GetString("LinkageParser_CancelledCatalog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Trigger linkage parser timeout.
         /// </summary>
         internal static string LinkageParser_CaptionLinkageTimeout {
             get {
                 return ResourceManager.GetString("LinkageParser_CaptionLinkageTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Switched {0} sequence linkage to UI thread..
+        /// </summary>
+        internal static string LinkageParser_CatalogSwitchedToUiThread {
+            get {
+                return ResourceManager.GetString("LinkageParser_CatalogSwitchedToUiThread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}% completed. {1}
+        ///Linkage completed in {2}ms..
+        /// </summary>
+        internal static string LinkageParser_Completed {
+            get {
+                return ResourceManager.GetString("LinkageParser_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed {0} sequence linkage in {1}ms..
+        /// </summary>
+        internal static string LinkageParser_CompletedCatalog {
+            get {
+                return ResourceManager.GetString("LinkageParser_CompletedCatalog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;  Pausing async sequence linkage..
+        /// </summary>
+        internal static string LinkageParser_PausingAsync {
+            get {
+                return ResourceManager.GetString("LinkageParser_PausingAsync", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}% completed. {1}.
+        /// </summary>
+        internal static string LinkageParser_PercentCompletedStage {
+            get {
+                return ResourceManager.GetString("LinkageParser_PercentCompletedStage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}% completed. {1} took {2}ms..
+        /// </summary>
+        internal static string LinkageParser_PercentCompletedStageElapsed {
+            get {
+                return ResourceManager.GetString("LinkageParser_PercentCompletedStageElapsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;  Resuming async sequence linkage..
+        /// </summary>
+        internal static string LinkageParser_ResumingAsync {
+            get {
+                return ResourceManager.GetString("LinkageParser_ResumingAsync", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resuming {0} sequence linkage..
+        /// </summary>
+        internal static string LinkageParser_ResumingCatalog {
+            get {
+                return ResourceManager.GetString("LinkageParser_ResumingCatalog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parsed and linked {0} Triggers..
+        /// </summary>
+        internal static string LinkageParser_StageCompleted {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selecting Generators....
+        /// </summary>
+        internal static string LinkageParser_StageGeneratorsBegin {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageGeneratorsBegin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT Generators.
+        /// </summary>
+        internal static string LinkageParser_StageGeneratorsEnd {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageGeneratorsEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Populating Linkage Table....
+        /// </summary>
+        internal static string LinkageParser_StageLinkingBegin {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageLinkingBegin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Populate Linkage Table.
+        /// </summary>
+        internal static string LinkageParser_StageLinkingEnd {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageLinkingEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Populating Sequence Table....
+        /// </summary>
+        internal static string LinkageParser_StageSequencesBegin {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageSequencesBegin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Populate Sequence Table.
+        /// </summary>
+        internal static string LinkageParser_StageSequencesEnd {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageSequencesEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT TriggerDependencies.
+        /// </summary>
+        internal static string LinkageParser_StageTriggerDependenciesEnd {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageTriggerDependenciesEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selecting TriggerDependencies....
+        /// </summary>
+        internal static string LinkageParser_StageTriggerDependenciesStart {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageTriggerDependenciesStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selecting Triggers....
+        /// </summary>
+        internal static string LinkageParser_StageTriggersBegin {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageTriggersBegin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT Triggers.
+        /// </summary>
+        internal static string LinkageParser_StageTriggersEnd {
+            get {
+                return ResourceManager.GetString("LinkageParser_StageTriggersEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Started.
+        /// </summary>
+        internal static string LinkageParser_Started {
+            get {
+                return ResourceManager.GetString("LinkageParser_Started", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;  Switched sequence linkage to UI thread..
+        /// </summary>
+        internal static string LinkageParser_SwitchedToUiThread {
+            get {
+                return ResourceManager.GetString("LinkageParser_SwitchedToUiThread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}  sequence linkage.
+        /// </summary>
+        internal static string LinkageParser_TaskHandlerTitle {
+            get {
+                return ResourceManager.GetString("LinkageParser_TaskHandlerTitle", resourceCulture);
             }
         }
         
@@ -78,6 +295,24 @@ namespace BlackbirdSql.Data.Properties {
         internal static string LinkageParser_TextLinkageParser {
             get {
                 return ResourceManager.GetString("LinkageParser_TextLinkageParser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating sequence linkage..
+        /// </summary>
+        internal static string LinkageParser_Updating {
+            get {
+                return ResourceManager.GetString("LinkageParser_Updating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating {0} sequence linkage..
+        /// </summary>
+        internal static string LinkageParser_UpdatingCatalog {
+            get {
+                return ResourceManager.GetString("LinkageParser_UpdatingCatalog", resourceCulture);
             }
         }
     }

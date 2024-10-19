@@ -161,7 +161,7 @@ public class TDataSource
 		_Providers = new TiDataProviderCollection(this);
 	}
 
-	public static void AddStandardDataSources(TDataConnectionDlg dialog)
+	public static void AddStandardDataSources(VxbConnectionDlg dialog)
 	{
 		dialog.DataSources.Add(FbDataSource);
 		dialog.UnspecifiedDataSource.Providers.Add(TDataProvider.BlackbirdSqlDataProvider);

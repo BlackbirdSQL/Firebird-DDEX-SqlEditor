@@ -25,7 +25,7 @@ internal class DslForeignKeyColumns : DslColumns
 {
 	public DslForeignKeyColumns() : base()
 	{
-		// Tracer.Trace(GetType(), "DslForeignKeyColumns.DslForeignKeyColumns");
+		// Evs.Trace(GetType(), "DslForeignKeyColumns.DslForeignKeyColumns");
 
 		_ParentType = "ForeignKey";
 		_ObjectType = "TableForeignKeyColumn";

@@ -637,7 +637,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// </remarks>
 	public static bool AreEquivalent(DbConnectionStringBuilder csb1, DbConnectionStringBuilder csb2)
 	{
-		// Tracer.Trace(typeof(AbstractCsb), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)");
+		// Evs.Debug(typeof(AbstractCsb), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)");
 
 		return AreEquivalent(csb1, csb2, Describers.EquivalencyKeys);
 	}
@@ -650,7 +650,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// </summary>
 	public static bool AreEquivalent(DbConnectionStringBuilder csb1, DbConnectionStringBuilder csb2, IEnumerable<Describer> enumerator, bool deep = false)
 	{
-		// Tracer.Trace(typeof(AbstractCsb), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)");
+		// Evs.Debug(typeof(AbstractCsb), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)");
 
 		object value1, value2;
 
@@ -674,9 +674,9 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 				if (!AreEquivalent(describer.Name, value1, value2))
 				{
-					// Tracer.Trace(typeof(AbstractCsb), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)",
-					//	"Connection parameter '{0}' mismatch: '{1}' : '{2}.",
-					//	describer.Name, value1?.ToString() ?? "null", value2?.ToString() ?? "null");
+					// Evs.Debug(typeof(AbstractCsb), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)",
+					//	$"Connection parameter '{describer.Name}' mismatch: '{(value1?.ToString() ?? "null")}' " +
+					//	$": '{(value2?.ToString() ?? "null")}.");
 
 					return false;
 				}
@@ -728,8 +728,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			}
 		}
 
-		// Tracer.Trace(typeof(TConnectionEquivalencyComparer),
-		// 	"TConnectionEquivalencyComparer.AreEquivalent(IDictionary, IDictionary)", "Connections are equivalent");
+		// Evs.Debug(typeof(AbstractCsb), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)",
+		//	"Connections are equivalent");
 
 		return true;
 	}
@@ -747,7 +747,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// </remarks>
 	public static bool AreEquivalent(string connectionString1, string connectionString2)
 	{
-		// Tracer.Trace(typeof(AbstractCsb), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)");
+		// Evs.Debug(typeof(AbstractCsb), "AreEquivalent(string, string)");
 
 		return AreEquivalent(connectionString1, connectionString2, Describers.EquivalencyKeys);
 	}
@@ -781,7 +781,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	// ---------------------------------------------------------------------------------
 	public static bool AreEquivalent(string key, object value1, object value2)
 	{
-		// Tracer.Trace();
+		// Evs.Debug(typeof(AbstractCsb), "AreEquivalent(string, object, object)");
 
 		if (value1 == null)
 		{
@@ -936,7 +936,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 		string result = urlb.Uri.ToString();
 
-		// Tracer.Trace(typeof(AbstractCsb), "BuildUniqueConnectionUrl()", "Url: {0}", testurlb.Uri.ToString());
+		// Evs.Debug(typeof(AbstractCsb), "BuildUniqueConnectionUrl()", $"Url: {result}.");
 
 		// We have a unique connection url
 		return result;
@@ -952,7 +952,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	// ---------------------------------------------------------------------------------
 	private void Extract(IVsDataExplorerNode node)
 	{
-		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)");
+		// Evs.Debug(GetType(), "Extract(IVsDataExplorerNode)");
+
 		IVsDataExplorerNode connectionNode = node.ExplorerConnection.ConnectionNode;
 
 		IVsDataObject @object = connectionNode.Object;
@@ -964,7 +965,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		}
 
 
-		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)", "Node type is {0}.", objType);
+		// Evs.Debug(GetType(), "Extract(IVsDataExplorerNode)", $"Node type is {@object}.");
 
 		object value;
 		object readOnly;
@@ -1002,7 +1003,9 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				throw;
 			}
 		}
-		// Tracer.Trace(GetType(), "Extract()", "node.ExplorerConnection./DisplayName: {0}, node.ExplorerConnection.ConnectionNode.Name: {1}, dbObj.Name: {2}.", node.ExplorerConnection.DisplayName, node.ExplorerConnection.ConnectionNode.Name, dbObj.Name);
+
+		// Evs.Debug(GetType(), "Extract()", $"node.ExplorerConnection.DisplayName: {node.ExplorerConnection.DisplayName}, " +
+		//	$"node.ExplorerConnection.ConnectionNode.Name: {node.ExplorerConnection.ConnectionNode.Name}.");
 
 		ConnectionKey = connectionNode.GetConnectionKey();
 		if (ConnectionKey == null)
@@ -1073,7 +1076,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != value)
 				{
-					// Tracer.Trace(typeof(AbstractCsb), "UpdatePropertiesReadOnlyAttribute()", "Setting ReadOnlyAttribute for PropertyDescriptor {0} to readonly: {1}.", name, readOnly);
+					// Evs.Debug(typeof(AbstractCsb), "UpdateDatasetKeysReadOnlyAttribute()",
+					//	$"Setting ReadOnlyAttribute for PropertyDescriptor {name} to readonly: {readOnly}.");
 
 					updated = true;
 					Reflect.SetFieldInfoValue(attr, fieldInfo, value);

@@ -55,8 +55,7 @@ public static class EnNodeSystemTypeExtensions
 		}
 
 
-		if (@object.Type.Name.EndsWith("Column") || @object.Type.Name.EndsWith("Parameter")
-			|| @object.Type.Name.EndsWith("ReturnValue"))
+		if (@object.Type.Name.EndsWith("Column") || @object.Type.Name.EndsWith("Parameter"))
 		{
 			if (@this.Parent != null && @this.Parent.Object != null)
 				@object = @this.Parent.Object;
@@ -80,7 +79,7 @@ public static class EnNodeSystemTypeExtensions
 			return EnNodeSystemType.User;
 		}
 
-		// Tracer.Trace(typeof(EnNodeSystemTypeExtensions), "NodeSystemType()", "Node {0} has no system type flag.", node.Name);
+		// Evs.Trace(typeof(EnNodeSystemTypeExtensions), "NodeSystemType()", "Node {0} has no system type flag.", node.Name);
 
 		return EnNodeSystemType.Global;
 

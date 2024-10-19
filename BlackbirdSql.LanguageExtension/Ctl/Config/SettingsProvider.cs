@@ -3,8 +3,9 @@
 
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Controls.Config;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Shell;
+
 
 
 namespace BlackbirdSql.LanguageExtension.Ctl.Config;
@@ -32,7 +33,7 @@ public class SettingsProvider
 
 	[ComVisible(true)]
 	[Guid(PackageData.C_TransientLanguagePreferencesPageGuid)]
-	public class TransientAdvancedPreferencesPage(IBsTransientSettings transientSettings)
+	public class TransientAdvancedPreferencesPage(IBsSettingsProvider transientSettings)
 		: AbstractTransientSettingsPage<TransientAdvancedPreferencesPage, AdvancedPreferencesModel>(transientSettings) { }
 
 }

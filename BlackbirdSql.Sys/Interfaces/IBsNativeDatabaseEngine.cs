@@ -36,7 +36,7 @@ public interface IBsNativeDatabaseEngine
 	Type EFProviderServicesType_ { get; }
 	string EFProviderServicesTypeFullName_ { get; }
 	Assembly EntityFrameworkAssembly_ { get; }
-	string[] EntityFrameworkVersions_ { get; }
+	// string[] EntityFrameworkVersions_ { get; }
 	Type ConnectionType_ { get; }
 	DescriberDictionary Describers_ { get; }
 

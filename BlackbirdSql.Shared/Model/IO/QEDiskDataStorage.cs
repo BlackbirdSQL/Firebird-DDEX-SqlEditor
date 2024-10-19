@@ -15,7 +15,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataS
 
 	public QEDiskDataStorage()
 	{
-		// Tracer.Trace(GetType(), "QEDiskDataStorage.QEDiskDataStorage", "", null);
+		// Evs.Trace(GetType(), "QEDiskDataStorage.QEDiskDataStorage", "", null);
 		_DataStorageEnabled = true;
 	}
 
@@ -23,10 +23,10 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataS
 
 	public override async Task<bool> SerializeDataAsync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "QEDiskDataStorage.SerializeData", "", null);
+		// Evs.Trace(GetType(), "QEDiskDataStorage.SerializeData", "", null);
 		try
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEDiskDataStorage.SerializeData", "_DataStorageEnabled = {0}", _DataStorageEnabled);
+			// Evs.Trace(GetType(), Tracer.EnLevel.Verbose, "QEDiskDataStorage.SerializeData", "_DataStorageEnabled = {0}", _DataStorageEnabled);
 			await base.SerializeDataAsync(cancelToken);
 		}
 		catch (Exception e)
@@ -72,7 +72,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataS
 
 	public override IBsStorageView GetStorageView()
 	{
-		// Tracer.Trace(GetType(), "QEDiskDataStorage.GetStorageView", "", null);
+		// Evs.Trace(GetType(), "QEDiskDataStorage.GetStorageView", "", null);
 		QEDiskStorageView qEDiskStorageView = new QEDiskStorageView(this);
 		if (MaxCharsToStore > 0)
 		{

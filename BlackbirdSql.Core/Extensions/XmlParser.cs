@@ -34,132 +34,6 @@ public static class XmlParser
 
 
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Single-level extrapolation of an xml stream with imports into a single stream.
-	/// Also, in DEBUG and if <see cref="Diag.EnableSaveExtrapolatedXml"/> is set, writes a copy of the
-	/// extrapolation to <paramref name="xmlName"/>.Extapolated.xml in the
-	/// <see cref="Diag.LogFile"/> folder.
-	/// </summary>
-	/// <returns>
-	/// Returns a System.IO.Stream object of the extrapolated xml.
-	/// </returns>
-	// ---------------------------------------------------------------------------------
-	public static Stream ExtrapolateXmlImports(string xmlName, Stream stream, IVsDataSupportImportResolver resolver)
-	{
-		/*
-		 * DataSupportBuilder recursively enumerates imported nodes and simply inserts them into it's reference dict.
-		 * We're going to have to insert them into the parent xml and then stream the extrapolated xml
-		 * back to Microsoft.VisualStudio.Data.Package.Connection.
-		*/
-
-		bool updated = false;
-
-		XmlDocument xmlDoc = new XmlDocument();
-		XmlDocument xmlImportDoc;
-
-		XmlNode xmlRoot, xmlImportRoot, xmlPrev, xmlNode, xmlImportNode;
-
-		XmlNamespaceManager xmlNs;
-		XmlNamespaceManager xmlImportNs;
-
-		XmlNodeList xmlImports, xmlDefinitions;
-
-		Stream importStream;
-
-
-		try
-		{
-			xmlDoc.Load(stream);
-			xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
-
-			xmlRoot = xmlDoc.DocumentElement;
-
-			if (!xmlNs.HasNamespace("confBlackbirdNs"))
-				xmlNs.AddNamespace("confBlackbirdNs", xmlRoot.NamespaceURI);
-
-
-			xmlImports = xmlRoot.SelectNodes("//confBlackbirdNs:Import", xmlNs);
-
-
-			foreach (XmlNode xmlImport in xmlImports)
-			{
-				string name = xmlImport.Attributes["name"].Value;
-
-				importStream = resolver.ImportSupportStream(name);
-
-				if (importStream == null)
-					continue;
-
-				xmlImportDoc = new XmlDocument();
-				xmlImportDoc.Load(importStream);
-				xmlImportNs = new XmlNamespaceManager(xmlImportDoc.NameTable);
-				xmlImportRoot = xmlImportDoc.DocumentElement;
-
-				if (!xmlImportNs.HasNamespace("confBlackbirdNs"))
-					xmlImportNs.AddNamespace("confBlackbirdNs", xmlImportRoot.NamespaceURI);
-
-				xmlDefinitions = xmlImportRoot.SelectNodes("//confBlackbirdNs:Define", xmlImportNs);
-
-				xmlPrev = xmlImport;
-
-				foreach (XmlNode xmlDefinition in xmlDefinitions)
-				{
-					xmlNode = xmlDoc.ImportNode(xmlDefinition, true);
-					xmlPrev = xmlRoot.InsertAfter(xmlNode, xmlPrev);
-				}
-
-				xmlImportNode = xmlImportRoot.SelectSingleNode("//confBlackbirdNs:Types", xmlImportNs);
-
-				if (xmlImportNode != null)
-				{
-					xmlNode = xmlDoc.ImportNode(xmlImportNode, true);
-					xmlPrev = xmlRoot.InsertAfter(xmlNode, xmlPrev);
-				}
-
-				xmlImportNode = xmlImportRoot.SelectSingleNode("//confBlackbirdNs:MappedTypes", xmlImportNs);
-
-				if (xmlImportNode != null)
-				{
-					xmlNode = xmlDoc.ImportNode(xmlImportNode, true);
-					xmlPrev = xmlRoot.InsertAfter(xmlNode, xmlPrev);
-				}
-
-
-				xmlRoot.RemoveChild(xmlImport);
-
-				updated = true;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
-
-
-		if (updated)
-		{
-			if (PersistentSettings.EnableSaveExtrapolatedXml)
-			{
-				FileInfo info = new FileInfo(Diag.LogFile);
-				xmlDoc.Save(info.DirectoryName + "/" + xmlName + ".Extrapolated.xml");
-			}
-
-			MemoryStream xmlStream = new MemoryStream();
-
-			xmlDoc.Save(xmlStream);
-			xmlStream.Position = 0;
-			return xmlStream;
-		}
-
-		stream.Position = 0;
-		return stream;
-
-	}
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if a project has the db provider invariant configured in the app.config
@@ -208,7 +82,7 @@ public static class XmlParser
 				try
 				{
 					xmlDoc.Save(xmlPath);
-					// Tracer.Trace("app.config save: " + xmlPath);
+					// Evs.Debug(typeof(XmlParser), "ConfigureDbProvider()", $"app.config save: {xmlPath}.");
 				}
 				catch (Exception ex)
 				{
@@ -284,7 +158,7 @@ public static class XmlParser
 				try
 				{
 					xmlDoc.Save(xmlPath);
-					// Tracer.Trace("app.config save: " + xmlPath);
+					// Evs.Debug(typeof(XmlParser), "ConfigureEntityFramework()", $"app.config save: {xmlPath}.");
 				}
 				catch (Exception ex)
 				{
@@ -692,7 +566,7 @@ public static class XmlParser
 			try
 			{
 				xmlDoc.Save(xmlPath);
-				// Tracer.Trace("edmx Xml saved: " + xmlPath);
+				// Evs.Debug(typeof(XmlParser), "UpdateEdmx()", $"edmx Xml saved: {xmlPath}.");
 			}
 			catch (Exception ex)
 			{

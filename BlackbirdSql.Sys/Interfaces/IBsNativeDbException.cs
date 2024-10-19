@@ -66,6 +66,11 @@ public interface IBsNativeDbException
 	bool HasSqlException_(Exception exception);
 
 	/// <summary>
+	/// Checks if an exception is a database network exception.
+	/// </summary>
+	bool IsDbNetException_(Exception @this);
+
+	/// <summary>
 	/// Checks if an exception is a native database exception.
 	/// </summary>
 	bool IsSqlException_(Exception exception);

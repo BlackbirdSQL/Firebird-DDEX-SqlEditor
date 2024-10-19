@@ -41,7 +41,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 	public AbstruseSettingsPage()
 	{
-		// Tracer.Trace(GetType(), ".ctor");
+		Evs.Trace(typeof(AbstruseSettingsPage), ".ctor");
 	}
 
 
@@ -49,7 +49,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 	protected override void Dispose(bool disposing)
 	{
-		// Tracer.Trace(GetType(), "Dispose()");
+		Evs.Trace(GetType(), "Dispose(bool)");
+
 		if (disposing)
 		{
 			if (_Window != null)
@@ -348,7 +349,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 			if (_Exposed)
 				return;
 
-			// Tracer.Trace(GetType(), "ExposeEventDelegates()", "Events NOT exposed. Exposing...");
+			// Evs.Debug(GetType(), "ExposeEventDelegates()", "Events NOT exposed. Exposing...");
 
 			TextBox editCtl = EditField;
 
@@ -545,7 +546,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 			}
 		}
 
-		// Tracer.Trace("Done OnEditBoxGotFocus().");
+		// Evs.Debug(GetType(), "OnEditControlGotFocus()", "Done OnEditBoxGotFocus().");
 	}
 
 
@@ -590,7 +591,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 			EventExit();
 		}
 
-		// Tracer.Trace("Done OnEditControlLostFocus().");
+		// Evs.Debug(GetType(), "OnEditControlLostFocus{}", "Done OnEditControlLostFocus().");
 	}
 
 
@@ -609,7 +610,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	// ---------------------------------------------------------------------------------
 	private void OnEditControlMouseDown(object sender, MouseEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnEditControlMouseDown()", "Sender type: {0}", sender.GetType().FullName);
+		// Evs.Debug(GetType(), "OnEditControlMouseDown()", "Sender type: {sender.GetType().FullName}.");
 
 		// Sanity check
 		if (_Window == null)

@@ -2,14 +2,11 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Extensions;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension;
@@ -126,7 +123,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// </summary>
 	public BlackbirdSqlDdexExtension() : base()
 	{
-		PersistentSettings.CreateInstance();
 	}
 
 
@@ -135,6 +131,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	/// </summary>
 	static BlackbirdSqlDdexExtension()
 	{
+		PersistentSettings.CreateInstance();
 		RegisterDataServices();
 		RegisterAssemblies();
 	}
@@ -251,13 +248,13 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		Type serviceType = typeof(TService);
 
 		if (serviceType == typeof(IBsProviderObjectFactory) || serviceType == typeof(IVsDataProviderObjectFactory))
-			return new TProviderObjectFactory() as TInterface;
+			return new VxbProviderObjectFactory() as TInterface;
 
 		else if (serviceType == typeof(IBsDataConnectionDlgHandler))
-			return new TDataConnectionDlgHandler() as TInterface;
+			return new VxbConnectionDlgHandler() as TInterface;
 
 		else if (serviceType == typeof(IBsDataConnectionPromptDialogHandler))
-			return new TConnectionPromptDialogHandler() as TInterface;
+			return new VxbPromptDialogHandler() as TInterface;
 
 		else if (serviceType.IsInstanceOfType(this))
 			return this as TInterface;
@@ -287,7 +284,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		});
 
 
-		// Tracer.Trace(GetType(), "GetService()", "TService: {0}, TInterface: {1}, instance: {2}", type, typeof(TInterface), instance );
+		// Evs.Trace(GetType(), nameof(GetService), "TService: {0}, TInterface: {1}, instance: {2}", type, typeof(TInterface), instance );
 
 		try
 		{

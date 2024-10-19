@@ -686,14 +686,15 @@ public class Csb : AbstractCsb, IBsCsb
 	{
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			// Tracer.Trace(GetType(), "ConvertTo()", "context: {0}, value type: {1}, dest type: {2}", context, value.GetType(), destinationType);
+			// Evs.Debug(GetType(), nameof(ConvertTo),
+			//	$"context: {context}, value type: {value.GetType()}, dest type: {destinationType}.");
 
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
 		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
 		{
-			// Tracer.Trace(GetType(), "GetProperties()");
+			// Evs.Debug(GetType(), nameof(GetProperties));
 
 			return TypeDescriptor.GetProperties(typeof(Csb), attributes);
 		}

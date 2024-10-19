@@ -50,7 +50,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 	private ProviderSchemaFactoryService()
 	{
-		// Tracer.Trace(GetType(), "DslProviderSchemaFactory.DslProviderSchemaFactory");
+		// Evs.Trace(GetType(), "DslProviderSchemaFactory.DslProviderSchemaFactory");
 	}
 
 	public static IBsNativeProviderSchemaFactory EnsureInstance() => _Instance ??= new ProviderSchemaFactoryService();
@@ -80,7 +80,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 	// Schema factory to handle custom collections
 	public static DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
-		// Tracer.Trace(typeof(ProviderSchemaFactoryService), "GetSchema()", "collectionName: {0}", collectionName);
+		// Evs.Trace(typeof(ProviderSchemaFactoryService), "GetSchema()", "collectionName: {0}", collectionName);
 
 		string schemaCollection;
 
@@ -150,7 +150,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			throw ex;
 		}
 
-		// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", parser == null ? "no parser to pause" : "making linker pause request");
+		// Evs.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", parser == null ? "no parser to pause" : "making linker pause request");
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
 		if (xmlStream == null)
@@ -225,8 +225,8 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 
 	// Schema factory to handle custom collections asynchronously
-	async Task<DataTable> IBsNativeProviderSchemaFactory.GetSchemaAsync(IDbConnection connection, string collectionName,
-		string[] restrictions, CancellationToken cancelToken)
+	async Task<DataTable> IBsNativeProviderSchemaFactory.GetSchemaAsync(IDbConnection connection,
+		string collectionName, string[] restrictions, CancellationToken cancelToken)
 	{
 		return await GetSchemaAsync(connection, collectionName, restrictions, cancelToken);
 	}
@@ -236,7 +236,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 	public static async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions,
 		CancellationToken cancelToken)
 	{
-		// Tracer.Trace(typeof(ProviderSchemaFactoryService), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
+		// Evs.Trace(typeof(ProviderSchemaFactoryService), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
 
 		string schemaCollection;
 
@@ -332,7 +332,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 		var oldCulture = Thread.CurrentThread.CurrentCulture;
 
-		// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
+		// Evs.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
 
 		try
 		{
@@ -417,7 +417,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 	private static DataTable PrepareCollection(IDbConnection connection, string collectionName, string schemaCollection,
 		string[] restrictions)
 	{
-		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollection", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
+		// Evs.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollection", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
 		AbstractDslSchema dslSchema;
 		NotSupportedException ex;
@@ -492,7 +492,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 	private static async Task<DataTable> PrepareCollectionAsync(IDbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancelToken)
 	{
-		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollectionAsync", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
+		// Evs.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollectionAsync", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
 		AbstractDslSchema dslSchema;
 		NotSupportedException ex;

@@ -19,12 +19,12 @@ public class CommandDatabaseList : AbstractCommand
 
 	public CommandDatabaseList()
 	{
-		// Tracer.Trace();
+		// Evs.Trace();
 	}
 
 	public CommandDatabaseList(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
-		// Tracer.Trace();
+		// Evs.Trace();
 	}
 
 
@@ -40,7 +40,7 @@ public class CommandDatabaseList : AbstractCommand
 
 			if (StoredDatabaseList == null || StoredRctStamp != RctManager.Stamp)
 			{
-				// Tracer.Trace(typeof(CommandDatabaseList), "get_DatabaseList", "Rebuilding list. Csb.DatasetKey: {0}.", _Csa == null ? "null" : _Csa.DatasetKey);
+				// Evs.Trace(typeof(CommandDatabaseList), "get_DatabaseList", "Rebuilding list. Csb.DatasetKey: {0}.", _Csa == null ? "null" : _Csa.DatasetKey);
 
 				string nodeDisplayMember = CachedLiveQualifiedName;
 

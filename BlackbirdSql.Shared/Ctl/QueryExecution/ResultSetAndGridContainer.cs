@@ -53,14 +53,14 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		}
 		set
 		{
-			// Tracer.Trace(GetType(), "ResultSetAndGridContainer.ControlToWindowRatio", "value = {0}", value);
+			// Evs.Trace(GetType(), "ResultSetAndGridContainer.ControlToWindowRatio", "value = {0}", value);
 			m_controlToWindowRatio = value;
 		}
 	}
 
 	public ResultSetAndGridContainer(QueryResultSet resultSet, bool printColumnHeaders, int numberOfCharsToShow)
 	{
-		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.ResultSetAndGridContainer", "", null);
+		// Evs.Trace(GetType(), "ResultSetAndGridContainer.ResultSetAndGridContainer", "", null);
 		_ResultSet = resultSet;
 		_PrintColumnHeaders = printColumnHeaders;
 		_NumberOfCharsToShow = numberOfCharsToShow;
@@ -69,7 +69,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	public void Initialize(IBsGridControl2 grid)
 	{
-		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.Initialize", "", null);
+		// Evs.Trace(GetType(), "ResultSetAndGridContainer.Initialize", "", null);
 		_GridCtl = grid;
 		_ResultSet.InGridMode = true;
 		_ResultSet.MoreRowsAvailableEventAsync += _MoreRowsAvailableEventAsync;
@@ -117,12 +117,12 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		((ISupportInitialize)_GridCtl).EndInit();
 		_GridCtl.UpdateGrid();
 		m_bGridHasRows = false;
-		// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ResultSetAndGridContainer.Initialize", "returning");
+		// Evs.Trace(GetType(), Tracer.EnLevel.Information, "ResultSetAndGridContainer.Initialize", "returning");
 	}
 
 	public void Dispose()
 	{
-		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.Dispose", "", null);
+		// Evs.Trace(GetType(), "ResultSetAndGridContainer.Dispose", "", null);
 		if (_ResultSet != null)
 		{
 			_ResultSet.MoreRowsAvailableEventAsync -= _MoreRowsAvailableEventAsync;
@@ -140,7 +140,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	public async Task<bool> StartRetrievingDataAsync(int nMaxNumCharsToDisplay, int nMaxNumXmlCharsToDisplay, CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.StartRetrievingData", "nMaxNumCharsToDisplay = {0}, nMaxNumXmlCharsToDisplay={1}", nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay);
+		// Evs.Trace(GetType(), "ResultSetAndGridContainer.StartRetrievingData", "nMaxNumCharsToDisplay = {0}, nMaxNumXmlCharsToDisplay={1}", nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay);
 		await _ResultSet.StartRetrievingDataAsync(nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay, cancelToken);
 
 		return !cancelToken.Cancelled();

@@ -9,8 +9,17 @@ using System.Runtime.InteropServices;
 namespace BlackbirdSql.Sys.Ctl.Diagnostics;
 
 
-public class EventProviderVersionTwo(Guid id) : EventProvider(id)
+/// <summary>
+/// Deprecated.
+/// </summary>
+public class EventProviderVersionTwo : EventProvider
 {
+
+	public EventProviderVersionTwo(Guid id) : base(id)
+	{
+
+	}
+
 
 	[StructLayout(LayoutKind.Explicit, Size = 16)]
 	private struct EventData

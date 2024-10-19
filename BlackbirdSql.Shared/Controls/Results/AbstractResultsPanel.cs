@@ -45,7 +45,7 @@ public abstract class AbstractResultsPanel : Panel
 
 	protected AbstractResultsPanel(string defaultResultsDirectory)
 	{
-		// Tracer.Trace(GetType(), "DisplaySqlResultsBaseTabPage.DisplaySqlResultsBaseTabPage", "", null);
+		// Evs.Trace(GetType(), "DisplaySqlResultsBaseTabPage.DisplaySqlResultsBaseTabPage", "", null);
 		_defaultResultsDirectory = defaultResultsDirectory;
 	}
 
@@ -82,7 +82,7 @@ public abstract class AbstractResultsPanel : Panel
 
 	public virtual void Initialize(object oleServiceProvider)
 	{
-		// Tracer.Trace(GetType(), "DisplaySqlResultsBaseTabPage.Initialize", "", null);
+		// Evs.Trace(GetType(), "DisplaySqlResultsBaseTabPage.Initialize", "", null);
 
 		Diag.ThrowIfNotOnUIThread();
 

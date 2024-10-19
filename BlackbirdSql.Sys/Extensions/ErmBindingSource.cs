@@ -536,7 +536,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 				ListChangedEventArgs e = new(ListChangedType.Reset, position, DependentPosition);
 				OnDependencyListChanged(e);
 			}
-			// Tracer.Trace("Dependency filter set: Position: " + DependentPosition);
+			// Evs.Trace("Dependency filter set: Position: " + DependentPosition);
 
 		}
 		catch (Exception ex)

@@ -29,7 +29,7 @@ internal class DslIndexColumns : DslColumns
 {
 	public DslIndexColumns() : base()
 	{
-		// Tracer.Trace(GetType(), "DslIndexColumns.DslIndexColumns");
+		// Evs.Trace(GetType(), "DslIndexColumns.DslIndexColumns");
 
 		_ParentType = "Index";
 		_ObjectType = "TableIndexColumn";

@@ -8,9 +8,11 @@ using BlackbirdSql.Sys.Enums;
 
 namespace BlackbirdSql.Sys.Ctl.Diagnostics;
 
+
+/// <summary>
+/// Deprecated.
+/// </summary>
 [Serializable]
-
-
 public class LogObject
 {
 

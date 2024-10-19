@@ -284,7 +284,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 	public override void Dispose()
 	{
-		// Tracer.Trace(GetType(), "Dispose()", "");
+		// Evs.Trace(GetType(), nameof(Dispose), "");
 
 		SinkTextBufferEvents(sink: false);
 		if (vsTextStream != null)

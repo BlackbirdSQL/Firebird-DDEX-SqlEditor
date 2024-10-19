@@ -3,8 +3,8 @@
 
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Controls.Config;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension.Model.Config;
+using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -64,27 +64,27 @@ public class SettingsProvider
 
 	[ComVisible(true)]
 	[Guid(PackageData.C_TransientExecutionSettingsGuid)]
-	public class TransientExecutionSettingsPage(IBsTransientSettings transientSettings)
+	public class TransientExecutionSettingsPage(IBsSettingsProvider transientSettings)
 		: AbstractTransientSettingsPage<TransientExecutionSettingsPage, ExecutionSettingsModel>(transientSettings) { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.C_TransientExecutionAdvancedSettingsGuid)]
-	public class TransientExecutionAdvancedSettingsPage(IBsTransientSettings transientSettings)
+	public class TransientExecutionAdvancedSettingsPage(IBsSettingsProvider transientSettings)
 		: AbstractTransientSettingsPage<TransientExecutionAdvancedSettingsPage, ExecutionAdvancedSettingsModel>(transientSettings) { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.C_TransientResultsSettingsGuid)]
-	public class TransientResultsSettingsPage(IBsTransientSettings transientSettings)
+	public class TransientResultsSettingsPage(IBsSettingsProvider transientSettings)
 		: AbstractTransientSettingsPage<TransientResultsSettingsPage, ResultsSettingsModel>(transientSettings)	{ }
 
 	[ComVisible(true)]
 	[Guid(PackageData.C_TransientResultsGridSettingsGuid)]
-	public class TransientResultsGridSettingsPage(IBsTransientSettings transientSettings)
+	public class TransientResultsGridSettingsPage(IBsSettingsProvider transientSettings)
 		: AbstractTransientSettingsPage<TransientResultsGridSettingsPage, ResultsGridSettingsModel>(transientSettings) { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.C_TransientResultsTextSettingsGuid)]
-	public class TransientResultsTextSettingsPage(IBsTransientSettings transientSettings)
+	public class TransientResultsTextSettingsPage(IBsSettingsProvider transientSettings)
 		: AbstractTransientSettingsPage<TransientResultsTextSettingsPage, ResultsTextSettingsModel>(transientSettings) { }
 
 

@@ -482,5 +482,23 @@ namespace BlackbirdSql.Sys.Properties {
                 return ResourceManager.GetString("PrivacyConfirmationDialog_ProductVersion", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Projects.
+        /// </summary>
+        internal static string ReindexAssemblies_All {
+            get {
+                return ResourceManager.GetString("ReindexAssemblies_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project : {0}.
+        /// </summary>
+        internal static string ReindexAssemblies_ProjectName {
+            get {
+                return ResourceManager.GetString("ReindexAssemblies_ProjectName", resourceCulture);
+            }
+        }
     }
 }

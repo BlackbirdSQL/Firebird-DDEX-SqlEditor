@@ -118,7 +118,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	protected override void Dispose(bool bDisposing)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.Dispose", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.Dispose", "", null);
 		if (bDisposing)
 		{
 			if (m_brushNullObjects != null)
@@ -136,7 +136,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public static void SelectAllCellInGrid(GridControl grid)
 	{
-		// Tracer.Trace(typeof(GridResultsPanel), "GridResultsTabPanel.SelectAllCellInGrid", "", null);
+		// Evs.Trace(typeof(GridResultsPanel), "GridResultsTabPanel.SelectAllCellInGrid", "", null);
 		BlockOfCellsCollection val = [];
 		BlockOfCells val2 = new BlockOfCells(0L, 1);
 		QueryResultSet qEResultSet = (QueryResultSet)(object)grid.GridStorage;
@@ -154,7 +154,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public override void Initialize(object rawServiceProvider)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.Initialize", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.Initialize", "", null);
 		SuspendLayout();
 
 		try
@@ -208,7 +208,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public void SaveGrid(GridControl grid, EnGridSaveFormats saveFormat, TextWriter writer)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.SaveGrid", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.SaveGrid", "", null);
 		if (writer == null)
 		{
 			Exception ex = new ArgumentNullException("writer");
@@ -464,7 +464,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public bool HandleXMLCellClick(QueryResultSet rs, long nRowIndex, int nColIndex)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.HandleXMLCellClick", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.HandleXMLCellClick", "", null);
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -689,7 +689,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	private void OnSelectAll(object sender, EventArgs a)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.OnSelectAll", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.OnSelectAll", "", null);
 		GridControl focusedGrid = FocusedGrid;
 		if (focusedGrid != null)
 		{
@@ -699,7 +699,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	private void OnSaveAs(object sender, EventArgs a)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.OnSaveAs", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.OnSaveAs", "", null);
 		GridControl focusedGrid = FocusedGrid;
 		if (focusedGrid == null)
 		{
@@ -739,7 +739,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	private void SelectWholeRowOrColumn(GridControl grid, long nIndex, bool bRow)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.SelectWholeRowOrColumn", "nIndex = {0}, bRow = {1}", nIndex, bRow);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.SelectWholeRowOrColumn", "nIndex = {0}, bRow = {1}", nIndex, bRow);
 		QueryResultSet qEResultSet = (QueryResultSet)(object)grid.GridStorage;
 		if (!qEResultSet.StoredAllData)
 		{
@@ -777,14 +777,14 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	private QueryResultSet GetGridResultSet(GridControl grid)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.GetGridResultSet", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.GetGridResultSet", "", null);
 		int index = (int)((Control)(object)grid).Tag;
 		return m_gridContainers[index].ResultSet;
 	}
 
 	private TextWriter GetTextWriterForSaveResultsFromGrid(out EnGridSaveFormats saveFormat)
 	{
-		// Tracer.Trace(GetType(), "GetTextWriterForSaveResultsFromGrid()");
+		// Evs.Trace(GetType(), nameof(GetTextWriterForSaveResultsFromGrid));
 
 		saveFormat = EnGridSaveFormats.CommaSeparated;
 		FileEncodingDialog fileEncodingDlg = new FileEncodingDialog();

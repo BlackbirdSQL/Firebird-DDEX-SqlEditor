@@ -470,18 +470,32 @@
 					<CommandName>CmdTextOpenScriptUniversal</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdOpenAlterTextObject" priority="0x0130" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdCreateTextObject" priority="0x0125" type="Button">
 				<Parent guid="CommandSetGuid" id="GrpIdSeNodeContext" />
-				<Icon guid="ImagesGuid" id="ImgOpenAlterQuery" />
+				<Icon guid="ImagesGuid" id="ImgCreateQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
-					<CanonicalName>BlackbirdSql.OpenAlterTextObject</CanonicalName>
-					<LocCanonicalName>BlackbirdSql.OpenAlterTextObject</LocCanonicalName>
+					<CanonicalName>BlackbirdSql.AlterTextObject</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.AlterTextObject</LocCanonicalName>
 					<ButtonText>Open Alter SQL Query</ButtonText>
-					<CommandName>CmdTextOpenAlterScriptUniversal</CommandName>
+					<CommandName>CmdTextCreateScriptUniversal</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdAlterTextObject" priority="0x0130" type="Button">
+				<Parent guid="CommandSetGuid" id="GrpIdSeNodeContext" />
+				<Icon guid="ImagesGuid" id="ImgAlterQuery" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				<Strings>
+					<CanonicalName>BlackbirdSql.AlterTextObject</CanonicalName>
+					<LocCanonicalName>BlackbirdSql.AlterTextObject</LocCanonicalName>
+					<ButtonText>Open Alter SQL Query</ButtonText>
+					<CommandName>CmdTextAlterScriptUniversal</CommandName>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewQuery" priority="0x0135" type="Button">
@@ -622,7 +636,7 @@
 
 		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
 		<Bitmaps>
-			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgExecuteQueryNoResult, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgCloneQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgAccept, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgModifyConnection, ImgCancel, ImgToggleTTS2, ImgToggleTTS, ImgExecuteQueryBatch, ImgCopyQuery, ImgNewQuery, ImgQuerySettings" />
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgExecuteQueryNoResult, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgCloneQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgAccept, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgModifyConnection, ImgCancel, ImgToggleTTS2, ImgToggleTTS, ImgExecuteQueryBatch, ImgCopyQuery, ImgNewQuery, ImgQuerySettings, ImgCreateQuery" />
 		</Bitmaps>
 	</Commands>
 
@@ -840,10 +854,11 @@
 			<!-- 808 -->
 			<IDSymbol name="CmdIdModifyConnection" value="0x0328" />
 
+			<IDSymbol name="CmdIdCreateTextObject" value="0x0333" />
 			<!-- 820 -->
 			<IDSymbol name="CmdIdOpenTextObject" value="0x0334" />
 			<!-- 821 -->
-			<IDSymbol name="CmdIdOpenAlterTextObject" value="0x0335" />
+			<IDSymbol name="CmdIdAlterTextObject" value="0x0335" />
 			<!-- 822 -->
 			<IDSymbol name="CmdIdRetrieveDesignerData" value="0x0336" />
 			<!-- 823 -->
@@ -878,7 +893,7 @@
 			<IDSymbol name="ImgToggleIntellisense" value="15" />
 			<IDSymbol name="ImgOpenQuery" value="16" />
 			<IDSymbol name="ImgCopy" value="17" />
-			<IDSymbol name="ImgOpenAlterQuery" value="18" />
+			<IDSymbol name="ImgAlterQuery" value="18" />
 			<IDSymbol name="ImgOpenDesignerQuery" value="19" />
 			<IDSymbol name="ImgNewDesignerQuery" value="20" />
 			<IDSymbol name="ImgResultsAsFile" value="21" />
@@ -891,6 +906,7 @@
 			<IDSymbol name="ImgCopyQuery" value="28" />
 			<IDSymbol name="ImgNewQuery" value="29" />
 			<IDSymbol name="ImgQuerySettings" value="30" />
+			<IDSymbol name="ImgCreateQuery" value="31" />
 		</GuidSymbol>
 
 	</Symbols>

@@ -30,7 +30,7 @@ internal class DslRawTriggers : AbstractDslSchema
 {
 	public DslRawTriggers() : base()
 	{
-		// Tracer.Trace(GetType(), "DslRawTriggers.DslRawTriggers");
+		// Evs.Trace(GetType(), "DslRawTriggers.DslRawTriggers");
 	}
 
 
@@ -39,7 +39,7 @@ internal class DslRawTriggers : AbstractDslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslRawTriggers.GetCommandText");
+		// Evs.Trace(GetType(), "DslRawTriggers.GetCommandText");
 
 		StringBuilder sql = new ();
 
@@ -115,7 +115,7 @@ FROM rdb$triggers trg
 {0}
 ORDER BY trg.rdb$trigger_name", transientRestrictions);
 
-		// Tracer.Trace(sql.ToString());
+		// Evs.Trace(sql.ToString());
 
 		return sql;
 	}

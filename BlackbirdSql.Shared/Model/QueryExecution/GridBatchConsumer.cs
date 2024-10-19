@@ -19,7 +19,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 	public GridBatchConsumer(IBsQueryExecutionHandler resultsControl)
 		: base(resultsControl)
 	{
-		// Tracer.Trace(GetType(), ".ctor", "", null);
+		// Evs.Trace(GetType(), ".ctor", "", null);
 		_MaxCharsPerColumn = SharedConstants.C_DefaultGridMaxCharsPerColumnStd;
 	}
 
@@ -31,7 +31,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 
 	public override async Task<bool> OnNewResultSetAsync(object sender, BatchNewResultSetEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnNewResultSetAsync()");
+		// Evs.Trace(GetType(), nameof(OnNewResultSetAsync));
 
 		try
 		{
@@ -79,7 +79,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 			throw ex;
 		}
 
-		// Tracer.Trace(GetType(), "OnNewResultSetAsync()", "Completed");
+		// Evs.Trace(GetType(), nameof(OnNewResultSetAsync), "Completed");
 
 		return !args.CancelToken.Cancelled();
 	}
@@ -91,7 +91,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 
 	public override void Cleanup()
 	{
-		// Tracer.Trace(GetType(), "Cleanup()");
+		// Evs.Trace(GetType(), nameof(Cleanup));
 		base.Cleanup();
 
 		if (_GridContainer != null)

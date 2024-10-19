@@ -22,7 +22,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 	public ShellTextViewControl() : base()
 	{
-		// Tracer.Trace(GetType(), "ShellTextViewControl.ShellTextViewControl", "", null);
+		// Evs.Trace(GetType(), "ShellTextViewControl.ShellTextViewControl", "", null);
 		textViewFlags = TextViewInitFlags.VIF_SET_OVERTYPE | TextViewInitFlags.VIF_HSCROLL
 			| TextViewInitFlags.VIF_VSCROLL | TextViewInitFlags.VIF_UPDATE_STATUS_BAR;
 		textViewInit[0].fDragDropMove = 1u;
@@ -214,7 +214,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 	protected override void Dispose(bool bDisposing)
 	{
-		// Tracer.Trace(GetType(), "ShellTextViewControl.Dispose", "", null);
+		// Evs.Trace(GetType(), "ShellTextViewControl.Dispose", "", null);
 		DisposeCodeWindowManager();
 		if (bDisposing)
 		{
@@ -283,7 +283,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 	protected override void CreateEditorWindow(object nativeSP)
 	{
-		// Tracer.Trace(GetType(), "ShellTextViewControl.CreateEditorWindow", "", null);
+		// Evs.Trace(GetType(), "ShellTextViewControl.CreateEditorWindow", "", null);
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -343,7 +343,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 	private void ApplyInitialLanguageService()
 	{
-		// Tracer.Trace(GetType(), "ShellTextViewControl.ApplyInitialLanguageService", "", null);
+		// Evs.Trace(GetType(), "ShellTextViewControl.ApplyInitialLanguageService", "", null);
 		try
 		{
 			if (!Equals(_ClsidLanguageService, Guid.Empty))
@@ -374,7 +374,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 	private void DoPostCreationInit()
 	{
-		// Tracer.Trace(GetType(), "ShellTextViewControl.DoPostCreationInit", "", null);
+		// Evs.Trace(GetType(), "ShellTextViewControl.DoPostCreationInit", "", null);
 		OnSizeChanged(new EventArgs());
 		if (_WantCustomPopupMenu)
 		{
@@ -385,7 +385,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 	private void OnNewLangSvc(object sender, LangServiceEventArgs a)
 	{
-		// Tracer.Trace(GetType(), "SqlTextViewControl.OnNewLangSvc", "", null);
+		// Evs.Trace(GetType(), "SqlTextViewControl.OnNewLangSvc", "", null);
 
 		if (_OleServiceProvider == null)
 			return;

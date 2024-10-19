@@ -79,7 +79,7 @@ public abstract class UnsafeCmd
 
 	public static string GetFileNameUsingSaveDialog(string strFilterString, string strCaption, string initialDir, IVsSaveOptionsDlg optionsDlg, out int filterIndex)
 	{
-		// Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetFileNameUsingSaveDialog", "strFilterString = {0}, strCaption = {1}", strFilterString, strCaption);
+		// Evs.Trace(typeof(CommonUtils), "CommonUtils.GetFileNameUsingSaveDialog", "strFilterString = {0}, strCaption = {1}", strFilterString, strCaption);
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -133,7 +133,7 @@ public abstract class UnsafeCmd
 					}
 
 					empty = new string(array2, 0, i);
-					// Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Information, "CommonUtils.GetFileNameUsingSaveDialog", "file name is {0}", empty);
+					// Evs.Trace(typeof(CommonUtils), Tracer.EnLevel.Information, "CommonUtils.GetFileNameUsingSaveDialog", "file name is {0}", empty);
 					return empty;
 				}
 				catch (Exception e)
@@ -157,7 +157,7 @@ public abstract class UnsafeCmd
 			}
 		}
 
-		// Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Verbose, "CommonUtils.GetFileNameUsingSaveDialog", "cannot get IVsUIShell!!");
+		// Evs.Trace(typeof(CommonUtils), Tracer.EnLevel.Verbose, "CommonUtils.GetFileNameUsingSaveDialog", "cannot get IVsUIShell!!");
 		return null;
 	}
 

@@ -5,7 +5,7 @@
 namespace BlackbirdSql.Sys;
 
 // =========================================================================================================
-//											SystemData Class
+//											LibraryData Class
 //
 /// <summary>
 /// System wide and current data provider specific constants and statics
@@ -27,6 +27,7 @@ public static class LibraryData
 	/// </summary>
 	public const string C_OutputPaneGuid = "9E2B946C-4D46-4067-ABEB-E181F3B3768E";
 
+	public const string C_BlackbirdSqlEventProviderGuid = "385F4628-5760-4F00-89BB-DDE1BE75118E";
 	public const string C_MandatedEventProviderGuid = VS.SqlEventProviderGuid;
 
 	public const string C_NativeProviderSchemaFactoryGuid = "9FDE2679-7080-4C88-A734-71AEC4CB099A";

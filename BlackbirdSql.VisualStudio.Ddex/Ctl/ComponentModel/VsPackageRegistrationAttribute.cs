@@ -134,7 +134,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 				{
 					registryValue = ExtensionData.ImplementationValues[implementation.Key + (i==0?"":i.ToString())];
 
-					// Tracer.Trace(implementation.Key + ": " + (registryValue.Name == null ? "null" : registryValue.Name) + ":" + registryValue.Value);
+					// Evs.Trace(implementation.Key + ": " + (registryValue.Name == null ? "null" : registryValue.Name) + ":" + registryValue.Value);
 					key3.SetValue(registryValue.Name, registryValue.Value);
 				}
 
@@ -226,7 +226,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 		Type providerFactoryClass = typeof(FirebirdClientFactory);
 
 
-		// Tracer.Trace("GAC Install: " + providerFactoryClass.Assembly.Location);
+		// Evs.Trace("GAC Install: " + providerFactoryClass.Assembly.Location);
 
 		Publish publisher = new Publish();
 		publisher.GacInstall(factoryClass.Assembly.Location);
@@ -236,7 +236,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 	{
 		Type providerFactoryClass = typeof(FirebirdClientFactory);
 
-		// Tracer.Trace("GAC Uninstall: " + providerFactoryClass.Assembly.Location);
+		// Evs.Trace("GAC Uninstall: " + providerFactoryClass.Assembly.Location);
 		Publish publisher = new Publish();
 
 		try

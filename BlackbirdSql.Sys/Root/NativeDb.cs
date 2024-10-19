@@ -9,9 +9,12 @@ using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
+using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
+using BlackbirdSql.Sys.Ctl.Config;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
+using BlackbirdSql.Sys.Properties;
 using EnvDTE;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
@@ -49,12 +52,11 @@ public static class NativeDb
 	private static IBsNativeDbException _DbExceptionSvc = null;
 	private static IBsNativeDbServerExplorerService _DbServerExplorerSvc = null;
 
+	private static string _EfAssemblyQualifiedName = null;
+	private static string _EfVersion = null;
 	private static Type _CsbType = null;
 
-	private static string[] _EquivalencyKeys = null;
-	private static bool _OnDemandLinkage = false;
-	private static int _LinkageTimeout = 120;
-
+	private static int _ReindexEvsIndex = -1;
 	private static int _EventReindexingCardinal = 0;
 
 
@@ -88,35 +90,12 @@ public static class NativeDb
 	/// properties defined in the BlackbirdSQL Server Tools user options.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string[] EquivalencyKeys
-	{
-		get
-		{
-			if (_EquivalencyKeys == null)
-				ApcManager.InitializeSettings();
-
-			return _EquivalencyKeys;
-		}
-		set
-		{
-			_EquivalencyKeys ??= [];
-
-			_EquivalencyKeys = value;
-		}
-	}
+	public static string[] EquivalencyKeys => PersistentSettings.EquivalencyKeys;
 
 
-	public static bool OnDemandLinkage
-	{
-		get { return _OnDemandLinkage; }
-		set { _OnDemandLinkage = value; }
-	}
+	public static bool OnDemandLinkage => PersistentSettings.OnDemandLinkage;
 
-	public static int LinkageTimeout
-	{
-		get { return _LinkageTimeout; }
-		set { _LinkageTimeout = value; }
-	}
+	public static int LinkageTimeout => PersistentSettings.LinkageTimeout;
 
 
 	public static IBsNativeDatabaseEngine DatabaseEngineSvc
@@ -313,91 +292,187 @@ public static class NativeDb
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller has checked.")]
 	private static List<Project> ReindexEntityFrameworkAssemblies(Project project = null)
 	{
-		// Tracer.Trace(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()");
+		string projectName = project != null
+			? ControlsResources.ReindexAssemblies_ProjectName.FmtRes(project.Name)
+			: ControlsResources.ReindexAssemblies_All;
 
-		List<Project> projects = project == null
-			? UnsafeCmd.RecursiveGetDesignTimeProjects()
-			: (project.EditableObject() != null ? [project] : []);
+		_ReindexEvsIndex = Evs.Start(typeof(NativeDb), nameof(ReindexEntityFrameworkAssemblies), projectName,
+			nameof(ReindexEntityFrameworkAssemblies), _ReindexEvsIndex);
 
-		if (projects.Count == 0)
+		try
+		{
+			List<Project> projects = project == null
+				? UnsafeCmd.RecursiveGetDesignTimeProjects()
+				: (project.EditableObject() != null ? [project] : []);
+
+			if (projects.Count == 0)
+				return projects;
+
+			Evs.Trace(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()", $"Project count: {projects.Count}.");
+
+			ServiceProvider serviceProvider = null;
+			DynamicTypeService dynamicTypeService = null;
+			IVsSolution solution = null;
+
+			ITypeResolutionService typeResolutionService;
+
+			Type providerServicesType = DatabaseEngineSvc.EFProviderServicesType_;
+
+			VSProject projectObject;
+			Reference efReference;
+
+			foreach (Project proj in projects)
+			{
+				projectObject = proj.EditableObject();
+
+				if (projectObject == null)
+					continue;
+
+				try
+				{
+					if (projectObject.References == null)
+						continue;
+
+					efReference = projectObject.References.Find(EFProvider);
+
+					if (efReference == null)
+						continue;
+				}
+				catch
+				{
+					continue;
+				}
+
+				// Evs.Debug(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()", $"Loop Project: {proj.Name}.");
+
+				if (serviceProvider == null)
+				{
+					serviceProvider = new((IOleServiceProvider)ApcManager.Dte);
+					dynamicTypeService = serviceProvider.GetService(typeof(DynamicTypeService)) as DynamicTypeService;
+					Diag.ThrowIfServiceUnavailable(dynamicTypeService, typeof(DynamicTypeService));
+
+					solution = serviceProvider.GetService(typeof(IVsSolution)) as IVsSolution;
+
+					ReindexVersioningFacade(proj, efReference);
+				}
+
+				solution.GetProjectOfUniqueName(proj.UniqueName, out IVsHierarchy vsHierarchy);
+				typeResolutionService = dynamicTypeService.GetTypeResolutionService(vsHierarchy);
+				Diag.ThrowIfServiceUnavailable(typeResolutionService, typeof(ITypeResolutionService));
+
+				if (_EfAssemblyQualifiedName == null)
+				{
+					_EfAssemblyQualifiedName = providerServicesType.AssemblyQualifiedName;
+					_EfVersion = providerServicesType.Assembly.GetName().Version.ToString();
+				}
+
+				string key = _EfAssemblyQualifiedName;
+				Dictionary<string, Type> typeCache = (Dictionary<string, Type>)Reflect.GetFieldValue(typeResolutionService, "_typeCache");
+
+				if (typeCache == null)
+				{
+					typeCache = new Dictionary<string, Type>(127);
+					Reflect.SetFieldValue(typeResolutionService, "_typeCache", typeCache);
+				}
+				else if (typeCache.ContainsKey(key))
+				{
+					continue;
+				}
+
+				// Evs.Trace(typeof(Cmd), "ReindexEntityFrameworkAssemblies()", "Reindexing EntityFrameworkAssemblies for project: {0}.", proj.Name);
+
+				typeCache[key] = providerServicesType;
+
+				key = _EfAssemblyQualifiedName.Replace(_EfVersion, efReference.Version);
+
+				typeCache[key] = providerServicesType;
+
+				/*
+				foreach (string version in DatabaseEngineSvc.EntityFrameworkVersions_)
+				{
+					key = _EfAssemblyQualifiedName.Replace(_EfVersion, version);
+
+					typeCache[key] = providerServicesType;
+				}
+				*/
+			}
+
 			return projects;
 
-		// Tracer.Trace(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()", "Project count: {0}.", projects.Count);
-
-		ServiceProvider serviceProvider = null;
-		DynamicTypeService dynamicTypeService = null;
-		IVsSolution solution = null;
-
-		ITypeResolutionService typeResolutionService;
-
-		Type providerServicesType = DatabaseEngineSvc.EFProviderServicesType_;
-		string typeKey = DatabaseEngineSvc.EFProviderServicesTypeFullName_;
-
-		Dictionary<string, Type> typeCache;
-		VSProject projectObject;
-		string key;
-
-		foreach (Project proj in projects)
+		}
+		finally
 		{
-			projectObject = proj.EditableObject();
+			Evs.Stop(typeof(NativeDb), nameof(ReindexEntityFrameworkAssemblies), projectName,
+				nameof(ReindexEntityFrameworkAssemblies), _ReindexEvsIndex);
+		}
 
-			if (projectObject == null)
-				continue;
+	}
 
+
+
+	// -----------------------------------------------------------------------------------------------------
+	/// <summary>
+	/// Currently diabled. Reindexes the Entity Framework VersioningFacade.DependencyResolver.
+	/// </summary>
+	// -----------------------------------------------------------------------------------------------------
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller has checked.")]
+	public static bool ReindexVersioningFacade(Project project, Reference efReference = null)
+	{
+		// TODO: Always exits because reindex still results in edmx "Create database" failure.
+		if (project != null)
+			return false;
+
+		if (project == null)
+			return false;
+
+		VSProject projectObject = project.EditableObject();
+
+		if (projectObject == null)
+			return false;
+
+
+		if (efReference == null)
+		{
 			try
 			{
-				if (projectObject.References == null || projectObject.References.Find(EFProvider) == null)
-					continue;
+				if (projectObject.References == null)
+					return false;
+
+				efReference = projectObject.References.Find(EFProvider);
+
+				if (efReference == null)
+					return false;
 			}
 			catch
 			{
-				continue;
+				return false;
 			}
-
-
-			if (serviceProvider == null)
-			{
-				serviceProvider = new((IOleServiceProvider)ApcManager.Dte);
-				dynamicTypeService = serviceProvider.GetService(typeof(DynamicTypeService)) as DynamicTypeService;
-				Diag.ThrowIfServiceUnavailable(dynamicTypeService, typeof(DynamicTypeService));
-
-				solution = serviceProvider.GetService(typeof(IVsSolution)) as IVsSolution;
-			}
-
-			solution.GetProjectOfUniqueName(proj.UniqueName, out IVsHierarchy vsHierarchy);
-			typeResolutionService = dynamicTypeService.GetTypeResolutionService(vsHierarchy);
-			Diag.ThrowIfServiceUnavailable(typeResolutionService, typeof(ITypeResolutionService));
-
-			typeCache = (Dictionary<string, Type>)Reflect.GetFieldValue(typeResolutionService, "_typeCache");
-
-			key = typeKey.FmtRes("1.0.0.0");
-
-			if (typeCache == null)
-			{
-				typeCache = new Dictionary<string, Type>(127);
-				Reflect.SetFieldValue(typeResolutionService, "_typeCache", typeCache);
-			}
-			else if (typeCache.ContainsKey(key))
-			{
-				continue;
-			}
-
-			// Tracer.Trace(typeof(Cmd), "ReindexEntityFrameworkAssemblies()", "Reindexing EntityFrameworkAssemblies for project: {0}.", proj.Name);
-
-			typeCache[key] = providerServicesType;
-
-			foreach (string version in DatabaseEngineSvc.EntityFrameworkVersions_)
-			{
-				key = typeKey.FmtRes(version);
-
-				typeCache[key] = providerServicesType;
-			}
-
 		}
 
-		return projects;
 
+		try
+		{
+			Type edmResolverType = Type.GetType("Microsoft.Data.Entity.Design.VersioningFacade.DependencyResolver, " +
+					"Microsoft.Data.Entity.Design.VersioningFacade", true, true)
+				?? throw new TypeAccessException("Could not get EDM VersioningFacade.DependencyResolver type.");
+
+			object edmResolver = Reflect.GetFieldValue(edmResolverType, "Instance")
+				?? throw new TypeAccessException("Could not get EDM VersioningFacade.DependencyResolver Instance.");
+
+			Reflect.InvokeMethod(edmResolver, "RegisterProvider", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public,
+				[DatabaseEngineSvc.EFProviderServicesType_, Invariant]);
+
+			// Evs.Debug(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()", $"Registered Project: {proj.Name}.");
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return false;
+		}
+
+		return true;
 	}
+
 
 
 	/*
@@ -499,7 +574,7 @@ public static class NativeDb
 	{
 		lock (_LockGlobal)
 		{
-			// Tracer.Trace(GetType(), "EventProjectEnter()", "_EventProjectCardinal: {0}, increment: {1}.", _EventProjectCardinal, increment);
+			// Evs.Trace(GetType(), nameof(EventProjectEnter), "_EventProjectCardinal: {0}, increment: {1}.", _EventProjectCardinal, increment);
 
 			if (_EventReindexingCardinal > 0 && !force)
 				return false;

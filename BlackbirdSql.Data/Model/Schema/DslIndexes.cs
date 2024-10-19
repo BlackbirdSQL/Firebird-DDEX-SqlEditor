@@ -29,11 +29,15 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslIndexes : AbstractDslSchema
 {
+	internal DslIndexes() : base()
+	{
+	}
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslIndexes.GetCommandText");
+		// Evs.Trace(GetType(), "DslIndexes.GetCommandText");
 
 		// BlackbirdSql added ForeignKey
 
@@ -111,14 +115,14 @@ internal class DslIndexes : AbstractDslSchema
 
 		sql.Append(" ORDER BY TABLE_NAME, INDEX_NAME");
 
-		// Tracer.Trace(GetType(), "GetCommandText()", "Sql: {0}.", sql);
+		// Evs.Trace(GetType(), nameof(GetCommandText), "Sql: {0}.", sql);
 
 		return sql;
 	}
 
 	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslIndexes.ProcessResult");
+		// Evs.Trace(GetType(), "DslIndexes.ProcessResult");
 
 		schema.BeginLoadData();
 		schema.Columns.Add("IS_PRIMARY", typeof(bool));

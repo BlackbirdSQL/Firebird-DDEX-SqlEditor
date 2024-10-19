@@ -15,12 +15,12 @@ public class CommandExecuteQuery : AbstractCommand
 
 	public CommandExecuteQuery()
 	{
-		// Tracer.Trace();
+		// Evs.Trace();
 	}
 
 	public CommandExecuteQuery(IBsTabbedEditorPane tabbedEditor) : base(tabbedEditor)
 	{
-		// Tracer.Trace();
+		// Evs.Trace();
 	}
 
 
@@ -44,7 +44,7 @@ public class CommandExecuteQuery : AbstractCommand
 		EnSqlExecutionType executionType = CachedAuxDocData.HasActualPlan
 			? EnSqlExecutionType.QueryWithPlan : EnSqlExecutionType.QueryOnly;
 
-		// Tracer.Trace(GetType(), "OnExec()", "ExecutionType: {0}.", executionType);
+		// Evs.Trace(GetType(), nameof(OnExec), "ExecutionType: {0}.", executionType);
 
 		// ----------------------------------------------------------------------------------- //
 		// *************** Execution Point (0) - CommandExecuteQuery.OnExec() **************** //

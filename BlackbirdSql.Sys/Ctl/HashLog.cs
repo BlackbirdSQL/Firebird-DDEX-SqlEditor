@@ -16,6 +16,9 @@ using BlackbirdSql.Sys.Ctl.Diagnostics;
 namespace BlackbirdSql.Sys.Ctl;
 
 
+/// <summary>
+/// Deprecated.
+/// </summary>
 public static class HashLog
 {
 	private const int C_MinHashBytes = 8;

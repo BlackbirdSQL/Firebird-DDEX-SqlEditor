@@ -546,7 +546,7 @@ public class SplitViewContainer : Control, IServiceProvider
 				SwapPanels();
 		}
 
-		// Tracer.Trace(GetType(), "DesignerXamlButton_Click()", "tag: {0}.", toolStripButton.Tag);
+		// Evs.Trace(GetType(), nameof(DesignerXamlButton_Click), "tag: {0}.", toolStripButton.Tag);
 
 		if (!IsSplitterVisible)
 			TabActivationRequestEvent?.Invoke(sender, new TabActivationEventArgs((Guid)toolStripButton.Tag, true));

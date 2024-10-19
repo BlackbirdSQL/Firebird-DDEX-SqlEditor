@@ -157,8 +157,6 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 
 			Native.BROWSEINFOEx browseInfo = null;
 
-			// Tracer.Trace("Title: " + (string.IsNullOrWhiteSpace(_Title) ? "Select folder" : _Title));
-
 			try
 			{
 				browseInfo = new()
@@ -366,7 +364,6 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 
 		if (_Context.PropertyDescriptor.Attributes[typeof(ParametersAttribute)] is ParametersAttribute paramsAttr)
 		{
-			// Tracer.Trace($"ParametersAttribute found for {context.PropertyDescriptor.Name}: {paramsAttr.Value1}.");
 			if (paramsAttr.Length > 0)
 			{
 				localTitle = false;

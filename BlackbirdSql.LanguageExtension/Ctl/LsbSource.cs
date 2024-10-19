@@ -34,7 +34,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 	public LsbSource(AbstractLanguageService service, IVsTextLines textLines, Colorizer colorizer)
 		: base(service, textLines, colorizer)
 	{
-		// Tracer.Trace(typeof(LsbSource), ".ctor.");
+		// Evs.Trace(typeof(LsbSource), ".ctor.");
 
 		_SqlLanguageService = (LsbLanguageService)service;
 		_IntelliSenseEnabled = service.Prefs.EnableIntellisense;

@@ -26,7 +26,7 @@ public abstract class Reflect
 
 	public static T CreateInstance<T>(params object[] args)
 	{
-		// Tracer.Trace(typeof(Reflect), "CreateInstance<T>()", "Instance Type: {0}.", typeof(T).FullName);
+		// Evs.Trace(typeof(Reflect), "CreateInstance<T>()", "Instance Type: {0}.", typeof(T).FullName);
 
 		var type = typeof(T);
 		var instance = type.Assembly.CreateInstance(type.FullName, false,
@@ -100,7 +100,7 @@ public abstract class Reflect
 	public static Delegate AddEventHandler(object handlerMethodContainerInstance, string handlerMethodName,
 		object eventContainerClassInstance, string eventName, BindingFlags eventBindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "AddEventHandler()", "Handler name: {0}, event name: {1}.", handlerMethodName, eventName);
+		// Evs.Trace(typeof(Reflect), "AddEventHandler()", "Handler name: {0}, event name: {1}.", handlerMethodName, eventName);
 
 		if (eventBindingFlags == BindingFlags.Default)
 			eventBindingFlags = BindingFlags.Instance | BindingFlags.Public;
@@ -159,7 +159,7 @@ public abstract class Reflect
 	public static object GetAttributeValue(PropertyDescriptor descriptor, Type attributeType,
 		string attributeValueFieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetAttributeValue()", "Attribute type: {0}, attribute field: {1}.", attributeType.FullName, attributeValueFieldName);
+		// Evs.Trace(typeof(Reflect), "GetAttributeValue()", "Attribute type: {0}, attribute field: {1}.", attributeType.FullName, attributeValueFieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
@@ -174,6 +174,19 @@ public abstract class Reflect
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets a class Type given the fully qualified class name.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public Type GetClassType(string typeName)
+	{
+		return Type.GetType(typeName, true, true);
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Get the class object field given the containing class object, the field name
@@ -185,10 +198,10 @@ public abstract class Reflect
 	// ---------------------------------------------------------------------------------
 	public static object GetField(object containerClassInstance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetField()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), "GetField()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 		Type typeClassInstance = containerClassInstance.GetType();
 
@@ -223,7 +236,9 @@ public abstract class Reflect
 	// ---------------------------------------------------------------------------------
 	public static FieldInfo GetFieldInfo(object containerClassInstance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetFieldInfo(object)", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), "GetFieldInfo(object)", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 		return GetFieldInfoImpl(containerClassInstance, fieldName, bindingFlags);
 
@@ -244,7 +259,7 @@ public abstract class Reflect
 	private static FieldInfo GetFieldInfo(Type typeContainerClass, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic;
+			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
 
 
 		FieldInfo fieldInfo = typeContainerClass.GetField(fieldName, bindingFlags);
@@ -275,7 +290,7 @@ public abstract class Reflect
 	{
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 		Type typeContainerClassInstance = containerClassInstance.GetType();
 
@@ -306,7 +321,7 @@ public abstract class Reflect
 	private static FieldInfo GetFieldInfoBase(object containerClassInstance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 		Type typeContainerClassInstance = containerClassInstance.GetType().BaseType;
 
@@ -335,7 +350,7 @@ public abstract class Reflect
 	private static FieldInfo GetFieldInfoBase(object containerClassInstance, string fieldName, int depth, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 
 		Type typeClassInstance = containerClassInstance.GetType();
@@ -369,7 +384,7 @@ public abstract class Reflect
 	// ---------------------------------------------------------------------------------
 	public static object GetFieldInfoValue(object containerClassInstance, FieldInfo fieldInfo)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetFieldInfoValue()", "Container class: {0}, fieldinfo name: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
+		// Evs.Trace(typeof(Reflect), "GetFieldInfoValue()", "Container class: {0}, fieldinfo name: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
 
 		return GetFieldInfoValueImpl(containerClassInstance, fieldInfo);
 	}
@@ -419,7 +434,10 @@ public abstract class Reflect
 	public static object GetFieldValue(object containerClassInstance, string fieldName, 
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetFieldValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), "GetFieldValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 		return GetFieldValueImpl(containerClassInstance, fieldName, bindingFlags);
 	}
@@ -439,10 +457,10 @@ public abstract class Reflect
 	public static object GetFieldValue(Type typeContainerClass, string fieldName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetFieldValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), "GetFieldValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic;
+			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
 
 		
 
@@ -483,7 +501,7 @@ public abstract class Reflect
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 
 		FieldInfo fieldInfo = GetFieldInfoImpl(containerClassInstance, fieldName, bindingFlags);
@@ -508,10 +526,10 @@ public abstract class Reflect
 	public static object GetFieldValueBase(object containerClassInstance, string fieldName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), "GetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 		FieldInfo fieldInfo = GetFieldInfoBase(containerClassInstance, fieldName, bindingFlags);
 
@@ -535,10 +553,10 @@ public abstract class Reflect
 	public static object GetFieldValueBase(object containerClassInstance, string fieldName,
 		int depth, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), "GetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
 		FieldInfo fieldInfo = GetFieldInfoBase(containerClassInstance, fieldName, depth, bindingFlags);
 
@@ -559,8 +577,11 @@ public abstract class Reflect
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	private static PropertyInfo GetPropertyInfo(object containerClassInstance,
-		string propertyName, BindingFlags bindingFlags)
+		string propertyName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+
 		Type typeContainerClassInstance = containerClassInstance.GetType();
 
 		return GetPropertyInfo(typeContainerClassInstance, propertyName, bindingFlags);
@@ -577,9 +598,12 @@ public abstract class Reflect
 	/// returns null on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	private static PropertyInfo GetPropertyInfo(Type typeContainerClass,
-		string propertyName, BindingFlags bindingFlags)
+	public static PropertyInfo GetPropertyInfo(Type typeContainerClass,
+		string propertyName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
+
 		PropertyInfo propertyInfo = typeContainerClass.GetProperty(propertyName, bindingFlags);
 
 		if (propertyInfo == null)
@@ -606,7 +630,7 @@ public abstract class Reflect
 	// ---------------------------------------------------------------------------------
 	private static object GetPropertyInfoValue(object containerClassInstance, PropertyInfo propertyInfo)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetPropertyInfoValue()");
+		// Evs.Trace(typeof(Reflect), "GetPropertyInfoValue()");
 
 		object value;
 
@@ -638,7 +662,7 @@ public abstract class Reflect
 	public static object GetPropertyValue(object containerClassInstance, string propertyName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetPropertyValue(object)", "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);
+		// Evs.Trace(typeof(Reflect), "GetPropertyValue(object)", "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -666,12 +690,40 @@ public abstract class Reflect
 	public static object GetPropertyValue(string containerClassName, string propertyName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "GetPropertyValue(Type)", "Container class: {0}, property: {1}.", containerClassName, propertyName);
+		// Evs.Trace(typeof(Reflect), "GetPropertyValue(Type)", "Container class: {0}, property: {1}.", containerClassName, propertyName);
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic;
+			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
 
 		Type typeContainerClass = Type.GetType(containerClassName);
+		PropertyInfo propertyInfo = typeContainerClass.GetProperty(propertyName, bindingFlags);
+
+		if (propertyInfo == null)
+			return null;
+
+		return propertyInfo.GetValue(null);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Get a class static property's value given the containing class type, the
+	/// property name and access modifier binding flags.
+	/// </summary>
+	/// <returns>
+	/// Returns the property's value else logs a diagnostics exception and returns null
+	/// on error
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static object GetPropertyValue(Type typeContainerClass, string propertyName,
+		BindingFlags bindingFlags = BindingFlags.Default)
+	{
+		// Evs.Trace(typeof(Reflect), "GetPropertyValue(Type)", "Container class: {0}, property: {1}.", containerClassName, propertyName);
+
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
+
 		PropertyInfo propertyInfo = typeContainerClass.GetProperty(propertyName, bindingFlags);
 
 		if (propertyInfo == null)
@@ -776,7 +828,7 @@ public abstract class Reflect
 		int depth, BindingFlags bindingFlags, object[] args = null, Type[] argTypes = null,
 		ParameterModifier[] argModifiers = null)
 	{
-		// Tracer.Trace(typeof(Reflect), "InvokeAmbiguousMethodBaseType()", "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
+		// Evs.Trace(typeof(Reflect), "InvokeAmbiguousMethodBaseType()", "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
 
 		try
 		{
@@ -833,7 +885,7 @@ public abstract class Reflect
 	public static object InvokeGenericMethod<T>(object containerClassInstance, string method,
 		BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
 	{
-		// Tracer.Trace(typeof(Reflect), "InvokeGenericMethod<T>()", "Container class: {0}, method: {1}, return type: {2}.",
+		// Evs.Trace(typeof(Reflect), "InvokeGenericMethod<T>()", "Container class: {0}, method: {1}, return type: {2}.",
 		//	containerClassInstance.GetType().FullName, method, typeof(T).FullName);
 
 		if (bindingFlags == BindingFlags.Default)
@@ -912,7 +964,7 @@ public abstract class Reflect
 		BindingFlags bindingFlags = BindingFlags.Default, object[] args = null,
 		bool throwExeption = false)
 	{
-		// Tracer.Trace(typeof(Reflect), "InvokeMethod(object)", "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
+		// Evs.Trace(typeof(Reflect), "InvokeMethod(object)", "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -977,10 +1029,10 @@ public abstract class Reflect
 	public static object InvokeMethod(Type typeContainerClass, string method,
 		BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
 	{
-		// Tracer.Trace(typeof(Reflect), "InvokeMethod(Type)", "Container class: {0}, method: {1}.", typeContainerClass.FullName, method);
+		// Evs.Trace(typeof(Reflect), "InvokeMethod(Type)", "Container class: {0}, method: {1}.", typeContainerClass.FullName, method);
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic;
+			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
 
 		try
 		{
@@ -1024,7 +1076,7 @@ public abstract class Reflect
 	public static object InvokeMethodBaseType(object containerClassInstance, string method,
 		int depth, BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
 	{
-		// Tracer.Trace(typeof(Reflect), "InvokeMethodBaseType()", "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
+		// Evs.Trace(typeof(Reflect), "InvokeMethodBaseType()", "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -1072,7 +1124,7 @@ public abstract class Reflect
 	public static void RemoveEventHandler(object containerClassInstance, string eventName,
 		Delegate eventHandler, BindingFlags eventBindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "RemoveEventHandler()", "Container class: {0}, event: {1}.", containerClassInstance.GetType().FullName, eventName);
+		// Evs.Trace(typeof(Reflect), "RemoveEventHandler()", "Container class: {0}, event: {1}.", containerClassInstance.GetType().FullName, eventName);
 
 		if (eventBindingFlags == BindingFlags.Default)
 			eventBindingFlags = BindingFlags.Instance | BindingFlags.Public;
@@ -1114,7 +1166,7 @@ public abstract class Reflect
 	// ---------------------------------------------------------------------------------
 	public static bool SetFieldInfoValue(object containerClassInstance, FieldInfo fieldInfo, object value)
 	{
-		// Tracer.Trace(typeof(Reflect), "SetFieldInfoValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
+		// Evs.Trace(typeof(Reflect), "SetFieldInfoValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
 
 		try
 		{
@@ -1144,7 +1196,7 @@ public abstract class Reflect
 	public static bool SetFieldValue(object containerClassInstance, string fieldName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "SetFieldValue(object)", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), "SetFieldValue(object)", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -1182,7 +1234,7 @@ public abstract class Reflect
 	public static bool SetFieldValue(Type typeContainerClass, string fieldName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "SetFieldValue(Type)", "Container class: {0}, field: {1}.", typeContainerClass.FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), "SetFieldValue(Type)", "Container class: {0}, field: {1}.", typeContainerClass.FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic;
@@ -1220,7 +1272,7 @@ public abstract class Reflect
 	public static bool SetFieldValueBase(object containerClassInstance, string fieldName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "SetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), "SetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -1256,7 +1308,7 @@ public abstract class Reflect
 	public static bool SetPropertyValue(object containerClassInstance, string propertyName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Tracer.Trace(typeof(Reflect), "SetPropertyValue()", "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);
+		// Evs.Trace(typeof(Reflect), "SetPropertyValue()", "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;

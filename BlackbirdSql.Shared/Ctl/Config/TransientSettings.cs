@@ -6,14 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys.Interfaces;
-using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Events;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Shared.Properties;
+using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Interfaces;
 
 
 
@@ -28,7 +26,7 @@ namespace BlackbirdSql.Shared.Ctl.Config;
 /// AutomationObject.
 /// </summary>
 // =============================================================================================================
-public class TransientSettings : PersistentSettings, IBsEditorTransientSettings, IBsTransientSettings, ICloneable
+public class TransientSettings : PersistentSettings, IBsEditorTransientSettings, IBsSettingsProvider, ICloneable
 {
 
 	// ---------------------------------------------------------------------------------
@@ -44,7 +42,7 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 		_ExecOptions = new BitArray(16);
 	}
 
-	protected TransientSettings(BitArray execOptions) : base(true)
+	protected TransientSettings(IDictionary<string, object> transientStore, BitArray execOptions) : base(transientStore)
 	{
 		_ExecOptions = execOptions.Clone() as BitArray;
 	}
@@ -53,20 +51,14 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 	public static TransientSettings CreateInstance()
 	{
-		return new()
-		{
-			_LiveStore = new(SettingsStore)
-		};
+		return new();
 	}
 
 
 
-	public static TransientSettings CreateInstance(IDictionary<string, object> liveStore, BitArray execOptions)
+	public static TransientSettings CreateInstance(IDictionary<string, object> transientStore, BitArray execOptions)
 	{
-		return new(execOptions)
-		{
-			_LiveStore = new(liveStore)
-		};
+		return new(transientStore, execOptions);
 	}
 
 
@@ -82,7 +74,6 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 
 	private readonly BitArray _ExecOptions;
-	protected Dictionary<string, object> _LiveStore;
 	
 
 	#endregion Fields
@@ -93,30 +84,6 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 	// =========================================================================================================
 	#region Property Accessors - TransientSettings
 	// =========================================================================================================
-
-
-	public override object this[string name]
-	{
-		get
-		{
-			lock (_LockObject)
-			{
-				if (!_LiveStore.TryGetValue(name, out object value))
-					return null;
-
-				return value;
-			}
-		}
-
-		set
-		{
-			lock (_LockObject)
-				_LiveStore[name] = value;
-		}
-	}
-
-
-
 
 
 	// Editor GeneralSettingsModel
@@ -142,11 +109,6 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 	{
 		get { return (EnLanguageService)this["EditorGeneralLanguageService"]; }
 		set { this["EditorGeneralLanguageService"] = value; }
-	}
-	public new bool EditorTtsDefault
-	{
-		get { return (bool)this["EditorGeneralTtsDefault"]; }
-		set { this["EditorGeneralTtsDefault"] = value; }
 	}
 
 
@@ -212,25 +174,25 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 
 	// Editor ExecutionSettingsModel
-	public new int EditorExecutionSetRowCount
+	public int EditorExecutionSetRowCount
 	{
 		get { return (int)this["EditorExecutionGeneralSetRowCount"]; }
 		set { this["EditorExecutionGeneralSetRowCount"] = value; }
 	}
 
-	public new EnBlobSubType EditorExecutionSetBlobDisplay
+	public EnBlobSubType EditorExecutionSetBlobDisplay
 	{
 		get { return (EnBlobSubType)this["EditorExecutionGeneralSetBlobDisplay"]; }
 		set { this["EditorExecutionGeneralSetBlobDisplay"] = value; }
 	}
 
-	public new int EditorExecutionTimeout
+	public int EditorExecutionTimeout
 	{
 		get { return (int)this["EditorExecutionGeneralExecutionTimeout"]; }
 		set { this["EditorExecutionGeneralExecutionTimeout"] = value; }
 	}
 
-	public new string EditorExecutionBatchSeparator
+	public string EditorExecutionBatchSeparator
 	{
 		get
 		{
@@ -250,92 +212,92 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 
 	// Editor ExecutionAdvancedSettingsModel
-	public new bool EditorExecutionSetCount
+	public bool EditorExecutionSetCount
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetCount"]; }
 		set { this["EditorExecutionAdvancedSetCount"] = value; }
 	}
-	public new bool EditorExecutionSetNoExec
+	public bool EditorExecutionSetNoExec
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetNoExec"]; }
 		set { this["EditorExecutionAdvancedSetNoExec"] = value; }
 	}
-	public new bool EditorExecutionSetShowplanText
+	public bool EditorExecutionSetShowplanText
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetShowplanText"]; }
 		set { this["EditorExecutionAdvancedSetShowplanText"] = value; }
 	}
-	public new bool EditorExecutionSetPlanXml
+	public bool EditorExecutionSetPlanXml
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetPlanXml"]; }
 		set { this["EditorExecutionAdvancedSetPlanXml"] = value; }
 	}
-	public new bool EditorExecutionSetParseOnly
+	public bool EditorExecutionSetParseOnly
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetParseOnly"]; }
 		set { this["EditorExecutionAdvancedSetParseOnly"] = value; }
 	}
-	public new bool EditorExecutionSetConcatenationNull
+	public bool EditorExecutionSetConcatenationNull
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetConcatenationNull"]; }
 		set { this["EditorExecutionAdvancedSetConcatenationNull"] = value; }
 	}
-	public new bool EditorExecutionSetBail
+	public bool EditorExecutionSetBail
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetBail"]; }
 		set { this["EditorExecutionAdvancedSetBail"] = value; }
 	}
-	public new bool EditorExecutionSetPlanText
+	public bool EditorExecutionSetPlanText
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetPlanText"]; }
 		set { this["EditorExecutionAdvancedSetPlanText"] = value; }
 	}
-	public new bool EditorExecutionSetStats
+	public bool EditorExecutionSetStats
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetStats"]; }
 		set { this["EditorExecutionAdvancedSetStats"] = value; }
 	}
-	public new bool EditorExecutionSetStatisticsIO
+	public bool EditorExecutionSetStatisticsIO
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetStatisticsIO"]; }
 		set { this["EditorExecutionAdvancedSetStatisticsIO"] = value; }
 	}
-	public new bool EditorExecutionSetWarnings
+	public bool EditorExecutionSetWarnings
 	{
 		get { return (bool)this["EditorExecutionAdvancedSetWarnings"]; }
 		set { this["EditorExecutionAdvancedSetSetWarnings"] = value; }
 	}
-	public new IsolationLevel EditorExecutionIsolationLevel
+	public IsolationLevel EditorExecutionIsolationLevel
 	{
 		get { return (IsolationLevel)this["EditorExecutionAdvancedIsolationLevel"]; }
 		set { this["EditorExecutionAdvancedIsolationLevel"] = value; }
 	}
-	public new EnDeadlockPriority EditorExecutionDeadlockPriority
+	public EnDeadlockPriority EditorExecutionDeadlockPriority
 	{
 		get { return (EnDeadlockPriority)this["EditorExecutionAdvancedDeadlockPriority"]; }
 		set { this["EditorExecutionAdvancedDeadlockPriority"] = value; }
 	}
-	public new bool EditorExecutionDeadlockPriorityLow
+	public bool EditorExecutionDeadlockPriorityLow
 	{
 		get { return EditorExecutionDeadlockPriority == EnDeadlockPriority.Low; }
 		set { EditorExecutionDeadlockPriority = value ? EnDeadlockPriority.Low : EnDeadlockPriority.Normal; }
 	}
-	public new int EditorExecutionLockTimeout
+	public int EditorExecutionLockTimeout
 	{
 		get { return (int)this["EditorExecutionAdvancedLockTimeout"]; }
 		set { this["EditorExecutionAdvancedLockTimeout"] = value; }
 	}
-	public new int EditorExecutionCostLimit
+	public int EditorExecutionCostLimit
 	{
 		get { return (int)this["EditorExecutionAdvancedCostLimit"]; }
 		set { this["EditorExecutionAdvancedCostLimit"] = value; }
 	}
-	public new bool EditorExecutionSuppressHeaders
+	public bool EditorExecutionSuppressHeaders
 	{
 		get { return (bool)this["EditorExecutionAdvancedSuppressHeaders"]; }
 		set { this["EditorExecutionAdvancedSuppressHeaders"] = value; }
 	}
-	public new bool EditorExecutionDisconnectOnCompletion
+	public bool EditorExecutionDisconnectOnCompletion
 	{
 		get { return (bool)this["EditorExecutionAdvancedDisconnectOnCompletion"]; }
 		set { this["EditorExecutionAdvancedDisconnectOnCompletion"] = value; }
@@ -343,118 +305,118 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 
 	// Editor ResultsSettingsModel
-	public new EnSqlOutputMode EditorResultsOutputMode
+	public EnSqlOutputMode EditorResultsOutputMode
 	{
 		get { return (EnSqlOutputMode)this["EditorResultsGeneralOutputMode"]; }
 		set { this["EditorResultsGeneralOutputMode"] = value; }
 	}
-	public new string EditorResultsDirectory
+	public string EditorResultsDirectory
 	{
 		get { return (string)this["EditorResultsGeneralDirectory"]; }
 		set { this["EditorResultsGeneralDirectory"] = value; }
 	}
-	public new bool EditorResultsPlaySounds
+	public bool EditorResultsPlaySounds
 	{
 		get { return (bool)this["EditorResultsGeneralPlaySounds"]; }
 		set { this["EditorResultsGeneralPlaySounds"] = value; }
 	}
 
 	// Grid results options.
-	public new bool EditorResultsGridOutputQuery
+	public bool EditorResultsGridOutputQuery
 	{
 		get { return (bool)this["EditorResultsGridOutputQuery"]; }
 		set { this["EditorResultsGridOutputQuery"] = value; }
 	}
 
-	public new bool EditorResultsGridSingleTab
+	public bool EditorResultsGridSingleTab
 	{
 		get { return (bool)this["EditorResultsGridSingleTab"]; }
 		set { this["EditorResultsGridSingleTab"] = value; }
 	}
 
-	public new bool EditorResultsGridSaveIncludeHeaders
+	public bool EditorResultsGridSaveIncludeHeaders
 	{
 		get { return (bool)this["EditorResultsGridSaveIncludeHeaders"]; }
 		set { this["EditorResultsGridSaveIncludeHeaders"] = value; }
 	}
-	public new bool EditorResultsGridCsvQuoteStringsCommas
+	public bool EditorResultsGridCsvQuoteStringsCommas
 	{
 		get { return (bool)this["EditorResultsGridCsvQuoteStringsCommas"]; }
 		set { this["EditorResultsGridCsvQuoteStringsCommas"] = value; }
 	}
-	public new bool EditorResultsGridDiscardResults
+	public bool EditorResultsGridDiscardResults
 	{
 		get { return (bool)this["EditorResultsGridDiscardResults"]; }
 		set { this["EditorResultsGridDiscardResults"] = value; }
 	}
-	public new bool EditorResultsGridSeparateTabs
+	public bool EditorResultsGridSeparateTabs
 	{
 		get { return (bool)this["EditorResultsGridSeparateTabs"]; }
 		set { this["EditorResultsGridSeparateTabs"] = value; }
 	}
-	public new bool EditorResultsGridSwitchToResults
+	public bool EditorResultsGridSwitchToResults
 	{
 		get { return (bool)this["EditorResultsGridSwitchToResults"]; }
 		set { this["EditorResultsGridSwitchToResults"] = value; }
 	}
-	public new int EditorResultsGridMaxCharsPerColumnStd
+	public int EditorResultsGridMaxCharsPerColumnStd
 	{
 		get { return (int)this["EditorResultsGridMaxCharsPerColumnStd"]; }
 		set { this["EditorResultsGridMaxCharsPerColumnStd"] = value; }
 	}
-	public new int EditorResultsGridMaxCharsPerColumnXml
+	public int EditorResultsGridMaxCharsPerColumnXml
 	{
 		get { return (int)this["EditorResultsGridMaxCharsPerColumnXml"]; }
 		set { this["EditorResultsGridMaxCharsPerColumnXml"] = value; }
 	}
 
 	// Text results options.
-	public new bool EditorResultsTextIncludeHeaders
+	public bool EditorResultsTextIncludeHeaders
 	{
 		get { return (bool)this["EditorResultsTextIncludeHeaders"]; }
 		set { this["EditorResultsTextIncludeHeaders"] = value; }
 	}
-	public new bool EditorResultsTextOutputQuery
+	public bool EditorResultsTextOutputQuery
 	{
 		get { return (bool)this["EditorResultsTextOutputQuery"]; }
 		set { this["EditorResultsTextOutputQuery"] = value; }
 	}
-	public new bool EditorResultsTextScrollingResults
+	public bool EditorResultsTextScrollingResults
 	{
 		get { return (bool)this["EditorResultsTextScrollingResults"]; }
 		set { this["EditorResultsTextScrollingResults"] = value; }
 	}
-	public new bool EditorResultsTextAlignRightNumerics
+	public bool EditorResultsTextAlignRightNumerics
 	{
 		get { return (bool)this["EditorResultsTextAlignRightNumerics"]; }
 		set { this["EditorResultsTextAlignRightNumerics"] = value; }
 	}
-	public new bool EditorResultsTextDiscardResults
+	public bool EditorResultsTextDiscardResults
 	{
 		get { return (bool)this["EditorResultsTextDiscardResults"]; }
 		set { this["EditorResultsTextDiscardResults"] = value; }
 	}
-	public new int EditorResultsTextMaxCharsPerColumnStd
+	public int EditorResultsTextMaxCharsPerColumnStd
 	{
 		get { return (int)this["EditorResultsTextMaxCharsPerColumnStd"]; }
 		set { this["EditorResultsTextMaxCharsPerColumnStd"] = value; }
 	}
-	public new bool EditorResultsTextSeparateTabs
+	public bool EditorResultsTextSeparateTabs
 	{
 		get { return (bool)this["EditorResultsTextSeparateTabs"]; }
 		set { this["EditorResultsTextSeparateTabs"] = value; }
 	}
-	public new bool EditorResultsTextSwitchToResults
+	public bool EditorResultsTextSwitchToResults
 	{
 		get { return (bool)this["EditorResultsTextSwitchToResults"]; }
 		set { this["EditorResultsTextSwitchToResults"] = value; }
 	}
-	public new EnSqlOutputFormat EditorResultsTextOutputFormat
+	public EnSqlOutputFormat EditorResultsTextOutputFormat
 	{
 		get { return (EnSqlOutputFormat)this["EditorResultsTextOutputFormat"]; }
 		set { this["EditorResultsTextOutputFormat"] = value; }
 	}
-	public new char EditorResultsTextDelimiter
+	public char EditorResultsTextDelimiter
 	{
 		get
 		{
@@ -597,7 +559,7 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 	public virtual object Clone()
 	{
 		lock (_LockObject)
-			return CreateInstance(_LiveStore, _ExecOptions);
+			return CreateInstance(_TransientStore, _ExecOptions);
 	}
 
 
@@ -612,41 +574,6 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 	}
 
 
-
-	public bool PropertyExists(string name)
-	{
-		lock (_LockObject)
-			return _LiveStore.ContainsKey(name);
-	}
-
-
-	protected override void Initialize()
-	{
-	}
-
-	/// <summary>
-	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
-	/// Only implemented by packages that have settings models, ie. are options providers.
-	/// </summary>
-	public override void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
-	{
-	}
-
-
-	/// <summary>
-	/// Only implemented by packages that have settings models. Whenever a package
-	/// settings model is saved it fires the extension's OnSettingsSaved event.
-	/// That event handler then requests each package to populate SettingsEventArgs
-	/// if it has settings relevant to the model.
-	/// PopulateSettingsEventArgs is also called on loading by the extension without
-	/// a specific model specified for a universal request for settings.
-	/// </summary>
-	public override bool PopulateSettingsEventArgs(ref PropagateSettingsEventArgs args)
-	{
-		return false;
-	}
-
-
 	#endregion Methods
 
 
@@ -655,16 +582,6 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 	// =========================================================================================================
 	#region Event handlers - TransientSettings
 	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Settings saved event handler - only the final descendent class implements this.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override void OnSettingsSaved(object sender)
-	{
-	}
 
 
 	#endregion Event handlers

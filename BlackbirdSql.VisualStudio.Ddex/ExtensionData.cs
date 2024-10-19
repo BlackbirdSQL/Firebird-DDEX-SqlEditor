@@ -35,7 +35,7 @@ static class ExtensionData
 	public const string C_VsixProduct = "BlackbirdSql.VisualStudio.Ddex";
 	public const string C_VsixName = "BlackbirdSql DDEX and SqlEditor for Firebird";
 	public const string C_VsixDescription = "The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the \"look and feel\" of Microsoft's SqlServer extensions";
-	public const string C_VsixVersion = "14.5.1.3";
+	public const string C_VsixVersion = "14.5.2.0";
 
 
 	public const string C_PackageControllerServiceName = "SBsPackageController";
@@ -45,7 +45,7 @@ static class ExtensionData
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// This preset defines whether DDEX implementations are defined in the private
-	/// registry or handled in <see cref="TProviderObjectFactory.CreateObject"/>
+	/// registry or handled in <see cref="VxbProviderObjectFactory.CreateObject"/>
 	/// </summary>
 	/// <remarks>
 	/// Setting to false inserts registry values against implementations allowing VS
@@ -119,7 +119,7 @@ static class ExtensionData
 	/// IVsDataViewSupport, IVsDataViewSupport1 and IVsDataViewSupport2 in the
 	/// <see cref="Values"/> dictionary.
 	/// If the number of registry values is zero, the implementation is handled in
-	/// <see cref="TProviderObjectFactory.CreateObject"/>.
+	/// <see cref="VxbProviderObjectFactory.CreateObject"/>.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	public static readonly IDictionary<string, int> Implementations = new Dictionary<string, int>()
@@ -163,28 +163,28 @@ static class ExtensionData
 
 	public static readonly IDictionary<string, RegistryValue> ImplementationValues = new Dictionary<string, RegistryValue>()
 	{
-		{ nameof(IVsDataConnectionEquivalencyComparer), new(null, typeof(TConnectionEquivalencyComparer).FullName) },
-		{ nameof(IVsDataConnectionPromptDialog), new(null, typeof(TConnectionPromptDialog).FullName) },
-		{ nameof(IVsDataConnectionProperties), new(null, typeof(TConnectionProperties).FullName) },
-		{ nameof(IVsDataConnectionSupport), new (null, typeof(TConnectionSupport).FullName) },
-		{ nameof(IVsDataConnectionUIConnector), new (null, typeof(TConnectionUIConnector).FullName) },
-		{ nameof(IVsDataConnectionUIControl), new(null, typeof(TConnectionUIControl).FullName) },
-		{ nameof(IVsDataConnectionUIProperties), new(null, typeof(TConnectionUIProperties).FullName) },
-		{ nameof(IVsDataMappedObjectConverter), new(null, typeof(TMappedObjectConverter).FullName) },
-		{ nameof(IVsDataObjectIdentifierConverter), new(null, typeof(TObjectIdentifierConverter).FullName) },
-		{ nameof(IVsDataObjectIdentifierResolver), new(null, typeof(TObjectIdentifierResolver).FullName) },
-		{ nameof(IVsDataObjectMemberComparer), new(null, typeof(TObjectMemberComparer).FullName) },
-		{ nameof(IVsDataObjectSelector), new(null, typeof(TObjectSelector).FullName) },
+		{ nameof(IVsDataConnectionEquivalencyComparer), new(null, typeof(VxbEquivalencyComparer).FullName) },
+		{ nameof(IVsDataConnectionPromptDialog), new(null, typeof(VxbConnectionPromptDialog).FullName) },
+		{ nameof(IVsDataConnectionProperties), new(null, typeof(VxbConnectionProperties).FullName) },
+		{ nameof(IVsDataConnectionSupport), new (null, typeof(VxbConnectionSupport).FullName) },
+		{ nameof(IVsDataConnectionUIConnector), new (null, typeof(VxbUIConnector).FullName) },
+		{ nameof(IVsDataConnectionUIControl), new(null, typeof(VxbConnectionUIControl).FullName) },
+		{ nameof(IVsDataConnectionUIProperties), new(null, typeof(VxbConnectionUIProperties).FullName) },
+		{ nameof(IVsDataMappedObjectConverter), new(null, typeof(VxbMappedObjectConverter).FullName) },
+		{ nameof(IVsDataObjectIdentifierConverter), new(null, typeof(VxbObjectIdentifierConverter).FullName) },
+		{ nameof(IVsDataObjectIdentifierResolver), new(null, typeof(VxbObjectIdentifierResolver).FullName) },
+		{ nameof(IVsDataObjectMemberComparer), new(null, typeof(VxbObjectMemberComparer).FullName) },
+		{ nameof(IVsDataObjectSelector), new(null, typeof(VxbObjectSelector).FullName) },
 
-		{ nameof(IVsDataObjectSupport), new(null, typeof(TObjectSupport).FullName) },
-		{ nameof(IVsDataObjectSupport)+1, new("XmlResource", typeof(TObjectSupport).FullName + ".xml") },
+		{ nameof(IVsDataObjectSupport), new(null, typeof(VxbObjectSupport).FullName) },
+		{ nameof(IVsDataObjectSupport)+1, new("XmlResource", typeof(VxbObjectSupport).FullName + ".xml") },
 
-		{ nameof(IVsDataSourceInformation), new(null, typeof(TSourceInformation).FullName) },
-		{ nameof(IVsDataSourceVersionComparer), new(null, typeof(TSourceVersionComparer).FullName) },
+		{ nameof(IVsDataSourceInformation), new(null, typeof(VxbSourceInformation).FullName) },
+		{ nameof(IVsDataSourceVersionComparer), new(null, typeof(VxbSourceVersionComparer).FullName) },
 
 
-		{ nameof(IVsDataViewSupport), new(null, typeof(TViewSupport).FullName) },
-		{ nameof(IVsDataViewSupport)+1, new("XmlResource", typeof(TViewSupport).FullName + ".xml") },
+		{ nameof(IVsDataViewSupport), new(null, typeof(VxbViewSupport).FullName) },
+		{ nameof(IVsDataViewSupport)+1, new("XmlResource", typeof(VxbViewSupport).FullName + ".xml") },
 		{ nameof(IVsDataViewSupport)+2, new("AllowAsynchronousEnumerations", "true") },
 		{ nameof(IVsDataViewSupport)+3, new("HasDocumentProvider", 0) },
 		{ nameof(IVsDataViewSupport)+4, new("PersistentCommands", $"{VS.SeDataCommandSetGuid},{CommandProperties.C_CmdIdSERetrieveData},3") }

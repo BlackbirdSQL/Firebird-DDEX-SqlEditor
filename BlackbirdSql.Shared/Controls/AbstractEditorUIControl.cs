@@ -345,7 +345,7 @@ public abstract class AbstractEditorUIControl : Control, IServiceProvider
 		AbstruseEditorTab editorTab = FindActiveTab(isTopTab);
 		if (editorTab != newTab)
 		{
-			// Tracer.Trace(GetType(), "ShowTab()", "logview: {0}.", newTab.LogicalView);
+			// Evs.Trace(GetType(), nameof(ShowTab), "logview: {0}.", newTab.LogicalView);
 			newTab?.Show();
 			editorTab?.Hide();
 		}

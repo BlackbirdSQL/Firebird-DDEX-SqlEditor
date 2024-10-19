@@ -335,6 +335,18 @@ public static class NativeDbExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Checks if an exception is a native database network exception.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	internal static bool IsDbNetException(this Exception @this)
+	{
+		return NativeDb.DbExceptionSvc.IsDbNetException_(@this);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks if an exception is a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------

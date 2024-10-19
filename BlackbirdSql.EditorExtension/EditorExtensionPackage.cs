@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -166,7 +165,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 			_CurrentDocData = null;
 			_CurrentAuxilliaryDocData = null;
 
-			// Tracer.Trace(GetType(), "Dispose()", "", null);
+			// Evs.Trace(GetType(), nameof(Dispose), "", null);
 
 			if (ThreadHelper.CheckAccess() && GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 			{
@@ -447,7 +446,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	public bool EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData,
 		bool isClone, out AuxilliaryDocData auxDocData)
 	{
-		// Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()",
+		// Evs.Trace(GetType(), nameof(EnsureAuxilliaryDocData),
 		//	"AuxDocData does not exist. Clone? {0}, documentMoniker: {1}.", isClone, documentMoniker);
 
 		lock (_LockLocal)
@@ -487,11 +486,9 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 			}
 
 
-			//Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()",
-			//	"fileCookie: {0}, monikerCookie: {1}, filePath: {2}, inflightMoniker: {3}, documentMoniker: {4}.",
-			//	fileCookie, cookie, filePath, inflightMoniker, documentMoniker);
-
-
+			// Evs.Debug(GetType(), "EnsureAuxilliaryDocData()",
+			//	$"fileCookie: {fileCookie}, monikerCookie: {cookie}, filePath: {filePath}, " +
+			//	$"inflightMoniker: {inflightMoniker}, documentMoniker: {documentMoniker}.");
 
 			auxDocData ??= new AuxilliaryDocData(this, cookie, documentMoniker, inflightMoniker, docData);
 
@@ -756,7 +753,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 	public DialogResult ShowExecutionSettingsDialog(AuxilliaryDocData auxDocData,
 		FormStartPosition startPosition)
 	{
-		// Tracer.Trace(GetType(), "ShowExecutionSettingsDialogFrame()");
+		// Evs.Trace(GetType(), nameof(ShowExecutionSettingsDialogFrame));
 
 		DialogResult result = DialogResult.Abort;
 
@@ -867,7 +864,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 
 	private void OnPowerBroadcast(IntPtr wParam, IntPtr lParam)
 	{
-		// Tracer.Trace(GetType(), "OnPowerBroadcast()");
+		// Evs.Trace(GetType(), nameof(OnPowerBroadcast));
 
 		if ((int)wParam != Native.PBT_APMSUSPEND || _AuxDocDataTable == null
 			|| _AuxDocDataTable.Count == 0)

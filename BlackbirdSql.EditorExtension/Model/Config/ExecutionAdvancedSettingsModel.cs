@@ -3,9 +3,9 @@
 
 using System.ComponentModel;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
+using BlackbirdSql.Sys.Interfaces;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
@@ -36,7 +36,7 @@ public class ExecutionAdvancedSettingsModel : AbstractSettingsModel<ExecutionAdv
 	}
 
 
-	public ExecutionAdvancedSettingsModel(IBsTransientSettings transientSettings)
+	public ExecutionAdvancedSettingsModel(IBsSettingsProvider transientSettings)
 		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 	}

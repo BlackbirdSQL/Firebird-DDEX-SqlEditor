@@ -27,7 +27,7 @@ public class CommandDisconnect : AbstractCommand
 
 	protected override int OnQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		// Tracer.Trace(GetType(), "OnQueryStatus()");
+		// Evs.Trace(GetType(), nameof(OnQueryStatus));
 
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 

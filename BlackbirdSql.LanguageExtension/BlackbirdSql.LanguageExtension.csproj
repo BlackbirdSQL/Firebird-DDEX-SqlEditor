@@ -35,6 +35,8 @@
 	  <Compile Include="Ctl\Config\LsbLanguagePreferences.cs" />
 	  <Compile Include="Ctl\Config\PersistentSettings.cs" />
 	  <Compile Include="Ctl\Config\SettingsProvider.cs" />
+	  <Compile Include="Enums\EnCasingStyle.cs" />
+	  <Compile Include="Evs.cs" />
 	  <Compile Include="Ctl\LsbAuthoringScope.cs" />
 	  <Compile Include="Ctl\LsbColorableItem.cs" />
 	  <Compile Include="Ctl\LsbCompletionSet.cs" />

@@ -16,7 +16,7 @@ internal class DslTriggerColumns : DslColumns
 {
 	public DslTriggerColumns() : base()
 	{
-		// Tracer.Trace(GetType(), "DslTriggerColumns.DslTriggerColumns");
+		// Evs.Trace(GetType(), "DslTriggerColumns.DslTriggerColumns");
 
 		_ParentType = "Trigger";
 		_ObjectType = "TriggerColumn";

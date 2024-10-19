@@ -79,7 +79,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	protected override void Dispose(bool bDisposing)
 	{
-		// Tracer.Trace(GetType(), "ClientStatistics.Dispose", "", null);
+		// Evs.Trace(GetType(), "ClientStatistics.Dispose", "", null);
 		Clear();
 		_GridControls = null;
 		base.Dispose(bDisposing);
@@ -87,7 +87,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public override void Initialize(object sp)
 	{
-		// Tracer.Trace(GetType(), ".Initialize", "", null);
+		// Evs.Trace(GetType(), ".Initialize", "", null);
 		base.Initialize(sp);
 		_MultiControlPnl.Dock = DockStyle.Fill;
 		_MultiControlPnl.Height = ClientRectangle.Height;
@@ -97,7 +97,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public override void Clear()
 	{
-		// Tracer.Trace(GetType(), "ClientStatistics.Clear", "", null);
+		// Evs.Trace(GetType(), "ClientStatistics.Clear", "", null);
 		base.Clear();
 
 		if (_GridControls != null)

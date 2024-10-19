@@ -146,6 +146,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 
 
+
 	// =========================================================================================================
 	#region Fields and Constants - AbstruseRunningConnectionTable
 	// =========================================================================================================
@@ -271,7 +272,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected bool AppendSingleConnectionRow(DataRow row)
 	{
-		// Tracer.Trace(GetType(), "AppendSingleConnectionRow()", "Adding row: {0}", row["DatasetKey"]);
+		// Evs.Debug(GetType(), "AppendSingleConnectionRow()", $"Adding row DatasetKey: {row["DatasetKey"]}.");
 
 		if (_Instance == null)
 			return false;
@@ -281,7 +282,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		foreach (DataColumn col in _InternalConnectionsTable.Columns)
 			str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
 		*/
-		// Tracer.Trace(GetType(), "AppendSingleConnectionRow()", str);
+		// Evs.Debug(GetType(), "AppendSingleConnectionRow()", str);
 
 		BeginLoadData(true);
 
@@ -345,7 +346,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private void ClearAsyncPayloadLauncher(bool disposeToken)
 	{
-		// Tracer.Trace(GetType(), "ClearAsyncPayloadLauncher()");
+		// Evs.Debug(GetType(), "ClearAsyncPayloadLauncher()");
 
 		lock (_LockObject)
 		{
@@ -359,7 +360,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			_LoadingAsyncCardinal--;
 			_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Inactive;
 
-			// Tracer.Trace(GetType(), "ClearAsyncPayloadLauncher()", "_LoadingAsyncCardinal is {0}.", _LoadingAsyncCardinal);
+			// Evs.Debug(GetType(), "ClearAsyncPayloadLauncher()", $"_LoadingAsyncCardinal is {_LoadingAsyncCardinal}.");
 		}
 	}
 
@@ -484,11 +485,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// At most one should be specified. If both are specified there will be a
 	/// redundancy check of the connection name otherwise the connection name takes
 	/// precedence.
-	/// If both are null the proposed derivedDatasetId will be derived from the dataSource.
+	/// If both are null the proposed derivedDatasetId will be derived from the
+	/// dataSource.
 	/// </summary>
-	/// <param name="connectionSource">
-	/// The ConnectionSource making the request.
-	/// </param>
+	/// <param name="connectionSource">The ConnectionSource making the request.</param>
 	/// <param name="proposedConnectionName">
 	/// The proposed DatasetKey (ConnectionName) property else null.
 	/// </param>
@@ -507,8 +507,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// </param>
 	/// <param name="storedConnectionUrl">
 	/// If a stored connection is being modified, the connectionUrl of the stored
-	/// connection, else null. If connectionUrl matches connectionUrl they will
-	/// be considered equal and it will be ignored.
+	/// connection, else null.
+	/// If storedConnectionUrl matches connectionUrl they will be considered equal and
+	/// it will be ignored.
+	/// </param>
+	/// <param name="createServerExplorerConnection">
+	/// Indicates wether or not the connection will be added as an SE Connection internally
+	/// if it does not exist.
 	/// </param>
 	/// <param name="outStoredConnectionSource">
 	/// Out | The ConnectionSource of connectionUrl if the connection exists in the rct
@@ -519,36 +524,32 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// connectionUrl points to an existing connection, then the target has changed and
 	/// outChangedTargetDatasetKey refers to the changed target's DatasetKey, else null.
 	/// </param>
-	/// <param name="outUniqueDatasetKey">
-	/// Out | The final unique DatasetKey.
-	/// </param>
+	/// <param name="outUniqueDatasetKey">Out | The final unique DatasetKey.</param>
 	/// <param name="outUniqueConnectionName">
-	/// Out | The unique resulting proposed ConnectionName. If null is returned then whatever was
-	/// provided in proposedConnectionName is correct and remains as is. If "" is
-	/// returned then whatever was provided in proposedConnectionName is good but changes the
-	/// existing name. If a value is returned then proposedConnectionName was
-	/// ambiguous and outUniqueConnectionName must be used in it's place.
+	/// Out | The unique resulting proposed ConnectionName. If null is returned then
+	/// whatever was provided in proposedConnectionName is correct and remains as is. If
+	/// "" is returned then whatever was provided in proposedConnectionName is good but
+	/// changes the existing name. If a value is returned then proposedConnectionName
+	/// was ambiguous and outUniqueConnectionName must be used in it's place.
 	/// outUniqueConnectionName and outUniqueDatasetId are mutually exclusive.
 	/// </param>
 	/// <param name="outUniqueDatasetId">
-	/// Out | The unique resulting proposed DatsetId. If null is returned then whatever was
-	/// provided in proposedDatasetId is correct and remains as is. If "" is
+	/// Out | The unique resulting proposed DatsetId. If null is returned then whatever
+	/// was provided in proposedDatasetId is correct and remains as is. If "" is
 	/// returned then whatever was provided in proposedDatasetId is good but changes the
 	/// existing name. If a value is returned then proposedDatasetId was ambiguous and
-	/// outUniqueDatasetId must be used in it's place. outUniqueConnectionName and
-	/// outUniqueDatasetId are mutually exclusive.
+	/// outUniqueDatasetId must be used in it's place.
+	/// outUniqueConnectionName and outUniqueDatasetId are mutually exclusive.
 	/// </param>
 	/// <returns>
-	/// A boolean indicating whether or not the provided arguments would cause a new
-	/// connection to be registered in the rct. This only applies to registration in
-	/// the rct and does not determine whether or not a new connection would be created
-	/// in the SE. The caller must determine that.
+	/// A boolean indicating whether or not an Rct connection exists for the provided
+	/// arguments.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	protected abstract bool GenerateUniqueDatasetKey(EnConnectionSource connectionSource,
 		ref string proposedConnectionName, ref string proposedDatasetId, string dataSource,
 		string dataset, string connectionUrl, string storedConnectionUrl,
-		out EnConnectionSource outStoredConnectionSource,
+		ref bool createServerExplorerConnection, out EnConnectionSource outStoredConnectionSource,
 		out string outChangedTargetDatasetKey, out string outUniqueDatasetKey,
 		out string outUniqueConnectionName, out string outUniqueDatasetId);
 
@@ -601,8 +602,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected bool InternalAsyuiLoadApplicationConnections(object probject)
 	{
-		// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Probject? {0}, _LoadingAsyncCardinal: {1}.",
-		//  	probject == null ? "probject == null" : "probject != null", _LoadingAsyncCardinal);
+		// Evs.Debug(GetType(), "InternalAsyuiLoadApplicationConnections()",
+		//	$"Probject? {(probject == null ? "probject == null" : "probject != null")}, " +
+		//	$"_LoadingAsyncCardinal: {_LoadingAsyncCardinal}.");
 
 		if (!PersistentSettings.IncludeAppConnections)
 			return false;
@@ -618,7 +620,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			if (_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.Cancelled() && probject != null)
 			{
-				// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Abort - is probject.");
+				// Evs.Debug(GetType(), "InternalAsyuiLoadApplicationConnections()", "Abort - is probject.");
 
 				Probjects.Add(probject);
 
@@ -656,12 +658,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		async Task<bool> payloadAsync() => await InternalLoadApplicationConnectionsAsync(cancelToken, probject);
 
 
-		// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Queueing InternalLoadApplicationConnectionsAsync.");
+		// Evs.Debug(GetType(), "InternalAsyuiLoadApplicationConnections()", "Queueing InternalLoadApplicationConnectionsAsync.");
 
 		_AsyncPayloadLauncher = Task.Factory.StartNew(payloadAsync, default, creationOptions, TaskScheduler.Default).Unwrap();
 
 
-		// Tracer.Trace(GetType(), "InternalAsyuiLoadApplicationConnections()", "Queued InternalLoadApplicationConnectionsAsync.");
+		// Evs.Debug(GetType(), "InternalAsyuiLoadApplicationConnections()", "Queued InternalLoadApplicationConnectionsAsync.");
 
 
 		return true;
@@ -676,7 +678,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected long InternalInvalidate()
 	{
-		// Tracer.Trace(GetType(), "InternalInvalidate()");
+		// Evs.Debug(GetType(), "InternalInvalidate()");
 
 		return ++_Stamp;
 	}
@@ -691,7 +693,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private void InternalLoadApplicationConnections(CancellationToken cancelToken, bool isSync, object probject)
 	{
-		// Tracer.Trace(GetType(), "InternalLoadApplicationConnections()");
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnections()");
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -719,7 +721,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		while (count > 0)
 		{
-			// Tracer.Trace(GetType(), "InternalLoadApplicationConnections()", "Scanning project: {0}.", project.Name);
+			// Evs.Debug(GetType(), "InternalLoadApplicationConnections()", $"Scanning project: {current.Name}.");
+
 			try
 			{
 				RecursiveScanProject(current);
@@ -737,7 +740,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				return;
 			}
 
-			// Tracer.Trace(GetType(), "InternalLoadApplicationConnections()", "Completed Scanning project: {0}.", project.Name);
+			// Evs.Debug(GetType(), "InternalLoadApplicationConnections()", $"Completed Scanning project: {current.Name}.");
 
 			lock (_LockObject)
 			{
@@ -764,7 +767,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private async Task<bool> InternalLoadApplicationConnectionsAsync(CancellationToken cancelToken, object probject)
 	{
-		// Tracer.Trace(GetType(), "InternalLoadApplicationConnectionsAsync()");
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsync()");
 
 		bool result = true;
 
@@ -811,7 +814,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				// thread to register connections for each project.
 
 
-				// Tracer.Trace(GetType(), "InternalLoadApplicationConnectionsAsync()", "Calling InternalLoadApplicationConnections(), _AsyncPayloadLauncherToken.Cancelled(): {0}.", _AsyncPayloadLauncherToken.Cancelled());
+				// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsync()",
+				//	"Calling InternalLoadApplicationConnections(), " +
+				//	$"_AsyncPayloadLauncherToken.Cancelled(): {_AsyncPayloadLauncherToken.Cancelled()}.");
 
 
 				BeginLoadData(true);
@@ -868,7 +873,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected bool InternalLoadApplicationConnectionsSync()
 	{
-		// Tracer.Trace(GetType(), "InternalLoadApplicationConnectionsSync()");
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsSync()");
 
 		bool result = true;
 
@@ -940,7 +945,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected bool InternalLoadConnections()
 	{
-		// Tracer.Trace(GetType(), "InternalLoadConnections()");
+		// Evs.Debug(GetType(), "InternalLoadConnections()");
 
 		if (InternalLoading)
 			return false;
@@ -1009,7 +1014,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private bool InternalLoadConnectionsSync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "InternalLoadConnectionsSync()");
+		// Evs.Debug(GetType(), "InternalLoadConnectionsSync()");
 
 		lock (_LockObject)
 		{
@@ -1037,7 +1042,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			if (PersistentSettings.IncludeAppConnections && ThreadHelper.CheckAccess())
 			{
-				// Tracer.Trace(GetType(), "InternalLoadConnectionsSync()", "Loading Unsafe Solution Connections on Safe");
+				// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", "Loading Unsafe Solution Connections on Safe");
 
 				InternalLoadApplicationConnections(_SyncPayloadLauncherToken, true, null);
 
@@ -1058,7 +1063,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			// string str = "AddGhostRow: ";
 			// foreach (DataColumn col in _InternalConnectionsTable.Columns)
 			// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-			// Tracer.Trace(GetType(), "InternalLoadConnectionsSync()", str);
+			// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", str);
 
 
 			AppendSingleConnectionRow(row);
@@ -1077,7 +1082,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			// str = "AddResetRow: ";
 			// foreach (DataColumn col in _InternalConnectionsTable.Columns)
 			// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-			// Tracer.Trace(GetType(), "InternalLoadConnectionsSync()", str);
+			// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", str);
 
 			AppendSingleConnectionRow(row);
 
@@ -1095,7 +1100,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				// str = "AddLocalHostGhostRow: ";
 				// foreach (DataColumn col in _InternalConnectionsTable.Columns)
 				// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-				// Tracer.Trace(GetType(), "InternalLoadConnectionsSync()", str);
+				// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", str);
 
 				AppendSingleConnectionRow(row);
 			}
@@ -1119,7 +1124,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private void InternalLoadServerExplorerConnections()
 	{
-		// Tracer.Trace(GetType(), "InternalLoadServerExplorerConnections()");
+		// Evs.Debug(GetType(), "InternalLoadServerExplorerConnections()");
 
 		RctEventSink.EventEnter(false, true);
 
@@ -1171,8 +1176,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private void InternalLoadServerExplorerConnection(string connectionName, string connectionString)
 	{
-
-		// Tracer.Trace(GetType(), "InternalLoadServerExplorerConnection()", "Connection name: {0}", connectionName);
+		// Evs.Debug(GetType(), "InternalLoadServerExplorerConnection()", $"Connection name: {connectionName}.");
 
 		string datasetId;
 		Csb csa;
@@ -1204,8 +1208,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		try
 		{
-			// Tracer.Trace(GetType(), "InternalLoadServerExplorerConnection()",
-			//	"ConnectionName: {0}, datasetId: {1}, csa: {2}.", connectionName, datasetId, csa.ConnectionString);
+			// Evs.Debug(GetType(), "InternalLoadServerExplorerConnection()",
+			//	$"ConnectionName: {connectionName}, datasetId: {datasetId}, csa: {csa.ConnectionString}.");
 
 			// The datasetId may not be unique at this juncture and already registered.
 			row = RegisterUniqueConnectionImpl(connectionName, datasetId,
@@ -1219,14 +1223,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			foreach (DataColumn col in _InternalConnectionsTable.Columns)
 				str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
 
-			// Tracer.Trace(GetType(), "InternalLoadServerExplorerConnection()", str);
+			// Evs.Debug(GetType(), "InternalLoadServerExplorerConnection()", str);
 			*/
 
 			if (_Instance == null)
 				return;
 
+			// Evs.Debug(GetType(), "InternalLoadServerExplorerConnection()", $"Adding row: {row["DatasetKey"]}.");
 
-			// Tracer.Trace(GetType(), "InternalLoadServerExplorerConnection()", "Adding row: {0}", row["DatasetKey"]);
 			AppendSingleConnectionRow(row);
 		}
 		finally
@@ -1245,7 +1249,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private void InternalLoadUtilityConnections()
 	{
-		// Tracer.Trace(GetType(), "InternalLoadUtilityConnections()");
+		Evs.Trace(GetType(), nameof(InternalLoadUtilityConnections));
 
 		DataRow row;
 
@@ -1378,7 +1382,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	}
 
-	protected bool InternalResetVolatile()
+
+
+	/// <summary>
+	/// Clears the Rct of non-persistent connections.
+	/// </summary>
+	protected bool InternalClearVolatileConnections()
 	{
 		lock (_LockObject)
 		{
@@ -1444,7 +1453,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	protected bool InternalResolveDeadlocksAndEnsureLoaded(bool asynchronous)
 	{
-		// Tracer.Trace(typeof(RctManager), "ResolveDeadlocksAndLoad()", "Instance.Initialized: {0}", Instance._Rct == null);
+		// Evs.Trace(typeof(RctManager), "InternalResolveDeadlocksAndEnsureLoaded()");
 
 
 		if (!InternalLoading && !_InternalLoaded)
@@ -1514,7 +1523,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 
 
-		// Tracer.Trace(GetType(), "TryGetHybridRowValue()", "hybridKey: {0}", hybridKey);
+		// Evs.Debug(GetType(), nameof(InternalTryGetHybridRowValue), $"hybridKey: {hybridKey}.");
 
 
 		if (keyType == EnRctKeyType.ConnectionString)
@@ -1587,7 +1596,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private bool PayloadSyncWaiter(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "SyncPayloadTask()");
+		// Evs.Debug(GetType(), nameof(PayloadSyncWaiter));
 
 		if (_SyncPayloadLauncher == null || cancelToken.Cancelled())
 			return false;
@@ -1637,7 +1646,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			_AsyncPayloadLauncherTokenSource = new();
 			_AsyncPayloadLauncherToken = _AsyncPayloadLauncherTokenSource.Token;
 
-			// Tracer.Trace(GetType(), "PrepAsyncPayloadLauncher()", "_LoadingAsyncCardinal is {0}.", _LoadingAsyncCardinal);
+			// Evs.Debug(GetType(), "PrepAsyncPayloadLauncher()", $"_LoadingAsyncCardinal is {_LoadingAsyncCardinal}.");
 		}
 	}
 
@@ -1673,7 +1682,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		ProjectItem config = null;
 
-		// Tracer.Trace("Recursive validate project: " + project.Name);
+		// Evs.Debug(GetType(), nameof(RecursiveScanProject), $"Recursive validate project: {project.Name}.");
 
 		config ??= project.GetAppConfig();
 
@@ -1690,7 +1699,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private void RegisterAppConnectionStrings(string projectName, string xmlPath)
 	{
-		// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()");
+		Evs.Trace(GetType(), nameof(RegisterAppConnectionStrings), $"Project: {projectName}.");
 
 		XmlDocument xmlDoc = new XmlDocument();
 
@@ -1802,7 +1811,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				if (string.IsNullOrWhiteSpace(connectionString))
 					continue;
 
-				// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "Entity connectionString: {0}", connectionString);
+				// Evs.Debug(GetType(), "RegisterAppConnectionStrings()", $"Entity connectionString: {connectionString}");
 
 				csa = new(connectionString);
 
@@ -1843,7 +1852,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				csa.Remove(C_KeyExDatasetId);
 				csa.Remove(C_KeyExConnectionSource);
 
-				// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "datasource: {0}, dataset: {1}, serverName: {2}, ConnectionName: {3}, datasetId: {4}, Connectionstring: {5}, storedConnectionString: {6}.", datasource, csa.Dataset, serverName, csa.ConnectionName, datasetId, csa.ConnectionString, connectionNode.Attributes["connectionString"].Value);
+				// Evs.Debug(GetType(), "RegisterAppConnectionStrings()",
+				//	$"datasource: {datasource}, dataset: {csa.Dataset}, serverName: {serverName}, " +
+				//	$"ConnectionName: {csa.ConnectionName}, datasetId: {datasetId}, " +
+				//	$"Connectionstring: {csa.ConnectionString}, " +
+				//	$"storedConnectionString: {connectionNode.Attributes["connectionString"].Value}.");
 
 				// The datasetId may not be unique at this juncture and already registered.
 				row = RegisterUniqueConnectionImpl(null, datasetId, connectionSource, ref csa);
@@ -1851,18 +1864,19 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				if (row == null)
 					continue;
 
-				// string str = "AddAppDbRow: ";
-				// foreach (DataColumn col in _InternalConnectionsTable.Columns)
-				// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-				// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", str);
-
+				/*
+				string str = "AddAppDbRow: ";
+				foreach (DataColumn col in _InternalConnectionsTable.Columns)
+					str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+				*/
+				// Evs.Debug(GetType(), "RegisterAppConnectionStrings()", str);
 
 				if (_Instance == null)
 					return;
 
-				// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "Adding row: {0}", row["DatasetKey"]);
-				AppendSingleConnectionRow(row);
+				// Evs.Debug(GetType(), "RegisterAppConnectionStrings()", $"Adding row DatasetKey: {row["DatasetKey"]}.");
 
+				AppendSingleConnectionRow(row);
 			}
 
 		}
@@ -1929,10 +1943,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			else
 				row["Orderer"] = 3;
 
-			// string str = "AddServerRow: ";
-			// foreach (DataColumn col in _InternalConnectionsTable.Columns)
-			//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-			// Tracer.Trace(GetType(), "AddServerRow()", str);
+			/*
+			string str = "AddServerRow: ";
+			 foreach (DataColumn col in _InternalConnectionsTable.Columns)
+				str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+			*/
+			// Evs.Debug(GetType(), "InternalRegisterServer()", str);
 
 			AppendSingleConnectionRow(row);
 
@@ -2018,7 +2034,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	private DataRow RegisterUniqueConnectionImpl(string proposedConnectionName,
 		string proposedDatasetId, EnConnectionSource source, ref Csb csa)
 	{
-		// Tracer.Trace(GetType(), "RegisterUniqueConnectionDatsetKey()");
+		// Evs.Debug(GetType(), nameof(RegisterUniqueConnectionImpl));
 
 		if (string.IsNullOrWhiteSpace(proposedConnectionName) && string.IsNullOrWhiteSpace(proposedDatasetId))
 		{
@@ -2056,10 +2072,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		try
 		{
-			// Sanity checks.
+			bool createServerExplorerConnection = false;
 
-			GenerateUniqueDatasetKey(source, ref proposedConnectionName, ref proposedDatasetId, csa.DataSource, csa.Dataset,
-				connectionUrl, null, out _, out _, out string uniqueDatasetKey, out string uniqueConnectionName,
+			GenerateUniqueDatasetKey(source, ref proposedConnectionName, ref proposedDatasetId,
+				csa.DataSource, csa.Dataset, connectionUrl, null, ref createServerExplorerConnection,
+				out _, out _, out string uniqueDatasetKey, out string uniqueConnectionName,
 				out string uniqueDatasetId);
 
 			csa.DatasetKey = uniqueDatasetKey;
@@ -2102,7 +2119,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			csa.Remove("externalkey");
 
 
-			// Tracer.Trace(GetType(), "RegisterUniqueDatasetKey()", "\nADDED uniqueDatasetKey: {0}, source: {1}, dataset: {2}, connectionName: {3}, uniqueDatasetId: {4}, \n\tConnectionString: {5}.", uniqueDatasetKey, source, Dataset, proposedDatasetKey, proposedDatasetId, ConnectionString);
+			// Evs.Debug(GetType(), "RegisterUniqueConnectionImpl()",
+			//	$"\nADDED uniqueDatasetKey: {uniqueDatasetKey}, source: {source}, dataset: {Dataset}, " +
+			//	$"connectionName: {proposedDatasetKey}, uniqueDatasetId: {proposedDatasetId}," +
+			//	$"\n\tConnectionString: {ConnectionString}.");
 
 			DataRow row = CreateDataRow(csa);
 
@@ -2189,7 +2209,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		// We're not doing this for a sync task.
 		// _TaskHandler.RegisterTask(_SyncPayloadLauncher);
 
-		// Tracer.Trace(GetType(), "InternalLoadConnections()", "SyncPayloadTask created. Calling LoadConfiguredConnectionsImpl()");
+		// Evs.Debug(GetType(), "SyncEnter()", "SyncPayloadTask created.");
 
 		return cancelToken;
 	}
@@ -2210,8 +2230,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// Kill SyncPayloadTask.
 
-		// Tracer.Trace(GetType(), "InternalLoadConnections()", "Killing SyncPayloadTask. Loading sync done. State: {0}",
-		//	_SyncPayloadLauncherLaunchState);
+		// Evs.Debug(GetType(), nameof(SyncExit), $"Killing SyncPayloadTask. Loading sync done. State: {_SyncPayloadLauncherLaunchState}.");
 
 		ClearSyncPayloadLauncher(false);
 
@@ -2340,7 +2359,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected void WaitForAsyncLoad()
 	{
-		// Tracer.Trace(GetType(), "WaitForAsyncLoad()");
+		// Evs.Debug(GetType(), nameof(WaitForAsyncLoad));
 
 		int waitTime = 0;
 
@@ -2353,7 +2372,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				throw ex;
 			}
 
-			// Tracer.Trace(GetType(), "WaitForAsyncLoad()", "WAITING");
+			// Evs.Debug(GetType(), "WaitForAsyncLoad()", "WAITING");
 
 			try
 			{
@@ -2365,7 +2384,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			waitTime += 100;
 		}
 
-		// Tracer.Trace(GetType(), "WaitForAsyncLoad()", "DONE WAITING");
+		// Evs.Debug(GetType(), "WaitForAsyncLoad()", "DONE WAITING");
 
 	}
 
@@ -2380,7 +2399,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	protected bool WaitForSyncLoad()
 	{
-		// Tracer.Trace(GetType(), "WaitForSyncLoad()");
+		// Evs.Debug(GetType(), nameof(WaitForSyncLoad));
 
 		if (!InternalLoading)
 			return true;

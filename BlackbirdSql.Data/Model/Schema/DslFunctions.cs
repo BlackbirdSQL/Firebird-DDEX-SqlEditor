@@ -24,11 +24,15 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslFunctions : AbstractDslSchema
 {
+	internal DslFunctions() : base()
+	{
+	}
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslFunctions.GetCommandText");
+		// Evs.Trace(GetType(), "DslFunctions.GetCommandText");
 
 		var sql = new StringBuilder();
 		var where = new StringBuilder();

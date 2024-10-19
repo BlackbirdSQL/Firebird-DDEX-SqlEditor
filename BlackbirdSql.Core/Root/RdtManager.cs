@@ -462,7 +462,7 @@ public sealed class RdtManager : AbstractRdtManager
 	// ---------------------------------------------------------------------------------
 	public static void SuppressChangeTracking(string mkDocument, IVsCodeWindow codeWindow, bool suppress)
 	{
-		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "mkDocument: {0}.", mkDocument);
+		// Evs.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "mkDocument: {0}.", mkDocument);
 
 		if (codeWindow == null && !TryGetCodeWindow(mkDocument, out codeWindow))
 			return;

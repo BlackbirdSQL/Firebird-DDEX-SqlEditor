@@ -2,6 +2,7 @@
 using System;
 using BlackbirdSql.Data.Model;
 using BlackbirdSql.Data.Model.Schema;
+using BlackbirdSql.Data.Properties;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Data.Services;
@@ -37,12 +38,12 @@ public class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNati
 	// ---------------------------------------------------------------------------------
 	public string GetDecoratedDdlSource_(IVsDataExplorerNode node, EnModelTargetType targetType)
 	{
-		// Tracer.Trace(typeof(Moniker), "GetDecoratedDdlSource()");
+		// Evs.Trace(typeof(Moniker), "GetDecoratedDdlSource()");
 
 		IVsDataObject obj = node.Object;
 
 		if (obj == null)
-			return "Node has no object";
+			return Resources.ScriptNoObject;
 
 		string prop = GetNodeScriptProperty(obj).ToUpper();
 		string src = ((string)obj.Properties[prop]).Replace("\r\n", "\n").Replace("\r", "\n");
@@ -91,7 +92,7 @@ public class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNati
 			if (child.Object == null)
 				continue;
 
-			if (child.Object.Type.Name != "FunctionParameter" && child.Object.Type.Name != "FunctionReturnValue")
+			if (child.Object.Type.Name != "FunctionParameter" && child.Object.Type.Name != "FunctionColumn")
 				continue;
 
 			direction = (short)child.Object.Properties["ORDINAL_POSITION"] == 0 ? 1 : 0;
@@ -136,49 +137,69 @@ public class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNati
 		string flddef;
 		string script = "";
 		string strout = "";
+		string ulReplaceParameters = new string('-', Resources.ScriptReplaceParams.Length);
 
 		IVsDataExplorerChildNodeCollection nodes = node.GetChildren(false);
 
 
 		foreach (IVsDataExplorerNode child in nodes)
 		{
-			if (child.Object == null || child.Object.Type.Name != "StoredProcedureParameter")
+			if (child.Object == null)
 				continue;
-			direction = Convert.ToInt32(child.Object.Properties["PARAMETER_DIRECTION"]);
 
-			flddef = child.Object.Properties["PARAMETER_NAME"] + " "
+			if (child.Object.Type.Name != "StoredProcedureParameter" && child.Object.Type.Name != "StoredProcedureColumn")
+				continue;
+
+			// Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL
+			direction = Convert.ToInt32(child.Object.Properties["DIRECTION_FLAG"]);
+
+			// if (direction == 3 && child.Object.Type.Name == "StoredProcedureParameter")
+			//	continue;
+
+			flddef = targetType == EnModelTargetType.AlterScript || targetType == EnModelTargetType.CreateScript
+				? child.Object.Properties["PARAMETER_NAME"] + " "
 					+ DbTypeHelper.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
 					child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
-					child.Object.Properties["NUMERIC_SCALE"]);
+					child.Object.Properties["NUMERIC_SCALE"])
+				: "@" + child.Object.Properties["PARAMETER_NAME"];
 
 			if (direction == 0 || direction == 3) // In
 			{
-				if (targetType == EnModelTargetType.AlterScript)
-					script += (script != "" ? ",\n\t" : "\n\t(") + flddef;
+				if (targetType == EnModelTargetType.AlterScript || targetType == EnModelTargetType.CreateScript)
+				{
+					script += (script != "" ? ", " : "\n\t(") + flddef;
+				}
 				else
-					script += (script != "" ? "\n" : "\n-- The following input parameters need to be initialized after the BEGIN statement\n")
-						+ "DECLARE VARIABLE " + flddef + ";";
+				{
+					script += (script != "" ? ", " : $"\n-- {Resources.ScriptReplaceParams}\n-- {ulReplaceParameters}\n");
+					script += flddef;
+				}
 			}
-			if (direction > 0) // Out
+
+			if ((targetType == EnModelTargetType.AlterScript || targetType == EnModelTargetType.CreateScript)
+				&& direction > 0) // Out
+			{
 				strout += (strout != "" ? ",\n\t" : "\n\t(") + flddef;
+			}
 		}
-		if (script != "" && targetType == EnModelTargetType.AlterScript)
+
+		if (targetType != EnModelTargetType.AlterScript && targetType != EnModelTargetType.CreateScript && script != "")
+			script += $"\n-- {ulReplaceParameters}";
+
+
+		if (targetType != EnModelTargetType.AlterScript && targetType != EnModelTargetType.CreateScript)
+			return $"EXECUTE PROCEDURE {obj.Properties["PROCEDURE_NAME"]}{script}\n";
+
+		if (script != "")
 			script += ")";
 		if (strout != "")
-			strout = $"\nRETURNS{strout})";
+			script += $"\nRETURNS{strout})";
 
-		if (strout != "" && targetType == EnModelTargetType.AlterScript)
-			script += strout;
-
-		if (targetType == EnModelTargetType.AlterScript)
+		if (targetType == EnModelTargetType.CreateScript)
+			script = $"CREATE PROCEDURE {obj.Properties["PROCEDURE_NAME"]}{script}\n";
+		else
 			script = $"ALTER PROCEDURE {obj.Properties["PROCEDURE_NAME"]}{script}\n";
-		else
-			strout = $"EXECUTE BLOCK{strout}\n";
-
-		if (targetType == EnModelTargetType.AlterScript)
-			src = $"{script}AS\n{src}";
-		else
-			src = $"{strout}AS{script}\n-- End of parameter declarations\n{src}";
+		src = $"{script}AS\n{src}";
 
 		return WrapScriptWithTerminators(src);
 	}
@@ -215,7 +236,7 @@ public class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNati
 	private static string GetDecoratedDdlSourceView(string src, IVsDataExplorerNode node,
 		IVsDataObject obj, EnModelTargetType targetType)
 	{
-		if (targetType != EnModelTargetType.AlterScript)
+		if (targetType != EnModelTargetType.AlterScript && targetType != EnModelTargetType.CreateScript)
 			return src;
 
 		string script = "";
@@ -227,7 +248,11 @@ public class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNati
 		if (script != "")
 			script += ")";
 
-		src = $"ALTER VIEW {obj.Properties["VIEW_NAME"]}{script}\nAS\n{src}";
+
+
+		src = (targetType == EnModelTargetType.AlterScript ? "ALTER VIEW" : "CREATE VIEW")
+			+ $" {obj.Properties["VIEW_NAME"]}{script}\nAS\n{src}";
+
 		return src;
 	}
 

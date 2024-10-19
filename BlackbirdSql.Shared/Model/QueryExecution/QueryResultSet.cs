@@ -199,7 +199,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 	private QueryResultSet()
 	{
-		// Tracer.Trace(GetType(), ".ctor");
+		// Evs.Trace(GetType(), ".ctor");
 	}
 
 	public QueryResultSet(IDataReader reader, int statementIndex, int statementCount) : this()
@@ -217,7 +217,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 	public async Task<bool> InitializeAsync(bool forwardOnly, CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "InitializeAsync()", "", null);
+		// Evs.Trace(GetType(), nameof(InitializeAsync), "", null);
 
 		if (_QeStorage != null)
 		{
@@ -274,13 +274,13 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 	public void Dispose()
 	{
-		// Tracer.Trace(GetType(), "Dispose()");
+		// Evs.Trace(GetType(), nameof(Dispose));
 		Dispose(bDisposing: true);
 	}
 
 	private void Dispose(bool bDisposing)
 	{
-		// Tracer.Trace(GetType(), "Dispose()", "bDisposing = {0}", bDisposing);
+		// Evs.Trace(GetType(), nameof(Dispose), "bDisposing = {0}", bDisposing);
 		if (_QeStorageView != null)
 		{
 			_QeStorageView.Dispose();
@@ -354,7 +354,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 	public void InitiateStopRetrievingData()
 	{
-		// Tracer.Trace(GetType(), "InitiateStopRetrievingData()", "", null);
+		// Evs.Trace(GetType(), nameof(InitiateStopRetrievingData), "", null);
 		_IsStopping = true;
 		lock (_LockLocal)
 		{
@@ -380,7 +380,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 	public async Task<bool> StartConsumingDataWithoutStoringAsync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "StartConsumingDataWithoutStoring()");
+		// Evs.Trace(GetType(), nameof(StartConsumingDataWithoutStoring));
 		if (_QeStorage == null)
 		{
 			Exception ex = new InvalidOperationException(Resources.ExResultSetNotInitialized);
@@ -407,7 +407,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 	public async Task<bool> StartRetrievingDataAsync(int nMaxNumCharsToDisplay, int nMaxNumXmlCharsToDisplay, CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "StartRetrievingData()", "nMaxNumCharsToDisplay = {0}", nMaxNumCharsToDisplay);
+		// Evs.Trace(GetType(), nameof(StartRetrievingData), "nMaxNumCharsToDisplay = {0}", nMaxNumCharsToDisplay);
 		if (_QeStorage == null)
 		{
 			Exception ex = new InvalidOperationException(Resources.ExResultSetNotInitialized);

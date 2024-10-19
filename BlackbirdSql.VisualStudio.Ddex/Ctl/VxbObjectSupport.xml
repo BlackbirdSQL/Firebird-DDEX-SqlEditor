@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+
+	<!--
+	This is messy but no way around it.
+
+	xs:sequence is specified so Element Definitions have to come first.
+	Most top level nodes include a Columns subset so these are parameterized.
+
+	Triggers
+		Firstly we want to list triggers in a folder at the top level within a database;
+			IOW the trigger is the hierarchy root.
+		But we also want to list triggers within each table;
+			In this case the table is the hierarchy root.
+		Whichever is the case, we want to list any dependency columns of the trigger,
+			those being a subset of the table's columns.
+		Further we want to differentiate between system & user for...
+			tables, triggers, sequences(generators) and possibly others.
+
+		All of these situations create a commonality of nodes so everything is
+		parameterized, which makes for poor readability unfortunately.
+	-->
+
+	<!-- Import data object support element and mapping definitions -->
+	<Import name="Types_Nodes_PropertiesDefinitions" />
+	<Import name="Mappings_Nodes_PropertiesDefinitions" />
+	<Import name="ServicesDefinitions" />
+	<Import name="Types_NodesDefinitions" />
+	<Import name="Mappings_NodesDefinitions" />
+
+	<!-- Import Root Nodes & Mappings -->
+	<Import name="TypesDefinitions" />
+	<Import name="MappingsDefinitions" />
+
+
+</DataObjectSupport>

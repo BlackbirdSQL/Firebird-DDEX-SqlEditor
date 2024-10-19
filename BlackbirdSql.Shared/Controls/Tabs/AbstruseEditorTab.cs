@@ -11,6 +11,7 @@ using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Sys.Ctl.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -418,7 +419,8 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			}
 			catch (Exception ex)
 			{
-				Tracer.Warning(GetType(), "Dispose()", "Exception encountered while Disposing AbstractEditorTab. CloseFrame threw: {0}.", ex.Message);
+				Evs.Warning(GetType(), "Dispose()",
+					$"Exception encountered while Disposing AbstractEditorTab. CloseFrame threw: {ex.Message}.");
 			}
 		}
 		if (_ParentPanel != null)
@@ -437,7 +439,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	public void Hide()
 	{
-		// Tracer.Trace(GetType(), "Hide()", "Guid: {0}.", _LogicalView);
+		// Evs.Trace(GetType(), nameof(Hide), "Guid: {0}.", _LogicalView);
 
 		_Visible = false;
 
@@ -519,11 +521,12 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				_CurrentFrame.SetFramePos((VSSETFRAMEPOS)(-1073741824), ref rguidRelativeTo, 0, 0, panelForCurrentFrame.Width, panelForCurrentFrame.Height);
+				_CurrentFrame.SetFramePos((VSSETFRAMEPOS)(-1073741824), ref rguidRelativeTo,
+					0, 0, panelForCurrentFrame.Width, panelForCurrentFrame.Height);
 			}
 			else
 			{
-				Tracer.Warning(GetType(), "SetBounds()", "Panel width and height must not be negative");
+				Evs.Warning(GetType(), "SetBounds()", "Panel width and height must not be negative");
 			}
 		}
 	}
@@ -532,7 +535,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		// Tracer.Trace(GetType(), "Show()", "Guid: {0}.", _LogicalView);
+		// Evs.Trace(GetType(), nameof(Show), "Guid: {0}.", _LogicalView);
 
 		try
 		{
@@ -653,7 +656,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IVsWindowFrameNotify3.OnClose(ref uint pgrfSaveOptions)
 	{
-		// Tracer.Trace(GetType(), "OnClose()");
+		// Evs.Trace(GetType(), nameof(OnClose));
 
 		IsClosed = true;
 		if (_CurrentFrame != null)

@@ -39,7 +39,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected AbstractLinkageParser(string connectionString, string[] restrictions) : base()
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
+		// Evs.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
 		if (restrictions == null || restrictions.Length < 3 || string.IsNullOrWhiteSpace(restrictions[2]))
 		{
@@ -63,7 +63,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	protected AbstractLinkageParser(AbstractLinkageParser rhs) : base()
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
+		// Evs.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
 		// Callers must EnsureLoaded().
 		if (rhs._LinkStage != EnLinkStage.Completed)
@@ -88,7 +88,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected AbstractLinkageParser(IVsDataExplorerConnection root, AbstractLinkageParser rhs) : base()
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
+		// Evs.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
 		lock (_LockGlobal)
 		{
@@ -141,7 +141,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected static AbstractLinkageParser GetInstanceImpl(IVsDataExplorerConnection root)
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
+		// Evs.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
 
 		if (root == null)
 		{
@@ -152,7 +152,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		IBsNativeDbLinkageParser parser;
 
-		// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
+		// Evs.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
 		lock (_LockGlobal)
 		{
 
@@ -191,7 +191,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// -------------------------------------------------------------------------
 	protected override bool Dispose(bool disposing)
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "isValidTransient: {0}.", isValidTransient);
+		// Evs.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "isValidTransient: {0}.", isValidTransient);
 
 		lock (_LockGlobal)
 		{
@@ -210,7 +210,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			if (disposing)
 				InvalidateEquivalentParsers(_ConnectionString);
 
-			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "DISPOSING OF PARSER. isValidTransient: {0}.", isValidTransient);
+			// Evs.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "DISPOSING OF PARSER. isValidTransient: {0}.", isValidTransient);
 
 			_Instances.Remove(_InstanceRoot);
 
@@ -242,7 +242,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// -------------------------------------------------------------------------
 	protected static bool DisposeInstanceImpl(IVsDataExplorerConnection root, bool disposing)
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
+		// Evs.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
 
 		lock (_LockGlobal)
 		{
@@ -253,7 +253,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			if (obj is not AbstractLinkageParser parser)
 				return false;
 
-			// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)", "isValidTransient: {0}.", isValidTransient);
+			// Evs.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)", "isValidTransient: {0}.", isValidTransient);
 			// isValidTransient &= parser.Loaded;
 
 
@@ -976,18 +976,18 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected static AbstractLinkageParser FindEquivalentParser(string connectionString, bool mustBeLoaded = false)
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
+		// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
 
 		lock (_LockGlobal)
 		{
 
 			if (_Instances == null)
 			{
-				// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Not found. _Instances is null.");
+				// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Not found. _Instances is null.");
 				return null;
 			}
 
-			// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Searching instances. Count: {0}.", _Instances.Count);
+			// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Searching instances. Count: {0}.", _Instances.Count);
 
 
 			foreach (KeyValuePair<IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
@@ -1004,7 +1004,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				}
 			}
 
-			// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found in instances. Count: {0}", _Instances.Count);
+			// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found in instances. Count: {0}", _Instances.Count);
 
 			return null;
 		}
@@ -1014,7 +1014,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected static AbstractLinkageParser FindInstanceOrTransient(string connectionString)
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "connectionString: {0}.", connectionString);
+		// Evs.Trace(typeof(AbstractLinkageParser), "FindParser()", "connectionString: {0}.", connectionString);
 
 		string connectionUrl = null;
 
@@ -1026,7 +1026,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		connectionUrl ??= ApcManager.CreateConnectionUrl(connectionString);
 
-		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "Searching instances. connectionUrl: {0}.", connectionUrl);
+		// Evs.Trace(typeof(AbstractLinkageParser), "FindParser()", "Searching instances. connectionUrl: {0}.", connectionUrl);
 
 		lock (_LockGlobal)
 		{
@@ -1037,14 +1037,14 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				if (!parser._Enabled || parser._IsIntransient)
 					continue;
 
-				// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "Comparing instance. parser._ConnectionUrl: {0}.", parser._ConnectionUrl);
+				// Evs.Trace(typeof(AbstractLinkageParser), "FindParser()", "Comparing instance. parser._ConnectionUrl: {0}.", parser._ConnectionUrl);
 
 				if (connectionUrl.Equals(parser._ConnectionUrl))
 					return parser;
 			}
 		}
 
-		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "No parser found in instances. Count: {0}", _Instances.Count);
+		// Evs.Trace(typeof(AbstractLinkageParser), "FindParser()", "No parser found in instances. Count: {0}", _Instances.Count);
 
 		return null;
 	}
@@ -1220,7 +1220,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// as potential transients so that they cannot be used.
 	protected static void InvalidateEquivalentParsers(string connectionString)
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
+		// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
 
 		lock (_LockGlobal)
 		{
@@ -1229,12 +1229,12 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 			if (_Instances == null)
 			{
-				// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Not found. _Instances is null.");
+				// Evs.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Not found. _Instances is null.");
 				return;
 			}
 
 
-			// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Searching instances. Count: {0}.", _Instances.Count);
+			// Evs.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Searching instances. Count: {0}.", _Instances.Count);
 
 			int i = -1;
 

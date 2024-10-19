@@ -4,9 +4,9 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.LanguageExtension.Ctl.ComponentModel;
+using BlackbirdSql.Sys.Interfaces;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.LanguageExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.LanguageExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
@@ -39,7 +39,7 @@ public class AdvancedPreferencesModel : AbstractSettingsModel<AdvancedPreference
 	}
 
 
-	public AdvancedPreferencesModel(IBsTransientSettings transientSettings)
+	public AdvancedPreferencesModel(IBsSettingsProvider transientSettings)
 		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 	}

@@ -55,10 +55,6 @@ public abstract class AbstractEventsManager : IBsEventsManager
 	/// <summary>
 	/// AbstractEventsManager disposal
 	/// </summary>
-	/// <remarks>
-	/// Example
-	/// <code>_Controller.OnExampleEvent -= OnExample;</code>
-	/// </remarks>
 	public void Dispose()
 	{
 		Dispose(true);

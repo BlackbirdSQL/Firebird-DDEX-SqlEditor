@@ -264,7 +264,7 @@ public sealed class QueryManager : IBsQueryManager
 				if (_LiveSettings != null)
 					return _LiveSettings;
 				_LiveSettings = TransientSettings.CreateInstance();
-				_LiveSettings.TtsEnabled = _LiveSettings.EditorTtsDefault;
+				_LiveSettings.TtsEnabled = PersistentSettings.EditorTtsDefault;
 
 				return _LiveSettings;
 			}
@@ -387,7 +387,7 @@ public sealed class QueryManager : IBsQueryManager
 	// ---------------------------------------------------------------------------------
 	public bool AsyncExecute(IBsTextSpan textSpan, EnSqlExecutionType executionType)
 	{
-		// Tracer.Trace(GetType(), "AsyncExecute()", " Enter. : ExecutionOptions.EstimatedPlanOnly: " + LiveSettings.EstimatedPlanOnly);
+		// Evs.Trace(GetType(), nameof(AsyncExecute), " Enter. : ExecutionOptions.EstimatedPlanOnly: " + LiveSettings.EstimatedPlanOnly);
 
 		_HadTransactions = HasTransactions;
 
@@ -529,10 +529,10 @@ public sealed class QueryManager : IBsQueryManager
 
 		_HadTransactions = LiveTransactions;
 
-		// Tracer.Trace(GetType(), "ExecuteAsync()", "Ensured connection");
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "Ensured connection");
 
 
-		// Tracer.Trace(GetType(), "ExecuteAsync()", "execTimeout = {0}.", execTimeout);
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "execTimeout = {0}.", execTimeout);
 
 		if (!LiveSettingsApplied)
 			LiveSettingsApplied = true;
@@ -542,7 +542,7 @@ public sealed class QueryManager : IBsQueryManager
 
 		liveSettings = (TransientSettings)LiveSettings.Clone();
 
-		// Tracer.Trace(GetType(), "ExecuteAsync()", "executionType: {0},  LiveSettings.ExecutionType: {1}, liveSettings.ExecutionType: {2}.",
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "executionType: {0},  LiveSettings.ExecutionType: {1}, liveSettings.ExecutionType: {2}.",
 		//	executionType,  LiveSettings.ExecutionType, liveSettings.ExecutionType);
 
 
@@ -602,7 +602,7 @@ public sealed class QueryManager : IBsQueryManager
 
 		try
 		{
-			// Tracer.Trace(GetType(), "QESQLExec.Cancel", "", null);
+			// Evs.Trace(GetType(), "QESQLExec.Cancel", "", null);
 			if ((AsyncExecTask?.IsCompleted ?? true)
 				|| (AsyncCancelTokenSource?.IsCancellationRequested ?? true))
 			{
@@ -620,7 +620,7 @@ public sealed class QueryManager : IBsQueryManager
 
 			TimeSpan sleepWait = new(0, 0, 0, 0, _SleepWaitTimeout);
 
-			// Tracer.Trace(GetType(), "QESQLExec.Cancel", "maxTimeOut: {0}.", maxTimeout);
+			// Evs.Trace(GetType(), "QESQLExec.Cancel", "maxTimeOut: {0}.", maxTimeout);
 
 			task = Task.Run(async delegate
 			{
@@ -629,7 +629,9 @@ public sealed class QueryManager : IBsQueryManager
 					/*
 					if (currentTimeEpoch - startTimeEpoch > maxTimeout)
 					{
-						Tracer.Warning(GetType(), "Cancel()", "Timed out waiting for AsyncExecTask to complete. Forgetting about it. Timeout (ms): {0}.", currentTimeEpoch - startTimeEpoch);
+						Evs.Warning(GetType(), "Cancel()",
+							$"Timed out waiting for AsyncExecTask to complete. " +
+							$"Forgetting about it. Timeout (ms): {(currentTimeEpoch - startTimeEpoch)}.");
 
 						HookupBatchConsumer(_CurBatch, _BatchConsumer, false);
 
@@ -639,7 +641,6 @@ public sealed class QueryManager : IBsQueryManager
 						_AsyncExecTask = null;
 
 						return false;
-
 					}
 					*/
 
@@ -657,7 +658,7 @@ public sealed class QueryManager : IBsQueryManager
 
 				}
 
-				// Tracer.Trace(GetType(), "Cancel()", "Thread stopped gracefully");
+				// Evs.Trace(GetType(), nameof(Cancel), "Thread stopped gracefully");
 
 				return true;
 
@@ -687,7 +688,7 @@ public sealed class QueryManager : IBsQueryManager
 			*/
 		}
 
-		// Tracer.Trace(GetType(), "Cancel", "CANCELLATION LAUNCHED.");
+		// Evs.Trace(GetType(), "Cancel", "CANCELLATION LAUNCHED.");
 
 		bool result = true;
 
@@ -939,7 +940,7 @@ public sealed class QueryManager : IBsQueryManager
 		foreach (EnQueryState state in _StateStack)
 			str += state + ", ";
 
-		// Tracer.Trace(GetType(), "PopStateStack()",
+		// Evs.Trace(GetType(), nameof(PopStateStack),
 			"\nPopped: {0}, prevState: {1}, prevPrevState: {2}, DatabaseChanged: {3}, Stack: {4}.",
 			value, prevState, prevPrevState, IsDatabaseChanged, str);
 		*/
@@ -1026,7 +1027,7 @@ public sealed class QueryManager : IBsQueryManager
 		foreach (EnQueryState state in _StateStack)
 			str += state + ", ";
 
-		// Tracer.Trace(GetType(), "PushStateStack()",
+		// Evs.Trace(GetType(), nameof(PushStateStack),
 			"\nPushed: {0}, prevState: {1}, prevPrevState: {2}, DatabaseChanged: {3}, Stack: {4}.",
 			value, prevState, prevPrevState, IsDatabaseChanged, str);
 		*/
@@ -1061,7 +1062,7 @@ public sealed class QueryManager : IBsQueryManager
 
 	public bool SetDatasetKeyOnConnection(string selectedQualifiedName)
 	{
-		// Tracer.Trace(GetType(), "SetDatasetKeyOnConnection()", "selectedQualifiedName: {0}.", selectedQualifiedName);
+		// Evs.Trace(GetType(), nameof(SetDatasetKeyOnConnection), "selectedQualifiedName: {0}.", selectedQualifiedName);
 
 		if (!EventLockEnter(invalidateToolbar: false))
 			return false;
@@ -1287,7 +1288,7 @@ public sealed class QueryManager : IBsQueryManager
 
 	private async Task OnBatchExecutionCompletedAsync(object sender, BatchExecutionCompletedEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnBatchExecutionCompletedAsync()", "", null);
+		// Evs.Trace(GetType(), nameof(OnBatchExecutionCompletedAsync), "", null);
 
 		await Cmd.AwaitableAsync();
 
@@ -1300,14 +1301,14 @@ public sealed class QueryManager : IBsQueryManager
 
 	private void OnBatchExecutionStart(object sender, BatchExecutionStartEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnBatchExecutionStart()", "", null);
+		// Evs.Trace(GetType(), nameof(OnBatchExecutionStart), "", null);
 	}
 
 
 
 	private void OnConnectionChanged(object sender, ConnectionChangedEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnConnectionChanged()", "Current: {0}, Previous: {1}.", args.CurrentConnection != null, args.PreviousConnection != null);
+		// Evs.Trace(GetType(), nameof(OnConnectionChanged), "Current: {0}, Previous: {1}.", args.CurrentConnection != null, args.PreviousConnection != null);
 
 		if (SyncCancelToken.Cancelled())
 			return;
@@ -1356,7 +1357,7 @@ public sealed class QueryManager : IBsQueryManager
 		if (SyncCancelToken.Cancelled())
 			return;
 
-		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "IN");
+		// Evs.Trace(GetType(), nameof(OnConnectionStateChanged), "IN");
 
 		bool hasTransactions = false;
 
@@ -1409,7 +1410,7 @@ public sealed class QueryManager : IBsQueryManager
 
 	private void OnDatabaseChanged(object sender, DatabaseChangeEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnDatabaseChanged()", "IN");
+		// Evs.Trace(GetType(), nameof(OnDatabaseChanged), "IN");
 
 		if (args.PreviousCsb != null)
 			SetStateValue(EnQueryState.Online, false);
@@ -1439,7 +1440,7 @@ public sealed class QueryManager : IBsQueryManager
 	{
 		QueryExecutionEndTime = DateTime.Now;
 
-		// Tracer.Trace(GetType(), "OnExecutionCompletedAsync()", "Calling ExecutionCompletedEventAsync. args.ExecResult: {0}.", args.ExecutionResult);
+		// Evs.Trace(GetType(), nameof(OnExecutionCompletedAsync), "Calling ExecutionCompletedEventAsync. args.ExecResult: {0}.", args.ExecutionResult);
 
 		bool result = true;
 
@@ -1505,7 +1506,7 @@ public sealed class QueryManager : IBsQueryManager
 			EnSqlExecutionType executionType, EnSqlOutputMode outputMode, bool launched, bool withClientStats,
 			CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "RaiseExecutionCompletedAsync()");
+		// Evs.Trace(GetType(), nameof(RaiseExecutionCompletedAsync));
 
 		ExecutionCompletedEventArgs args = new(executionResult, executionType, outputMode, launched,
 			withClientStats, cancelToken, syncToken);

@@ -104,7 +104,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 
 			if (_ProjectItemEvents == null)
 			{
-				// Tracer.Trace(GetType(), "Initialize()", "_ProjectItemEvents registered.");
+				// Evs.Debug(GetType(), "Initialize()", "_ProjectItemEvents registered.");
 
 				// Store a reference so that VS doesn't forget about us.
 				_ProjectItemEvents = ((Events2)dte2.Events).ProjectItemsEvents;

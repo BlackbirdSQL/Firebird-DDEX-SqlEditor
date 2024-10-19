@@ -2,12 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Extensions;
 using BlackbirdSql.Core.Interfaces;
@@ -94,7 +92,7 @@ public sealed class RctManager : RunningConnectionTable
 
 	public static void Delete()
 	{
-		// Tracer.Trace(typeof(RctManager), "Delete()");
+		// Evs.Trace(typeof(RctManager), "Delete()");
 
 		((RctManager)_Instance)?.Dispose(true);
 		_Instance = null;
@@ -108,9 +106,14 @@ public sealed class RctManager : RunningConnectionTable
 		Dispose(true);
 	}
 
-	public static void ResetVolatile()
+
+
+	/// <summary>
+	/// Clears the Rct of non-persistent connections.
+	/// </summary>
+	public static void ClearVolatileConnections()
 	{
-		((RctManager)_Instance)?.InternalResetVolatile();
+		((RctManager)_Instance)?.InternalClearVolatileConnections();
 	}
 
 
@@ -124,16 +127,10 @@ public sealed class RctManager : RunningConnectionTable
 
 
 
+
 	// =========================================================================================================
-	#region Fields and Constants - RctManager
+	#region Constants - RctManager
 	// =========================================================================================================
-
-
-	private static int _InitializingExplorerModelsCardinal = 0;
-	private static bool _ServerExplorerModelsInitialized = false;
-
-	private static int _EventConnectionDialogCardinal = 0;
-	private static bool _SessionConnectionSourceActive = false;
 
 
 	private const string C_Wizard = "{C99AEA30-8E36-4515-B76F-496F5A48A6AA}";
@@ -143,6 +140,26 @@ public sealed class RctManager : RunningConnectionTable
 	private const string C_XsdDatasetDesigner2 = "{74946810-37A0-11D2-A273-00C04F8EF4FF}";
 	private const string C_XsdDatasetDesigner3 = "{8E7B96A8-E33D-11D0-A6D5-00C04FB67F6A}";
 	*/
+
+
+	#endregion Constants
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - RctManager
+	// =========================================================================================================
+
+
+	private static int _InitializeServerExplorerModelsEvsIndex = -1;
+	private static int _InitializingExplorerModelsCardinal = 0;
+	private static bool _ServerExplorerModelsInitialized = false;
+
+	private static int _EventConnectionDialogCardinal = 0;
+	private static bool _SessionConnectionSourceActive = false;
+
 
 	private static readonly string _S_SEToolWindow = VSConstants.StandardToolWindows.ServerExplorer.ToString("B").ToUpper();
 	private static readonly string _S_VsMdPropertyBrowser = VSConstants.StandardToolWindows.VSMDPropertyBrowser.ToString("B").ToUpper();
@@ -154,7 +171,8 @@ public sealed class RctManager : RunningConnectionTable
 	private static readonly string _S_VsTextBuffer = VS.CLSID_VsTextBuffer.ToString("B").ToUpper();
 	*/
 
-	#endregion Fields and Constants
+
+	#endregion Fields
 
 
 
@@ -311,7 +329,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	private static bool AsyncInitializeServerExplorerModels()
 	{
-		// Tracer.Trace(GetType(), "AsyncInitializeServerExplorerModels()");
+		// Evs.Trace(typeof(RctManager), "AsyncInitializeServerExplorerModels()");
 
 		if (_ServerExplorerModelsInitialized)
 			return false;
@@ -325,14 +343,14 @@ public sealed class RctManager : RunningConnectionTable
 
 		async Task<bool> payloadAsync() => await InitializeServerExplorerModelsAsync(cancelToken);
 
-		// Tracer.Trace(GetType(), "AsyncInitializeServerExplorerModels()", "Queueing InitializeServerExplorerModelsAsync.");
+		// Evs.Debug(GetType(), nameof(AsyncInitializeServerExplorerModels), "Queueing InitializeServerExplorerModelsAsync.");
 
 		// Run on new thread in thread pool.
 		// Fire and forget.
 
 		_ = Task.Factory.StartNew(payloadAsync, default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 
-		// Tracer.Trace(GetType(), "AsyncInitializeServerExplorerModels()", "Queued InitializeServerExplorerModelsAsync.");
+		// Evs.Debug(GetType(), nameof(AsyncInitializeServerExplorerModels), "Queued InitializeServerExplorerModelsAsync.");
 
 		return true;
 	}
@@ -351,7 +369,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	public static bool AsyuiLoadApplicationConnections(object probject)
 	{
-		// Tracer.Trace(typeof(RctManager), "LoadProjectConnections()");
+		// Evs.Trace(typeof(RctManager), "LoadProjectConnections()");
 
 		if (!(Instance?.InternalLoaded ?? false) || ShutdownState)
 			return false;
@@ -698,7 +716,7 @@ public sealed class RctManager : RunningConnectionTable
 	{
 		EnConnectionSource connectionSource = GetConnectionSourceImpl();
 
-		// Tracer.Trace(typeof(RctManager), "GetConnectionSource()", "ConnectionSource: {0}", connectionSource);
+		// Evs.Trace(typeof(RctManager), "GetConnectionSource()", "ConnectionSource: {0}", connectionSource);
 
 		return connectionSource;
 	}
@@ -714,7 +732,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	private static EnConnectionSource GetConnectionSourceImpl()
 	{
-		// Tracer.Trace(typeof(RctManager), "GetConnectionSourceImpl()");
+		// Evs.Trace(typeof(RctManager), "GetConnectionSourceImpl()");
 
 		// Definitely None.
 		if (ApcManager.IdeShutdownState)
@@ -764,7 +782,7 @@ public sealed class RctManager : RunningConnectionTable
 		if (objectKind == _S_SEToolWindow)
 		{
 			result = EnConnectionSource.ServerExplorer;
-			// Tracer.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}.{1}", result.ToUpper(), info);
+			// Evs.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}.{1}", result.ToUpper(), info);
 			return result;
 		}
 
@@ -773,7 +791,7 @@ public sealed class RctManager : RunningConnectionTable
 		if (objectKind == _S_VsMdPropertyBrowser)
 		{
 			result = EnConnectionSource.Application;
-			// Tracer.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}.{1}", result.ToUpper(), info);
+			// Evs.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}.{1}", result.ToUpper(), info);
 			return result;
 		}
 
@@ -781,7 +799,7 @@ public sealed class RctManager : RunningConnectionTable
 		if (objectKind == C_Wizard)
 		{
 			result = EnConnectionSource.EntityDataModel;
-			// Tracer.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}. {1}", result.ToUpper(), info);
+			// Evs.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}. {1}", result.ToUpper(), info);
 			return result;
 		}
 
@@ -799,7 +817,7 @@ public sealed class RctManager : RunningConnectionTable
 
 
 		// info = $"\n\tDialogActive: {ConnectionDialogActive}, ActiveWindowType: {ApcManager.ActiveWindowType}, ActiveWindowObjectType: {objectType}, ActiveWindowObjectKind: {KindName(objectKind)}, ActiveDocumentExtension: {extension}, isSettings: {isSettings}.";
-		// Tracer.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}. {1}", result.ToUpper(), info);
+		// Evs.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}. {1}", result.ToUpper(), info);
 
 		return result;
 	}
@@ -926,7 +944,7 @@ public sealed class RctManager : RunningConnectionTable
 
 		// New registration.
 
-		// Tracer.Trace(typeof(Csb), "EnsureVolatileInstance()", "Could NOT find registered DataRow for dbConnectionString: {0}.", connection.ConnectionString);
+		// Evs.Trace(typeof(Csb), "EnsureVolatileInstance()", "Could NOT find registered DataRow for dbConnectionString: {0}.", connection.ConnectionString);
 
 		csa = new(connection);
 		string datasetId = csa.DatasetId;
@@ -988,11 +1006,11 @@ public sealed class RctManager : RunningConnectionTable
 
 		Instance.InternalInvalidate();
 
-		// Tracer.Trace(typeof(RctManager), "Invalidate()", "New stamp: {0}", Stamp);
+		// Evs.Trace(typeof(RctManager), "Invalidate()", "New stamp: {0}", Stamp);
 	}
 
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+	// [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 	private static string KindName(string kind)
 	{
 		foreach (KeyValuePair<string, string> pair in _ActiveWindowObjectKinds)
@@ -1051,14 +1069,16 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	private static async Task<bool> InitializeServerExplorerModelsAsync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "InitializeServerExplorerModelsAsync()");
-
 		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState)
 			return false;
 
 		bool result = false;
 
 		_InitializingExplorerModelsCardinal++;
+
+		_InitializeServerExplorerModelsEvsIndex = Evs.Start(typeof(RctManager),
+			nameof(InitializeServerExplorerModelsAsync), "", nameof(InitializeServerExplorerModelsAsync),
+			_InitializeServerExplorerModelsEvsIndex);
 
 		try
 		{
@@ -1087,6 +1107,9 @@ public sealed class RctManager : RunningConnectionTable
 		finally
 		{
 			_InitializingExplorerModelsCardinal--;
+
+			Evs.Stop(typeof(RctManager), nameof(InitializeServerExplorerModelsAsync), "",
+				nameof(InitializeServerExplorerModelsAsync), _InitializeServerExplorerModelsEvsIndex);
 		}
 
 
@@ -1107,7 +1130,7 @@ public sealed class RctManager : RunningConnectionTable
 	private static bool ModifyServerExplorerConnection(IVsDataExplorerConnection explorerConnection,
 		ref Csb csa, bool modifyExplorerConnection)
 	{
-		// Tracer.Trace(typeof(RctManager), "ModifyServerExplorerConnection()",
+		// Evs.Trace(typeof(RctManager), "ModifyServerExplorerConnection()",
 		//	"csa.ConnectionString: {0}, se.DecryptedConnectionString: {1}, modifyExplorerConnection: {2}.",
 		//	csa.ConnectionString, explorerConnection.Connection.DecryptedConnectionString(), modifyExplorerConnection);
 
@@ -1214,7 +1237,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	private static bool ResolveDeadlocksAndEnsureLoaded(bool asynchronous)
 	{
-		// Tracer.Trace(typeof(RctManager), "ResolveDeadlocksAndLoad()", "Instance.Initialized: {0}", Instance._Rct == null);
+		// Evs.Trace(typeof(RctManager), "ResolveDeadlocksAndLoad()", "Instance.Initialized: {0}", Instance._Rct == null);
 		if (ApcManager.IdeShutdownState)
 			return false;
 
@@ -1274,7 +1297,7 @@ public sealed class RctManager : RunningConnectionTable
 				str += $"\n\t{pair.Key}: {pair.Value}";
 			}
 
-			Tracer.Information(typeof(RctManager), "TraceRct()", "{0}", str);
+			Evs.Info(typeof(RctManager), "TraceRct()", str);
 		}
 		catch (Exception ex)
 		{
@@ -1335,7 +1358,7 @@ public sealed class RctManager : RunningConnectionTable
 	private static bool UpdateServerExplorer(ref Csb csa,
 		bool addExplorerConnection, bool modifyExplorerConnection)
 	{
-		// Tracer.Trace(typeof(RctManager), "UpdateServerExplorer()", "csa.ConnectionString: {0}, addServerExplorerConnection: {1}, modifyExplorerConnection: {2}.", csa.ConnectionString, addExplorerConnection, modifyExplorerConnection);
+		// Evs.Trace(typeof(RctManager), "UpdateServerExplorer()", "csa.ConnectionString: {0}, createServerExplorerConnection: {1}, modifyExplorerConnection: {2}.", csa.ConnectionString, addExplorerConnection, modifyExplorerConnection);
 
 		csa.ConnectionSource = EnConnectionSource.ServerExplorer;
 
@@ -1358,7 +1381,7 @@ public sealed class RctManager : RunningConnectionTable
 		{
 			explorerConnection = manager.AddConnection(csa.DatasetKey, new(SystemData.C_ProviderGuid), csa.ConnectionString, false);
 
-			// RctEventSink.AdviseServerExplorerEvents(explorerConnection);
+			RctEventSink.InitializeServerExplorerModel(explorerConnection);
 
 			explorerConnection.ConnectionNode.Select();
 		}
@@ -1408,7 +1431,7 @@ public sealed class RctManager : RunningConnectionTable
 				csa.Remove(CoreConstants.C_KeyExEdmu);
 				csa.Remove(CoreConstants.C_KeyExEdmx);
 
-				// Tracer.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "\nEDMU repairString: {0}.", csa.ConnectionString);
+				// Evs.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "\nEDMU repairString: {0}.", csa.ConnectionString);
 
 				UpdateOrRegisterConnection(csa.ConnectionString, EnConnectionSource.ServerExplorer, false, true);
 			}
@@ -1423,7 +1446,7 @@ public sealed class RctManager : RunningConnectionTable
 					throw ex;
 				}
 
-				// Tracer.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "EDMX repairString: {0}.", storedConnectionString);
+				// Evs.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "EDMX repairString: {0}.", storedConnectionString);
 
 				UpdateOrRegisterConnection(storedConnectionString, EnConnectionSource.ServerExplorer, false, true);
 			}
@@ -1436,7 +1459,7 @@ public sealed class RctManager : RunningConnectionTable
 			return;
 
 
-		// Tracer.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "proposedConnectionName: {0}, connectionString: {1}.", proposedConnectionName, csa.ConnectionString);
+		// Evs.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "proposedConnectionName: {0}, connectionString: {1}.", proposedConnectionName, csa.ConnectionString);
 
 		string msg;
 		string caption;
@@ -1461,6 +1484,7 @@ public sealed class RctManager : RunningConnectionTable
 		}
 
 
+		bool createServerExplorerConnection = false;
 		string connectionUrl = csa.Moniker;
 		string proposedDatasetId = csa.DatasetId;
 		string dataSource = csa.DataSource;
@@ -1468,11 +1492,12 @@ public sealed class RctManager : RunningConnectionTable
 
 
 		// Check whether the connection name will change.
-		Instance.GenerateUniqueDatasetKey(EnConnectionSource.ServerExplorer, ref proposedConnectionName, ref proposedDatasetId, dataSource, dataset,
-			connectionUrl, connectionUrl, out _, out _, out string uniqueDatasetKey,
+		Instance.GenerateUniqueDatasetKey(EnConnectionSource.ServerExplorer, ref proposedConnectionName,
+			ref proposedDatasetId, dataSource, dataset, connectionUrl, connectionUrl,
+			ref createServerExplorerConnection, out _, out _, out string uniqueDatasetKey,
 			out string uniqueConnectionName, out string uniqueDatasetId);
 
-		// Tracer.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}, uniqueDatasetKey: {4}, uniqueConnectionName: {5}, uniqueDatasetId: {6}.",
+		// Evs.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}, uniqueDatasetKey: {4}, uniqueConnectionName: {5}, uniqueDatasetId: {6}.",
 		//	proposedConnectionName, proposedDatasetId, dataSource, dataset, uniqueDatasetKey ?? "Null", uniqueConnectionName ?? "Null", uniqueDatasetId ?? "Null");
 
 		if (!string.IsNullOrEmpty(uniqueConnectionName))
@@ -1525,23 +1550,26 @@ public sealed class RctManager : RunningConnectionTable
 	/// </summary>
 	/// <returns>
 	/// A tuple where... 
-	/// Item1 (rSuccess): true if validation was successful else false if add or modify
+	/// Item1 (retSuccess): true if validation was successful else false if add or modify
 	/// should be cancelled.
-	/// Item2 (rAddInternally): true if connectionUrl (connection) has
+	/// Item2 (retAddInternally): true if connectionUrl (connection) has
 	/// changed and requires adding a new connection internally.
-	/// Item3 (rModifyInternally): true if connectionUrl changed and will now
-	/// require internally modifying
-	/// another connection.
+	/// Item3 (retModifyInternally): true if connectionUrl changed and will now
+	/// require internally modifying another connection.
 	/// </returns>
 	/// <param name="site">
 	/// The IVsDataConnectionProperties Site (usually the Site of an
 	/// IVsDataConnectionUIControl control.
 	/// </param>
-	/// <param name="source">
+	/// <param name="connectionSource">
 	/// The source requesting the validation.
 	/// </param>
 	/// <param name="serverExplorerInsertMode">
 	/// Boolean indicating wehther or not a connection is being added or modified.
+	/// </param>
+	/// <param name="createServerExplorerConnection">
+	/// If the ConnectionSource is Session, indicates wether or not the connection can be added as an SE Connection
+	/// if it does not exist.
 	/// </param>
 	/// <param name="storedConnectionString">
 	/// The original ConnectionString before any editing of the Site took place else
@@ -1549,14 +1577,14 @@ public sealed class RctManager : RunningConnectionTable
 	/// </param>
 	// ---------------------------------------------------------------------------------
 	public static (bool, bool, bool) ValidateSiteProperties(IVsDataConnectionProperties site, EnConnectionSource connectionSource,
-		bool serverExplorerInsertMode, bool disableSessionAddInternally, string storedConnectionString)
+		bool serverExplorerInsertMode, bool createServerExplorerConnection, string storedConnectionString)
 	{
-		bool rSuccess = true;
-		bool rAddInternally = false;
-		bool rModifyInternally = false;
+		bool retSuccess = true;
+		bool retAddInternally = false;
+		bool retModifyInternally = false;
 
 		if (Instance == null)
-			return (rSuccess, rAddInternally, rModifyInternally);
+			return (retSuccess, retAddInternally, retModifyInternally);
 
 		string storedConnectionUrl = null;
 
@@ -1579,8 +1607,8 @@ public sealed class RctManager : RunningConnectionTable
 
 			MessageCtl.ShowEx(msg, caption, MessageBoxButtons.OK);
 
-			rSuccess = false;
-			return (rSuccess, rAddInternally, rModifyInternally);
+			retSuccess = false;
+			return (retSuccess, retAddInternally, retModifyInternally);
 		}
 
 		string proposedDatasetId = site.ContainsKey(SysConstants.C_KeyExDatasetId)
@@ -1605,17 +1633,19 @@ public sealed class RctManager : RunningConnectionTable
 
 		string connectionUrl = (site as IBsDataConnectionProperties).Csa.LiveDatasetMoniker;
 
-		// Tracer.Trace(typeof(RctManager), "ValidateSiteProperties()", "connectionSource: {0}, serverExplorerInsertMode: {1}, proposedConnectionName: {2}, proposedDatasetId: {3}, dataSource: {4}, dataset: {5}.",
+		// Evs.Trace(typeof(RctManager), "ValidateSiteProperties()", "connectionSource: {0}, serverExplorerInsertMode: {1}, proposedConnectionName: {2}, proposedDatasetId: {3}, dataSource: {4}, dataset: {5}.",
 		//	connectionSource, serverExplorerInsertMode, proposedConnectionName, proposedDatasetId, dataSource, dataset);
 
+
 		// Validate the proposed names.
-		bool createNew = Instance.GenerateUniqueDatasetKey(connectionSource, ref proposedConnectionName, ref proposedDatasetId,
-			dataSource, dataset, connectionUrl, storedConnectionUrl, out EnConnectionSource storedConnectionSource,
+		bool rctExists = Instance.GenerateUniqueDatasetKey(connectionSource, ref proposedConnectionName, ref proposedDatasetId,
+			dataSource, dataset, connectionUrl, storedConnectionUrl, ref createServerExplorerConnection,
+			out EnConnectionSource storedConnectionSource,
 			out string changedTargetDatasetKey, out string uniqueDatasetKey, out string uniqueConnectionName,
 			out string uniqueDatasetId);
 
 		/*
-		// Tracer.Trace(typeof(RctManager), "ValidateSiteProperties()",
+		// Evs.Trace(typeof(RctManager), "ValidateSiteProperties()",
 			"GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}, createnew: {4}, storedConnectionSource: {5}, changedTargetDatasetKey: {6}, uniqueDatasetKey : {7}, uniqueConnectionName: {8}, uniqueDatasetId: {9}.",
 			proposedConnectionName, proposedDatasetId, dataSource, dataset, createNew, storedConnectionSource,
 			changedTargetDatasetKey ?? "Null", uniqueDatasetKey ?? "Null",
@@ -1623,13 +1653,7 @@ public sealed class RctManager : RunningConnectionTable
 			uniqueDatasetId == null ? "Null" : (uniqueDatasetId == "" ? """" : uniqueDatasetId));
 		*/
 
-		// If we're in the EDM and the stored connection source is not ServerExplorer we have to create it in the SE to get past the EDM bug.
-		// Also, if we're in the SE and the stored connection source is not ServerExplorer we have to create it in the SE.
-		if (!createNew && storedConnectionSource != EnConnectionSource.ServerExplorer
-			&& (connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.EntityDataModel))
-		{
-			createNew = true;
-		}
+
 
 
 
@@ -1641,21 +1665,20 @@ public sealed class RctManager : RunningConnectionTable
 		{
 			// Handle all cases where there's a connection name conflict.
 
-			// The settings provided will create a new SE connection with a connection name conflict.
-			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
-				|| connectionSource == EnConnectionSource.EntityDataModel))
-			{
-				caption = ControlsResources.RctManager_CaptionNewConnectionNameConflict;
-				msg = ControlsResources.RctManager_TextNewSEConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
-			}
-			// The settings provided will create a new Session connection as well as a new SE connection with a connection name conflict.
-			else if (createNew && !serverExplorerInsertMode && !disableSessionAddInternally)
+				// The settings provided will create a new Session connection as well as a new SE connection with a connection name conflict.
+			if (createServerExplorerConnection && !serverExplorerInsertMode && connectionSource == EnConnectionSource.Session)
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionNameConflict;
 				msg = ControlsResources.RctManager_TextNewConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
 			}
+			// The settings provided will create a new SE connection with a connection name conflict.
+			else if (createServerExplorerConnection && !serverExplorerInsertMode)
+			{
+				caption = ControlsResources.RctManager_CaptionNewConnectionNameConflict;
+				msg = ControlsResources.RctManager_TextNewSEConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
+			}
 			// The settings provided will create a new Session connection with a connection name conflict.
-			else if (createNew && !serverExplorerInsertMode)
+			else if (!rctExists && !serverExplorerInsertMode)
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionNameConflict;
 				msg = ControlsResources.RctManager_TextNewSessionConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
@@ -1677,21 +1700,20 @@ public sealed class RctManager : RunningConnectionTable
 		{
 			// Handle all cases where there's a DatasetId conflict.
 
-			// The settings provided will create a new SE connection with a DatasetId conflict.
-			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
-				|| connectionSource == EnConnectionSource.EntityDataModel))
-			{
-				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
-				msg = ControlsResources.RctManager_TextNewSEConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
-			}
 			// The settings provided will create a new Session connection as well as a new SE connection with a DatasetId conflict.
-			else if (createNew && !serverExplorerInsertMode && !disableSessionAddInternally)
+			if (createServerExplorerConnection && !serverExplorerInsertMode && connectionSource == EnConnectionSource.Session)
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
 				msg = ControlsResources.RctManager_TextNewConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
 			}
+			// The settings provided will create a new SE connection with a DatasetId conflict.
+			else if (createServerExplorerConnection && !serverExplorerInsertMode)
+			{
+				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
+				msg = ControlsResources.RctManager_TextNewSEConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
+			}
 			// The settings provided will create a new Session connection with a DatasetId conflict.
-			else if (createNew && !serverExplorerInsertMode)
+			else if (!rctExists && !serverExplorerInsertMode)
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
 				msg = ControlsResources.RctManager_TextNewSessionConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
@@ -1710,21 +1732,20 @@ public sealed class RctManager : RunningConnectionTable
 			}
 		}
 		// Handle all cases where there is no conflict.
+		// The settings provided will create a new SE connection within a Session connection dialog.
+		else if (createServerExplorerConnection && !serverExplorerInsertMode && connectionSource == EnConnectionSource.Session)
+		{
+			caption = ControlsResources.RctManager_CaptionNewConnection;
+			msg = ControlsResources.RctManager_TextNewSessionSEConnection;
+		}
 		// The settings provided will create a new SE connection.
-		else if (createNew && !serverExplorerInsertMode &&
-			(connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.EntityDataModel))
+		else if (createServerExplorerConnection && !serverExplorerInsertMode)
 		{
 			caption = ControlsResources.RctManager_CaptionNewConnection;
 			msg = ControlsResources.RctManager_TextNewSEConnection;
 		}
-		// The settings provided will create a new Session connection as well as a new SE connection.
-		else if (createNew && !serverExplorerInsertMode && !disableSessionAddInternally)
-		{
-			caption = ControlsResources.RctManager_CaptionNewConnection;
-			msg = ControlsResources.RctManager_TextNewConnection;
-		}
 		// The settings provided will create a new Session connection.
-		else if (createNew && !serverExplorerInsertMode)
+		else if (!rctExists && !serverExplorerInsertMode)
 		{
 			caption = ControlsResources.RctManager_CaptionNewConnection;
 			msg = ControlsResources.RctManager_TextNewSessionConnection;
@@ -1789,7 +1810,7 @@ public sealed class RctManager : RunningConnectionTable
 			connectionKey = uniqueDatasetKey;
 		}
 
-		// Tracer.Trace(typeof(RctManager), "ValidateSiteProperties()", "Retrieved ConnectionKey: {0}.", connectionKey ?? "Null");
+		// Evs.Trace(typeof(RctManager), "ValidateSiteProperties()", "Retrieved ConnectionKey: {0}.", connectionKey ?? "Null");
 
 		if (connectionKey != null)
 		{
@@ -1806,23 +1827,23 @@ public sealed class RctManager : RunningConnectionTable
 				site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
 		}
 
-		if (!serverExplorerInsertMode && createNew)
-			rAddInternally = true;
+		if (!serverExplorerInsertMode && createServerExplorerConnection)
+			retAddInternally = true;
 
-		rModifyInternally = changedTargetDatasetKey != null || (!rAddInternally
+		retModifyInternally = changedTargetDatasetKey != null || (!retAddInternally
 			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel);
 
 		// Tag the site as being updated by the edmx wizard if it's not being done internally, which will
 		// use IVsDataConnectionUIProperties.Parse().
 		// We do this because the wizard will attempt to rename the connection and we'll pick it up in
 		// the rct on an IVsDataExplorerConnection.NodeChanged event, and reverse the rename and drop the tag.
-		if (connectionSource == EnConnectionSource.EntityDataModel && !rAddInternally && !rModifyInternally)
+		if (connectionSource == EnConnectionSource.EntityDataModel && !retAddInternally && !retModifyInternally)
 			site["edmu"] = true;
 
 
-		rSuccess = true;
+		retSuccess = true;
 
-		return (rSuccess, rAddInternally, rModifyInternally);
+		return (retSuccess, retAddInternally, retModifyInternally);
 
 	}
 
@@ -1868,7 +1889,7 @@ public sealed class RctManager : RunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	public static void EventConnectionDialogExit()
 	{
-		// Tracer.Trace(typeof(RctManager), "EventConnectionDialogExit()");
+		// Evs.Trace(typeof(RctManager), "EventConnectionDialogExit()");
 
 		lock (_LockGlobal)
 		{

@@ -226,7 +226,7 @@ public class StorageDataReader
 
 	public async Task<bool> ReadAsync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "ReadAsync()", "ASYNC ReadAsync()");
+		// Evs.Trace(GetType(), nameof(ReadAsync), "ASYNC ReadAsync()");
 		if (cancelToken.Cancelled())
 			return false;
 
@@ -294,7 +294,7 @@ public class StorageDataReader
 
 		if (_DbDataReader != null)
 		{
-			// Tracer.Trace(GetType(), "GetSchemaTableAsync()", "ASYNC GetSchemaTableAsync()");
+			// Evs.Trace(GetType(), nameof(GetSchemaTableAsync), "ASYNC GetSchemaTableAsync()");
 
 			try
 			{
@@ -401,7 +401,7 @@ public class StorageDataReader
 
 		string result = new string(array);
 
-		// Tracer.Trace(GetType(), "GetCharsWithMaxCapacity()", "Col: {0}[{1}], maxReturnBytes: {2}, result: {3}.", GetName(iCol), iCol, maxCharsToReturn, result);
+		// Evs.Trace(GetType(), nameof(GetCharsWithMaxCapacity), "Col: {0}[{1}], maxReturnBytes: {2}, result: {3}.", GetName(iCol), iCol, maxCharsToReturn, result);
 
 		return result;
 	}
@@ -554,7 +554,7 @@ public class StorageDataReader
 			result = GetValue(i);
 		}
 
-		// Tracer.Trace(GetType(), "GetSerializedWithMaxCapacity()", "Col: {0}[{1}], maxReturnBytes: {2}, result: {3}.", GetName(i), i, maxReturnBytes, result);
+		// Evs.Trace(GetType(), nameof(GetSerializedWithMaxCapacity), "Col: {0}[{1}], maxReturnBytes: {2}, result: {3}.", GetName(i), i, maxReturnBytes, result);
 
 
 		return result;

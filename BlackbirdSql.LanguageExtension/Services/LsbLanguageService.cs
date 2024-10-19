@@ -84,7 +84,7 @@ public class LsbLanguageService : AbstractLanguageService
 			}
 		}
 
-		// Tracer.Trace(GetType(), "OverrideError()", "StartOffset: {0}, EndOffset: {1}, Ignore: {2}.", startOffset, endOffset, ignore);
+		// Evs.Trace(GetType(), nameof(OverrideError), "StartOffset: {0}, EndOffset: {1}, Ignore: {2}.", startOffset, endOffset, ignore);
 
 		return ignore;
 	}

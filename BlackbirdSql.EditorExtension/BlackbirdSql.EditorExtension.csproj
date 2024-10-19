@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 		<Compile Include="Controls\Config\LiveSettingsDialog.cs" />
+		<Compile Include="Evs.cs" />
 		<Compile Include="Model\Config\ContextSettingsModel.cs" />
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
 		<Compile Include="Controls\ComponentModel\AdvancedFolderNameEditor.cs" />

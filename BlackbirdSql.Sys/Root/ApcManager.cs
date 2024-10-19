@@ -304,7 +304,7 @@ public static class ApcManager
 
 	public static void ShutdownDte()
 	{
-		// Tracer.Trace(typeof(AbstrusePackageController), "ShutdownDte()");
+		// Evs.Trace(typeof(AbstrusePackageController), "ShutdownDte()");
 
 		AbstrusePackageController.ShutdownDte();
 	}

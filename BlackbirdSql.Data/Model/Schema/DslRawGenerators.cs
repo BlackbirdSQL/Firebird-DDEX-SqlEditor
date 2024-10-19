@@ -29,7 +29,7 @@ internal class DslRawGenerators : AbstractDslSchema
 
 	public DslRawGenerators() : base()
 	{
-		// Tracer.Trace(GetType(), "DslRawGenerators.DslRawGenerators");
+		// Evs.Trace(GetType(), "DslRawGenerators.DslRawGenerators");
 	}
 
 
@@ -37,7 +37,7 @@ internal class DslRawGenerators : AbstractDslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslRawGenerators.GetCommandText");
+		// Evs.Trace(GetType(), "DslRawGenerators.GetCommandText");
 
 		var sql = new StringBuilder();
 

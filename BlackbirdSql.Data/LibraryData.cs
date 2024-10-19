@@ -17,7 +17,7 @@ using static BlackbirdSql.SysConstants;
 namespace BlackbirdSql.Data;
 
 // =========================================================================================================
-//											SystemData Class
+//											LibraryData Class
 //
 /// <summary>
 /// System wide and the current data provider (in this case Firebird) specific constants and statics
@@ -68,7 +68,8 @@ public static class LibraryData
 
 
 
-	// Known previous version of FirebirdSql.Data.FirebirdClient that could cause conflicts.
+	// Deprecated. Known previous version of FirebirdSql.Data.FirebirdClient that could cause conflicts.
+	/*
 	public static readonly string[] S_InvariantVersions =
 		[
 			"10.3.1.0", "10.3.0.0", "10.2.0.0", "10.1.0.0", "10.0.0.0", "9.1.1.0", "9.1.0.0", "9.0.2.0",
@@ -82,9 +83,11 @@ public static class LibraryData
 			"3.1.1.0", "3.1.0.0", "3.0.2.1", "3.0.2.0", "3.0.1.0", "3.0.0.0", "2.7.7.0", "2.7.5.0",
 			"2.7.0.0", "2.6.5.0"
 		];
+	*/
 
 
-	// Known previous version of EntityFramework.Firebird that could cause conflicts.
+	// Deprecated. Known previous version of EntityFramework.Firebird that could cause conflicts.
+	/*
 	public static readonly string[] S_EntityFrameworkVersions =
 		[
 			"10.0.1.0", "10.0.0.0", "9.1.1.0", "9.1.0.0", "9.0.2.0", "9.0.1.0", "9.0.0.0", "8.5.4.0",
@@ -96,6 +99,7 @@ public static class LibraryData
 			"4.7.0.0", "4.6.4.0", "4.6.3.0", "4.6.2.0", "4.6.1.0", "4.6.0.0", "4.5.2.0", "4.5.1.0",
 			"4.5.0.0", "4.2.0.0", "4.1.5.0", "4.1.0.0"
 		];
+	*/
 
 
 

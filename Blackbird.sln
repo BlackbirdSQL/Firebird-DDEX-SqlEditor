@@ -45,6 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F6F05A4E-8
 		Docs\int128.md = Docs\int128.md
 		Docs\license.txt = Docs\license.txt
 		Docs\Regex Saved Replaces.txt = Docs\Regex Saved Replaces.txt
+		ReleaseFinalTests.txt = ReleaseFinalTests.txt
 		Docs\services-backup.md = Docs\services-backup.md
 		Docs\time-zones.md = Docs\time-zones.md
 		Docs\Using WPF with EDMX.txt = Docs\Using WPF with EDMX.txt

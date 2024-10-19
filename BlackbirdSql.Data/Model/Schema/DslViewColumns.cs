@@ -29,7 +29,7 @@ internal class DslViewColumns : DslColumns
 
 	public DslViewColumns() : base()
 	{
-		// Tracer.Trace(GetType(), "DslViewColumns.DslViewColumns");
+		// Evs.Trace(GetType(), "DslViewColumns.DslViewColumns");
 
 		_ParentType = "View";
 		_ObjectType = "ViewColumn";

@@ -30,7 +30,7 @@ internal class DslRawTriggerDependencies : AbstractDslSchema
 {
 	public DslRawTriggerDependencies() : base()
 	{
-		// Tracer.Trace(GetType(), "DslRawTriggerDependencies.DslRawTriggerDependencies");
+		// Evs.Trace(GetType(), "DslRawTriggerDependencies.DslRawTriggerDependencies");
 	}
 
 	
@@ -39,7 +39,7 @@ internal class DslRawTriggerDependencies : AbstractDslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslRawTriggerDependencies.GetCommandText");
+		// Evs.Trace(GetType(), "DslRawTriggerDependencies.GetCommandText");
 
 		StringBuilder sql = new ();
 
@@ -86,7 +86,7 @@ LEFT OUTER JOIN rdb$generators fd_gen
 GROUP BY TRIGGER_NAME, SEQUENCE_GENERATOR
 ORDER BY trg.rdb$trigger_name", identityType, generatorSelector, transientRestrictions);
 
-		// Tracer.Trace(sql.ToString());
+		// Evs.Trace(sql.ToString());
 
 		return sql;
 	}

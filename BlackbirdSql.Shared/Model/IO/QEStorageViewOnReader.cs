@@ -35,7 +35,7 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBsQEStorageVie
 		{
 			if (_MaxBytesToDisplay != value)
 			{
-				// Tracer.Trace(GetType(), "QueryExecution", "QEDiskStorageView.MaxNumBytesToDisplay", "value = {0}", value);
+				// Evs.Trace(GetType(), "QueryExecution", "QEDiskStorageView.MaxNumBytesToDisplay", "value = {0}", value);
 				_MaxBytesToDisplay = value;
 				_SbWork.Capacity = _MaxBytesToDisplay * C_ColumnSizeIndex + C_ColumnSizeIndex;
 			}
@@ -46,7 +46,7 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBsQEStorageVie
 
 	public QEStorageViewOnReader(QEReaderDataStorage readerDataStorage)
 	{
-		// Tracer.Trace(GetType(), "QEStorageViewOnReader.QEStorageViewOnReader", "", null);
+		// Evs.Trace(GetType(), "QEStorageViewOnReader.QEStorageViewOnReader", "", null);
 		_QeReaderStorage = readerDataStorage;
 		_StorageReader = readerDataStorage.StorageReader;
 		int num = readerDataStorage.ColumnCount;

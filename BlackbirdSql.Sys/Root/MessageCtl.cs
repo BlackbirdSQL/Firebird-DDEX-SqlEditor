@@ -641,7 +641,7 @@ public class MessageCtl
 
 	private void OnMessageBoxShown(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnMessageBoxShown()");
+		// Evs.Trace(GetType(), nameof(OnMessageBoxShown));
 		_OnMessageBoxShownEvent?.Invoke(sender, e);
 	}
 

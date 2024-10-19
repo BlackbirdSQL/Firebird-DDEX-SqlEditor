@@ -36,7 +36,7 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 
 	public AbstractSettingsPage() : base()
 	{
-		// Tracer.Trace(GetType(), ".ctor");
+		Evs.Trace(typeof(AbstractSettingsPage<T>), ".ctor");
 	}
 
 
@@ -93,10 +93,7 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 			foreach (Attribute customAttribute in property.PropertyType.GetCustomAttributes())
 			{
 				if (customAttribute is DefaultValueAttribute defaultAttr)
-				{
-					// Tracer.Trace($"Getting default for {property.Name}: {defaultAttr.Value}.");
 					return defaultAttr.Value;
-				}
 			}
 			return null;
 		}

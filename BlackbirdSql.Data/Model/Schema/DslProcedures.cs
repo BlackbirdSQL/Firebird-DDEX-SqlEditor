@@ -26,11 +26,17 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslProcedures : AbstractDslSchema
 {
+	internal DslProcedures() : base()
+	{
+	}
+
+
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslProcedures.GetCommandText");
+		// Evs.Trace(GetType(), "DslProcedures.GetCommandText");
 
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
@@ -90,7 +96,7 @@ internal class DslProcedures : AbstractDslSchema
 
 	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "DslProcedures.ProcessResult");
+		// Evs.Trace(GetType(), "DslProcedures.ProcessResult");
 
 		schema.BeginLoadData();
 

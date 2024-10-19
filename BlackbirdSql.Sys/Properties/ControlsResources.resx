@@ -258,4 +258,10 @@
   <data name="PrivacyConfirmationDialog_ProductVersion" xml:space="preserve">
     <value>Product Version</value>
   </data>
+  <data name="ReindexAssemblies_All" xml:space="preserve">
+    <value>All Projects</value>
+  </data>
+  <data name="ReindexAssemblies_ProjectName" xml:space="preserve">
+    <value>Project : {0}</value>
+  </data>
 </root>

@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+
+	<!--
+	Mapped object types used by the IDE built-in commands
+	_____________________________________________________
+	Unable to locate any documentation re required mappings so we're placing every conceivable
+	mapping property in here including all SqlServer object types' properties or their respectve
+	mapping types' properties
+
+	NOTE: filter only applies to dsref operations
+	-->
+
+	<Define name="TplMappedTypeColumn" parameters="mappedType, underlyingType, advancedType, selectRestrictions, selectFilter, tag" >
+		<MappedType name="$(mappedType)" underlyingType="$(underlyingType)">
+			<Selection restrictions="$(selectRestrictions)" filter="$(selectFilter)" />
+			<Identifier>
+				<!-- Bookmark -->
+				<!-- TplMappedIdentifierList$(mappedType)() -->
+				<PartListRef name="TplMappedIdentifierList$(mappedType)" arguments="$(tag)"/>
+			</Identifier>
+			<Properties>
+				<PropertyListRef name="TplMappedPropertyList$(mappedType)" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="Id" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="Description" underlyingMember="DESCRIPTION" />
+				<Property name="Collation" underlyingMember="COLLATION_NAME" />
+				<Property name="CharacterSet" underlyingMember="CHARACTER_SET_NAME" />
+				<Property name="Domain" underlyingMember="DOMAIN_NAME" />
+				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
+				<Property name="IsComputed" underlyingMember="IS_COMPUTED" />
+				<Property name="Expression" underlyingMember="EXPRESSION" />
+				<Property name="Length" underlyingMember="FIELD_SIZE" />
+				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
+				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
+				<Property name="NativeDataType" underlyingMember="FIELD_DATA_TYPE" />
+				<Property name="AdoDotNetDataType" underlyingMember="FIELD_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="AdoDotNetDbType" underlyingMember="FIELD_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="FrameworkDataType" underlyingMember="FIELD_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<PropertyListRef name="TplMappedPropertyList$(advancedType)Column" />
+			</Properties>
+		</MappedType>
+	</Define>
+
+	<Define name="TplMappedTypeIndex" parameters="mappedType, selectFilter" >
+		<MappedType name="$(mappedType)" underlyingType="Index">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="$(selectFilter)" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="Name" underlyingMember="INDEX_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
+				<Property name="IsDescending" underlyingMember="IS_DESCENDING" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
+						<Calculate expr="false" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+				<Property name="IsDisabled" underlyingMember="IS_INACTIVE" />
+				<Property name="IsClustered" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<!-- Set to always false. No clustered indexes in Firebird. -->
+						<Calculate expr="false" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+				<Property name="IsFullTextKey" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<!-- Set to always false. No full text indexes in Firebird. -->
+						<Calculate expr="false" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+				<Property name="IsXmlIndex" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<!-- Set to always false. No xml indexes in Firebird. -->
+						<Calculate expr="false" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+	</Define>
+
+
+
+</DataObjectSupport>

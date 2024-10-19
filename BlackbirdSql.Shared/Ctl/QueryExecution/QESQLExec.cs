@@ -43,7 +43,7 @@ public class QESQLExec : AbstractQESQLExec
 
 	protected override bool Dispose(bool disposing)
 	{
-		// Tracer.Trace(GetType(), "Dispose(bool)", "disposing: {0}", disposing);
+		// Evs.Trace(GetType(), "Dispose(bool)", "disposing: {0}", disposing);
 
 		if (!base.Dispose(disposing))
 			return false;
@@ -147,7 +147,7 @@ public class QESQLExec : AbstractQESQLExec
 
 	private void CloseCurrentConnIfNeeded()
 	{
-		// Tracer.Trace(GetType(), "CloseCurrentConnIfNeeded()");
+		// Evs.Trace(GetType(), nameof(CloseCurrentConnIfNeeded));
 		try
 		{
 			if (_CurrentConn == null || _CurrentConn == _Conn || _CurrentConn.State != ConnectionState.Open)
@@ -186,7 +186,7 @@ public class QESQLExec : AbstractQESQLExec
 	protected override async Task<EnScriptExecutionResult> ExecuteBatchStatementAsync(QESQLBatch batch,
 		CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "ExecuteBatchStatementAsync()", " _ExecOptions.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
+		// Evs.Trace(GetType(), nameof(ExecuteBatchStatementAsync), " _ExecOptions.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
 
 		if (batch.SqlStatement == null)
 			return EnScriptExecutionResult.Success;
@@ -254,7 +254,7 @@ public class QESQLExec : AbstractQESQLExec
 	private async Task<bool> ProcessBatchStatementAsync(IBsNativeDbStatementWrapper sqlStatement,
 	CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "ProcessBatchStatementAsync()", " ExecLiveSettings.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
+		// Evs.Trace(GetType(), nameof(ProcessBatchStatementAsync), " ExecLiveSettings.EstimatedPlanOnly: " + ExecLiveSettings.EstimatedPlanOnly);
 
 		bool continueProcessing = true;
 
@@ -301,7 +301,7 @@ public class QESQLExec : AbstractQESQLExec
 			{
 				lock (_LockObject)
 				{
-					// Tracer.Trace(GetType(), "ProcessBatchStatementAsync()", "execState = {0}", _ExecState);
+					// Evs.Trace(GetType(), nameof(ProcessBatchStatementAsync), "execState = {0}", _ExecState);
 					if (cancelToken.Cancelled() || _AsyncExecState == EnLauncherPayloadLaunchState.Discarded)
 					{
 						scriptExecutionResult = EnScriptExecutionResult.Cancel;
@@ -354,7 +354,7 @@ public class QESQLExec : AbstractQESQLExec
 
 	protected override void HookupBatchConsumer(QESQLBatch batch, IBsQESQLBatchConsumer batchConsumer)
 	{
-		// Tracer.Trace(GetType(), "HookupBatchConsumer()");
+		// Evs.Trace(GetType(), nameof(HookupBatchConsumer));
 
 		if (batch == null || batchConsumer == null || _Hooked)
 			return;
@@ -384,7 +384,7 @@ public class QESQLExec : AbstractQESQLExec
 
 	private void OnBatchStatementCompleted(object sender, BatchStatementCompletedEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnBatchStatementCompleted()", "sender: {0}, args.RecordCount: {1}", sender, args.RecordCount);
+		// Evs.Trace(GetType(), nameof(OnBatchStatementCompleted), "sender: {0}, args.RecordCount: {1}", sender, args.RecordCount);
 
 		// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
 		BatchStatementCompletedEvent?.Invoke(sender, args);
@@ -395,7 +395,7 @@ public class QESQLExec : AbstractQESQLExec
 	private async Task RaiseBatchExecutionCompletedAsync(QESQLBatch batch, EnScriptExecutionResult batchResult,
 		CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "OnBatchExecutionCompletedAsync()", "m_curBatchIndex = {0}, batchResult = {1}, _ExecState = {2}", _CurBatchIndex, batchResult, _ExecState);
+		// Evs.Trace(GetType(), nameof(OnBatchExecutionCompletedAsync), "m_curBatchIndex = {0}, batchResult = {1}, _ExecState = {2}", _CurBatchIndex, batchResult, _ExecState);
 		if (BatchExecutionCompletedEventAsync != null)
 		{
 			EnSqlExecutionType executionType = EnSqlExecutionType.QueryOnly;
@@ -417,7 +417,7 @@ public class QESQLExec : AbstractQESQLExec
 
 	private void RaiseBatchExecutionStart(QESQLBatch batch)
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.OnStartBatchExecution", "m_curBatchIndex = {0}", _CurBatchIndex);
+		// Evs.Trace(GetType(), "QESQLExec.OnStartBatchExecution", "m_curBatchIndex = {0}", _CurBatchIndex);
 		BatchExecutionStartEvent?.Invoke(this, new BatchExecutionStartEventArgs(-1, batch));
 	}
 
@@ -426,7 +426,7 @@ public class QESQLExec : AbstractQESQLExec
 	protected override async Task<bool> RaiseExecutionCompletedAsync(EnScriptExecutionResult execResult, bool launched,
 		CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "OnExecutionCompletedAsync()", "execResult = {0}", execResult);
+		// Evs.Trace(GetType(), nameof(OnExecutionCompletedAsync), "execResult = {0}", execResult);
 
 		try
 		{
@@ -450,7 +450,7 @@ public class QESQLExec : AbstractQESQLExec
 
 	private void UnhookBatchConsumer(QESQLBatch batch, IBsQESQLBatchConsumer batchConsumer)
 	{
-		// Tracer.Trace(GetType(), "UnhookBatchConsumer()");
+		// Evs.Trace(GetType(), nameof(UnhookBatchConsumer));
 
 		if (batch == null || batchConsumer == null || !_Hooked)
 			return;

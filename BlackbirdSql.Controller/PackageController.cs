@@ -186,13 +186,13 @@ public sealed class PackageController : AbstractPackageController
 		if (!RdtManager.ServiceAvailable)
 			Diag.ThrowException(new NullReferenceException(Resources.ExceptionIVsRunningDocumentTableIsNull));
 
-		// Tracer.Trace(GetType(), "AdviseUnsafeEventsImpl()", "ProjectItemsEvents.");
+		// Evs.Debug(GetType(), "AdviseUnsafeEventsImpl()", "ProjectItemsEvents.");
 
 		if (!_EventsAdvisedUnsafe)
 		{
 			_EventsAdvisedUnsafe = true;
 
-			// Tracer.Trace(GetType(), "AdviseUnsafeEventsImpl()", "SolutionEvents.");
+			// Evs.Debug(GetType(), "AdviseUnsafeEventsImpl()", "SolutionEvents.");
 
 			// Enable solution event capture
 			VsSolution.AdviseSolutionEvents(this, out _HSolutionEvents);
@@ -241,7 +241,7 @@ public sealed class PackageController : AbstractPackageController
 		{
 			List<Project> projects = UnsafeCmd.RecursiveGetDesignTimeProjects();
 
-			// Tracer.Trace(GetType(), "RegisterProjectEventHandlersImpl()", "Adding event handlers for {0} EF projects", projects.Count);
+			Evs.Trace(GetType(), nameof(RegisterProjectEventHandlersImpl), $"Adding event handlers for {projects.Count} EF projects");
 
 			foreach (Project project in projects)
 				AddProjectEventHandlers(project);

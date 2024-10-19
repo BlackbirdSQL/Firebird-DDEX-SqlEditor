@@ -141,7 +141,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	static TextOrFileBatchConsumer()
 	{
-		// Tracer.Trace(typeof(TextOrFileBatchConsumer), "static TextOrFileBatchConsumer.TextOrFileBatchConsumer", "", null);
+		// Evs.Trace(typeof(TextOrFileBatchConsumer), "static TextOrFileBatchConsumer.TextOrFileBatchConsumer", "", null);
 		_TypeToCharNumHashTable = new Hashtable
 		{
 			{ "SYSTEM.INT16", short.MinValue.ToString(CultureInfo.InvariantCulture).Length }
@@ -202,7 +202,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 	public TextOrFileBatchConsumer(IBsQueryExecutionHandler resultsControl)
 		: base(resultsControl)
 	{
-		// Tracer.Trace(GetType(), "TextOrFileBatchConsumer.TextOrFileBatchConsumer", "", null);
+		// Evs.Trace(GetType(), "TextOrFileBatchConsumer.TextOrFileBatchConsumer", "", null);
 		_MoreRowsAvailableEventAsync = OnMoreRowsAvailableAsync;
 	}
 
@@ -228,7 +228,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	public override void Cleanup()
 	{
-		// Tracer.Trace(GetType(), "Cleanup()");
+		// Evs.Trace(GetType(), nameof(Cleanup));
 		base.Cleanup();
 		_Results.Clear();
 		_MaxColSizes.Clear();
@@ -251,7 +251,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	private void CreateColumnWidthsAndFormatStrings()
 	{
-		// Tracer.Trace(GetType(), "TextOrFileBatchConsumer.CreateColumnWidthsAndFormatStrings", "", null);
+		// Evs.Trace(GetType(), "TextOrFileBatchConsumer.CreateColumnWidthsAndFormatStrings", "", null);
 		_ColumnWidths = new int[_ResultSet.NumberOfDataColumns];
 
 		string dateFormat = "yyyy-MM-dd HH:mm:ss.fffffff";
@@ -384,7 +384,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	private void HookupWithEvents(bool bSubscribe)
 	{
-		// Tracer.Trace(GetType(), "HookupWithEvents()", "bSubscribe = {0}", bSubscribe);
+		// Evs.Trace(GetType(), nameof(HookupWithEvents), "bSubscribe = {0}", bSubscribe);
 		if (bSubscribe)
 		{
 			_ResultSet.MoreRowsAvailableEventAsync += _MoreRowsAvailableEventAsync;
@@ -399,7 +399,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	private void OutputColumnNames()
 	{
-		// Tracer.Trace(GetType(), "TextOrFileBatchConsumer.OutputColumnNames", "", null);
+		// Evs.Trace(GetType(), "TextOrFileBatchConsumer.OutputColumnNames", "", null);
 		_RowBuilder.Length = 0;
 		int num;
 		for (num = 0; num < _ResultSet.ColumnNames.Count; num++)
@@ -455,7 +455,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	private void OutputRow(string[] row, bool flush)
 	{
-		// Tracer.Trace(GetType(), "TextOrFileBatchConsumer.OnMoreRowsAvailable", "NewRows = {0}, AllData = {1}", a.NewRowsNumber, a.AllRows);
+		// Evs.Trace(GetType(), "TextOrFileBatchConsumer.OnMoreRowsAvailable", "NewRows = {0}, AllData = {1}", a.NewRowsNumber, a.AllRows);
 
 		_RowBuilder.Length = 0;
 		for (int i = 0; i < _ColumnCount; i++)
@@ -496,7 +496,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 			}
 		}
 
-		// Tracer.Trace(GetType(), "OnMoreRowsAvailable", "Row string: {0}", _RowBuilder.ToString());
+		// Evs.Trace(GetType(), "OnMoreRowsAvailable", "Row string: {0}", _RowBuilder.ToString());
 
 		_ResultsControl.AddStringToResults(_RowBuilder.ToString(), flush);
 
@@ -516,7 +516,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	private async Task<bool> OnMoreRowsAvailableAsync(object sender, MoreRowsAvailableEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnMoreRowsAvailable()", "_ColumnCount: {0}, _MaxColSizes.Count: {1}", _ColumnCount, _MaxColSizes.Count);
+		// Evs.Trace(GetType(), nameof(OnMoreRowsAvailable), "_ColumnCount: {0}, _MaxColSizes.Count: {1}", _ColumnCount, _MaxColSizes.Count);
 
 		if (args.CancelToken.Cancelled())
 			return await Task.FromResult(false);
@@ -575,7 +575,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 		_Results.Add(new KeyValuePair<string[], bool>(row, flush));
 
-		// Tracer.Trace(GetType(), "OnMoreRowsAvailable", "Row string: {0}", _RowBuilder.ToString());
+		// Evs.Trace(GetType(), "OnMoreRowsAvailable", "Row string: {0}", _RowBuilder.ToString());
 
 		return !args.CancelToken.Cancelled();
 	}
@@ -584,7 +584,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	public override async Task<bool> OnNewResultSetAsync(object sender, BatchNewResultSetEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "TextOrFileBatchConsumer.OnNewResultSet", "", null);
+		// Evs.Trace(GetType(), "TextOrFileBatchConsumer.OnNewResultSet", "", null);
 		Cleanup();
 
 		await args.ResultSet.InitializeAsync(true, args.CancelToken);
@@ -616,7 +616,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	public override void OnFinishedProcessingResultSet(object sender, EventArgs args)
 	{
-		// Tracer.Trace(GetType(), "OnFinishedProcessingResultSet()");
+		// Evs.Trace(GetType(), nameof(OnFinishedProcessingResultSet));
 
 		_ResultsControl.AddResultSetSeparatorMsg();
 
@@ -628,7 +628,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 
 	public override void OnCancelling(object sender, EventArgs args)
 	{
-		// Tracer.Trace(GetType(), "TextOrFileBatchConsumer.OnCancelling", "", null);
+		// Evs.Trace(GetType(), "TextOrFileBatchConsumer.OnCancelling", "", null);
 		base.OnCancelling(sender, args);
 	}
 

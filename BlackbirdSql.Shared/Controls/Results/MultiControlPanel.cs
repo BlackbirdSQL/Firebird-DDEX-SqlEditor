@@ -97,7 +97,7 @@ public sealed class MultiControlPanel : Panel
 		}
 		set
 		{
-			// Tracer.Trace(GetType(), "MultiControlPanel.HostedControlsMinInitialSize", "value = {0}", value);
+			// Evs.Trace(GetType(), "MultiControlPanel.HostedControlsMinInitialSize", "value = {0}", value);
 			hostedControlsMinInitialSize = value;
 		}
 	}
@@ -110,7 +110,7 @@ public sealed class MultiControlPanel : Panel
 		}
 		set
 		{
-			// Tracer.Trace(GetType(), "MultiControlPanel.HostedControlsMinSize", "value = {0}", value);
+			// Evs.Trace(GetType(), "MultiControlPanel.HostedControlsMinSize", "value = {0}", value);
 			hostedControlsMinSize = value;
 		}
 	}
@@ -131,7 +131,7 @@ public sealed class MultiControlPanel : Panel
 
 	public MultiControlPanel()
 	{
-		// Tracer.Trace(GetType(), "MultiControlPanel.MultiControlPanel", "", null);
+		// Evs.Trace(GetType(), "MultiControlPanel.MultiControlPanel", "", null);
 		AutoScroll = true;
 		Clear();
 	}
@@ -162,7 +162,7 @@ public sealed class MultiControlPanel : Panel
 
 	public void AddControl(Control controlToHost, bool limitMaxControlHeightToClientArea)
 	{
-		// Tracer.Trace(GetType(), "MultiControlPanel.AddControl", "", null);
+		// Evs.Trace(GetType(), "MultiControlPanel.AddControl", "", null);
 		if (controlToHost == null)
 		{
 			Exception ex = new ArgumentNullException("controlToHost");
@@ -265,7 +265,7 @@ public sealed class MultiControlPanel : Panel
 
 	private QESplitter AllocateNewSplitter(Control boundControl, int minSize)
 	{
-		// Tracer.Trace(GetType(), "MultiControlPanel.AllocateNewSplitter", "minSize = {0}", minSize);
+		// Evs.Trace(GetType(), "MultiControlPanel.AllocateNewSplitter", "minSize = {0}", minSize);
 		QESplitter qESplitter = new QESplitter(boundControl, minSize)
 		{
 			BackColor = SystemColors.Control
@@ -276,7 +276,7 @@ public sealed class MultiControlPanel : Panel
 
 	public void ResizeControls(bool usePreferredSize, bool limitMaxControlHeightToClientArea)
 	{
-		// Tracer.Trace(GetType(), "MultiControlPanel.ResizeControls", "", null);
+		// Evs.Trace(GetType(), "MultiControlPanel.ResizeControls", "", null);
 		int count = hostPanel.Controls.Count;
 		switch (count)
 		{
@@ -333,11 +333,11 @@ public sealed class MultiControlPanel : Panel
 		/*
 		if (usePreferredSize)
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control heights = {1}, adjustment = {2}", count, IntArrayToString(array), num2);
+			// Evs.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control heights = {1}, adjustment = {2}", count, IntArrayToString(array), num2);
 		}
 		else
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control height = {1}", count, hostedControlsMinInitialSize + num2);
+			// Evs.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control height = {1}", count, hostedControlsMinInitialSize + num2);
 		}
 		*/
 

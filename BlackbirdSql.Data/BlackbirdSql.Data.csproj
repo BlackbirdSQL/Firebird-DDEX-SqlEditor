@@ -21,6 +21,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Include="Evs.cs" />
 	  <Compile Include="Ctl\LinkageParserTaskHandler.cs" />
 	  <Compile Include="Properties\ControlsResources.Designer.cs">
 	    <DependentUpon>ControlsResources.resx</DependentUpon>
@@ -30,7 +31,7 @@
 	  <Compile Include="Root\DatabaseInfoService.cs" />
 	  <Compile Include="Ctl\StringParser.cs" />
 	  <Compile Include="Root\DatabaseEngineService.cs" />
-	  <Compile Include="Root\DataConstants.cs" />
+	  <Compile Include="DataConstants.cs" />
 	  <Compile Include="Root\DbExceptionService.cs" />
 	  <Compile Include="Root\DbServerExplorerService.cs" />
 	  <Compile Include="Root\ExtensionMembers.cs" />

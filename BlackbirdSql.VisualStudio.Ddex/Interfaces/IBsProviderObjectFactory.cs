@@ -13,7 +13,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Interfaces;
 
 
 /// <summary>
-/// Placeholder interface for TProviderObjectFactory.
+/// Placeholder interface for VxbProviderObjectFactory.
 /// </summary>
 public interface IBsProviderObjectFactory
 {

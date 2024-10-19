@@ -573,7 +573,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 
 	public bool SetDatasetKeyOnConnection(string selectedQualifiedName)
 	{
-		// Tracer.Trace(GetType(), "SetDatasetKeyOnConnection()", "selectedDatasetKey: {0}, ConnectionString: {1}.", selectedDatasetKey, csb.ConnectionString);
+		// Evs.Trace(GetType(), nameof(SetDatasetKeyOnConnection), "selectedDatasetKey: {0}, ConnectionString: {1}.", selectedDatasetKey, csb.ConnectionString);
 
 		lock (_LockObject)
 		{

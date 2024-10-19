@@ -24,7 +24,7 @@ internal class DslFunctionArguments : DslColumns
 {
 	public DslFunctionArguments() : base()
 	{
-		// Tracer.Trace(GetType(), "DslFunctionArguments.DslFunctionArguments");
+		// Evs.Trace(GetType(), "DslFunctionArguments.DslFunctionArguments");
 
 		string packageName;
 
@@ -43,19 +43,24 @@ internal class DslFunctionArguments : DslColumns
 		}
 
 		_ParentType = "Function";
-		_ObjectType = "ScalarFunctionParameter";
+		_ObjectType = "FunctionParameter";
 		_ParentColumn = "r.rdb$function_name";
 		_ChildColumn = "r.rdb$argument_name";
 		_GeneratorSelector = null;
 		_OrderingField = "r.rdb$function_name";
 		_FromClause = "rdb$function_arguments r";
 
+
 		_RequiredColumns["ORDINAL_POSITION"] = "r.rdb$argument_position";
+		// Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL
+		_RequiredColumns["DIRECTION_FLAG"] = "(CASE WHEN r.rdb$argument_position = 0 THEN 6 ELSE 0 END)";
 
 		_AdditionalColumns.Add("FUNCTION_CATALOG", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("FUNCTION_SCHEMA", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("FUNCTION_NAME", new("r.rdb$function_name", "varchar(50)"));
-		_AdditionalColumns.Add("ARGUMENT_NAME", new("r.rdb$argument_name", "varchar(50)"));
+		_AdditionalColumns.Add("ARGUMENT_NAME",
+			new("(CASE WHEN r.rdb$argument_name IS NULL THEN '' ELSE r.rdb$argument_name END)", "varchar(50)"));
+
 		_AdditionalColumns.Add("PSEUDO_NAME",
 			new("(CASE WHEN r.rdb$argument_name IS NULL THEN '@RETURN_VALUE' ELSE r.rdb$argument_name END)", "varchar(50)"));
 		_AdditionalColumns.Add("PACKAGE_NAME", new(packageName, "varchar(10)"));

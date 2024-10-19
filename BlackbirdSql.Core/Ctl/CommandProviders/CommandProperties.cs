@@ -104,7 +104,8 @@ public static class CommandProperties
 	public static CommandID NewDesignerQuery = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdNewDesignerQuery);
 	public static CommandID ShowAddTableDialog = new CommandID(new Guid(VS.DavCommandSetGuid), C_CmdIdAddTableViewForQRY);
 	public static CommandID OpenTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenTextObject);
-	public static CommandID OpenAlterTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenAlterTextObject);
+	public static CommandID CreateTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdCreateTextObject);
+	public static CommandID AlterTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdAlterTextObject);
 	public static CommandID OverrideRetrieveDataLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), C_CmdIdSERetrieveData);
 	public static CommandID RetrieveDesignerData = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdRetrieveDesignerData);
 	public static CommandID TraceRct = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdTraceRct);

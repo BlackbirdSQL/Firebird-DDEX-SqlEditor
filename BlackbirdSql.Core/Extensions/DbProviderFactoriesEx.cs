@@ -240,7 +240,7 @@ public static class DbProviderFactoriesEx
 	// ---------------------------------------------------------------------------------
 	public static bool InvalidatedProviderFactoryRecovery()
 	{
-		// Tracer.Trace(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()");
+		Evs.Trace(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()");
 
 		if (!PersistentSettings.ValidateProviderFactories)
 			return true;
@@ -321,8 +321,8 @@ public static class DbProviderFactoriesEx
 
 					// if (firstCycle)
 					// {
-					// Tracer.Trace(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()",
-					//	"Verifying Invariant: {0}, Guid: {1}.", invariant, pair.Key);
+					//	Evs.Debug(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()",
+					//		$"Verifying Invariant: {invariant}, Guid: {pair.Key}.");
 					// }
 
 
@@ -350,7 +350,7 @@ public static class DbProviderFactoriesEx
 
 					if (firstCycle)
 					{
-						// Tracer.Warning(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()", "\n\tBad Invariant: {0}. Attempting recovery...", invariant);
+						// Evs.Warning(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()", "\n\tBad Invariant: {0}. Attempting recovery...", invariant);
 
 						if (badCount == 0)
 						{
@@ -392,7 +392,7 @@ public static class DbProviderFactoriesEx
 							RegisterAssemblyDirect(invariant, factoryName, factoryDescription, assemblyQualifiedName);
 							remainingProviders.Remove(pair.Key);
 
-							// Tracer.Warning(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()",
+							// Evs.Warning(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()",
 							//	"\n\tRecovered invariant '{0}' using {1} removal after {2}.", invariant,
 							//	directRemoval ? "direct" : "ConfigurationManager",
 							//	dataRow == null ? "failed ConfigurationManager registration" : "being invalidated");
@@ -448,7 +448,7 @@ public static class DbProviderFactoriesEx
 					}
 				}
 
-				// Tracer.Warning(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()",
+				// Evs.Warning(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()",
 				//	"\n\tProvider recovery - Bad invariants: {0}, Recovered invariants: {1}, Total recovery time: {2}ms.",
 				//	badCount, badCount - remainingProviders.Count, stopwatch.ElapsedMilliseconds);
 

@@ -148,7 +148,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 
 	protected void OnCopy(object sender, EventArgs a)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.OnCopy", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.OnCopy", "", null);
 		GridControl focusedGrid = FocusedGrid;
 		if (focusedGrid != null)
 		{
@@ -166,7 +166,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 
 	protected void OnCopyWithHeaders(object sender, EventArgs a)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.OnCopyWithHeaders", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.OnCopyWithHeaders", "", null);
 		GridControl focusedGrid = FocusedGrid;
 		if (focusedGrid == null)
 		{
@@ -202,7 +202,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 
 	protected void OnPrint(object sender, EventArgs a)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.OnPrint", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.OnPrint", "", null);
 		PrintDialog printDialog = new()
 		{
 			Document = CurrentGridPrintDocument
@@ -223,7 +223,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 
 	protected void OnPrintPageSetup(object sender, EventArgs a)
 	{
-		// Tracer.Trace(GetType(), "GridResultsTabPanel.OnPrintPageSetup", "", null);
+		// Evs.Trace(GetType(), "GridResultsTabPanel.OnPrintPageSetup", "", null);
 		try
 		{
 			PageSetupDialog pageSetupDialog = new PageSetupDialog();

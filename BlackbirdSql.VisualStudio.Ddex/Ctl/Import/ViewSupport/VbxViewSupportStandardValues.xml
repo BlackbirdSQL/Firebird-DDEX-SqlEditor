@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataViewSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataViewSupport">
+
+	<!-- Standard Values definitions -->
+
+	<!-- Standard values lists -->
+	<!-- These must still be defined in .resx for multilingual -->
+
+	<!-- Data type standard values list -->
+
+	<Define name="TplStandardValuesInverseBoolean" >
+		<StandardValues>
+			<StandardValue value="false" resource="Property_Value_Boolean_False" />
+			<StandardValue value="true" resource="Property_Value_Boolean_True" />
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesInverseOrdinalBoolean" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_Boolean_True" />
+			<StandardValue value="1" resource="Property_Value_Boolean_False" />
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesOrdinalBoolean" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_Boolean_False" />
+			<StandardValue value="1" resource="Property_Value_Boolean_True" />
+		</StandardValues>
+	</Define>
+
+
+	
+	<Define name="TplStandardValuesColumnDataType" >
+		<!-- Mostly c based. c is in English -->
+		<StandardValues>
+			<StandardValue value="array">Array</StandardValue>
+			<StandardValue value="bigint">BigInt</StandardValue>
+			<StandardValue value="blob">Blob</StandardValue>
+			<StandardValue value="blob sub_type 1">BlobText</StandardValue>
+			<StandardValue value="boolean">Boolean</StandardValue>
+			<StandardValue value="char">Char/Guid</StandardValue>
+			<StandardValue value="date">Date</StandardValue>
+			<StandardValue value="decfloat">DecimalFloat</StandardValue>
+			<StandardValue value="decimal">Decimal</StandardValue>
+			<StandardValue value="double precision">Double</StandardValue>
+			<StandardValue value="float">Float</StandardValue>
+			<StandardValue value="integer">Integer</StandardValue>
+			<StandardValue value="int128">Int128</StandardValue>
+			<StandardValue value="numeric">Numeric</StandardValue>
+			<StandardValue value="smallint">SmallInt</StandardValue>
+			<StandardValue value="time">Time</StandardValue>
+			<StandardValue value="timestamp">TimeStamp</StandardValue>
+			<StandardValue value="timestamp with time zone">TimeStampTZ</StandardValue>
+			<StandardValue value="time with time zone">TimeTZ</StandardValue>
+			<StandardValue value="varchar">VarChar</StandardValue>
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesForeignKeyRule" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_ForeignKeyRule_NoAction" />
+			<StandardValue value="1" resource="Property_Value_ForeignKeyRule_Cascade" />
+			<StandardValue value="2" resource="Property_Value_ForeignKeyRule_SetNull" />
+			<StandardValue value="3" resource="Property_Value_ForeignKeyRule_SetDefault" />
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesFunctionSystemType" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_FunctionType_User" />
+			<StandardValue value="1" resource="Property_Value_FunctionType_System" />
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesIndexSystemType" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_IndexType_User" />
+			<StandardValue value="1" resource="Property_Value_IndexType_System" />
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesProcedureSystemType" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_ProcedureType_User" />
+			<StandardValue value="1" resource="Property_Value_ProcedureType_System" />
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesServerType" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_ServerType_Default" />
+			<StandardValue value="1" resource="Property_Value_ServerType_Embedded" />
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesTableSystemType" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_TableType_User" />
+			<StandardValue value="1" resource="Property_Value_TableType_System" />
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesTriggerEventType" >
+		<StandardValues>
+			<StandardValue value="1" resource="Property_Value_TriggerEventType_BeforeInsert" />
+			<StandardValue value="2" resource="Property_Value_TriggerEventType_AfterInsert" />
+			<StandardValue value="3" resource="Property_Value_TriggerEventType_BeforeUpdate" />
+			<StandardValue value="4" resource="Property_Value_TriggerEventType_AfterUpdate" />
+			<StandardValue value="5" resource="Property_Value_TriggerEventType_BeforeDelete" />
+			<StandardValue value="6" resource="Property_Value_TriggerEventType_AfterDelete" />
+			<StandardValue value="17" resource="Property_Value_TriggerEventType_BeforeInsertUpdate" />
+			<StandardValue value="18" resource="Property_Value_TriggerEventType_AfterInsertUpdate" />
+			<StandardValue value="25" resource="Property_Value_TriggerEventType_BeforeInsertDelete" />
+			<StandardValue value="26" resource="Property_Value_TriggerEventType_AfterInsertDelete" />
+			<StandardValue value="27" resource="Property_Value_TriggerEventType_BeforeUpdateDelete" />
+			<StandardValue value="28" resource="Property_Value_TriggerEventType_AfterUpdateDelete" />
+			<StandardValue value="113" resource="Property_Value_TriggerEventType_BeforeInsertUpdateDelete" />
+			<StandardValue value="114" resource="Property_Value_TriggerEventType_AfterInsertUpdateDelete" />
+			<StandardValue value="8192" resource="Property_Value_TriggerEventType_OnConnect" />
+			<StandardValue value="8193" resource="Property_Value_TriggerEventType_OnDisconnect" />
+			<StandardValue value="8194" resource="Property_Value_TriggerEventType_OnTransactionBegin" />
+			<StandardValue value="8195" resource="Property_Value_TriggerEventType_OnTransactionCommit" />
+			<StandardValue value="8196" resource="Property_Value_TriggerEventType_OnTransactionRollback" />
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesViewSystemType" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_ViewType_User" />
+			<StandardValue value="1" resource="Property_Value_ViewType_System" />
+		</StandardValues>
+	</Define>
+
+</DataViewSupport>

@@ -4,8 +4,8 @@
 using System.ComponentModel;
 using System.Drawing.Design;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
+using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
@@ -33,7 +33,7 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 	// ---------------------------------------------------------------------------------
 
 
-	public DebugSettingsModel(IBsTransientSettings transientSettings)
+	public DebugSettingsModel(IBsSettingsProvider transientSettings)
 		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 
@@ -76,6 +76,37 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 
 
 
+
+	[TypeConverter(typeof(GlobalEnumConverter))]
+	public enum EnGlobalizedSourceLevels
+	{
+		[GlobalizedRadio("EnSourceLevels_Off")]
+		Off = 0,
+		[GlobalizedRadio("EnSourceLevels_Critical")]
+		Critical = 1,
+		[GlobalizedRadio("EnSourceLevels_Error")]
+		Error = 3,
+		[GlobalizedRadio("EnSourceLevels_Warning")]
+		Warning = 7,
+		[GlobalizedRadio("EnSourceLevels_Information")]
+		Information = 0xF,
+		[GlobalizedRadio("EnSourceLevels_TraceOnly")]
+		TraceOnly = 0x10,
+		[GlobalizedRadio("EnSourceLevels_DebugOnly")]
+		DebugOnly = 0x20,
+		[GlobalizedRadio("EnSourceLevels_TraceDebug")]
+		TraceDebug = 0x30,
+		[GlobalizedRadio("EnSourceLevels_Verbose")]
+		Verbose = 0x1F,
+		[GlobalizedRadio("EnSourceLevels_ActivityTracing")]
+		ActivityTracing = 0xFF00,
+		[GlobalizedRadio("EnSourceLevels_All")]
+		All = 0xFFFF
+	}
+
+
+
+
 	[GlobalizedCategory("OptionCategoryDebugging")]
 	[GlobalizedDisplayName("OptionDisplayDebugEnableTrace")]
 	[GlobalizedDescription("OptionDescriptionDebugEnableTrace")]
@@ -85,11 +116,18 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayDebugEnableTracer")]
-	[GlobalizedDescription("OptionDescriptionDebugEnableTracer")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableActivityLogging")]
+	[GlobalizedDescription("OptionDescriptionDebugEnableActivityLogging")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(false)]
-	public bool EnableTracer { get; set; } = false;
+	public bool EnableActivityLogging { get; set; } = false;
+
+	[GlobalizedCategory("OptionCategoryDebugging")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableEventSourceLogging")]
+	[GlobalizedDescription("OptionDescriptionDebugEnableEventSourceLogging")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(false)]
+	public bool EnableEventSourceLogging { get; set; } = false;
 
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
@@ -105,6 +143,21 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 	[TypeConverter(typeof(GlobalYesNoConverter))]
 	[DefaultValue(false)]
 	public bool EnableSaveExtrapolatedXml { get; set; } = false;
+
+
+	[GlobalizedCategory("OptionCategoryDebugging")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableActivityTracing")]
+	[GlobalizedDescription("OptionDescriptionDebugEnableActivityTracing")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(false)]
+	public bool EnableActivityTracing { get; set; } = false;
+
+
+	[GlobalizedCategory("OptionCategoryDebugging")]
+	[GlobalizedDisplayName("OptionDisplayDebugSourceLevel")]
+	[GlobalizedDescription("OptionDescriptionDebugSourceLevel")]
+	[DefaultValue(EnGlobalizedSourceLevels.Off)]
+	public EnGlobalizedSourceLevels SourceLevel { get; set; } = EnGlobalizedSourceLevels.Off;
 
 
 	[GlobalizedCategory("OptionCategoryDebugging")]

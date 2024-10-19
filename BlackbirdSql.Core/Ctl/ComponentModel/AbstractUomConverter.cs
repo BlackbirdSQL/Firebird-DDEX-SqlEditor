@@ -64,7 +64,8 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 
 	public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 	{
-		// Tracer.Trace("CanConvertFrom: " + context.PropertyDescriptor.Name);
+		// Evs.Debug(GetType(), "CanConvertFrom()",  $"context.PropertyDescriptor: {context.PropertyDescriptor.Name}.");
+
 		RegisterModel(context);
 
 		if (sourceType == typeof(string))
@@ -77,7 +78,8 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 
 	public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 	{
-		// Tracer.Trace("ConvertFrom: " + context.PropertyDescriptor.Name);
+		// Evs.Debug(GetType(), "ConvertFrom()",  $"context.PropertyDescriptor: {context.PropertyDescriptor.Name}.");
+
 		RegisterModel(context);
 
 		if (value is string text)
@@ -131,7 +133,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 		if (destinationType == null)
 			Diag.ThrowException(new ArgumentNullException("destinationType"));
 
-		// Tracer.Trace("ConvertTo: " + context.PropertyDescriptor.Name);
+		// Evs.Debug(GetType(), "ConvertTo()",  $"context.PropertyDescriptor: {context.PropertyDescriptor.Name}.");
 
 		RegisterModel(context);
 
@@ -140,12 +142,12 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 			_CurrentValue = IsCardinal ? (int)value : (string)value;
 			if (string.IsNullOrEmpty(_UomFmt) || _EditActive)
 			{
-				// Tracer.Trace("Converted To: " + _CurrentValue.ToString(CultureInfo.CurrentCulture));
+				// Evs.Debug(GetType(), "ConvertTo()",  "Converted To: " + _CurrentValue.ToString());
 				return !IsCardinal ? StringValue : IntValue.ToString(CultureInfo.CurrentCulture);
 			}
 			else
 			{
-				// Tracer.Trace("Converted To: " + string.Format(_UomFmt, _CurrentValue));
+				// Evs.Debug(GetType(), "ConvertTo()",  "Converted To: " + string.Format(_UomFmt, _CurrentValue));
 				if (_UomFmtMin != null && IntValue == _Min)
 					return _UomFmtMin;
 				else if (_UomFmtMax != null && IntValue == _Max)
@@ -185,7 +187,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 
 		_PropertyName = context.PropertyDescriptor.Name;
 
-		// Tracer.Trace(GetType(), "RegisterModel()", "Model: {0}.", _Model.GetType().FullName);
+		// Evs.Debug(GetType(), "RegisterModel()", $"Model: {_Model.GetType().FullName}.");
 
 		_Model.EditControlGotFocusEvent += OnEditControlGotFocus;
 		_Model.EditControlLostFocusEvent += OnEditControlLostFocus;
@@ -259,7 +261,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 
 	public void OnEditControlGotFocus(object sender, EditControlFocusEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnEditControlGotFocus()");
+		// Evs.Debug(GetType(), "OnEditControlGotFocus()");
 
 		if (e.SelectionItem.PropertyDescriptor.Name != _PropertyName)
 			return;

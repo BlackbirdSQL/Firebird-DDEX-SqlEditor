@@ -251,15 +251,6 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new connection. Continue?.
-        /// </summary>
-        internal static string RctManager_TextNewConnection {
-            get {
-                return ResourceManager.GetString("RctManager_TextNewConnection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The settings provided will create a new connection.
         ///The Proposed Database Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
         ///
@@ -346,6 +337,15 @@ namespace BlackbirdSql.Core.Properties {
         internal static string RctManager_TextNewSessionConnectionNameConflict {
             get {
                 return ResourceManager.GetString("RctManager_TextNewSessionConnectionNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will add a new Server Explorer connection. Continue?.
+        /// </summary>
+        internal static string RctManager_TextNewSessionSEConnection {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewSessionSEConnection", resourceCulture);
             }
         }
         

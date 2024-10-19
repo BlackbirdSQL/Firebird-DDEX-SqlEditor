@@ -18,7 +18,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 	protected AbstractBatchConsumer(IBsQueryExecutionHandler resultsControl)
 	{
-		// Tracer.Trace(GetType(), "AbstractBatchConsumer()");
+		// Evs.Trace(GetType(), nameof(AbstractBatchConsumer));
 		_ResultsControl = resultsControl;
 	}
 
@@ -29,7 +29,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 	protected virtual void Dispose(bool bDisposing)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.Dispose", "bDisposing = {0}", bDisposing);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.Dispose", "bDisposing = {0}", bDisposing);
 		if (bDisposing)
 		{
 			Cleanup();
@@ -112,7 +112,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 	private async Task<bool> OnMoreRowsFromDSForDiscardAsync(object sender, MoreRowsAvailableEventArgs a)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.MoreRowsFromDSForDiscard", "", null);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.MoreRowsFromDSForDiscard", "", null);
 
 		if (a.AllRows)
 		{
@@ -141,12 +141,12 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 	public virtual void OnCancelling(object sender, EventArgs args)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnCancelling", "", null);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.OnCancelling", "", null);
 	}
 
 	public virtual void OnMessage(object sender, BatchMessageEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnMessage", "", null);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.OnMessage", "", null);
 		if (!DiscardResults)
 		{
 			// string msg = (TotalInfoMessageCount > 0 ? "\r\n" : "") + args.Message;
@@ -166,7 +166,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 	public virtual void OnErrorMessage(object sender, BatchErrorMessageEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnErrorMessage", "", null);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.OnErrorMessage", "", null);
 		if (!DiscardResults)
 		{
 			string msg = TotalInfoMessageCount > 0 ? "\r\n" : "";
@@ -181,18 +181,18 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 	public virtual void OnSpecialAction(object sender, BatchSpecialActionEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnSpecialAction", "", null);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.OnSpecialAction", "", null);
 		_ResultsControl.ProcessBatchSpecialAction(args);
 	}
 
 	public virtual void OnStatementCompleted(object sender, BatchStatementCompletedEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnStatementCompleted", "sender: {0}, args.RecordCount: {1}", sender, args.RecordCount);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.OnStatementCompleted", "sender: {0}, args.RecordCount: {1}", sender, args.RecordCount);
 	}
 
 	public virtual void Cleanup()
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.Cleanup", "", null);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.Cleanup", "", null);
 		if (_ResultSetForDiscardArgs != null)
 		{
 			if (_OnMoreRowsFromDSForDiscardEventAsync != null)
@@ -212,7 +212,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 
 	public virtual void OnFinishedProcessingResultSet(object sender, EventArgs args)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnFinishedProcessingResultSet", "", null);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.OnFinishedProcessingResultSet", "", null);
 	}
 
 	public abstract Task<bool> OnNewResultSetAsync(object sender, BatchNewResultSetEventArgs args);
@@ -222,7 +222,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 		if (args.CancelToken.Cancelled())
 			return false;
 
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.HandleNewResultSetForDiscard", "", null);
+		// Evs.Trace(GetType(), "QESQLBatchConsumerBase.HandleNewResultSetForDiscard", "", null);
 		_OnMoreRowsFromDSForDiscardEventAsync = OnMoreRowsFromDSForDiscardAsync;
 		_ResultSetForDiscardArgs = args;
 		_ResultSetForDiscardArgs.ResultSet.MoreRowsAvailableEventAsync += _OnMoreRowsFromDSForDiscardEventAsync;

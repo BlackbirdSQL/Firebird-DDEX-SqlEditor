@@ -84,7 +84,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 	public async Task<bool> StartConsumingDataWithoutStoringAsync(CancellationToken canceltoken)
 	{
-		// Tracer.Trace(GetType(), "QEDiskDataStorage.StartConsumingDataWithoutStoring", "", null);
+		// Evs.Trace(GetType(), "QEDiskDataStorage.StartConsumingDataWithoutStoring", "", null);
 		if (_StorageReader == null)
 		{
 			InvalidOperationException ex = new(Resources.ExStorageNoReader);
@@ -147,7 +147,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 		_StorageReader = new StorageDataReader(reader);
 
-		// Tracer.Trace(GetType(), "InitStorage()", "ASYNC GetSchemaTableAsync()");
+		// Evs.Trace(GetType(), nameof(InitStorage), "ASYNC GetSchemaTableAsync()");
 
 		await _StorageReader.GetSchemaTableAsync(cancelToken);
 
@@ -200,7 +200,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 	private async Task<bool> ConsumeDataWithoutStoringAsync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "QEReaderDataStorage.ConsumeDataWithoutStoring", "", null);
+		// Evs.Trace(GetType(), "QEReaderDataStorage.ConsumeDataWithoutStoring", "", null);
 		_IsClosed = false;
 
 		while (_DataStorageEnabled && !cancelToken.Cancelled()
@@ -215,7 +215,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 	private async Task<bool> GetDataFromReaderAsync(CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
+		// Evs.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
 		while (_DataStorageEnabled && !cancelToken.Cancelled()
 			&& await _StorageReader.ReadAsync(cancelToken))
 		{

@@ -225,7 +225,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		MenuCommand menuCommand = _MenuService.FindCommand(commandID);
 		if (menuCommand != null)
 		{
-			// Tracer.Trace(GetType(), "Exec", "{0}:{1}", commandID.Guid, commandID.ID);
+			// Evs.Trace(GetType(), "Exec", "{0}:{1}", commandID.Guid, commandID.ID);
 			try
 			{
 				menuCommand.Invoke();
@@ -530,7 +530,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 
 	internal void OnPrint(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnPrint", "", null);
+		// Evs.Trace(GetType(), "OnPrint", "", null);
 		if (currentGraphPanel == null)
 		{
 			return;
@@ -561,7 +561,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 
 	internal void OnPrintPreview(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnPrintPreview", "", null);
+		// Evs.Trace(GetType(), "OnPrintPreview", "", null);
 		if (currentGraphPanel == null)
 		{
 			return;
@@ -589,7 +589,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 
 	internal void OnPrintPageSetup(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnPrintPageSetup", "", null);
+		// Evs.Trace(GetType(), "OnPrintPageSetup", "", null);
 		try
 		{
 			using PageSetupDialog pageSetupDialog = new PageSetupDialog();

@@ -147,86 +147,10 @@
   <data name="ExceptionUnsupportedPopulationMechanism" xml:space="preserve">
     <value>Unsupported population mechanism: {0}</value>
   </data>
-  <data name="InvalidConnectionType" xml:space="preserve">
-    <value>Invalid connection type</value>
+  <data name="ScriptNoObject" xml:space="preserve">
+    <value>Node has no object</value>
   </data>
-  <data name="LinkageParserCancelled" xml:space="preserve">
-    <value>&gt;  Cancelled. {0}% completed. {1} took {2}ms.</value>
-  </data>
-  <data name="LinkageParserCancelledCatalog" xml:space="preserve">
-    <value>&gt;  Cancelled {0} sequence linkage.</value>
-  </data>
-  <data name="LinkageParserCatalogSwitchedToUiThread" xml:space="preserve">
-    <value>Switched {0} sequence linkage to UI thread.</value>
-  </data>
-  <data name="LinkageParserCompleted" xml:space="preserve">
-    <value>{0}% completed. {1}
-Linkage completed in {2}ms.</value>
-  </data>
-  <data name="LinkageParserCompletedCatalog" xml:space="preserve">
-    <value>Completed {0} sequence linkage in {1}ms.</value>
-  </data>
-  <data name="LinkageParserPausingAsync" xml:space="preserve">
-    <value>&gt;  Pausing async sequence linkage.</value>
-  </data>
-  <data name="LinkageParserPercentCompletedStage" xml:space="preserve">
-    <value>{0}% completed. {1}</value>
-  </data>
-  <data name="LinkageParserPercentCompletedStageElapsed" xml:space="preserve">
-    <value>{0}% completed. {1} took {2}ms.</value>
-  </data>
-  <data name="LinkageParserResumingAsync" xml:space="preserve">
-    <value>&gt;  Resuming async sequence linkage.</value>
-  </data>
-  <data name="LinkageParserResumingCatalog" xml:space="preserve">
-    <value>Resuming {0} sequence linkage.</value>
-  </data>
-  <data name="LinkageParserStageCompleted" xml:space="preserve">
-    <value>Parsed and linked {0} Triggers.</value>
-  </data>
-  <data name="LinkageParserStageGeneratorsBegin" xml:space="preserve">
-    <value>Selecting Generators...</value>
-  </data>
-  <data name="LinkageParserStageGeneratorsEnd" xml:space="preserve">
-    <value>SELECT Generators</value>
-  </data>
-  <data name="LinkageParserStageLinkingBegin" xml:space="preserve">
-    <value>Populating Linkage Table...</value>
-  </data>
-  <data name="LinkageParserStageLinkingEnd" xml:space="preserve">
-    <value>Populate Linkage Table</value>
-  </data>
-  <data name="LinkageParserStageSequencesBegin" xml:space="preserve">
-    <value>Populating Sequence Table...</value>
-  </data>
-  <data name="LinkageParserStageSequencesEnd" xml:space="preserve">
-    <value>Populate Sequence Table</value>
-  </data>
-  <data name="LinkageParserStageTriggerDependenciesEnd" xml:space="preserve">
-    <value>SELECT TriggerDependencies</value>
-  </data>
-  <data name="LinkageParserStageTriggerDependenciesStart" xml:space="preserve">
-    <value>Selecting TriggerDependencies...</value>
-  </data>
-  <data name="LinkageParserStageTriggersBegin" xml:space="preserve">
-    <value>Selecting Triggers...</value>
-  </data>
-  <data name="LinkageParserStageTriggersEnd" xml:space="preserve">
-    <value>SELECT Triggers</value>
-  </data>
-  <data name="LinkageParserStarted" xml:space="preserve">
-    <value>Started</value>
-  </data>
-  <data name="LinkageParserSwitchedToUiThread" xml:space="preserve">
-    <value>&gt;  Switched sequence linkage to UI thread.</value>
-  </data>
-  <data name="LinkageParserTaskHandlerTitle" xml:space="preserve">
-    <value>{0}  sequence linkage</value>
-  </data>
-  <data name="LinkageParserUpdating" xml:space="preserve">
-    <value>Updating sequence linkage.</value>
-  </data>
-  <data name="LinkageParserUpdatingCatalog" xml:space="preserve">
-    <value>Updating {0} sequence linkage.</value>
+  <data name="ScriptReplaceParams" xml:space="preserve">
+    <value>Replace the parameters below with input values before executing.</value>
   </data>
 </root>

@@ -331,12 +331,14 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 
 		foreach (Attribute customAttribute in propInfo.GetCustomAttributes())
 		{
-			// Tracer.Trace($"Validating {PropertyName} custom attribute: {customAttribute.GetType().FullName}.");
+			// Evs.Debug(typeof(PropertyWrapper), ".ctor",
+			//	$"Validating {PropertyName} custom attribute: {customAttribute.GetType().FullName}.");
 
 			if (customAttribute is DefaultValueAttribute defaultValue)
 			{
 				DefaultValue = defaultValue.Value;
-				// Tracer.Trace($"Loaded default for {PropertyName}: {DefaultValue}.");
+				// Evs.Debug(typeof(PropertyWrapper), ".ctor",
+				//	$"Loaded default for {PropertyName}: {DefaultValue}.");
 				continue;
 			}
 			if (customAttribute is AutomatorAttribute autoAttr)
@@ -346,7 +348,9 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 				InvertAutomator = autoAttr.Invert;
 				AutomatorEnableValue = autoAttr.EnableValue;
 
-				// Tracer.Trace($"Loaded automator for {PropertyName}: Automator: {Automator} IsAutomator: {IsAutomator} InvertAutomator: {InvertAutomator}.");
+				// Evs.Debug(typeof(PropertyWrapper), ".ctor",
+				//	$"Loaded automator for {PropertyName}: Automator: {Automator} " +
+				//	$"IsAutomator: {IsAutomator} InvertAutomator: {InvertAutomator}.");
 				continue;
 			}
 			if (customAttribute is DisplayOrderAttribute displayOrder)
@@ -563,7 +567,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		return false;
 	}
 
-	public virtual bool Save<TModel>(AbstractSettingsModel<TModel> baseOptionModel, IBsTransientSettings transientSettings) where TModel : AbstractSettingsModel<TModel>
+	public virtual bool Save<TModel>(AbstractSettingsModel<TModel> baseOptionModel, IBsSettingsProvider transientSettings) where TModel : AbstractSettingsModel<TModel>
 	{
 		string collectionName = OverrideCollectionName ?? baseOptionModel.CollectionName;
 		object obj = null;
@@ -637,7 +641,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		return false;
 	}
 
-	public virtual bool Load<TModel>(AbstractSettingsModel<TModel> baseOptionModel, IBsTransientSettings transientSettings) where TModel : AbstractSettingsModel<TModel>
+	public virtual bool Load<TModel>(AbstractSettingsModel<TModel> baseOptionModel, IBsSettingsProvider transientSettings) where TModel : AbstractSettingsModel<TModel>
 	{
 		object obj = null;
 

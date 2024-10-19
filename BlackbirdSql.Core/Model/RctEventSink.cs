@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.Shell;
 
 
 
@@ -73,7 +71,7 @@ internal class RctEventSink : IDisposable
 
 		viewSupport.OnCloseEvent -= OnNodeRemoving;
 
-		// Tracer.Trace(typeof(RctEventSink), "Dispose()", "Deregistered events for {0}.", _Root.SafeName());
+		// Evs.Debug(typeof(RctEventSink), "Dispose(bool)", $"Deregistered events for {_Root.SafeName()}.");
 
 		_Root = null;
 		_ConnectionEventsAttached = false;
@@ -141,9 +139,10 @@ internal class RctEventSink : IDisposable
 
 		if (_RctEventSinks != null && _RctEventSinks.TryGetValue(e.Node.ExplorerConnection, out RctEventSink eventSink))
 		{
-			if (!((RctEventSink)eventSink)._Initialized)
+			if (!eventSink._Initialized)
 			{
-				Tracer.Warning(typeof(RctEventSink), "AdviseServerExplorerEvents()", "Events already advised for node {0}.", e.Node.ExplorerConnection.SafeName());
+				Evs.Warning(typeof(RctEventSink), "NotifyInitializedServerExplorerModel()",
+					$"Events already advised for node {e.Node.ExplorerConnection.SafeName()}.");
 				return;
 			}
 		}
@@ -152,7 +151,7 @@ internal class RctEventSink : IDisposable
 			eventSink = new RctEventSink(e.Node.ExplorerConnection, false);
 		}
 
-		((RctEventSink)eventSink).NotifyInitializedModel(sender, e);
+		eventSink.NotifyInitializedModel(sender, e);
 	}
 
 
@@ -170,7 +169,7 @@ internal class RctEventSink : IDisposable
 		if (_RctEventSinks != null && _RctEventSinks.ContainsKey(root))
 			return;
 
-		// Tracer.Trace(typeof(RctEventSink), "InitializeServerExplorerModel()", root.SafeName());
+		// Evs.Trace(typeof(RctEventSink), "InitializeServerExplorerModel()", $"Connection Safename: {root.SafeName()}.");
 
 		_RctEventSinks ??= new Dictionary<IVsDataExplorerConnection, RctEventSink>();
 		_RctEventSinks[root] = new RctEventSink(root, true);
@@ -181,18 +180,19 @@ internal class RctEventSink : IDisposable
 			// bool gotViewSupport = (bool)Reflect.GetFieldValue(root, "_gotViewSupport");
 
 			// Wake the connection node so we can get some basic info in the property window.
-			// This will also cause AdviseEvents to be fired in TViewSupport.Initialize()
-			// and also ensures TViewSupport.Close() will be called when an ExplorerConnection
+			// This will also cause AdviseEvents to be fired in VxbViewSupport.Initialize()
+			// and also ensures VxbViewSupport.Close() will be called when an ExplorerConnection
 			// node is deleted.
 			// if (!gotViewSupport)
 
 			Reflect.InvokeMethod(root, "InitializeModel", BindingFlags.Default, null, true);
 
-			// Tracer.Trace(typeof(RctEventSink), "InitializeServerExplorerModel()", "Model; initialized for {0}.", root.SafeName());
+			// Evs.Debug(typeof(RctEventSink), "InitializeServerExplorerModel()",
+			//	$"Model; initialized for {root.SafeName()}.");
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex);
+			Diag.Expected(ex, $"Failed to initialize model for {root.SafeName()}.");
 			_RctEventSinks.Remove(root);
 		}
 	}
@@ -200,7 +200,7 @@ internal class RctEventSink : IDisposable
 
 	private void NotifyInitializedModel(object sender, DataExplorerNodeEventArgs e)
 	{
-		// Tracer.Trace(typeof(RctEventSink), "NotifyInitializedModel()", "Performing full registration.");
+		// Evs.Trace(typeof(RctEventSink), "NotifyInitializedModel()", "Performing full registration.");
 
 		if (_Root.Connection == null)
 			Diag.ThrowException(new ArgumentException($"The ExplorerConnection.Connectionfor Server Explorer node '{_Root.SafeName()}' is null. Aborting."));
@@ -221,15 +221,11 @@ internal class RctEventSink : IDisposable
 			_Root.Connection.StateChanged += OnConnectionStateChanged;
 
 
-			// else
-			//	Tracer.Warning(typeof(RctEventSink), "NotifyInitializedModel()", "The Server Explorer node '{0}' has already been initialized.", _Root.SafeName());
-
-
 			IBsDataViewSupport viewSupport = sender as IBsDataViewSupport;
 
 			viewSupport.OnCloseEvent += OnNodeRemoving;
 
-			// Tracer.Trace(typeof(RctEventSink), "AdviseEvents()", "Registered events for {0}.", _Root.SafeName());
+			Evs.Debug(typeof(RctEventSink), nameof(NotifyInitializedModel), $"Registered events for {_Root.SafeName()}.");
 		}
 		catch (Exception ex)
 		{
@@ -276,7 +272,7 @@ internal class RctEventSink : IDisposable
 			Diag.ThrowException(new ApplicationException($"RctEventSink not found for explorerConnection: {_Root.SafeName()}."));
 		}
 
-		// Tracer.Trace(typeof(RctEventSink), "UnadviseEvents()", "Unregistering events for {0}.", _Root.SafeName());
+		// Evs.Trace(typeof(RctEventSink), "UnadviseServerExplorerEvents()", $"Unregistering events for {_Root.SafeName()}.");
 
 
 		_RctEventSinks.Remove(_Root);
@@ -421,7 +417,7 @@ internal class RctEventSink : IDisposable
 		if (!EventEnter())
 			return;
 
-		// Tracer.Trace(typeof(RctEventSink), "OnNodeChanged()",
+		// Evs.Trace(typeof(RctEventSink), "OnNodeChanged()",
 		//	"\n=============================================================================================================");
 		// Diag.Trace(typeof(RctEventSink), "OnNodeChanged()", e, ConnectionSource, ThreadHelper.CheckAccess(), _Initialized);
 
@@ -469,7 +465,8 @@ internal class RctEventSink : IDisposable
 				{
 					NativeDb.UnlockLoadedParser();
 
-					// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "\nParser == null. IsEdmConnectionSource. If not IsEdm then Calling AsyncEnsureLinkageLoading().");
+					// Evs.Debug(GetType(), "OnNodeChanged()",
+					//	"\nParser == null. IsEdmConnectionSource. If not IsEdm then Calling AsyncEnsureLinkageLoading().");
 
 					connectionSource = ConnectionSource;
 
@@ -479,7 +476,8 @@ internal class RctEventSink : IDisposable
 			}
 			else if (e.Node.IsExpanding && !e.Node.HasBeenExpanded)
 			{
-				// Tracer.Trace(typeof(RctEventSink), "OnNodeChanged()", "\nIsExpanding && !HasBeenExpanded. UnlockLoadedParser_ and calling AsyncEnsureLinkageLoading().");
+				// Evs.Debug(typeof(RctEventSink), "OnNodeChanged()",
+				//	"\nIsExpanding && !HasBeenExpanded. UnlockLoadedParser_ and calling AsyncEnsureLinkageLoading().");
 
 				NativeDb.UnlockLoadedParser();
 				root.AsyncEnsureLinkageLoading();
@@ -493,7 +491,8 @@ internal class RctEventSink : IDisposable
 					if (connectionSource == EnConnectionSource.ServerExplorer)
 						root.AsyncEnsureLinkageLoading();
 				}
-				// Tracer.Trace(typeof(RctEventSink), "OnNodeChanged()", "\nNot IsRefreshing or (IsExpanding or !HasBeenExpanded). DOING NOTHING.");
+				// Evs.Debug(typeof(RctEventSink), "OnNodeChanged()",
+				//	"\nNot IsRefreshing or (IsExpanding or !HasBeenExpanded). DOING NOTHING.");
 			}
 
 			_Initialized = true;
@@ -523,14 +522,14 @@ internal class RctEventSink : IDisposable
 					&& csa.ContainsKey(CoreConstants.C_KeyExDatasetKey))
 			{
 				// Check if node.Object exists before accessing it otherwise the root node will be initialized
-				// with a call to TObjectSelectorRoot.SelectObjects.
+				// with a call to VxbObjectSelectorRoot.SelectObjects.
 
 				string datasetKey = csa.DatasetKey;
 
 				// DatasetKey will be null if the edmx has corrupted the root node.
 				if (!string.IsNullOrEmpty(datasetKey) && datasetKey == root.DisplayName)
 				{
-					// Tracer.Trace(typeof(RctEventSink), "OnNodeChanged()", "No ValidateAndUpdateExplorerConnectionRename(). DisplayName IS OK.");
+					// Evs.Debug(typeof(RctEventSink), "OnNodeChanged()", "No ValidateAndUpdateExplorerConnectionRename(). DisplayName IS OK.");
 					return;
 				}
 			}
@@ -543,7 +542,7 @@ internal class RctEventSink : IDisposable
 					return;
 			}
 
-			// Tracer.Trace(typeof(RctEventSink), "OnNodeChanged()", "Calling ValidateAndUpdateExplorerConnectionRename(). DisplayName ISSUE");
+			// Evs.Debug(typeof(RctEventSink), "OnNodeChanged()", "Calling ValidateAndUpdateExplorerConnectionRename(). DisplayName ISSUE");
 
 			RctManager.ValidateAndUpdateExplorerConnectionRename(root, root.DisplayName, csa);
 		}
@@ -566,10 +565,10 @@ internal class RctEventSink : IDisposable
 			return;
 
 
-		// Tracer.Trace(typeof(RctEventSink), "OnNodeExpandedOrRefreshed()",
+		// Evs.Trace(typeof(RctEventSink), "OnNodeExpandedOrRefreshed()",
 		//	"\n================================================================================================================\n"
-		//	+ "e.Node.HasBeenExpanded: {0}, e.Node.IsExpanded: {1}, e.Node.IsExpanding: {2}, __EntityDataModelRenameState: {3}.",
-		//	e.Node.HasBeenExpanded, e.Node.IsExpanded, e.Node.IsExpanding, _EntityDataModelRenameState);
+		//	+ $"e.Node.HasBeenExpanded: {e.Node.HasBeenExpanded}, e.Node.IsExpanded: {e.Node.IsExpanded}, " +
+		//	$"e.Node.IsExpanding: {e.Node.IsExpanding}, __EntityDataModelRenameState: {_EntityDataModelRenameState}.");
 
 
 		if (!EventEnter())
@@ -630,7 +629,7 @@ internal class RctEventSink : IDisposable
 		if (ApcManager.IdeShutdownState)
 			return;
 
-		// Tracer.Trace(typeof(RctEventSink), "OnNodeRemoving()",
+		// Evs.Trace(typeof(RctEventSink), "OnNodeRemoving()",
 		//	"\n=========================================================================================================");
 
 		if (!EventEnter())

@@ -19,6 +19,7 @@ using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model.QueryExecution;
 using BlackbirdSql.Shared.Properties;
+using BlackbirdSql.Sys.Ctl.Diagnostics;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using static System.Net.Mime.MediaTypeNames;
@@ -52,7 +53,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 	public void Dispose()
 	{
-		// Tracer.Trace(GetType(), "Dispose()", "", null);
+		// Evs.Trace(GetType(), nameof(Dispose), "", null);
 
 		Dispose(true);
 		GC.SuppressFinalize(this);
@@ -62,7 +63,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 	protected virtual void Dispose(bool disposing)
 	{
-		// Tracer.Trace(GetType(), "Dispose(bool)", "disposing = {0}", disposing);
+		// Evs.Trace(GetType(), "Dispose(bool)", "disposing = {0}", disposing);
 
 		if (!disposing)
 			return;
@@ -179,7 +180,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			if (_ExecutionState == EnBatchState.Cancelling)
 				return true;
 
-			// Tracer.Trace(GetType(), "QESQLBatch.Cancel", "Cancelled: {0}.", cancelToken.Cancelled());
+			// Evs.Trace(GetType(), "QESQLBatch.Cancel", "Cancelled: {0}.", cancelToken.Cancelled());
 
 			if (!cancelToken.Cancelled())
 				return false;
@@ -190,12 +191,12 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			{
 				CancellingEvent?.Invoke(this, new EventArgs());
 
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: calling InitiateStopRetrievingData", "", null);
+				// Evs.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: calling InitiateStopRetrievingData", "", null);
 				_ActiveResultSet.InitiateStopRetrievingData();
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: InitiateStopRetrievingData returned", "", null);
+				// Evs.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: InitiateStopRetrievingData returned", "", null);
 			}
 
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: executing Cancel command", "", null);
+			// Evs.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: executing Cancel command", "", null);
 			/*
 			try
 			{
@@ -207,7 +208,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			}
 			*/
 
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: Cancel command returned", "", null);
+			// Evs.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: Cancel command returned", "", null);
 		}
 
 		return true;
@@ -218,7 +219,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	public async Task<EnScriptExecutionResult> ExecuteAsync(IDbConnection conn, EnSpecialActions specialActions,
 		CancellationToken cancelToken, CancellationToken syncToken)
 	{
-		// Tracer.Trace(GetType(), "ExecuteAsync()", "conn.State = {0}", conn.State);
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "conn.State = {0}", conn.State);
 		lock (_LockLocal)
 		{
 			if (CheckCancelled(cancelToken))
@@ -234,7 +235,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		_SpecialActions = specialActions;
 
 
-		// Tracer.Trace(GetType(), "ExecuteAsync()", " Creating command - _SpecialActions: " + _SpecialActions);
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), " Creating command - _SpecialActions: " + _SpecialActions);
 
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 
@@ -248,7 +249,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			// **************** Final 4Execution Point (13) - QESQLBatch.ExecuteAsync() ***************** //
 			// ----------------------------------------------------------------------------------------- //
 
-			// Tracer.Trace(GetType(), "ExecuteAsync()", "Async Executing _SqlStatement.");
+			// Evs.Trace(GetType(), nameof(ExecuteAsync), "Async Executing _SqlStatement.");
 
 			try
 			{
@@ -262,9 +263,9 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			}
 
 
-			// Tracer.Trace(GetType(), "ExecuteAsync()", "Executed _SqlStatement.");
+			// Evs.Trace(GetType(), nameof(ExecuteAsync), "Executed _SqlStatement.");
 
-			// Tracer.Trace(GetType(), "ExecuteAsync()", "Executed _SqlStatement. ExecutionType: {0}, CurrentAction: {1}, CurrentActionReader: {2}, HasRows: {3}.",
+			// Evs.Trace(GetType(), nameof(ExecuteAsync), "Executed _SqlStatement. ExecutionType: {0}, CurrentAction: {1}, CurrentActionReader: {2}, HasRows: {3}.",
 			//	_SqlStatement.ExecutionType, _SqlStatement.CurrentAction, _SqlStatement.CurrentActionReader,
 			//	_SqlStatement.CurrentActionReader == null ? "null" : (_SqlStatement.CurrentActionReader.HasRows ? "HasRows" : "NoRows" ));
 
@@ -289,7 +290,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				{
 					RaiseStatementCompleted(statementIndex, rowsSelected, totalRowsSelected, false);
 
-					// Tracer.Trace(GetType(), "ExecuteAsync()", " ExecuteNonQuery returned!");
+					// Evs.Trace(GetType(), nameof(ExecuteAsync), " ExecuteNonQuery returned!");
 					lock (_LockLocal)
 					{
 						if (CheckCancelled(cancelToken))
@@ -308,7 +309,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			{
 				IDataReader dataReader = _SqlStatement.CurrentActionReader;
 
-				// Tracer.Trace(GetType(), "ExecuteAsync()", "ExecutionType: {0}, CurrentAction: {1}, _NoResultsExpected: {2}, rowsAffected: {3}, totalRowsAffected: {4}, isSpecialAction: {5}.",
+				// Evs.Trace(GetType(), nameof(ExecuteAsync), "ExecutionType: {0}, CurrentAction: {1}, _NoResultsExpected: {2}, rowsAffected: {3}, totalRowsAffected: {4}, isSpecialAction: {5}.",
 				//	_SqlStatement.ExecutionType, _SqlStatement.CurrentAction, _NoResultsExpected,
 				//	rowsAffected, totalRowsAffected, isSpecialAction);
 
@@ -343,7 +344,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			}
 		}
 
-		// Tracer.Trace(GetType(), "ExecuteAsync()", "Completed. Result {0}", result);
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "Completed. Result {0}", result);
 
 		return result;
 	}
@@ -352,7 +353,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 	protected void HandleCriticalExceptionMessage(Exception ex, int statementIndex)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatch.HandleExceptionMessage", "", null);
+		// Evs.Trace(GetType(), "QESQLBatch.HandleExceptionMessage", "", null);
 
 		// HandleSqlMessages(ex.GetErrors(), true);
 		string message = statementIndex < 0
@@ -382,7 +383,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 	public EnScriptExecutionResult HandleExecutionExceptions(Exception exception, int statementIndex, CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "Exception: {0}.", exception.Message);
+		// Evs.Trace(GetType(), nameof(HandleExecutionExceptions), "Exception: {0}.", exception.Message);
 
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 
@@ -390,7 +391,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		if (exception.IsSqlException() || (statementIndex == -1 && exception is ArgumentException))
 		{
-			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "DbException: {0}.", exception.GetType().Name);
+			// Evs.Trace(GetType(), nameof(HandleExecutionExceptions), "DbException: {0}.", exception.GetType().Name);
 
 			lock (_LockLocal)
 				result = !CheckCancelled(cancelToken) ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
@@ -400,27 +401,27 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		}
 		else if (exception.HasExceptionType<IOException>())
 		{
-			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "IOException: {0}.", exception.GetType().Name);
+			// Evs.Trace(GetType(), nameof(HandleExecutionExceptions), "IOException: {0}.", exception.GetType().Name);
 
 			result = EnScriptExecutionResult.Failure;
 			HandleCriticalExceptionMessage(exception, statementIndex);
 		}
 		else if (exception.HasExceptionType<OverflowException>())
 		{
-			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "OverflowException: {0}.", exception.GetType().Name);
+			// Evs.Trace(GetType(), nameof(HandleExecutionExceptions), "OverflowException: {0}.", exception.GetType().Name);
 
 			result = EnScriptExecutionResult.Failure;
 			HandleCriticalExceptionMessage(exception, statementIndex);
 		}
 		else if (exception.HasExceptionType<ThreadAbortException>())
 		{
-			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "ThreadAbortException: {0}.", exception.GetType().Name);
+			// Evs.Trace(GetType(), nameof(HandleExecutionExceptions), "ThreadAbortException: {0}.", exception.GetType().Name);
 
 			result = EnScriptExecutionResult.Failure;
 		}
 		else if (exception.HasExceptionType<SystemException>())
 		{
-			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "SystemException: {0}.", exception.GetType().Name);
+			// Evs.Trace(GetType(), nameof(HandleExecutionExceptions), "SystemException: {0}.", exception.GetType().Name);
 
 			lock (_LockLocal)
 				result = !CheckCancelled(cancelToken) ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
@@ -430,7 +431,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		}
 		else
 		{
-			// Tracer.Trace(GetType(), "HandleExecutionExceptions()", "Exception.Exception: {0}.", exception.GetType().Name);
+			// Evs.Trace(GetType(), nameof(HandleExecutionExceptions), "Exception.Exception: {0}.", exception.GetType().Name);
 
 			HandleCriticalExceptionMessage(exception, statementIndex);
 			result = EnScriptExecutionResult.Failure;
@@ -444,7 +445,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 	public void HandleSqlMessages(Exception ex, int statementIndex)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatch.HandleSqlMessages", "Error count: {0}.", errors.Count);
+		// Evs.Trace(GetType(), "QESQLBatch.HandleSqlMessages", "Error count: {0}.", errors.Count);
 
 		if (statementIndex == -1 && ex is ArgumentException)
 		{
@@ -461,7 +462,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 			foreach (object error in NativeDb.GetErrorEnumerator(errors))
 			{
-				// Tracer.Trace(GetType(), "HandleSqlMessages()", "GetErrorNumber: {0}", NativeDb.GetErrorNumber(error));
+				// Evs.Trace(GetType(), nameof(HandleSqlMessages), "GetErrorNumber: {0}", NativeDb.GetErrorNumber(error));
 
 				string text = NativeDb.GetErrorMessage(error);
 				int line = NativeDb.GetErrorLineNumber(error);
@@ -519,7 +520,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 	public EnScriptExecutionResult Parse(IBsNativeDbBatchParser batchParser)
 	{
-		// Tracer.Trace(GetType(), "Parse()");
+		// Evs.Trace(GetType(), nameof(Parse));
 
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 
@@ -551,7 +552,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		bool isSpecialAction, int statementIndex, int statementCount, long rowsSelected, long totalRowsSelected,
 		bool canComplete, CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "ProcessReaderAsync()", "Entry conn.State = {0}", conn.State);
+		// Evs.Trace(GetType(), nameof(ProcessReaderAsync), "Entry conn.State = {0}", conn.State);
 
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 
@@ -568,7 +569,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			// if (!isSpecialAction)
 			//	OnSqlStatementCompleted(_SqlStatement, new(rowsSelected, totalRowsSelected, false));
 
-			// Tracer.Trace(GetType(), "ProcessReaderAsync()", ": got the reader!");
+			// Evs.Trace(GetType(), nameof(ProcessReaderAsync), ": got the reader!");
 			lock (_LockLocal)
 			{
 				if (CheckCancelled(cancelToken))
@@ -591,7 +592,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 					if (dataReader.FieldCount <= 0)
 					{
-						Tracer.Warning(GetType(), "ProcessReaderAsync()", "Result set is empty.");
+						Evs.Warning(GetType(), "ProcessReaderAsync()", "Result set is empty.");
 
 						if (tableReader != null)
 						{
@@ -599,7 +600,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 						}
 						else
 						{
-							// Tracer.Trace(GetType(), "ProcessReaderAsync()", "ASYNC NextResultAsync()");
+							// Evs.Trace(GetType(), nameof(ProcessReaderAsync), "ASYNC NextResultAsync()");
 
 							try
 							{
@@ -623,7 +624,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 						continue;
 					}
 
-					// Tracer.Trace(GetType(), "ProcessReaderAsync()", ": processing result set");
+					// Evs.Trace(GetType(), nameof(ProcessReaderAsync), ": processing result set");
 
 					// ------------------------------------------------------------------------------- //
 					// ************* Output Point (1) - QESQLBatch.ProcessReaderAsync() ************** //
@@ -638,12 +639,12 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 					if (processingResult != EnScriptExecutionResult.Success)
 					{
-						// Tracer.Trace(GetType(), "ProcessReaderAsync()", ": something wrong while processing the result set: {0}", processingResult);
+						// Evs.Trace(GetType(), nameof(ProcessReaderAsync), ": something wrong while processing the result set: {0}", processingResult);
 						result = processingResult;
 						break;
 					}
 
-					// Tracer.Trace(GetType(), "ProcessReaderAsync()", ": successfully processed the result set");
+					// Evs.Trace(GetType(), nameof(ProcessReaderAsync), ": successfully processed the result set");
 					FinishedResultSetEvent?.Invoke(this, new EventArgs());
 
 					// hasMoreRows = dataReader.NextResult();
@@ -653,7 +654,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 					}
 					else
 					{
-						// Tracer.Trace(GetType(), "ProcessReaderAsync()", "ASYNC NextResultAsync() 2");
+						// Evs.Trace(GetType(), nameof(ProcessReaderAsync), "ASYNC NextResultAsync() 2");
 
 						try
 						{
@@ -679,7 +680,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 				if (_ContainsErrors)
 				{
-					Tracer.Warning(GetType(), "ProcessReaderAsync()", "Successfully processed result set, but there were errors shown to the user.");
+					Evs.Warning(GetType(), "ProcessReaderAsync()",
+						"Successfully processed result set, but there were errors shown to the user.");
 					result = EnScriptExecutionResult.Failure;
 				}
 
@@ -698,7 +700,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			}
 			else
 			{
-				Tracer.Warning(GetType(), "ProcessReaderAsync()", "No NewResultSet handler was specified or Cancel was received!");
+				Evs.Warning(GetType(), "ProcessReaderAsync()",
+					"No NewResultSet handler was specified or Cancel was received!");
 			}
 		}
 		catch (Exception ex)
@@ -712,7 +715,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		}
 		finally
 		{
-			// Tracer.Trace(GetType(), "ProcessReaderAsync()", "Finalizing");
+			// Evs.Trace(GetType(), nameof(ProcessReaderAsync), "Finalizing");
 
 			try
 			{
@@ -724,7 +727,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 					}
 					else
 					{
-						// Tracer.Trace(GetType(), "ProcessReaderAsync()", "ASYNC CloseAsync()");
+						// Evs.Trace(GetType(), nameof(ProcessReaderAsync), "ASYNC CloseAsync()");
 
 						try
 						{
@@ -742,7 +745,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 					dataReader = null;
 				}
 
-				// Tracer.Trace(GetType(), "ProcessReaderAsync()", "Finalized");
+				// Evs.Trace(GetType(), nameof(ProcessReaderAsync), "Finalized");
 			}
 			catch (ThreadAbortException exta)
 			{
@@ -758,7 +761,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			}
 		}
 
-		// Tracer.Trace(GetType(), "ProcessReaderAsync()", "Completed. Result: {0}", result);
+		// Evs.Trace(GetType(), nameof(ProcessReaderAsync), "Completed. Result: {0}", result);
 
 		return result;
 	}
@@ -777,7 +780,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		bool isPlan = IsExecutionPlanResultSet(dataReader, out EnSpecialActions batchSpecialActiont);
 
-		// Tracer.Trace(GetType(), "ProcessResultSetAsync()", "Entry. _SpecialActions: {0}, SpecialActionEvent: {1}, IsExecutionPlanResultSet(): {2}, batchSpecialAction: {3}.",
+		// Evs.Trace(GetType(), nameof(ProcessResultSetAsync), "Entry. _SpecialActions: {0}, SpecialActionEvent: {1}, IsExecutionPlanResultSet(): {2}, batchSpecialAction: {3}.",
 		// 	_SpecialActions, SpecialActionEvent, isPlan, batchSpecialActiont);
 
 
@@ -803,11 +806,11 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		try
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ProcessResultSet", "result set has been created!");
+			// Evs.Trace(GetType(), Tracer.EnLevel.Verbose, "ProcessResultSet", "result set has been created!");
 			EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 			BatchNewResultSetEventArgs args = new(_ActiveResultSet, cancelToken);
 
-			// Tracer.Trace(GetType(), "ProcessResultSetAsync()", "firing new resultset event!");
+			// Evs.Trace(GetType(), nameof(ProcessResultSetAsync), "firing new resultset event!");
 
 			// The data reader loads into a mem or disk storage dataset here then notifies
 			// the consumer result set for loading into a grid or text page.
@@ -855,8 +858,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			throw ex;
 		}
 
-		// Tracer.Trace(GetType(), "QESQLBatch.ProcessResultSetForExecutionPlan", "", null);
-		// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ProcessResultSetForExecutionPlan", "firing SpecialAction event for showplan", null);
+		// Evs.Trace(GetType(), "QESQLBatch.ProcessResultSetForExecutionPlan", "", null);
+		// Evs.Trace(GetType(), Tracer.EnLevel.Information, "ProcessResultSetForExecutionPlan", "firing SpecialAction event for showplan", null);
 		BatchSpecialActionEventArgs args = new BatchSpecialActionEventArgs(batchSpecialAction, this, dataReader);
 
 		try
@@ -895,7 +898,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 	public void Reset()
 	{
-		// Tracer.Trace(GetType(), "QESQLBatch.Reset", "", null);
+		// Evs.Trace(GetType(), "QESQLBatch.Reset", "", null);
 		lock (_LockLocal)
 		{
 			_ExecutionState = EnBatchState.Initial;
@@ -917,7 +920,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 	public void SetSuppressProviderMessageHeaders(bool shouldSuppress)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatch.SetSuppressProviderMessageHeaders", "shouldSuppress = {0}", shouldSuppress);
+		// Evs.Trace(GetType(), "QESQLBatch.SetSuppressProviderMessageHeaders", "shouldSuppress = {0}", shouldSuppress);
 		// _SuppressProviderMessageHeaders = shouldSuppress;
 	}
 
@@ -951,7 +954,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	{
 		BatchStatementCompletedEventArgs args = new(statementIndex, rowsSelected, totalRowsSelected, false);
 
-		// Tracer.Trace(GetType(), "QESQLBatch.OnSqlStatementCompleted", "", null);
+		// Evs.Trace(GetType(), "QESQLBatch.OnSqlStatementCompleted", "", null);
 		StatementCompletedEvent?.Invoke(_SqlStatement, args);
 
 		if (MessageEvent != null)

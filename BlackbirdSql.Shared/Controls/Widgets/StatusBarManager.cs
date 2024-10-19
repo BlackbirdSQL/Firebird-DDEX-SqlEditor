@@ -432,7 +432,7 @@ public sealed class StatusBarManager : IDisposable
 
 	private string SetBarState(EnState newState)
 	{
-		// Tracer.Trace(GetType(), "SetBarState()", "StatusBarCurrentState: {0}, StatusBarNewState: {1}", CurrentState, newState);
+		// Evs.Trace(GetType(), nameof(SetBarState), "StatusBarCurrentState: {0}, StatusBarNewState: {1}", CurrentState, newState);
 
 		ToolStripItem toolStripItem = (ToolStripItem)(object)_GeneralPanel;
 
@@ -591,7 +591,7 @@ public sealed class StatusBarManager : IDisposable
 
 	private void TransitionIntoOfflineMode()
 	{
-		// Tracer.Trace(GetType(), "StatusBarManager.TransitionIntoOfflineMode", "", null);
+		// Evs.Trace(GetType(), "StatusBarManager.TransitionIntoOfflineMode", "", null);
 
 		_ModeState = EnState.Offline;
 
@@ -680,7 +680,7 @@ public sealed class StatusBarManager : IDisposable
 
 	private async Task<bool> OnExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs a)
 	{
-		// Tracer.Trace(GetType(), "OnQueryExecutionCompletedAsync()", "a.ExecResult: {0}.", a.ExecutionResult);
+		// Evs.Trace(GetType(), nameof(OnQueryExecutionCompletedAsync), "a.ExecResult: {0}.", a.ExecutionResult);
 
 		if (a.SyncToken.Cancelled())
 			return true;

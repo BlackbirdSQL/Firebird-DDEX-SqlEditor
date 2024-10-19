@@ -264,7 +264,7 @@
   <data name="Type_ForeignKey" xml:space="preserve">
     <value>Foreign Key</value>
   </data>
-  <data name="Type_ScalarFunction" xml:space="preserve">
+  <data name="Type_Function" xml:space="preserve">
     <value>Function</value>
   </data>
   <data name="Property_Name_ForeignKey_ReferencedCatalog" xml:space="preserve">
@@ -363,13 +363,13 @@
   <data name="Identifier_Name_Catalog" xml:space="preserve">
     <value>Catalog</value>
   </data>
-  <data name="Identifier_Desc_ScalarFunction" xml:space="preserve">
+  <data name="Identifier_Desc_Function" xml:space="preserve">
     <value>The function that owns this database object.</value>
   </data>
   <data name="Property_Desc_ForeignKey_ReferencedTable" xml:space="preserve">
     <value>Name of the table referenced by the foreign key.</value>
   </data>
-  <data name="Type_ScalarFunctionParameter" xml:space="preserve">
+  <data name="Type_FunctionParameter" xml:space="preserve">
     <value>Function Parameter</value>
   </data>
   <data name="Property_Desc_Parameter_Precision" xml:space="preserve">
@@ -441,7 +441,7 @@
   <data name="Type_TableColumn" xml:space="preserve">
     <value>Column</value>
   </data>
-  <data name="Node_Name_ScalarFunctions" xml:space="preserve">
+  <data name="Node_Name_Functions" xml:space="preserve">
     <value>Functions</value>
   </data>
   <data name="Property_Name_CreateDate" xml:space="preserve">
@@ -489,7 +489,7 @@
   <data name="Property_Desc_Table_PkColumnNames" xml:space="preserve">
     <value>List of primary key columns of the table.</value>
   </data>
-  <data name="Identifier_Name_ScalarFunction" xml:space="preserve">
+  <data name="Identifier_Name_Function" xml:space="preserve">
     <value>Function</value>
   </data>
   <data name="Property_Name_ForeignKeyColumn_ReferencedCatalog" xml:space="preserve">
@@ -649,7 +649,7 @@
     <value>Is the trigger an auto-increment generator?</value>
   </data>
   <data name="Property_Name_Trigger_IsIdentity" xml:space="preserve">
-    <value>Is Auto-increment trigger</value>
+    <value>Is Auto-increment</value>
   </data>
   <data name="Property_Desc_Trigger_Dependencies" xml:space="preserve">
     <value>Columns driving this trigger</value>

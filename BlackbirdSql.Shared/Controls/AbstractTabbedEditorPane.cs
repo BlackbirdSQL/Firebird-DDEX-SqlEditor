@@ -373,7 +373,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	int IVsCodeWindow.Close()
 	{
-		// Tracer.Trace(GetType(), "Close()");
+		// Evs.Trace(GetType(), nameof(Close));
 
 		return XamlCodeWindow?.Close() ?? VSConstants.E_NOTIMPL;
 	}
@@ -399,7 +399,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	int IVsDocumentLockHolder.CloseDocumentHolder(uint dwSaveOptions)
 	{
-		// Tracer.Trace(GetType(), "CloseDocumentHolder()");
+		// Evs.Trace(GetType(), nameof(CloseDocumentHolder));
 
 		if (_LockHolderCookie != 0)
 			RdtManager.UnregisterDocumentLockHolder(_LockHolderCookie);
@@ -859,7 +859,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	int IVsHasRelatedSaveItems.GetRelatedSaveTreeItems(VSSAVETREEITEM saveItem, uint celt, VSSAVETREEITEM[] rgSaveTreeItems, out uint pcActual)
 	{
-		// Tracer.Trace(GetType(), "GetRelatedSaveTreeItems()", "SaveOptFald: {0}.", saveItem.grfSave);
+		// Evs.Trace(GetType(), nameof(GetRelatedSaveTreeItems), "SaveOptFald: {0}.", saveItem.grfSave);
 
 		if (_OverrideSaveDocCookieList == null)
 		{
@@ -974,7 +974,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	private int HandleCloseEditorOrDesigner(AuxilliaryDocData auxDocData)
 	{
-		// Tracer.Trace(GetType(), "HandleCloseEditorOrDesigner()");
+		// Evs.Trace(GetType(), nameof(HandleCloseEditorOrDesigner));
 
 		if (!auxDocData.RequestDeactivateQuery())
 			return VSConstants.OLE_E_PROMPTSAVECANCELLED;
@@ -1138,7 +1138,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	protected virtual int SaveFiles(ref uint saveFlags)
 	{
-		// Tracer.Trace(GetType(), "SaveFiles()");
+		// Evs.Trace(GetType(), nameof(SaveFiles));
 
 		if (VsShellUtilities.IsInAutomationFunction(this))
 			saveFlags = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
@@ -1376,7 +1376,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	protected override void OnClose()
 	{
-		// Tracer.Trace(GetType(), "OnClose()");
+		// Evs.Trace(GetType(), nameof(OnClose));
 
 		_IsClosing = true;
 
@@ -1387,7 +1387,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	int IVsWindowFrameNotify3.OnClose(ref uint frameSaveOptions)
 	{
-		// Tracer.Trace(GetType(), "OnClose()");
+		// Evs.Trace(GetType(), nameof(OnClose));
 
 		if (IsClone && (frameSaveOptions & (uint)__FRAMECLOSE.FRAMECLOSE_NoSave) > 0)
 		{
@@ -1494,7 +1494,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 	private int OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
 	{
-		// Tracer.Trace(GetType(), "OnElementValueChanged()", "ElementId: {0}.", elementid);
+		// Evs.Trace(GetType(), nameof(OnElementValueChanged), "ElementId: {0}.", elementid);
 
 		if (_IsLoading || _IsInUpdateCmdUIContext || !_IsAppActivated || ApcManager.SolutionClosing)
 		{

@@ -201,6 +201,72 @@
   <data name="ConverterUom_Separator" xml:space="preserve">
     <value>separator</value>
   </data>
+  <data name="EnSourceLevels_ActivityTracing_Selected" xml:space="preserve">
+    <value>◉ Activity Tracing Only</value>
+  </data>
+  <data name="EnSourceLevels_ActivityTracing_Unselected" xml:space="preserve">
+    <value>◎ Activity Tracing Only</value>
+  </data>
+  <data name="EnSourceLevels_All_Selected" xml:space="preserve">
+    <value>◉ All</value>
+  </data>
+  <data name="EnSourceLevels_All_Unselected" xml:space="preserve">
+    <value>◎ All</value>
+  </data>
+  <data name="EnSourceLevels_Critical_Selected" xml:space="preserve">
+    <value>◉ Critical</value>
+  </data>
+  <data name="EnSourceLevels_Critical_Unselected" xml:space="preserve">
+    <value>◎ Critical</value>
+  </data>
+  <data name="EnSourceLevels_DebugOnly_Selected" xml:space="preserve">
+    <value>◉ Debug Only</value>
+  </data>
+  <data name="EnSourceLevels_DebugOnly_Unselected" xml:space="preserve">
+    <value>◎ Debug Only</value>
+  </data>
+  <data name="EnSourceLevels_Error_Selected" xml:space="preserve">
+    <value>◉ Error</value>
+  </data>
+  <data name="EnSourceLevels_Error_Unselected" xml:space="preserve">
+    <value>◎ Error</value>
+  </data>
+  <data name="EnSourceLevels_Information_Selected" xml:space="preserve">
+    <value>◉ Information</value>
+  </data>
+  <data name="EnSourceLevels_Information_Unselected" xml:space="preserve">
+    <value>◎ Information</value>
+  </data>
+  <data name="EnSourceLevels_Off_Selected" xml:space="preserve">
+    <value>◉ Off</value>
+  </data>
+  <data name="EnSourceLevels_Off_Unselected" xml:space="preserve">
+    <value>◎ Off</value>
+  </data>
+  <data name="EnSourceLevels_TraceDebug_Selected" xml:space="preserve">
+    <value>◉ Trace &amp; Debug Only</value>
+  </data>
+  <data name="EnSourceLevels_TraceDebug_Unselected" xml:space="preserve">
+    <value>◎ Trace &amp; Debug Only</value>
+  </data>
+  <data name="EnSourceLevels_TraceOnly_Selected" xml:space="preserve">
+    <value>◉ Trace Only</value>
+  </data>
+  <data name="EnSourceLevels_TraceOnly_Unselected" xml:space="preserve">
+    <value>◎ Trace Only</value>
+  </data>
+  <data name="EnSourceLevels_Verbose_Selected" xml:space="preserve">
+    <value>◉ Verbose</value>
+  </data>
+  <data name="EnSourceLevels_Verbose_Unselected" xml:space="preserve">
+    <value>◎ Verbose</value>
+  </data>
+  <data name="EnSourceLevels_Warning_Selected" xml:space="preserve">
+    <value>◉ Warning</value>
+  </data>
+  <data name="EnSourceLevels_Warning_Unselected" xml:space="preserve">
+    <value>◎ Warning</value>
+  </data>
   <data name="OptionCategoryDebugging" xml:space="preserve">
     <value>Debugging</value>
   </data>
@@ -225,20 +291,29 @@
   <data name="OptionCategoryQueryDesigner" xml:space="preserve">
     <value>Query designer</value>
   </data>
+  <data name="OptionDescriptionDebugEnableActivityLogging" xml:space="preserve">
+    <value>Enables EventSource ActivityTracing events to be included in Diag.Trace() logging.</value>
+  </data>
+  <data name="OptionDescriptionDebugEnableActivityTracing" xml:space="preserve">
+    <value>Enables Stop, Start, Suspend, Transfer and Resume event tracing.</value>
+  </data>
   <data name="OptionDescriptionDebugEnableDiagnosticsLog" xml:space="preserve">
     <value>Enables diagnostics logging to a log file.</value>
   </data>
+  <data name="OptionDescriptionDebugEnableEventSourceLogging" xml:space="preserve">
+    <value>Enables EventSource (excluding ActivityTracing) events to be included in Diag.Trace() logging.</value>
+  </data>
   <data name="OptionDescriptionDebugEnableTrace" xml:space="preserve">
     <value>Enables the execution of Diag.Trace() calls.</value>
-  </data>
-  <data name="OptionDescriptionDebugEnableTracer" xml:space="preserve">
-    <value>Enables Sql Tracer output to be directed to Diag.Trace().</value>
   </data>
   <data name="OptionDescriptionDebugLogFile" xml:space="preserve">
     <value>Location of diagnostics log file.</value>
   </data>
   <data name="OptionDescriptionDebugSaveExtrapolatedXml" xml:space="preserve">
-    <value>Saves the extrapolated IVsDataObjectSupport xml (TObjectSupport.xml), after imports, to the directory location of the diagnostics log file.</value>
+    <value>Saves the extrapolated IVsDataObjectSupport xml (VxbObjectSupport.xml), after imports, to the directory location of the diagnostics log file.</value>
+  </data>
+  <data name="OptionDescriptionDebugSourceLevel" xml:space="preserve">
+    <value>The EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
   </data>
   <data name="OptionDescriptionEquivalencyApplicationName" xml:space="preserve">
     <value>The name of the application making the connection.</value>
@@ -375,20 +450,29 @@
   <data name="OptionDialogFilterLogFile" xml:space="preserve">
     <value>All Files(*.*)|*.*</value>
   </data>
+  <data name="OptionDisplayDebugEnableActivityLogging" xml:space="preserve">
+    <value>Activity logging</value>
+  </data>
+  <data name="OptionDisplayDebugEnableActivityTracing" xml:space="preserve">
+    <value>Activity tracing</value>
+  </data>
   <data name="OptionDisplayDebugEnableDiagnosticsLog" xml:space="preserve">
-    <value>Enable diagnostics logging</value>
+    <value>Diagnostics logging</value>
+  </data>
+  <data name="OptionDisplayDebugEnableEventSourceLogging" xml:space="preserve">
+    <value>Event source logging</value>
   </data>
   <data name="OptionDisplayDebugEnableSaveExtrapolatedXml" xml:space="preserve">
     <value>Save extrapolated xml</value>
   </data>
   <data name="OptionDisplayDebugEnableTrace" xml:space="preserve">
-    <value>Enable trace</value>
-  </data>
-  <data name="OptionDisplayDebugEnableTracer" xml:space="preserve">
-    <value>Enable tracer</value>
+    <value>Diagnostics tracing</value>
   </data>
   <data name="OptionDisplayDebugLogFile" xml:space="preserve">
     <value>Log file</value>
+  </data>
+  <data name="OptionDisplayDebugSourceLevel" xml:space="preserve">
+    <value>Event trace level</value>
   </data>
   <data name="OptionDisplayEquivalencyApplicationName" xml:space="preserve">
     <value>Application name</value>

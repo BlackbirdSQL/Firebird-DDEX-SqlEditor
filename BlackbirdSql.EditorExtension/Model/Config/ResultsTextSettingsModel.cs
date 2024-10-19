@@ -7,7 +7,7 @@ using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 using BlackbirdSql.Sys;
-
+using BlackbirdSql.Sys.Interfaces;
 using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
 using GlobalizedDescriptionAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
 using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
@@ -37,7 +37,7 @@ public class ResultsTextSettingsModel : AbstractSettingsModel<ResultsTextSetting
 	}
 
 
-	public ResultsTextSettingsModel(IBsTransientSettings transientSettings)
+	public ResultsTextSettingsModel(IBsSettingsProvider transientSettings)
 		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 	}

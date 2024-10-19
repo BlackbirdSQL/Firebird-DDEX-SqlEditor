@@ -4,6 +4,7 @@
 using System.ComponentModel;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
+using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
 
@@ -26,7 +27,7 @@ public class EquivalencySettingsModel : AbstractSettingsModel<EquivalencySetting
 	// ---------------------------------------------------------------------------------
 
 
-	public EquivalencySettingsModel(IBsTransientSettings transientSettings)
+	public EquivalencySettingsModel(IBsSettingsProvider transientSettings)
 		: base(C_Package, C_Group, C_PropertyPrefix, transientSettings)
 	{
 

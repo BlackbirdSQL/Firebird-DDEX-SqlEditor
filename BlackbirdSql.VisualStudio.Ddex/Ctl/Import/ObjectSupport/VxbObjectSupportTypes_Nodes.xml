@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+
+
+	<!-- Bookmark -->
+	<!-- The underlying type for table columns is either TableColumn, ViewColumn, IndexColumn, ForeignKeyColumn or TriggerColumn. -->
+	<!-- The selector uses either DslColumns(FbColumns), DslViewColumns(new), DslIndexColumns(new), DslForeignKeyColumns(new), DslTriggerColumns(new) -->
+	<!-- parentType: Table, View, Index, ForeignKey or Trigger -->
+	<!-- parentColumn: TABLE_NAME, VIEW_NAME, INDEX_NAME, CONSTRAINT_NAME  or TRIGGER_NAME -->
+	<!-- collectionName: Columns, ViewColumns, IndexColumns, ForeignKeyColumns or TriggerColumns -->
+	<!-- tplServiceIdsRef:  TplServiceRefColumnIdsRef or Empty -->
+	<Define name="TplTypeColumn" parameters="type, parentType, parentColumn, collectionName, dsLevel, parentRefType, parentPreciseType, subParentRefType, subParentPreciseType, refType, preciseType" >
+		<Type name="$(type)" preferredOrdering="ORDINAL_POSITION">
+			<Identifier>
+				<PartListRef name="TplIdentifierList$(parentType)Column" />
+			</Identifier>
+			<Properties>
+				<PropertyListRef name="TplPropertyList$(parentType)Column" />
+				<Property name="ORDINAL_POSITION" type="System.Int16" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="DIRECTION_FLAG" type="System.Int32" />
+				<Property name="IS_NULLABLE" type="System.Boolean" />
+				<Property name="FIELD_DATA_TYPE" type="System.String" />
+				<Property name="FIELD_SIZE" type="System.Int32" />
+				<Property name="NUMERIC_PRECISION" type="System.Int32" />
+				<Property name="NUMERIC_SCALE" type="System.Int32" />
+				<Property name="FIELD_DEFAULT" type="System.String" />
+				<Property name="COLLATION_NAME" type="System.String" />
+				<Property name="CHARACTER_SET_NAME" type="System.String" />
+				<Property name="DOMAIN_NAME" type="System.String" />
+				<Property name="IS_COMPUTED" type="System.Boolean" />
+				<Property name="EXPRESSION" type="System.String" />
+				<Property name="IS_IDENTITY" type="System.Boolean" />
+				<Property name="IS_UNIQUE" type="System.Boolean" />
+				<Property name="IN_PRIMARYKEY" type="System.Boolean" />
+				<Property name="SEQUENCE_GENERATOR" type="System.String" />
+				<Property name="IDENTITY_SEED" type="System.Int64" />
+				<Property name="IDENTITY_INCREMENT" type="System.Int32" />
+				<Property name="IDENTITY_CURRENT" type="System.Int64" />
+				<Property name="PARENT_TYPE" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.VxbObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="$(collectionName)" />
+					</Parameters>
+				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService$(dsLevel)" arguments="$(parentRefType),$(parentPreciseType),$(subParentRefType),$(subParentPreciseType),$(refType),$(preciseType)" />
+			</Services>
+		</Type>
+	</Define>
+
+
+
+
+	<Define name="TplTypeTrigger" parameters="triggerType" >
+		<Type name="$(triggerType)" preferredOrdering="TRIGGER_NAME">
+			<Identifier>
+				<Part name="TABLE_CATALOG" type="System.String" />
+				<Part name="TABLE_SCHEMA" type="System.String" />
+				<Part name="TABLE_NAME" type="System.String" />
+				<Part name="TRIGGER_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="TRIGGER_NAME" isIdentifierPart="true" />
+				<Property name="TRIGGER_TYPE" type="System.Int64" />
+				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
+				<Property name="IS_INACTIVE" type="System.Boolean" />
+				<Property name="PRIORITY" type="System.Int16" />
+				<Property name="EXPRESSION" type="System.String" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="IS_IDENTITY" type="System.Boolean" />
+				<Property name="SEQUENCE_GENERATOR" type="System.String" />
+				<Property name="IDENTITY_SEED" type="System.Int64" />
+				<Property name="IDENTITY_INCREMENT" type="System.Int32" />
+				<Property name="IDENTITY_CURRENT" type="System.Int32" />
+				<Property name="DEPENDENCY_COUNT" type="System.Int32" />
+				<Property name="DEPENDENCY_FIELDS" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.VxbObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="$(triggerType)s" />
+					</Parameters>
+				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService4" arguments="Table,101,null,0,Trigger,103" />
+			</Services>
+		</Type>
+	</Define>
+
+</DataObjectSupport>

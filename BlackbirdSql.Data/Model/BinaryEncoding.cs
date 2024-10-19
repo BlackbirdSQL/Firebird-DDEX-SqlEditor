@@ -31,7 +31,7 @@ public class BinaryEncoding : Encoding
 
 	static void Validate(object data, int dataLength, int index, int count)
 	{
-		// Tracer.Trace();
+		// Evs.Trace();
 		if (data == null)
 		{
 			ArgumentNullException ex = new();

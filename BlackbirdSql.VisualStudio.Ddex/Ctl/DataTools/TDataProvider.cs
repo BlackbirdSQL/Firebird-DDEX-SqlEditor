@@ -151,11 +151,11 @@ public class TDataProvider
 			};
 			Dictionary<string, Type> dictionary2 = new Dictionary<string, Type>
 			{
-				{ TDataSource.FbDataSource.Name, typeof(TConnectionUIControl) }
+				{ TDataSource.FbDataSource.Name, typeof(VxbConnectionUIControl) }
 			};
 			Dictionary<string, Type> dictionary3 = new Dictionary<string, Type>
 			{
-				{ "", typeof(TConnectionUIProperties) }
+				{ "", typeof(VxbConnectionUIProperties) }
 			};
 				_BlackbirdSqlDataProvider = new (NativeDb.Invariant, Resources.DataProvider_Ddex, Resources.DataProvider_Ddex_Short,
 				Resources.DataProvider_Ddex_Description, NativeDb.ConnectionType, dictionary, dictionary2, dictionary3);

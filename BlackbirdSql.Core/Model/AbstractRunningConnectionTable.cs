@@ -4,7 +4,6 @@ using System.Data;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Enums;
-
 using static BlackbirdSql.CoreConstants;
 using static BlackbirdSql.SysConstants;
 
@@ -54,6 +53,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 
 	#endregion Constructors / Destructors
+
 
 
 
@@ -112,7 +112,6 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	// =========================================================================================================
 
 
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Generates a unique DatasetKey (ConnectionName) or DatasetId (DatabaseName)
@@ -121,11 +120,10 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// At most one should be specified. If both are specified there will be a
 	/// redundancy check of the connection name otherwise the connection name takes
 	/// precedence.
-	/// If both are null the proposed derivedDatasetId will be derived from the dataSource.
+	/// If both are null the proposed derivedDatasetId will be derived from the
+	/// dataSource.
 	/// </summary>
-	/// <param name="connectionSource">
-	/// The ConnectionSource making the request.
-	/// </param>
+	/// <param name="connectionSource">The ConnectionSource making the request.</param>
 	/// <param name="proposedConnectionName">
 	/// The proposed DatasetKey (ConnectionName) property else null.
 	/// </param>
@@ -144,8 +142,14 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// </param>
 	/// <param name="storedConnectionUrl">
 	/// If a stored connection is being modified, the connectionUrl of the stored
-	/// connection, else null. If connectionUrl matches connectionUrl they will
-	/// be considered equal and it will be ignored.</param>
+	/// connection, else null.
+	/// If storedConnectionUrl matches connectionUrl they will be considered equal and
+	/// it will be ignored.
+	/// </param>
+	/// <param name="createServerExplorerConnection">
+	/// Indicates wether or not the connection will be added as an SE Connection internally
+	/// if it does not exist.
+	/// </param>
 	/// <param name="outStoredConnectionSource">
 	/// Out | The ConnectionSource of connectionUrl if the connection exists in the rct
 	/// else EnConnectionSource.None.
@@ -155,40 +159,36 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// connectionUrl points to an existing connection, then the target has changed and
 	/// outChangedTargetDatasetKey refers to the changed target's DatasetKey, else null.
 	/// </param>
-	/// <param name="outUniqueDatasetKey">
-	/// Out | The final unique DatasetKey.
-	/// </param>
+	/// <param name="outUniqueDatasetKey">Out | The final unique DatasetKey.</param>
 	/// <param name="outUniqueConnectionName">
-	/// Out | The unique resulting proposed ConnectionName. If null is returned then whatever was
-	/// provided in proposedConnectionName is correct and remains as is. If "" is
-	/// returned then whatever was provided in proposedConnectionName is good but changes the
-	/// existing name. If a value is returned then proposedConnectionName was
-	/// ambiguous and outUniqueConnectionName must be used in it's place.
+	/// Out | The unique resulting proposed ConnectionName. If null is returned then
+	/// whatever was provided in proposedConnectionName is correct and remains as is. If
+	/// "" is returned then whatever was provided in proposedConnectionName is good but
+	/// changes the existing name. If a value is returned then proposedConnectionName
+	/// was ambiguous and outUniqueConnectionName must be used in it's place.
 	/// outUniqueConnectionName and outUniqueDatasetId are mutually exclusive.
 	/// </param>
 	/// <param name="outUniqueDatasetId">
-	/// Out | The unique resulting proposed DatsetId. If null is returned then whatever was
-	/// provided in proposedDatasetId is correct and remains as is. If "" is
+	/// Out | The unique resulting proposed DatsetId. If null is returned then whatever
+	/// was provided in proposedDatasetId is correct and remains as is. If "" is
 	/// returned then whatever was provided in proposedDatasetId is good but changes the
 	/// existing name. If a value is returned then proposedDatasetId was ambiguous and
-	/// outUniqueDatasetId must be used in it's place. outUniqueConnectionName and
-	/// outUniqueDatasetId are mutually exclusive.
+	/// outUniqueDatasetId must be used in it's place.
+	/// outUniqueConnectionName and outUniqueDatasetId are mutually exclusive.
 	/// </param>
 	/// <returns>
-	/// A boolean indicating whether or not the provided arguments would cause a new
-	/// connection to be registered in the rct. This only applies to registration in
-	/// the rct and does not determine whether or not a new connection would be created
-	/// in the SE. The caller must determine that.
+	/// A boolean indicating whether or not an Rct connection exists for the provided
+	/// arguments.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	protected override bool GenerateUniqueDatasetKey(EnConnectionSource connectionSource,
 		ref string proposedConnectionName, ref string proposedDatasetId, string dataSource,
 		string dataset, string connectionUrl, string storedConnectionUrl,
-		out EnConnectionSource outStoredConnectionSource,
+		ref bool createServerExplorerConnection, out EnConnectionSource outStoredConnectionSource,
 		out string outChangedTargetDatasetKey, out string outUniqueDatasetKey,
 		out string outUniqueConnectionName, out string outUniqueDatasetId)
 	{
-		bool rNewRctConnection = true;
+		bool retRctExists = false;
 
 		// These are the 5 values in the tuple to be returned except .
 		outStoredConnectionSource = EnConnectionSource.Unknown;
@@ -203,33 +203,42 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			proposedConnectionName = null;
 
 		if (string.IsNullOrWhiteSpace(proposedDatasetId))
-		{
 			proposedDatasetId = null;
-		}
 
 
 		if (storedConnectionUrl != null && storedConnectionUrl == connectionUrl)
 			storedConnectionUrl = null;
 
-		string existingConnectionName = null;
-		string existingDatasetId = null;
+		string storedDatasetKey = null;
+		string storedConnectionName = null;
+		string storedDatasetId = null;
 
 		// Get the index if the connection already exists.
 		if (InternalTryGetHybridRowValue(connectionUrl, EnRctKeyType.ConnectionUrl, out DataRow row))
 		{
-			rNewRctConnection = false;
+			retRctExists = true;
+
 			connectionIndex = Convert.ToInt32(row["Id"]);
 
 			outStoredConnectionSource = (EnConnectionSource)(int)row[C_KeyExConnectionSource];
 
-			existingConnectionName = Cmd.IsNullValueOrEmpty(row[C_KeyExConnectionName]) ? null : row[C_KeyExConnectionName].ToString();
-			existingDatasetId = Cmd.IsNullValueOrEmpty(row[C_KeyExDatasetId]) ? null : row[C_KeyExDatasetId].ToString();
-
+			storedDatasetKey = Cmd.IsNullValueOrEmpty(row[C_KeyExDatasetKey]) ? null : row[C_KeyExDatasetKey].ToString();
+			storedConnectionName = Cmd.IsNullValueOrEmpty(row[C_KeyExConnectionName]) ? null : row[C_KeyExConnectionName].ToString();
+			storedDatasetId = Cmd.IsNullValueOrEmpty(row[C_KeyExDatasetId]) ? null : row[C_KeyExDatasetId].ToString();
 
 			// Notify caller that the proposed settings apply to a different connection.
 			if (storedConnectionUrl != null)
 				outChangedTargetDatasetKey = (string)row[C_KeyExDatasetKey];
+
+			// If the connection is already ServerExplorer, do not create.
+			createServerExplorerConnection &= outStoredConnectionSource != EnConnectionSource.ServerExplorer;
 		}
+
+		// If the connection source is EntityDataModel and the existing is not ServerExplorer
+		// we have to add it internally.
+		createServerExplorerConnection |= connectionSource == EnConnectionSource.EntityDataModel
+			&& outStoredConnectionSource != EnConnectionSource.ServerExplorer;
+
 
 
 		// It's always preferable to propose a datasetId.
@@ -247,14 +256,23 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 				proposedDatasetId = derivedDatasetId;
 				proposedConnectionName = null;
 
-				existingDatasetId ??= GetDerivedDatasetIdFromConnectionName(dataSource, existingConnectionName);
-				existingConnectionName = null;
+				storedDatasetId ??= GetDerivedDatasetIdFromConnectionName(dataSource, storedConnectionName);
+				storedConnectionName = null;
 			}
 		}
 
 		if (proposedConnectionName != null)
 		{
-			outUniqueConnectionName = GetUniqueConnectionName(proposedConnectionName, connectionIndex);
+			if (retRctExists && storedConnectionName != null && storedConnectionName == proposedConnectionName)
+			{
+				// If the connection exists and the proposed connection name == the existing stored name
+				// then we don't need to generate a unique name.
+				outUniqueConnectionName = storedConnectionName;
+			}
+			else
+			{
+				outUniqueConnectionName = GetUniqueConnectionName(proposedConnectionName, connectionIndex);
+			}
 
 			outUniqueDatasetKey = outUniqueConnectionName;
 
@@ -262,7 +280,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			if (proposedConnectionName == outUniqueConnectionName)
 			{
 				// Does it change the existing?
-				if (existingConnectionName != null && existingConnectionName != proposedConnectionName)
+				if (storedConnectionName != null && storedConnectionName != proposedConnectionName)
 					outUniqueConnectionName = "";
 				else
 					outUniqueConnectionName = null;
@@ -270,19 +288,30 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		}
 		else
 		{
-			// The derived datasetId will form the basis of the datasetId part of an auto-generated key.
-			derivedDatasetId = proposedDatasetId ?? dataset;
+			if (retRctExists && storedDatasetId != null && storedDatasetId == proposedDatasetId)
+			{
+				// If the connection exists and the proposed datasetId == the existing stored datasetId
+				// then we don't need to generate a unique id.
+				outUniqueDatasetKey = storedDatasetKey;
+				outUniqueDatasetId = storedDatasetId;
+			}
+			else
+			{
 
-			(outUniqueDatasetKey, outUniqueDatasetId) = GetUniqueDatasetId(dataSource, derivedDatasetId, connectionIndex);
+				// The derived datasetId will form the basis of the datasetId part of an auto-generated key.
+				derivedDatasetId = proposedDatasetId ?? dataset;
+
+				(outUniqueDatasetKey, outUniqueDatasetId) = GetUniqueDatasetId(dataSource, derivedDatasetId, connectionIndex);
+			}
 
 			// The proposedDatasetId is good.
 			if (proposedDatasetId != null && proposedDatasetId == outUniqueDatasetId)
 			{
 				// Does it change the existing?
 
-				existingDatasetId ??= GetDerivedDatasetIdFromConnectionName(dataSource, existingConnectionName);
+				storedDatasetId ??= GetDerivedDatasetIdFromConnectionName(dataSource, storedConnectionName);
 
-				if (existingDatasetId != null && existingDatasetId != proposedDatasetId)
+				if (storedDatasetId != null && storedDatasetId != proposedDatasetId)
 					outUniqueDatasetId = "";
 				else
 					outUniqueDatasetId = null;
@@ -290,13 +319,14 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		}
 
 
-		// Tracer.Trace(GetType(), "GenerateUniqueDatasetKey()", "DataSource: {0}, Dataset: {1},
-		//		proposedConnectionName: {2}, proposedDatasetId: {3},  rNewConnection: {4}, rUniqueDatasetKey: {5},
-		//		rUniqueConnectionName: {6}, rUniqueDatasetId: {7}", dataSource ?? "Null", dataset ?? "Null", 
-		//		proposedConnectionName ?? "Null", proposedDatasetId ?? "Null", rNewConnection,
-		//		rUniqueDatasetKey ?? "Null", rUniqueConnectionName ?? "Null", rUniqueDatasetId ?? "Null");
+		// Evs.Debug(GetType(), "GenerateUniqueDatasetKey()",
+		//	$"DataSource: {dataSource ?? "Null"}, Dataset: {dataset ?? "Null"}, " +
+		//	$"proposedConnectionName: {proposedConnectionName ?? "Null"}, " +
+		//	$"proposedDatasetId: {proposedDatasetId ?? "Null"},  " +
+		//	$"rNewRctConnection: {rNewRctConnection}, outUniqueDatasetKey: {outUniqueDatasetKey}, " +
+		//	$"outUniqueConnectionName: {outUniqueConnectionName}, outUniqueDatasetId: {outUniqueDatasetId}.");
 
-		return rNewRctConnection;
+		return retRctExists;
 	}
 
 
@@ -391,8 +421,9 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		string proposedDatasetIdPrefix = Cmd.GetUniqueIdentifierPrefix(proposedDatasetId);
 
-		// Tracer.Trace(GetType(), "GetUniqueDatasetId()", "dataSource: {0}, proposedDatasetId: {1}, connectionIndex: {2}, proposedDatasetIdPrefix: {3}.",
-		//	dataSource, proposedDatasetId, connectionIndex, proposedDatasetIdPrefix);
+		// Evs.Debug(GetType(), "GetUniqueDatasetId()",
+		//	$"dataSource: {dataSource}, proposedDatasetId: {proposedDatasetId}, " +
+		//	$"connectionIndex: {connectionIndex}, proposedDatasetIdPrefix: {proposedDatasetIdPrefix}.");
 
 		// Establish a unique DatasetId using i as the suffix.
 		// This loop will execute at least once.
@@ -470,7 +501,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		string connectionUrl = csa.Moniker;
 
-		// Tracer.Trace(GetType(), "InternalUpdateRegisteredConnection()", "Update connection string: {0}", connectionString);
+		// Evs.Debug(GetType(), "InternalUpdateRegisteredConnection()", $"Update connection string: {connectionString}.");
 
 
 		// Nothing to update. New connection.
@@ -536,10 +567,8 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		rowObject = row["DatasetId"];
 		string rowDatasetId = rowObject != DBNull.Value ? rowObject?.ToString() : null;
 
-		// string str = null;
-
 		/*
-		str = $"Original Data row for DatasetKey: {csa.DatasetKey}, ConnectionKey: {csa.ConnectionKey}: ";
+		string str = $"Original Data row for DatasetKey: {csa.DatasetKey}, ConnectionKey: {csa.ConnectionKey}: ";
 
 		string colName;
 
@@ -604,7 +633,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		// Update the source. If canTakeOwnerShip the updating source can take ownership.
 
-		// Tracer.Trace(GetType(), "InternalUpdateRegisteredConnection()", "Updateable - Updating row.");
+		// Evs.Debug(GetType(), "InternalUpdateRegisteredConnection()", "Updateable - Updating row.");
 
 		if (!csa.ContainsKey(C_KeyExConnectionSource) || csa.ConnectionSource != (canTakeOwnerShip ? source : rowConnectionSource))
 			csa.ConnectionSource = (canTakeOwnerShip ? source : rowConnectionSource);
@@ -674,7 +703,8 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 			// str += $"\nOriginal csa: {csaOriginal.ConnectionString}.\nNew csa: {csa.ConnectionString}.";
 
-			// Tracer.Trace(GetType(), "InternalUpdateRegisteredConnection()", "\n _LoadDataCardinal: {0}, _databases==null: {1}\n{2}", _LoadDataCardinal, _InternalDatabases == null, str);
+			// Evs.Debug(GetType(), "InternalUpdateRegisteredConnection()",
+			//	$"\n _LoadDataCardinal: {_LoadDataCardinal}, _InternalDatabases==null: {_InternalDatabases == null}\n{str}");
 		}
 
 	}

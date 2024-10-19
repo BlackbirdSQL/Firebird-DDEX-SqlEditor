@@ -206,7 +206,7 @@ public static partial class ExtensionMembers
 			throw ex;
 		}
 
-		// Tracer.Trace(typeof(IVsDataExplorerConnection), "GetConnectionKey()", "Retrieved ConnectionKey: {0}.", retval);
+		// Evs.Debug(typeof(IVsDataExplorerConnection), "GetConnectionKey()", $"Retrieved ConnectionKey: {retval}.");
 
 		return retval;
 	}

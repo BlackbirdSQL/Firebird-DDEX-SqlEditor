@@ -50,7 +50,8 @@ public class Moniker
 
 		EnModelObjectType objType = node.ModelObjectType();
 
-		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)", "Node type for node '{0}' is {1}.", node.Name, objType.ToString());
+		// Evs.Debug(typeof(Moniker), ".ctor(IVsDataExplorerNode, EnModelTargetType)",
+		//	$"Node type for node '{node.Name}' is {objType.ToString()}.");
 
 		IVsDataObject @dbObj;
 
@@ -131,6 +132,7 @@ public class Moniker
 		switch (targetType)
 		{
 			case EnModelTargetType.QueryScript:
+			case EnModelTargetType.CreateScript:
 			case EnModelTargetType.AlterScript:
 				objType = EnModelObjectType.NewQuery;
 				break;
@@ -145,7 +147,8 @@ public class Moniker
 		string objectName = objType.ToString();
 
 
-		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)", "Node type is {0}.", objType);
+		// Evs.Debug(typeof(Moniker), ".ctor(IVsDataExplorerConnection, EnModelTargetType)",
+		//	$"Node type is {objType}.");
 
 		IVsDataObject @dbObj = @nodeObj;
 
@@ -288,7 +291,7 @@ public class Moniker
 		// Serialize the db path.
 		string str = Serialization.Serialize64(string.IsNullOrEmpty(Database) ? "nodatabase" : Database.ToLowerInvariant());
 
-		// Tracer.Trace(GetType(), "BuildStorageDatabaseUrl()", "Serialized dbpath: {0}", str);
+		// Evs.Debug(GetType(), "BuildDatabaseUrl()", $"Serialized dbpath: {str}");
 
 		urlb.Path = str + SystemData.C_UnixFieldSeparator;
 
@@ -304,7 +307,7 @@ public class Moniker
 			throw;
 		}
 
-		// Tracer.Trace(GetType(), "BuildDatabaseUrl()", "Url: {0}", result);
+		// Evs.Debug(GetType(), "BuildDatabaseUrl()", $"Url: {result}");
 
 		return result;
 	}
@@ -401,7 +404,7 @@ public class Moniker
 			result = filename;
 		}
 
-		// Tracer.Trace(GetType(), "BuildDocumentMoniker()", "Result DocumentMoniker: {0}", result);
+		// Evs.Debug(GetType(), "BuildDocumentMoniker()", $"Result DocumentMoniker: {result}");
 
 		return result;
 	}

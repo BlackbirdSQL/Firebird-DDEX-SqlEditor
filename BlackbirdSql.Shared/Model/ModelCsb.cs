@@ -157,7 +157,7 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 					return connection;
 				}
 
-				// Tracer.Trace(GetType(), "get_Connection()", "Connections are not equivalent: \nCurrent: {0}\nRegistered: {1}",
+				// Evs.Trace(GetType(), nameof(get_Connection), "Connections are not equivalent: \nCurrent: {0}\nRegistered: {1}",
 				//	csaCurrent.ConnectionString, csaRegistered.ConnectionString);
 
 				if (Csb.AreEquivalent(csaRegistered, csaCurrent, Csb.EquivalencyKeys))
@@ -175,7 +175,7 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 				}
 
 				// If we're here it's a reset.
-				// Tracer.Trace(GetType(), "get_LiveConnection()", "The connection was reset because it is is no longer equivalent.");
+				// Evs.Trace(GetType(), nameof(get_LiveConnection), "The connection was reset because it is is no longer equivalent.");
 
 				return null;
 			}

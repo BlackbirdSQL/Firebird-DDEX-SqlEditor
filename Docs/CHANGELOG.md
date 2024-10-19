@@ -3,16 +3,23 @@
 ## Change log
 
 
-### v14.5.1.3 Minor enhancements and code cleanup.
+### v14.5.2.0 Major update including Selective Intellisense.
 
 #### New / Enhancements
 - Replaced the `Enable Intellisense` SqlEditor user option with `Intellisense Policy`, which provides a radio button choice of `Active Query Only`, `All Queries` and `Disabled`. The default policy is `Active Query Only` which displays only the current active query's `Intellisense` messages. The option applies to only __BlackbirdSql__ SqlEditor queries. This eliminates the ambiguity caused by Intellisense messages when multiple query windows with the same or similar names are open.
+- Implemented first phase of `EventSource` tracing and `EventCounter` telemetry. This replaces the legacy MS SqlServer `SqlTracer`, `TraceUtils` and Etw tracing and telemetry from the original Firebird port. Several User Options settings have been added to the diagnostics settings to cater for additional diagnostics filtering, which will be improved over time. All assemblies use the same BlackbirdSql EventSource provider base class, but have distinct static instances (all named `Evs`) by late binding to the base class using type parameters. This is simply to have only class declarative code in the final `Evs` types. 
 - Added an n/nn (Statement n of Total nn) grid identifier to the upper left cell of grids for queries with multiple result sets.
+- Streamlined the reindexing of project type resolution services so that only the extension's shipped EntityFramework assembly version and the applicable project's version are checked for reindexing.
+- Added wrappers for all `Path` class methods that operate on file paths. The wrappers remove common invalid and non-printable characters from the path before calling the native `Path` method.
+- Code cleanup: Changed the prefix of all Ddex IVs interface implementations from the previous Borland `T` class type prefix convention to `Vxb` (VS Extension BlackbirdSql) because it conflicted with the Microsoft `T` prefix convention for __Type Parameter/Specifier__ names.
 - Code cleanup: Removed the `GuidId` class because the built-in `CommandID` class is functionally equivalent.
 - Code cleanup: Moved the __SplitNext__ and __SplitPrev__ built-in `VSStandardCommandSet97` commands into the `CommandMapper` as `IBsCommandHandler` type interfaces. This provides for a uniform system of handling global commands that is in line with the handling of internal extension commands.
 - Code cleanup: Separated __Action__ `QueryManager` states as a subset of the new __Operation__ state in the state syncronicity stack, due to subtle differences in their behavior during push/pop stack operations. __Virtual__ states are cleared when the last __Action__ state is popped. When the __Operation__ state is popped, __Virtual__ states are only cleared if no __Action__ states exist in the stack. __Virtual__ states become volatile whenever an __Operation__ or __Action__ state is pushed onto the stack, as was their behavior previously. The __Operation__ state marker is set as the second to last enum marker in the `EnQueryState` enum.
 #### Fixes
-- Fixed bug where the FileDialog selection was not being correctly assigned in the Connection Dialog.
+- Fixed bug where the FileDialog selection was not being correctly assigned in the Connection Dialog. Under certain conditions this also affected the ability to add the path manually.
+- Fixed `IDSRefBuilder` functionality for database `ScalarFunctions`.
+- Fixed issue where creating a new session connection within a query, with the __"Add new connections to Server Explorer"__ checkbox checked, was not creating a new Server Explorer connection.
+- Fixed bug where a Server Explorer connection's events were not handled when the connection was added internally from a query window or Entity Data Model connection dialog.
 
 
 ### v14.5.1.1 Minor enhancements and code cleanup.

@@ -120,14 +120,14 @@ private:
 			return;
 
 		int sourceLineNumber = -1;
-		SysStr^ methodName = "[Release: MemberName Unavailable]", ^ sourceFilePath = "[Release: SourcePath Unavailable]";
+		SysStr^ methodName = "[Release: MemberName Unavailable]", ^ sourcePath = "[Release: SourcePath Unavailable]";
 
 #ifdef _DEBUG
 		StackFrame^ frame = frame = stack->GetFrame(0);
 		MethodInfo^ methodInfo = static_cast<MethodInfo^>(frame->GetMethod());;
 
 		methodName = methodInfo->Name;
-		sourceFilePath = frame->GetFileName();
+		sourcePath = frame->GetFileName();
 		sourceLineNumber = frame->GetFileLineNumber();
 #endif // _DEBUG
 
@@ -136,15 +136,15 @@ private:
 		SysStr^ logfile = LogFile;
 
 
-		if ((pos = sourceFilePath->IndexOf("\\BlackbirdSql")) == -1)
-			pos = sourceFilePath->IndexOf("\\BlackbirdDsl");
+		if ((pos = sourcePath->IndexOf("\\BlackbirdSql")) == -1)
+			pos = sourcePath->IndexOf("\\BlackbirdDsl");
 
 		if (pos != -1)
-			sourceFilePath = sourceFilePath->Substring(pos + 1);
+			sourcePath = sourcePath->Substring(pos + 1);
 
 
 		SysStr^ str = Context + ":" + (isException ? ":EXCEPTION: " : " ") + (System::DateTime::Now).ToString("hh.mm.ss.ffffff") + ":   "
-			+ methodName + " :: " + sourceFilePath + " :: " + sourceLineNumber +
+			+ methodName + " :: " + sourcePath + " :: " + sourceLineNumber +
 			(message == "" ? "" : System::Environment::NewLine + "\t" + message) + System::Environment::NewLine;
 
 #ifdef _DEBUG

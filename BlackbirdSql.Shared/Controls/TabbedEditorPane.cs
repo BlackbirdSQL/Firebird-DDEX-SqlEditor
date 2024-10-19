@@ -581,7 +581,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 	/// </summary>
 	private void AsyncAutoExecuteQuery()
 	{
-		// Tracer.Trace(GetType(), "AsyncAutoExecuteQuery()", "ExecutionType: {0}.", executionType);
+		// Evs.Trace(GetType(), nameof(AsyncAutoExecuteQuery), "ExecutionType: {0}.", executionType);
 
 		if (!_AutoExecute)
 			return;
@@ -612,7 +612,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 	/// </summary>
 	public void AsyncExecuteQuery(EnSqlExecutionType executionType)
 	{
-		// Tracer.Trace(GetType(), "AsyncExecuteQuery()");
+		// Evs.Trace(GetType(), nameof(AsyncExecuteQuery));
 
 
 		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
@@ -627,7 +627,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			{
 				QueryManager qryMgr = QryMgr;
 
-				// Tracer.Trace(GetType(), "AsyncExecuteQuery", "calling QryMgr.AsyncExecute()");
+				// Evs.Trace(GetType(), "AsyncExecuteQuery", "calling QryMgr.AsyncExecute()");
 
 
 				// ----------------------------------------------------------------------------------- //
@@ -663,7 +663,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		IOleServiceProvider site = pvar as IOleServiceProvider;
 		if (textView is not IObjectWithSite objectWithSite)
 		{
-			// Tracer.Trace(typeof(AbstractSqlEditorTab), "ConfigureTextViewForAutonomousFind", "Couldn't cast textView to IObjectWithsite!");
+			// Evs.Trace(typeof(AbstractSqlEditorTab), "ConfigureTextViewForAutonomousFind", "Couldn't cast textView to IObjectWithsite!");
 			return;
 		}
 
@@ -1253,7 +1253,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 	protected override int SaveFiles(ref uint pgrfSaveOptions)
 	{
-		// Tracer.Trace(GetType(), "SaveFiles()");
+		// Evs.Trace(GetType(), nameof(SaveFiles));
 
 		if (pgrfSaveOptions == (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave)
 		{
@@ -1678,7 +1678,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			return command.Exec(nCmdexecopt, pvaIn, pvaOut);
 
 
-		// Tracer.Trace(GetType(), "OnExec()", "pguidCmdGroup: {0}, nCmdId: {1}.", pguidCmdGroup, nCmdID);
+		// Evs.Trace(GetType(), nameof(OnExec), "pguidCmdGroup: {0}, nCmdId: {1}.", pguidCmdGroup, nCmdID);
 
 		/* No extended command handlers
 		 * 
@@ -1753,7 +1753,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 	private void OnTabActivated(object sender, EventArgs args)
 	{
-		// Tracer.Trace(GetType(), "TabActivatedHandler", "SenderType: {0}, View: {1}.", sender.GetType().Name, (sender as AbstractEditorTab).GetView());
+		// Evs.Trace(GetType(), "TabActivatedHandler", "SenderType: {0}, View: {1}.", sender.GetType().Name, (sender as AbstractEditorTab).GetView());
 		((sender as AbstruseEditorTab).GetView() as ResultPane)?.SetFocus();
 	}
 
@@ -1807,7 +1807,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			string moniker = GetDocumentMoniker(frame);
 			string auxDocDataMoniker = auxDocData.InternalMoniker;
 
-			// Tracer.Trace(GetType(), "OnShow()",
+			// Evs.Trace(GetType(), nameof(OnShow),
 			//	"PrimaryCookie: {0}, AuxDocData.DocCookie: {1}, DocumentMoniker: {2}, AuxDocData.InternalMoniker: {3}.",
 			//	GetPrimaryCookie(frame), auxDocDataCookie, moniker, auxDocDataMoniker);
 

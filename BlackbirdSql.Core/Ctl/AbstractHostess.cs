@@ -118,7 +118,8 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 
 	public bool ActivateDocumentIfOpen(string documentMoniker)
 	{
-		// Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "documentMoniker: {0}", documentMoniker);
+		Evs.Trace(GetType(), nameof(ActivateDocumentIfOpen), "documentMoniker: {documentMoniker}.");
+
 		Diag.ThrowIfNotOnUIThread();
 
 		return ActivateDocumentIfOpen(documentMoniker, false) != null;
@@ -128,7 +129,8 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 
 	public IVsWindowFrame ActivateDocumentIfOpen(string mkDocument, bool doNotShowWindowFrame)
 	{
-		// Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "mkDocument: {0}, doNotShowWindowFrame: {1}", mkDocument, doNotShowWindowFrame);
+		Evs.Trace(GetType(), "ActivateDocumentIfOpen(string, bool)",
+			$"mkDocument: {mkDocument}, doNotShowWindowFrame: {doNotShowWindowFrame}.");
 
 		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>()
 			?? throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
@@ -160,7 +162,7 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 
 	public void PostExecuteCommand(CommandID command, int delay = 0)
 	{
-		// Tracer.Trace(GetType(), "AbstractHostess.PostExecuteCommand", "command: {0}", command);
+		Evs.Trace(GetType(), nameof(PostExecuteCommand), "command: {command}.");
 
 		_ = ShellService;
 

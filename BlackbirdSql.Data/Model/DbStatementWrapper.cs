@@ -10,7 +10,6 @@ using BlackbirdSql.Data.Ctl;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
-using EnvDTE;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
 
@@ -230,7 +229,6 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 				case SqlStatementType.EventWait:
 				case SqlStatementType.Execute:
 				case SqlStatementType.ExecuteImmediate:
-				case SqlStatementType.ExecuteProcedure:
 				case SqlStatementType.Grant:
 				case SqlStatementType.Insert:
 				case SqlStatementType.InsertCursor:
@@ -255,6 +253,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 					break;
 
 				case SqlStatementType.ExecuteBlock:
+				case SqlStatementType.ExecuteProcedure:
 				case SqlStatementType.Select:
 
 					ProvideCommand().CommandText = statement.Text;
@@ -473,6 +472,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 		try
 		{
+			// Evs.Debug(GetType(), nameof(ExecuteCommandAsync), $"Command: {_Command.CommandText}");
 			rowsAffected = await _Command.ExecuteNonQueryAsync(cancelToken);
 		}
 		catch (Exception ex)

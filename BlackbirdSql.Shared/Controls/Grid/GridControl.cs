@@ -4216,12 +4216,12 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		if (ApcManager.DisposableWaitCursor != null)
 		{
-			// Tracer.Trace(GetType(), "SetCursorFromHitTest()", "DisposableWaitCursor IS active");
+			// Evs.Trace(GetType(), nameof(SetCursorFromHitTest), "DisposableWaitCursor IS active");
 			Cursor = Cursors.WaitCursor;
 			return;
 		}
 
-		// Tracer.Trace(GetType(), "SetCursorFromHitTest()", "DisposableWaitCursor is NOT active");
+		// Evs.Trace(GetType(), nameof(SetCursorFromHitTest), "DisposableWaitCursor is NOT active");
 
 
 		switch (ht)

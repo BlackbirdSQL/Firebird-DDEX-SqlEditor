@@ -1,0 +1,40 @@
+
+
+1. Add SE connections.
+	a. From dropdown FlameRobin.
+	b. From File Dialog.
+	c. From dropdown edm.
+	d. From dropdown application.
+	e. From query.
+	f. From No solution.
+2. Refresh SE nodes.
+3. Create xsd.
+	a. Add table.
+	b. Add view.
+	c. Preview data.
+4. Launch designer.
+	a. From table.
+	b. From view.
+5. Create edmx.
+	a. Add table.
+	b. Add view.
+	c. Update from database.
+	d. Add connection.
+6. Add new datasource.
+	a. From table.
+	b. From view.
+7. Edit scripts.
+	a. Edit/alter view.
+	b. Edit/Alter proc.
+	c. Edit/alter function.
+	d. Edit/alter trigger.
+8. Open table query.
+9. Test drift detection of SE connection.
+10. Test intellisense policies.
+11. Test EventSource levels and debug settings.
+12. Test language settings.
+13. Test alternate languages.
+14. Test all remaining user settings.
+15. Test transient settings.
+16. Test sql errors.
+17. Test query critical errors.

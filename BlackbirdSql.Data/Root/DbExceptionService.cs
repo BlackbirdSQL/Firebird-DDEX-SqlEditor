@@ -122,7 +122,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 
 		if (@this is not FbException exception)
 		{
-			// Tracer.Trace(GetType(), "GetErrorCode()", "exceptionType: {0}.", @this.GetType().Name);
+			// Evs.Trace(GetType(), nameof(GetErrorCode), "exceptionType: {0}.", @this.GetType().Name);
 
 			if (@this.GetType().Name != "IscException")
 				return dbErrorCode;
@@ -162,7 +162,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	{
 		if (@this is not FbException exception)
 		{
-			// Tracer.Trace(GetType(), "GetErrors()", "exceptionType: {0}.", @this.GetType().Name);
+			// Evs.Trace(GetType(), nameof(GetErrors), "exceptionType: {0}.", @this.GetType().Name);
 
 			if (@this.GetType().Name != "IscException")
 				return [];
@@ -192,7 +192,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 
 		objects =
 		[
-			// Tracer.Trace(GetType(), "GetErrors()", "Error count: {0}.", errors.Count);
+			// Evs.Trace(GetType(), nameof(GetErrors), "Error count: {0}.", errors.Count);
 			.. errors,
 		];
 
@@ -280,7 +280,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 
 		if (@this is not FbException exception)
 		{
-			// Tracer.Trace(GetType(), "GetState()", "exceptionType: {0}.", @this.GetType().Name);
+			// Evs.Trace(GetType(), nameof(GetState), "exceptionType: {0}.", @this.GetType().Name);
 			if (@this.GetType().Name != "IscException")
 				return "";
 
@@ -383,10 +383,25 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 		if (HasExceptionType<FbException>(@this))
 			return true;
 
-		// Tracer.Trace(GetType(), "HasSqlException()", "exceptionType: {0}.", @this.GetType().Name);
+		// Evs.Trace(GetType(), nameof(HasSqlException), "exceptionType: {0}.", @this.GetType().Name);
 
 		return HasExceptionType(@this, "IscException");
 
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Checks if an exception is a database network exception.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public bool IsDbNetException_(Exception @this)
+	{
+		// Evs.Trace(GetType(), nameof(IsDbNetException_), "exceptionType: {0}.", @this.GetType().Name);
+
+		return @this is FbException exception
+			&& GetExceptionErrorCode_(exception) == IscCodes.isc_net_write_err;
 	}
 
 
@@ -398,7 +413,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	// ---------------------------------------------------------------------------------
 	public bool IsSqlException_(Exception @this)
 	{
-		// Tracer.Trace(GetType(), "IsSqlException()", "exceptionType: {0}.", @this.GetType().Name);
+		// Evs.Trace(GetType(), nameof(IsSqlException), "exceptionType: {0}.", @this.GetType().Name);
 
 		if (@this is FbException exception)
 		{

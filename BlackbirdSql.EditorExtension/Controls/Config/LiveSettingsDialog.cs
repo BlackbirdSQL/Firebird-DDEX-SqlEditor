@@ -8,13 +8,14 @@ using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.EditorExtension.Ctl.Config;
 using BlackbirdSql.EditorExtension.Properties;
 using BlackbirdSql.Shared.Ctl.Config;
+using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.EditorExtension.Controls.Config;
 
 public sealed class LiveSettingsDialog : AbstractTransientSettingsDialog
 {
 
-	public LiveSettingsDialog(IBsTransientSettings settings)
+	public LiveSettingsDialog(IBsSettingsProvider settings)
 		: base(AttributeResources.IconProperties16x, VsFontColorPreferences.EnvironmentFont)
 	{
 		InitializeComponent();
@@ -35,7 +36,7 @@ public sealed class LiveSettingsDialog : AbstractTransientSettingsDialog
 		base.Dispose(disposing);
 	}
 
-	private void InitializeDialog(IBsTransientSettings transientSettings)
+	private void InitializeDialog(IBsSettingsProvider transientSettings)
 	{
 		IBsSettingsPage[] pages =
 			[

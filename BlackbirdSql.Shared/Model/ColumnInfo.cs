@@ -157,7 +157,7 @@ public class ColumnInfo : IBsColumnInfo
 
 		DataTable schemaTable;
 
-		// Tracer.Trace(GetType(), ".InitializeAsync", "ASYNC GetSchemaTableAsync()");
+		// Evs.Trace(GetType(), ".InitializeAsync", "ASYNC GetSchemaTableAsync()");
 
 		try
 		{

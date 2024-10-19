@@ -37,7 +37,7 @@ internal abstract class AbstractDslSchema
 {
 	public AbstractDslSchema()
 	{
-		// Tracer.Trace(GetType(), "AbstractDslSchema");
+		// Evs.Trace(GetType(), "AbstractDslSchema");
 	}
 
 	#region Abstract Methods
@@ -50,7 +50,7 @@ internal abstract class AbstractDslSchema
 
 	public DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "GetSchema", "collectionName: {0}", collectionName);
+		// Evs.Trace(GetType(), "GetSchema", "collectionName: {0}", collectionName);
 
 		DataTable dataTable = new (collectionName);
 		FbCommand command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
@@ -79,7 +79,7 @@ internal abstract class AbstractDslSchema
 
 	public async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken = default)
 	{
-		// Tracer.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
+		// Evs.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
 
 		DataTable dataTable = new (collectionName);
 		FbCommand command = await BuildCommandAsync(connection, collectionName, ParseRestrictions(restrictions), cancelToken);
@@ -130,7 +130,7 @@ internal abstract class AbstractDslSchema
 
 	protected FbCommand BuildCommand(IDbConnection connection, string collectionName, string[] restrictions)
 	{
-		// Tracer.Trace(GetType(), "BuildCommand", "collectionName: {0}", collectionName);
+		// Evs.Trace(GetType(), "BuildCommand", "collectionName: {0}", collectionName);
 
 		FbConnection dbConnection = connection as FbConnection;
 
@@ -185,7 +185,7 @@ internal abstract class AbstractDslSchema
 
 	protected async Task<FbCommand> BuildCommandAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken)
 	{
-		// Tracer.Trace(GetType(), "BuildCommandAsync", "collectionName: {0}", collectionName);
+		// Evs.Trace(GetType(), "BuildCommandAsync", "collectionName: {0}", collectionName);
 
 		FbConnection dbConnection = connection as FbConnection;
 		
@@ -245,7 +245,7 @@ internal abstract class AbstractDslSchema
 
 	protected virtual string[] ParseRestrictions(string[] restrictions)
 	{
-		// Tracer.Trace();
+		// Evs.Trace();
 		return restrictions;
 	}
 
