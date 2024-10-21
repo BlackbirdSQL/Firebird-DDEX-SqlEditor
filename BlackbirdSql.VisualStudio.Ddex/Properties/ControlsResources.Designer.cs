@@ -242,11 +242,65 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application Project connections are not synchronized with the Running Connection Table. Synchronization requires a Solution reload..
+        /// </summary>
+        internal static string TConnectionUIControl_ConnectionSourceDescription_Application {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_ConnectionSourceDescription_Application", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To assign a custom name to this DataSource connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties..
+        /// </summary>
+        internal static string TConnectionUIControl_ConnectionSourceDescription_DataSource {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_ConnectionSourceDescription_DataSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WARNING: Entity Data Model wizards are slow. Design procedures may take a long time to complete on slow networks. Modifying connections here can take up to 90 seconds..
+        /// </summary>
+        internal static string TConnectionUIControl_ConnectionSourceDescription_EntityDataModel {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_ConnectionSourceDescription_EntityDataModel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ERROR: The Connection Dialog ConnectionSource could not be established. Please report this error and details of where this error occured to the developers..
+        /// </summary>
+        internal static string TConnectionUIControl_ConnectionSourceDescription_Error {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_ConnectionSourceDescription_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To assign a custom name to this Server Explorer connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties..
+        /// </summary>
+        internal static string TConnectionUIControl_ConnectionSourceDescription_ServerExplorer {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_ConnectionSourceDescription_ServerExplorer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To assign a custom name to this Session connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties..
+        /// </summary>
+        internal static string TConnectionUIControl_ConnectionSourceDescription_Session {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_ConnectionSourceDescription_Session", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The dropdown list displays the Database Names of configured connections for the selected Server.
         ///Glyph prefix legend:
-        /// ⨠ Session (non-persistent) connections.
+        /// ⬤ Session (non-persistent) connections.
         /// ⛭ Project Settings (App.Config) connections.
-        /// ⛮ Entity Data Model (edmx) connections.
+        /// ⛮ Entity Data Model (edmx or DataSource) connections.
         /// ⧉ FlameRobin connections.
         ///Server Explorer connections have no glyph.
         ///.
@@ -254,33 +308,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         internal static string TConnectionUIControl_Database_ToolTip {
             get {
                 return ResourceManager.GetString("TConnectionUIControl_Database.ToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to To assign a custom name to this connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties..
-        /// </summary>
-        internal static string TConnectionUIControl_DatasetKeyDescription {
-            get {
-                return ResourceManager.GetString("TConnectionUIControl_DatasetKeyDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Project connections are not synchronized with the Running Connection Table. Synchronization requires a Solution reload..
-        /// </summary>
-        internal static string TConnectionUIControl_DatasetKeyDescription_Application {
-            get {
-                return ResourceManager.GetString("TConnectionUIControl_DatasetKeyDescription_Application", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to WARNING: The wizard is slow. Design procedures may take a long time to complete on slow networks. Modifying connections here can take up to 90 seconds..
-        /// </summary>
-        internal static string TConnectionUIControl_DatasetKeyDescription_EntityDataModel {
-            get {
-                return ResourceManager.GetString("TConnectionUIControl_DatasetKeyDescription_EntityDataModel", resourceCulture);
             }
         }
         

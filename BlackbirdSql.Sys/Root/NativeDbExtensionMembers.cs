@@ -153,7 +153,7 @@ public static class NativeDbExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets the connection name or datasetid from a native database exception.
+	/// Gets the connection name or datasetName from a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static string GetDatabase(this Exception @this)

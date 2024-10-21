@@ -11,6 +11,8 @@ using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
+using static BlackbirdSql.SysConstants;
+
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -73,49 +75,49 @@ public class VxbConnectionUIProperties : VxbConnectionProperties
 	/// Overloads <see cref="ICustomTypeDescriptor.GetProperties"/> to change readonly on
 	/// dataset key properties for application connection sources.
 	/// </summary>
-	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb, Attribute[] attributes)
+	protected override PropertyDescriptorCollection GetCsbProperties(Csb csb, Attribute[] attributes)
 	{
-		PropertyDescriptorCollection descriptors;
 		try
 		{
-			descriptors = TypeDescriptor.GetProperties(csb, attributes);
+			PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(csb, attributes);
 
-			Csb.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
+			// Csb.UpdateDescriptorReadOnlyAttribute(ref descriptors, [C_KeyExConnectionName, C_KeyExDatasetName],
+			//	ConnectionSource == EnConnectionSource.Application);
+
+			return descriptors;
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
 			throw;
 		}
-
-
-		return descriptors;
-
 	}
+
 
 
 	/// <summary>
 	/// Overloads <see cref="ICustomTypeDescriptor.GetProperties"/> to change readonly on
 	/// dataset key properties for application connection sources.
 	/// </summary>
-	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb)
+	protected override PropertyDescriptorCollection GetCsbProperties(Csb csb)
 	{
-		PropertyDescriptorCollection descriptors;
 		try
 		{
-			descriptors = TypeDescriptor.GetProperties(csb);
+			PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(csb);
 
-			Csb.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
+			// Csb.UpdateDescriptorReadOnlyAttribute(ref descriptors, [C_KeyExConnectionName, C_KeyExDatasetName],
+			//	ConnectionSource == EnConnectionSource.Application);
+
+			return descriptors;
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
 			throw;
 		}
-
-
-		return descriptors;
 	}
+
+
 
 	public override void Reset()
 	{
@@ -142,7 +144,7 @@ public class VxbConnectionUIProperties : VxbConnectionProperties
 				// with an "edmu" property.
 				// The ancestor IVsDataConnectionProperties implementation is identified
 				// with an "edmx" property.
-				if (ConnectionSource == EnConnectionSource.EntityDataModel)
+				if (ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource)
 				{
 					ConnectionStringBuilder.Remove(CoreConstants.C_KeyExEdmx);
 					ConnectionStringBuilder[CoreConstants.C_KeyExEdmu] = true;

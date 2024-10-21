@@ -361,11 +361,8 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 				case SysConstants.C_KeyDatabase:
 					retval = connection.Database;
 					break;
-				case SysConstants.C_KeyExDatasetId:
-					strval = _Csa.DatasetId;
-					if (string.IsNullOrWhiteSpace(strval))
-						strval = _Csa.Dataset;
-					retval = strval;
+				case SysConstants.C_KeyExDatasetName:
+					retval = _Csa.DisplayDatasetName;
 					break;
 				case CoreConstants.C_KeyExAdornedQualifiedName:
 					retval = _Csa.AdornedQualifiedName;

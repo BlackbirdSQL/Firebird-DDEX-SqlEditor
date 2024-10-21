@@ -3,7 +3,9 @@
 
 
 using System;
+using System.ComponentModel;
 using System.Data;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core.Interfaces;
@@ -16,6 +18,7 @@ using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
 
 
 
@@ -42,7 +45,8 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		RctManager.EventConnectionDialogEnter(false, true);
+		if (!RctManager.EventConnectionDialogEnter())
+			Diag.Dug(new ApplicationException("Attempt to enter connection dialog when already in a connection dialog"));
 
 
 		try
@@ -61,17 +65,26 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 			InitializeComponent();
 
-			if (ConnectionSource == EnConnectionSource.Application)
+			switch (ConnectionSource)
 			{
-				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription_Application;
-			}
-			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
-			{
-				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription_EntityDataModel;
-			}
-			else
-			{
-				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription;
+				case EnConnectionSource.Session:
+					lblConnectionSourceDescription.Text = ControlsResources.TConnectionUIControl_ConnectionSourceDescription_Session;
+					break;
+				case EnConnectionSource.ServerExplorer:
+					lblConnectionSourceDescription.Text = ControlsResources.TConnectionUIControl_ConnectionSourceDescription_ServerExplorer;
+					break;
+				case EnConnectionSource.Application:
+					lblConnectionSourceDescription.Text = ControlsResources.TConnectionUIControl_ConnectionSourceDescription_Application;
+					break;
+				case EnConnectionSource.EntityDataModel:
+					lblConnectionSourceDescription.Text = ControlsResources.TConnectionUIControl_ConnectionSourceDescription_EntityDataModel;
+					break;
+				case EnConnectionSource.DataSource:
+					lblConnectionSourceDescription.Text = ControlsResources.TConnectionUIControl_ConnectionSourceDescription_DataSource;
+					break;
+				default:
+					lblConnectionSourceDescription.Text = ControlsResources.TConnectionUIControl_ConnectionSourceDescription_Error;
+					break;
 			}
 
 			// Evs.Trace("Creating erd");
@@ -99,7 +112,19 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 	/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 	protected override void Dispose(bool disposing)
 	{
-		RctManager.EventConnectionDialogExit();
+		if (!RctManager.EventConnectionDialogEnter(true))
+			RctManager.EventConnectionDialogExit();
+
+		if (disposing && Csa != null)
+		{
+			// Reset the ReadonlyAttribute of the Csb class proposed name property descriptors to false.
+			// The proposed name properties will have been set to readonly for Application connection dialogs.
+
+			PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(Csa);
+
+			Csb.UpdateDescriptorReadOnlyAttribute(ref descriptors,
+				[SysConstants.C_KeyExConnectionName, SysConstants.C_KeyExDatasetName], false);
+		}
 
 		if (disposing && (components != null))
 		{
@@ -133,7 +158,6 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 	private int _EventPropertyCardinal = 0;
 	private EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
 	private bool _EventsLoaded = false;
-	private Form _ParentParentForm = null;
 	private bool _SiteChanged = true;
 
 	private Delegate _OnVerifySettingsDelegate = null;
@@ -174,6 +198,8 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 	}
 
 
+	private Csb Csa => ((IBsDataConnectionProperties)Site)?.Csa;
+
 
 	private ErmBindingSource DataSources
 	{
@@ -202,6 +228,9 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 	private bool InvalidDependent => DataSources.DependentRow == null
 		|| DataSources.DependentRow["DatabaseLc"] == DBNull.Value
 		|| (string)DataSources.DependentRow["DatabaseLc"] == "";
+
+
+	private Form ParentParentForm => Parent?.Parent as Form;
 
 
 	IBsDataConnectionDlg SessionDlg => Parent != null ? Parent.Parent as IBsDataConnectionDlg : null;
@@ -329,10 +358,10 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 					Site.Remove(SysConstants.C_KeyExConnectionName);
 				}
 
-				if (Site.ContainsKey(SysConstants.C_KeyExDatasetId)
-					&& string.IsNullOrWhiteSpace((string)Site[SysConstants.C_KeyExDatasetId]))
+				if (Site.ContainsKey(SysConstants.C_KeyExDatasetName)
+					&& string.IsNullOrWhiteSpace((string)Site[SysConstants.C_KeyExDatasetName]))
 				{
-					Site.Remove(SysConstants.C_KeyExDatasetId);
+					Site.Remove(SysConstants.C_KeyExDatasetName);
 				}
 
 
@@ -396,18 +425,31 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 	private void AddEventHandlers()
 	{
-		if (_EventsLoaded || Parent == null || Parent.Parent is not Form form)
+		if (_EventsLoaded || Parent == null || Parent.Parent is not Form)
 			return;
 
 		// Evs.Trace(GetType(), nameof(AddEventHandlers), "Container: {0}, Parent: {1}, ParentForm: {2}, Enabled: {3}, Visible: {4}.",
 		//	Container, Parent, ParentForm, Enabled, Visible);
 
 		_EventsLoaded = true;
-		_ParentParentForm = form;
 
-		_OnVerifySettingsDelegate = Reflect.AddEventHandler(this, nameof(OnVerifySettings), form, "VerifySettings");
+		if (Csa != null)
+		{
+			// Temporarily set the ReadonlyAttribute of the Csb class proposed name property descriptors.
+			// The proposed name properties will be set to readonly for Application connection dialogs.
 
-		Button btnAccept = (Button)Reflect.GetFieldValue(form, "acceptButton");
+			PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(Csa);
+
+			Csb.UpdateDescriptorReadOnlyAttribute(ref descriptors,
+				[SysConstants.C_KeyExConnectionName, SysConstants.C_KeyExDatasetName],
+				ConnectionSource == EnConnectionSource.Application);
+		}
+
+		ParentParentForm.FormClosed += OnFormClosed;
+
+		_OnVerifySettingsDelegate = Reflect.AddEventHandler(this, nameof(OnVerifySettings), ParentParentForm, "VerifySettings");
+
+		Button btnAccept = (Button)Reflect.GetFieldValue(ParentParentForm, "acceptButton");
 
 		_OnAcceptDelegate = Reflect.AddEventHandler(this, nameof(OnAccept), btnAccept, "Click");
 
@@ -558,17 +600,21 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		// Evs.Trace(GetType(), nameof(RemoveEventHandlers), "Container: {0}, Parent: {1}, ParentForm: {2}, Enabled: {3}, Visible: {4}.",
 		//	Container, Parent, ParentForm, Enabled, Visible);
 
-		Reflect.RemoveEventHandler(_ParentParentForm, "VerifySettings", _OnVerifySettingsDelegate);
+		if (ParentParentForm != null)
+		{
+			ParentParentForm.FormClosed -= OnFormClosed;
 
-		Button btnAccept = (Button)Reflect.GetFieldValue(_ParentParentForm, "acceptButton");
+			Reflect.RemoveEventHandler(ParentParentForm, "VerifySettings", _OnVerifySettingsDelegate);
 
-		Reflect.RemoveEventHandler(btnAccept, "Click", _OnAcceptDelegate);
+			Button btnAccept = (Button)Reflect.GetFieldValue(ParentParentForm, "acceptButton");
+
+			Reflect.RemoveEventHandler(btnAccept, "Click", _OnAcceptDelegate);
+		}
 
 		if (ConnectionSource == EnConnectionSource.Session)
 			SessionDlg.UpdateServerExplorerChangedEvent -= OnUpdateServerExplorerChanged;
 
 		_EventsLoaded = false;
-		_ParentParentForm = null;
 		_OnVerifySettingsDelegate = null;
 		_OnAcceptDelegate = null;
 	}
@@ -585,7 +631,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 		try
 		{
-			((IBsDataConnectionProperties)Site).Csa.ConnectionString = restoreConnectionString;
+			Csa.ConnectionString = restoreConnectionString;
 		}
 		finally
 		{
@@ -725,7 +771,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			if (removeProposed)
 			{
 				Site.Remove(SysConstants.C_KeyExConnectionName);
-				Site.Remove(SysConstants.C_KeyExDatasetId);
+				Site.Remove(SysConstants.C_KeyExDatasetName);
 			}
 
 			Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
@@ -733,6 +779,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			lblCurrentDisplayName.Text = ControlsResources.TConnectionUIControl_NewDatabaseConnection;
 
 			EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.EntityDataModel
+				|| ConnectionSource == EnConnectionSource.DataSource
 				? EnConnectionSource.ServerExplorer : ConnectionSource;
 
 			if (connectionSource == EnConnectionSource.Session
@@ -773,14 +820,17 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 	/// </summary>
 	private void OnAccept(object sender, EventArgs e)
 	{
-		// Evs.Trace(GetType(), nameof(OnAccept), "ConnectionSource: {0}.", ConnectionSource);
+		// Evs.Trace(GetType(), nameof(OnAccept), $"ConnectionSource: {ConnectionSource}.");
 
 		_HandleNewInternally = false;
 		_HandleModifyInternally = false;
 		_HandleVerification = true;
 
 		if (ConnectionSource == EnConnectionSource.Application)
+		{
+			Csa.ValidateServerName();
 			return;
+		}
 
 
 		if (RctManager.ShutdownState)
@@ -841,13 +891,21 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 			}
 
+
+
 			string restoreConnectionString = Site.ToString();
-			// Evs.Trace(GetType(), nameof(OnAccept), "restoreConnectionString: {0}.", restoreConnectionString);
+			// Evs.Debug(GetType(), nameof(OnAccept), $"restoreConnectionString: {restoreConnectionString}.");
 
 			try
 			{
 				bool serverExplorerInsertMode = _InsertMode && ConnectionSource == EnConnectionSource.ServerExplorer;
 				bool createServerExplorerConnection = ConnectionSource == EnConnectionSource.Session && SessionDlg.UpdateServerExplorer;
+
+
+				Csa.ValidateServerName();
+				Csa.ValidateProposedName();
+
+				// Evs.Debug(GetType(), nameof(OnAccept), $"DatasetName: {site[SysConstants.C_KeyExDatasetName]}.");
 
 
 				(bool success, bool addInternally, bool modifyInternally)
@@ -1060,7 +1118,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			// so that the user can be warned if they then change the properties and cause a target
 			// change. For ServerExplorer and Session connection dialogs _OriginalConnectionString
 			// will already be set.
-			if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			if (ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource)
 			{
 				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionString];
 				_OriginalConnectionString = !Cmd.IsNullValue(@object)
@@ -1179,6 +1237,26 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		}
 	}
 
+
+
+	void OnFormClosed(object sender, FormClosedEventArgs e)
+	{
+		if (RctManager.EventConnectionDialogEnter(true))
+			return;
+
+		// Fire and forget
+
+		Task.Factory.StartNew(
+			async () =>
+			{
+				await Task.Delay(640);
+
+				if (!RctManager.EventConnectionDialogEnter(true))
+					RctManager.EventConnectionDialogExit();
+
+			},
+			default, TaskCreationOptions.None, TaskScheduler.Default).Forget();
+	}
 
 
 
@@ -1324,6 +1402,18 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 			EventPropertyEnter(false, true);
 
+			if (Csa != null)
+			{
+				// Temporarily set the ReadonlyAttribute of the Csb class proposed name property descriptors.
+				// The proposed name properties will be set to readonly for Application connection dialogs.
+
+				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(Csa);
+
+				Csb.UpdateDescriptorReadOnlyAttribute(ref descriptors,
+					[SysConstants.C_KeyExConnectionName, SysConstants.C_KeyExDatasetName],
+					ConnectionSource == EnConnectionSource.Application);
+			}
+
 			try
 			{
 				if (ConnectionSource == EnConnectionSource.Application)
@@ -1355,6 +1445,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 						|| (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] <= EnConnectionSource.Unknown)
 					{
 						EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.EntityDataModel
+							|| ConnectionSource == EnConnectionSource.DataSource
 							? EnConnectionSource.ServerExplorer : ConnectionSource;
 
 						if (connectionSource == EnConnectionSource.Session
@@ -1404,8 +1495,8 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 
 		if (ConnectionSource == EnConnectionSource.Application || !_HandleVerification
-			|| (ConnectionSource == EnConnectionSource.EntityDataModel && !_HandleNewInternally
-			&& !_HandleModifyInternally))
+			|| ((ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource)
+			&& !_HandleNewInternally && !_HandleModifyInternally))
 		{
 			// Evs.Trace(GetType(), nameof(OnVerifySettings), "Not handling internally.");
 			return;
@@ -1415,7 +1506,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 
 		EnConnectionSource registrationSource =
-			(ConnectionSource == EnConnectionSource.EntityDataModel
+			(ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource
 			|| (ConnectionSource == EnConnectionSource.Session && _HandleNewInternally))
 			? EnConnectionSource.ServerExplorer : ConnectionSource;
 

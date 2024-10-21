@@ -3,7 +3,7 @@
 ## Change log
 
 
-### v14.5.2.0 Major update including Selective Intellisense.
+### v14.5.3.0 Major update including Selective Intellisense.
 
 #### New / Enhancements
 - Replaced the `Enable Intellisense` SqlEditor user option with `Intellisense Policy`, which provides a radio button choice of `Active Query Only`, `All Queries` and `Disabled`. The default policy is `Active Query Only` which displays only the current active query's `Intellisense` messages. The option applies to only __BlackbirdSql__ SqlEditor queries. This eliminates the ambiguity caused by Intellisense messages when multiple query windows with the same or similar names are open.
@@ -11,15 +11,23 @@
 - Added an n/nn (Statement n of Total nn) grid identifier to the upper left cell of grids for queries with multiple result sets.
 - Streamlined the reindexing of project type resolution services so that only the extension's shipped EntityFramework assembly version and the applicable project's version are checked for reindexing.
 - Added wrappers for all `Path` class methods that operate on file paths. The wrappers remove common invalid and non-printable characters from the path before calling the native `Path` method.
+- Added the `ConnectionSource DataSource` to differentiate between DataSource and edmx Connection Dialogs.
 - Code cleanup: Changed the prefix of all Ddex IVs interface implementations from the previous Borland `T` class type prefix convention to `Vxb` (VS Extension BlackbirdSql) because it conflicted with the Microsoft `T` prefix convention for __Type Parameter/Specifier__ names.
 - Code cleanup: Removed the `GuidId` class because the built-in `CommandID` class is functionally equivalent.
 - Code cleanup: Moved the __SplitNext__ and __SplitPrev__ built-in `VSStandardCommandSet97` commands into the `CommandMapper` as `IBsCommandHandler` type interfaces. This provides for a uniform system of handling global commands that is in line with the handling of internal extension commands.
 - Code cleanup: Separated __Action__ `QueryManager` states as a subset of the new __Operation__ state in the state syncronicity stack, due to subtle differences in their behavior during push/pop stack operations. __Virtual__ states are cleared when the last __Action__ state is popped. When the __Operation__ state is popped, __Virtual__ states are only cleared if no __Action__ states exist in the stack. __Virtual__ states become volatile whenever an __Operation__ or __Action__ state is pushed onto the stack, as was their behavior previously. The __Operation__ state marker is set as the second to last enum marker in the `EnQueryState` enum.
+- Code cleanup: Renamed the `Csb DatasetId` property to the more descriptive name `DatasetName`. The `DatasetName` is the unique short name of a `DbConnectionStringBuilder Database`.
 #### Fixes
 - Fixed bug where the FileDialog selection was not being correctly assigned in the Connection Dialog. Under certain conditions this also affected the ability to add the path manually.
 - Fixed `IDSRefBuilder` functionality for database `ScalarFunctions`.
 - Fixed issue where creating a new session connection within a query, with the __"Add new connections to Server Explorer"__ checkbox checked, was not creating a new Server Explorer connection.
 - Fixed bug where a Server Explorer connection's events were not handled when the connection was added internally from a query window or Entity Data Model connection dialog.
+- Fixed a bug where the ReadOnlyAttribute of `Csb` descriptors was not being correctly updated. The proposed `ConnectionName` and `DatasetName` advanced properties descriptors must be readonly within the Application settings connection dialog.
+
+#### Tips
+- Whenever a new Entity Data Model or DataSource connection is added using `Add Connection`, it must exist as a Server Explorer connection. You will be prompted to add it if it does not exist.
+- Modifications to an existing Server Explorer connection from within the Query Session, DataSource or edmx connection dialog will permanently update the Server Explorer connection. You will be prompted before any modifications are applied.
+
 
 
 ### v14.5.1.1 Minor enhancements and code cleanup.
@@ -264,7 +272,7 @@ __New/ Enhancements__</br>
 __Fixes__</br>
 -- Resolved bug where the connection source was not being correctly identified. This resulted in some Entity Data Model connections getting past the validation checks that are intended to prevent EDM wizards from corrupting Server Explorer connections.</br>
 -- Resolved several issues where connection naming was not being uniformly replicated across the extension.</br>
--- Resolved issue where closed connection nodes called the running connection table for updates when a connection was about to be modified. This caused proposed DatasetId's to be converted to proposed ConnectionNames and also initiated an unecessary trigger linkage that was then discarded.</br>
+-- Resolved issue where closed connection nodes called the running connection table for updates when a connection was about to be modified. This caused proposed DatasetName's to be converted to proposed ConnectionNames and also initiated an unecessary trigger linkage that was then discarded.</br>
 -- Resolved several instances where database connections were left dangling. Server Explorer may still leave connections dangling where multiple nodes are expanded on a refresh. This is a minor internal Server Explorer bug which causes each consecutive refresh to sporadically increase the active connections by one.</br>
 -- Resolved a bug where selecting another connection for a query caused all queries using that same connection to change.</br>
 -- Removed lazy loading of the SettingsManager from the User Options Model, which is already lazy and which caused VS to hang when a Model was requested early. Sections of the Model were cribbed from VisualStudio.Community which contains this bug.
@@ -375,7 +383,7 @@ Resolved RunningConnectionTable deadlock red zone issues.</br>
 Removed redundant Csb DataSource Case name mangling validations.</br>
 Resolved several SE, edmx and RunningConnectionTable sync issues.</br>
 Removed ConnectionSource debug messages.</br>
-Prevented DatasetId glyph removal in Session connection dialogs when connection has not changed.
+Prevented DatasetName glyph removal in Session connection dialogs when connection has not changed.
 
 ### v10.1.2.3
 Resolved several SE, edmx and RunningConnectionTable sync issues.

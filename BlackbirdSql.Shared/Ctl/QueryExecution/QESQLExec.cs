@@ -160,12 +160,12 @@ public class QESQLExec : AbstractQESQLExec
 			{
 				if (_CurrentConnInfo.UserID != null && _CurrentConnInfo.UserID.Length != 0)
 				{
-					OnInfoMessage(Resources.InfoDisconnectingFromSvrAsUser.FmtRes(string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetId) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetId,
+					OnInfoMessage(Resources.InfoDisconnectingFromSvrAsUser.FmtRes(string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetName) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetName,
 						_CurrentConnInfo.UserID));
 				}
 				else
 				{
-					OnInfoMessage(Resources.InfoDisconnectingFromSvr.FmtRes(string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetId) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetId));
+					OnInfoMessage(Resources.InfoDisconnectingFromSvr.FmtRes(string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetName) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetName));
 				}
 			}
 			*/

@@ -36,12 +36,12 @@ namespace BlackbirdSql.Core.Model;
 /// </summary>
 /// <remarks>
 /// A BlackbirdSql connection is uniquely identifiable on it's generated
-/// <see cref="AbstractCsb.DatasetKey"/> 'Server (DatasetId)', and also it's proposed name,
+/// <see cref="AbstractCsb.DatasetKey"/> 'Server (DatasetName)', and also it's proposed name,
 /// <see cref="AbstractCsb.ConnectionName"/>, if that was provided.
-/// A <see cref="AbstractCsb.DatasetId"/> is the proposed name of the database which defaults to
+/// A <see cref="AbstractCsb.DatasetName"/> is the proposed name of the database which defaults to
 /// <see cref="AbstractCsb.Dataset"/>.
 /// If the DatasetKey is not unique across an ide session, then either ConnectionName (if specified) or
-/// DatasetId will be numerically suffixed beginning with '_2'. Connections are considered equivalent
+/// DatasetName will be numerically suffixed beginning with '_2'. Connections are considered equivalent
 /// based on the configured <see cref="PersistentSettings.EquivalencyKeys"/>.
 /// Whenever a new instance of an existing unique connection is requested, the stored connection's
 /// redundant properties will be updated if connection properties or a connection string are provided.
@@ -358,21 +358,21 @@ public class Csb : AbstractCsb, IBsCsb
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Applies required or removes redundant ConnectionName and DatasetId properties after
+	/// Applies required or removes redundant ConnectionName and DatasetName properties after
 	/// a validation call to <see cref="ValidateKeys"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public void ApplyValidKeys(string connectionName, string datasetId, bool clearInvalidDatasetKey)
+	public void ApplyValidKeys(string connectionName, string datasetName, bool clearInvalidDatasetKey)
 	{
 		if (connectionName == "")
 			Remove(C_KeyExConnectionName);
 		else if (connectionName != null)
 			ConnectionName = connectionName;
 
-		if (datasetId == "")
-			Remove(C_KeyExDatasetId);
-		else if (datasetId != null)
-			DatasetId = datasetId;
+		if (datasetName == "")
+			Remove(C_KeyExDatasetName);
+		else if (datasetName != null)
+			DatasetName = datasetName;
 
 		if (!clearInvalidDatasetKey || !ContainsKey(C_KeyExDatasetKey))
 			return;
@@ -382,16 +382,16 @@ public class Csb : AbstractCsb, IBsCsb
 
 		string datasetKey = DatasetKey;
 		connectionName = ConnectionName;
-		datasetId = DatasetId;
+		datasetName = DatasetName;
 
 		if (!string.IsNullOrWhiteSpace(connectionName))
 		{
 			if (!connectionName.Equals(datasetKey))
 				Remove(C_KeyExDatasetKey);
 		}
-		else if (!string.IsNullOrWhiteSpace(datasetId))
+		else if (!string.IsNullOrWhiteSpace(datasetName))
 		{
-			string derivedConnectionName = S_DatasetKeyFormat.FmtRes(DataSource, datasetId);
+			string derivedConnectionName = S_DatasetKeyFormat.FmtRes(DataSource, datasetName);
 
 			if (!derivedConnectionName.Equals(datasetKey))
 				Remove(C_KeyExDatasetKey);
@@ -564,7 +564,7 @@ public class Csb : AbstractCsb, IBsCsb
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Validates the csa for redundant or required registration properties.
-	/// Determines if the ConnectionName (proposed DatsetKey) and DatasetId (proposed
+	/// Determines if the ConnectionName (proposed DatsetKey) and DatasetName (proposed
 	/// database name) are required in the csa.
 	/// This cleanup ensures that proposed keys do not appear in the connection string
 	/// if they will have no impact on the final DatsetKey. 
@@ -575,7 +575,7 @@ public class Csb : AbstractCsb, IBsCsb
 	/// </param>
 	/// <param name="clearInvalidDatasetKey">
 	/// If true will clear the DatasetKey if it does not match the proposed ConnectionName
-	/// or datasetId. Only applies if 'applyValidation' is set to true.
+	/// or datasetName. Only applies if 'applyValidation' is set to true.
 	/// </param>
 	/// <returns>
 	/// Returns a tuple (ConnectionName, DatsetId). The contents of each reflects the
@@ -589,32 +589,32 @@ public class Csb : AbstractCsb, IBsCsb
 	// ---------------------------------------------------------------------------------
 	public (string, string) ValidateKeys(bool applyValidation, bool clearInvalidDatasetKey)
 	{
-		// First the DatasetId. If it's equal to the Dataset we clear it because, by
+		// First the DatasetName. If it's equal to the Dataset we clear it because, by
 		// default the trimmed filepath (Dataset) can be used.
 
 		string dataset = Dataset;
-		string datasetId = ContainsKey(C_KeyExDatasetId) ? DatasetId : null;
+		string datasetName = ContainsKey(C_KeyExDatasetName) ? DatasetName : null;
 
-		if (datasetId != null)
+		if (datasetName != null)
 		{
-			if (string.IsNullOrWhiteSpace(datasetId))
+			if (string.IsNullOrWhiteSpace(datasetName))
 			{
-				// DatasetId exists and is invalid (empty). Delete it.
-				datasetId = "";
+				// DatasetName exists and is invalid (empty). Delete it.
+				datasetName = "";
 			}
 			else
 			{
-				// If the DatasetId is equal to the Dataset it's not needed. Delete it.
-				if (datasetId == dataset)
-					datasetId = "";
+				// If the DatasetName is equal to the Dataset it's not needed. Delete it.
+				if (datasetName == dataset)
+					datasetName = "";
 			}
 		}
 
-		// Now that the datasetId is established, we can determined its default derived value
+		// Now that the datasetName is established, we can determined its default derived value
 		// and the default derived value of the datasetKey.
-		string derivedDatasetId = string.IsNullOrEmpty(datasetId) ? dataset : datasetId;
-		string derivedConnectionName = S_DatasetKeyFormat.FmtRes(DataSource, derivedDatasetId);
-		string derivedAlternateConnectionName = S_DatasetKeyAlternateFormat.FmtRes(DataSource, derivedDatasetId);
+		string derivedDatasetName = string.IsNullOrEmpty(datasetName) ? dataset : datasetName;
+		string derivedConnectionName = S_DatasetKeyFormat.FmtRes(DataSource, derivedDatasetName);
+		string derivedAlternateConnectionName = S_DatasetKeyAlternateFormat.FmtRes(DataSource, derivedDatasetName);
 
 
 		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived
@@ -634,11 +634,11 @@ public class Csb : AbstractCsb, IBsCsb
 				// If the ConnectionName (proposed DatsetKey) is equal to the default
 				// derived datasetkey it also won't be needed, so delete it,
 				// else the ConnectionName still exists and is the determinant, so
-				// any existing proposed DatasetId is not required.
+				// any existing proposed DatasetName is not required.
 				if (connectionName == derivedConnectionName || connectionName == derivedAlternateConnectionName)
 					connectionName = "";
-				else if (!string.IsNullOrWhiteSpace(datasetId))
-					datasetId = "";
+				else if (!string.IsNullOrWhiteSpace(datasetName))
+					datasetName = "";
 			}
 		}
 
@@ -650,18 +650,18 @@ public class Csb : AbstractCsb, IBsCsb
 			connectionName = null;
 		}
 
-		if (!string.IsNullOrEmpty(datasetId) && ContainsKey(C_KeyExDatasetId)
-			&& datasetId == DatasetId)
+		if (!string.IsNullOrEmpty(datasetName) && ContainsKey(C_KeyExDatasetName)
+			&& datasetName == DatasetName)
 		{
-			datasetId = null;
+			datasetName = null;
 		}
 
 
 		// Simultaneously update the csa if requested.
 		if (applyValidation)
-			ApplyValidKeys(connectionName, datasetId, clearInvalidDatasetKey);
+			ApplyValidKeys(connectionName, datasetName, clearInvalidDatasetKey);
 
-		return (connectionName, datasetId);
+		return (connectionName, datasetName);
 
 	}
 

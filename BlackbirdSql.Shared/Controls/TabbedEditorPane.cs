@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Shared.Controls.PropertiesWindow;
 using BlackbirdSql.Shared.Controls.Results;
 using BlackbirdSql.Shared.Controls.Tabs;

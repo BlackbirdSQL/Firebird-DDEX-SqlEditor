@@ -225,7 +225,7 @@ internal class RctEventSink : IDisposable
 
 			viewSupport.OnCloseEvent += OnNodeRemoving;
 
-			Evs.Debug(typeof(RctEventSink), nameof(NotifyInitializedModel), $"Registered events for {_Root.SafeName()}.");
+			// Evs.Debug(typeof(RctEventSink), nameof(NotifyInitializedModel), $"Registered events for {_Root.SafeName()}.");
 		}
 		catch (Exception ex)
 		{
@@ -457,7 +457,7 @@ internal class RctEventSink : IDisposable
 					{
 						connectionSource = ConnectionSource;
 
-						if (connectionSource != EnConnectionSource.EntityDataModel)
+						if (connectionSource != EnConnectionSource.EntityDataModel && connectionSource != EnConnectionSource.DataSource)
 							root.DisposeLinkageParser(true);
 					}
 				}
@@ -538,7 +538,7 @@ internal class RctEventSink : IDisposable
 				if (connectionSource == EnConnectionSource.Undefined)
 					connectionSource = ConnectionSource;
 
-				if (connectionSource != EnConnectionSource.EntityDataModel)
+				if (connectionSource != EnConnectionSource.EntityDataModel && connectionSource != EnConnectionSource.DataSource)
 					return;
 			}
 
@@ -595,7 +595,7 @@ internal class RctEventSink : IDisposable
 
 			// If the refresh is the result of the EDMX wizard making an illegal name
 			// change, exit. We'll handle this in OnNodeChanged().
-			if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			if (ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource)
 				return;
 
 

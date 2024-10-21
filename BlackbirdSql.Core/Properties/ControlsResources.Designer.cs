@@ -109,6 +109,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection modification warning.
+        /// </summary>
+        internal static string RctManager_CaptionConnectionModified {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionConnectionModified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ConnectionName change.
         /// </summary>
         internal static string RctManager_CaptionConnectionNameChange {
@@ -208,6 +217,7 @@ namespace BlackbirdSql.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to The Proposed Connection Name &apos;{0}&apos; is already allocated to another connection and &apos;{1}&apos; will be used instead.
+        ///Any modified settings will be applied to the alternate connection.
         ///
         ///Continue?.
         /// </summary>
@@ -232,6 +242,7 @@ namespace BlackbirdSql.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to The Proposed Database Name &apos;{0}&apos; is already allocated to another connection and &apos;{1}&apos; will be used instead.
+        ///Any modified settings will be applied to the alternate connection.
         ///
         ///Continue?.
         /// </summary>
@@ -350,7 +361,20 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The existing Server Explorer Connection&apos;s name will be modified. Continue?.
+        ///   Looks up a localized string similar to Any modified settings will be applied to the existing Server Explorer Connection &apos;{0}&apos;.
+        ///
+        ///Continue?.
+        /// </summary>
+        internal static string RctManager_TextSEConnectionModified {
+            get {
+                return ResourceManager.GetString("RctManager_TextSEConnectionModified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The existing Server Explorer Connection&apos;s name for &apos;{0}&apos; will be modified.
+        ///
+        ///Continue?.
         /// </summary>
         internal static string RctManager_TextSEConnectionNameChange {
             get {

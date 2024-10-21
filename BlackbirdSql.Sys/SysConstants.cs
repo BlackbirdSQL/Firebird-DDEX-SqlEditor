@@ -84,7 +84,7 @@ public static class SysConstants
 
 
 	// Extended property descriptor keys
-	public const string C_KeyExDatasetId = "DatasetId";
+	public const string C_KeyExDatasetName = "DatasetName";
 	public const string C_KeyExConnectionName = "ConnectionName";
 
 
@@ -148,7 +148,7 @@ public static class SysConstants
 
 
 	// Extended property defaults
-	public const string C_DefaultExDatasetId = "";
+	public const string C_DefaultExDatasetName = "";
 	public const string C_DefaultExConnectionName = "";
 
 

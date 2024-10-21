@@ -104,12 +104,12 @@ public class VxbConnectionProperties : AbstractConnectionProperties
 	#region Methods - VxbConnectionProperties
 	// =================================================================================
 
-	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb, Attribute[] attributes)
+	protected override PropertyDescriptorCollection GetCsbProperties(Csb csb, Attribute[] attributes)
 	{
 		return (PropertyDescriptorCollection)Diag.ThrowException(new NotImplementedException("VxbConnectionProperties.GetCsbProperties(DbConnectionStringBuilder, Attribute[])"));
 	}
 
-	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb)
+	protected override PropertyDescriptorCollection GetCsbProperties(Csb csb)
 	{
 		return (PropertyDescriptorCollection)Diag.ThrowException(new NotImplementedException("VxbConnectionProperties.GetCsbProperties(DbConnectionStringBuilder)"));
 	}

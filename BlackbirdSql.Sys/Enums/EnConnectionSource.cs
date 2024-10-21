@@ -7,6 +7,7 @@ public enum EnConnectionSource
 	ServerExplorer,
 	Session,
 	EntityDataModel,
+	DataSource,
 	Application,
 	ExternalUtility
 }

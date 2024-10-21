@@ -181,21 +181,21 @@ Exception message: {0}</value>
   <data name="TConnectionUIControl_Database.ToolTip" xml:space="preserve">
     <value>The dropdown list displays the Database Names of configured connections for the selected Server.
 Glyph prefix legend:
- ⨠ Session (non-persistent) connections.
+ ⬤ Session (non-persistent) connections.
  ⛭ Project Settings (App.Config) connections.
- ⛮ Entity Data Model (edmx) connections.
+ ⛮ Entity Data Model (edmx or DataSource) connections.
  ⧉ FlameRobin connections.
 Server Explorer connections have no glyph.
 </value>
   </data>
-  <data name="TConnectionUIControl_DatasetKeyDescription" xml:space="preserve">
-    <value>To assign a custom name to this connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties.</value>
+  <data name="TConnectionUIControl_ConnectionSourceDescription_Session" xml:space="preserve">
+    <value>To assign a custom name to this Session connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties.</value>
   </data>
-  <data name="TConnectionUIControl_DatasetKeyDescription_Application" xml:space="preserve">
-    <value>Project connections are not synchronized with the Running Connection Table. Synchronization requires a Solution reload.</value>
+  <data name="TConnectionUIControl_ConnectionSourceDescription_Application" xml:space="preserve">
+    <value>Application Project connections are not synchronized with the Running Connection Table. Synchronization requires a Solution reload.</value>
   </data>
-  <data name="TConnectionUIControl_DatasetKeyDescription_EntityDataModel" xml:space="preserve">
-    <value>WARNING: The wizard is slow. Design procedures may take a long time to complete on slow networks. Modifying connections here can take up to 90 seconds.</value>
+  <data name="TConnectionUIControl_ConnectionSourceDescription_EntityDataModel" xml:space="preserve">
+    <value>WARNING: Entity Data Model wizards are slow. Design procedures may take a long time to complete on slow networks. Modifying connections here can take up to 90 seconds.</value>
   </data>
   <data name="TConnectionUIControl_DisplayName.ToolTip" xml:space="preserve">
     <value>The Database Name of the registered connection that the current input of the Connection dialog matches.
@@ -287,5 +287,14 @@ If the current input does not match any registered connection '*New Connection' 
   </data>
   <data name="TDataSource_DataProviderNotFound" xml:space="preserve">
     <value>The data provider was not found.</value>
+  </data>
+  <data name="TConnectionUIControl_ConnectionSourceDescription_ServerExplorer" xml:space="preserve">
+    <value>To assign a custom name to this Server Explorer connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties.</value>
+  </data>
+  <data name="TConnectionUIControl_ConnectionSourceDescription_Error" xml:space="preserve">
+    <value>ERROR: The Connection Dialog ConnectionSource could not be established. Please report this error and details of where this error occured to the developers.</value>
+  </data>
+  <data name="TConnectionUIControl_ConnectionSourceDescription_DataSource" xml:space="preserve">
+    <value>To assign a custom name to this DataSource connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties.</value>
   </data>
 </root>

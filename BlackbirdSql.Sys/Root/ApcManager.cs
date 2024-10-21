@@ -142,6 +142,27 @@ public static class ApcManager
 
 
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
+	public static IntPtr ActiveWindowHandle
+	{
+		get
+		{
+			try
+			{
+				EnvDTE.Window window = ActiveWindow;
+				if (window == null)
+					return IntPtr.Zero;
+
+				return window.HWnd;
+			}
+			catch
+			{
+				return IntPtr.Zero;
+			}
+		}
+	}
+
+
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
 	public static string ActiveWindowObjectKind
 	{
 		get

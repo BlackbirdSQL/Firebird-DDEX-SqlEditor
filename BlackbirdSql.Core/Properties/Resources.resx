@@ -304,10 +304,10 @@
   <data name="RctGlyphFormat2" xml:space="preserve">
     <value> {0}   {1}</value>
   </data>
-  <data name="RctProjectDatasetIdFormat" xml:space="preserve">
+  <data name="RctProjectDatasetNameFormat" xml:space="preserve">
     <value>[{0}] {1}</value>
   </data>
-  <data name="RctUtilityDatasetIdFormat" xml:space="preserve">
+  <data name="RctUtilityDatasetNameFormat" xml:space="preserve">
     <value>{0}</value>
   </data>
   <data name="Remove_Failed_Property_NotFound" xml:space="preserve">

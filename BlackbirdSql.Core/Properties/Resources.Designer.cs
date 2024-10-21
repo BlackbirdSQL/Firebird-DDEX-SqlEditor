@@ -616,18 +616,18 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to [{0}] {1}.
         /// </summary>
-        public static string RctProjectDatasetIdFormat {
+        public static string RctProjectDatasetNameFormat {
             get {
-                return ResourceManager.GetString("RctProjectDatasetIdFormat", resourceCulture);
+                return ResourceManager.GetString("RctProjectDatasetNameFormat", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0}.
         /// </summary>
-        public static string RctUtilityDatasetIdFormat {
+        public static string RctUtilityDatasetNameFormat {
             get {
-                return ResourceManager.GetString("RctUtilityDatasetIdFormat", resourceCulture);
+                return ResourceManager.GetString("RctUtilityDatasetNameFormat", resourceCulture);
             }
         }
         

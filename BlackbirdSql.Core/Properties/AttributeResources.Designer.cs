@@ -306,9 +306,9 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The proposed server scope unique name for a database to construct a connection name. Defaults to Dataset..
         /// </summary>
-        internal static string PropertyDescriptionDatasetId {
+        internal static string PropertyDescriptionDatasetName {
             get {
-                return ResourceManager.GetString("PropertyDescriptionDatasetId", resourceCulture);
+                return ResourceManager.GetString("PropertyDescriptionDatasetName", resourceCulture);
             }
         }
         
@@ -387,9 +387,9 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to  Proffered  Database Name.
         /// </summary>
-        internal static string PropertyDisplayDatasetId {
+        internal static string PropertyDisplayDatasetName {
             get {
-                return ResourceManager.GetString("PropertyDisplayDatasetId", resourceCulture);
+                return ResourceManager.GetString("PropertyDisplayDatasetName", resourceCulture);
             }
         }
         

@@ -377,10 +377,10 @@ public sealed class StatusBarManager : IDisposable
 	}
 
 
-	private void ResetDatasetId()
+	private void ResetDatasetName()
 	{
-		string datasetId = QryMgr.Strategy.LiveAdornedTitle;
-		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetId ?? "";
+		string datasetName = QryMgr.Strategy.LiveAdornedTitle;
+		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetName ?? "";
 	}
 
 
@@ -389,7 +389,7 @@ public sealed class StatusBarManager : IDisposable
 	{
 		AbstractConnectionStrategy strategy = QryMgr.Strategy;
 		string displayUserName = strategy.DisplayUserName;
-		string datasetId = strategy.LiveAdornedTitle;
+		string datasetName = strategy.LiveAdornedTitle;
 		string text = strategy.DisplayServerName;
 		Version serverVersion = strategy.ServerVersion;
 
@@ -406,7 +406,7 @@ public sealed class StatusBarManager : IDisposable
 
 		((ToolStripItem)(object)_ServerNamePanel).Text = text;
 		((ToolStripItem)(object)_UserNamePanel).Text = displayUserName;
-		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetId ?? "";
+		((ToolStripItem)(object)_DatabaseNamePanel).Text = datasetName ?? "";
 		if (!QryMgr.QueryExecutionEndTime.HasValue || !QryMgr.QueryExecutionStartTime.HasValue)
 		{
 			((ToolStripItem)(object)_ExecutionTimePanel).Text = "00:00:00";
@@ -504,7 +504,7 @@ public sealed class StatusBarManager : IDisposable
 					: (QryMgr.PeekTransactions
 						? ControlsResources.StatusBar_QueryCancelledRollback
 						: ControlsResources.StatusBar_QueryCancelled);
-				ResetDatasetId();
+				ResetDatasetName();
 				break;
 			case EnState.ExecutionFailed:
 				_GeneralPanel.SetOneImage(S_ExecWithErrorBitmap);
@@ -513,18 +513,18 @@ public sealed class StatusBarManager : IDisposable
 					: (QryMgr.PeekTransactions
 						? ControlsResources.StatusBar_QueryCompletedWithErrorsRollback
 						: ControlsResources.StatusBar_QueryCompletedWithErrors);
-				ResetDatasetId();
+				ResetDatasetName();
 				break;
 			case EnState.ExecutionOk:
 				_GeneralPanel.SetOneImage(S_ExecSuccessBitmap);
 				toolStripItem.Text =
 					ControlsResources.StatusBar_QueryCompletedSuccessfully.FmtRes(!QryMgr.QueryExecutionEndTime.HasValue ? "" : QryMgr.QueryExecutionEndTime);
-				ResetDatasetId();
+				ResetDatasetName();
 				break;
 			case EnState.ExecutionTimedOut:
 				_GeneralPanel.SetOneImage(S_ExecWithErrorBitmap);
 				toolStripItem.Text = ControlsResources.StatusBar_QueryTimedOut;
-				ResetDatasetId();
+				ResetDatasetName();
 				break;
 			case EnState.Offline:
 				_GeneralPanel.SetOneImage(S_OfflineBitmap);
@@ -823,7 +823,7 @@ public sealed class StatusBarManager : IDisposable
 							result = EnState.Connected;
 
 						SetBarState(result);
-						ResetDatasetId();
+						ResetDatasetName();
 
 						return;
 					}
@@ -833,7 +833,7 @@ public sealed class StatusBarManager : IDisposable
 						result = EnState.Disconnected;
 
 						SetBarState(result);
-						ResetDatasetId();
+						ResetDatasetName();
 
 						return;
 					}
@@ -858,7 +858,7 @@ public sealed class StatusBarManager : IDisposable
 				{
 					result = EnState.Offline;
 					SetBarState(result);
-					ResetDatasetId();
+					ResetDatasetName();
 
 					return;
 				}

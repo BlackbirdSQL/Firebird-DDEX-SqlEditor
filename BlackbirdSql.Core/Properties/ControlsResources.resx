@@ -135,6 +135,9 @@ Extend the allotted linkage time by {0} seconds?</value>
   <data name="RctManager_CaptionConnectionChangeNameConflict" xml:space="preserve">
     <value>Connection change ConnectionName conflict</value>
   </data>
+  <data name="RctManager_CaptionConnectionModified" xml:space="preserve">
+    <value>Connection modification warning</value>
+  </data>
   <data name="RctManager_CaptionConnectionNameChange" xml:space="preserve">
     <value>ConnectionName change</value>
   </data>
@@ -175,6 +178,7 @@ Continue?</value>
   </data>
   <data name="RctManager_TextConnectionNameConflict" xml:space="preserve">
     <value>The Proposed Connection Name '{0}' is already allocated to another connection and '{1}' will be used instead.
+Any modified settings will be applied to the alternate connection.
 
 Continue?</value>
   </data>
@@ -187,6 +191,7 @@ Continue?
   </data>
   <data name="RctManager_TextDatabaseNameConflict" xml:space="preserve">
     <value>The Proposed Database Name '{0}' is already allocated to another connection and '{1}' will be used instead.
+Any modified settings will be applied to the alternate connection.
 
 Continue?</value>
   </data>
@@ -238,7 +243,14 @@ Continue?</value>
   <data name="RctManager_TextNewSessionSEConnection" xml:space="preserve">
     <value>The settings provided will add a new Server Explorer connection. Continue?</value>
   </data>
+  <data name="RctManager_TextSEConnectionModified" xml:space="preserve">
+    <value>Any modified settings will be applied to the existing Server Explorer Connection '{0}'.
+
+Continue?</value>
+  </data>
   <data name="RctManager_TextSEConnectionNameChange" xml:space="preserve">
-    <value>The existing Server Explorer Connection's name will be modified. Continue?</value>
+    <value>The existing Server Explorer Connection's name for '{0}' will be modified.
+
+Continue?</value>
   </data>
 </root>

@@ -32,7 +32,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 	ICollection<KeyValuePair<string, object>>, IEnumerable<KeyValuePair<string, object>>,
 	IEnumerable, IVsDataConnectionUIProperties, ICustomTypeDescriptor, INotifyPropertyChanged
 {
-	private Csb _ConnectionStringBuilder;
+	protected Csb _ConnectionStringBuilder;
 	protected EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
 
 
@@ -122,7 +122,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 	}
 
 
-	public Csb Csa => ConnectionStringBuilder;
+	public Csb Csa => _ConnectionStringBuilder;
 
 
 
@@ -260,7 +260,8 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 				ConnectionStringBuilder.ConnectionString = connectionString;
 
 				if (ConnectionSource == EnConnectionSource.Application
-					|| ConnectionSource == EnConnectionSource.EntityDataModel)
+					|| ConnectionSource == EnConnectionSource.EntityDataModel
+					|| ConnectionSource == EnConnectionSource.DataSource)
 				{
 					foreach (Describer describer in Csb.AdvancedKeys)
 					{
@@ -274,7 +275,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 					// with an "edmx" property.
 					// The descendant IVsDataConnectionUIProperties implementation will be
 					// identified with an "edmu" property.
-					if (ConnectionSource == EnConnectionSource.EntityDataModel)
+					if (ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource)
 					{
 						ConnectionStringBuilder[CoreConstants.C_KeyExEdmx] = true;
 						ConnectionStringBuilder.Remove(CoreConstants.C_KeyExEdmu);
@@ -534,7 +535,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 		return TypeDescriptor.GetDefaultProperty(ConnectionStringBuilder, noCustomTypeDesc: true);
 	}
 
-	protected abstract PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb);
+	protected abstract PropertyDescriptorCollection GetCsbProperties(Csb csb);
 
 
 	PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
@@ -542,7 +543,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 		return GetCsbProperties(ConnectionStringBuilder);
 	}
 
-	protected abstract PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb, Attribute[] attributes);
+	protected abstract PropertyDescriptorCollection GetCsbProperties(Csb csb, Attribute[] attributes);
 
 
 	PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)

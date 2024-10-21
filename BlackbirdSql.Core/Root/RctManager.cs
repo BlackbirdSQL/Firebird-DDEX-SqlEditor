@@ -138,7 +138,6 @@ public sealed class RctManager : RunningConnectionTable
 	private const string C_SolutionExplorer = "{3AE79031-E1BC-11D0-8F78-00A0C9110057}";
 	private const string C_XsdDatasetDesigner = "{9DDABE98-1D02-11D3-89A1-00C04F688DDE}";
 	private const string C_XsdDatasetDesigner2 = "{74946810-37A0-11D2-A273-00C04F8EF4FF}";
-	private const string C_XsdDatasetDesigner3 = "{8E7B96A8-E33D-11D0-A6D5-00C04FB67F6A}";
 	*/
 
 
@@ -163,7 +162,7 @@ public sealed class RctManager : RunningConnectionTable
 
 	private static readonly string _S_SEToolWindow = VSConstants.StandardToolWindows.ServerExplorer.ToString("B").ToUpper();
 	private static readonly string _S_VsMdPropertyBrowser = VSConstants.StandardToolWindows.VSMDPropertyBrowser.ToString("B").ToUpper();
-
+	private static readonly string _S_VsTextBuffer = VS.CLSID_VsTextBuffer.ToString("B").ToUpper();
 	/*
 	private static readonly string _S_DataSourceToolWindow = VSConstants.StandardToolWindows.DataSource.ToString("B").ToUpper();
 	private static readonly string _S_ErrorList = VSConstants.StandardToolWindows.ErrorList.ToString("B").ToUpper();
@@ -613,10 +612,10 @@ public sealed class RctManager : RunningConnectionTable
 
 	private static readonly Dictionary<string, string> _ActiveWindowObjectKinds = new()
 	{
-		{ "SEToolWindow", VSConstants.StandardToolWindows.ServerExplorer.ToString("B") },
-		{ "VsMdPropertyBrowser", VSConstants.StandardToolWindows.VSMDPropertyBrowser.ToString("B") },
-		{ "VsTextBuffer", VS.CLSID_VsTextBuffer.ToString("B") },
-		{ "Wizard", "{C99AEA30-8E36-4515-B76F-496F5A48A6AA}" },
+		{ "SEToolWindow", _S_SEToolWindow },
+		{ "VsMdPropertyBrowser", _S_VsMdPropertyBrowser },
+		{ "VsTextBuffer", _S_VsTextBuffer },
+		{ "Wizard", C_Wizard },
 		{ "DataSourceToolWindow", VSConstants.StandardToolWindows.DataSource.ToString("B") },
 		{ "OutputToolWindow", VSConstants.StandardToolWindows.Output.ToString("B") },
 		{ "SolutionExplorer", "{3AE79031-E1BC-11D0-8F78-00A0C9110057}" },
@@ -661,9 +660,9 @@ public sealed class RctManager : RunningConnectionTable
 		if (!string.IsNullOrEmpty(csa.ConnectionName))
 			colObject = null;
 		else
-			colObject = row[SysConstants.C_KeyExDatasetId];
+			colObject = row[SysConstants.C_KeyExDatasetName];
 		if (!Cmd.IsNullValue(colObject))
-			csa.DatasetId = (string)colObject;
+			csa.DatasetName = (string)colObject;
 
 		colObject = row[CoreConstants.C_KeyExConnectionSource];
 		if (!Cmd.IsNullValue(colObject))
@@ -739,7 +738,6 @@ public sealed class RctManager : RunningConnectionTable
 			return EnConnectionSource.Unknown;
 
 		// Definitely Session.
-
 		if (_SessionConnectionSourceActive)
 			return EnConnectionSource.Session;
 
@@ -748,6 +746,7 @@ public sealed class RctManager : RunningConnectionTable
 		if (InitializingExplorerModels)
 			return EnConnectionSource.ServerExplorer;
 
+		// We are not in the connection dialog so the ConnectionSource is not needed.
 		if (EventConnectionDialogEnter(true))
 			return EnConnectionSource.Unknown;
 
@@ -755,34 +754,30 @@ public sealed class RctManager : RunningConnectionTable
 		// We're just peeking.
 		// Diag.ThrowIfNotOnUIThread();
 
-		// At this point we're definitely in a dialog and there are cases
-		// where we can't be guessing...
-		// 1. We're in the SE tool window. This has to be known or we have a bug.
-		// 2. We're in a Session dialog. This we will know because we would have launched it.
-		// 3. We're editing settings. This we will know because the settings window will be active.
-		// 4. We're in the .edmx wizard. This we will know but creating a datasource could also
-		//		show up as an edm, as below.
-		// 5. We're creating a datasource from the Project menu or some unknown extension.
-		//		In this case our active window could be anything.
-		//		a. It could be an .edmx model. That's best. We can prevent refreshing of the SE.
-		//		b. It could be the SE. In this case we cannot prevent a refresh.
-		//		c. It could be user settings. It cannot be. Adding datasources is disabled when
-		//			this window is active.
-		//		d. Any other window will show up as an edm. Also best.
+		// At this point we're definitely in the connection dialog and we can't be guessing...
+		//
+		// 1. ServerExplorer: We're in the SE tool window. This has to be known or we have a bug.
+		// 2. Session: We're in a Session dialog. This we will know because we would have launched it.
+		// 3. Application: We're editing settings. This we will know because the settings window will
+		//		be active and it will be in the parent hierarchy of the focused control.
+		// 4. EntityDataModel: We're in the .edmx wizard or creating a datasource from the Project menu
+		//		or some unknown extension.
+		//		Applies to all other cases.In this case our active window could be anything.
 
 
 		EnConnectionSource result;
 
 		string objectKind = ApcManager.ActiveWindowObjectKind;
-		string extension = ApcManager.ActiveDocumentExtension;
+		// string objectType = ApcManager.ActiveWindowObjectType;
 
-		// string info = $"\n\tDialogActive: {ConnectionDialogActive}, ActiveWindowType: {ApcManager.ActiveWindowType}, ActiveWindowObjectType: null, ActiveWindowObjectKind: {KindName(objectKind)}, ActiveDocumentExtension: {extension}.";
+		// string info = $"\n\tConnection Dialog: ActiveWindowObjectType: {objectType}, ActiveWindowType: {ApcManager.ActiveWindowType}, ActiveWindowObjectKind: {KindName(objectKind)}|{objectKind}.";
+
 
 		// Definitely ServerExplorer
 		if (objectKind == _S_SEToolWindow)
 		{
 			result = EnConnectionSource.ServerExplorer;
-			// Evs.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}.{1}", result.ToUpper(), info);
+			// Evs.Debug(typeof(RctManager), "GetConnectionSourceImpl()", $"ConnectionSource: {result}.{info}");
 			return result;
 		}
 
@@ -791,7 +786,7 @@ public sealed class RctManager : RunningConnectionTable
 		if (objectKind == _S_VsMdPropertyBrowser)
 		{
 			result = EnConnectionSource.Application;
-			// Evs.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}.{1}", result.ToUpper(), info);
+			// Evs.Debug(typeof(RctManager), "GetConnectionSourceImpl()", $"ConnectionSource: {result}.{info}");
 			return result;
 		}
 
@@ -799,25 +794,71 @@ public sealed class RctManager : RunningConnectionTable
 		if (objectKind == C_Wizard)
 		{
 			result = EnConnectionSource.EntityDataModel;
-			// Evs.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}. {1}", result.ToUpper(), info);
+			// Evs.Debug(typeof(RctManager), "GetConnectionSourceImpl()", $"ConnectionSource: {result}.{info}");
 			return result;
 		}
 
 
-		string objectType = ApcManager.ActiveWindowObjectType;
+		string extension = ApcManager.ActiveDocumentExtension;
 		bool isSettings = !string.IsNullOrEmpty(extension) && extension.Equals(".settings", StringComparison.InvariantCultureIgnoreCase);
 
-		result = isSettings ? EnConnectionSource.Application : EnConnectionSource.EntityDataModel;
+		if (isSettings)
+		{
+			// Hack: The ConnectionSource is 'Application' only if the ActiveWindow is
+			// within the parent hierarchy of the focused control.
+
+			isSettings = false;
+
+			IntPtr activeHwnd = ApcManager.ActiveWindowHandle;
+			// IntPtr fgHwnd = Sys.Native.GetForegroundWindow();
+			IntPtr focusHwnd = Sys.Native.GetFocus();
+			IntPtr parentHwnd = IntPtr.Zero;
+
+			// string parentHwnds = "";
+
+			if (focusHwnd != IntPtr.Zero)
+				parentHwnd = Sys.Native.GetParent(focusHwnd);
+
+			while (parentHwnd != IntPtr.Zero)
+			{
+				// if (parentHwnds != "")
+				//	parentHwnds += ":";
+
+				// parentHwnds += parentHwnd;
+
+				if (parentHwnd == activeHwnd)
+				{
+					// parentHwnds += "[Active]";
+					isSettings = true;
+					break;
+				}
+
+				// if (parentHwnd == fgHwnd)
+				//	parentHwnds += "[Fg]";
+				// if (parentHwnd == focusHwnd)
+				//	parentHwnds += "[Focus]";
+
+				IntPtr pparentHwnd = Sys.Native.GetParent(parentHwnd);
+
+				if (pparentHwnd == IntPtr.Zero || pparentHwnd == parentHwnd)
+					break;
+
+				parentHwnd = pparentHwnd;
+			}
+
+			// info = $"\n\tConnection Dialog: ActiveWindowObjectType: {objectType}, ActiveWindowType: {ApcManager.ActiveWindowType}, ActiveWindowObjectKind: {KindName(objectKind)}|{objectKind}, ActiveDocumentExtension: {extension}, ActiveHwnd: {activeHwnd}, FgHwnd: {fgHwnd}, FocusHwnd: {focusHwnd}, ParentHwnds: {parentHwnds}.";
+		}
+
+		result = isSettings ? EnConnectionSource.Application : (objectKind == _S_VsTextBuffer
+				? EnConnectionSource.DataSource : EnConnectionSource.EntityDataModel);
 
 		// Probably nothing
-		if (objectType == "" && objectKind == "")
+		if (objectKind == "" /* && objectType == "" */)
 		{
 			Diag.Dug(new ApplicationException($"ConnectionSource not discovered. Using: {result.ToUpper()}. ActiveWindowType: {ApcManager.ActiveWindowType}. ActiveWindowObjectType is null, ActiveWindowObjectKind is null."));
 		}
 
-
-		// info = $"\n\tDialogActive: {ConnectionDialogActive}, ActiveWindowType: {ApcManager.ActiveWindowType}, ActiveWindowObjectType: {objectType}, ActiveWindowObjectKind: {KindName(objectKind)}, ActiveDocumentExtension: {extension}, isSettings: {isSettings}.";
-		// Evs.Trace(typeof(RctManager), "GetConnectionSourceImpl()", "{0}. {1}", result.ToUpper(), info);
+		// Evs.Debug(typeof(RctManager), "GetConnectionSourceImpl()", $"ConnectionSource: {result}.{info}");
 
 		return result;
 	}
@@ -891,22 +932,20 @@ public sealed class RctManager : RunningConnectionTable
 		// we're creating a new configured connection.
 
 		Csb csa = new(connectionString);
-		string datasetId = csa.DatasetId;
+		string datasetName = csa.DisplayDatasetName;
 
-		if (string.IsNullOrWhiteSpace(datasetId))
-			datasetId = csa.Dataset;
 
 		// If the proposed key matches the proposed generated one, drop it.
 
 		if (csa.ContainsKey(SysConstants.C_KeyExConnectionName)
 			&& !string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
-			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
+			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetName) == csa.ConnectionName
+			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetName) == csa.ConnectionName))
 		{
-			csa.Remove(SysConstants.C_KeyExConnectionName);
+			// csa.Remove(SysConstants.C_KeyExConnectionName);
 		}
 
-		Instance.RegisterUniqueConnection(csa.ConnectionName, datasetId, source, ref csa);
+		Instance.RegisterUniqueConnection(csa.ConnectionName, datasetName, source, ref csa);
 
 		return csa;
 	}
@@ -947,19 +986,17 @@ public sealed class RctManager : RunningConnectionTable
 		// Evs.Trace(typeof(Csb), "EnsureVolatileInstance()", "Could NOT find registered DataRow for dbConnectionString: {0}.", connection.ConnectionString);
 
 		csa = new(connection);
-		string datasetId = csa.DatasetId;
+		string datasetName = csa.DisplayDatasetName;
 
-		if (string.IsNullOrWhiteSpace(datasetId))
-			datasetId = csa.Dataset;
 
 		if (!string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
-			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
+			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetName) == csa.ConnectionName
+			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetName) == csa.ConnectionName))
 		{
 			csa.ConnectionName = SysConstants.C_DefaultExConnectionName;
 		}
 
-		if (Instance.RegisterUniqueConnection(csa.ConnectionName, datasetId, ConnectionSource, ref csa))
+		if (Instance.RegisterUniqueConnection(csa.ConnectionName, datasetName, ConnectionSource, ref csa))
 		{
 			csa.RefreshDriftDetectionState();
 		}
@@ -1419,7 +1456,7 @@ public sealed class RctManager : RunningConnectionTable
 		// If the connection doesn't exist in the SE we will have created it on the fly
 		// to prevent the wizard throwing an exception.
 		// Whether created or selected, the wizard will misbehave and rename the
-		// connection, and we lose the DatasetId if it existed.
+		// connection, and we lose the DatasetName if it existed.
 		// A node changed event is raised which we pick up here, and we perform a
 		// reverse repair.
 
@@ -1486,19 +1523,19 @@ public sealed class RctManager : RunningConnectionTable
 
 		bool createServerExplorerConnection = false;
 		string connectionUrl = csa.Moniker;
-		string proposedDatasetId = csa.DatasetId;
+		string proposedDatasetName = csa.DatasetName;
 		string dataSource = csa.DataSource;
 		string dataset = csa.Dataset;
 
 
 		// Check whether the connection name will change.
 		Instance.GenerateUniqueDatasetKey(EnConnectionSource.ServerExplorer, ref proposedConnectionName,
-			ref proposedDatasetId, dataSource, dataset, connectionUrl, connectionUrl,
+			ref proposedDatasetName, dataSource, dataset, connectionUrl, connectionUrl,
 			ref createServerExplorerConnection, out _, out _, out string uniqueDatasetKey,
-			out string uniqueConnectionName, out string uniqueDatasetId);
+			out string uniqueConnectionName, out string uniqueDatasetName);
 
-		// Evs.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}, uniqueDatasetKey: {4}, uniqueConnectionName: {5}, uniqueDatasetId: {6}.",
-		//	proposedConnectionName, proposedDatasetId, dataSource, dataset, uniqueDatasetKey ?? "Null", uniqueConnectionName ?? "Null", uniqueDatasetId ?? "Null");
+		// Evs.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetName: {1}, dataSource: {2}, dataset: {3}, uniqueDatasetKey: {4}, uniqueConnectionName: {5}, uniqueDatasetName: {6}.",
+		//	proposedConnectionName, proposedDatasetName, dataSource, dataset, uniqueDatasetKey ?? "Null", uniqueConnectionName ?? "Null", uniqueDatasetName ?? "Null");
 
 		if (!string.IsNullOrEmpty(uniqueConnectionName))
 		{
@@ -1526,12 +1563,12 @@ public sealed class RctManager : RunningConnectionTable
 		else
 			csa.ConnectionName = proposedConnectionName;
 
-		if (uniqueDatasetId == null && proposedDatasetId == null)
-			csa.Remove(SysConstants.C_KeyExDatasetId);
-		else if (!string.IsNullOrEmpty(uniqueDatasetId))
-			csa.DatasetId = uniqueDatasetId;
+		if (uniqueDatasetName == null && proposedDatasetName == null)
+			csa.Remove(SysConstants.C_KeyExDatasetName);
+		else if (!string.IsNullOrEmpty(uniqueDatasetName))
+			csa.DatasetName = uniqueDatasetName;
 		else
-			csa.DatasetId = proposedDatasetId;
+			csa.DatasetName = proposedDatasetName;
 
 
 		UpdateOrRegisterConnection(csa.ConnectionString, EnConnectionSource.ServerExplorer, false, true);
@@ -1587,9 +1624,13 @@ public sealed class RctManager : RunningConnectionTable
 			return (retSuccess, retAddInternally, retModifyInternally);
 
 		string storedConnectionUrl = null;
+		string storedDatasetKey = null;
 
 		if (storedConnectionString != null)
+		{
 			storedConnectionUrl = Csb.CreateConnectionUrl(storedConnectionString);
+			storedDatasetKey = GetDatasetKey(storedConnectionUrl);
+		}
 
 
 		string proposedConnectionName = site.ContainsKey(SysConstants.C_KeyExConnectionName)
@@ -1611,10 +1652,10 @@ public sealed class RctManager : RunningConnectionTable
 			return (retSuccess, retAddInternally, retModifyInternally);
 		}
 
-		string proposedDatasetId = site.ContainsKey(SysConstants.C_KeyExDatasetId)
-			? (string)site[SysConstants.C_KeyExDatasetId] : null;
-		if (Cmd.IsNullValueOrEmpty(proposedDatasetId))
-			proposedDatasetId = null;
+		string proposedDatasetName = site.ContainsKey(SysConstants.C_KeyExDatasetName)
+			? (string)site[SysConstants.C_KeyExDatasetName] : null;
+		if (Cmd.IsNullValueOrEmpty(proposedDatasetName))
+			proposedDatasetName = null;
 
 		string dataSource = (string)site[SysConstants.C_KeyDataSource];
 		string database = (string)site[SysConstants.C_KeyDatabase];
@@ -1633,24 +1674,24 @@ public sealed class RctManager : RunningConnectionTable
 
 		string connectionUrl = (site as IBsDataConnectionProperties).Csa.LiveDatasetMoniker;
 
-		// Evs.Trace(typeof(RctManager), "ValidateSiteProperties()", "connectionSource: {0}, serverExplorerInsertMode: {1}, proposedConnectionName: {2}, proposedDatasetId: {3}, dataSource: {4}, dataset: {5}.",
-		//	connectionSource, serverExplorerInsertMode, proposedConnectionName, proposedDatasetId, dataSource, dataset);
+		// Evs.Trace(typeof(RctManager), "ValidateSiteProperties()", "connectionSource: {0}, serverExplorerInsertMode: {1}, proposedConnectionName: {2}, proposedDatasetName: {3}, dataSource: {4}, dataset: {5}.",
+		//	connectionSource, serverExplorerInsertMode, proposedConnectionName, proposedDatasetName, dataSource, dataset);
 
 
 		// Validate the proposed names.
-		bool rctExists = Instance.GenerateUniqueDatasetKey(connectionSource, ref proposedConnectionName, ref proposedDatasetId,
+		bool rctExists = Instance.GenerateUniqueDatasetKey(connectionSource, ref proposedConnectionName, ref proposedDatasetName,
 			dataSource, dataset, connectionUrl, storedConnectionUrl, ref createServerExplorerConnection,
 			out EnConnectionSource storedConnectionSource,
 			out string changedTargetDatasetKey, out string uniqueDatasetKey, out string uniqueConnectionName,
-			out string uniqueDatasetId);
+			out string uniqueDatasetName);
 
 		/*
 		// Evs.Trace(typeof(RctManager), "ValidateSiteProperties()",
-			"GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetId: {1}, dataSource: {2}, dataset: {3}, createnew: {4}, storedConnectionSource: {5}, changedTargetDatasetKey: {6}, uniqueDatasetKey : {7}, uniqueConnectionName: {8}, uniqueDatasetId: {9}.",
-			proposedConnectionName, proposedDatasetId, dataSource, dataset, createNew, storedConnectionSource,
+			"GenerateUniqueDatasetKey results: proposedConnectionName: {0}, proposedDatasetName: {1}, dataSource: {2}, dataset: {3}, createnew: {4}, storedConnectionSource: {5}, changedTargetDatasetKey: {6}, uniqueDatasetKey : {7}, uniqueConnectionName: {8}, uniqueDatasetName: {9}.",
+			proposedConnectionName, proposedDatasetName, dataSource, dataset, createNew, storedConnectionSource,
 			changedTargetDatasetKey ?? "Null", uniqueDatasetKey ?? "Null",
 			uniqueConnectionName == null ? "Null" : (uniqueConnectionName == "" ? """" : uniqueConnectionName),
-			uniqueDatasetId == null ? "Null" : (uniqueDatasetId == "" ? """" : uniqueDatasetId));
+			uniqueDatasetName == null ? "Null" : (uniqueDatasetName == "" ? """" : uniqueDatasetName));
 		*/
 
 
@@ -1696,39 +1737,39 @@ public sealed class RctManager : RunningConnectionTable
 				msg = ControlsResources.RctManager_TextConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
 			}
 		}
-		else if (!string.IsNullOrEmpty(uniqueDatasetId) && !string.IsNullOrEmpty(proposedDatasetId))
+		else if (!string.IsNullOrEmpty(uniqueDatasetName) && !string.IsNullOrEmpty(proposedDatasetName))
 		{
-			// Handle all cases where there's a DatasetId conflict.
+			// Handle all cases where there's a DatasetName conflict.
 
-			// The settings provided will create a new Session connection as well as a new SE connection with a DatasetId conflict.
+			// The settings provided will create a new Session connection as well as a new SE connection with a DatasetName conflict.
 			if (createServerExplorerConnection && !serverExplorerInsertMode && connectionSource == EnConnectionSource.Session)
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
-				msg = ControlsResources.RctManager_TextNewConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
+				msg = ControlsResources.RctManager_TextNewConnectionDatabaseNameConflict.FmtRes(proposedDatasetName, uniqueDatasetName);
 			}
-			// The settings provided will create a new SE connection with a DatasetId conflict.
+			// The settings provided will create a new SE connection with a DatasetName conflict.
 			else if (createServerExplorerConnection && !serverExplorerInsertMode)
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
-				msg = ControlsResources.RctManager_TextNewSEConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
+				msg = ControlsResources.RctManager_TextNewSEConnectionDatabaseNameConflict.FmtRes(proposedDatasetName, uniqueDatasetName);
 			}
-			// The settings provided will create a new Session connection with a DatasetId conflict.
+			// The settings provided will create a new Session connection with a DatasetName conflict.
 			else if (!rctExists && !serverExplorerInsertMode)
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
-				msg = ControlsResources.RctManager_TextNewSessionConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
+				msg = ControlsResources.RctManager_TextNewSessionConnectionDatabaseNameConflict.FmtRes(proposedDatasetName, uniqueDatasetName);
 			}
-			// The settings provided will switch connections with a DatasetId conflict.
+			// The settings provided will switch connections with a DatasetName conflict.
 			else if (changedTargetDatasetKey != null)
 			{
 				caption = ControlsResources.RctManager_CaptionConnectionChangeDatabaseNameConflict;
-				msg = ControlsResources.RctManager_TextConnectionChangeDatabaseNameConflict.FmtRes(changedTargetDatasetKey, proposedDatasetId, uniqueDatasetId);
+				msg = ControlsResources.RctManager_TextConnectionChangeDatabaseNameConflict.FmtRes(changedTargetDatasetKey, proposedDatasetName, uniqueDatasetName);
 			}
-			// The settings provided will cause a DatasetId conflict.
+			// The settings provided will cause a DatasetName conflict.
 			else
 			{
 				caption = ControlsResources.RctManager_CaptionDatabaseNameConflict;
-				msg = ControlsResources.RctManager_TextDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
+				msg = ControlsResources.RctManager_TextDatabaseNameConflict.FmtRes(proposedDatasetName, uniqueDatasetName);
 			}
 		}
 		// Handle all cases where there is no conflict.
@@ -1760,12 +1801,21 @@ public sealed class RctManager : RunningConnectionTable
 		// If it's an SE connection and it's not the SE modifying warn if the connection name is being modified.
 		else if (connectionSource != EnConnectionSource.ServerExplorer
 			&& storedConnectionSource == EnConnectionSource.ServerExplorer &&
-			(uniqueConnectionName == "" || uniqueDatasetId == ""))
+			(uniqueConnectionName == "" || uniqueDatasetName == ""))
 		{
 			// The target connection name will change.
-			caption = ControlsResources.RctManager_CaptionConnectionNameChange;
-			msg = ControlsResources.RctManager_TextSEConnectionNameChange;
+			caption = ControlsResources.RctManager_CaptionConnectionModified;
+			msg = ControlsResources.RctManager_TextSEConnectionNameChange.FmtRes(storedDatasetKey);
 		}
+		// If it's an SE connection and it's not the SE modifying warn that modified settings will be
+		// applied to the connection.
+		else if (connectionSource != EnConnectionSource.ServerExplorer
+			&& storedConnectionSource == EnConnectionSource.ServerExplorer)
+		{
+			caption = ControlsResources.RctManager_CaptionConnectionModified;
+			msg = ControlsResources.RctManager_TextSEConnectionModified.FmtRes(storedDatasetKey);
+		}
+
 
 
 		if (msg != null && MessageCtl.ShowEx(msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
@@ -1792,12 +1842,12 @@ public sealed class RctManager : RunningConnectionTable
 		else
 			site[SysConstants.C_KeyExConnectionName] = proposedConnectionName;
 
-		if (uniqueDatasetId == null && proposedDatasetId == null)
-			site.Remove(SysConstants.C_KeyExDatasetId);
-		else if (!string.IsNullOrEmpty(uniqueDatasetId))
-			site[SysConstants.C_KeyExDatasetId] = uniqueDatasetId;
+		if (uniqueDatasetName == null && proposedDatasetName == null)
+			site.Remove(SysConstants.C_KeyExDatasetName);
+		else if (!string.IsNullOrEmpty(uniqueDatasetName))
+			site[SysConstants.C_KeyExDatasetName] = uniqueDatasetName;
 		else
-			site[SysConstants.C_KeyExDatasetId] = proposedDatasetId;
+			site[SysConstants.C_KeyExDatasetName] = proposedDatasetName;
 
 
 		// Establish the connection owner.
@@ -1805,7 +1855,8 @@ public sealed class RctManager : RunningConnectionTable
 		string connectionKey = site.FindConnectionKey();
 
 		if (connectionKey == null && (connectionSource == EnConnectionSource.ServerExplorer
-			|| connectionSource == EnConnectionSource.EntityDataModel))
+			|| connectionSource == EnConnectionSource.EntityDataModel
+			|| connectionSource == EnConnectionSource.DataSource))
 		{
 			connectionKey = uniqueDatasetKey;
 		}
@@ -1831,14 +1882,18 @@ public sealed class RctManager : RunningConnectionTable
 			retAddInternally = true;
 
 		retModifyInternally = changedTargetDatasetKey != null || (!retAddInternally
-			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel);
+			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel
+			&& connectionSource != EnConnectionSource.DataSource);
 
 		// Tag the site as being updated by the edmx wizard if it's not being done internally, which will
 		// use IVsDataConnectionUIProperties.Parse().
 		// We do this because the wizard will attempt to rename the connection and we'll pick it up in
 		// the rct on an IVsDataExplorerConnection.NodeChanged event, and reverse the rename and drop the tag.
-		if (connectionSource == EnConnectionSource.EntityDataModel && !retAddInternally && !retModifyInternally)
+		if ((connectionSource == EnConnectionSource.EntityDataModel || connectionSource == EnConnectionSource.DataSource)
+			&& !retAddInternally && !retModifyInternally)
+		{
 			site["edmu"] = true;
+		}
 
 
 		retSuccess = true;

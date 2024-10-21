@@ -28,10 +28,10 @@
 						<Category resource="Category_Connection" />
 						<Description resource="Identifier_Desc_DatabasePath" />
 					</Property>
-					<Property name="DatasetId">
-						<DisplayName resource="Identifier_Name_DatasetId" />
+					<Property name="DatasetName">
+						<DisplayName resource="Identifier_Name_DatasetName" />
 						<Category resource="Category_Connection" />
-						<Description resource="Identifier_Desc_DatasetId" />
+						<Description resource="Identifier_Desc_DatasetName" />
 					</Property>
 					<Property name="UserID">
 						<DisplayName resource="Identifier_Name_UserId" />

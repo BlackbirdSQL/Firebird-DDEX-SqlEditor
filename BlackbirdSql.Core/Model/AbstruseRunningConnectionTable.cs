@@ -479,28 +479,28 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Generates a unique DatasetKey (ConnectionName) or DatasetId (DatabaseName)
-	/// from the proposedConnectionName or proposedDatasetId, usually supplied by a
+	/// Generates a unique DatasetKey (ConnectionName) or DatasetName (DatabaseName)
+	/// from the proposedConnectionName or proposedDatasetName, usually supplied by a
 	/// connection dialog's underlying site or csa, or from a connection rename.
 	/// At most one should be specified. If both are specified there will be a
 	/// redundancy check of the connection name otherwise the connection name takes
 	/// precedence.
-	/// If both are null the proposed derivedDatasetId will be derived from the
+	/// If both are null the proposed derivedDatasetName will be derived from the
 	/// dataSource.
 	/// </summary>
 	/// <param name="connectionSource">The ConnectionSource making the request.</param>
 	/// <param name="proposedConnectionName">
 	/// The proposed DatasetKey (ConnectionName) property else null.
 	/// </param>
-	/// <param name="proposedDatasetId">
-	/// The proposed DatasetId (DatabaseName) property else null.
+	/// <param name="proposedDatasetName">
+	/// The proposed DatasetName (DatabaseName) property else null.
 	/// </param>
 	/// <param name="dataSource">
 	/// The DataSource (server name) property to be used in constructing the DatasetKey.
 	/// </param>
 	/// <param name="dataset">
-	/// The readonly Dataset property to be used in constructing a DatasetId if the
-	/// proposed DatasetId is null.
+	/// The readonly Dataset property to be used in constructing a DatasetName if the
+	/// proposed DatasetName is null.
 	/// </param>
 	/// <param name="connectionUrl">
 	/// The readonly SafeDatasetMoniker property of the underlying csa of the caller.
@@ -531,15 +531,15 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// "" is returned then whatever was provided in proposedConnectionName is good but
 	/// changes the existing name. If a value is returned then proposedConnectionName
 	/// was ambiguous and outUniqueConnectionName must be used in it's place.
-	/// outUniqueConnectionName and outUniqueDatasetId are mutually exclusive.
+	/// outUniqueConnectionName and outUniqueDatasetName are mutually exclusive.
 	/// </param>
-	/// <param name="outUniqueDatasetId">
+	/// <param name="outUniqueDatasetName">
 	/// Out | The unique resulting proposed DatsetId. If null is returned then whatever
-	/// was provided in proposedDatasetId is correct and remains as is. If "" is
-	/// returned then whatever was provided in proposedDatasetId is good but changes the
-	/// existing name. If a value is returned then proposedDatasetId was ambiguous and
-	/// outUniqueDatasetId must be used in it's place.
-	/// outUniqueConnectionName and outUniqueDatasetId are mutually exclusive.
+	/// was provided in proposedDatasetName is correct and remains as is. If "" is
+	/// returned then whatever was provided in proposedDatasetName is good but changes the
+	/// existing name. If a value is returned then proposedDatasetName was ambiguous and
+	/// outUniqueDatasetName must be used in it's place.
+	/// outUniqueConnectionName and outUniqueDatasetName are mutually exclusive.
 	/// </param>
 	/// <returns>
 	/// A boolean indicating whether or not an Rct connection exists for the provided
@@ -547,11 +547,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	protected abstract bool GenerateUniqueDatasetKey(EnConnectionSource connectionSource,
-		ref string proposedConnectionName, ref string proposedDatasetId, string dataSource,
+		ref string proposedConnectionName, ref string proposedDatasetName, string dataSource,
 		string dataset, string connectionUrl, string storedConnectionUrl,
 		ref bool createServerExplorerConnection, out EnConnectionSource outStoredConnectionSource,
 		out string outChangedTargetDatasetKey, out string outUniqueDatasetKey,
-		out string outUniqueConnectionName, out string outUniqueDatasetId);
+		out string outUniqueConnectionName, out string outUniqueDatasetName);
 
 
 
@@ -1178,7 +1178,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Evs.Debug(GetType(), "InternalLoadServerExplorerConnection()", $"Connection name: {connectionName}.");
 
-		string datasetId;
+		string datasetName;
 		Csb csa;
 		DataRow row;
 
@@ -1192,27 +1192,27 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 
 
-		datasetId = csa.DatasetId;
+		datasetName = csa.DatasetName;
 
-		// If the connection name matches the datasetKey constructed from the datasetId, remove it.
-		if (!string.IsNullOrEmpty(datasetId) && !csa.ContainsKey(C_KeyExConnectionName)
-			&& connectionName == S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetId))
+		// If the connection name matches the datasetKey constructed from the datasetName, remove it.
+		if (!string.IsNullOrEmpty(datasetName) && !csa.ContainsKey(C_KeyExConnectionName)
+			&& connectionName == S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetName))
 		{
 			connectionName = null;
 		}
 
-		if (!string.IsNullOrEmpty(connectionName) && !string.IsNullOrEmpty(datasetId))
-			datasetId = null;
+		if (!string.IsNullOrEmpty(connectionName) && !string.IsNullOrEmpty(datasetName))
+			datasetName = null;
 
 		BeginLoadData(true);
 
 		try
 		{
 			// Evs.Debug(GetType(), "InternalLoadServerExplorerConnection()",
-			//	$"ConnectionName: {connectionName}, datasetId: {datasetId}, csa: {csa.ConnectionString}.");
+			//	$"ConnectionName: {connectionName}, datasetName: {datasetName}, csa: {csa.ConnectionString}.");
 
-			// The datasetId may not be unique at this juncture and already registered.
-			row = RegisterUniqueConnectionImpl(connectionName, datasetId,
+			// The datasetName may not be unique at this juncture and already registered.
+			row = RegisterUniqueConnectionImpl(connectionName, datasetName,
 				EnConnectionSource.ServerExplorer, ref csa);
 
 			if (row == null)
@@ -1280,7 +1280,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			Csb csa;
 			int port;
 			string serverName, datasource, authentication, user, password, path, charset;
-			string datasetId;
+			string datasetName;
 
 			xmlServers = xmlRoot.SelectNodes("//server");
 
@@ -1316,7 +1316,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					if ((xmlNode = xmlDatabase.SelectSingleNode("name")) == null)
 						continue;
 
-					datasetId = xmlNode.InnerText.Trim();
+					datasetName = xmlNode.InnerText.Trim();
 
 					if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
 						continue;
@@ -1351,13 +1351,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 					}
 
-					datasetId = Resources.RctUtilityDatasetIdFormat.FmtRes(datasetId);
+					datasetName = Resources.RctUtilityDatasetNameFormat.FmtRes(datasetName);
 
 
-					// The datasetId may not be unique at this juncture and already registered.
+					// The datasetName may not be unique at this juncture and already registered.
 					csa = new(serverName, port, path, user, password, charset);
 
-					row = RegisterUniqueConnectionImpl(null, datasetId, EnConnectionSource.ExternalUtility, ref csa);
+					row = RegisterUniqueConnectionImpl(null, datasetName, EnConnectionSource.ExternalUtility, ref csa);
 
 					if (row == null)
 						continue;
@@ -1730,7 +1730,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			// the markup tree.
 			// Q? Does this mean you can use different namespaces within the selection string?
 			XmlNode xmlNode = null, xmlParent;
-			string datasetId;
+			string datasetName;
 			string[] arr;
 			Csb csa;
 			DataRow row;
@@ -1759,7 +1759,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				foreach (XmlNode connectionNode in xmlNodes)
 				{
 					arr = connectionNode.Attributes["name"].Value.Split('.');
-					datasetId = Resources.RctProjectDatasetIdFormat.FmtRes(projectName, arr[^1]);
+					datasetName = Resources.RctProjectDatasetNameFormat.FmtRes(projectName, arr[^1]);
 
 					csa = new(connectionNode.Attributes["connectionString"].Value);
 
@@ -1770,10 +1770,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					}
 
 					// Add in now to store. Will be retrieved and removed when we actually load.
-					csa.DatasetId = datasetId;
+					csa.DatasetName = datasetName;
 					csa.ConnectionSource = EnConnectionSource.Application;
 
-					sortkey = csa.DataSource + datasetId + "\n" + (i++).ToString("D4");
+					sortkey = csa.DataSource + datasetName + "\n" + (i++).ToString("D4");
 					sortlist.Add(sortkey);
 					sortdict[sortkey] = csa;
 				}
@@ -1792,7 +1792,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			foreach (XmlNode connectionNode in xmlNodes)
 			{
 				name = connectionNode.Attributes["name"].Value;
-				datasetId = Resources.RctEdmDatasetFormat.FmtRes(projectName, name);
+				datasetName = Resources.RctEdmDatasetFormat.FmtRes(projectName, name);
 
 				csb = new()
 				{
@@ -1826,10 +1826,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				csa.Remove(C_KeyExEdmu);
 
 				// Add in now to store. Will be retrieved and removed when we actually load.
-				csa.DatasetId = datasetId;
+				csa.DatasetName = datasetName;
 				csa.ConnectionSource = EnConnectionSource.Application;
 
-				sortkey = csa.DataSource + datasetId + "\n" + (i++).ToString("D4");
+				sortkey = csa.DataSource + datasetName + "\n" + (i++).ToString("D4");
 				sortlist.Add(sortkey);
 				sortdict[sortkey] = csa;
 			}
@@ -1846,20 +1846,20 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			{
 				csa = sortdict[sortlistkey];
 
-				datasetId = csa.DatasetId;
+				datasetName = csa.DatasetName;
 				connectionSource = csa.ConnectionSource;
 
-				csa.Remove(C_KeyExDatasetId);
+				csa.Remove(C_KeyExDatasetName);
 				csa.Remove(C_KeyExConnectionSource);
 
 				// Evs.Debug(GetType(), "RegisterAppConnectionStrings()",
 				//	$"datasource: {datasource}, dataset: {csa.Dataset}, serverName: {serverName}, " +
-				//	$"ConnectionName: {csa.ConnectionName}, datasetId: {datasetId}, " +
+				//	$"ConnectionName: {csa.ConnectionName}, datasetName: {datasetName}, " +
 				//	$"Connectionstring: {csa.ConnectionString}, " +
 				//	$"storedConnectionString: {connectionNode.Attributes["connectionString"].Value}.");
 
-				// The datasetId may not be unique at this juncture and already registered.
-				row = RegisterUniqueConnectionImpl(null, datasetId, connectionSource, ref csa);
+				// The datasetName may not be unique at this juncture and already registered.
+				row = RegisterUniqueConnectionImpl(null, datasetName, connectionSource, ref csa);
 
 				if (row == null)
 					continue;
@@ -1967,7 +1967,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Builds a uniquely identifiable connection url and registers it's unique
-	/// DatasetKey in the form 'Server (DatasetId)' or the supplied proposed DatasetKey.
+	/// DatasetKey in the form 'Server (DatasetName)' or the supplied proposed DatasetKey.
 	/// The minimum property requirement for a dataset to be registered is DataSource,
 	/// Database and UserID.
 	/// </summary>
@@ -1976,7 +1976,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	protected bool RegisterUniqueConnection(string proposedDatasetKey,
-		string proposedDatasetId, EnConnectionSource source, ref Csb csa)
+		string proposedDatasetName, EnConnectionSource source, ref Csb csa)
 	{
 
 		if (_Instance == null)
@@ -1989,7 +1989,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		try
 		{
-			DataRow row = RegisterUniqueConnectionImpl(proposedDatasetKey, proposedDatasetId, source, ref csa);
+			DataRow row = RegisterUniqueConnectionImpl(proposedDatasetKey, proposedDatasetName, source, ref csa);
 
 			if (row == null)
 				return false;
@@ -2009,7 +2009,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Builds a uniquely identifiable connection url and registers it's unique
-	/// DatasetKey in the form 'Server (DatasetId)' or the supplied proposed DatasetKey.
+	/// DatasetKey in the form 'Server (DatasetName)' or the supplied proposed DatasetKey.
 	/// The minimum property requirement for a dataset to be registered is DataSource,
 	/// Database and UserID.
 	/// </summary>
@@ -2023,29 +2023,29 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// Dictionary tables updated:
 	/// SConnectionMonikers
 	/// key: fbsql://user@server:port//database_lc_serialized/[role_lc.charset_uc.dialect.noTriggersTrueFalse]/
-	/// value: Connection info in form Server(uniqueDatasetId) \n User \n Password \n Port \n dbPath \n
+	/// value: Connection info in form Server(uniqueDatasetName) \n User \n Password \n Port \n dbPath \n
 	/// Role \n Charset \n Dialect \n NoDatabaseTriggers \.
 	/// We don't use the values in the url key because they're not in the original case.
 	/// SDatasetKeys
-	/// key: DatasetKey in form server(uniqueDatasetId).
+	/// key: DatasetKey in form server(uniqueDatasetName).
 	/// value: The SConnectionMonikers url key.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	private DataRow RegisterUniqueConnectionImpl(string proposedConnectionName,
-		string proposedDatasetId, EnConnectionSource source, ref Csb csa)
+		string proposedDatasetName, EnConnectionSource source, ref Csb csa)
 	{
 		// Evs.Debug(GetType(), nameof(RegisterUniqueConnectionImpl));
 
-		if (string.IsNullOrWhiteSpace(proposedConnectionName) && string.IsNullOrWhiteSpace(proposedDatasetId))
+		if (string.IsNullOrWhiteSpace(proposedConnectionName) && string.IsNullOrWhiteSpace(proposedDatasetName))
 		{
-			ArgumentNullException ex = new ArgumentNullException("proposedConnectionName and proposedDatasetId may not both be null.");
+			ArgumentNullException ex = new ArgumentNullException("proposedConnectionName and proposedDatasetName may not both be null.");
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && !string.IsNullOrWhiteSpace(proposedDatasetId))
+		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && !string.IsNullOrWhiteSpace(proposedDatasetName))
 		{
-			ArgumentNullException ex = new ArgumentNullException("proposedConnectionName and proposedDatasetId may not both contain values.");
+			ArgumentNullException ex = new ArgumentNullException("proposedConnectionName and proposedDatasetName may not both contain values.");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -2062,7 +2062,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			return null;
 
 		// If the unique url exists return null to indicate "not done", otherwise create a new one,
-		// numbering it's datasetid and or datasetkey if duplicates exist.
+		// numbering it's datasetName and or datasetkey if duplicates exist.
 		if (ContainsConnectionUrlKey(connectionUrl))
 			return null;
 
@@ -2074,10 +2074,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			bool createServerExplorerConnection = false;
 
-			GenerateUniqueDatasetKey(source, ref proposedConnectionName, ref proposedDatasetId,
+			GenerateUniqueDatasetKey(source, ref proposedConnectionName, ref proposedDatasetName,
 				csa.DataSource, csa.Dataset, connectionUrl, null, ref createServerExplorerConnection,
 				out _, out _, out string uniqueDatasetKey, out string uniqueConnectionName,
-				out string uniqueDatasetId);
+				out string uniqueDatasetName);
 
 			csa.DatasetKey = uniqueDatasetKey;
 
@@ -2088,12 +2088,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			else
 				csa.ConnectionName = proposedConnectionName;
 
-			if (uniqueDatasetId == null && proposedDatasetId == null)
-				csa.Remove(C_KeyExDatasetId);
-			else if (!string.IsNullOrEmpty(uniqueDatasetId))
-				csa.DatasetId = uniqueDatasetId;
+			if (uniqueDatasetName == null && proposedDatasetName == null)
+				csa.Remove(C_KeyExDatasetName);
+			else if (!string.IsNullOrEmpty(uniqueDatasetName))
+				csa.DatasetName = uniqueDatasetName;
 			else
-				csa.DatasetId = proposedDatasetId;
+				csa.DatasetName = proposedDatasetName;
 
 
 			int id = 0;
@@ -2121,7 +2121,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			// Evs.Debug(GetType(), "RegisterUniqueConnectionImpl()",
 			//	$"\nADDED uniqueDatasetKey: {uniqueDatasetKey}, source: {source}, dataset: {Dataset}, " +
-			//	$"connectionName: {proposedDatasetKey}, uniqueDatasetId: {proposedDatasetId}," +
+			//	$"connectionName: {proposedDatasetKey}, uniqueDatasetName: {proposedDatasetName}," +
 			//	$"\n\tConnectionString: {ConnectionString}.");
 
 			DataRow row = CreateDataRow(csa);
@@ -2305,7 +2305,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				}
 				updated = true;
 				row[name] = newValue;
-				if (name == C_KeyExDatasetId)
+				if (name == C_KeyExDatasetName)
 					row["Name"] = newValue;
 
 			}
@@ -2323,7 +2323,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 			updated = true;
 			row[name] = DBNull.Value;
-			if (name == C_KeyExDatasetId)
+			if (name == C_KeyExDatasetName)
 				row["Name"] = "";
 			return updated;
 		}
@@ -2338,7 +2338,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 			updated = true;
 			row[name] = DBNull.Value;
-			if (name == C_KeyExDatasetId)
+			if (name == C_KeyExDatasetName)
 				row["Name"] = "";
 		}
 

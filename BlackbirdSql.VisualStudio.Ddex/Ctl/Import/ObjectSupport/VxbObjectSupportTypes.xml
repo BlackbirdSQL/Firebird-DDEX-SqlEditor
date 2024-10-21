@@ -33,7 +33,7 @@
 				<Property name="Port" type="System.Int32"/>
 				<Property name="ServerType" type="System.Int32"/>
 				<Property name="Database" type="System.String" />
-				<Property name="DatasetId" type="System.String" />
+				<Property name="DatasetName" type="System.String" />
 				<Property name="UserID" type="System.String"/>
 				<Property name="Password" type="System.String"/>
 				<Property name="Role" type="System.String"/>

@@ -237,7 +237,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets the connection name or datasetid from a Firebird exception.
+	/// Gets the connection name or datasetName from a Firebird exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public string GetExceptionDatabase_(Exception @this)

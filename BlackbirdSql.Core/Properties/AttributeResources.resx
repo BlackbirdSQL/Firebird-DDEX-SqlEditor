@@ -198,7 +198,7 @@
   <data name="PropertyDescriptionDataset" xml:space="preserve">
     <value>The stripped file name excluding extension of the database file path.</value>
   </data>
-  <data name="PropertyDescriptionDatasetId" xml:space="preserve">
+  <data name="PropertyDescriptionDatasetName" xml:space="preserve">
     <value>The proposed server scope unique name for a database to construct a connection name. Defaults to Dataset.</value>
   </data>
   <data name="PropertyDescriptionDatasetKey" xml:space="preserve">
@@ -225,7 +225,7 @@
   <data name="PropertyDisplayDataset" xml:space="preserve">
     <value>Dataset</value>
   </data>
-  <data name="PropertyDisplayDatasetId" xml:space="preserve">
+  <data name="PropertyDisplayDatasetName" xml:space="preserve">
     <value> Proffered  Database Name</value>
   </data>
   <data name="PropertyDisplayDatasetKey" xml:space="preserve">

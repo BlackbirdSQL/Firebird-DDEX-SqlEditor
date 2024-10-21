@@ -46,7 +46,7 @@ public interface IBsNativeDbException
 	string GetExceptionProcedure_(Exception exception);
 
 	/// <summary>
-	/// Gets the connection name or datasetid from a native database exception.
+	/// Gets the connection name or datasetName from a native database exception.
 	/// </summary>
 	string GetExceptionDatabase_(Exception exception);
 

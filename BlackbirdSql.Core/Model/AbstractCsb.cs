@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
@@ -36,10 +34,10 @@ namespace BlackbirdSql.Core.Model;
 /// unique connection DatasetKey naming according to connection equivalency keys. See remarks.
 /// </summary>
 /// <remarks>
-/// A BlackbirdSql connection is uniquely identifiable on it's DatasetKey, 'Server (DatasetId)', where
-/// DatasetId is the connection name in FlameRobin or the Dataset if the connection cannot be derived
+/// A BlackbirdSql connection is uniquely identifiable on it's DatasetKey, 'Server (DatasetName)', where
+/// DatasetName is the connection name in FlameRobin or the Dataset if the connection cannot be derived
 /// from FlameRobin. A Dataset name is the database path's stripped file name. If the DatasetKey is not
-/// unique across an ide session, duplicate DatasetId names will be numerically suffixed beginning
+/// unique across an ide session, duplicate DatasetNames will be numerically suffixed beginning
 /// with 2, which means a connection's DatasetKey may differ from one ide session to another.
 /// Connections are considered equivalent if the connection equivalency parameters match. To keep
 /// things simple the describers have DataSource/Server, Database path, UserID, Role and
@@ -129,7 +127,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		[
 			new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey, D_Default),
 			new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey, D_Default),
-			new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId, D_Default),
+			new Describer(C_KeyExDatasetName, typeof(string), C_DefaultExDatasetName, D_Default),
 			new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset, D_Default | D_Derived),
 
 			new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName, D_Default),
@@ -144,6 +142,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			new Describer(C_KeyExEdmx, typeof(bool), D_Default),
 			new Describer(C_KeyExEdmu, typeof(bool), D_Default)
 		]);
+
+		Describers.AddSynonym("datasetid", C_KeyExDatasetName);
 
 		// Diag.DebugTrace("Added core describers");
 	}
@@ -212,7 +212,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
 	[GlobalizedDisplayName("PropertyDisplayConnectionName")]
 	[GlobalizedDescription("PropertyDescriptionConnectionName")]
-	[ReadOnly(true)]
+	[ReadOnly(false)]
 	[DefaultValue(C_DefaultExConnectionName)]
 	public string ConnectionName
 	{
@@ -224,26 +224,26 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 	/// <summary>
 	/// The server scope unique name for a connection configuration database used in DatasetKey
-	/// 'Server (DatasetId)'.
+	/// 'Server (DatasetName)'.
 	/// Clients must always register a csb using one of the register methods before attempting to
-	/// access DatasetKey or DatasetId.
+	/// access DatasetKey or DatasetName.
 	/// </summary>
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
-	[GlobalizedDisplayName("PropertyDisplayDatasetId")]
-	[GlobalizedDescription("PropertyDescriptionDatasetId")]
-	[ReadOnly(true)]
-	[DefaultValue(C_DefaultExDatasetId)]
-	public string DatasetId
+	[GlobalizedDisplayName("PropertyDisplayDatasetName")]
+	[GlobalizedDescription("PropertyDescriptionDatasetName")]
+	[ReadOnly(false)]
+	[DefaultValue(C_DefaultExDatasetName)]
+	public string DatasetName
 	{
-		get { return (string)GetValue(C_KeyExDatasetId); }
-		set { SetValue(C_KeyExDatasetId, value); }
+		get { return (string)GetValue(C_KeyExDatasetName); }
+		set { SetValue(C_KeyExDatasetName, value); }
 	}
 
 
 	/// <summary>
-	/// The unique key for an ide session connection configuration in the form 'Server (DatasetId)'.
+	/// The unique key for an ide session connection configuration in the form 'Server (DatasetName)'.
 	/// Clients must always register a csb using one of the register methods before attempting to
-	/// access DatasetKey or DatasetId.
+	/// access DatasetKey or DatasetName.
 	/// </summary>
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
 	[GlobalizedDisplayName("PropertyDisplayDatasetKey")]
@@ -378,9 +378,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				retval = DatasetKey;
 			if (string.IsNullOrWhiteSpace(retval))
 			{
-				retval = DatasetId;
-				if (string.IsNullOrWhiteSpace(retval))
-					retval = Dataset;
+				retval = DisplayDatasetName;
+
 				if (!string.IsNullOrWhiteSpace(DataSource))
 					retval = S_DatasetKeyFormat.FmtRes(DataSource, retval);
 			}
@@ -388,8 +387,29 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		}
 	}
 
+
+
+
 	/// <summary>
-	/// The unqualified name which is the ConnectionName else DatasetId else Dataset.
+	/// The derived unqualified DatasetName which is DatasetName else Dataset.
+	/// </summary>
+	[Browsable(false)]
+	public string DisplayDatasetName
+	{
+		get
+		{
+			string retval = DatasetName;
+
+			if (string.IsNullOrWhiteSpace(retval))
+				retval = Dataset;
+
+			return retval;
+		}
+	}
+
+
+	/// <summary>
+	/// The derived unqualified name which is the ConnectionName else DatasetName else Dataset.
 	/// </summary>
 	[Browsable(false)]
 	public string DisplayName
@@ -398,11 +418,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		{
 			string retval = ConnectionName;
 			if (string.IsNullOrWhiteSpace(retval))
-			{
-				retval = DatasetId;
-				if (string.IsNullOrWhiteSpace(retval))
-					retval = Dataset;
-			}
+				retval = DisplayDatasetName;
+
 			return retval;
 		}
 	}
@@ -423,7 +440,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				glyph = RctManager.SessionDatasetGlyph;
 			else if (ConnectionSource == EnConnectionSource.Application)
 				glyph = RctManager.ProjectDatasetGlyph;
-			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			else if (ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource)
 				glyph = RctManager.EdmDatasetGlyph;
 			else if (ConnectionSource == EnConnectionSource.ExternalUtility)
 				glyph = RctManager.UtilityDatasetGlyph;
@@ -455,7 +472,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				glyph = RctManager.SessionTitleGlyph;
 			else if (ConnectionSource == EnConnectionSource.Application)
 				glyph = RctManager.ProjectTitleGlyph;
-			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			else if (ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource)
 				glyph = RctManager.EdmTitleGlyph;
 			else if (ConnectionSource == EnConnectionSource.ExternalUtility)
 				glyph = RctManager.UtilityTitleGlyph;
@@ -492,7 +509,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				glyph = RctManager.SessionDatasetGlyph;
 			else if (ConnectionSource == EnConnectionSource.Application)
 				glyph = RctManager.ProjectDatasetGlyph;
-			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			else if (ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource)
 				glyph = RctManager.EdmDatasetGlyph;
 			else if (ConnectionSource == EnConnectionSource.ExternalUtility)
 				glyph = RctManager.UtilityDatasetGlyph;
@@ -526,6 +543,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 					format = Resources.RctGlyphFormat.FmtRes(glyph, retval);
 					break;
 				case EnConnectionSource.EntityDataModel:
+				case EnConnectionSource.DataSource:
 					glyph = RctManager.EdmTitleGlyph;
 					format = Resources.RctGlyphFormat.FmtRes(glyph, retval);
 					break;
@@ -1029,10 +1047,28 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Ensures a proposed name (ConnectionName or DatasetName), exists.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public void ValidateProposedName()
+	{
+		if (!string.IsNullOrWhiteSpace(ConnectionName) || !string.IsNullOrWhiteSpace(DatasetName)
+			|| string.IsNullOrWhiteSpace(DisplayDatasetName))
+		{
+			return;
+		}
+
+		DatasetName = DisplayDatasetName;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Validates the DataSource for case name mangling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void ValidateServerName()
+	public void ValidateServerName()
 	{
 		string dataSource, server;
 
@@ -1046,23 +1082,21 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 
 	/// <summary>
-	/// Updates descriptor collection readonly on dataset key properties for application
-	/// connection sources.
+	/// Updates descriptor ReadonlyAttributes.
 	/// </summary>
-	public static bool UpdateDatasetKeysReadOnlyAttribute(ref PropertyDescriptorCollection descriptors, bool readOnly)
+	public static bool UpdateDescriptorReadOnlyAttribute(ref PropertyDescriptorCollection descriptors, string[] readOnlyDescriptors, bool readOnly)
 	{
 		if (descriptors == null || descriptors.Count == 0)
 			return false;
 
 		bool value;
 		bool updated = false;
-		string[] descriptorList = [C_KeyExConnectionName, C_KeyExDatasetId];
 
 		try
 		{
-			foreach (string name in descriptorList)
+			foreach (string name in readOnlyDescriptors)
 			{
-				PropertyDescriptor descriptor = descriptors.Find(name, false);
+				PropertyDescriptor descriptor = descriptors.Find(name, true);
 
 				if (descriptor == null)
 					continue;
@@ -1076,9 +1110,6 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != value)
 				{
-					// Evs.Debug(typeof(AbstractCsb), "UpdateDatasetKeysReadOnlyAttribute()",
-					//	$"Setting ReadOnlyAttribute for PropertyDescriptor {name} to readonly: {readOnly}.");
-
 					updated = true;
 					Reflect.SetFieldInfoValue(attr, fieldInfo, value);
 				}

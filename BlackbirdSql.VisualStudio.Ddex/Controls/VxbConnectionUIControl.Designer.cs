@@ -47,7 +47,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.txtDatabase = new System.Windows.Forms.TextBox();
 			this.lblDatabaseBlank = new System.Windows.Forms.Label();
 			this.lblDataSourceBlank = new System.Windows.Forms.Label();
-			this.lblDatasetKeyDescription = new System.Windows.Forms.Label();
+			this.lblConnectionSourceDescription = new System.Windows.Forms.Label();
 			this.connectionUIControlToolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.grbSettings.SuspendLayout();
 			this.grbLogin.SuspendLayout();
@@ -275,11 +275,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.lblDataSourceBlank.BackColor = System.Drawing.Color.White;
 			this.lblDataSourceBlank.Name = "lblDataSourceBlank";
 			// 
-			// lblDatasetKeyDescription
+			// lblConnectionSourceDescription
 			// 
-			resources.ApplyResources(this.lblDatasetKeyDescription, "lblDatasetKeyDescription");
-			this.lblDatasetKeyDescription.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-			this.lblDatasetKeyDescription.Name = "lblDatasetKeyDescription";
+			resources.ApplyResources(this.lblConnectionSourceDescription, "lblConnectionSourceDescription");
+			this.lblConnectionSourceDescription.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.lblConnectionSourceDescription.Name = "lblConnectionSourceDescription";
 			// 
 			// connectionUIControlToolTip
 			// 
@@ -291,7 +291,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			// 
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.lblDatasetKeyDescription);
+			this.Controls.Add(this.lblConnectionSourceDescription);
 			this.Controls.Add(this.txtDataSource);
 			this.Controls.Add(this.lblDataSourceBlank);
 			this.Controls.Add(this.lblServerType);
@@ -346,7 +346,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 		private System.Windows.Forms.TextBox txtDatabase;
 		private System.Windows.Forms.Label lblDatabaseBlank;
 		private System.Windows.Forms.Label lblDataSourceBlank;
-		private System.Windows.Forms.Label lblDatasetKeyDescription;
+		private System.Windows.Forms.Label lblConnectionSourceDescription;
 		private System.Windows.Forms.Label lblCurrentDisplayName;
 		private System.Windows.Forms.ToolTip connectionUIControlToolTip;
 	}

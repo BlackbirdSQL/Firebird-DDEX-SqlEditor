@@ -583,7 +583,7 @@ public static partial class ExtensionMembers
 	/// <summary>
 	/// Validates the IVsDataConnectionProperties Site for redundant or required
 	/// registration properties.
-	/// Determines if the ConnectionName (proposed DatsetKey) and DatasetId (proposed
+	/// Determines if the ConnectionName (proposed DatsetKey) and DatasetName (proposed
 	/// database name) are required in the Site.
 	/// This cleanup ensures that proposed keys do not appear in connection dialogs
 	/// and strings if they will have no impact on the final DatsetKey. 
@@ -592,7 +592,7 @@ public static partial class ExtensionMembers
 	public static bool ValidateKeys(this IVsDataConnectionProperties @this)
 	{
 		bool modified = false;
-		// First the DatasetId. If it's equal to the Dataset we clear it because, by
+		// First the DatasetName. If it's equal to the Dataset we clear it because, by
 		// default the trimmed filepath (Dataset) can be used.
 
 		string database = @this.ContainsKey(SysConstants.C_KeyDatabase)
@@ -619,31 +619,33 @@ public static partial class ExtensionMembers
 		}
 
 
-		string datasetId = @this.ContainsKey(SysConstants.C_KeyExDatasetId)
-			? (string)@this[SysConstants.C_KeyExDatasetId] : null;
+		string datasetName = @this.ContainsKey(SysConstants.C_KeyExDatasetName)
+			? (string)@this[SysConstants.C_KeyExDatasetName] : null;
 
-		if (datasetId != null)
+		if (datasetName != null)
 		{
-			if (string.IsNullOrWhiteSpace(datasetId))
+			if (string.IsNullOrWhiteSpace(datasetName))
 			{
-				// DatasetId exists and is invalid (empty). Delete it.
+				// DatasetName exists and is invalid (empty). Delete it.
 				modified = true;
-				datasetId = null;
-				@this.Remove(SysConstants.C_KeyExDatasetId);
+				datasetName = null;
+				@this.Remove(SysConstants.C_KeyExDatasetName);
 			}
 
-			if (datasetId != null && dataset != null && datasetId == dataset)
+			/*
+			if (datasetName != null && dataset != null && datasetName == dataset)
 			{
-				// If the DatasetId is equal to the Dataset it's also not needed. Delete it.
+				// If the DatasetName is equal to the Dataset it's also not needed. Delete it.
 				modified = true;
-				datasetId = null;
-				@this.Remove(SysConstants.C_KeyExDatasetId);
+				datasetName = null;
+				@this.Remove(SysConstants.C_KeyExDatasetName);
 			}
+			*/
 		}
 
-		// Now that the datasetId is established, we can determined its default derived value
+		// Now that the datasetName is established, we can determined its default derived value
 		// and the default derived value of the datasetKey.
-		string derivedDatasetId = datasetId ?? (dataset ?? null);
+		// string derivedDatasetName = datasetName ?? (dataset ?? null);
 
 		string dataSource = @this.ContainsKey(SysConstants.C_KeyDataSource)
 			? (string)@this[SysConstants.C_KeyDataSource] : null;
@@ -651,15 +653,15 @@ public static partial class ExtensionMembers
 		if (dataSource != null && string.IsNullOrWhiteSpace(dataSource))
 		{
 			modified = true;
-			dataSource = null;
+			// dataSource = null;
 			@this.Remove(SysConstants.C_KeyDataSource);
 		}
 
 
-		string derivedConnectionName = (dataSource != null && derivedDatasetId != null)
-			? SysConstants.S_DatasetKeyFormat.FmtRes(dataSource, derivedDatasetId) : null;
-		string derivedAlternateConnectionName = (dataSource != null && derivedDatasetId != null)
-			? SysConstants.S_DatasetKeyAlternateFormat.FmtRes(dataSource, derivedDatasetId) : null;
+		// string derivedConnectionName = (dataSource != null && derivedDatasetName != null)
+		//	? SysConstants.S_DatasetKeyFormat.FmtRes(dataSource, derivedDatasetName) : null;
+		// string derivedAlternateConnectionName = (dataSource != null && derivedDatasetName != null)
+		//	? SysConstants.S_DatasetKeyAlternateFormat.FmtRes(dataSource, derivedDatasetName) : null;
 
 
 		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived
@@ -680,17 +682,19 @@ public static partial class ExtensionMembers
 			// If the ConnectionName (proposed DatsetKey) is equal to the default
 			// derived datasetkey it also won't be needed, so delete it,
 			// else the ConnectionName still exists and is the determinant, so
-			// any existing proposed DatasetId is not required.
+			// any existing proposed DatasetName is not required.
+			/*
 			if (connectionName == derivedConnectionName || connectionName == derivedAlternateConnectionName)
 			{
 				modified = true;
 				@this.Remove(SysConstants.C_KeyExConnectionName);
 			}
-			else if (datasetId != null)
+			else */
+			if (datasetName != null)
 			{
-				// If ConnectionName exists the DatasetId is not needed. Delete it.
+				// If ConnectionName exists the DatasetName is not needed. Delete it.
 				modified = true;
-				@this.Remove(SysConstants.C_KeyExDatasetId);
+				@this.Remove(SysConstants.C_KeyExDatasetName);
 			}
 		}
 

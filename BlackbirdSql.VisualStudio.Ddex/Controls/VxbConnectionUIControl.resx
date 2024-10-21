@@ -813,7 +813,7 @@ If the current input does not match any registered connection '*New Connection' 
 Glyph prefix legend:
  ⬤ Session (non-persistent) connections.
  ⛭ Project Settings (App.Config) connections.
- ⛮ Entity Data Model (edmx) connections.
+ ⛮ Entity Data Model (edmx or DataSource) connections.
  ⧉ FlameRobin connections.
 Server Explorer connections have no glyph.</value>
   </data>
@@ -978,8 +978,8 @@ Server Explorer connections have no glyph.</value>
 Glyph prefix legend:
  ⬤ Session (non-persistent) connections.
  ⛭ Project Settings (App.Config) connections.
- ⛮ Entity Data Model (edmx) connections.
- ֎ FlameRobin connections.
+ ⛮ Entity Data Model (edmx or DataSource) connections.
+ ⧉ FlameRobin connections.
 Server Explorer connections have no glyph.</value>
   </data>
   <data name="&gt;&gt;txtDatabase.Name" xml:space="preserve">
@@ -1048,31 +1048,31 @@ Server Explorer connections have no glyph.</value>
   <data name="&gt;&gt;lblDataSourceBlank.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="lblDatasetKeyDescription.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+  <data name="lblConnectionSourceDescription.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
   </data>
-  <data name="lblDatasetKeyDescription.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="lblConnectionSourceDescription.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 82</value>
   </data>
-  <data name="lblDatasetKeyDescription.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="lblConnectionSourceDescription.Size" type="System.Drawing.Size, System.Drawing">
     <value>406, 30</value>
   </data>
-  <data name="lblDatasetKeyDescription.TabIndex" type="System.Int32, mscorlib">
+  <data name="lblConnectionSourceDescription.TabIndex" type="System.Int32, mscorlib">
     <value>36</value>
   </data>
-  <data name="lblDatasetKeyDescription.Text" xml:space="preserve">
+  <data name="lblConnectionSourceDescription.Text" xml:space="preserve">
     <value>To assign a custom name to this connection specify a Proposed Connection Name or a Proposed Database Name under Advanced Properties.</value>
   </data>
-  <data name="&gt;&gt;lblDatasetKeyDescription.Name" xml:space="preserve">
-    <value>lblDatasetKeyDescription</value>
+  <data name="&gt;&gt;lblConnectionSourceDescription.Name" xml:space="preserve">
+    <value>lblConnectionSourceDescription</value>
   </data>
-  <data name="&gt;&gt;lblDatasetKeyDescription.Type" xml:space="preserve">
+  <data name="&gt;&gt;lblConnectionSourceDescription.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;lblDatasetKeyDescription.Parent" xml:space="preserve">
+  <data name="&gt;&gt;lblConnectionSourceDescription.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;lblDatasetKeyDescription.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;lblConnectionSourceDescription.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
