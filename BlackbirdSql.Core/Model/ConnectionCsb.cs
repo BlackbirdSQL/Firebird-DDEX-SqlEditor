@@ -11,6 +11,7 @@ using Microsoft.Data.ConnectionUI;
 
 using static BlackbirdSql.CoreConstants;
 using static BlackbirdSql.SysConstants;
+using Microsoft.VisualStudio.LanguageServer.Client;
 
 
 
@@ -711,9 +712,20 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 	{
 		IDbConnection conn = NativeDb.CreateDbConnection(ConnectionString);
 
-		conn.Open();
-		conn.Close();
-		conn.Dispose();
+		try
+		{
+			conn.Open();
+			conn.Close();
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex, $"\nConnectionString: {conn.ConnectionString}");
+			throw;
+		}
+		finally
+		{
+			conn.Dispose();
+		}
 	}
 
 

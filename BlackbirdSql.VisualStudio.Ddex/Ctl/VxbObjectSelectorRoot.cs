@@ -177,7 +177,7 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 		catch (Exception ex)
 		{
 			lockedProviderObject = null;
-			Diag.Dug(ex);
+			Diag.Dug(ex, $"\nConnectionString: {connection?.ConnectionString}");
 			throw ex;
 		}
 		finally
@@ -334,7 +334,7 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 			}
 			catch (Exception ex)
 			{
-				Diag.Expected(ex, $"\nConnection string: {connection?.ConnectionString}");
+				Diag.Expected(ex, $"\nConnectionString: {connection?.ConnectionString}");
 			}
 		}
 

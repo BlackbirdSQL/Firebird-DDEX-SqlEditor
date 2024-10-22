@@ -165,7 +165,7 @@ public class VxbObjectSelector : VxbObjectSelectorTable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"CollectionName: {parameters[0]}\nConnection string:{connection?.ConnectionString}");
+			Diag.Dug(ex, $"CollectionName: {parameters[0]}\nConnectionString: {connection?.ConnectionString}");
 			throw;
 		}
 		finally

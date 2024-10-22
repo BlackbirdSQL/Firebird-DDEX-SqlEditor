@@ -149,7 +149,17 @@ public class StatisticsSnapshot
 		try
 		{
 			if (_InternalConnection.State != ConnectionState.Open)
-				_InternalConnection.Open();
+			{
+				try
+				{
+					_InternalConnection.Open();
+				}
+				catch (Exception ex)
+				{
+					Diag.Expected(ex, $"\nConnectionString: {_InternalConnection?.ConnectionString}");
+					throw;
+				}
+			}
 
 			NativeDatabaseInfoProxy info = new(_InternalConnection);
 

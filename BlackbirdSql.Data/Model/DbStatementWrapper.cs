@@ -4,6 +4,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Data.Ctl;
@@ -12,6 +13,7 @@ using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
+using Microsoft.VisualStudio.LanguageServer.Client;
 
 
 
@@ -759,7 +761,17 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		}
 
 		if (_Owner.Connection.State == ConnectionState.Closed)
-			_Owner.Connection.Open();
+		{
+			try
+			{
+				_Owner.Connection.Open();
+			}
+			catch (Exception ex)
+			{
+				Diag.Expected(ex, $"\nConnectionString: {_Owner?.Connection?.ConnectionString}");
+				throw;
+			}
+		}
 
 		return (FbConnection)_Owner.Connection;
 	}

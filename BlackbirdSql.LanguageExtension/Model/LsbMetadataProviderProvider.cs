@@ -246,7 +246,16 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 			//	ServerConnection.DatabaseName = metadataConnectionStringBuilder.InitialCatalog;
 			// ServerConnection.ConnectionString = metadataConnectionStringBuilder.ToString();
 
-			ServerConnection.Open();
+			try
+			{
+				ServerConnection.Open();
+			}
+			catch (Exception ex)
+			{
+				Diag.Expected(ex, $"\nConnectionString: {ServerConnection?.ConnectionString}");
+				throw;
+			}
+
 
 			// ConnectionHelperUtils.SetLockAndCommandTimeout(ServerConnection.SqlConnectionObject);
 			ServerVersion = ServerConnection.ParseServerVersion();
@@ -262,7 +271,17 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 			DisposeDriftDetectionConnection();
 			string metadataConnectionString = GetMetadataConnectionString();
 			DriftDetectionConnection = (DbConnection)NativeDb.CreateDbConnection(metadataConnectionString);
-			DriftDetectionConnection.Open();
+
+			try
+			{
+				DriftDetectionConnection.Open();
+			}
+			catch (Exception ex)
+			{
+				Diag.Expected(ex, $"\nConnectionString: {DriftDetectionConnection?.ConnectionString}");
+				throw;
+			}
+
 			// ConnectionHelperUtils.SetLockAndCommandTimeout(DriftDetectionConnection);
 		}
 	}

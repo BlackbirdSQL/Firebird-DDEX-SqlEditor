@@ -934,12 +934,8 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 				if (ConnectionSource != EnConnectionSource.Session || addInternally || modifyInternally
 					|| PersistentSettings.ValidateSessionConnectionOnFormAccept)
 				{
-					if (connection == null || connection.State != ConnectionState.Open)
-					{
-						connection ??= NativeDb.CreateDbConnection(site.ToString());
-
-						connection.Open();
-					}
+					connection = NativeDb.CreateDbConnection(site.ToString());
+					connection.Open();
 				}
 
 				// If a new unique SE connection is going to be created in a Session set the connection source.
@@ -959,7 +955,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex, $"\nConnection string: {connection?.ConnectionString}");
+			Diag.Expected(ex, $"\nConnectionString: {connection?.ConnectionString}");
 			throw;
 		}
 		finally

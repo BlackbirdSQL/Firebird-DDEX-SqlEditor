@@ -69,7 +69,7 @@ public class VxbUIConnector : DataConnectionUIConnector
 			}
 			catch (Exception ex)
 			{
-				Diag.Expected(ex, $"\nConnection string: {connection?.DecryptedConnectionString()}");
+				Diag.Expected(ex, $"\nConnectionString: {connection?.DecryptedConnectionString()}");
 				throw;
 			}
 		}

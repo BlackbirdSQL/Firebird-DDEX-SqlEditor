@@ -291,7 +291,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex, $"\nConnection string: {connectionString}");
+			Diag.Expected(ex, $"\nConnectionString: {connectionString}");
 			throw;
 		}
 
@@ -314,7 +314,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex, $"\nConnection string: {Connection?.ConnectionString}");
+			Diag.Expected(ex, $"\nConnectionString: {Connection?.ConnectionString}");
 			throw;
 		}
 

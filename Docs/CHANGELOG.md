@@ -3,6 +3,19 @@
 ## Change log
 
 
+### v14.5.3.1001 Patch to fix ReadOnlyAttribute anomaly.
+
+#### New / Enhancements
+- Added __User Option__ `BlackbirdSQL Server Tools > Ddex Provider > Debug > Expected exceptions`. Enabling this option causes expected exceptions to be output to the __BlackbirdSql__ section of the VS output window for Release builds. 
+#### Fixes
+- Fixed anomaly where defining a property's `ReadOnlyAttribute` as false causes the property to attach to the Class `ReadonlyAttribute`. This caused a programmatic  change to property's `ReadOnlyAttribute` to modify the Class level `ReadOnlyAttribute`, and by default to modify all properties without a `ReadOnlyAttribute`.
+
+
+#### Tips
+- None.
+
+
+
 ### v14.5.3.1 Added User Option to output Expected Exceptions.
 
 #### New / Enhancements

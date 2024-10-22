@@ -212,7 +212,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
 	[GlobalizedDisplayName("PropertyDisplayConnectionName")]
 	[GlobalizedDescription("PropertyDescriptionConnectionName")]
-	[ReadOnly(false)]
+	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExConnectionName)]
 	public string ConnectionName
 	{
@@ -231,7 +231,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
 	[GlobalizedDisplayName("PropertyDisplayDatasetName")]
 	[GlobalizedDescription("PropertyDescriptionDatasetName")]
-	[ReadOnly(false)]
+	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExDatasetName)]
 	public string DatasetName
 	{
