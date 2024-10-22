@@ -269,9 +269,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 		if (e.SelectionItem.PropertyDescriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr)
 		{
 			if ((bool)Reflect.GetFieldValue(attr, "isReadOnly"))
-			{
 				return;
-			}
 		}
 
 		_EditActive = true;

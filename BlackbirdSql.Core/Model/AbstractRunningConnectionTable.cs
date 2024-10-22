@@ -551,7 +551,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			}
 			else
 			{
-				csa.DatasetKey = S_DatasetKeyFormat.FmtRes(csa.DataSource, csa.DisplayDatasetName);
+				csa.DatasetKey = S_DatasetKeyFormat.FmtRes(csa.ServerName, csa.DisplayDatasetName);
 			}
 		}
 

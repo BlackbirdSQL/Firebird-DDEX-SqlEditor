@@ -939,8 +939,8 @@ public sealed class RctManager : RunningConnectionTable
 
 		if (csa.ContainsKey(SysConstants.C_KeyExConnectionName)
 			&& !string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetName) == csa.ConnectionName
-			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetName) == csa.ConnectionName))
+			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.ServerName, datasetName) == csa.ConnectionName
+			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.ServerName, datasetName) == csa.ConnectionName))
 		{
 			// csa.Remove(SysConstants.C_KeyExConnectionName);
 		}
@@ -990,8 +990,8 @@ public sealed class RctManager : RunningConnectionTable
 
 
 		if (!string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetName) == csa.ConnectionName
-			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.DataSource, datasetName) == csa.ConnectionName))
+			&& (SysConstants.S_DatasetKeyFormat.FmtRes(csa.ServerName, datasetName) == csa.ConnectionName
+			|| SysConstants.S_DatasetKeyAlternateFormat.FmtRes(csa.ServerName, datasetName) == csa.ConnectionName))
 		{
 			csa.ConnectionName = SysConstants.C_DefaultExConnectionName;
 		}
@@ -1524,7 +1524,7 @@ public sealed class RctManager : RunningConnectionTable
 		bool createServerExplorerConnection = false;
 		string connectionUrl = csa.Moniker;
 		string proposedDatasetName = csa.DatasetName;
-		string dataSource = csa.DataSource;
+		string dataSource = csa.ServerName;
 		string dataset = csa.Dataset;
 
 
@@ -1658,6 +1658,7 @@ public sealed class RctManager : RunningConnectionTable
 			proposedDatasetName = null;
 
 		string dataSource = (string)site[SysConstants.C_KeyDataSource];
+		int port = site.ContainsKey(SysConstants.C_KeyPort) ? Convert.ToInt32(site[SysConstants.C_KeyPort]) : SysConstants.C_DefaultPort;
 		string database = (string)site[SysConstants.C_KeyDatabase];
 		string dataset;
 
@@ -1677,6 +1678,8 @@ public sealed class RctManager : RunningConnectionTable
 		// Evs.Trace(typeof(RctManager), "ValidateSiteProperties()", "connectionSource: {0}, serverExplorerInsertMode: {1}, proposedConnectionName: {2}, proposedDatasetName: {3}, dataSource: {4}, dataset: {5}.",
 		//	connectionSource, serverExplorerInsertMode, proposedConnectionName, proposedDatasetName, dataSource, dataset);
 
+		if (!string.IsNullOrEmpty(dataSource))
+			dataSource = RegisterServer(dataSource, port);
 
 		// Validate the proposed names.
 		bool rctExists = Instance.GenerateUniqueDatasetKey(connectionSource, ref proposedConnectionName, ref proposedDatasetName,

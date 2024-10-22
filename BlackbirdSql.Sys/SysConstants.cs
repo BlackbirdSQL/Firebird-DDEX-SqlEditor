@@ -37,9 +37,11 @@ public static class SysConstants
 	public const int D_Default = D_Advanced | D_Public;
 	public const int D_Mandatory = 0x8;
 	public const int D_Derived = 0x10;
-	public const int D_ExtendedType = 0x20;
+	public const int D_HasReadOnly = 0x20;
+	public const int D_DefaultReadOnly = D_Advanced | D_Public | D_HasReadOnly;
+	public const int D_ExtendedType = 0x40;
 	public const int D_Extended = D_Default | D_ExtendedType;
-	public const int D_InternalType = 0x40;
+	public const int D_InternalType = 0x80;
 	public const int D_Internal = D_Extended | D_InternalType;
 
 

@@ -57,6 +57,8 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 		Database = database;
 		UserID = userId;
 		Password = password;
+
+		ValidateServerName();
 	}
 
 

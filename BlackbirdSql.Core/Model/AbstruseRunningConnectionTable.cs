@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Properties;
@@ -1196,7 +1197,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// If the connection name matches the datasetKey constructed from the datasetName, remove it.
 		if (!string.IsNullOrEmpty(datasetName) && !csa.ContainsKey(C_KeyExConnectionName)
-			&& connectionName == S_DatasetKeyFormat.FmtRes(csa.DataSource, datasetName))
+			&& connectionName == S_DatasetKeyFormat.FmtRes(csa.ServerName, datasetName))
 		{
 			connectionName = null;
 		}
@@ -1747,6 +1748,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			int i = 0;
 			string sortkey;
+			string serverName;
 			List<string> sortlist = [];
 			Dictionary<string, Csb> sortdict = [];
 
@@ -1773,7 +1775,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					csa.DatasetName = datasetName;
 					csa.ConnectionSource = EnConnectionSource.Application;
 
-					sortkey = csa.DataSource + datasetName + "\n" + (i++).ToString("D4");
+					// To keep uniformity of server names, the case of the first connection
+					// discovered for a server name is the case that will be used for all
+					// connections for that server.
+					serverName = InternalRegisterServer(csa.DataSource, csa.Port);
+
+					sortkey = serverName + datasetName + "\n" + (i++).ToString("D4");
 					sortlist.Add(sortkey);
 					sortdict[sortkey] = csa;
 				}
@@ -1829,7 +1836,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				csa.DatasetName = datasetName;
 				csa.ConnectionSource = EnConnectionSource.Application;
 
-				sortkey = csa.DataSource + datasetName + "\n" + (i++).ToString("D4");
+				// To keep uniformity of server names, the case of the first connection
+				// discovered for a server name is the case that will be used for all
+				// connections for that server.
+				serverName = InternalRegisterServer(csa.DataSource, csa.Port);
+
+				sortkey = serverName + datasetName + "\n" + (i++).ToString("D4");
 				sortlist.Add(sortkey);
 				sortdict[sortkey] = csa;
 			}
@@ -2075,7 +2087,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			bool createServerExplorerConnection = false;
 
 			GenerateUniqueDatasetKey(source, ref proposedConnectionName, ref proposedDatasetName,
-				csa.DataSource, csa.Dataset, connectionUrl, null, ref createServerExplorerConnection,
+				csa.ServerName, csa.Dataset, connectionUrl, null, ref createServerExplorerConnection,
 				out _, out _, out string uniqueDatasetKey, out string uniqueConnectionName,
 				out string uniqueDatasetName);
 
@@ -2265,6 +2277,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				csaValue = csa != null && csa.ContainsKey(describer.Name)
 					? csa[describer.Name]
 					: describer.DefaultValue;
+
+				if (describer.Name == C_KeyDataSource && !string.IsNullOrWhiteSpace((string)csaValue))
+					csaValue = InternalRegisterServer((string)csaValue, csa.Port);
 
 				updated = UpdateDataColumn(row, describer.Name, csaValue, updated);
 			}

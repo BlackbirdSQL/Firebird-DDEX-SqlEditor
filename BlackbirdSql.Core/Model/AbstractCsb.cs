@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using BlackbirdSql.Core.Ctl.ComponentModel;
@@ -125,17 +124,17 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 		Describers.AddRange(
 		[
-			new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey, D_Default),
-			new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey, D_Default),
-			new Describer(C_KeyExDatasetName, typeof(string), C_DefaultExDatasetName, D_Default),
-			new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset, D_Default | D_Derived),
+			new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey, D_DefaultReadOnly),
+			new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey, D_DefaultReadOnly),
+			new Describer(C_KeyExDatasetName, typeof(string), C_DefaultExDatasetName, D_DefaultReadOnly),
+			new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset, D_DefaultReadOnly | D_Derived),
 
-			new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName, D_Default),
-			new Describer(C_KeyExConnectionSource, typeof(EnConnectionSource), C_DefaultExConnectionSource, D_Default),
+			new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName, D_DefaultReadOnly),
+			new Describer(C_KeyExConnectionSource, typeof(EnConnectionSource), C_DefaultExConnectionSource, D_DefaultReadOnly),
 
-			new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, D_Public | D_Derived),
-			new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, D_Public | D_Derived),
-			new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, D_Public | D_Derived),
+			new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, D_Public | D_Derived | D_HasReadOnly),
+			new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, D_Public | D_Derived | D_HasReadOnly),
+			new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, D_Public | D_Derived | D_HasReadOnly),
 
 			new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion, D_Public | D_Derived),
 			new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, D_Public | D_Derived),
@@ -173,6 +172,9 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	// =====================================================================================================
 	#region Constants - AbstractCsb
 	// =====================================================================================================
+
+
+	bool _ServerNameValidated = false;
 
 
 	#endregion Constants
@@ -381,9 +383,27 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				retval = DisplayDatasetName;
 
 				if (!string.IsNullOrWhiteSpace(DataSource))
-					retval = S_DatasetKeyFormat.FmtRes(DataSource, retval);
+					retval = S_DatasetKeyFormat.FmtRes(ServerName, retval);
 			}
 			return retval;
+		}
+	}
+
+
+	/// <summary>
+	/// The registered ServerName for the DataSource.
+	/// </summary>
+	[Browsable(false)]
+	public string ServerName
+	{
+		get
+		{
+			string retval = DataSource;
+
+			if (_ServerNameValidated || string.IsNullOrWhiteSpace(retval))
+				return retval;
+
+			return RctManager.RegisterServer(retval, Port);
 		}
 	}
 
@@ -492,7 +512,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// The DatasetKey if ConnectionName is null else the DisplayName qualified with the server name.
 	/// </summary>
 	[Browsable(false)]
-	public string QualifiedName => string.IsNullOrEmpty(ConnectionName) ? DatasetKey : S_DatasetKeyFormat.FmtRes(DataSource, DisplayName);
+	public string QualifiedName => string.IsNullOrEmpty(ConnectionName) ? DatasetKey : S_DatasetKeyFormat.FmtRes(ServerName, DisplayName);
 
 
 
@@ -986,32 +1006,21 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		// Evs.Debug(GetType(), "Extract(IVsDataExplorerNode)", $"Node type is {@object}.");
 
 		object value;
-		object readOnly;
-		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(this);
-
-
 
 		foreach (KeyValuePair<string, Describer> pair in Csb.Describers)
 		{
 			try
 			{
+				if (pair.Value.IsDerived)
+					continue;
+
 				if (!@object.Properties.ContainsKey(pair.Key))
 					continue;
 
 				value = @object.Properties[pair.Key];
 
-				if (Cmd.IsNullValue(value))
+				if (Cmd.IsNullValue(value) || pair.Value.DefaultEquals(value))
 					continue;
-
-				readOnly = Reflect.GetAttributeValue(descriptors[pair.Key], typeof(ReadOnlyAttribute), "isReadOnly");
-
-				if (readOnly != null && (bool)readOnly)
-					continue;
-
-
-				if (pair.Value.DefaultEquals(value))
-					continue;
-
 
 				this[pair.Key] = value;
 			}
@@ -1070,57 +1079,17 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	// ---------------------------------------------------------------------------------
 	public void ValidateServerName()
 	{
-		string dataSource, server;
+		string dataSource;
 
 		if (ContainsKey(C_KeyDataSource) && !string.IsNullOrWhiteSpace(dataSource = DataSource)
-			&& !RctManager.ShutdownState && !dataSource.Equals(server = RctManager.RegisterServer(dataSource, Port)))
+			&& !RctManager.ShutdownState)
 		{
-			DataSource = server;
+			_ServerNameValidated = true;
+			string server = RctManager.RegisterServer(dataSource, Port);
+
+			if (!dataSource.Equals(server))
+				DataSource = server;
 		}
-	}
-
-
-
-	/// <summary>
-	/// Updates descriptor ReadonlyAttributes.
-	/// </summary>
-	public static bool UpdateDescriptorReadOnlyAttribute(ref PropertyDescriptorCollection descriptors, string[] readOnlyDescriptors, bool readOnly)
-	{
-		if (descriptors == null || descriptors.Count == 0)
-			return false;
-
-		bool value;
-		bool updated = false;
-
-		try
-		{
-			foreach (string name in readOnlyDescriptors)
-			{
-				PropertyDescriptor descriptor = descriptors.Find(name, true);
-
-				if (descriptor == null)
-					continue;
-
-				if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is not ReadOnlyAttribute attr)
-					throw new IndexOutOfRangeException($"ReadOnlyAttribute not found in PropertyDescriptor for {name}.");
-
-				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly");
-
-				value = readOnly;
-
-				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != value)
-				{
-					updated = true;
-					Reflect.SetFieldInfoValue(attr, fieldInfo, value);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
-
-		return updated;
 	}
 
 

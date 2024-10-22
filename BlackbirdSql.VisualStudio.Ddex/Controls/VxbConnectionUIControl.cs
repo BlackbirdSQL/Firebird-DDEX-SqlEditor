@@ -5,6 +5,7 @@
 using System;
 using System.ComponentModel;
 using System.Data;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
@@ -115,15 +116,13 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		if (!RctManager.EventConnectionDialogEnter(true))
 			RctManager.EventConnectionDialogExit();
 
-		if (disposing && Csa != null)
+		if (disposing)
 		{
 			// Reset the ReadonlyAttribute of the Csb class proposed name property descriptors to false.
 			// The proposed name properties will have been set to readonly for Application connection dialogs.
 
-			PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(Csa);
-
-			Csb.UpdateDescriptorReadOnlyAttribute(ref descriptors,
-				[SysConstants.C_KeyExConnectionName, SysConstants.C_KeyExDatasetName], false);
+			// Evs.Debug(GetType(), nameof(Dispose), "Setting readonly to false.");
+			UpdateDescriptorReadOnlyAttribute(false);
 		}
 
 		if (disposing && (components != null))
@@ -169,6 +168,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 	private bool _HandleNewInternally = false;
 	private bool _HandleModifyInternally = false;
 	private bool _HandleVerification = true;
+	private static bool _ReadOnlyDescriptors = true;
 
 
 	#endregion Fields
@@ -433,17 +433,13 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 		_EventsLoaded = true;
 
-		if (Csa != null)
-		{
-			// Temporarily set the ReadonlyAttribute of the Csb class proposed name property descriptors.
-			// The proposed name properties will be set to readonly for Application connection dialogs.
+		// Temporarily set the ReadonlyAttribute of the Csb class proposed name property descriptors.
+		// The proposed name properties will be set to readonly for Application connection dialogs.
 
-			PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(Csa);
+		// Evs.Debug(GetType(), nameof(AddEventHandlers), $"Setting readonly to {(ConnectionSource == EnConnectionSource.Application)}.");
 
-			Csb.UpdateDescriptorReadOnlyAttribute(ref descriptors,
-				[SysConstants.C_KeyExConnectionName, SysConstants.C_KeyExDatasetName],
-				ConnectionSource == EnConnectionSource.Application);
-		}
+		UpdateDescriptorReadOnlyAttribute(ConnectionSource == EnConnectionSource.Application);
+
 
 		ParentParentForm.FormClosed += OnFormClosed;
 
@@ -748,6 +744,58 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			ShowError(uiService, title, ex);
 		}
 	}
+
+
+	/// <summary>
+	/// Updates Csb descriptor ReadonlyAttributes.
+	/// </summary>
+	public static bool UpdateDescriptorReadOnlyAttribute(bool readOnly)
+	{
+		if (_ReadOnlyDescriptors == readOnly)
+			return false;
+
+		_ReadOnlyDescriptors = readOnly;
+
+		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(typeof(Csb));
+
+		if (descriptors.Count == 0)
+			Diag.ThrowException(new ApplicationException("Could not get property descriptors for Csb"));
+
+		bool value;
+		bool updated = false;
+		string[] readOnlyDescriptors = [SysConstants.C_KeyExConnectionName, SysConstants.C_KeyExDatasetName];
+
+		try
+		{
+			foreach (string name in readOnlyDescriptors)
+			{
+				PropertyDescriptor descriptor = descriptors.Find(name, true);
+
+				if (descriptor == null)
+					continue;
+
+				if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is not ReadOnlyAttribute attr)
+					throw new IndexOutOfRangeException($"ReadOnlyAttribute not found in PropertyDescriptor for {name}.");
+
+				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly");
+
+				value = readOnly;
+
+				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != value)
+				{
+					updated = true;
+					Reflect.SetFieldInfoValue(attr, fieldInfo, value);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		return updated;
+	}
+
 
 
 	/// <summary>
@@ -1248,6 +1296,9 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		if (RctManager.EventConnectionDialogEnter(true))
 			return;
 
+		// Evs.Debug(GetType(), nameof(OnFormClosed), "Setting readonly to false.");
+		UpdateDescriptorReadOnlyAttribute(false);
+
 		// Fire and forget
 
 		Task.Factory.StartNew(
@@ -1386,6 +1437,10 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		// Evs.Trace(GetType(), nameof(OnSiteChanged), "Site.ToString(): {0}, Site.Count: {1}", Site != null ? Site.ToString() : "Null",
 		//	Site != null ? Site.Count : -1);
 
+		// Evs.Debug(GetType(), nameof(OnSiteChanged), $"Setting readonly to {(ConnectionSource == EnConnectionSource.Application)}.");
+
+		UpdateDescriptorReadOnlyAttribute(ConnectionSource == EnConnectionSource.Application);
+
 		_OriginalConnectionString = null;
 		_InsertMode = true;
 		_SiteChanged = true;
@@ -1405,18 +1460,6 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 				? (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] : EnConnectionSource.Undefined;
 
 			EventPropertyEnter(false, true);
-
-			if (Csa != null)
-			{
-				// Temporarily set the ReadonlyAttribute of the Csb class proposed name property descriptors.
-				// The proposed name properties will be set to readonly for Application connection dialogs.
-
-				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(Csa);
-
-				Csb.UpdateDescriptorReadOnlyAttribute(ref descriptors,
-					[SysConstants.C_KeyExConnectionName, SysConstants.C_KeyExDatasetName],
-					ConnectionSource == EnConnectionSource.Application);
-			}
 
 			try
 			{

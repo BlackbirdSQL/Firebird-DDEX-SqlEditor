@@ -391,7 +391,7 @@ public class Csb : AbstractCsb, IBsCsb
 		}
 		else if (!string.IsNullOrWhiteSpace(datasetName))
 		{
-			string derivedConnectionName = S_DatasetKeyFormat.FmtRes(DataSource, datasetName);
+			string derivedConnectionName = S_DatasetKeyFormat.FmtRes(ServerName, datasetName);
 
 			if (!derivedConnectionName.Equals(datasetKey))
 				Remove(C_KeyExDatasetKey);
@@ -613,8 +613,8 @@ public class Csb : AbstractCsb, IBsCsb
 		// Now that the datasetName is established, we can determined its default derived value
 		// and the default derived value of the datasetKey.
 		string derivedDatasetName = string.IsNullOrEmpty(datasetName) ? dataset : datasetName;
-		string derivedConnectionName = S_DatasetKeyFormat.FmtRes(DataSource, derivedDatasetName);
-		string derivedAlternateConnectionName = S_DatasetKeyAlternateFormat.FmtRes(DataSource, derivedDatasetName);
+		string derivedConnectionName = S_DatasetKeyFormat.FmtRes(ServerName, derivedDatasetName);
+		string derivedAlternateConnectionName = S_DatasetKeyAlternateFormat.FmtRes(ServerName, derivedDatasetName);
 
 
 		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived

@@ -173,6 +173,12 @@ public class Describer
 
 
 	/// <summary>
+	/// Returns true if the the connection property/parameter has a ReadOnlyAttribute(true) attribute.
+	/// </summary>
+	public bool HasReadOnly => (_DType & D_HasReadOnly) > 0;
+
+
+	/// <summary>
 	/// True if this describer is derived / calculated else false.
 	/// </summary>
 	public bool IsDerived => (_DType & D_Derived) > 0;
