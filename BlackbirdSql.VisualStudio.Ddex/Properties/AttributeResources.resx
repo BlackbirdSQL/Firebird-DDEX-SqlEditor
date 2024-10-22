@@ -303,6 +303,9 @@
   <data name="OptionDescriptionDebugEnableEventSourceLogging" xml:space="preserve">
     <value>Enables EventSource (excluding ActivityTracing) events to be included in Diag.Trace() logging.</value>
   </data>
+  <data name="OptionDescriptionDebugEnableExpected" xml:space="preserve">
+    <value>Enables output of expected exceptions.</value>
+  </data>
   <data name="OptionDescriptionDebugEnableTrace" xml:space="preserve">
     <value>Enables the execution of Diag.Trace() calls.</value>
   </data>
@@ -461,6 +464,9 @@
   </data>
   <data name="OptionDisplayDebugEnableEventSourceLogging" xml:space="preserve">
     <value>Event source logging</value>
+  </data>
+  <data name="OptionDisplayDebugEnableExpected" xml:space="preserve">
+    <value>Expected exceptions</value>
   </data>
   <data name="OptionDisplayDebugEnableSaveExtrapolatedXml" xml:space="preserve">
     <value>Save extrapolated xml</value>

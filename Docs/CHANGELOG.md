@@ -3,6 +3,15 @@
 ## Change log
 
 
+### v14.5.3.1 Added User Option to output Expected Exceptions.
+
+#### New / Enhancements
+- Added __User Option__ `BlackbirdSQL Server Tools > Ddex Provider > Debug > Expected exceptions`. Enabling this option causes expected exceptions to be output to the __BlackbirdSql__ section of the VS output window for Release builds. 
+#### Fixes
+- Fixed possible bug where an attempt is made to open an open connection for a second time in the connection dialog.
+
+
+
 ### v14.5.3.0 Major update including Selective Intellisense.
 
 #### New / Enhancements

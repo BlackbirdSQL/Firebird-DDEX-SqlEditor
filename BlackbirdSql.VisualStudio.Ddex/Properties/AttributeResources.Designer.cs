@@ -619,6 +619,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables output of expected exceptions..
+        /// </summary>
+        public static string OptionDescriptionDebugEnableExpected {
+            get {
+                return ResourceManager.GetString("OptionDescriptionDebugEnableExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enables the execution of Diag.Trace() calls..
         /// </summary>
         public static string OptionDescriptionDebugEnableTrace {
@@ -1092,6 +1101,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayDebugEnableEventSourceLogging {
             get {
                 return ResourceManager.GetString("OptionDisplayDebugEnableEventSourceLogging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expected exceptions.
+        /// </summary>
+        public static string OptionDisplayDebugEnableExpected {
+            get {
+                return ResourceManager.GetString("OptionDisplayDebugEnableExpected", resourceCulture);
             }
         }
         

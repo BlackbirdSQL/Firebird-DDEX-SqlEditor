@@ -334,7 +334,7 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 			}
 			catch (Exception ex)
 			{
-				Diag.Expected(ex);
+				Diag.Expected(ex, $"\nConnection string: {connection?.ConnectionString}");
 			}
 		}
 

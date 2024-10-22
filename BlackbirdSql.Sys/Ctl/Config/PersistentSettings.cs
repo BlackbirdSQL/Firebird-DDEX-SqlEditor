@@ -225,6 +225,14 @@ public abstract class PersistentSettings : IBsSettingsProvider
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Flag indicating whether or not <see cref="Diag.Expected"/> exceptions are output.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool EnableExpected => (bool)GetPersistentSetting("DdexDebugEnableExpected", false);
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Specifies the level of trace messages filtered by the source switch and event
 	/// type filter.
 	/// </summary>

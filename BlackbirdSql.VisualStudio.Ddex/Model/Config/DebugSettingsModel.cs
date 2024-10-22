@@ -138,6 +138,13 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 	public bool EnableDiagnosticsLog { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableExpected")]
+	[GlobalizedDescription("OptionDescriptionDebugEnableExpected")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(false)]
+	public bool EnableExpected { get; set; } = false;
+
+	[GlobalizedCategory("OptionCategoryDebugging")]
 	[GlobalizedDisplayName("OptionDisplayDebugEnableSaveExtrapolatedXml")]
 	[GlobalizedDescription("OptionDescriptionDebugSaveExtrapolatedXml")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]

@@ -276,20 +276,22 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 		}
 		catch (Exception ex)
 		{
-			Diag.Debug(ex);
+			Diag.Expected(ex);
 			throw;
 		}
+
+		string connectionString = Connection != null ? ConnectionString : "";
 
 		try
 		{
 			if (_ConnectionSource != EnConnectionSource.Undefined)
 				(connectionUIProperties as IBsDataConnectionProperties).ConnectionSource = _ConnectionSource;
 
-			connectionUIProperties.Parse(ConnectionString);
+			connectionUIProperties.Parse(connectionString);
 		}
 		catch (Exception ex)
 		{
-			Diag.Debug(ex);
+			Diag.Expected(ex, $"\nConnection string: {connectionString}");
 			throw;
 		}
 
@@ -312,7 +314,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex);
+			Diag.Expected(ex, $"\nConnection string: {Connection?.ConnectionString}");
 			throw;
 		}
 

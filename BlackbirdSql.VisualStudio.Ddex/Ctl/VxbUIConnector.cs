@@ -60,9 +60,18 @@ public class VxbUIConnector : DataConnectionUIConnector
 			throw ex;
 		}
 
+
 		if (connection.State != DataConnectionState.Open)
 		{
-			connection.Open();
+			try
+			{
+				connection.Open();
+			}
+			catch (Exception ex)
+			{
+				Diag.Expected(ex, $"\nConnection string: {connection?.DecryptedConnectionString()}");
+				throw;
+			}
 		}
 	}
 

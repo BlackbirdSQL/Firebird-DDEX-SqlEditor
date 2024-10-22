@@ -135,6 +135,14 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Flag indicating whether or not <see cref="Diag.Expected"/> exceptions are output.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static bool EnableExpected => _InternalActive > 0 || PersistentSettings.EnableExpected;
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The log file path
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -514,7 +522,7 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Diagnostics method for outputting expected Exceptions that will display on
-	/// DEBUG builds but be swallowed in release builds.
+	/// DEBUG builds but be swallowed in release builds unless EnableExpected is enabled.
 	/// For example a connection that throws an exception due to a broken network
 	/// connection or a temporarily inaccessible tab for text updates. 
 	/// </summary>
@@ -526,6 +534,9 @@ public static class Diag
 	{
 #if DEBUG
 		Dug(ex, message, line, memberName, sourcePath, 2);
+#else
+		if (EnableExpected)
+			Dug(ex, message, line, memberName, sourcePath, 2);
 #endif
 	}
 
