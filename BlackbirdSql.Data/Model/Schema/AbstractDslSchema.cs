@@ -20,6 +20,7 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
@@ -99,7 +100,7 @@ internal abstract class AbstractDslSchema
 				{
 					if (cancelToken.Cancelled())
 						return dataTable;
-					Diag.Dug(ex, collectionName);
+					Diag.Ex(ex, collectionName);
 					throw;
 				}
 			}
@@ -134,7 +135,7 @@ internal abstract class AbstractDslSchema
 
 		FbConnection dbConnection = connection as FbConnection;
 
-		SetMajorVersionNumber(dbConnection);
+		GetServerProperties(dbConnection);
 
 		string schemaCollection;
 
@@ -153,10 +154,10 @@ internal abstract class AbstractDslSchema
 				break;
 		}
 
-		string filter = string.Format("CollectionName='{0}'", schemaCollection);
+		string filter = "CollectionName='{0}'".Fmt(schemaCollection);
 		StringBuilder builder = GetCommandText(restrictions);
 		DataRow[] restrictionRows = dbConnection.GetSchema(DbMetaDataCollectionNames.Restrictions).Select(filter);
-		// var transaction = connection.InnerConnection.ActiveTransaction;
+		// IDbTransaction transaction = connection.InnerConnection.ActiveTransaction;
 
 		FbCommand command = new(builder.ToString(), dbConnection /*, transaction*/);
 
@@ -188,8 +189,8 @@ internal abstract class AbstractDslSchema
 		// Evs.Trace(GetType(), "BuildCommandAsync", "collectionName: {0}", collectionName);
 
 		FbConnection dbConnection = connection as FbConnection;
-		
-		SetMajorVersionNumber(dbConnection);
+
+		GetServerProperties(dbConnection);
 
 		string schemaCollection;
 
@@ -208,10 +209,10 @@ internal abstract class AbstractDslSchema
 				break;
 		}
 
-		string filter = string.Format("CollectionName='{0}'", schemaCollection);
+		string filter = "CollectionName='{0}'".Fmt(schemaCollection);
 		StringBuilder builder = GetCommandText(restrictions);
 		DataRow[] restrictionRows = (await dbConnection.GetSchemaAsync(DbMetaDataCollectionNames.Restrictions, cancelToken)).Select(filter);
-		// var transaction = connection.InnerConnection.ActiveTransaction;
+		// IDbTransaction transaction = connection.InnerConnection.ActiveTransaction;
 
 		FbCommand command = new(builder.ToString(), dbConnection /*, transaction*/);
 
@@ -258,6 +259,36 @@ internal abstract class AbstractDslSchema
 	#region Private Methods
 
 
+	/// <summary>
+	/// Determines the major version number from the Serverversion on the inner connection.
+	/// </summary>
+	/// <param name="connection">an open connection, which is used to determine the version number of the connected database server</param>
+	private void GetServerProperties(FbConnection connection)
+	{
+		Version serverVersion = FbServerProperties.ParseServerVersion(connection.ServerVersion);
+		MajorVersionNumber = serverVersion.Major;
+
+		try
+		{
+			FbServerProperties serverProps = new(connection.ConnectionString);
+
+			// int isccode = IscCodes.isc_spb_auth_plugin_name;
+
+			List<object> list = null; // (List<object>)Reflect.InvokeAmbiguousMethod(serverProps, "GetInfo", BindingFlags.Default, [isccode]);
+
+			Authentication = list == null ? "Legacy_UserManager" : (string)list[0];
+		}
+		catch (Exception ex)
+		{
+			Diag.Ex(ex);
+			throw;
+		}
+
+		// Evs.Debug(GetType(), nameof(GetServerProperties), $"Authentication: {Authentication}.");
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Returns true if an SE node's collection requires completed Trigger/Generator
@@ -284,16 +315,6 @@ internal abstract class AbstractDslSchema
 	}
 
 
-
-	/// <summary>
-	/// Determines the major version number from the Serverversion on the inner connection.
-	/// </summary>
-	/// <param name="connection">an open connection, which is used to determine the version number of the connected database server</param>
-	private void SetMajorVersionNumber(FbConnection connection)
-	{
-		Version serverVersion = FbServerProperties.ParseServerVersion(connection.ServerVersion);
-		MajorVersionNumber = serverVersion.Major;
-	}
 	#endregion
 
 	#region Private Static Methods
@@ -304,7 +325,7 @@ internal abstract class AbstractDslSchema
 
 		foreach (DataRow row in schema.Rows)
 		{
-			for (var i = 0; i < schema.Columns.Count; i++)
+			for (int i = 0; i < schema.Columns.Count; i++)
 			{
 				if (!row.IsNull(schema.Columns[i]) &&
 					schema.Columns[i].DataType == typeof(System.String))
@@ -321,10 +342,16 @@ internal abstract class AbstractDslSchema
 	#endregion
 
 	#region Properties
+
+
+	protected string Authentication { get; private set; }
+
+
 	/// <summary>
 	/// The major version of the connected Firebird server
 	/// </summary>
 	protected int MajorVersionNumber { get; private set; }
+
 
 	#endregion
 

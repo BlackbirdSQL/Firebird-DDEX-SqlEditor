@@ -164,7 +164,7 @@ public class StatisticsSnapshotCollection : CollectionBase
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		finally
@@ -180,7 +180,7 @@ public class StatisticsSnapshotCollection : CollectionBase
 		if (!_Initialized)
 		{
 			InvalidOperationException ex = new InvalidOperationException("StatisticsSnapshotCollection not initialized.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -197,7 +197,7 @@ public class StatisticsSnapshotCollection : CollectionBase
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

@@ -44,7 +44,7 @@ public class Moniker
 		if (@nodeObj == null)
 		{
 			ArgumentNullException ex = new($"{node.Name} Object is null");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return;
 		}
 
@@ -123,7 +123,7 @@ public class Moniker
 		if (@nodeObj == null)
 		{
 			ArgumentNullException ex = new($"{explorerConnection.SafeName()} Object is null");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return;
 		}
 
@@ -303,7 +303,7 @@ public class Moniker
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -350,7 +350,7 @@ public class Moniker
 		if (includeExtension && ObjectType != EnModelObjectType.Unknown && Identifier != null)
 		{
 			extension = NativeDb.Extension;
-			filename = string.Format(CultureInfo.InvariantCulture, "{0}{1}", filename, extension);
+			filename = "{0}{1}".Fmti(filename, extension);
 		}
 
 		string result = filename;
@@ -365,7 +365,7 @@ public class Moniker
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"Serialized database url: {filenameNoExtension}.");
+				Diag.Ex(ex, $"Serialized database url: {filenameNoExtension}.");
 				throw;
 			}
 
@@ -375,13 +375,13 @@ public class Moniker
 			// name for the clone.
 			if (_IsClone && basename != testname)
 			{
-				testname = string.Format(CultureInfo.InvariantCulture, "{0}{1}", testname, extension);
+				testname = "{0}{1}".Fmti(testname, extension);
 
 				if (!RdtManager.IsInflightMonikerFilenameRegistered(testname))
 					return filename;
 			}
 
-			testname = string.Format(CultureInfo.InvariantCulture, "{0}{1}", basename, extension);
+			testname = "{0}{1}".Fmti(basename, extension);
 			filenameNoExtension = Path.Combine(Cmd.GetDirectoryName(filename), basename);
 
 			for (int i = 2; i < 1000; i++)
@@ -397,8 +397,8 @@ public class Moniker
 				else
 					_UniqueId = i;
 
-				testname = string.Format(CultureInfo.InvariantCulture, "{0}_{1}{2}", basename, _UniqueId, extension);
-				filename = string.Format(CultureInfo.InvariantCulture, "{0}_{1}{2}", filenameNoExtension, _UniqueId, extension);
+				testname = "{0}_{1}{2}".Fmti(basename, _UniqueId, extension);
+				filename = "{0}_{1}{2}".Fmti(filenameNoExtension, _UniqueId, extension);
 			}
 
 			result = filename;

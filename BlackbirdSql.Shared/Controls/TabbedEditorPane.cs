@@ -466,7 +466,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"Moniker: {moniker}.");
+				Diag.Ex(ex, $"Moniker: {moniker}.");
 				throw;
 			}
 
@@ -488,7 +488,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"File name: {(string)pName}.");
+				Diag.Ex(ex, $"File name: {(string)pName}.");
 				throw;
 			}
 
@@ -578,7 +578,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 	/// <summary>
 	/// [Launch async]: Auto-execute query.
 	/// </summary>
-	private void AsyncAutoExecuteQuery()
+	private void AutoExecuteQueryAsyin()
 	{
 		// Evs.Trace(GetType(), nameof(AsyncAutoExecuteQuery), "ExecutionType: {0}.", executionType);
 
@@ -601,41 +601,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		// ----------------------------------------------------------------------------------- //
 		// ****** Execution Point (0) - TabbedEditorPane.AsyncAutoExecuteQuery() ******* //
 		// ----------------------------------------------------------------------------------- //
-		AsyncExecuteQuery(EnSqlExecutionType.QueryOnly);
-	}
-
-
-
-	/// <summary>
-	/// [Launch async]: Execute query.
-	/// </summary>
-	public void AsyncExecuteQuery(EnSqlExecutionType executionType)
-	{
-		// Evs.Trace(GetType(), nameof(AsyncExecuteQuery));
-
-
-		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
-		{
-			TextSpanEx textSpanInfo = GetSelectedCodeEditorTextSpan();
-			if (textSpanInfo.Text == null || textSpanInfo.Text.Length == 0)
-			{
-				textSpanInfo = GetAllCodeEditorTextSpan();
-			}
-
-			if (textSpanInfo != null && !string.IsNullOrEmpty(textSpanInfo.Text))
-			{
-				QueryManager qryMgr = QryMgr;
-
-				// Evs.Trace(GetType(), "AsyncExecuteQuery", "calling QryMgr.AsyncExecute()");
-
-
-				// ----------------------------------------------------------------------------------- //
-				// ******* Execution Point (1) - TabbedEditorPane.AsyncExecuteQuery() ********** //
-				// ----------------------------------------------------------------------------------- //
-				qryMgr.AsyncExecute(textSpanInfo, executionType);
-
-			}
-		}
+		ExecuteQueryAsyin(EnSqlExecutionType.QueryOnly);
 	}
 
 
@@ -644,15 +610,15 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 	{
 		if (frame == null)
 		{
-			ArgumentNullException ex = new("frame");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(frame));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (textView == null)
 		{
-			ArgumentNullException ex = new("textView");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(textView));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -662,7 +628,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		IOleServiceProvider site = pvar as IOleServiceProvider;
 		if (textView is not IObjectWithSite objectWithSite)
 		{
-			// Evs.Trace(typeof(AbstractSqlEditorTab), "ConfigureTextViewForAutonomousFind", "Couldn't cast textView to IObjectWithsite!");
+			// Evs.Trace(typeof(AbstractSqlEditorTab), nameof(ConfigureTextViewForAutonomousFind), "Couldn't cast textView to IObjectWithsite!");
 			return;
 		}
 
@@ -867,7 +833,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		if (resultsTab == null)
 		{
 			ApplicationException ex = new("GetSqlEditorResultsTab returned null");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -958,12 +924,46 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		finally
 		{
 			TabbedEditorUiCtl.ResumeLayout();
+		}
+	}
+
+
+
+	/// <summary>
+	/// [Launch async]: Execute query.
+	/// </summary>
+	public void ExecuteQueryAsyin(EnSqlExecutionType executionType)
+	{
+		// Evs.Trace(GetType(), nameof(AsyncExecuteQuery));
+
+
+		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
+		{
+			TextSpanX textSpanInfo = GetSelectedCodeEditorTextSpan();
+			if (textSpanInfo.Text == null || textSpanInfo.Text.Length == 0)
+			{
+				textSpanInfo = GetAllCodeEditorTextSpan();
+			}
+
+			if (textSpanInfo != null && !string.IsNullOrEmpty(textSpanInfo.Text))
+			{
+				QueryManager qryMgr = QryMgr;
+
+				// Evs.Trace(GetType(), "AsyncExecuteQuery", "calling QryMgr.AsyncExecute()");
+
+
+				// ----------------------------------------------------------------------------------- //
+				// ******* Execution Point (1) - TabbedEditorPane.AsyncExecuteQuery() ********** //
+				// ----------------------------------------------------------------------------------- //
+				qryMgr.ExecuteAsyin(textSpanInfo, executionType);
+
+			}
 		}
 	}
 
@@ -1012,21 +1012,21 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		IVsTextView codeEditorTextView = GetCodeEditorTextView();
 		int iStartLine = 0;
 		int iStartIndex = 0;
-		___(codeEditorTextView.GetBuffer(out var ppBuffer));
-		___(ppBuffer.GetLastLineIndex(out var piLine, out var piIndex));
-		___(ppBuffer.GetLineText(iStartLine, iStartIndex, piLine, piIndex, out var pbstrBuf));
+		___(codeEditorTextView.GetBuffer(out IVsTextLines ppBuffer));
+		___(ppBuffer.GetLastLineIndex(out int piLine, out int piIndex));
+		___(ppBuffer.GetLineText(iStartLine, iStartIndex, piLine, piIndex, out string pbstrBuf));
 		return pbstrBuf;
 	}
 
 
 
-	public TextSpanEx GetAllCodeEditorTextSpan()
+	public TextSpanX GetAllCodeEditorTextSpan()
 	{
 		IVsTextView codeEditorTextView = GetCodeEditorTextView();
 		int anchorCol = 0;
-		___(codeEditorTextView.GetBuffer(out var ppBuffer));
-		___(ppBuffer.GetLastLineIndex(out var piLine, out var piIndex));
-		return new TextSpanEx(0, anchorCol, piLine, piIndex, GetAllCodeEditorText(), codeEditorTextView);
+		___(codeEditorTextView.GetBuffer(out IVsTextLines ppBuffer));
+		___(ppBuffer.GetLastLineIndex(out int piLine, out int piIndex));
+		return new TextSpanX(0, anchorCol, piLine, piIndex, GetAllCodeEditorText(), codeEditorTextView);
 	}
 
 
@@ -1074,7 +1074,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 	public string GetCodeText()
 	{
-		TextSpanEx textSpanInfo = GetSelectedCodeEditorTextSpan();
+		TextSpanX textSpanInfo = GetSelectedCodeEditorTextSpan();
 		if (textSpanInfo.Text == null || textSpanInfo.Text.Length == 0)
 		{
 			textSpanInfo = GetAllCodeEditorTextSpan();
@@ -1105,7 +1105,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"DocumentMoniker: {DocumentMoniker}.");
+			Diag.Ex(ex, $"DocumentMoniker: {DocumentMoniker}.");
 			throw;
 		}
 
@@ -1174,11 +1174,11 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 
 
-	public TextSpanEx GetSelectedCodeEditorTextSpan()
+	public TextSpanX GetSelectedCodeEditorTextSpan()
 	{
 		IVsTextView codeEditorTextView = GetCodeEditorTextView();
-		___(codeEditorTextView.GetSelection(out var piAnchorLine, out var piAnchorCol, out var piEndLine, out var piEndCol));
-		return new TextSpanEx(piAnchorLine, piAnchorCol, piEndLine, piEndCol, GetSelectedCodeEditorText(), codeEditorTextView);
+		___(codeEditorTextView.GetSelection(out int piAnchorLine, out int piAnchorCol, out int piEndLine, out int piEndCol));
+		return new TextSpanX(piAnchorLine, piAnchorCol, piEndLine, piEndCol, GetSelectedCodeEditorText(), codeEditorTextView);
 	}
 
 
@@ -1356,7 +1356,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -1384,7 +1384,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 		}
@@ -1475,7 +1475,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 		{
 			statsButtonText = snapshotCount == 0
 				? ControlsResources.ToolStripButton_StatisticsSnapshot_Button_Text
-				: ControlsResources.ToolStripButton_StatisticsSnapshotCount_Button_Text.FmtRes(snapshotCount);
+				: ControlsResources.ToolStripButton_StatisticsSnapshotCount_Button_Text.Fmt(snapshotCount);
 		}
 
 
@@ -1485,19 +1485,19 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			{
 				resultsButtonText = args.TotalRowsSelected == 0
 					? ControlsResources.ToolStripButton_ResultsGrid_Button_Text
-					: ControlsResources.ToolStripButton_ResultsGridCount_Button_Text.FmtRes(args.TotalRowsSelected, args.StatementCount);
+					: ControlsResources.ToolStripButton_ResultsGridCount_Button_Text.Fmt(args.TotalRowsSelected, args.StatementCount);
 			}
 			else
 			{
 				resultsButtonText = args.TotalRowsSelected == 0
 					? ControlsResources.ToolStripButton_ResultsText_Button_Text
-					: ControlsResources.ToolStripButton_ResultsTextCount_Button_Text.FmtRes(args.TotalRowsSelected, args.StatementCount);
+					: ControlsResources.ToolStripButton_ResultsTextCount_Button_Text.Fmt(args.TotalRowsSelected, args.StatementCount);
 			}
 		}
 
 		messagesButtonText = messageCount == 0
 			? ControlsResources.ToolStripButton_Message_Button_Text
-			: ControlsResources.ToolStripButton_MessageCount_Button_Text.FmtRes(messageCount);
+			: ControlsResources.ToolStripButton_MessageCount_Button_Text.Fmt(messageCount);
 
 
 		Guid clsidMessagesTab = new Guid(LibraryData.C_MessageTabGuid);
@@ -1629,7 +1629,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 		if (moniker != null && moniker.StartsWith(Path.GetTempPath(), StringComparison.InvariantCultureIgnoreCase))
 		{
-			text = Resources.QueryCaptionGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, text);
+			text = Resources.QueryCaptionGlyphFormat.Fmt(SystemData.C_SessionTitleGlyph, text);
 		}
 
 		___(frame.SetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, text));
@@ -1833,7 +1833,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 			if (_AutoExecute)
 			{
-				AsyncAutoExecuteQuery();
+				AutoExecuteQueryAsyin();
 			}
 			else
 			{

@@ -12,7 +12,6 @@ using BlackbirdSql.LanguageExtension.Ctl.Config;
 using BlackbirdSql.LanguageExtension.Services;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -27,19 +26,20 @@ using Microsoft.Win32;
 namespace BlackbirdSql.LanguageExtension;
 
 
-// =========================================================================================================
+// =============================================================================================================
 //										LanguageExtensionPackage Class 
 //
 /// <summary>
-/// BlackbirdSql Language Extension <see cref="AsyncPackage"/> class implementation
+/// BlackbirdSql Language Extension <see cref="AsyncPackage"/> class implementation.
+/// This package is still under development. Autocomplete is TBC and Intellisense is partially complet.
 /// </summary>
-// =========================================================================================================
+// =============================================================================================================
 
 
 
-// ---------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------
 #region							LanguageExtensionPackage Class Attributes
-// ---------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------
 
 
 [ProvideService(typeof(LsbLanguageService), IsAsyncQueryable = true, ServiceName = PackageData.C_LanguageServiceName)]
@@ -58,9 +58,9 @@ namespace BlackbirdSql.LanguageExtension;
 
 
 
-// =========================================================================================================
+// =============================================================================================================
 #region							LanguageExtensionPackage Class Declaration
-// =========================================================================================================
+// =============================================================================================================
 public abstract class LanguageExtensionPackage : AbstractCorePackage, IBsLanguagePackage, IOleComponent
 {
 

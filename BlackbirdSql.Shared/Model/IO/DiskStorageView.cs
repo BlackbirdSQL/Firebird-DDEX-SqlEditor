@@ -50,7 +50,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 
 	protected DiskStorageView()
 	{
-		throw new Exception(Resources.ExStorageViewDefaultConstructorCannotBeUsed);
+		throw new Exception(Resources.ExceptionStorageViewDefaultConstructorCannotBeUsed);
 	}
 
 	protected internal DiskStorageView(IBsDiskDataStorage storage)
@@ -121,7 +121,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	{
 		if (i64Row >= RowCount || iCol >= ColumnCount)
 		{
-			throw new Exception(Resources.ExInvalidArgument);
+			throw new Exception(Resources.ExceptionInvalidArgument);
 		}
 		if (iCol == 0 || iCol != m_iPrevCol + 1 || i64Row != m_i64PrevRow)
 		{
@@ -175,7 +175,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 
 					string str = $"Offset: {_CurrentOffset}, SkipValue: {bSkipValue}.\nColumnInfo:: ColumnName: {columnInfo.ColumnName}, DataTypeName: {columnInfo.DataTypeName}, ProviderSpecificDataTypeName: {columnInfo.ProviderSpecificDataTypeName}, FieldType: {columnInfo.FieldType}, IsBlobField: {columnInfo.IsBlobField}, IsCharsField: {columnInfo.IsCharsField}, IsBytesField: {columnInfo.IsBytesField}, IsXml: {columnInfo.IsXml}, IsSqlVariant: {columnInfo.IsSqlVariant}, IsUdtField: {columnInfo.IsUdtField}, Precision: {columnInfo.Precision}";
 
-					Diag.Dug(ex, str);
+					Diag.Ex(ex, str);
 					throw;
 				}
 				if (!IsNull && !bSkipValue)
@@ -608,7 +608,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	{
 		if (m_i64CurrentRow - 1 >= RowCount || i >= ColumnCount)
 		{
-			throw new Exception(Resources.ExInvalidArgument);
+			throw new Exception(Resources.ExceptionInvalidArgument);
 		}
 		InitFileWriter();
 		_CurrentOffset = _DiskDataStorage.GetRowOffset(m_i64CurrentRow - 1);

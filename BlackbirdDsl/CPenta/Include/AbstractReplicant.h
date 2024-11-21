@@ -525,7 +525,7 @@ public:
 				SysStr::Format("Attempted insert{0} at index {1} into array with {2} items.",
 					k != -1 ? "-replacement" : "", index, Count));
 
-			Diag::Dug(ex);
+			Diag::Ex(ex);
 			throw ex;
 		}
 

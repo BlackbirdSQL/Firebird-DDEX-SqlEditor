@@ -1,15 +1,13 @@
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using System.Security.Cryptography;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Ctl.ComponentModel;
 using BlackbirdSql.Sys.Enums;
-
+using BlackbirdSql.Sys.Properties;
 using static BlackbirdSql.SysConstants;
 
 
@@ -116,11 +114,20 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 	private Dictionary<string, object> InternalStore => _InternalStore ??= [];
 
-
+	[GlobalizedCategory("PropertyCategoryData")]
+	[GlobalizedDisplayName("PropertyDisplayConnectionString")]
+	[GlobalizedDescription("PropertyDescriptionConnectionString")]
+	[Browsable(true)]
+	public new string ConnectionString
+	{
+		get { return base.ConnectionString; }
+		set { base.ConnectionString = value; }
+	}
 
 	[GlobalizedCategory("PropertyCategorySecurity")]
 	[GlobalizedDisplayName("PropertyDisplayUserID")]
 	[GlobalizedDescription("PropertyDescriptionUserID")]
+	[Browsable(true)]
 	[DefaultValue(C_DefaultUserID)]
 	public string UserID
 	{
@@ -131,6 +138,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	[GlobalizedCategory("PropertyCategorySecurity")]
 	[GlobalizedDisplayName("PropertyDisplayPassword")]
 	[GlobalizedDescription("PropertyDescriptionPassword")]
+	[Browsable(true)]
 	[PasswordPropertyText(true)]
 	[DefaultValue(C_DefaultPassword)]
 	public string Password
@@ -142,6 +150,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	[GlobalizedCategory("PropertyCategorySource")]
 	[GlobalizedDisplayName("PropertyDisplayDataSource")]
 	[GlobalizedDescription("PropertyDescriptionDataSource")]
+	[Browsable(true)]
 	[DefaultValue(C_DefaultDataSource)]
 	public string DataSource
 	{
@@ -152,6 +161,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	[GlobalizedCategory("PropertyCategorySource")]
 	[GlobalizedDisplayName("PropertyDisplayDatabase")]
 	[GlobalizedDescription("PropertyDescriptionDatabase")]
+	[Browsable(true)]
 	[DefaultValue(C_DefaultDatabase)]
 	public string Database
 	{
@@ -162,6 +172,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	[GlobalizedCategory("PropertyCategorySource")]
 	[GlobalizedDisplayName("PropertyDisplayPort")]
 	[GlobalizedDescription("PropertyDescriptionPort")]
+	[Browsable(true)]
 	[DefaultValue(C_DefaultPort)]
 	public int Port
 	{
@@ -182,6 +193,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	[GlobalizedCategory("PropertyCategorySecurity")]
 	[GlobalizedDisplayName("PropertyDisplayRole")]
 	[GlobalizedDescription("PropertyDescriptionRole")]
+	[Browsable(true)]
 	[DefaultValue(C_DefaultRole)]
 	public string Role
 	{
@@ -192,6 +204,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	[GlobalizedCategory("PropertyCategoryAdvanced")]
 	[GlobalizedDisplayName("PropertyDisplayDialect")]
 	[GlobalizedDescription("PropertyDescriptionDialect")]
+	[Browsable(true)]
 	[DefaultValue(C_DefaultDialect)]
 	public int Dialect
 	{
@@ -202,6 +215,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	[GlobalizedCategory("PropertyCategoryAdvanced")]
 	[GlobalizedDisplayName("PropertyDisplayCharset")]
 	[GlobalizedDescription("PropertyDescriptionCharset")]
+	[Browsable(true)]
 	[DefaultValue(C_DefaultCharset)]
 	public string Charset
 	{
@@ -272,6 +286,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 	[GlobalizedCategory("PropertyCategorySource")]
 	[GlobalizedDisplayName("PropertyDisplayServerType")]
 	[GlobalizedDescription("PropertyDescriptionServerType")]
+	[Browsable(true)]
 	[DefaultValue(C_DefaultServerType)]
 	public EnServerType ServerType
 	{
@@ -602,7 +617,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 		Describer describer = Describers.GetSynonymDescriber(synonym);
 
 		if (describer == null)
-			Diag.ThrowException(new ArgumentException($"Describer does not exist for synonym: {synonym}."));
+			Diag.ThrowException(new ArgumentException(Resources.ExceptionSynonymDescriberNotFound.Fmt(synonym)));
 
 		string storageKey = describer.ConnectionStringKey;
 		object storedValue;

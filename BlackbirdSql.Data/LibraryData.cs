@@ -36,7 +36,7 @@ public static class LibraryData
 
 	public const string C_DataProviderName = "Firebird Server"; // Firebird
 	public const string C_DbEngineName = "Firebird";
-	public const string C_SchemaMetaDataXml = "FirebirdSql.Data.Schema.FbMetaData.xml";
+	public const string C_SchemaMetaDataXml = "BlackbirdSql.Data.Model.Schema.DslMetaData.xml";
 
 	/// <summary>
 	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).

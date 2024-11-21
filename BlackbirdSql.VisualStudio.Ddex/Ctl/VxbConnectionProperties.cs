@@ -86,7 +86,7 @@ public class VxbConnectionProperties : AbstractConnectionProperties
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw;
 			}
 

@@ -65,7 +65,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 	private static void OpenAsMiscellaneousFile(string path, string caption, Guid editor,
 		string physicalView, Guid logicalView)
 	{
-		// Evs.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
+		// Evs.Trace(typeof(Cmd), nameof(OpenAsMiscellaneousFile));
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -94,7 +94,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -157,7 +157,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 	private static bool OpenMiscellaneousVirtualFile(string moniker, IVsDataExplorerNode node,
 		EnModelTargetType targetType, Csb csa, string initialScript)
 	{
-		// Evs.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "ExplorerMoniker: {0}.", explorerMoniker);
+		// Evs.Trace(typeof(DesignerExplorerServices), nameof(OpenMiscellaneousSqlFile), "ExplorerMoniker: {0}.", explorerMoniker);
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -218,7 +218,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Moniker: {moniker}.");
+			Diag.Ex(ex, $"Moniker: {moniker}.");
 			throw;
 		}
 
@@ -228,13 +228,13 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 		string tempFilename = Path.Combine(tempDirectory, filename + NativeDb.Extension);
 
-		// Evs.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousVirtialFile()", "filename: {0}, tempFilename: {1}, moniker: {2}.",
+		// Evs.Trace(typeof(DesignerExplorerServices), nameof(OpenMiscellaneousVirtialFile), "filename: {0}, tempFilename: {1}, moniker: {2}.",
 		//	filename, tempFilename, moniker);
 
 
 		if (tempFilename == null)
 		{
-			MessageCtl.ShowEx("", Resources.ExCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowX("", Resources.ExceptionCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return false;
 		}
 
@@ -276,7 +276,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 	public static void OpenNewMiscellaneousSqlFile(string baseName, string initialContent)
 	{
-		// Evs.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
+		// Evs.Trace(typeof(Cmd), nameof(OpenAsMiscellaneousFile));
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -286,7 +286,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		string tempFileName = Path.GetTempFileName();
 		if (tempFileName == null)
 		{
-			MessageCtl.ShowEx("", Resources.ExCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowX("", Resources.ExceptionCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return;
 		}
 		StreamWriter streamWriter = null;
@@ -327,7 +327,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		IList<string> identifierList = [baseName];
 		IList<string> identifierArray = new List<string>(identifierList); 
 
-		// Evs.Trace(typeof(DesignerExplorerServices), "OpenNewQueryEditor()", "csa.DataSource: {0}, csa.Database: {1}", csa.DataSource, csa.Database);
+		// Evs.Trace(typeof(DesignerExplorerServices), nameof(OpenNewQueryEditor), "csa.DataSource: {0}, csa.Database: {1}", csa.DataSource, csa.Database);
 
 		string mkDocument = Moniker.BuildDocumentMoniker(csb?.DataSource, csb?.Database, elementType, ref identifierArray, targetType, true, isClone);
 
@@ -404,7 +404,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -424,7 +424,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -434,7 +434,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}

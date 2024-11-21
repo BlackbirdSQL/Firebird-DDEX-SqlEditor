@@ -143,11 +143,11 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 			if (string.IsNullOrEmpty(_UomFmt) || _EditActive)
 			{
 				// Evs.Debug(GetType(), "ConvertTo()",  "Converted To: " + _CurrentValue.ToString());
-				return !IsCardinal ? StringValue : IntValue.ToString(CultureInfo.CurrentCulture);
+				return !IsCardinal ? StringValue : IntValue.ToString(culture);
 			}
 			else
 			{
-				// Evs.Debug(GetType(), "ConvertTo()",  "Converted To: " + string.Format(_UomFmt, _CurrentValue));
+				// Evs.Debug(GetType(), "ConvertTo()",  "Converted To: " + _UomFmt.Fmt(_CurrentValue));
 				if (_UomFmtMin != null && IntValue == _Min)
 					return _UomFmtMin;
 				else if (_UomFmtMax != null && IntValue == _Max)
@@ -155,7 +155,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 				else if (_UomFmtDefault != null && CurrentValue == DefaultValue)
 					return _UomFmtDefault;
 				else
-					return string.Format(_UomFmt, CurrentValue);
+					return string.Format(culture, _UomFmt, CurrentValue);
 			}
 		}
 		return base.ConvertTo(context, culture, value, destinationType);
@@ -228,19 +228,19 @@ public abstract class AbstractUomConverter : TypeConverter, IBsEditConverter, ID
 				// The formatted display string of the minimum value in the current culture.
 				string fmt = ResMgr.GetString("ConverterUomFormatMin_" + _UomKey);
 				if (fmt != null)
-					_UomFmtMin = fmt.FmtRes(_Min);
+					_UomFmtMin = fmt.Fmt(_Min);
 
 				// The formatted display string of the maximum value in the current culture.
 				fmt = ResMgr.GetString("ConverterUomFormatMax_" + _UomKey);
 				if (fmt != null)
-					_UomFmtMax = fmt.FmtRes(_Max);
+					_UomFmtMax = fmt.Fmt(_Max);
 
 				_DefaultValue = model[_PropertyName].DefaultValue;
 
 				// The formatted display string of the default value in the current culture.
 				fmt = ResMgr.GetString("ConverterUomFormatDefault_" + _UomKey);
 				if (fmt != null)
-					_UomFmtDefault = fmt.FmtRes(_Max);
+					_UomFmtDefault = fmt.Fmt(_Max);
 
 			}
 		}

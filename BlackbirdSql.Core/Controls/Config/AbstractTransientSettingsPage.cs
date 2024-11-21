@@ -1,5 +1,5 @@
 ﻿//
-// Plagiarized from Community.VisualStudio.Toolkit extension
+// Original code plagiarized from Community.VisualStudio.Toolkit extension
 //
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Model.Config;

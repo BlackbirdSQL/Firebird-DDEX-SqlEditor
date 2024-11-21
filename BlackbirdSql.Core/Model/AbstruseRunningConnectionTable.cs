@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -218,7 +219,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns true if the Async task is activ e else false.
+	/// Returns true if the Async task is active else false.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private bool AsyncLoading => _AsyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Inactive
@@ -299,7 +300,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 		finally
@@ -572,7 +573,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			if (_LoadDataCardinal < 0)
 			{
 				InvalidOperationException ex = new($"EndLoadData() over called {-_LoadDataCardinal} times.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return;
 			}
 
@@ -585,89 +586,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 			}
 		}
 
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// [Async on UI thread]: Launches an async task to perform unsafe loading of
-	/// solution connections which require the DTE on the UI thread. To keep things
-	/// tight this method will throw an exception if it's already on the UI thread and
-	/// should not have been called.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected bool InternalAsyuiLoadApplicationConnections(object probject)
-	{
-		// Evs.Debug(GetType(), "InternalAsyuiLoadApplicationConnections()",
-		//	$"Probject? {(probject == null ? "probject == null" : "probject != null")}, " +
-		//	$"_LoadingAsyncCardinal: {_LoadingAsyncCardinal}.");
-
-		if (!PersistentSettings.IncludeAppConnections)
-			return false;
-
-
-		// Sanity checks.
-
-		lock (_LockObject)
-		{
-			if (_InternalConnectionsTable == null)
-				return false;
-
-
-			if (_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.Cancelled() && probject != null)
-			{
-				// Evs.Debug(GetType(), "InternalAsyuiLoadApplicationConnections()", "Abort - is probject.");
-
-				Probjects.Add(probject);
-
-				return true;
-			}
-		}
-
-		if (_AsyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Inactive)
-		{
-			// We create an awaiter which blocks entry so this should never happen.
-			COMException exc = new($"Recursive call: Async Launch State: {_AsyncPayloadLauncherLaunchState}.", VSConstants.RPC_E_CANTCALLOUT_AGAIN);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		if (probject == null)
-			Diag.ThrowIfOnUIThread();
-
-
-		// Prep the launcher.
-		PrepAsyncPayloadLauncher();
-
-		// The following for brevity.
-		TaskCreationOptions creationOptions = TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent;
-		CancellationToken cancelToken = _AsyncPayloadLauncherToken;
-
-		// Fire and remember.
-
-		if (_AsyncPayloadLauncher != null && _AsyncPayloadLauncher.IsCompleted)
-			_AsyncPayloadLauncher?.Dispose();
-
-		// Run on new thread in thread pool.
-		// Fire and remember.
-
-		async Task<bool> payloadAsync() => await InternalLoadApplicationConnectionsAsync(cancelToken, probject);
-
-
-		// Evs.Debug(GetType(), "InternalAsyuiLoadApplicationConnections()", "Queueing InternalLoadApplicationConnectionsAsync.");
-
-		_AsyncPayloadLauncher = Task.Factory.StartNew(payloadAsync, default, creationOptions, TaskScheduler.Default).Unwrap();
-
-
-		// Evs.Debug(GetType(), "InternalAsyuiLoadApplicationConnections()", "Queued InternalLoadApplicationConnectionsAsync.");
-
-
-		return true;
 	}
 
 
@@ -730,7 +652,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -806,7 +728,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				if (probject == null && ApcManager.SolutionProjects == null)
 				{
 					COMException exc = new("DTE.Solution.Projects is not available", VSConstants.RPC_E_INVALID_DATA);
-					Diag.Dug(exc);
+					Diag.Ex(exc);
 					throw exc;
 				}
 
@@ -846,7 +768,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 		finally
@@ -872,6 +794,85 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// synchronously.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// [Async on UI thread]: Launches an async task to perform unsafe loading of
+	/// solution connections which require the DTE on the UI thread. To keep things
+	/// tight this method will throw an exception if it's already on the UI thread and
+	/// should not have been called.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected bool InternalLoadApplicationConnectionsAsyui(object probject)
+	{
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyui()",
+		//	$"Probject? {(probject == null ? "probject == null" : "probject != null")}, " +
+		//	$"_LoadingAsyncCardinal: {_LoadingAsyncCardinal}.");
+
+		if (!PersistentSettings.IncludeAppConnections)
+			return false;
+
+
+		// Sanity checks.
+
+		lock (_LockObject)
+		{
+			if (_InternalConnectionsTable == null)
+				return false;
+
+
+			if (_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.Cancelled() && probject != null)
+			{
+				// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyui()", "Abort - is probject.");
+
+				Probjects.Add(probject);
+
+				return true;
+			}
+		}
+
+		if (_AsyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Inactive)
+		{
+			// We create an awaiter which blocks entry so this should never happen.
+			COMException exc = new($"Recursive call: Async Launch State: {_AsyncPayloadLauncherLaunchState}.", VSConstants.RPC_E_CANTCALLOUT_AGAIN);
+			Diag.Ex(exc);
+			throw exc;
+		}
+
+		if (probject == null)
+			Diag.ThrowIfOnUIThread();
+
+
+		// Prep the launcher.
+		PrepAsyncPayloadLauncher();
+
+		// The following for brevity.
+		TaskCreationOptions creationOptions = TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent;
+		CancellationToken cancelToken = _AsyncPayloadLauncherToken;
+
+		// Fire and remember.
+
+		if (_AsyncPayloadLauncher != null && _AsyncPayloadLauncher.IsCompleted)
+			_AsyncPayloadLauncher?.Dispose();
+
+		// Run on new thread in thread pool.
+		// Fire and remember.
+
+		async Task<bool> payloadAsync() => await InternalLoadApplicationConnectionsAsync(cancelToken, probject);
+
+
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyui()", "Queueing InternalLoadApplicationConnectionsAsync.");
+
+		_AsyncPayloadLauncher = Task.Factory.StartNew(payloadAsync, default, creationOptions, TaskScheduler.Default).Unwrap();
+
+
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyui()", "Queued InternalLoadApplicationConnectionsAsync.");
+
+
+		return true;
+	}
+
+
+
 	protected bool InternalLoadApplicationConnectionsSync()
 	{
 		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsSync()");
@@ -891,7 +892,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			if (ApcManager.SolutionProjects == null)
 			{
 				COMException exc = new("DTE.Solution.Projects is not available", VSConstants.RPC_E_INVALID_DATA);
-				Diag.Dug(exc);
+				Diag.Ex(exc);
 				throw exc;
 			}
 
@@ -918,7 +919,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -981,7 +982,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			// with a fire and forget async task.
 
 			if (PersistentSettings.IncludeAppConnections && !ThreadHelper.CheckAccess())
-				InternalAsyuiLoadApplicationConnections(null);
+				InternalLoadApplicationConnectionsAsyui(null);
 		}
 		finally
 		{
@@ -1155,7 +1156,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw;
 				}
 			}
@@ -1197,7 +1198,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// If the connection name matches the datasetKey constructed from the datasetName, remove it.
 		if (!string.IsNullOrEmpty(datasetName) && !csa.ContainsKey(C_KeyExConnectionName)
-			&& connectionName == S_DatasetKeyFormat.FmtRes(csa.ServerName, datasetName))
+			&& connectionName == S_DatasetKeyFormat.Fmt(csa.ServerName, datasetName))
 		{
 			connectionName = null;
 		}
@@ -1308,7 +1309,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				// To keep uniformity of server names, the case of the first connection
 				// discovered for a server name is the case that will be used for all
 				// connections for that server.
-				serverName = InternalRegisterServer(datasource, port);
+				serverName = InternalGetRegisteredServer(datasource).Item1;
 
 				xmlDatabases = xmlServer.SelectNodes("database");
 
@@ -1352,7 +1353,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 					}
 
-					datasetName = Resources.RctUtilityDatasetNameFormat.FmtRes(datasetName);
+					datasetName = Resources.RctUtilityDatasetNameFormat.Fmt(datasetName);
 
 
 					// The datasetName may not be unique at this juncture and already registered.
@@ -1374,7 +1375,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -1454,7 +1455,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	protected bool InternalResolveDeadlocksAndEnsureLoaded(bool asynchronous)
 	{
-		// Evs.Trace(typeof(RctManager), "InternalResolveDeadlocksAndEnsureLoaded()");
+		// Evs.Trace(typeof(RctManager), nameof(InternalResolveDeadlocksAndEnsureLoaded));
 
 
 		if (!InternalLoading && !_InternalLoaded)
@@ -1611,7 +1612,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			if (waitTime >= 15000)
 			{
 				TimeoutException ex = new($"Timed out waiting for SyncPayload Task to complete. Timeout (ms): {waitTime}.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -1710,7 +1711,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return;
 		}
 
@@ -1761,7 +1762,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				foreach (XmlNode connectionNode in xmlNodes)
 				{
 					arr = connectionNode.Attributes["name"].Value.Split('.');
-					datasetName = Resources.RctProjectDatasetNameFormat.FmtRes(projectName, arr[^1]);
+					datasetName = Resources.RctProjectDatasetNameFormat.Fmt(projectName, arr[^1]);
 
 					csa = new(connectionNode.Attributes["connectionString"].Value);
 
@@ -1778,7 +1779,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					// To keep uniformity of server names, the case of the first connection
 					// discovered for a server name is the case that will be used for all
 					// connections for that server.
-					serverName = InternalRegisterServer(csa.DataSource, csa.Port);
+					serverName = csa.DataSource.ToUpperInvariant();
 
 					sortkey = serverName + datasetName + "\n" + (i++).ToString("D4");
 					sortlist.Add(sortkey);
@@ -1799,7 +1800,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			foreach (XmlNode connectionNode in xmlNodes)
 			{
 				name = connectionNode.Attributes["name"].Value;
-				datasetName = Resources.RctEdmDatasetFormat.FmtRes(projectName, name);
+				datasetName = Resources.RctEdmDatasetFormat.Fmt(projectName, name);
 
 				csb = new()
 				{
@@ -1839,7 +1840,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				// To keep uniformity of server names, the case of the first connection
 				// discovered for a server name is the case that will be used for all
 				// connections for that server.
-				serverName = InternalRegisterServer(csa.DataSource, csa.Port);
+				serverName = csa.DataSource.ToUpperInvariant();
 
 				sortkey = serverName + datasetName + "\n" + (i++).ToString("D4");
 				sortlist.Add(sortkey);
@@ -1894,13 +1895,52 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 		finally
 		{
 			EndLoadData();
 		}
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the registered unmangled , uniformly cased Server/DataSource name of the
+	/// provided name if it exists else returns the provided serverName.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected (string, int) InternalGetRegisteredServer(string serverName, int port = -1)
+	{
+		DataRow[] rows = null;
+		string search = serverName.ToLower();
+
+		lock (_LockObject)
+		{
+			if (port == -1)
+			{
+				rows = _InternalConnectionsTable.Select()
+					.Where(x => search.Equals(x["DataSourceLc"])
+						&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])
+						&& !Cmd.IsNullValue(x[C_KeyPort])).ToArray();
+			}
+			else
+			{
+				rows = _InternalConnectionsTable.Select()
+					.Where(x => search.Equals(x["DataSourceLc"])
+						&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])
+						&& !Cmd.IsNullValue(x[C_KeyPort])
+						&& port == Convert.ToInt32(x[C_KeyPort])).ToArray();
+			}
+		}
+
+		if (rows.Length == 0)
+			return (serverName, port);
+
+		return ((string)rows[0][C_KeyDataSource], Convert.ToInt32(rows[0][C_KeyPort]));
 
 	}
 
@@ -1937,6 +1977,18 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		if (rows.Length > 0)
 			return (string)rows[0]["DataSource"];
+
+		lock (_LockObject)
+		{
+			DataRow[] rows2 = _InternalConnectionsTable.Select()
+				.Where(x => search.Equals(x["DataSourceLc"])
+					&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])
+					&& !Cmd.IsNullValue(x[C_KeyPort])).ToArray();
+
+			if (rows2.Length > 0)
+				serverName = (string)rows2[0]["DataSource"];
+		}
+
 
 		BeginLoadData(true);
 
@@ -2051,14 +2103,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (string.IsNullOrWhiteSpace(proposedConnectionName) && string.IsNullOrWhiteSpace(proposedDatasetName))
 		{
 			ArgumentNullException ex = new ArgumentNullException("proposedConnectionName and proposedDatasetName may not both be null.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && !string.IsNullOrWhiteSpace(proposedDatasetName))
 		{
 			ArgumentNullException ex = new ArgumentNullException("proposedConnectionName and proposedDatasetName may not both contain values.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2183,7 +2235,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return false;
 		}
 
@@ -2365,7 +2417,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// The awaiter for unsafe loading of solution connections that use the DTE and were
-	/// launched by <see cref="InternalAsyuiLoadApplicationConnections"/> .
+	/// launched by <see cref="InternalLoadApplicationConnectionsAsyui"/> .
 	/// </summary>
 	/// <remarks>
 	/// This may take some time if the ide is starting up, followed in quick succession
@@ -2382,8 +2434,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			if (waitTime >= 15000)
 			{
-				TimeoutException ex = new($"Timed out waiting for InternalAsyuiLoadApplicationConnections() to complete. Timeout (ms): {waitTime}.");
-				Diag.Dug(ex);
+				TimeoutException ex = new($"Timed out waiting for InternalLoadApplicationConnectionsAsyui() to complete. Timeout (ms): {waitTime}.");
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -2433,7 +2485,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			if (waitTime >= 15000)
 			{
 				TimeoutException ex = new($"Timed out waiting for InternalLoadConnections() to complete. Timeout (ms): {waitTime}.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 

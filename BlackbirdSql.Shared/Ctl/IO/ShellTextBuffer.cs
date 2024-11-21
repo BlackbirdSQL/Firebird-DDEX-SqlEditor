@@ -59,7 +59,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			IVsUserData obj = vsTextStream as IVsUserData;
 			Guid riidKey = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
 
-			___(obj.GetData(ref riidKey, out var pvtData));
+			___(obj.GetData(ref riidKey, out object pvtData));
 
 			return (bool)pvtData;
 		}
@@ -149,7 +149,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 	{
 		get
 		{
-			___(vsTextStream.GetSize(out var piLength));
+			___(vsTextStream.GetSize(out int piLength));
 			return piLength;
 		}
 	}
@@ -333,7 +333,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		if (chars > 1073741822)
 		{
 			ArgumentOutOfRangeException ex = new("chars");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -420,7 +420,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		UndoEnabled = flag;
 	}
 
-	public int CreateStreamMarker(int markerType, int position, int length, int doubleClickLine, TextSpanEx textSpan)
+	public int CreateStreamMarker(int markerType, int position, int length, int doubleClickLine, TextSpanX textSpan)
 	{
 		return CreateStreamMarkerInternal(markerType, position, length, doubleClickLine, textSpan);
 	}
@@ -447,7 +447,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		markers.Clear();
 	}
 
-	private int CreateStreamMarkerInternal(int markerType, int position, int length, int doubleClickLine, TextSpanEx textSpan)
+	private int CreateStreamMarkerInternal(int markerType, int position, int length, int doubleClickLine, TextSpanX textSpan)
 	{
 		IVsTextStreamMarker[] array = new IVsTextStreamMarker[1];
 		Marker marker = new Marker(markers, markerType);
@@ -505,7 +505,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				Exception exo = new("Couldn't replace text", ex);
 				throw exo;
 			}
@@ -538,7 +538,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			IVsCodeWindow vsCodeWindow = (IVsCodeWindow)pvar;
 			if (vsCodeWindow != null)
 			{
-				___(vsCodeWindow.GetBuffer(out var ppBuffer));
+				___(vsCodeWindow.GetBuffer(out IVsTextLines ppBuffer));
 				IVsTextManager vsTextManager = (IVsTextManager)serviceProvider.GetService(VS.CLSID_TextManager);
 				if (lineNum > 0)
 				{
@@ -554,7 +554,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		}
 		catch (Exception e)
 		{
-			Diag.Dug(e);
+			Diag.Ex(e);
 		}
 	}
 

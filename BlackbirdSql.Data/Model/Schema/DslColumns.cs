@@ -480,28 +480,26 @@ END",
 		schema.Columns.Add("IDENTITY_CURRENT", typeof(long));
 
 		schema.AcceptChanges();
+		schema.BeginLoadData();
 
 		DataRow trig;
 
-		schema.BeginLoadData();
-
 		foreach (DataRow row in schema.Rows)
 		{
-			var blrType = Convert.ToInt32(row["FIELD_TYPE"], CultureInfo.InvariantCulture);
+			int blrType = Convert.ToInt32(row["FIELD_TYPE"], CultureInfo.InvariantCulture);
 
-			var subType = 0;
+			int subType = 0;
+
 			if (row["FIELD_SUB_TYPE"] != DBNull.Value)
-			{
 				subType = Convert.ToInt32(row["FIELD_SUB_TYPE"], CultureInfo.InvariantCulture);
-			}
 
-			var scale = 0;
+			int scale = 0;
+
 			if (row["NUMERIC_SCALE"] != DBNull.Value)
-			{
 				scale = Convert.ToInt32(row["NUMERIC_SCALE"], CultureInfo.InvariantCulture);
-			}
 
-			var dbType = DbTypeHelper.GetDbDataTypeFromBlrType(blrType, subType, scale);
+			EnDbDataType dbType = DbTypeHelper.GetDbDataTypeFromBlrType(blrType, subType, scale);
+
 			row["FIELD_DATA_TYPE"] = DbTypeHelper.GetDataTypeName(dbType).ToLowerInvariant();
 
 			if (dbType == EnDbDataType.Binary || dbType == EnDbDataType.Text)
@@ -534,11 +532,10 @@ END",
 
 			row["NUMERIC_SCALE"] = (-1) * scale;
 
-			var domainName = row["DOMAIN_NAME"].ToString();
+			string domainName = row["DOMAIN_NAME"].ToString();
+
 			if (domainName != null && domainName.StartsWith("RDB$"))
-			{
 				row["DOMAIN_NAME"] = null;
-			}
 
 			trig = null;
 
@@ -580,6 +577,8 @@ END",
 		// Remove not more needed columns
 		schema.Columns.Remove("FIELD_TYPE");
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
+
+		schema.AcceptChanges();
 
 		// Evs.Trace("Rows returned: " + schema.Rows.Count);
 

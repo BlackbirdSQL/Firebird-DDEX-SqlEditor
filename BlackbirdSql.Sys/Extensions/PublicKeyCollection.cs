@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using BlackbirdSql.Sys.Properties;
 
 
 
@@ -35,8 +36,8 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 	{
 		if (dictionary == null)
 		{
-			ArgumentNullException ex = new("Dictionary");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(dictionary));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -90,8 +91,8 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 			{
 				if (_Index == 0 || _Index == _Dictionary.RawCount + 1)
 				{
-					IndexOutOfRangeException ex = new("PublicKeyCollection::Current");
-					Diag.Dug(ex);
+					IndexOutOfRangeException ex = new(Resources.ExceptionIndexOutOfRange.Fmt(nameof(_Index), _Index));
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -262,22 +263,22 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 	{
 		if (array == null)
 		{
-			ArgumentNullException ex = new("CollectionEx::CopyTo array");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(array));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (index < 0 || index > array.Length)
 		{
-			ArgumentOutOfRangeException ex = new("CollectionEx::CopyTo index");
-			Diag.Dug(ex);
+			ArgumentOutOfRangeException ex = new(Resources.ExceptionCopyToIndexOutOfRange.Fmt(index, array.Length));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.Length - index < _Dictionary.Count)
 		{
-			ArgumentException ex = new("CollectionEx::CopyTo array to small");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToArrayTooSmall.Fmt(array.Length, _Dictionary.Count, index));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -294,15 +295,15 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 
 	void ICollection<TKey>.Add(TKey item)
 	{
-		NotSupportedException ex = new("Add(TKey item) Not Supported");
-		Diag.Dug(ex);
+		NotSupportedException ex = new("Add(TKey item)");
+		Diag.Ex(ex);
 		throw ex;
 	}
 
 	void ICollection<TKey>.Clear()
 	{
-		NotSupportedException ex = new("Clear() Not Supported");
-		Diag.Dug(ex);
+		NotSupportedException ex = new("Clear()");
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -313,8 +314,8 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 
 	bool ICollection<TKey>.Remove(TKey item)
 	{
-		NotSupportedException ex = new("Remove(TKey item) Not Supported");
-		Diag.Dug(ex);
+		NotSupportedException ex = new("Remove(TKey item)");
+		Diag.Ex(ex);
 		return false;
 	}
 
@@ -364,36 +365,36 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 	{
 		if (array == null)
 		{
-			ArgumentNullException ex = new("array");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(array));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.Rank != 1)
 		{
-			ArgumentException ex = new("RankMultiDimNotSupported");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToRankMultiDimNotSupported);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.GetLowerBound(0) != 0)
 		{
-			ArgumentException ex = new("NonZeroLowerBound");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToNonZeroLowerBound);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (index < 0 || index > array.Length)
 		{
-			ArgumentOutOfRangeException ex = new("ArgumentOutOfRange_NeedNonNegNum");
-			Diag.Dug(ex);
+			ArgumentOutOfRangeException ex = new(nameof(index), Resources.ExceptionCopyToIndexOutOfRange.Fmt(index, array.Length));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.Length - index < _Dictionary.Count)
 		{
-			ArgumentException ex = new("ArrayPlusOffTooSmall");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToArrayTooSmall.Fmt(array.Length, _Dictionary.Count, index));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -405,8 +406,8 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 
 		if (array is not object[] array3)
 		{
-			ArgumentException ex = new("Argument_InvalidArrayType");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToInvalidArrayType.Fmt(array.GetType()), nameof(array));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -424,8 +425,8 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 		}
 		catch (ArrayTypeMismatchException)
 		{
-			ArgumentException ex = new("Argument_InvalidArrayType");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToArrayTypeMismatch.Fmt(_Dictionary.Entries.GetType(), array.GetType()));
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

@@ -62,6 +62,18 @@
 			</Properties>
 		</MappedType>
 
+		<!-- User -->
+		<MappedType name="User" underlyingType="User">
+			<Selection restrictions="{Login}" />
+			<Identifier>
+				<Part name="Login" underlyingMember="USER_LOGIN" />
+			</Identifier>
+			<Properties>
+				<Property name="Login" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="USER_NAME" />
+			</Properties>
+		</MappedType>
+
 		<!-- Role -->
 		<MappedType name="Role" underlyingType="Role">
 			<Selection restrictions="{Name}" />

@@ -286,6 +286,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Database path: {0}..
+        /// </summary>
+        public static string LabelDatabasePath {
+            get {
+                return ResourceManager.GetString("LabelDatabasePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .NET Provider for Firebird (FirebirdClient).
         /// </summary>
         public static string Provider_DisplayName {

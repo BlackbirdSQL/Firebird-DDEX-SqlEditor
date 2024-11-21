@@ -10,6 +10,7 @@ using Microsoft.SqlServer.Management.SqlParser.Intellisense;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
@@ -280,7 +281,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 
 	public string GetIntendedBestMatch(string typedSoFar)
 	{
-		base.GetBestMatch(typedSoFar, out var index, out _);
+		base.GetBestMatch(typedSoFar, out int index, out _);
 
 		if (string.IsNullOrEmpty(typedSoFar))
 			return "";
@@ -301,7 +302,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 			while (num != -1)
 			{
 				string text2 = typedSoFar[..num];
-				base.GetBestMatch(text2, out var index2, out _);
+				base.GetBestMatch(text2, out int index2, out _);
 
 				if (index2 == -1)
 					break;
@@ -368,7 +369,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 				if (wpfTextView != null)
 				{
 					ITextBuffer textBuffer = wpfTextView.TextBuffer;
-					if (LanguageExtensionPackage.Instance.TextUndoHistoryRegistrySvc.TryGetHistory(textBuffer, out var history))
+					if (LanguageExtensionPackage.Instance.TextUndoHistoryRegistrySvc.TryGetHistory(textBuffer, out ITextUndoHistory history))
 					{
 						source.CurrentCommitUndoTransaction = history.CreateTransaction(Resources.IntellisenseCompletionUndoText);
 					}

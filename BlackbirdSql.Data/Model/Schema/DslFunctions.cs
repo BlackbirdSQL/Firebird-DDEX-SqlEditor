@@ -34,8 +34,8 @@ internal class DslFunctions : AbstractDslSchema
 	{
 		// Evs.Trace(GetType(), "DslFunctions.GetCommandText");
 
-		var sql = new StringBuilder();
-		var where = new StringBuilder();
+		StringBuilder sql = new();
+		StringBuilder where = new();
 
 		sql.AppendFormat(
 			@"SELECT
@@ -60,7 +60,7 @@ internal class DslFunctions : AbstractDslSchema
 
 		if (restrictions != null)
 		{
-			var index = 0;
+			int index = 0;
 
 			/* FUNCTION_CATALOG	*/
 			if (restrictions.Length >= 1 && restrictions[0] != null)

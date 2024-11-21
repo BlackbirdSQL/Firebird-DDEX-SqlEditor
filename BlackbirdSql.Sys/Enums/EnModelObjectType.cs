@@ -14,6 +14,8 @@ public enum EnModelObjectType
 	IndexColumn,
 	ForeignKeyColumn,
 	ForeignKey,
+	Role,
+	User,
 	View,
 	ViewColumn,
 	Trigger,
@@ -184,7 +186,7 @@ public static class EnModelObjectTypeExtensions
 		if (@this == null || @this.Object == null)
 			return EnModelObjectType.Unknown;
 
-		// Evs.Trace(typeof(EnModelObjectTypeExtensions), "ModelObjectType", "Node type for node '{0}' is {1}.", node.Name, node.Object.Type.Name.ToUpperInvariant());
+		// Evs.Trace(typeof(EnModelObjectType), nameof(ModelObjectType), $"Node type for node '{@this.Name}' is {@this.Object.Type.Name.ToUpperInvariant()}.");
 
 		return @this.Object.Type.Name.ToUpperInvariant() switch
 		{
@@ -204,6 +206,8 @@ public static class EnModelObjectTypeExtensions
 			"FOREIGNKEYCOLUMN" => EnModelObjectType.ForeignKeyColumn,
 			"TRIGGERCOLUMN" => EnModelObjectType.TriggerColumn,
 			"VIEWCOLUMN" => EnModelObjectType.ViewColumn,
+			"USER" => EnModelObjectType.User,
+			"ROLE" => EnModelObjectType.Role,
 			"STOREDPROCEDUREPARAMETER" => EnModelObjectType.StoredProcedureParameter,
 			"STOREDPROCEDURECOLUMN" => EnModelObjectType.StoredProcedureParameter,
 			"FUNCTIONPARAMETER" => EnModelObjectType.FunctionParameter,
@@ -251,7 +255,7 @@ public static class EnModelObjectTypeExtensions
 		if (@this.ModelObjectTypeIn(EnModelObjectType.Table, EnModelObjectType.Index,
 			EnModelObjectType.ForeignKey, EnModelObjectType.View,
 			EnModelObjectType.StoredProcedure, EnModelObjectType.Function,
-			EnModelObjectType.Database))
+			EnModelObjectType.Database, EnModelObjectType.User, EnModelObjectType.Role))
 		{
 			return @this.ModelObjectType();
 		}

@@ -42,7 +42,7 @@ public sealed class VsProvideEditorAutomationPageAttribute : ProvideOptionDialog
 
 	private static string AutomationTextEditorRegKey => "AutomationProperties\\TextEditor";
 
-	private string AutomationCategoryRegKey => string.Format(CultureInfo.InvariantCulture, "{0}\\{1}", AutomationTextEditorRegKey, CategoryName);
+	private string AutomationCategoryRegKey => "{0}\\{1}".Fmti(AutomationTextEditorRegKey, CategoryName);
 
 
 
@@ -50,7 +50,7 @@ public sealed class VsProvideEditorAutomationPageAttribute : ProvideOptionDialog
 
 	public override void Register(RegistrationContext context)
 	{
-		context.Log.WriteLine(string.Format(Resources.Culture, Resources.NotifyOptionPage, CategoryName, PageName));
+		context.Log.WriteLine(Resources.NotifyOptionPage.Fmt(CategoryName, PageName));
 		using Key key = context.CreateKey(AutomationCategoryRegKey);
 		key.SetValue(null, "#" + CategoryResourceId);
 		key.SetValue("Name", CategoryName);

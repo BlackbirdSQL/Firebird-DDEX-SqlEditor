@@ -340,7 +340,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		if (connectionName == null)
 			return null;
 
-		string[] split = S_DatasetKeyFormat.FmtRes(dataSource, "\n").Split('\n');
+		string[] split = S_DatasetKeyFormat.Fmt(dataSource, "\n").Split('\n');
 
 		if ((split[0] == "" || connectionName.StartsWith(split[0], StringComparison.InvariantCulture))
 			&& (split[1] == "" || connectionName.EndsWith(split[1], StringComparison.InvariantCulture))
@@ -448,7 +448,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 					: (proposedDatasetNamePrefix + $"_{i + 1}");
 			}
 
-			uniqueDatasetKey = S_DatasetKeyFormat.FmtRes(dataSource, uniqueDatasetName);
+			uniqueDatasetKey = S_DatasetKeyFormat.Fmt(dataSource, uniqueDatasetName);
 
 			if (!TryGetEntry(uniqueDatasetKey, out int index))
 				break;
@@ -492,7 +492,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		if (connectionString == null)
 		{
 			ArgumentNullException ex = new(nameof(connectionString));
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -551,7 +551,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			}
 			else
 			{
-				csa.DatasetKey = S_DatasetKeyFormat.FmtRes(csa.ServerName, csa.DisplayDatasetName);
+				csa.DatasetKey = S_DatasetKeyFormat.Fmt(csa.ServerName, csa.DisplayDatasetName);
 			}
 		}
 
@@ -667,7 +667,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			}
 			catch (Exception ex)
 			{
-				Diag.DebugDug(ex);
+				Diag.Ex(ex);
 				return null;
 			}
 
@@ -785,7 +785,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		lock (_LockObject)
 		{
 			if (_EventCardinal == 0)
-				Diag.Dug(new InvalidOperationException(Resources.ExEventsAlreadyEnabled));
+				Diag.Ex(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
 			else
 				_EventCardinal--;
 		}

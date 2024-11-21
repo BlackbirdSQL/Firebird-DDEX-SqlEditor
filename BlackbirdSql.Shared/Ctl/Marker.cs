@@ -26,7 +26,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		_markerType = mtype;
 	}
 
-	public Marker(IDictionary markers, int mtype, int doubleClickLine, TextSpanEx textSpan)
+	public Marker(IDictionary markers, int mtype, int doubleClickLine, TextSpanX textSpan)
 		: this(markers, mtype)
 	{
 		_doubleClickLine = doubleClickLine;
@@ -39,7 +39,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		SetMarkerTooltip(toolTip);
 	}
 
-	public Marker(IDictionary markers, int mtype, string toolTip, int doubleClickLine, TextSpanEx textSpan)
+	public Marker(IDictionary markers, int mtype, string toolTip, int doubleClickLine, TextSpanX textSpan)
 		: this(markers, mtype, toolTip)
 	{
 		_doubleClickLine = doubleClickLine;
@@ -62,7 +62,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 
 	private int _doubleClickLine;
 
-	private TextSpanEx _TextSpan;
+	private TextSpanX _TextSpan;
 
 	public IVsTextStreamMarker VsMarker
 	{
@@ -90,7 +90,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		}
 	}
 
-	public TextSpanEx TextSpan
+	public TextSpanX TextSpan
 	{
 		get
 		{
@@ -145,7 +145,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		}
 		catch (Exception e)
 		{
-			Diag.Dug(e);
+			Diag.Ex(e);
 		}
 	}
 
@@ -191,8 +191,8 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 			return 1;
 		}
 
-		COMException ex = new(Resources.ExCommandNotSupported, VSConstants.E_UNEXPECTED);
-		Diag.Dug(ex);
+		COMException ex = new(Resources.ExceptionCommandNotSupported, VSConstants.E_UNEXPECTED);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -209,17 +209,17 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 	{
 		if (_TextSpan == null)
 		{
-			COMException ex = new(Resources.ExViewHasToBeSetBeforeExecutingDoubleClickEvent, VSConstants.E_UNEXPECTED);
-			Diag.Dug(ex);
+			COMException ex = new(Resources.ExceptionViewHasToBeSetBeforeExecutingDoubleClickEvent, VSConstants.E_UNEXPECTED);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		int num;
 		if (_TextSpan.Offset > 0)
 		{
-			___(_TextSpan.VsTextView.GetNearestPosition(_TextSpan.AnchorLine, _TextSpan.AnchorCol, out var piPos, out _));
+			___(_TextSpan.VsTextView.GetNearestPosition(_TextSpan.AnchorLine, _TextSpan.AnchorCol, out int piPos, out _));
 			piPos += _TextSpan.Offset;
-			___(_TextSpan.VsTextView.GetLineAndColumn(piPos, out var piLine, out _));
+			___(_TextSpan.VsTextView.GetLineAndColumn(piPos, out int piLine, out _));
 			piLine += _doubleClickLine - 1;
 			num = piLine;
 		}
@@ -240,16 +240,16 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 
 		if (num > -1)
 		{
-			___(_TextSpan.VsTextView.GetBuffer(out var ppBuffer));
+			___(_TextSpan.VsTextView.GetBuffer(out IVsTextLines ppBuffer));
 			if (ppBuffer != null)
 			{
-				___(ppBuffer.GetLineCount(out var piLineCount));
+				___(ppBuffer.GetLineCount(out int piLineCount));
 				if (num > piLineCount)
 				{
 					return;
 				}
 
-				___(ppBuffer.GetLengthOfLine(num, out var piLength));
+				___(ppBuffer.GetLengthOfLine(num, out int piLength));
 				___(_TextSpan.VsTextView.SetSelection(num, 0, num, piLength));
 			}
 			else

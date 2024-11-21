@@ -952,7 +952,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables logging of tasks to the output window pane. This option should remain enabled..
+        ///   Looks up a localized string similar to Enables logging of tasks and diagnostics to the output window pane. This option should remain enabled..
         /// </summary>
         public static string OptionDescriptionGeneralEnableTaskLog {
             get {

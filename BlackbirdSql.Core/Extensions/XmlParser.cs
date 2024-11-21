@@ -60,7 +60,7 @@ public static class XmlParser
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return false;
 			}
 
@@ -87,7 +87,7 @@ public static class XmlParser
 				catch (Exception ex)
 				{
 					modified = false;
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					return false;
 				}
 
@@ -95,7 +95,7 @@ public static class XmlParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -134,7 +134,7 @@ public static class XmlParser
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return false;
 			}
 
@@ -163,7 +163,7 @@ public static class XmlParser
 				catch (Exception ex)
 				{
 					modified = false;
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					return false;
 				}
 
@@ -171,7 +171,7 @@ public static class XmlParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -296,7 +296,7 @@ public static class XmlParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -415,7 +415,7 @@ public static class XmlParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -444,7 +444,7 @@ public static class XmlParser
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw;
 			}
 
@@ -469,7 +469,7 @@ public static class XmlParser
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return false;
 			}
 
@@ -477,7 +477,7 @@ public static class XmlParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}
@@ -507,7 +507,7 @@ public static class XmlParser
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw;
 			}
 
@@ -533,7 +533,7 @@ public static class XmlParser
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return false;
 			}
 
@@ -570,13 +570,13 @@ public static class XmlParser
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw;
 			}
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 

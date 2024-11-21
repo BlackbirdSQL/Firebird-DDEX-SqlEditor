@@ -59,7 +59,7 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 	{
 		get
 		{
-			return string.Format(ControlsResources.Graphing_EdgeDisplayPropertiesLabel, EdgeOriginal.EstimatedRowCount, EdgeOriginal.RowSize, NodeFrom.ID, NodeTo.ID);
+			return ControlsResources.Graphing_EdgeDisplayPropertiesLabel.Fmt(EdgeOriginal.EstimatedRowCount, EdgeOriginal.RowSize, NodeFrom.ID, NodeTo.ID);
 		}
 		set
 		{

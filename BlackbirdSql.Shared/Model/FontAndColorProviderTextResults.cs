@@ -86,9 +86,9 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 		CategoryName = ControlsResources.FontAndColorCategoryResultsText;
 		Guid = VS.CLSID_FontAndColorsSqlResultsTextCategory;
 		FontDefault = new Font("Courier New", Control.DefaultFont.SizeInPoints);
-		FontAndColorUtilities.EncodeAutomaticColor(out var pcrResult);
-		FontAndColorUtilities.EncodeIndexedColor(COLORINDEX.CI_SYSPLAINTEXT_FG, out var pcrResult2);
-		FontAndColorUtilities.EncodeIndexedColor(COLORINDEX.CI_SYSPLAINTEXT_BK, out var pcrResult3);
+		FontAndColorUtilities.EncodeAutomaticColor(out uint pcrResult);
+		FontAndColorUtilities.EncodeIndexedColor(COLORINDEX.CI_SYSPLAINTEXT_FG, out uint pcrResult2);
+		FontAndColorUtilities.EncodeIndexedColor(COLORINDEX.CI_SYSPLAINTEXT_BK, out uint pcrResult3);
 		AllColorableItemInfo allColorableItemInfo = new AllColorableItemInfo
 		{
 			bNameValid = 1,
@@ -169,8 +169,8 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 			return;
 		}
 
-		___(FontAndColorUtilities.GetColorType(itemInfo[0].crBackground, out var pctType));
-		___(FontAndColorUtilities.GetColorType(itemInfo[0].crForeground, out var pctType2));
+		___(FontAndColorUtilities.GetColorType(itemInfo[0].crBackground, out int pctType));
+		___(FontAndColorUtilities.GetColorType(itemInfo[0].crForeground, out int pctType2));
 		if ((long)pctType == 3)
 		{
 			itemInfo[0].crBackground = DecodeSystemColor(itemInfo[0].crBackground);

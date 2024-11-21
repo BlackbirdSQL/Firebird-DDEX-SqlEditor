@@ -128,7 +128,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 	{
 		if (storageReader == null)
 		{
-			throw new Exception(Resources.ExReaderCannotBeNull);
+			throw new Exception(Resources.ExceptionReaderCannotBeNull);
 		}
 
 		_StorageReader = new StorageDataReader(storageReader);
@@ -137,7 +137,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 
 		if (_FileName.Length == 0)
 		{
-			throw new Exception(Resources.ExFailedToGetTempFileName);
+			throw new Exception(Resources.ExceptionFailedToGetTempFileName);
 		}
 		_FsWriter = new FileStreamWriter();
 		_FsWriter.Init(_FileName);
@@ -170,23 +170,23 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 		}
 		if (storageReader == null)
 		{
-			throw new ArgumentException(Resources.ExReaderCannotBeNull);
+			throw new ArgumentException(Resources.ExceptionReaderCannotBeNull);
 		}
 		if (storageReader.FieldCount != _ColumnInfoArray.Count)
 		{
-			throw new ArgumentException(Resources.ExColumnsCountDoesNotMatch);
+			throw new ArgumentException(Resources.ExceptionColumnsCountDoesNotMatch);
 		}
 		for (int i = 0; i < storageReader.FieldCount; i++)
 		{
 			IBsColumnInfo columnInfo = GetColumnInfo(i);
 			if (columnInfo.ColumnName != storageReader.GetName(i) || columnInfo.DataTypeName != storageReader.GetDataTypeName(i))
 			{
-				throw new ArgumentException(Resources.ExColumnsDoNotMatch);
+				throw new ArgumentException(Resources.ExceptionColumnsDoNotMatch);
 			}
 		}
 		if (_DataStorageEnabled)
 		{
-			throw new Exception(Resources.ExCannotAddReaderWhenStoringData);
+			throw new Exception(Resources.ExceptionCannotAddReaderWhenStoringData);
 		}
 		_StorageReader = new StorageDataReader(storageReader);
 
@@ -196,7 +196,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 	public async Task<bool> StartStoringDataAsync(CancellationToken cancelToken)
 	{
 		if (_DataStorageEnabled)
-			throw new Exception(Resources.ExAlreadyStoringData);
+			throw new Exception(Resources.ExceptionAlreadyStoringData);
 
 		_DataStorageEnabled = true;
 
@@ -241,12 +241,12 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 	{
 		if (_DataStorageEnabled)
 		{
-			throw new InvalidOperationException(Resources.ExAlreadyStoringData);
+			throw new InvalidOperationException(Resources.ExceptionAlreadyStoringData);
 		}
 
 		if (_StorageReader == null)
 		{
-			throw new InvalidOperationException(Resources.ExStorageNotInitialized);
+			throw new InvalidOperationException(Resources.ExceptionStorageNotInitialized);
 		}
 
 		_DataStorageEnabled = true;

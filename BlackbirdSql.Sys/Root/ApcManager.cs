@@ -4,10 +4,12 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Interfaces;
 using EnvDTE;
+using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
@@ -82,29 +84,47 @@ public static class ApcManager
 			if (IdeShutdownState || SolutionClosing)
 				return null;
 
-			Project result = null;
+			DTE2 dte2 = Dte as DTE2;
 
 			try
 			{
-				object activeSolutionProjects = Dte?.ActiveSolutionProjects;
+
+				object activeSolutionProjects = dte2?.ActiveSolutionProjects;
 
 				if (activeSolutionProjects != null && activeSolutionProjects is Array array && array.Length > 0)
 				{
 					object value = array.GetValue(0);
 
-					if (value != null && value is Project project)
+					if (value != null && value is Project project && !project.IsFolder())
 					{
-						result = project;
+						return project;
 					}
 				}
 			}
+			catch (COMException)
+			{
+			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return null;
 			}
 
-			return result;
+			if (dte2.ActiveDocument != null && dte2.ActiveDocument.ProjectItem != null
+				&& dte2.ActiveDocument.ProjectItem.ContainingProject != null)
+			{
+				return dte2.ActiveDocument.ProjectItem.ContainingProject;
+			}
+
+			if (dte2.Solution.Projects.Count == 0)
+				return null;
+
+			Project	project = dte2.Solution.Projects.Item(1);
+
+			if (project.IsFolder())
+				return null;
+
+			return project;
 		}
 	}
 
@@ -325,7 +345,7 @@ public static class ApcManager
 
 	public static void ShutdownDte()
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "ShutdownDte()");
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(ShutdownDte));
 
 		AbstrusePackageController.ShutdownDte();
 	}

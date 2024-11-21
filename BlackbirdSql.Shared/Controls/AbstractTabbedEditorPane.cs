@@ -543,7 +543,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 		finally
@@ -590,7 +590,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 	{
 		foreach (uint editableDocument in designerService.GetEditableDocuments())
 		{
-			if (TryGetDocDataFromCookie(editableDocument, out var docData))
+			if (TryGetDocDataFromCookie(editableDocument, out object docData))
 			{
 				bool isDirty = IsDirty(docData);
 				bool isPrimary = editableDocument == designerService.PrimaryCookie;
@@ -733,7 +733,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 		if (frame == null)
 			return null;
 
-		frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar);
+		frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out object pvar);
 
 		return pvar as string;
 	}
@@ -836,7 +836,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 		if (frame == null)
 			return 0u;
 
-		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocCookie, out var pvar));
+		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocCookie, out object pvar));
 
 		return (uint)(int)pvar;
 	}
@@ -1004,7 +1004,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 		if (docData is IVsPersistDocData vsPersistDocData)
 		{
-			___(vsPersistDocData.IsDocDataDirty(out var pfDirty));
+			___(vsPersistDocData.IsDocDataDirty(out int pfDirty));
 			return pfDirty != 0;
 		}
 
@@ -1209,7 +1209,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 		{
 			((IVsCodeWindow)this).GetPrimaryView(out IVsTextView ppView);
 
-			___((ppView as IVsProvideUserContext).GetUserContext(out var ppctx));
+			___((ppView as IVsProvideUserContext).GetUserContext(out IVsUserContext ppctx));
 
 			if (vsUserContext != null)
 				___(ppctx.AddSubcontext(vsUserContext, 500, out _));
@@ -1283,8 +1283,8 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 		try
 		{
-			if (__(RdtManager.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _,
-				out var _, out var _, out ppunkDocData)))
+			if (__(RdtManager.GetDocumentInfo(cookie, out _, out _, out _, out _,
+				out _, out _, out ppunkDocData)))
 			{
 				docData = Marshal.GetObjectForIUnknown(ppunkDocData);
 				result = true;
@@ -1584,7 +1584,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 		catch (Exception ex)
 		{
 			result = false;
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		args.Result &= result;

@@ -25,7 +25,7 @@ public static partial class ExtensionMembers
 		// Catalog, Schema and TableType are no real restrictions
 		// if (!name.EndsWith("Catalog") && !name.EndsWith("Schema") && name != "TableType")
 		// {
-		var pname = string.Format("@p{0}", index++);
+		string pname = "@p{0}".Fmt(index++);
 
 		FbParameter parm = @this.Parameters.Add(pname, FbDbType.VarChar, 255);
 		parm.Value = value;
@@ -44,10 +44,12 @@ public static partial class ExtensionMembers
 	{
 		string stringVersion = @this.ServerVersion;
 
-		var m = Regex.Match(stringVersion, @"\w{2}-\w(\d+\.\d+\.\d+\.\d+)");
+		Match m = Regex.Match(stringVersion, @"\w{2}-\w(\d+\.\d+\.\d+\.\d+)");
+
 		if (!m.Success)
 			return null;
-		return new Version(m.Groups[1].Value);
+
+		return new (m.Groups[1].Value);
 	}
 
 }

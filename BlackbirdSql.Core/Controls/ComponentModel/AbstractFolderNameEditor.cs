@@ -189,7 +189,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return DialogResult.Abort;
 			}
 			finally
@@ -208,7 +208,6 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 			return DialogResult.OK;
 
 		}
-
 
 
 
@@ -231,56 +230,69 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 				// http://www.codeproject.com/Questions/179097/SHBrowseForFolder-and-SHGetPathFromIDList
 				// to adjust the scroll position when the selection changes.
 				IntPtr hbrowse = Native.FindWindowEx(hwnd, IntPtr.Zero, "SHBrowseForFolder ShellNameSpace Control", null);
+
 				if (hbrowse == IntPtr.Zero)
 				{
-					COMException ex = new("Could not find window 'SHBrowseForFolder ShellNameSpace Control'.");
-					Diag.Dug(ex);
+					COMException ex = new(Resources.ExceptionSHBrowseForFolderNotFound);
+					Diag.Ex(ex);
 					return 0;
 				}
+
 				IntPtr htree = Native.FindWindowEx(hbrowse, IntPtr.Zero, "SysTreeView32", null);
+
 				if (htree == IntPtr.Zero)
 				{
-					COMException ex = new("Could not find window 'SysTreeView32'.");
-					Diag.Dug(ex);
+					COMException ex = new(Resources.ExceptionSysTreeView32NotFound);
+					Diag.Ex(ex);
 					return 0;
 				}
 
 				IntPtr htir = Native.SendMessage(new HandleRef(null, htree), Native.TVM_GETNEXTITEM, Native.TVGN_ROOT, IntPtr.Zero);
+
 				if (htir == IntPtr.Zero)
 				{
-					COMException ex = new("Get next tree item from root returned null.");
-					Diag.Dug(ex);
+					COMException ex = new(Resources.ExceptionNextTreeItemFromRootNull);
+					Diag.Ex(ex);
 					return 0;
 				}
+
 				IntPtr htis = Native.SendMessage(new HandleRef(null, htree), Native.TVM_GETNEXTITEM, Native.TVGN_CARET, IntPtr.Zero);
+
 				if (htis == IntPtr.Zero)
 				{
-					COMException ex = new("Get next tree item from caret returned null.");
-					Diag.Dug(ex);
+					COMException ex = new(Resources.ExceptionNextTreeItemFromCaretNull);
+					Diag.Ex(ex);
 					return 0;
 				}
+
 				IntPtr htic = Native.SendMessage(new HandleRef(null, htree), Native.TVM_GETNEXTITEM, Native.TVGN_CHILD, htir);
+
 				if (htic == IntPtr.Zero)
 				{
-					COMException ex = new("Get next tree child item returned null.");
-					Diag.Dug(ex);
+					COMException ex = new(Resources.ExceptionNextTreeChildItemNull);
+					Diag.Ex(ex);
 					return 0;
 				}
 
 
 				int count = 0;
 				int pos = 0;
-				for (; htic != IntPtr.Zero; htic = Native.SendMessage(new HandleRef(null, htree), Native.TVM_GETNEXTITEM, Native.TVGN_NEXTVISIBLE, htic), count++)
+
+				for (; htic != IntPtr.Zero;
+					htic = Native.SendMessage(new HandleRef(null, htree), Native.TVM_GETNEXTITEM, Native.TVGN_NEXTVISIBLE, htic),
+					count++)
 				{
 					if (htis == htic)
 						pos = count;
 				}
-				Native.SCROLLINFOEx si = new();
+
+				Native.SCROLLINFOX si = new();
 				si.cbSize = Marshal.SizeOf(si);
 				si.fMask = Native.SIF_POS | Native.SIF_RANGE | Native.SIF_PAGE;
 				Native.GetScrollInfo(htree, Native.SB_VERT, si);
 
 				si.nPage /= 2;
+
 				if ((pos > (int)(si.nMin + si.nPage)) && (pos <= (int)(si.nMax - si.nMin - si.nPage)))
 				{
 					si.nMax = si.nPos - si.nMin + (int)si.nPage;
@@ -288,6 +300,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 					for (; pos > si.nMax; pos--) Native.PostMessage(htree, Native.WM_VSCROLL, Native.SB_LINEDOWN, 0);
 				}
 			}
+
 			return 0;
 		}
 

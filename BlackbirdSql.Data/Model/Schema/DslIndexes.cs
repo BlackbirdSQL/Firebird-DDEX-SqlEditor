@@ -41,8 +41,8 @@ internal class DslIndexes : AbstractDslSchema
 
 		// BlackbirdSql added ForeignKey
 
-		var sql = new StringBuilder();
-		var where = new StringBuilder();
+		StringBuilder sql = new();
+		StringBuilder where = new();
 
 		sql.Append(
 			@"SELECT
@@ -78,7 +78,7 @@ internal class DslIndexes : AbstractDslSchema
 
 		if (restrictions != null)
 		{
-			var index = 0;
+			int index = 0;
 
 			/* TABLE_CATALOG */
 			if (restrictions.Length >= 1 && restrictions[0] != null)

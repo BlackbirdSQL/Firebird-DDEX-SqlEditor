@@ -279,6 +279,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
 	[GlobalizedDisplayName("PropertyDisplayDataset")]
 	[GlobalizedDescription("PropertyDescriptionDataset")]
+	[Browsable(false)]
 	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExDataset)]
 	public string Dataset
@@ -291,7 +292,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"Database path: {Database}.");
+				Diag.Ex(ex, Resources.LabelDatabasePath.Fmt(Database));
 				throw;
 			}
 		}
@@ -383,7 +384,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				retval = DisplayDatasetName;
 
 				if (!string.IsNullOrWhiteSpace(DataSource))
-					retval = S_DatasetKeyFormat.FmtRes(ServerName, retval);
+					retval = S_DatasetKeyFormat.Fmt(ServerName, retval);
 			}
 			return retval;
 		}
@@ -403,7 +404,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			if (_ServerNameValidated || string.IsNullOrWhiteSpace(retval))
 				return retval;
 
-			return RctManager.RegisterServer(retval, Port);
+			return RctManager.GetRegisteredServer(retval).Item1;
 		}
 	}
 
@@ -468,7 +469,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			string retval = DisplayName;
 
 			if (glyph != '\0')
-				retval = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+				retval = Resources.RctGlyphFormat.Fmt(glyph, retval);
 
 			return retval;
 		}
@@ -500,7 +501,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			string retval = DisplayName;
 
 			if (glyph != '\0')
-				retval = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+				retval = Resources.RctGlyphFormat.Fmt(glyph, retval);
 
 			return retval;
 		}
@@ -512,7 +513,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	/// The DatasetKey if ConnectionName is null else the DisplayName qualified with the server name.
 	/// </summary>
 	[Browsable(false)]
-	public string QualifiedName => string.IsNullOrEmpty(ConnectionName) ? DatasetKey : S_DatasetKeyFormat.FmtRes(ServerName, DisplayName);
+	public string QualifiedName => string.IsNullOrEmpty(ConnectionName) ? DatasetKey : S_DatasetKeyFormat.Fmt(ServerName, DisplayName);
 
 
 
@@ -535,7 +536,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 				glyph = RctManager.UtilityDatasetGlyph;
 
 			if (glyph != '\0')
-				retval = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+				retval = Resources.RctGlyphFormat.Fmt(glyph, retval);
 
 			return retval;
 		}
@@ -556,27 +557,27 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			{
 				case EnConnectionSource.Session:
 					glyph = RctManager.SessionTitleGlyph;
-					format = Resources.RctGlyphFormat2.FmtRes(glyph, retval);
+					format = Resources.RctGlyphFormat2.Fmt(glyph, retval);
 					break;
 				case EnConnectionSource.Application:
 					glyph = RctManager.ProjectTitleGlyph;
-					format = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+					format = Resources.RctGlyphFormat.Fmt(glyph, retval);
 					break;
 				case EnConnectionSource.EntityDataModel:
 				case EnConnectionSource.DataSource:
 					glyph = RctManager.EdmTitleGlyph;
-					format = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+					format = Resources.RctGlyphFormat.Fmt(glyph, retval);
 					break;
 				case EnConnectionSource.ExternalUtility:
 					glyph = RctManager.UtilityTitleGlyph;
-					format = Resources.RctGlyphFormat.FmtRes(glyph, retval);
+					format = Resources.RctGlyphFormat.Fmt(glyph, retval);
 					break;
 				default:
 					break;
 			}
 
 			if (glyph != '\0')
-				retval = format.FmtRes(glyph, retval);
+				retval = format.Fmt(glyph, retval);
 
 			return retval;
 		}
@@ -722,7 +723,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return false;
 		}
 
@@ -1026,7 +1027,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"Error retrieving node {node.Name} property: {pair.Key}");
+				Diag.Ex(ex, Resources.ExceptionRetrievingNodeProperty.Fmt(node.Name, pair.Key));
 				throw;
 			}
 		}
@@ -1037,8 +1038,8 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		ConnectionKey = connectionNode.GetConnectionKey();
 		if (ConnectionKey == null)
 		{
-			COMException ex = new($"ConnectionKey for explorer connection {node.ExplorerConnection.SafeName()} for node {node.Name} is null");
-			Diag.Dug(ex);
+			COMException ex = new(Resources.ExceptionConnectionKeyNull.Fmt(node.ExplorerConnection.SafeName(), node.Name));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1084,11 +1085,13 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 		if (ContainsKey(C_KeyDataSource) && !string.IsNullOrWhiteSpace(dataSource = DataSource)
 			&& !RctManager.ShutdownState)
 		{
-			_ServerNameValidated = true;
-			string server = RctManager.RegisterServer(dataSource, Port);
+			(string server, int port) = RctManager.GetRegisteredServer(dataSource);
 
-			if (!dataSource.Equals(server))
+			if (port != -1)
+			{
+				_ServerNameValidated = true;
 				DataSource = server;
+			}
 		}
 	}
 

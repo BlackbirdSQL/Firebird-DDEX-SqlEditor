@@ -395,7 +395,7 @@ public sealed class StatusBarManager : IDisposable
 
 		if (serverVersion != null)
 		{
-			text = ControlsResources.StatusBar_ServerNameAndBuild.FmtRes(text,
+			text = ControlsResources.StatusBar_ServerNameAndBuild.Fmt(text,
 				serverVersion.Major, serverVersion.Minor);
 		}
 
@@ -414,7 +414,7 @@ public sealed class StatusBarManager : IDisposable
 		}
 		else
 		{
-			((ToolStripItem)(object)_ExecutionTimePanel).Text = (QryMgr.QueryExecutionEndTime.Value - QryMgr.QueryExecutionStartTime.Value).FmtStatus();
+			((ToolStripItem)(object)_ExecutionTimePanel).Text = (QryMgr.QueryExecutionEndTime.Value - QryMgr.QueryExecutionStartTime.Value).FmtRound();
 			((ToolStripItem)(object)_CompletedTimePanel).Text = QryMgr.QueryExecutionEndTime.Value.ToString(CultureInfo.CurrentCulture);
 		}
 
@@ -518,7 +518,7 @@ public sealed class StatusBarManager : IDisposable
 			case EnState.ExecutionOk:
 				_GeneralPanel.SetOneImage(S_ExecSuccessBitmap);
 				toolStripItem.Text =
-					ControlsResources.StatusBar_QueryCompletedSuccessfully.FmtRes(!QryMgr.QueryExecutionEndTime.HasValue ? "" : QryMgr.QueryExecutionEndTime);
+					ControlsResources.StatusBar_QueryCompletedSuccessfully.Fmt(!QryMgr.QueryExecutionEndTime.HasValue ? "" : QryMgr.QueryExecutionEndTime);
 				ResetDatasetName();
 				break;
 			case EnState.ExecutionTimedOut:
@@ -580,7 +580,7 @@ public sealed class StatusBarManager : IDisposable
 
 	private void SetRowsAffected(long rows)
 	{
-		string text = string.Format(CultureInfo.CurrentCulture, ControlsResources.StatusBar_NumberOfReturnedRows, rows);
+		string text = ControlsResources.StatusBar_NumberOfReturnedRows.Fmt(rows);
 		if (text != ((ToolStripItem)(object)_NumOfRowsPanel).Text)
 		{
 			((ToolStripItem)(object)_NumOfRowsPanel).Text = text;
@@ -670,7 +670,7 @@ public sealed class StatusBarManager : IDisposable
 	{
 		void update()
 		{
-			((ToolStripItem)(object)_ExecutionTimePanel).Text = (a.SignalTime - ExecutionStartTime).FmtStatus();
+			((ToolStripItem)(object)_ExecutionTimePanel).Text = (a.SignalTime - ExecutionStartTime).FmtRound();
 		}
 
 		EnqueUpdateAction(update);
@@ -713,7 +713,7 @@ public sealed class StatusBarManager : IDisposable
 					_ElapsedExecutionTimer.Enabled = false;
 				}
 
-				((ToolStripItem)(object)_ExecutionTimePanel).Text = (DateTime.Now - ExecutionStartTime).FmtStatus();
+				((ToolStripItem)(object)_ExecutionTimePanel).Text = (DateTime.Now - ExecutionStartTime).FmtRound();
 			}
 		}
 
@@ -731,7 +731,7 @@ public sealed class StatusBarManager : IDisposable
 			_StatusStrip.Show();
 			if (PersistentSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
 			{
-				((ToolStripItem)(object)_ExecutionTimePanel).Text = (DateTime.Now - DateTime.Now).FmtStatus();
+				((ToolStripItem)(object)_ExecutionTimePanel).Text = (DateTime.Now - DateTime.Now).FmtRound();
 				ExecutionStartTime = DateTime.Now;
 				if (_ElapsedExecutionTimer == null)
 				{

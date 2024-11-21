@@ -231,9 +231,9 @@ public abstract class AbstractCommand : IBsCommand
 		}
 
 
-		string message = Resources.ExTransactionsActive;
+		string message = Resources.ExceptionTransactionsActive;
 
-		MessageCtl.ShowEx(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+		MessageCtl.ShowX(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
 
 		return false;
 	}

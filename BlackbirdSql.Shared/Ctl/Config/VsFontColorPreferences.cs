@@ -62,7 +62,7 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 
 	~VsFontColorPreferences()
 	{
-		Diag.Dug(new ApplicationException("VsFontColorPreferences must be explictly disposed"));
+		Diag.Ex(new ApplicationException("VsFontColorPreferences must be explictly disposed"));
 		Dispose(disposing: false);
 	}
 

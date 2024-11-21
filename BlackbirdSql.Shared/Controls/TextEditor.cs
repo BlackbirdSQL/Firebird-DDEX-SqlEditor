@@ -69,7 +69,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		get
 		{
-			TextView.GetCaretPos(out var piLine, out var piColumn);
+			TextView.GetCaretPos(out int piLine, out int piColumn);
 			return LineColToOffset(piLine, piColumn);
 		}
 	}
@@ -78,7 +78,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		get
 		{
-			if (!__(_CodeWindow.GetLastActiveView(out var ppView)))
+			if (!__(_CodeWindow.GetLastActiveView(out IVsTextView ppView)))
 			{
 				___(_CodeWindow.GetPrimaryView(out ppView));
 			}
@@ -153,7 +153,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 			}
 			if (tabbedEditorServices.GetService(typeof(SVsWindowFrame)) is IVsWindowFrame vsWindowFrame)
 			{
-				vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out var pvar);
+				vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_Hierarchy, out object pvar);
 				_Hierarchy = (IVsHierarchy)pvar;
 				_ = _Hierarchy; // Suppression
 			}
@@ -208,8 +208,8 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		if (!IsActive)
 		{
 			IVsTextView textView = TextView;
-			OffsetToLineCol(start, out var line, out var col);
-			OffsetToLineCol(start + length, out var line2, out var col2);
+			OffsetToLineCol(start, out int line, out int col);
+			OffsetToLineCol(start + length, out int line2, out int col2);
 			textView.PositionCaretForEditing(line, 0);
 			textView.EnsureSpanVisible(new TextSpan
 			{
@@ -224,7 +224,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	private int LineColToOffset(int line, int col)
 	{
-		Stream.GetPositionOfLineIndex(line, col, out var piPosition);
+		Stream.GetPositionOfLineIndex(line, col, out int piPosition);
 		return piPosition;
 	}
 
@@ -401,7 +401,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		// Evs.Trace(GetType(), nameof(OnCloseView));
 
-		if (_ConnectedViews != null && _ConnectedViews.TryGetValue(pView, out var value))
+		if (_ConnectedViews != null && _ConnectedViews.TryGetValue(pView, out ConnectionPointCookie value))
 		{
 			value.Dispose();
 			_ConnectedViews.Remove(pView);

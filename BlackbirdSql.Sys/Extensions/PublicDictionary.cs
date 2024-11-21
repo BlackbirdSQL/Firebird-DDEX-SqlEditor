@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Threading;
+using BlackbirdSql.Sys.Properties;
 
 
 
@@ -84,8 +85,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (capacity < 0)
 		{
-			ArgumentOutOfRangeException ex = new("capacity");
-			Diag.Dug(ex);
+			ArgumentOutOfRangeException ex = new(nameof(capacity));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -145,8 +146,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (dictionary == null)
 		{
-			ArgumentNullException ex = new("dictionary");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(dictionary));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -304,7 +305,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 				return _Entries[num].Value;
 
 			KeyNotFoundException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		set
@@ -419,15 +420,15 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 		{
 			if (key == null)
 			{
-				ArgumentNullException ex = new("key");
-				Diag.Dug(ex);
+				ArgumentNullException ex = new(nameof(key));
+				Diag.Ex(ex);
 				throw ex;
 			}
 
 			if (value == null && default(TValue) != null)
 			{
-				ArgumentNullException ex = new("value");
-				Diag.Dug(ex);
+				ArgumentNullException ex = new(nameof(value));
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -440,15 +441,15 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 				}
 				catch (InvalidCastException)
 				{
-					ArgumentException ex = new($"Arg_WrongType: value - {typeof(TValue)}");
-					Diag.Dug(ex);
+					ArgumentException ex = new(Resources.ExceptionInvalidValueType.Fmt(typeof(TValue)));
+					Diag.Ex(ex);
 					throw ex;
 				}
 			}
 			catch (InvalidCastException)
 			{
-				ArgumentException ex = new($"Arg_WrongType: key - {typeof(TKey)}");
-				Diag.Dug(ex);
+				ArgumentException ex = new(Resources.ExceptionInvalidKeyType.Fmt(typeof(TKey)));
+				Diag.Ex(ex);
 				throw ex;
 			}
 		}
@@ -615,22 +616,22 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (array == null)
 		{
-			ArgumentNullException ex = new("array");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(array));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (index < 0 || index > array.Length)
 		{
-			ArgumentOutOfRangeException ex = new("index cannot be negative");
-			Diag.Dug(ex);
+			ArgumentOutOfRangeException ex = new(Resources.ExceptionCopyToIndexOutOfRange.Fmt(index, array.Length));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.Length - index < Count)
 		{
-			ArgumentException ex = new("Arg_ArrayPlusOffTooSmall");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToArrayTooSmall.Fmt(array.Length, Count, index));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -684,8 +685,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (info == null)
 		{
-			ArgumentNullException ex = new("info");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(info));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -704,8 +705,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (key == null)
 		{
-			ArgumentNullException ex = new("key");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(key));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -741,8 +742,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (key == null)
 		{
-			ArgumentNullException ex = new("key");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(key));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -760,8 +761,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 			{
 				if (add)
 				{
-					ArgumentException ex = new("Argument_AddingDuplicate");
-					Diag.Dug(ex);
+					ArgumentException ex = new(Resources.ExceptionDuplicateKey.Fmt(key));
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -822,7 +823,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	//     current System.Collections.Generic.Dictionary`2 instance is invalid.
 	public virtual void OnDeserialization(object sender)
 	{
-		HashHelpersEx.SerializationInfoTable.TryGetValue(this, out var value);
+		HashHelpersEx.SerializationInfoTable.TryGetValue(this, out SerializationInfo value);
 		if (value == null)
 		{
 			return;
@@ -844,8 +845,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 			KeyValuePair<TKey, TValue>[] array = (KeyValuePair<TKey, TValue>[])value.GetValue(C_KeyValuePairsName, typeof(KeyValuePair<TKey, TValue>[]));
 			if (array == null)
 			{
-				SerializationException ex = new("Serialization_MissingKeys");
-				Diag.Dug(ex);
+				SerializationException ex = new(Resources.ExceptionSerializationMissingKeys);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -853,8 +854,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 			{
 				if (array[j].Key == null)
 				{
-					SerializationException ex = new("Serialization_NullKey");
-					Diag.Dug(ex);
+					SerializationException ex = new(Resources.ExceptionSerializationNullKey);
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -930,8 +931,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (key == null)
 		{
-			ArgumentNullException ex = new("key");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(key));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1096,36 +1097,36 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (array == null)
 		{
-			ArgumentNullException ex = new("array");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(array));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.Rank != 1)
 		{
-			ArgumentException ex = new("Arg_RankMultiDimNotSupported");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToRankMultiDimNotSupported);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.GetLowerBound(0) != 0)
 		{
-			ArgumentException ex = new("Arg_NonZeroLowerBound");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToNonZeroLowerBound);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (index < 0 || index > array.Length)
 		{
-			ArgumentOutOfRangeException ex = new("index cannot be negative");
-			Diag.Dug(ex);
+			ArgumentOutOfRangeException ex = new(nameof(index), Resources.ExceptionCopyToIndexOutOfRange.Fmt(index, array.Length));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.Length - index < Count)
 		{
-			ArgumentException ex = new("Arg_ArrayPlusOffTooSmall");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToArrayTooSmall.Fmt(array.Length, Count, index));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1154,8 +1155,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 
 		if (array is not object[] array5)
 		{
-			ArgumentException ex = new("Argument_InvalidArrayType");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToInvalidArrayType.Fmt(array.GetType()), nameof(array));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1173,8 +1174,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 		}
 		catch (ArrayTypeMismatchException)
 		{
-			ArgumentException ex = new("Argument_InvalidArrayType");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToArrayTypeMismatch.Fmt(_Entries.GetType(), array.GetType()));
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -1194,8 +1195,8 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (key == null)
 		{
-			ArgumentNullException ex = new("key");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(key));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1225,15 +1226,15 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	{
 		if (key == null)
 		{
-			ArgumentNullException ex = new("key");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(key));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (value == null && default(TValue) != null)
 		{
-			ArgumentNullException ex = new("value");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(value));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1246,15 +1247,15 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 			}
 			catch (InvalidCastException)
 			{
-				ArgumentException ex = new($"Arg_WrongType: value - {typeof(TValue)}");
-				Diag.Dug(ex);
+				ArgumentException ex = new(Resources.ExceptionInvalidCastValue.Fmt(value.GetType(), typeof(TValue)));
+				Diag.Ex(ex);
 				throw ex;
 			}
 		}
 		catch (InvalidCastException)
 		{
-			ArgumentException ex = new($"Arg_WrongType: key - {typeof(TKey)}");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionInvalidCastKey.Fmt(key.GetType(), typeof(TKey)));
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

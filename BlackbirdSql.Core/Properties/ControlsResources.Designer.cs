@@ -262,31 +262,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new connection.
-        ///The Proposed Database Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
-        ///
-        ///Continue?.
-        /// </summary>
-        internal static string RctManager_TextNewConnectionDatabaseNameConflict {
-            get {
-                return ResourceManager.GetString("RctManager_TextNewConnectionDatabaseNameConflict", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new connection.
-        ///The Proposed Connection Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
-        ///
-        ///Continue?.
-        /// </summary>
-        internal static string RctManager_TextNewConnectionNameConflict {
-            get {
-                return ResourceManager.GetString("RctManager_TextNewConnectionNameConflict", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A new Server Explorer Connection will be created. Continue?.
+        ///   Looks up a localized string similar to A new Server Explorer Connection will be required. Continue?.
         /// </summary>
         internal static string RctManager_TextNewSEConnection {
             get {
@@ -295,7 +271,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new Server Explorer connection.
+        ///   Looks up a localized string similar to The settings provided requires a new Server Explorer connection.
         ///The Proposed Database Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
         ///
         ///Continue?.
@@ -307,7 +283,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new Server Explorer connection.
+        ///   Looks up a localized string similar to The settings provided requires a new Server Explorer connection.
         ///The Proposed Connection Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
         ///
         ///Continue?.
@@ -352,11 +328,35 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will add a new Server Explorer connection. Continue?.
+        ///   Looks up a localized string similar to The settings provided will create a new Server Explorer connection. Continue?.
         /// </summary>
         internal static string RctManager_TextNewSessionSEConnection {
             get {
                 return ResourceManager.GetString("RctManager_TextNewSessionSEConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new Server Explorer connection.
+        ///The Proposed Database Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
+        ///
+        ///Continue?.
+        /// </summary>
+        internal static string RctManager_TextNewSessionSEConnectionDatabaseNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewSessionSEConnectionDatabaseNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new Server Explorer connection.
+        ///The Proposed Connection Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
+        ///
+        ///Continue?.
+        /// </summary>
+        internal static string RctManager_TextNewSessionSEConnectionNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewSessionSEConnectionNameConflict", resourceCulture);
             }
         }
         

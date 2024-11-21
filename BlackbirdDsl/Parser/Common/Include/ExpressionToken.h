@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "StringCell.h"
-#include "DslOptions.h"
+#include "EnParserOptions.h"
 #include "GramConsts.h"
 #include "RegexLexer.h"
 #include "AbstractParser.h"

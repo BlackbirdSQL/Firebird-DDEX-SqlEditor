@@ -68,7 +68,6 @@ public interface IBsNativeDatabaseEngine
 
 
 	int AddCommandParameter_(DbCommand @this, string name, int index, object value);
-	void AsyncEnsureLinkageLoading_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1);
 	DbConnection CastToNativeConnection_(object connection);
 	object CreateDatabaseInfoObject_(DbConnection @this);
 	IBsNativeDbBatchParser CreateDbBatchParser_(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script);
@@ -76,6 +75,7 @@ public interface IBsNativeDatabaseEngine
 	DbCommand CreateDbCommand_(string cmdText = null);
 	IBsNativeDbStatementWrapper CreateDbStatementWrapper_(IBsNativeDbBatchParser owner, object statement, int index);
 	bool DisposeLinkageParserInstance_(IVsDataExplorerConnection root, bool disposing);
+	void EnsureLinkageLoadingAsyin_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1);
 	string GetConnectionDataSource_(IDbConnection @this);
 	string GetConnectionDataSourceVersion_(IDbConnection @this);
 	int GetConnectionPacketSize_(DbConnection @this);

@@ -17,7 +17,7 @@ void OffsetCalculator::PrintOffset(SysStr^ text, SysStr^ sql, int charPos, SysSt
 	SysStr^ holdem = sql->Substring(0, charPos) + "^" + sql->Substring(charPos);
 
 
-	Diag::Dug(true, text + "  Key: " + key + "  Parsed: " + parsed + "  Back: " + backtracking + " "
+	Diag::Ex(true, text + "  Key: " + key + "  Parsed: " + parsed + "  Back: " + backtracking + " "
 		+ holdem);
 #else // _DEBUG
 	return;
@@ -258,7 +258,7 @@ void OffsetCalculator::LookForBaseExpression(SysStr^ sql, int* charPos, StringCe
 			if (offset == -1)
 			{
 				KeyNotFoundException^ ex = gcnew KeyNotFoundException(pair.Value + ":" + subject);
-				Diag::Dug(ex);
+				Diag::Ex(ex);
 				throw ex;
 			}
 

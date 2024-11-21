@@ -143,234 +143,234 @@ namespace BlackbirdSql.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid calling sequence: already sorting data.
         /// </summary>
-        internal static string ExAlreadySortingData {
+        internal static string ExceptionAlreadySortingData {
             get {
-                return ResourceManager.GetString("ExAlreadySortingData", resourceCulture);
+                return ResourceManager.GetString("ExceptionAlreadySortingData", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid calling sequence: already storing data..
         /// </summary>
-        internal static string ExAlreadyStoringData {
+        internal static string ExceptionAlreadyStoringData {
             get {
-                return ResourceManager.GetString("ExAlreadyStoringData", resourceCulture);
+                return ResourceManager.GetString("ExceptionAlreadyStoringData", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; may only be set to false..
         /// </summary>
-        internal static string ExArgumentOnlyFalse {
+        internal static string ExceptionArgumentOnlyFalse {
             get {
-                return ResourceManager.GetString("ExArgumentOnlyFalse", resourceCulture);
+                return ResourceManager.GetString("ExceptionArgumentOnlyFalse", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid argument: buffer size should be a positive number..
         /// </summary>
-        internal static string ExBufferSizeShouldBePositive {
+        internal static string ExceptionBufferSizeShouldBePositive {
             get {
-                return ResourceManager.GetString("ExBufferSizeShouldBePositive", resourceCulture);
+                return ResourceManager.GetString("ExceptionBufferSizeShouldBePositive", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to A new reader cannot be added while storage is storing data..
         /// </summary>
-        internal static string ExCannotAddReaderWhenStoringData {
+        internal static string ExceptionCannotAddReaderWhenStoringData {
             get {
-                return ResourceManager.GetString("ExCannotAddReaderWhenStoringData", resourceCulture);
+                return ResourceManager.GetString("ExceptionCannotAddReaderWhenStoringData", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Failed to create temporary XML file..
         /// </summary>
-        internal static string ExCannotCreateTempFile {
+        internal static string ExceptionCannotCreateTempFile {
             get {
-                return ResourceManager.GetString("ExCannotCreateTempFile", resourceCulture);
+                return ResourceManager.GetString("ExceptionCannotCreateTempFile", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Connection Selection Error.
         /// </summary>
-        internal static string ExChangeConnectionCaption {
+        internal static string ExceptionChangeConnectionCaption {
             get {
-                return ResourceManager.GetString("ExChangeConnectionCaption", resourceCulture);
+                return ResourceManager.GetString("ExceptionChangeConnectionCaption", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Number of columns in the new reader does not match storage..
         /// </summary>
-        internal static string ExColumnsCountDoesNotMatch {
+        internal static string ExceptionColumnsCountDoesNotMatch {
             get {
-                return ResourceManager.GetString("ExColumnsCountDoesNotMatch", resourceCulture);
+                return ResourceManager.GetString("ExceptionColumnsCountDoesNotMatch", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Column definitions do not match those in the storage..
         /// </summary>
-        internal static string ExColumnsDoNotMatch {
+        internal static string ExceptionColumnsDoNotMatch {
             get {
-                return ResourceManager.GetString("ExColumnsDoNotMatch", resourceCulture);
+                return ResourceManager.GetString("ExceptionColumnsDoNotMatch", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to This command is not supported..
         /// </summary>
-        internal static string ExCommandNotSupported {
+        internal static string ExceptionCommandNotSupported {
             get {
-                return ResourceManager.GetString("ExCommandNotSupported", resourceCulture);
+                return ResourceManager.GetString("ExceptionCommandNotSupported", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Connection failed. ConnectionString: {0}. Error message: {1}..
         /// </summary>
-        internal static string ExDatabaseConnection {
+        internal static string ExceptionDatabaseConnection {
             get {
-                return ResourceManager.GetString("ExDatabaseConnection", resourceCulture);
+                return ResourceManager.GetString("ExceptionDatabaseConnection", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Database not accessible..
         /// </summary>
-        internal static string ExDatabaseNotAccessible {
+        internal static string ExceptionDatabaseNotAccessible {
             get {
-                return ResourceManager.GetString("ExDatabaseNotAccessible", resourceCulture);
+                return ResourceManager.GetString("ExceptionDatabaseNotAccessible", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Database not accessible: {0}..
         /// </summary>
-        internal static string ExDatabaseNotAccessibleEx {
+        internal static string ExceptionDatabaseNotAccessibleEx {
             get {
-                return ResourceManager.GetString("ExDatabaseNotAccessibleEx", resourceCulture);
+                return ResourceManager.GetString("ExceptionDatabaseNotAccessibleEx", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Disable TTS Error.
         /// </summary>
-        internal static string ExDisableTtsCaption {
+        internal static string ExceptionDisableTtsCaption {
             get {
-                return ResourceManager.GetString("ExDisableTtsCaption", resourceCulture);
+                return ResourceManager.GetString("ExceptionDisableTtsCaption", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Disconnect Error.
         /// </summary>
-        internal static string ExDisconnectCaption {
+        internal static string ExceptionDisconnectCaption {
             get {
-                return ResourceManager.GetString("ExDisconnectCaption", resourceCulture);
+                return ResourceManager.GetString("ExceptionDisconnectCaption", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Events already enabled..
         /// </summary>
-        internal static string ExEventsAlreadyEnabled {
+        internal static string ExceptionEventsAlreadyEnabled {
             get {
-                return ResourceManager.GetString("ExEventsAlreadyEnabled", resourceCulture);
+                return ResourceManager.GetString("ExceptionEventsAlreadyEnabled", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Previous execution is not yet complete..
         /// </summary>
-        internal static string ExExecutionNotCompleted {
+        internal static string ExceptionExecutionNotCompleted {
             get {
-                return ResourceManager.GetString("ExExecutionNotCompleted", resourceCulture);
+                return ResourceManager.GetString("ExceptionExecutionNotCompleted", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Execution Plan Error.
         /// </summary>
-        internal static string ExExecutionPlanCaption {
+        internal static string ExceptionExecutionPlanCaption {
             get {
-                return ResourceManager.GetString("ExExecutionPlanCaption", resourceCulture);
+                return ResourceManager.GetString("ExceptionExecutionPlanCaption", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Failed to get temporary file name..
         /// </summary>
-        internal static string ExFailedToGetTempFileName {
+        internal static string ExceptionFailedToGetTempFileName {
             get {
-                return ResourceManager.GetString("ExFailedToGetTempFileName", resourceCulture);
+                return ResourceManager.GetString("ExceptionFailedToGetTempFileName", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid calling sequence: file stream already initialized..
         /// </summary>
-        internal static string ExFileStreamAlreadyInitialized {
+        internal static string ExceptionFileStreamAlreadyInitialized {
             get {
-                return ResourceManager.GetString("ExFileStreamAlreadyInitialized", resourceCulture);
+                return ResourceManager.GetString("ExceptionFileStreamAlreadyInitialized", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid calling sequence: file stream must be initialized first..
         /// </summary>
-        internal static string ExFileStreamNeedsToBeInitializedFirst {
+        internal static string ExceptionFileStreamNeedsToBeInitializedFirst {
             get {
-                return ResourceManager.GetString("ExFileStreamNeedsToBeInitializedFirst", resourceCulture);
+                return ResourceManager.GetString("ExceptionFileStreamNeedsToBeInitializedFirst", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The supplied group number is incorrect..
         /// </summary>
-        internal static string ExIncorrectGroupNumber {
+        internal static string ExceptionIncorrectGroupNumber {
             get {
-                return ResourceManager.GetString("ExIncorrectGroupNumber", resourceCulture);
+                return ResourceManager.GetString("ExceptionIncorrectGroupNumber", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Row number is incorrect..
         /// </summary>
-        internal static string ExIncorrectRowNumber {
+        internal static string ExceptionIncorrectRowNumber {
             get {
-                return ResourceManager.GetString("ExIncorrectRowNumber", resourceCulture);
+                return ResourceManager.GetString("ExceptionIncorrectRowNumber", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Argument is not valid..
         /// </summary>
-        internal static string ExInvalidArgument {
+        internal static string ExceptionInvalidArgument {
             get {
-                return ResourceManager.GetString("ExInvalidArgument", resourceCulture);
+                return ResourceManager.GetString("ExceptionInvalidArgument", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unsupported command object.  Use SqlCommand or ReliableSqlCommand..
         /// </summary>
-        internal static string ExInvalidCommandType {
+        internal static string ExceptionInvalidCommandType {
             get {
-                return ResourceManager.GetString("ExInvalidCommandType", resourceCulture);
+                return ResourceManager.GetString("ExceptionInvalidCommandType", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Modify Connection Error.
         /// </summary>
-        internal static string ExModifyConnectionCaption {
+        internal static string ExceptionModifyConnectionCaption {
             get {
-                return ResourceManager.GetString("ExModifyConnectionCaption", resourceCulture);
+                return ResourceManager.GetString("ExceptionModifyConnectionCaption", resourceCulture);
             }
         }
         
@@ -378,9 +378,9 @@ namespace BlackbirdSql.Shared.Properties {
         ///   Looks up a localized string similar to An error occurred while executing batch. Error message is:
         ///{0}.
         /// </summary>
-        internal static string ExQueryBatchError {
+        internal static string ExceptionQueryBatchError {
             get {
-                return ResourceManager.GetString("ExQueryBatchError", resourceCulture);
+                return ResourceManager.GetString("ExceptionQueryBatchError", resourceCulture);
             }
         }
         
@@ -388,144 +388,144 @@ namespace BlackbirdSql.Shared.Properties {
         ///   Looks up a localized string similar to An error occurred while executing batch statement #{0}. Error message is:
         ///{1}.
         /// </summary>
-        internal static string ExQueryBatchStatementError {
+        internal static string ExceptionQueryBatchStatementError {
             get {
-                return ResourceManager.GetString("ExQueryBatchStatementError", resourceCulture);
+                return ResourceManager.GetString("ExceptionQueryBatchStatementError", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Query execution failed.
         /// </summary>
-        internal static string ExQueryExecutionCaption {
+        internal static string ExceptionQueryExecutionCaption {
             get {
-                return ResourceManager.GetString("ExQueryExecutionCaption", resourceCulture);
+                return ResourceManager.GetString("ExceptionQueryExecutionCaption", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid argument: reader cannot be null..
         /// </summary>
-        internal static string ExReaderCannotBeNull {
+        internal static string ExceptionReaderCannotBeNull {
             get {
-                return ResourceManager.GetString("ExReaderCannotBeNull", resourceCulture);
+                return ResourceManager.GetString("ExceptionReaderCannotBeNull", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Initialize has already been called..
         /// </summary>
-        internal static string ExResultSetAlreadyInited {
+        internal static string ExceptionResultSetAlreadyInited {
             get {
-                return ResourceManager.GetString("ExResultSetAlreadyInited", resourceCulture);
+                return ResourceManager.GetString("ExceptionResultSetAlreadyInited", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Storage is already storing the data..
         /// </summary>
-        internal static string ExResultSetAlreadyStoring {
+        internal static string ExceptionResultSetAlreadyStoring {
             get {
-                return ResourceManager.GetString("ExResultSetAlreadyStoring", resourceCulture);
+                return ResourceManager.GetString("ExceptionResultSetAlreadyStoring", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Initialize should be called before..
         /// </summary>
-        internal static string ExResultSetNotInitialized {
+        internal static string ExceptionResultSetNotInitialized {
             get {
-                return ResourceManager.GetString("ExResultSetNotInitialized", resourceCulture);
+                return ResourceManager.GetString("ExceptionResultSetNotInitialized", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to An error was encountered while parsing with message: {0}..
         /// </summary>
-        internal static string ExScriptingParseFailure {
+        internal static string ExceptionScriptingParseFailure {
             get {
-                return ResourceManager.GetString("ExScriptingParseFailure", resourceCulture);
+                return ResourceManager.GetString("ExceptionScriptingParseFailure", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to SortView default constructor cannot be used..
         /// </summary>
-        internal static string ExSortViewDefaultConstructorCannotBeUsed {
+        internal static string ExceptionSortViewDefaultConstructorCannotBeUsed {
             get {
-                return ResourceManager.GetString("ExSortViewDefaultConstructorCannotBeUsed", resourceCulture);
+                return ResourceManager.GetString("ExceptionSortViewDefaultConstructorCannotBeUsed", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Execution mode cannot be changed when query is executing.
         /// </summary>
-        internal static string ExSqlExecutionModeChangeFailed {
+        internal static string ExceptionSqlExecutionModeChangeFailed {
             get {
-                return ResourceManager.GetString("ExSqlExecutionModeChangeFailed", resourceCulture);
+                return ResourceManager.GetString("ExceptionSqlExecutionModeChangeFailed", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid calling sequence: already storing data..
         /// </summary>
-        internal static string ExStorageAlreadyStoring {
+        internal static string ExceptionStorageAlreadyStoring {
             get {
-                return ResourceManager.GetString("ExStorageAlreadyStoring", resourceCulture);
+                return ResourceManager.GetString("ExceptionStorageAlreadyStoring", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Object is not initialized with the reader..
         /// </summary>
-        internal static string ExStorageNoReader {
+        internal static string ExceptionStorageNoReader {
             get {
-                return ResourceManager.GetString("ExStorageNoReader", resourceCulture);
+                return ResourceManager.GetString("ExceptionStorageNoReader", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid calling sequence: storage must be initialized first..
         /// </summary>
-        internal static string ExStorageNotInitialized {
+        internal static string ExceptionStorageNotInitialized {
             get {
-                return ResourceManager.GetString("ExStorageNotInitialized", resourceCulture);
+                return ResourceManager.GetString("ExceptionStorageNotInitialized", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to StorageView default constructor cannot be used..
         /// </summary>
-        internal static string ExStorageViewDefaultConstructorCannotBeUsed {
+        internal static string ExceptionStorageViewDefaultConstructorCannotBeUsed {
             get {
-                return ResourceManager.GetString("ExStorageViewDefaultConstructorCannotBeUsed", resourceCulture);
+                return ResourceManager.GetString("ExceptionStorageViewDefaultConstructorCannotBeUsed", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Transactions are still pending on this connection. You must Commit or Rollback pending Transactions before proceeding..
         /// </summary>
-        internal static string ExTransactionsActive {
+        internal static string ExceptionTransactionsActive {
             get {
-                return ResourceManager.GetString("ExTransactionsActive", resourceCulture);
+                return ResourceManager.GetString("ExceptionTransactionsActive", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unable to close connection specified in the SQLCMD script..
         /// </summary>
-        internal static string ExUnableToCloseCon {
+        internal static string ExceptionUnableToCloseCon {
             get {
-                return ResourceManager.GetString("ExUnableToCloseCon", resourceCulture);
+                return ResourceManager.GetString("ExceptionUnableToCloseCon", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to View has to be set before executing double click event..
         /// </summary>
-        internal static string ExViewHasToBeSetBeforeExecutingDoubleClickEvent {
+        internal static string ExceptionViewHasToBeSetBeforeExecutingDoubleClickEvent {
             get {
-                return ResourceManager.GetString("ExViewHasToBeSetBeforeExecutingDoubleClickEvent", resourceCulture);
+                return ResourceManager.GetString("ExceptionViewHasToBeSetBeforeExecutingDoubleClickEvent", resourceCulture);
             }
         }
         

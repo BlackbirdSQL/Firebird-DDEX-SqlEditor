@@ -76,7 +76,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		base.Dispose(disposing);
@@ -319,8 +319,8 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		// and environment events synchronously.
 		// PropagateSettings();
 
-		ApcInstance.AsyeuAdviseUnsafeEvents();
-		ApcInstance.AsyeuRegisterProjectEventHandlers();
+		ApcInstance.AdviseUnsafeEventsAsyeu();
+		ApcInstance.RegisterProjectEventHandlersAsyeu();
 
 		// Diag.DebugTrace($"OnLoadOptions():  Invoking.");
 

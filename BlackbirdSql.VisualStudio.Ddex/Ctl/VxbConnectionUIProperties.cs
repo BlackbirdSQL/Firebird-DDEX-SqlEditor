@@ -61,7 +61,7 @@ public class VxbConnectionUIProperties : VxbConnectionProperties
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw;
 			}
 
@@ -88,7 +88,7 @@ public class VxbConnectionUIProperties : VxbConnectionProperties
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}
@@ -112,7 +112,7 @@ public class VxbConnectionUIProperties : VxbConnectionProperties
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}
@@ -151,7 +151,7 @@ public class VxbConnectionUIProperties : VxbConnectionProperties
 
 					// Evs.Debug(GetType(), nameof(Parse), "Calling ReindexEntityFrameworkAssemblies.");
 
-					NativeDb.AsyuiReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
+					NativeDb.ReindexEntityFrameworkAssembliesAsyui(ApcManager.ActiveProject);
 				}
 
 
@@ -162,7 +162,7 @@ public class VxbConnectionUIProperties : VxbConnectionProperties
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}

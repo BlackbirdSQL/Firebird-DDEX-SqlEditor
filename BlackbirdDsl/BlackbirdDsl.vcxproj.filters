@@ -66,7 +66,7 @@
     <ClInclude Include="CPenta\Include\StringCell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Include\DslOptions.h">
+    <ClInclude Include="Parser\Include\EnParserOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\pch.h">
@@ -102,112 +102,112 @@
     <ClInclude Include="Parser\Parsers\Include\ParserManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TBracketParser.h">
+    <ClInclude Include="Parser\Parsers\Include\BracketParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TCreateParser.h">
+    <ClInclude Include="Parser\Parsers\Include\CreateParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TTableParser.h">
+    <ClInclude Include="Parser\Parsers\Include\TableParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TIndexParser.h">
+    <ClInclude Include="Parser\Parsers\Include\IndexParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TDeleteParser.h">
+    <ClInclude Include="Parser\Parsers\Include\DeleteParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TDescParser.h">
+    <ClInclude Include="Parser\Parsers\Include\DescParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TDescribeParser.h">
+    <ClInclude Include="Parser\Parsers\Include\DescribeParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TDropParser.h">
+    <ClInclude Include="Parser\Parsers\Include\DropParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TDuplicateParser.h">
+    <ClInclude Include="Parser\Parsers\Include\DuplicateParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TExplainParser.h">
+    <ClInclude Include="Parser\Parsers\Include\ExplainParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TFromParser.h">
+    <ClInclude Include="Parser\Parsers\Include\FromParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TGroupByParser.h">
+    <ClInclude Include="Parser\Parsers\Include\GroupByParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\THavingParser.h">
+    <ClInclude Include="Parser\Parsers\Include\HavingParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TInsertParser.h">
+    <ClInclude Include="Parser\Parsers\Include\InsertParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TIntoParser.h">
+    <ClInclude Include="Parser\Parsers\Include\IntoParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TLimitParser.h">
+    <ClInclude Include="Parser\Parsers\Include\LimitParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TOptionsParser.h">
+    <ClInclude Include="Parser\Parsers\Include\OptionsParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TOrderByParser.h">
+    <ClInclude Include="Parser\Parsers\Include\OrderByParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TRenameParser.h">
+    <ClInclude Include="Parser\Parsers\Include\RenameParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TReplaceParser.h">
+    <ClInclude Include="Parser\Parsers\Include\ReplaceParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TSelectParser.h">
+    <ClInclude Include="Parser\Parsers\Include\SelectParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TSetParser.h">
+    <ClInclude Include="Parser\Parsers\Include\SetParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TShowParser.h">
+    <ClInclude Include="Parser\Parsers\Include\ShowParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TUpdateParser.h">
+    <ClInclude Include="Parser\Parsers\Include\UpdateParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TUsingParser.h">
+    <ClInclude Include="Parser\Parsers\Include\UsingParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TValuesParser.h">
+    <ClInclude Include="Parser\Parsers\Include\ValuesParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TWhereParser.h">
+    <ClInclude Include="Parser\Parsers\Include\WhereParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\TWithParser.h">
+    <ClInclude Include="Parser\Parsers\Include\WithParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Parser\Common\Include\OffsetCalculator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\WPartitionOptionsParser.h">
+    <ClInclude Include="Parser\Parsers\Include\PartitionOptionsParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\WCreateDefinitionParser.h">
+    <ClInclude Include="Parser\Parsers\Include\CreateDefinitionParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\WIndexColumnListParser.h">
+    <ClInclude Include="Parser\Parsers\Include\IndexColumnListParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\WSelectExpressionParser.h">
+    <ClInclude Include="Parser\Parsers\Include\SelectExpressionParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\WExpressionListParser.h">
+    <ClInclude Include="Parser\Parsers\Include\ExpressionListParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Parser\Common\Include\ExpressionToken.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Parsers\Include\WColumnListParser.h">
+    <ClInclude Include="Parser\Parsers\Include\ColumnListParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -266,7 +266,7 @@
     <ClCompile Include="CPenta\StringCell.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\DslOptions.cpp">
+    <ClCompile Include="Parser\EnParserOptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Parser\Common\AbstractParser.cpp">
@@ -299,112 +299,112 @@
     <ClCompile Include="Parser\Parsers\ParserManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TBracketParser.cpp">
+    <ClCompile Include="Parser\Parsers\BracketParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TCreateParser.cpp">
+    <ClCompile Include="Parser\Parsers\CreateParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TTableParser.cpp">
+    <ClCompile Include="Parser\Parsers\TableParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TIndexParser.cpp">
+    <ClCompile Include="Parser\Parsers\IndexParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TDeleteParser.cpp">
+    <ClCompile Include="Parser\Parsers\DeleteParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TDescParser.cpp">
+    <ClCompile Include="Parser\Parsers\DescParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TDescribeParser.cpp">
+    <ClCompile Include="Parser\Parsers\DescribeParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TDropParser.cpp">
+    <ClCompile Include="Parser\Parsers\DropParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TDuplicateParser.cpp">
+    <ClCompile Include="Parser\Parsers\DuplicateParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TExplainParser.cpp">
+    <ClCompile Include="Parser\Parsers\ExplainParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TFromParser.cpp">
+    <ClCompile Include="Parser\Parsers\FromParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TGroupByParser.cpp">
+    <ClCompile Include="Parser\Parsers\GroupByParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\THavingParser.cpp">
+    <ClCompile Include="Parser\Parsers\HavingParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TInsertParser.cpp">
+    <ClCompile Include="Parser\Parsers\InsertParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TIntoParser.cpp">
+    <ClCompile Include="Parser\Parsers\IntoParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TLimitParser.cpp">
+    <ClCompile Include="Parser\Parsers\LimitParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TOptionsParser.cpp">
+    <ClCompile Include="Parser\Parsers\OptionsParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TOrderByParser.cpp">
+    <ClCompile Include="Parser\Parsers\OrderByParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TRenameParser.cpp">
+    <ClCompile Include="Parser\Parsers\RenameParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TReplaceParser.cpp">
+    <ClCompile Include="Parser\Parsers\ReplaceParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TSelectParser.cpp">
+    <ClCompile Include="Parser\Parsers\SelectParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TSetParser.cpp">
+    <ClCompile Include="Parser\Parsers\SetParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TShowParser.cpp">
+    <ClCompile Include="Parser\Parsers\ShowParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TUpdateParser.cpp">
+    <ClCompile Include="Parser\Parsers\UpdateParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TUsingParser.cpp">
+    <ClCompile Include="Parser\Parsers\UsingParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TValuesParser.cpp">
+    <ClCompile Include="Parser\Parsers\ValuesParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TWhereParser.cpp">
+    <ClCompile Include="Parser\Parsers\WhereParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\TWithParser.cpp">
+    <ClCompile Include="Parser\Parsers\WithParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Parser\Common\OffsetCalculator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\WPartitionOptionsParser.cpp">
+    <ClCompile Include="Parser\Parsers\PartitionOptionsParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\WCreateDefinitionParser.cpp">
+    <ClCompile Include="Parser\Parsers\CreateDefinitionParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\WIndexColumnListParser.cpp">
+    <ClCompile Include="Parser\Parsers\IndexColumnListParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\WSelectExpressionParser.cpp">
+    <ClCompile Include="Parser\Parsers\SelectExpressionParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\WExpressionListParser.cpp">
+    <ClCompile Include="Parser\Parsers\ExpressionListParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Parser\Common\ExpressionToken.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Parsers\WColumnListParser.cpp">
+    <ClCompile Include="Parser\Parsers\ColumnListParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AssemblyInfo.cpp">

@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -34,7 +35,7 @@ public sealed class Charset
 
 	static Charset()
 	{
-		var charsets = GetSupportedCharsets();
+		List<Charset> charsets = GetSupportedCharsets();
 		charsetsById = charsets.ToDictionary(x => x.Identifier);
 		charsetsByName = charsets.ToDictionary(x => x.Name, StringComparer.CurrentCultureIgnoreCase);
 	}
@@ -47,14 +48,14 @@ public sealed class Charset
 
 	private static List<Charset> GetSupportedCharsets()
 	{
-		var charsets = new List<Charset>
-		{
+		List<Charset> charsets =
+		[
 			new Charset(0, None, 1, None),
 			new Charset(1, Octets, 1, Octets),
 			new Charset(2, "ASCII", 1, "ascii"),
 			new Charset(3, "UNICODE_FSS", 3, "UTF-8"),
 			new Charset(4, "UTF8", 4, "UTF-8")
-		};
+		];
 
 		TryAddCharset(charsets, () => new Charset(5, "SJIS_0208", 2, "shift_jis"));
 		TryAddCharset(charsets, () => new Charset(6, "EUCJ_0208", 2, "euc-jp"));

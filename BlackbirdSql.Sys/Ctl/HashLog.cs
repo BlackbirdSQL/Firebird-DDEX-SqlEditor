@@ -34,14 +34,14 @@ public static class HashLog
 
 	public static string Format(IFormatProvider formatProvider, string stringFormat, params object[] args)
 	{
-		return string.Format(formatProvider, stringFormat, args);
+		return formatProvider.Fmt(stringFormat, args);
 	}
 
 	public static string FormatHashed(IFormatProvider formatProvider, string stringFormat, params object[] args)
 	{
 		if (!HashObjectNamesInLogs || args == null || args.Length == 0)
 		{
-			return string.Format(formatProvider, stringFormat, args);
+			return formatProvider.Fmt(stringFormat, args);
 		}
 
 		object[] array = new object[args.Length];
@@ -50,7 +50,7 @@ public static class HashLog
 			array[i] = FormatObject(args[i]);
 		}
 
-		return string.Format(formatProvider, stringFormat, array);
+		return formatProvider.Fmt(stringFormat, array);
 	}
 
 	public static string Join(string separator, params object[] args)

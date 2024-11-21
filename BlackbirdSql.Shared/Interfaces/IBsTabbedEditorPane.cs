@@ -57,16 +57,16 @@ public interface IBsTabbedEditorPane : IBsEditorPaneServiceProvider, IBsEditorPa
 	void ActivateStatisticsTab();
 	void ActivateTextPlanTab();
 	void ActivateTextResultsTab();
-	void AsyncExecuteQuery(EnSqlExecutionType executionType);
 	void ConfigureTextViewForAutonomousFind(IVsWindowFrame frame, IVsTextView textView);
 	void CustomizeTabsForResultsSetting(bool isParseOnly);
 	ResultsHandler EnsureDisplayResultsControl();
+	void ExecuteQueryAsyin(EnSqlExecutionType executionType);
 	string GetAllCodeEditorText();
-	TextSpanEx GetAllCodeEditorTextSpan();
+	TextSpanX GetAllCodeEditorTextSpan();
 	IWpfTextView GetCodeEditorWpfTextView();
 	string GetCodeText();
 	public T GetEditorTab<T>(Guid guidTab) where T : class;
 	string GetSelectedCodeEditorText();
-	TextSpanEx GetSelectedCodeEditorTextSpan();
+	TextSpanX GetSelectedCodeEditorTextSpan();
 	void SetCodeEditorSelection(int startIndex, int length);
 }

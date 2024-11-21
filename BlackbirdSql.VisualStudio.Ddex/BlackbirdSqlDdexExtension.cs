@@ -250,8 +250,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		if (serviceType == typeof(IBsProviderObjectFactory) || serviceType == typeof(IVsDataProviderObjectFactory))
 			return new VxbProviderObjectFactory() as TInterface;
 
-		else if (serviceType == typeof(IBsDataConnectionDlgHandler))
-			return new VxbConnectionDlgHandler() as TInterface;
+		else if (serviceType == typeof(IBsConnectionDialogHandler))
+			return new VxbConnectionDialogHandler() as TInterface;
 
 		else if (serviceType == typeof(IBsDataConnectionPromptDialogHandler))
 			return new VxbPromptDialogHandler() as TInterface;
@@ -292,7 +292,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -317,7 +317,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -348,7 +348,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 		// Add provider object and schema factories
 		AddService(typeof(IBsProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
-		AddService(typeof(IBsDataConnectionDlgHandler), ServicesCreatorCallbackAsync, promote: false);
+		AddService(typeof(IBsConnectionDialogHandler), ServicesCreatorCallbackAsync, promote: false);
 		AddService(typeof(IBsDataConnectionPromptDialogHandler), ServicesCreatorCallbackAsync, promote: false);
 
 		ProgressAsync(progress, "Extension registering DDEX Provider services... Done.").Forget();
@@ -394,8 +394,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		if (serviceType == typeof(IBsProviderObjectFactory) || serviceType == typeof(IVsDataProviderObjectFactory))
 			return await GetLocalServiceInstanceAsync<IVsDataProviderObjectFactory, IVsDataProviderObjectFactory>(token);
 
-		else if (serviceType == typeof(IBsDataConnectionDlgHandler))
-			return await GetLocalServiceInstanceAsync<IBsDataConnectionDlgHandler, IBsDataConnectionDlgHandler>(token);
+		else if (serviceType == typeof(IBsConnectionDialogHandler))
+			return await GetLocalServiceInstanceAsync<IBsConnectionDialogHandler, IBsConnectionDialogHandler>(token);
 
 		else if (serviceType == typeof(IBsDataConnectionPromptDialogHandler))
 			return await GetLocalServiceInstanceAsync<IBsDataConnectionPromptDialogHandler, IBsDataConnectionPromptDialogHandler>(token);

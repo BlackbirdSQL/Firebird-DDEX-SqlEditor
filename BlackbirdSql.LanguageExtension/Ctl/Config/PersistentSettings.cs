@@ -143,7 +143,7 @@ public abstract class PersistentSettings : Shared.Ctl.Config.PersistentSettings
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, Resources.ExFailedToSubscribeSettingsEvents);
+			Diag.Ex(ex, Resources.ExFailedToSubscribeSettingsEvents);
 		}
 	}
 

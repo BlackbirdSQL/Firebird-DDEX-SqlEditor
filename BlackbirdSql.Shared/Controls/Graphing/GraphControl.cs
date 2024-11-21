@@ -670,7 +670,7 @@ public class GraphControl : GraphCtrl
 		}
 		else if (m.Msg == 1 && Package.GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 		{
-			vsShell.GetProperty((int)__VSSPROPID5.VSSPROPID_NativeScrollbarThemeModePropName, out var pvar);
+			vsShell.GetProperty((int)__VSSPROPID5.VSSPROPID_NativeScrollbarThemeModePropName, out object pvar);
 			if (!string.IsNullOrEmpty(pvar as string))
 			{
 				Native.SetProp(new HandleRef(this, Handle), (string)pvar, new HandleRef(this, (IntPtr)2));
@@ -1214,7 +1214,7 @@ public class GraphControl : GraphCtrl
 	private void ShowExceptionMessage(Exception exception)
 	{
 		// Use something else.
-		MessageCtl.ShowEx(exception, (string)null, EnMessageBoxButtons.OK, EnMessageBoxSymbol.Error, (IWin32Window)this);
+		MessageCtl.ShowX(exception, (string)null, EnMessageBoxButtons.OK, EnMessageBoxSymbol.Error, (IWin32Window)this);
 	}
 
 	private void OnHelpRequested()

@@ -36,7 +36,7 @@ public class CommandToggleTTS : AbstractCommand
 
 	protected override int OnExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (ExecutionLocked || !RequestDisposeTts(Resources.ExDisableTtsCaption))
+		if (ExecutionLocked || !RequestDisposeTts(Resources.ExceptionDisableTtsCaption))
 			return VSConstants.S_OK;
 
 		if (CachedAuxDocData.TtsEnabled)

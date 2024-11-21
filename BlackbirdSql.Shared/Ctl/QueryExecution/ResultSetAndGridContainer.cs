@@ -89,7 +89,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		_GridCtl.AddColumn(gridColumnInfo);
 
 		if (ResultSet.StatementIndex > -1 && ResultSet.StatementCount > 1)
-			_GridCtl.SetHeaderInfo(0, ControlsResources.Grid_StatementLabel.FmtRes(ResultSet.StatementIndex+1, ResultSet.StatementCount), null);
+			_GridCtl.SetHeaderInfo(0, ControlsResources.Grid_StatementLabel.Fmt(ResultSet.StatementIndex+1, ResultSet.StatementCount), null);
 
 		for (int i = 0; i < _ResultSet.NumberOfDataColumns; i++)
 		{

@@ -610,7 +610,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		// Evs.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()");
+		// Evs.Trace(typeof(AbstractConnectionStrategy), nameof(PromptForCompleteConnection));
 
 		if (_MdlCsb == null)
 			return null;
@@ -631,7 +631,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 					if (Csb.GetIsComplete(connectionString))
 					{
-						// Evs.Trace(typeof(AbstractConnectionStrategy), "PromptForCompleteConnection()", "ConnectionString result: {0}.", connectionString);
+						// Evs.Trace(typeof(AbstractConnectionStrategy), nameof(PromptForCompleteConnection), "ConnectionString result: {0}.", connectionString);
 						connectionString = RctManager.AdornConnectionStringFromRegistration(connectionString);
 
 						RctManager.UpdateRegisteredConnection(connectionString, EnConnectionSource.Session, true);
@@ -658,9 +658,9 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		// Evs.Trace(typeof(AbstractConnectionStrategy), "PromptForConnection()");
+		// Evs.Trace(typeof(AbstractConnectionStrategy), nameof(PromptForConnection));
 
-		IBsDataConnectionDlgHandler connectionDialogHandler = ApcManager.EnsureService<IBsDataConnectionDlgHandler>();
+		IBsConnectionDialogHandler connectionDialogHandler = ApcManager.EnsureService<IBsConnectionDialogHandler>();
 
 		using (connectionDialogHandler)
 		{
@@ -795,7 +795,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			object obj = ci.AdvancedOptions["USE_CUSTOM_CONNECTION_COLOR"];
 			if (obj != null)
 			{
-				if (obj is string text && bool.TryParse(text, out var result2))
+				if (obj is string text && bool.TryParse(text, out bool result2))
 				{
 					result = result2;
 				}
@@ -886,7 +886,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		lock (_LockObject)
 		{
 			if (_EventCardinal == 0)
-				Diag.Dug(new InvalidOperationException(Resources.ExEventsAlreadyEnabled));
+				Diag.Ex(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
 			else
 				_EventCardinal--;
 		}

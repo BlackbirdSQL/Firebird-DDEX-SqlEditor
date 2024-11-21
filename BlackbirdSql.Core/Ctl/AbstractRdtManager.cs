@@ -10,7 +10,6 @@ using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Sys.Ctl.Diagnostics;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -44,8 +43,8 @@ public abstract class AbstractRdtManager : IDisposable
 	{
 		if (!Application.MessageLoop)
 		{
-			InvalidOperationException ex = new("Must create Events Manager on the UI Thread");
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(Resources.ExceptionCreateRdtManagerOnUiThread);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		Diag.ThrowIfNotOnUIThread();
@@ -61,9 +60,7 @@ public abstract class AbstractRdtManager : IDisposable
 		lock (_KeepAliveLockLocal)
 		{
 			if (_KeepAliveDocCookies.Keys.Count != 0)
-			{
-				Diag.Dug(new ApplicationException("Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data."));
-			}
+				Diag.Ex(new ApplicationException(Resources.ExceptionDocDataKeepAlive));
 		}
 	}
 
@@ -81,29 +78,18 @@ public abstract class AbstractRdtManager : IDisposable
 
 	protected static volatile AbstractRdtManager _Instance = null;
 
+	private readonly object _KeepAliveLockLocal = new object();
+
 	// A static class lock
 	protected static readonly object _LockGlobal = new object();
 
 	private IVsInvisibleEditorManager _InvisibleEditorManager = null;
-
-
 	private _DTE _Dte = null;
-
-	private IVsUIShell _UiShell = null;
-
-	protected static int _InflightMonikerCursor = -1;
-	protected static int _InflightMonikerSeed = -1;
-
-	protected static Dictionary<int, string> _InflightMonikers = null;
-	protected static Dictionary<string, IBsCsb> _InflightMonikerCsbTable = null;
-
-
-	private readonly Dictionary<uint, int> _KeepAliveDocCookies = [];
-
-	private readonly object _KeepAliveLockLocal = new object();
-
 	private RunningDocumentTable _Rdt = null;
 	private IVsRunningDocumentTable _RdtSvc = null;
+	private IVsUIShell _UiShell = null;
+
+	private readonly Dictionary<uint, int> _KeepAliveDocCookies = [];
 
 
 	#endregion Fields
@@ -171,7 +157,7 @@ public abstract class AbstractRdtManager : IDisposable
 	{
 		lock (_KeepAliveLockLocal)
 		{
-			if (_KeepAliveDocCookies.TryGetValue(docCookie, out var value))
+			if (_KeepAliveDocCookies.TryGetValue(docCookie, out int value))
 			{
 				_KeepAliveDocCookies[docCookie] = value + 1;
 				return;
@@ -190,7 +176,7 @@ public abstract class AbstractRdtManager : IDisposable
 	{
 		lock (_KeepAliveLockLocal)
 		{
-			if (_KeepAliveDocCookies.TryGetValue(docCookie, out var value))
+			if (_KeepAliveDocCookies.TryGetValue(docCookie, out int value))
 			{
 				if (value == 1)
 				{
@@ -235,7 +221,7 @@ public abstract class AbstractRdtManager : IDisposable
 			IntPtr ppunkDocData = IntPtr.Zero;
 			try
 			{
-				___(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_NoLock, mkDocument, out var _, out var _, out ppunkDocData, out var pdwCookie));
+				___(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_NoLock, mkDocument, out _, out _, out ppunkDocData, out uint pdwCookie));
 
 				if (pdwCookie != 0)
 				{
@@ -264,17 +250,13 @@ public abstract class AbstractRdtManager : IDisposable
 				finally
 				{
 					if (spEditor != null)
-					{
 						Marshal.ReleaseComObject(spEditor);
-					}
 				}
 			}
 			finally
 			{
 				if (ppunkDocData != IntPtr.Zero)
-				{
 					Marshal.Release(ppunkDocData);
-				}
 			}
 		}
 
@@ -283,12 +265,12 @@ public abstract class AbstractRdtManager : IDisposable
 
 
 
-	protected bool TryGetTextLinesAndInvisibleEditor(string mkDocument, out IVsInvisibleEditor spEditor, out IVsTextLines textLines)
+	private bool TryGetTextLinesAndInvisibleEditor(string mkDocument, out IVsInvisibleEditor spEditor, out IVsTextLines textLines)
 	{
 		return TryGetTextLinesAndInvisibleEditor(mkDocument, null, out spEditor, out textLines);
 	}
 
-	protected bool TryGetTextLinesAndInvisibleEditor(string mkDocument, IVsProject project, out IVsInvisibleEditor spEditor, out IVsTextLines textLines)
+	private bool TryGetTextLinesAndInvisibleEditor(string mkDocument, IVsProject project, out IVsInvisibleEditor spEditor, out IVsTextLines textLines)
 	{
 		spEditor = null;
 		textLines = null;
@@ -321,7 +303,7 @@ public abstract class AbstractRdtManager : IDisposable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 
 			if (Cmd.IsCriticalException(ex))
 				throw;
@@ -363,10 +345,10 @@ public abstract class AbstractRdtManager : IDisposable
 		}
 	}
 
-	protected static string GetAllTextFromTextLines(IVsTextLines textLines)
+	private static string GetAllTextFromTextLines(IVsTextLines textLines)
 	{
 		string pbstrBuf = null;
-		if (textLines != null && textLines.GetLastLineIndex(out var piLine, out var piIndex) == 0 && textLines.GetLineText(0, 0, piLine, piIndex, out pbstrBuf) != 0)
+		if (textLines != null && textLines.GetLastLineIndex(out int piLine, out int piIndex) == 0 && textLines.GetLineText(0, 0, piLine, piIndex, out pbstrBuf) != 0)
 		{
 			pbstrBuf = null;
 		}
@@ -395,7 +377,7 @@ public abstract class AbstractRdtManager : IDisposable
 		}
 
 		/*
-		if (!__(runningDocumentTable.GetRunningDocumentsEnum(out var ppenum)))
+		if (!__(runningDocumentTable.GetRunningDocumentsEnum(out IEnumerator ppenum)))
 		{
 			ppenum = null;
 		}
@@ -413,14 +395,14 @@ public abstract class AbstractRdtManager : IDisposable
 		mkDoc = null;
 		if (frame == null)
 		{
-			InvalidOperationException ex = new("frame argument cannot be null.");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(frame));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		Diag.ThrowIfNotOnUIThread();
 
-		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar));
+		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out object pvar));
 		if (pvar != null)
 		{
 			mkDoc = pvar as string;
@@ -450,10 +432,10 @@ public abstract class AbstractRdtManager : IDisposable
 			{
 				uint rdtCookie = GetRdtCookieImpl(mkDocument);
 				___(RdtSvc.NotifyOnBeforeSave(rdtCookie));
-				if (vsPersistDocData.SaveDocData(VSSAVEFLAGS.VSSAVE_Save, out var _, out var pfSaveCancelled) != 0 || pfSaveCancelled != 0)
+				if (vsPersistDocData.SaveDocData(VSSAVEFLAGS.VSSAVE_Save, out _, out int pfSaveCancelled) != 0 || pfSaveCancelled != 0)
 				{
-					InvalidOperationException ex = new(string.Format(CultureInfo.CurrentCulture, Resources.Exception_FailedToSaveFile, mkDocument));
-					Diag.Dug(ex);
+					InvalidOperationException ex = new(Resources.ExceptionFailedToSaveFile.Fmt(mkDocument));
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -481,11 +463,11 @@ public abstract class AbstractRdtManager : IDisposable
 		ThreadHelper.JoinableTaskFactory.Run(async delegate
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				___(UiShell.GetDocumentWindowEnum(out var ppenum));
+				___(UiShell.GetDocumentWindowEnum(out IEnumWindowFrames ppenum));
 				IVsWindowFrame[] array = new IVsWindowFrame[1];
 				while (ppenum.Next(1u, array, out uint pceltFetched) == 0 && pceltFetched == 1)
 				{
-					___(array[0].GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out var pvar));
+					___(array[0].GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out object pvar));
 					if (pvar is IPersistFileFormat persistFileFormat)
 					{
 						int num = persistFileFormat.IsDirty(out int pfIsDirty);
@@ -494,7 +476,7 @@ public abstract class AbstractRdtManager : IDisposable
 							___(num);
 							if (pfIsDirty == 1)
 							{
-								___(persistFileFormat.GetCurFile(out var ppszFilename, out var _));
+								___(persistFileFormat.GetCurFile(out string ppszFilename, out _));
 
 								if (!string.IsNullOrEmpty(ppszFilename) && shouldHandle(ppszFilename))
 								{
@@ -569,7 +551,7 @@ public abstract class AbstractRdtManager : IDisposable
 		IntPtr ppunkDocData = IntPtr.Zero;
 		try
 		{
-			___(RdtSvc.GetDocumentInfo(docCookie, out var _, out var _, out var _, out var _, out var ppHier, out var _, out ppunkDocData));
+			___(RdtSvc.GetDocumentInfo(docCookie, out _, out _, out _, out _, out IVsHierarchy ppHier, out _, out ppunkDocData));
 			return ppHier;
 		}
 		finally
@@ -588,7 +570,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 		object docData = null;
 
-		if (RdtSvc != null && __(RdtSvc.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _, out var _, out var _, out var ppunkDocData)))
+		if (RdtSvc != null && __(RdtSvc.GetDocumentInfo(cookie, out _, out _, out _, out _, out _, out _, out IntPtr ppunkDocData)))
 		{
 			docData = Marshal.GetObjectForIUnknown(ppunkDocData);
 			Marshal.Release(ppunkDocData);
@@ -609,7 +591,7 @@ public abstract class AbstractRdtManager : IDisposable
 				IntPtr ppunkDocData = IntPtr.Zero;
 				try
 				{
-					if (!__(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var ppHier, out var pitemid, out ppunkDocData, out var pdwCookie)))
+					if (!__(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out IVsHierarchy ppHier, out uint pitemid, out ppunkDocData, out uint pdwCookie)))
 					{
 						Evs.Warning(GetType(), "TrySetDocDataDirty()", $"Failed to find document {fileName}.");
 						return false;
@@ -623,7 +605,7 @@ public abstract class AbstractRdtManager : IDisposable
 						return false;
 					}
 
-					if (!__(RdtSvc.GetDocumentInfo(pdwCookie, out var _, out var _, out var _, out var _, out ppHier, out pitemid, out var ppunkDocData2)))
+					if (!__(RdtSvc.GetDocumentInfo(pdwCookie, out _, out _, out _, out _, out ppHier, out pitemid, out IntPtr ppunkDocData2)))
 					{
 						Evs.Warning(GetType(), "TrySetDocDataDirty()", $"Failed to get document info {fileName}.");
 						return false;
@@ -673,7 +655,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 		if (GetDocData(docFullPath) is IVsPersistDocData vsPersistDocData)
 		{
-			___(vsPersistDocData.IsDocDataDirty(out var pfDirty));
+			___(vsPersistDocData.IsDocDataDirty(out int pfDirty));
 			return pfDirty != 0;
 		}
 
@@ -696,7 +678,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 		if (docData is IVsPersistDocData vsPersistDocData)
 		{
-			___(vsPersistDocData.IsDocDataDirty(out var pfDirty));
+			___(vsPersistDocData.IsDocDataDirty(out int pfDirty));
 			return pfDirty != 0;
 		}
 
@@ -709,8 +691,8 @@ public abstract class AbstractRdtManager : IDisposable
 
 		if (string.IsNullOrEmpty(fileName))
 		{
-			ArgumentNullException ex = new("fileName");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(fileName));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -719,7 +701,7 @@ public abstract class AbstractRdtManager : IDisposable
 			IntPtr ppunkDocData = IntPtr.Zero;
 			try
 			{
-				hresult = FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var _, out var _, out ppunkDocData, out var pdwCookie);
+				hresult = FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out _, out _, out ppunkDocData, out uint pdwCookie);
 
 				if (hresult == VSConstants.S_FALSE)
 					hresult = VSConstants.E_FAIL;
@@ -764,7 +746,7 @@ public abstract class AbstractRdtManager : IDisposable
 				IntPtr ppunkDocData = IntPtr.Zero;
 				try
 				{
-					hresult = FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var _, out var _, out ppunkDocData, out var pdwCookie);
+					hresult = FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out _, out _, out ppunkDocData, out uint pdwCookie);
 
 					if (__(hresult))
 					{
@@ -797,7 +779,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 	protected bool CloseOpenDocument(string fileName)
 	{
-		CloseFrame(fileName, out var _);
+		CloseFrame(fileName, out _);
 
 		try
 		{
@@ -917,14 +899,14 @@ public abstract class AbstractRdtManager : IDisposable
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex, $"Frame file: {ppszFilename}, Moniker: {mkDocument}.");
+					Diag.Ex(ex, Resources.LabelFrameFileAndMoniker.Fmt(ppszFilename, mkDocument));
 					throw;
 				}
 			}
 		}
 
 		if (result == null)
-			Evs.Warning(GetType(), "GetWindowFrame()", $"FAILED to find window frame for mkDocument: {mkDocument}");
+			Evs.Warning(GetType(), nameof(GetWindowFrameImpl), Resources.WarningWindowFrameForDocumentNotFound.Fmt(mkDocument));
 
 		return result;
 	}
@@ -953,7 +935,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 		try
 		{
-			FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_NoLock, mkDocument, out var _, out var _, out ppunkDocData, out var _);
+			FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_NoLock, mkDocument, out _, out _, out ppunkDocData, out _);
 		}
 		finally
 		{
@@ -1010,7 +992,7 @@ public abstract class AbstractRdtManager : IDisposable
 			IntPtr ppunkDocData = IntPtr.Zero;
 			try
 			{
-				if (RdtSvc.GetDocumentInfo(docCookie, out var _, out var _, out var _, out var pbstrMkDocument, out var _, out var _, out ppunkDocData) == 0)
+				if (RdtSvc.GetDocumentInfo(docCookie, out _, out _, out _, out string pbstrMkDocument, out _, out _, out ppunkDocData) == 0)
 				{
 					fileName = pbstrMkDocument;
 				}
@@ -1034,15 +1016,16 @@ public abstract class AbstractRdtManager : IDisposable
 
 	protected bool WriteToFile(string mkDocument, string content, bool saveFile)
 	{
-		return WriteToFile(mkDocument, content, saveFile, createIfNotExist: false);
+		return WriteToFile(mkDocument, content, saveFile, canCreate: false);
 	}
 
-	protected bool WriteToFile(string mkDocument, string content, bool saveFile, bool createIfNotExist)
+	protected bool WriteToFile(string mkDocument, string content, bool saveFile, bool canCreate)
 	{
 		bool result = true;
+		bool created = false;
 		IVsInvisibleEditor spEditor = null;
 		IVsTextLines textLines = null;
-		bool flag = false;
+
 		try
 		{
 			if (IsFileInRdtImpl(mkDocument))
@@ -1051,9 +1034,9 @@ public abstract class AbstractRdtManager : IDisposable
 			}
 			else
 			{
-				if (createIfNotExist && !File.Exists(mkDocument))
+				if (canCreate && !File.Exists(mkDocument))
 				{
-					flag = true;
+					created = true;
 					FileStream fileStream = null;
 					StreamWriter streamWriter = null;
 					try
@@ -1077,17 +1060,17 @@ public abstract class AbstractRdtManager : IDisposable
 					}
 				}
 
-				if (!flag && !TryGetTextLinesAndInvisibleEditor(mkDocument, out spEditor, out textLines))
+				if (!created && !TryGetTextLinesAndInvisibleEditor(mkDocument, out spEditor, out textLines))
 				{
 					textLines = null;
 				}
 			}
 
-			if (!flag)
+			if (!created)
 			{
 				if (textLines != null)
 				{
-					if (textLines.GetLastLineIndex(out var piLine, out var piIndex) == 0)
+					if (textLines.GetLastLineIndex(out int piLine, out int piIndex) == 0)
 					{
 						IntPtr intPtr = IntPtr.Zero;
 						try
@@ -1126,15 +1109,13 @@ public abstract class AbstractRdtManager : IDisposable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		finally
 		{
 			if (spEditor != null)
-			{
 				Marshal.ReleaseComObject(spEditor);
-			}
 		}
 	}
 

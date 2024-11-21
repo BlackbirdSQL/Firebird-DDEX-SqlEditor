@@ -31,7 +31,7 @@ public class ExecutionPlanGraph : Graph
 	private int PullIntFromRoot(string name)
 	{
 		string text = RootNode[name].ToString();
-		if (text != null && int.TryParse(text, out var result))
+		if (text != null && int.TryParse(text, out int result))
 		{
 			return result;
 		}

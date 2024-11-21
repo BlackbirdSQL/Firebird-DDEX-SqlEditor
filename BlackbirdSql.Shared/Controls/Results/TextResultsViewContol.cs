@@ -144,12 +144,12 @@ public class TextResultsViewContol : ShellTextViewControl, IOleCommandTarget, IV
 
 	private IVsTextMarker GetTextMarkerAtPosition(int lineNum, int columnNum)
 	{
-		TextBuffer.VsTextBuffer.GetPositionOfLine(lineNum, out var piPosition);
+		TextBuffer.VsTextBuffer.GetPositionOfLine(lineNum, out int piPosition);
 		piPosition += columnNum;
 		TextBuffer.TextStream.FindMarkerByPosition(ShellTextBuffer.markerTypeError, piPosition + 1, 1u, out IVsTextStreamMarker ppMarker);
 		if (ppMarker != null)
 		{
-			ppMarker.GetCurrentSpan(out var piPos, out var piLen);
+			ppMarker.GetCurrentSpan(out int piPos, out int piLen);
 			if (piPosition >= piPos && piPosition <= piPos + piLen)
 			{
 				return ppMarker;
@@ -159,7 +159,7 @@ public class TextResultsViewContol : ShellTextViewControl, IOleCommandTarget, IV
 		TextBuffer.TextStream.FindMarkerByPosition(ShellTextBuffer.markerTypeError, piPosition, 0u, out ppMarker);
 		if (ppMarker != null)
 		{
-			ppMarker.GetCurrentSpan(out var piPos2, out var piLen2);
+			ppMarker.GetCurrentSpan(out int piPos2, out int piLen2);
 			if (piPosition >= piPos2 && piPosition <= piPos2 + piLen2)
 			{
 				return ppMarker;

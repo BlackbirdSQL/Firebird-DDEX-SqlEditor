@@ -492,11 +492,11 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 			try
 			{
 				IVsTextView currentView = CurrentView;
-				___(currentView.GetCaretPos(out var piLine, out var piColumn));
+				___(currentView.GetCaretPos(out int piLine, out int piColumn));
 				POINT[] array = new POINT[1];
 				___(currentView.GetPointOfLineColumn(piLine, piColumn, array));
 
-				if (Native.GetClientRect(currentView.GetWindowHandle(), out Native.UIRECTEx val)
+				if (Native.GetClientRect(currentView.GetWindowHandle(), out Native.UIRECTX val)
 					&& (array[0].y < val.Top || array[0].x > val.Bottom || array[0].x < val.Left || array[0].y > val.Right))
 				{
 					array[0].x = 0;
@@ -594,8 +594,8 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 			try
 			{
 				Guid riid = typeof(IVsTextManagerEvents).GUID;
-				connectionPointContainer.FindConnectionPoint(ref riid, out var ppCP);
-				ppCP.EnumConnections(out var ppEnum);
+				connectionPointContainer.FindConnectionPoint(ref riid, out IConnectionPoint ppCP);
+				ppCP.EnumConnections(out IEnumConnections ppEnum);
 				intPtr = Marshal.AllocHGlobal(16);
 				Marshal.Copy(fontCategory.ToByteArray(), 0, intPtr, 16);
 				intPtr2 = Marshal.AllocHGlobal(16);
@@ -619,7 +619,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 			}
 			catch (Exception e)
 			{
-				Diag.Dug(e);
+				Diag.Ex(e);
 			}
 			finally
 			{
@@ -684,7 +684,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 		if (IsEditorInstanceCreated)
 		{
 			InvalidOperationException ex = new("this property must be set BEFORE editor instance is created");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

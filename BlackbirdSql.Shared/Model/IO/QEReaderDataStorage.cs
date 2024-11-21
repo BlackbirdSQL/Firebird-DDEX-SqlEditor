@@ -87,8 +87,8 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 		// Evs.Trace(GetType(), "QEDiskDataStorage.StartConsumingDataWithoutStoring", "", null);
 		if (_StorageReader == null)
 		{
-			InvalidOperationException ex = new(Resources.ExStorageNoReader);
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(Resources.ExceptionStorageNoReader);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -140,8 +140,8 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 	{
 		if (reader == null)
 		{
-			ArgumentNullException ex = new("reader");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(reader));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -174,15 +174,15 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 	{
 		if (_StorageReader == null)
 		{
-			InvalidOperationException ex = new(Resources.ExStorageNoReader);
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(Resources.ExceptionStorageNoReader);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (!_IsClosed)
 		{
-			InvalidOperationException ex = new(Resources.ExStorageAlreadyStoring);
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(Resources.ExceptionStorageAlreadyStoring);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

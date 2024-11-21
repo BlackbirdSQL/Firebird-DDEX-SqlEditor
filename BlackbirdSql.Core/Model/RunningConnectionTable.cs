@@ -147,7 +147,7 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 			if (_LoadDataCardinal > 0)
 			{
 				AccessViolationException ex = new($"Attempt to access Rct internal table while loading. LoadDataCardinal: {_LoadDataCardinal}.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -284,7 +284,7 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 		if (rows.Length == 0)
 		{
 			ArgumentException ex = new($"DatasetKey '{key}' not found for synonym '{synonym}.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -294,7 +294,7 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Failed to add Synonym {synonym} for DatsetKey: {key}.");
+			Diag.Ex(ex, $"Failed to add Synonym {synonym} for DatsetKey: {key}.");
 			throw ex;
 		}
 	}
@@ -323,7 +323,7 @@ public abstract class RunningConnectionTable : AbstractRunningConnectionTable
 		if (_LoadDataCardinal > 0)
 		{
 			AccessViolationException ex = new($"Attempt to access Rct internal table while loading. LoadDataCardinal: {_LoadDataCardinal}.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

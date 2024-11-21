@@ -38,7 +38,7 @@ public class SaveFormats
 			if (saveFormatList.Count <= index || index < 0)
 			{
 				ArgumentOutOfRangeException ex = new("index");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 			return saveFormatList[index].SaveFormat;

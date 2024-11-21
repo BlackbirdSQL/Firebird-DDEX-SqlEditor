@@ -66,7 +66,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			BeginInvoke(new VoidInvoker(InitDefaultEmbeddedControls));
 		};
-		GetFontInfo(Font, out var height, out m_cAvCharWidth);
+		GetFontInfo(Font, out int height, out m_cAvCharWidth);
 		_ScrollMgr.CellHeight = height + GridButton.ButtonAdditionalHeight;
 		_ScrollMgr.SetHorizontalScrollUnitForArrows((int)m_cAvCharWidth);
 		m_autoScrollTimer.Interval = 75;
@@ -171,7 +171,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			if (grid.ColumnsNumber <= 0)
 			{
 				ArgumentException ex = new(ControlsResources.ExGridColumnNumberShouldBeAboveZero, "grid");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -411,7 +411,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				{
 					get
 					{
-						Grid.IsACellBeingEdited(out var nRowNum, out var nColNum);
+						Grid.IsACellBeingEdited(out long nRowNum, out int nColNum);
 						if (m_rowIndex == nRowNum)
 						{
 							return m_colIndex == nColNum;
@@ -728,10 +728,10 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					{
 						if (Grid.m_gridHeader[m_colIndex].AccessibleName != null)
 						{
-							return ControlsResources.Grid_ColumnHeaderAAName.FmtRes(m_colIndex, Grid.m_gridHeader[m_colIndex].AccessibleName);
+							return ControlsResources.Grid_ColumnHeaderAAName.Fmt(m_colIndex, Grid.m_gridHeader[m_colIndex].AccessibleName);
 						}
 
-						return ControlsResources.Grid_ColumnHeaderAAName.FmtRes(m_colIndex, Grid.m_gridHeader[m_colIndex].Text);
+						return ControlsResources.Grid_ColumnHeaderAAName.Fmt(m_colIndex, Grid.m_gridHeader[m_colIndex].Text);
 					}
 				}
 
@@ -814,7 +814,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			{
 				get
 				{
-					return ControlsResources.Grid_ColumnNumber.FmtRes(m_colIndex);
+					return ControlsResources.Grid_ColumnNumber.Fmt(m_colIndex);
 				}
 				set
 				{
@@ -961,7 +961,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						{
 							if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 							{
-								Diag.Dug(ex);
+								Diag.Ex(ex);
 								throw ex;
 							}
 						}
@@ -985,7 +985,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						{
 							if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 							{
-								Diag.Dug(ex);
+								Diag.Ex(ex);
 								throw ex;
 							}
 						}
@@ -1009,7 +1009,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						{
 							if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 							{
-								Diag.Dug(ex);
+								Diag.Ex(ex);
 								throw ex;
 							}
 						}
@@ -1033,7 +1033,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						{
 							if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 							{
-								Diag.Dug(ex);
+								Diag.Ex(ex);
 								throw ex;
 							}
 						}
@@ -1057,7 +1057,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						{
 							if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 							{
-								Diag.Dug(ex);
+								Diag.Ex(ex);
 								throw ex;
 							}
 						}
@@ -1081,7 +1081,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						{
 							if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 							{
-								Diag.Dug(ex);
+								Diag.Ex(ex);
 								throw ex;
 							}
 						}
@@ -1104,7 +1104,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					{
 						if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 						{
-							Diag.Dug(ex);
+							Diag.Ex(ex);
 							throw ex;
 						}
 					}
@@ -1153,7 +1153,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						{
 							if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 							{
-								Diag.Dug(ex);
+								Diag.Ex(ex);
 								throw ex;
 							}
 						}
@@ -1176,7 +1176,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					{
 						if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 						{
-							Diag.Dug(ex);
+							Diag.Ex(ex);
 							throw ex;
 						}
 					}
@@ -1196,7 +1196,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					{
 						if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 						{
-							Diag.Dug(ex);
+							Diag.Ex(ex);
 							throw ex;
 						}
 					}
@@ -1221,7 +1221,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				{
 					if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 					{
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						throw ex;
 					}
 				}
@@ -1257,7 +1257,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					{
 						if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 						{
-							Diag.Dug(ex);
+							Diag.Ex(ex);
 							throw ex;
 						}
 					}
@@ -1281,7 +1281,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				{
 					if (ex.ErrorCode != VSConstants.DISP_E_MEMBERNOTFOUND)
 					{
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						throw ex;
 					}
 				}
@@ -1620,8 +1620,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			if (!Enum.IsDefined(typeof(EnGridLineType), value))
 			{
-				InvalidEnumArgumentException ex = new("value", (int)value, typeof(EnGridLineType));
-				Diag.Dug(ex);
+				InvalidEnumArgumentException ex = new(nameof(value), (int)value, typeof(EnGridLineType));
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -1656,8 +1656,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			{
 				if (!Enum.IsDefined(typeof(EnGridSelectionType), value))
 				{
-					InvalidEnumArgumentException ex = new("value", (int)value, typeof(EnGridSelectionType));
-					Diag.Dug(ex);
+					InvalidEnumArgumentException ex = new(nameof(value), (int)value, typeof(EnGridSelectionType));
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -1685,8 +1685,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		{
 			if (!Enum.IsDefined(typeof(BorderStyle), value))
 			{
-				InvalidEnumArgumentException ex = new("value", (int)value, typeof(BorderStyle));
-				Diag.Dug(ex);
+				InvalidEnumArgumentException ex = new(nameof(value), (int)value, typeof(BorderStyle));
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -1714,7 +1714,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				if (value < 0)
 				{
 					ArgumentException ex = new(ControlsResources.ExFirstScrollableColumnShouldBeValid, "value");
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -1757,7 +1757,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			if (value <= 0)
 			{
 				ArgumentException ex = new(ControlsResources.Grid_AutoScrollMoreThanZero, "value");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -1903,14 +1903,14 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			if (IsEmpty)
 			{
 				InvalidOperationException ex = new(ControlsResources.ExCannotPrintEmptyGrid);
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
 			if (RowCount == 0L && !m_withHeader)
 			{
 				InvalidOperationException ex = new(ControlsResources.ExCannotPrintEmptyGrid);
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -2240,8 +2240,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 		if (m_gridHeader[uIColumnIndexByStorageIndex].Type == EnGridColumnHeaderType.CheckBox || m_gridHeader[uIColumnIndexByStorageIndex].Type == EnGridColumnHeaderType.TextAndCheckBox)
 		{
-			InvalidOperationException ex = new(string.Format(ControlsResources.ExShouldSetHeaderStateForCheckBox, nColIndex));
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(ControlsResources.ExShouldSetHeaderStateForCheckBox.Fmt(nColIndex));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2265,8 +2265,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		int uIColumnIndexByStorageIndex = GetUIColumnIndexByStorageIndex(colIndex);
 		if (m_gridHeader[uIColumnIndexByStorageIndex].Type != EnGridColumnHeaderType.CheckBox && m_gridHeader[uIColumnIndexByStorageIndex].Type != EnGridColumnHeaderType.TextAndCheckBox)
 		{
-			InvalidOperationException ex = new(string.Format(ControlsResources.ExShouldSetHeaderStateForRegualrCol, colIndex));
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(ControlsResources.ExShouldSetHeaderStateForRegualrCol.Fmt(colIndex));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2285,8 +2285,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		int uIColumnIndexByStorageIndex = GetUIColumnIndexByStorageIndex(colIndex);
 		if (m_gridHeader[uIColumnIndexByStorageIndex].Type == EnGridColumnHeaderType.CheckBox || m_gridHeader[uIColumnIndexByStorageIndex].Type == EnGridColumnHeaderType.TextAndCheckBox)
 		{
-			InvalidOperationException ex = new(string.Format(ControlsResources.ExShouldSetHeaderStateForCheckBox, colIndex));
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(ControlsResources.ExShouldSetHeaderStateForCheckBox.Fmt(colIndex));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2298,8 +2298,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		int uIColumnIndexByStorageIndex = GetUIColumnIndexByStorageIndex(colIndex);
 		if (m_gridHeader[uIColumnIndexByStorageIndex].Type != EnGridColumnHeaderType.CheckBox && m_gridHeader[uIColumnIndexByStorageIndex].Type != EnGridColumnHeaderType.TextAndCheckBox)
 		{
-			InvalidOperationException ex = new(string.Format(ControlsResources.ExShouldSetHeaderStateForRegualrCol, colIndex));
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(ControlsResources.ExShouldSetHeaderStateForRegualrCol.Fmt(colIndex));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2354,28 +2354,28 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (editableCellType < 1024)
 		{
 			ArgumentException ex = new(ControlsResources.ExInvalidCellType, "editableCellType");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (embeddedControl == null)
 		{
-			ArgumentNullException ex = new("embeddedControl");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(embeddedControl));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (embeddedControl is not IBsGridEmbeddedControlManagement)
 		{
 			ArgumentException ex = new(ControlsResources.ExNoIGridEmbeddedControlManagement, "embeddedControl");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (embeddedControl is not IBsGridEmbeddedControl)
 		{
 			ArgumentException ex = new(ControlsResources.ExNoIGridEmbeddedControl, "embeddedControl");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2486,22 +2486,22 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (InvokeRequired)
 		{
 			InvalidOperationException ex = new(ControlsResources.ExInvalidThreadForMethod);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (nColIndex < 0 || nColIndex >= NumColInt)
 		{
 			IndexOutOfRangeException ex = new("nColIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		int uIColumnIndexByStorageIndex = GetUIColumnIndexByStorageIndex(nColIndex);
 		if (m_Columns[uIColumnIndexByStorageIndex].ColumnType != 4)
 		{
-			InvalidOperationException ex = new(ControlsResources.ExColumnIsNotCheckBox.FmtRes(nColIndex));
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(ControlsResources.ExColumnIsNotCheckBox.Fmt(nColIndex));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2524,7 +2524,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (InvokeRequired)
 		{
 			InvalidOperationException ex = new(ControlsResources.ExInvalidThreadForMethod);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2536,7 +2536,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (indexInStorage < 0)
 		{
 			ArgumentException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2556,7 +2556,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (indexInUI < 0)
 		{
 			ArgumentException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2579,7 +2579,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (columnIndex < 0 || columnIndex >= NumColInt)
 		{
 			IndexOutOfRangeException ex = new("nColIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2598,7 +2598,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (columnIndex < 0 || columnIndex >= NumColInt)
 		{
 			IndexOutOfRangeException ex = new("nColIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -2771,7 +2771,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	protected override void OnFontChanged(EventArgs e)
 	{
 		double cAvCharWidth = m_cAvCharWidth;
-		GetFontInfo(Font, out var height, out m_cAvCharWidth);
+		GetFontInfo(Font, out int height, out m_cAvCharWidth);
 		_ScrollMgr.CellHeight = height + GridButton.ButtonAdditionalHeight;
 		_ScrollMgr.SetHorizontalScrollUnitForArrows((int)m_cAvCharWidth);
 		UpdateEmbeddedControlsFont();
@@ -3165,7 +3165,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		catch (Exception ex)
 		{
 			m_captureTracker.Reset();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -3421,49 +3421,49 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	protected virtual AbstractGridColumn AllocateCustomColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
 	{
 		NotImplementedException ex = new(ControlsResources.ExDeriveToImplementCustomColumn);
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
 	protected virtual bool HandleCustomCellMouseBtnDown(Keys modKeys, MouseButtons btn)
 	{
 		NotImplementedException ex = new(ControlsResources.ExDeriveToImplementCustomColumn);
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
 	protected virtual void HandleCustomCellDoubleClick(Keys modKeys, MouseButtons btn)
 	{
 		NotImplementedException ex = new(ControlsResources.ExDeriveToImplementCustomColumn);
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
 	protected virtual void HandleCustomCellMouseBtnUp(int X, int Y, MouseButtons btn)
 	{
 		NotImplementedException ex = new(ControlsResources.ExDeriveToImplementCustomColumn);
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
 	protected virtual void SetCursorForCustomCell(long nRowIndex, int nColumnIndex, Rectangle r)
 	{
 		NotImplementedException ex = new(ControlsResources.ExDeriveToImplementCustomColumn);
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
 	protected virtual void HandleCustomCellMouseMove(int X, int Y, MouseButtons btn)
 	{
 		NotImplementedException ex = new(ControlsResources.ExDeriveToImplementCustomColumn);
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
 	protected virtual string GetCustomColumnStringForClipboardText(long rowIndex, int colIndex)
 	{
 		NotImplementedException ex = new(ControlsResources.ExDeriveToImplementCustomColumn);
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -3634,14 +3634,14 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (nIndex < 0 || nIndex > m_Columns.Count)
 		{
 			ArgumentOutOfRangeException ex = new("nIndex", nIndex, "");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (ci.MergedHeaderResizeProportion < 0f || ci.MergedHeaderResizeProportion > 1f)
 		{
 			ArgumentException ex = new(ControlsResources.ExInvalidMergedHeaderResizeProportion, "GridColumnInfo.MergedHeaderResizeProportion");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -3649,8 +3649,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		int columnWidthInPixels = GetColumnWidthInPixels(ci.ColumnWidth, ci.WidthType);
 		if (columnWidthInPixels > C_MaximumColumnWidth)
 		{
-			ArgumentException ex = new(ControlsResources.ExColumnWidthShouldBeLessThanMax.FmtRes(C_MaximumColumnWidth), "nWidth");
-			Diag.Dug(ex);
+			ArgumentException ex = new(ControlsResources.ExColumnWidthShouldBeLessThanMax.Fmt(C_MaximumColumnWidth), "nWidth");
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -3679,14 +3679,14 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (nIndex < 0 || nIndex >= m_Columns.Count)
 		{
 			ArgumentOutOfRangeException ex = new("nIndex", nIndex, "");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (_ScrollMgr.FirstScrollableColumnIndex == m_Columns.Count - 1 && m_Columns.Count != 1)
 		{
 			ArgumentException ex = new(ControlsResources.ExFirstScrollableWillBeBad, "nIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -3718,7 +3718,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (nIndex < 0 || nIndex >= m_Columns.Count)
 		{
 			ArgumentOutOfRangeException ex = new("nIndex", nIndex, "");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -3750,7 +3750,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			return invokerInOutArgs.InOutParam3;
 		}
 
-		GetHeaderInfoInternal(colIndex, out headerText, out var bmp, out var checkBoxState);
+		GetHeaderInfoInternal(colIndex, out headerText, out Bitmap bmp, out EnGridCheckBoxState checkBoxState);
 		if (bitmapHeader)
 		{
 			return bmp;
@@ -3764,7 +3764,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (colIndex < 0 || colIndex >= m_Columns.Count)
 		{
 			ArgumentOutOfRangeException ex = new("colIndex", colIndex, "");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -3784,7 +3784,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	private void GetHeaderInfoInternalForInvoke(int colIndex, InvokerInOutArgs outArgs)
 	{
-		GetHeaderInfoInternal(colIndex, out var headerText, out var bmp, out var checkBoxState);
+		GetHeaderInfoInternal(colIndex, out string headerText, out Bitmap bmp, out EnGridCheckBoxState checkBoxState);
 		outArgs.InOutParam = headerText;
 		outArgs.InOutParam2 = bmp;
 		outArgs.InOutParam3 = checkBoxState;
@@ -3795,14 +3795,14 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (nRowIndex < 0 || nRowIndex >= RowCount)
 		{
 			ArgumentOutOfRangeException ex = new("nRowIndex", nRowIndex, ControlsResources.ExRowIndexShouldBeInRange);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (nColIndex < 0 || nColIndex >= m_Columns.Count)
 		{
 			ArgumentOutOfRangeException ex = new("nColIndex", nColIndex, ControlsResources.ExColumnIndexShouldBeInRange);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -3835,7 +3835,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (col != null && col.Count > 1 && _SelectionMgr.OnlyOneSelItem)
 		{
 			ArgumentException ex = new(ControlsResources.ExNoMultiBlockSelInSingleSelMode, "SelectionBlocks");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -3845,22 +3845,22 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			{
 				if (item.X < 0 || item.Y < 0)
 				{
-					ArgumentException ex = new(string.Format(ControlsResources.ExNonExistingGridSelectionBlock, item.X.ToString(), item.Y.ToString(), item.Right.ToString(), item.Bottom.ToString()), "SelectionBlocks");
-					Diag.Dug(ex);
+					ArgumentException ex = new(ControlsResources.ExNonExistingGridSelectionBlock.Fmt(item.X.ToString(), item.Y.ToString(), item.Right.ToString(), item.Bottom.ToString()), "SelectionBlocks");
+					Diag.Ex(ex);
 					throw ex;
 				}
 
 				if (item.Y >= RowCount || item.Bottom >= RowCount)
 				{
-					ArgumentException ex = new(string.Format(ControlsResources.ExNonExistingGridSelectionBlock, item.X.ToString(), item.Y.ToString(), item.Right.ToString(), item.Bottom.ToString()), "SelectionBlocks");
-					Diag.Dug(ex);
+					ArgumentException ex = new(ControlsResources.ExNonExistingGridSelectionBlock.Fmt(item.X.ToString(), item.Y.ToString(), item.Right.ToString(), item.Bottom.ToString()), "SelectionBlocks");
+					Diag.Ex(ex);
 					throw ex;
 				}
 
 				if (item.X >= NumColInt || item.Right >= NumColInt)
 				{
-					ArgumentException ex = new(string.Format(ControlsResources.ExNonExistingGridSelectionBlock, item.X.ToString(), item.Y.ToString(), item.Right.ToString(), item.Bottom.ToString()), "SelectionBlocks");
-					Diag.Dug(ex);
+					ArgumentException ex = new(ControlsResources.ExNonExistingGridSelectionBlock.Fmt(item.X.ToString(), item.Y.ToString(), item.Right.ToString(), item.Bottom.ToString()), "SelectionBlocks");
+					Diag.Ex(ex);
 					throw ex;
 				}
 			}
@@ -3901,21 +3901,21 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (!IsHandleCreated)
 		{
 			InvalidOperationException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (nRowIndex < 0 || nRowIndex >= RowCount)
 		{
 			ArgumentOutOfRangeException ex = new("nRowIndex", nRowIndex, "");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (nColIndex < 0 || nColIndex >= NumColInt)
 		{
 			ArgumentOutOfRangeException ex = new("nColIndex", nColIndex, "");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -3958,22 +3958,22 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (nColIndex < 0 || nColIndex >= NumColInt)
 		{
 			ArgumentOutOfRangeException ex = new("nColIndex", nColIndex, "");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (nWidth <= 0)
 		{
 			ArgumentException ex = new(ControlsResources.ExColumnWidthShouldBeGreaterThanZero, "nWidth");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		int columnWidthInPixels = GetColumnWidthInPixels(nWidth, widthType);
 		if (columnWidthInPixels > C_MaximumColumnWidth)
 		{
-			ArgumentException ex = new(ControlsResources.ExColumnWidthShouldBeLessThanMax.FmtRes(C_MaximumColumnWidth), "nWidth");
-			Diag.Dug(ex);
+			ArgumentException ex = new(ControlsResources.ExColumnWidthShouldBeLessThanMax.Fmt(C_MaximumColumnWidth), "nWidth");
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -4009,14 +4009,14 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (proportion < 0f || proportion > 1f)
 		{
 			ArgumentException ex = new(ControlsResources.ExInvalidMergedHeaderResizeProportion, "proportion");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (!m_gridHeader[colIndex].MergedWithRight)
 		{
 			ArgumentException ex = new(ControlsResources.ExInvalidColIndexForMergedResizeProp, "colIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -4028,7 +4028,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (nColIndex < 0 || nColIndex >= NumColInt)
 		{
 			ArgumentOutOfRangeException ex = new("nColIndex", nColIndex, "");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -4057,7 +4057,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	private void IsACellBeingEditedInternalForInvoke(InvokerInOutArgs args)
 	{
-		args.InOutParam = IsACellBeingEditedInternal(out var rowIndex, out var columnIndex);
+		args.InOutParam = IsACellBeingEditedInternal(out long rowIndex, out int columnIndex);
 		args.InOutParam2 = rowIndex;
 		args.InOutParam3 = columnIndex;
 	}
@@ -4140,7 +4140,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected virtual int CalculateHeaderHeight(Font headerFont)
 	{
-		GetFontInfo(headerFont, out var height, out var _);
+		GetFontInfo(headerFont, out int height, out _);
 		return height + GridButton.ButtonAdditionalHeight;
 	}
 
@@ -4286,7 +4286,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				using Graphics g2 = GraphicsFromHandle();
 				if (m_Columns[nColNumber].IsPointOverTextInCell(PointToClient(MousePosition), _ScrollMgr.GetCellRectangle(nRowNumber, nColNumber), m_gridStorage, nRowNumber, g2, m_linkFont))
 				{
-					toolTipText = ControlsResources.Grid_ToolTipUrl.FmtRes(m_gridStorage.GetCellDataAsString(nRowNumber, m_Columns[nColNumber].ColumnIndex));
+					toolTipText = ControlsResources.Grid_ToolTipUrl.Fmt(m_gridStorage.GetCellDataAsString(nRowNumber, m_Columns[nColNumber].ColumnIndex));
 				}
 			}
 			catch (Exception ex)
@@ -4333,7 +4333,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				if (_SelectionMgr.CurrentSelectionBlockIndex < 0)
 				{
 					InvalidOperationException ex = new(ControlsResources.ExInvalidCurrentSelBlockForClipboard);
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -4408,14 +4408,14 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (columnIndex < 0 || columnIndex >= NumColInt)
 		{
 			ArgumentOutOfRangeException ex = new("columnIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (!IsHandleCreated)
 		{
 			InvalidOperationException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -5979,7 +5979,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	private void DrawOneButtonCell(long nRowIndex, int nColumnIndex, bool bPushed)
 	{
 		GridButtonColumn gridButtonColumn = (GridButtonColumn)m_Columns[nColumnIndex];
-		m_gridStorage.GetCellDataForButton(nRowIndex, m_Columns[nColumnIndex].ColumnIndex, out var _, out Bitmap image, out string buttonLabel);
+		m_gridStorage.GetCellDataForButton(nRowIndex, m_Columns[nColumnIndex].ColumnIndex, out _, out Bitmap image, out string buttonLabel);
 		SolidBrush bkBrush = null;
 		SolidBrush textBrush = null;
 		GetCellGDIObjects(m_Columns[nColumnIndex], nRowIndex, nColumnIndex, ref bkBrush, ref textBrush);
@@ -6007,14 +6007,14 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			if (firstScrollableColumnIndex < 0 || firstScrollableColumnIndex >= m_Columns.Count)
 			{
 				ArgumentException ex = new(ControlsResources.ExFirstScrollableColumnShouldBeValid, "FirstScrollalbeColumn");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
 			if (firstScrollableColumnIndex > 0 && m_gridHeader[firstScrollableColumnIndex - 1].MergedWithRight)
 			{
 				ArgumentException ex = new(ControlsResources.ExLastNonScrollCannotBeMerged, "FirstScrollalbeColumn");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 		}
@@ -6025,7 +6025,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (_ScrollMgr.FirstScrollableRowIndex < 0)
 		{
 			ArgumentException ex = new(ControlsResources.ExFirstScrollableRowShouldBeValid, "FirstScrollalbeRow");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -6264,7 +6264,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected void CheckAndRePositionEmbeddedControlForSmallSizes()
 	{
-		if (!IsACellBeingEdited(out var nRowNum, out var nColNum))
+		if (!IsACellBeingEdited(out long nRowNum, out int nColNum))
 		{
 			return;
 		}
@@ -6412,10 +6412,10 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	{
 		if (m_gridHeader[columnIndex].AccessibleName != null)
 		{
-			return ControlsResources.Grid_CellDefaultAccessibleName.FmtRes(rowIndex, columnIndex, m_gridHeader[columnIndex].AccessibleName);
+			return ControlsResources.Grid_CellDefaultAccessibleName.Fmt(rowIndex, columnIndex, m_gridHeader[columnIndex].AccessibleName);
 		}
 
-		return ControlsResources.Grid_CellDefaultAccessibleName.FmtRes(rowIndex, columnIndex, m_gridHeader[columnIndex].Text);
+		return ControlsResources.Grid_CellDefaultAccessibleName.Fmt(rowIndex, columnIndex, m_gridHeader[columnIndex].Text);
 	}
 
 	private bool StartEditingCell(long nRowIndex, int nColIndex, int editType, bool focusEmbedded)
@@ -6441,7 +6441,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (gridEmbeddedControl == null)
 		{
 			InvalidOperationException ex = new(ControlsResources.ExCurControlIsNotIGridEmbedded);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -6530,7 +6530,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (!m_scrollableArea.Contains(mousePosition))
 		{
 			int yDelta = -1;
-			Native.RECTEx scrollRect = new Native.RECTEx(0, 0, 0, 0);
+			Native.RECTX scrollRect = new Native.RECTX(0, 0, 0, 0);
 			HitTestInfo hitTestInfo = HitTestInternal(mousePosition.X, mousePosition.Y);
 			long nRowIndex = hitTestInfo.RowIndex;
 			int nColIndex = hitTestInfo.ColumnIndex;
@@ -6841,7 +6841,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 
 		int yDelta = -1;
-		Native.RECTEx scrollRect = new Native.RECTEx(0, 0, 0, 0);
+		Native.RECTX scrollRect = new Native.RECTX(0, 0, 0, 0);
 		_ = _ScrollMgr.FirstRowIndex;
 		int num = _ScrollMgr.CalcVertPageSize(m_scrollableArea);
 		if (!CheckAndProcessCurrentEditingCellForKeyboard())
@@ -6968,7 +6968,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 		else
 		{
-			_ScrollMgr.EnsureRowIsVisibleNoRedraw(_SelectionMgr.LastUpdatedRow, bMakeRowTheTopOne: true, out var _);
+			_ScrollMgr.EnsureRowIsVisibleNoRedraw(_SelectionMgr.LastUpdatedRow, bMakeRowTheTopOne: true, out _);
 		}
 
 		Refresh();
@@ -7011,7 +7011,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			}
 
 			bool bMakeRowTheTopOne = !bDown;
-			_ScrollMgr.EnsureRowIsVisibleNoRedraw(_SelectionMgr.CurrentRow, bMakeRowTheTopOne, out var _);
+			_ScrollMgr.EnsureRowIsVisibleNoRedraw(_SelectionMgr.CurrentRow, bMakeRowTheTopOne, out _);
 			_ScrollMgr.EnsureColumnIsVisible(_SelectionMgr.CurrentColumn, bMakeFirstFullyVisible: false, bRedraw: false);
 			CompleteArrowsNatigation(flag, bDown ? Keys.Down : Keys.Up, mod);
 			return true;
@@ -7233,7 +7233,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 	protected EnButtonCellState GetButtonCellState(long nRowIndex, int nColIndex)
 	{
-		m_gridStorage.GetCellDataForButton(nRowIndex, m_Columns[nColIndex].ColumnIndex, out var state, out _, out _);
+		m_gridStorage.GetCellDataForButton(nRowIndex, m_Columns[nColIndex].ColumnIndex, out EnButtonCellState state, out _, out _);
 		return state;
 	}
 
@@ -7245,7 +7245,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 
 		ArgumentException ex = new(ControlsResources.ExInvalidCustomColType, "ci.ColumnType");
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -7293,7 +7293,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 
 		InvalidOperationException ex = new(ControlsResources.ExInvalidGridStateForClipboard);
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -7302,7 +7302,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		if (m_gridStorage == null)
 		{
 			InvalidOperationException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

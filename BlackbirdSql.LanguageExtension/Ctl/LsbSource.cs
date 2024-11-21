@@ -209,7 +209,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		catch (Exception ex)
 		{
 			result = false;
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		args.Result &= result;
@@ -246,7 +246,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				// TraceUtils.LogExCatch(GetType(), e, "ExecuteParseRequest():  Hit Exception While Extracting MetadataProvider from Database Project");
 			}
 		}

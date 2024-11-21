@@ -149,7 +149,7 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

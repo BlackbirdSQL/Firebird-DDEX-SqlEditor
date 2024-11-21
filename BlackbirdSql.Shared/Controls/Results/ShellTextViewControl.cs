@@ -118,15 +118,15 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 			VerifyBeforeInstanceProperty();
 			if (value == null)
 			{
-				ArgumentNullException ex = new("value");
-				Diag.Dug(ex);
+				ArgumentNullException ex = new(nameof(value));
+				Diag.Ex(ex);
 				throw ex;
 			}
 
 			if (value.Length == 0)
 			{
 				ArgumentOutOfRangeException ex = new("value");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -145,15 +145,15 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 			VerifyBeforeInstanceProperty();
 			if (value == null)
 			{
-				ArgumentNullException ex = new("value");
-				Diag.Dug(ex);
+				ArgumentNullException ex = new(nameof(value));
+				Diag.Ex(ex);
 				throw ex;
 			}
 
 			if (value.Length == 0)
 			{
 				ArgumentException ex = new("", "value");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -204,7 +204,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 			}
 			catch (Exception e)
 			{
-				Diag.Dug(e);
+				Diag.Ex(e);
 			}
 
 			Release(vsCodeWindowManager);
@@ -303,8 +303,8 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 		if (codeWindowStyle)
 		{
-			object var = true;
-			___(ppProp.SetProperty(VSEDITPROPID.VSEDITPROPID_ViewComposite_AllCodeWindowDefaults, var));
+			object obj = true;
+			___(ppProp.SetProperty(VSEDITPROPID.VSEDITPROPID_ViewComposite_AllCodeWindowDefaults, obj));
 		}
 		else
 		{
@@ -319,7 +319,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 			}
 		}
 
-		___(m_textView.GetScrollInfo(1, out _, out _, out _, out var piFirstVisibleUnit));
+		___(m_textView.GetScrollInfo(1, out _, out _, out _, out int piFirstVisibleUnit));
 		___(m_textView.SetScrollPosition(1, piFirstVisibleUnit));
 		___(m_textView.GetScrollInfo(0, out _, out _, out _, out piFirstVisibleUnit));
 		___(m_textView.SetScrollPosition(0, piFirstVisibleUnit));
@@ -368,7 +368,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 	}
 
@@ -407,7 +407,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 			}
 			catch (Exception e)
 			{
-				Diag.Dug(e);
+				Diag.Ex(e);
 			}
 		}
 		finally

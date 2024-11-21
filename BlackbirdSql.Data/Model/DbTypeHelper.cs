@@ -341,7 +341,7 @@ internal static class DbTypeHelper
 		else
 		{
 			ArgumentException ex = new($"Unknown type: {type}.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

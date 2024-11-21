@@ -46,7 +46,7 @@ public partial class VxbConnectionPromptDialog : DataConnectionPromptDialog
 		{
 			RctManager.SessionConnectionSourceActive = false;
 
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -112,7 +112,7 @@ public partial class VxbConnectionPromptDialog : DataConnectionPromptDialog
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw;
 			}
 
@@ -148,7 +148,7 @@ public partial class VxbConnectionPromptDialog : DataConnectionPromptDialog
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -176,7 +176,7 @@ public partial class VxbConnectionPromptDialog : DataConnectionPromptDialog
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -226,7 +226,7 @@ public partial class VxbConnectionPromptDialog : DataConnectionPromptDialog
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}
@@ -284,7 +284,7 @@ public partial class VxbConnectionPromptDialog : DataConnectionPromptDialog
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}

@@ -1242,7 +1242,7 @@ public class SplitViewContainer : Control, IServiceProvider
 		lock (_LockLocal)
 		{
 			if (_EventCardinal == 0)
-				Diag.Dug(new InvalidOperationException(Resources.ExEventsAlreadyEnabled));
+				Diag.Ex(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
 			else
 				_EventCardinal--;
 		}

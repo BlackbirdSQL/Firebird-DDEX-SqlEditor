@@ -58,7 +58,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -70,7 +70,7 @@ public class GridBatchConsumer : AbstractBatchConsumer
 		}
 		catch (ResultsException ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			_CouldNotAddGrid = true;
 		}
 		catch (Exception ex)

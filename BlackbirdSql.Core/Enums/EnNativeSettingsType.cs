@@ -86,7 +86,7 @@ public static class EnNativeSettingsTypeExtensions
 			_ => ((Func<Type>)(() =>
 			{
 				ArgumentOutOfRangeException exbb = new("nativeSettingsType", @this, null);
-				Diag.Dug(exbb);
+				Diag.Ex(exbb);
 				throw exbb;
 			}))(),
 		};

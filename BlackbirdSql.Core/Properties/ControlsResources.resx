@@ -198,29 +198,17 @@ Continue?</value>
   <data name="RctManager_TextInvalidConnectionName" xml:space="preserve">
     <value>Connection names beginning with '{0}' are reserved for connection monikers. The ConnectionName '{1}' is not permitted.</value>
   </data>
-  <data name="RctManager_TextNewConnectionDatabaseNameConflict" xml:space="preserve">
-    <value>The settings provided will create a new connection.
-The Proposed Database Name '{0}' is already allocated and '{1}' will be used instead.
-
-Continue?</value>
-  </data>
-  <data name="RctManager_TextNewConnectionNameConflict" xml:space="preserve">
-    <value>The settings provided will create a new connection.
-The Proposed Connection Name '{0}' is already allocated and '{1}' will be used instead.
-
-Continue?</value>
-  </data>
   <data name="RctManager_TextNewSEConnection" xml:space="preserve">
-    <value>A new Server Explorer Connection will be created. Continue?</value>
+    <value>A new Server Explorer Connection will be required. Continue?</value>
   </data>
   <data name="RctManager_TextNewSEConnectionDatabaseNameConflict" xml:space="preserve">
-    <value>The settings provided will create a new Server Explorer connection.
+    <value>The settings provided requires a new Server Explorer connection.
 The Proposed Database Name '{0}' is already allocated and '{1}' will be used instead.
 
 Continue?</value>
   </data>
   <data name="RctManager_TextNewSEConnectionNameConflict" xml:space="preserve">
-    <value>The settings provided will create a new Server Explorer connection.
+    <value>The settings provided requires a new Server Explorer connection.
 The Proposed Connection Name '{0}' is already allocated and '{1}' will be used instead.
 
 Continue?</value>
@@ -241,7 +229,19 @@ The Proposed Connection Name '{0}' is already allocated and '{1}' will be used i
 Continue?</value>
   </data>
   <data name="RctManager_TextNewSessionSEConnection" xml:space="preserve">
-    <value>The settings provided will add a new Server Explorer connection. Continue?</value>
+    <value>The settings provided will create a new Server Explorer connection. Continue?</value>
+  </data>
+  <data name="RctManager_TextNewSessionSEConnectionDatabaseNameConflict" xml:space="preserve">
+    <value>The settings provided will create a new Server Explorer connection.
+The Proposed Database Name '{0}' is already allocated and '{1}' will be used instead.
+
+Continue?</value>
+  </data>
+  <data name="RctManager_TextNewSessionSEConnectionNameConflict" xml:space="preserve">
+    <value>The settings provided will create a new Server Explorer connection.
+The Proposed Connection Name '{0}' is already allocated and '{1}' will be used instead.
+
+Continue?</value>
   </data>
   <data name="RctManager_TextSEConnectionModified" xml:space="preserve">
     <value>Any modified settings will be applied to the existing Server Explorer Connection '{0}'.

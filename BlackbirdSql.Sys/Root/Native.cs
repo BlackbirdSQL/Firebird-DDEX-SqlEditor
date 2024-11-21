@@ -201,7 +201,7 @@ public abstract class Native
 
 	// GetScrollInfo
 	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-	public static extern bool GetScrollInfo(IntPtr hWnd, int fnBar, [In][Out] SCROLLINFOEx si);
+	public static extern bool GetScrollInfo(IntPtr hWnd, int fnBar, [In][Out] SCROLLINFOX si);
 
 
 	// GetSysColor
@@ -227,7 +227,7 @@ public abstract class Native
 	// GetWindowRect
 	[DllImport("user32.dll")]
 	[return: MarshalAs(UnmanagedType.Bool)]
-	public static extern bool GetWindowRect(IntPtr hwnd, out RECTEx lpRect);
+	public static extern bool GetWindowRect(IntPtr hwnd, out RECTX lpRect);
 
 
 	// IsWindow
@@ -238,7 +238,7 @@ public abstract class Native
 
 	// InvalidateRect
 	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-	public static extern bool InvalidateRect(IntPtr hWnd, COMRECTEx rect, bool erase);
+	public static extern bool InvalidateRect(IntPtr hWnd, COMRECTX rect, bool erase);
 
 
 	// LineTo
@@ -269,7 +269,7 @@ public abstract class Native
 
 	// ScrollWindow
 	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-	public static extern bool ScrollWindow(IntPtr hWnd, int nXAmount, int nYAmount, ref RECTEx rectScrollRegion, ref RECTEx rectClip);
+	public static extern bool ScrollWindow(IntPtr hWnd, int nXAmount, int nYAmount, ref RECTX rectScrollRegion, ref RECTX rectClip);
 
 
 	// SelectObject
@@ -296,7 +296,7 @@ public abstract class Native
 
 	// SetScrollInfo
 	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-	public static extern int SetScrollInfo(IntPtr hWnd, int fnBar, SCROLLINFOEx si, bool redraw);
+	public static extern int SetScrollInfo(IntPtr hWnd, int fnBar, SCROLLINFOX si, bool redraw);
 
 
 	// SetFocus
@@ -387,7 +387,7 @@ public abstract class Native
 
 
 	[StructLayout(LayoutKind.Sequential)]
-	public class COMRECTEx
+	public class COMRECTX
 	{
 		public int left;
 
@@ -397,11 +397,11 @@ public abstract class Native
 
 		public int bottom;
 
-		public COMRECTEx()
+		public COMRECTX()
 		{
 		}
 
-		public COMRECTEx(int left, int top, int right, int bottom)
+		public COMRECTX(int left, int top, int right, int bottom)
 		{
 			this.left = left;
 			this.top = top;
@@ -446,7 +446,7 @@ public abstract class Native
 	}
 
 
-	public struct RECTEx
+	public struct RECTX
 	{
 		public int left;
 
@@ -456,7 +456,7 @@ public abstract class Native
 
 		public int bottom;
 
-		public RECTEx(int left, int top, int right, int bottom)
+		public RECTX(int left, int top, int right, int bottom)
 		{
 			this.left = left;
 			this.top = top;
@@ -464,7 +464,7 @@ public abstract class Native
 			this.bottom = bottom;
 		}
 
-		public RECTEx(OLERECT rect)
+		public RECTX(OLERECT rect)
 		{
 			left = rect.left;
 			top = rect.top;
@@ -472,17 +472,17 @@ public abstract class Native
 			bottom = rect.bottom;
 		}
 
-		public static RECTEx FromXYWH(int x, int y, int width, int height)
+		public static RECTX FromXYWH(int x, int y, int width, int height)
 		{
-			return new RECTEx(x, y, x + width, y + height);
+			return new RECTX(x, y, x + width, y + height);
 		}
 	}
 
 
 	[StructLayout(LayoutKind.Sequential)]
-	public class SCROLLINFOEx
+	public class SCROLLINFOX
 	{
-		public int cbSize = Marshal.SizeOf(typeof(SCROLLINFOEx));
+		public int cbSize = Marshal.SizeOf(typeof(SCROLLINFOX));
 		public int fMask;
 		public int nMin;
 		public int nMax;
@@ -490,11 +490,11 @@ public abstract class Native
 		public int nPos;
 		public int nTrackPos;
 
-		public SCROLLINFOEx()
+		public SCROLLINFOX()
 		{
 		}
 
-		public SCROLLINFOEx(int mask, int min, int max, int page, int pos)
+		public SCROLLINFOX(int mask, int min, int max, int page, int pos)
 		{
 			fMask = mask;
 			nMin = min;
@@ -503,7 +503,7 @@ public abstract class Native
 			nPos = pos;
 		}
 
-		public SCROLLINFOEx(bool bInitWithAllMask) : this()
+		public SCROLLINFOX(bool bInitWithAllMask) : this()
 		{
 			if (bInitWithAllMask)
 				fMask = 23;

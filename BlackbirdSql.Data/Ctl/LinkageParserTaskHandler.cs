@@ -149,7 +149,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	public void PreRegister(bool canBeCancelled)
 	{
 		TaskHandlerOptions options = default;
-		options.Title = ControlsResources.LinkageParser_TaskHandlerTitle.FmtRes(DatasetKey);
+		options.Title = ControlsResources.LinkageParser_TaskHandlerTitle.Fmt(DatasetKey);
 		options.ActionsAfterCompletion = CompletionActions.None;
 
 		_ProgressData = default;
@@ -169,7 +169,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 	}
 
@@ -256,7 +256,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 		else if (progress == 100)
 		{
 			completed = true;
-			text = ControlsResources.LinkageParser_Completed.FmtRes(progress, stage, totalElapsed);
+			text = ControlsResources.LinkageParser_Completed.Fmt(progress, stage, totalElapsed);
 		}
 		else
 		{
@@ -266,7 +266,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 				if (!enabled)
 				{
 					completed = true;
-					text = ControlsResources.LinkageParser_Cancelled.FmtRes(progress, stage, elapsed);
+					text = ControlsResources.LinkageParser_Cancelled.Fmt(progress, stage, elapsed);
 				}
 				else
 				{
@@ -275,9 +275,9 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 					else if (elapsed == LinkageParser.C_Elapsed_Disabling)
 						text = ControlsResources.LinkageParser_PausingAsync;
 					else if (elapsed == LinkageParser.C_Elapsed_StageCompleted)
-						text = ControlsResources.LinkageParser_PercentCompletedStage.FmtRes(progress, stage);
+						text = ControlsResources.LinkageParser_PercentCompletedStage.Fmt(progress, stage);
 					else
-						text = ControlsResources.LinkageParser_PercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);
+						text = ControlsResources.LinkageParser_PercentCompletedStageElapsed.Fmt(progress, stage, elapsed);
 
 				}
 			}
@@ -286,9 +286,9 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 				if (elapsed == LinkageParser.C_Elapsed_Resuming)
 					text = ControlsResources.LinkageParser_SwitchedToUiThread;
 				else if (elapsed == LinkageParser.C_Elapsed_StageCompleted)
-					text = ControlsResources.LinkageParser_PercentCompletedStage.FmtRes(progress, stage);
+					text = ControlsResources.LinkageParser_PercentCompletedStage.Fmt(progress, stage);
 				else
-					text = ControlsResources.LinkageParser_PercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);
+					text = ControlsResources.LinkageParser_PercentCompletedStageElapsed.Fmt(progress, stage, elapsed);
 			}
 
 		}
@@ -316,12 +316,12 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 		if (stage == EnLinkStage.Start)
 		{
 			// async = isAsync ? " (async)" : "";
-			text = ControlsResources.LinkageParser_UpdatingCatalog.FmtRes(catalog);
+			text = ControlsResources.LinkageParser_UpdatingCatalog.Fmt(catalog);
 		}
 		else if (stage == EnLinkStage.Completed)
 		{
 			// async = isAsync ? " (async)" : "";
-			text = ControlsResources.LinkageParser_CompletedCatalog.FmtRes(catalog, totalElapsed);
+			text = ControlsResources.LinkageParser_CompletedCatalog.Fmt(catalog, totalElapsed);
 		}
 		else
 		{
@@ -329,16 +329,16 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 			{
 				// If it's a user cancel request.
 				if (!enabled)
-					text = ControlsResources.LinkageParser_CancelledCatalog.FmtRes(catalog);
+					text = ControlsResources.LinkageParser_CancelledCatalog.Fmt(catalog);
 				else
-					text = ControlsResources.LinkageParser_ResumingCatalog.FmtRes(catalog);
+					text = ControlsResources.LinkageParser_ResumingCatalog.Fmt(catalog);
 			}
 			else
 			{
 				if (!enabled)
-					text = ControlsResources.LinkageParser_CancelledCatalog.FmtRes(catalog);
+					text = ControlsResources.LinkageParser_CancelledCatalog.Fmt(catalog);
 				else
-					text = ControlsResources.LinkageParser_CatalogSwitchedToUiThread.FmtRes(catalog);
+					text = ControlsResources.LinkageParser_CatalogSwitchedToUiThread.Fmt(catalog);
 			}
 		}
 

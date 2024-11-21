@@ -11,7 +11,6 @@ using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
-using BlackbirdSql.Sys.Ctl.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -95,7 +94,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			if (!(vsWindowFrame != null))
 				return null;
 
-			vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar);
+			vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out object pvar);
 			return (string)pvar;
 		}
 	}
@@ -293,7 +292,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		___(CurrentFrame.GetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, out var pvar));
+		___(CurrentFrame.GetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, out object pvar));
 
 		return Control.FromHandle((IntPtr)(int)pvar) as Panel;
 	}
@@ -451,11 +450,11 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		try
 		{
 			_SavedSelection = null;
-			if (__(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
+			if (__(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out object pvar)))
 			{
 				using ServiceProvider serviceProvider = new ServiceProvider((IOleServiceProvider)pvar);
 				if (serviceProvider.GetService(typeof(SVsTrackSelectionEx)) is IVsTrackSelectionEx vsTrackSelectionEx
-					&& __(vsTrackSelectionEx.GetCurrentSelection(out var ppHier, out var _, out var _, out var ppSC))
+					&& __(vsTrackSelectionEx.GetCurrentSelection(out IntPtr ppHier, out _, out _, out IntPtr ppSC))
 					&& ppSC != IntPtr.Zero)
 				{
 					try
@@ -479,7 +478,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -549,14 +548,14 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			{
 				_CmdTarget = cmdTarget;
 			}
-			if (_SavedSelection != null && __(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
+			if (_SavedSelection != null && __(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out object pvar)))
 			{
 				using ServiceProvider serviceProvider = new ServiceProvider((IOleServiceProvider)pvar);
 				(serviceProvider.GetService(typeof(SVsTrackSelectionEx)) as IVsTrackSelectionEx).OnSelectChange(_SavedSelection);
 				_SavedSelection = null;
 			}
 
-			int hr = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar2);
+			int hr = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out object pvar2);
 			if (!__(hr))
 				return;
 
@@ -566,12 +565,12 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				IVsHierarchy o = null;
 				uint itemid = 0u;
 
-				hr = _CurrentFrame.GetProperty((int)VsFramePropID.Hierarchy, out var pvar3);
+				hr = _CurrentFrame.GetProperty((int)VsFramePropID.Hierarchy, out object pvar3);
 
 				if (__(hr))
 				{
 					o = (IVsHierarchy)pvar3;
-					hr = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out var pvar4);
+					hr = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out object pvar4);
 
 					if (__(hr))
 						itemid = (uint)(int)pvar4;
@@ -611,7 +610,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 

@@ -156,7 +156,7 @@ public static class VsColorUtilities
 
 		Diag.ThrowIfNotOnUIThread();
 
-		fontAndColorUtilities.GetRGBOfIndex(colorIndex, out var pcrResult);
+		fontAndColorUtilities.GetRGBOfIndex(colorIndex, out uint pcrResult);
 
 		return ColorTranslator.FromWin32((int)pcrResult);
 	}
@@ -209,7 +209,7 @@ public static class VsColorUtilities
 
 		Diag.ThrowIfNotOnUIThread();
 
-		___(UiShell.GetVSSysColorEx(colorIndex, out var pdwRGBval));
+		___(UiShell.GetVSSysColorEx(colorIndex, out uint pdwRGBval));
 		System.Drawing.Color color = ColorTranslator.FromWin32((int)pdwRGBval);
 
 		return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);

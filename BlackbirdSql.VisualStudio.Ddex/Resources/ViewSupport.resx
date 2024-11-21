@@ -999,4 +999,10 @@
   <data name="Identifier_Name_DatasetName" xml:space="preserve">
     <value>Dataset Id</value>
   </data>
+  <data name="Property_Desc_Column_Table" xml:space="preserve">
+    <value>The table associated with this column</value>
+  </data>
+  <data name="Property_Name_Column_Table" xml:space="preserve">
+    <value>Table</value>
+  </data>
 </root>

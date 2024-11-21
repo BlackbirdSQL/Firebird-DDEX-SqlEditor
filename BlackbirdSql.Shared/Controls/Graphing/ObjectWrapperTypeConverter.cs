@@ -156,7 +156,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		}
 		foreach (KeyValuePair<string, int> item2 in dictionary)
 		{
-			string text = string.Format(ControlsResources.Graphing_Wait, item2.Value, item2.Key);
+			string text = ControlsResources.Graphing_Wait.Fmt(item2.Value, item2.Key);
 			displayName = MergeString(CultureInfo.CurrentCulture.TextInfo.ListSeparator + " ", displayName, text);
 		}
 	}
@@ -171,7 +171,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		{
 			PropertyValue propertyValue = property.Properties["SpillLevel"] as PropertyValue;
 			string arg = propertyValue.Value.ToString();
-			string text = ((property.Properties["SpilledThreadCount"] is PropertyValue propertyValue2) ? ControlsResources.SpillToTempDb.FmtRes(arg, propertyValue2.Value.ToString()) : ControlsResources.Graphing_SpillToTempDbOld.FmtRes(arg));
+			string text = ((property.Properties["SpilledThreadCount"] is PropertyValue propertyValue2) ? ControlsResources.SpillToTempDb.Fmt(arg, propertyValue2.Value.ToString()) : ControlsResources.Graphing_SpillToTempDbOld.Fmt(arg));
 			displayName = MergeString(CultureInfo.CurrentCulture.TextInfo.ListSeparator + " ", displayName, text);
 		}
 	}
@@ -196,8 +196,8 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		}
 		foreach (ExpandableObjectWrapper property in GetPropertyList(wrapper, "HashSpillDetails"))
 		{
-			GetCommonSpillDetails(property, out var grantedMemory, out var usedMemory, out var writes, out var reads);
-			string text = string.Format(ControlsResources.Graphing_HashSpillDetails, writes, reads, grantedMemory, usedMemory);
+			GetCommonSpillDetails(property, out string grantedMemory, out string usedMemory, out string writes, out string reads);
+			string text = ControlsResources.Graphing_HashSpillDetails.Fmt(writes, reads, grantedMemory, usedMemory);
 			displayName = MergeString(CultureInfo.CurrentCulture.TextInfo.ListSeparator + " ", displayName, text);
 		}
 	}
@@ -210,8 +210,8 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		}
 		foreach (ExpandableObjectWrapper property in GetPropertyList(wrapper, "SortSpillDetails"))
 		{
-			GetCommonSpillDetails(property, out var grantedMemory, out var usedMemory, out var writes, out var reads);
-			string text = ControlsResources.Graphing_SortSpillDetails.FmtRes(writes, reads, grantedMemory, usedMemory);
+			GetCommonSpillDetails(property, out string grantedMemory, out string usedMemory, out string writes, out string reads);
+			string text = ControlsResources.Graphing_SortSpillDetails.Fmt(writes, reads, grantedMemory, usedMemory);
 			displayName = MergeString(CultureInfo.CurrentCulture.TextInfo.ListSeparator + " ", displayName, text);
 		}
 	}
@@ -237,7 +237,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		if (wrapper["ColumnsWithNoStatistics"] != null)
 		{
 			string value = ((wrapper["ColumnsWithNoStatistics"] as ExpandableObjectWrapper).Properties["ColumnReference"] as PropertyValue).Value.ToString();
-			displayName = string.Format(ControlsResources.Graphing_NameValuePair, ControlsResources.Graphing_ColumnsWithNoStatistics, value);
+			displayName = ControlsResources.Graphing_NameValuePair.Fmt(ControlsResources.Graphing_ColumnsWithNoStatistics, value);
 		}
 	}
 
@@ -259,7 +259,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		{
 			string arg = (property.Properties["ConvertIssue"] as PropertyValue).Value.ToString();
 			string arg2 = (property.Properties["Expression"] as PropertyValue).Value.ToString();
-			string text =ControlsResources.PlanAffectingConvert.FmtRes(arg2, arg);
+			string text =ControlsResources.PlanAffectingConvert.Fmt(arg2, arg);
 			displayName = MergeString(CultureInfo.CurrentCulture.TextInfo.ListSeparator + " ", displayName, text);
 		}
 	}
@@ -277,7 +277,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 				&& property.Properties["RequestedMemory"] is PropertyValue propertyValue2
 				&& property.Properties["MaxUsedMemory"] is PropertyValue propertyValue4)
 			{
-				string text = ControlsResources.Graphing_MemoryGrantWarning.FmtRes(propertyValue.Value.ToString(), propertyValue2.Value.ToString(), propertyValue3.Value.ToString(), propertyValue4.Value.ToString());
+				string text = ControlsResources.Graphing_MemoryGrantWarning.Fmt(propertyValue.Value.ToString(), propertyValue2.Value.ToString(), propertyValue3.Value.ToString(), propertyValue4.Value.ToString());
 				displayName = MergeString(CultureInfo.CurrentCulture.TextInfo.ListSeparator + " ", displayName, text);
 			}
 		}
@@ -333,7 +333,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
 		if (!string.IsNullOrEmpty(item.ScalarString))
 		{
-			expandableObjectWrapper.DisplayName = string.Format(CultureInfo.CurrentCulture, "{0}({1})", ControlsResources.Graphing_ScalarOperator, item.ScalarString);
+			expandableObjectWrapper.DisplayName = "{0}({1})".Fmt(ControlsResources.Graphing_ScalarOperator, item.ScalarString);
 		}
 		else
 		{
@@ -361,7 +361,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		}
 		else
 		{
-			expandableObjectWrapper.DisplayName = string.Format(CultureInfo.CurrentCulture, "{0}({1})", item.CompareOp, obj);
+			expandableObjectWrapper.DisplayName = "{0}({1})".Fmt(item.CompareOp, obj);
 		}
 		return expandableObjectWrapper;
 	}
@@ -369,7 +369,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 	public static ExpandableObjectWrapper Convert(OrderByTypeOrderByColumn item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
-		expandableObjectWrapper.DisplayName = string.Format(CultureInfo.CurrentCulture, "{0} {1}", expandableObjectWrapper["ColumnReference"], item.Ascending ? ControlsResources.Graphing_Ascending : ControlsResources.Descending);
+		expandableObjectWrapper.DisplayName = "{0} {1}".Fmt(expandableObjectWrapper["ColumnReference"], item.Ascending ? ControlsResources.Graphing_Ascending : ControlsResources.Descending);
 		return expandableObjectWrapper;
 	}
 
@@ -404,11 +404,11 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 			}
 			if (text.Length > 0)
 			{
-				expandableObjectWrapper.DisplayName = string.Format(CultureInfo.CurrentCulture, "{0} {1} {2}", obj, text, obj2);
+				expandableObjectWrapper.DisplayName = "{0} {1} {2}".Fmt(obj, text, obj2);
 			}
 			else
 			{
-				expandableObjectWrapper.DisplayName = string.Format(CultureInfo.CurrentCulture, "{0}({1})", item.ScanType, MergeString(",", obj, obj2));
+				expandableObjectWrapper.DisplayName = "{0}({1})".Fmt(item.ScanType, MergeString(",", obj, obj2));
 			}
 		}
 		return expandableObjectWrapper;
@@ -438,7 +438,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 					{
 						stringBuilder.Append(value);
 					}
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, "{0} {1}", properties[i].DisplayName, properties[i].GetValue(expandableObjectWrapper).ToString()));
+					stringBuilder.Append("{0} {1}".Fmt(properties[i].DisplayName, properties[i].GetValue(expandableObjectWrapper).ToString()));
 				}
 				expandableObjectWrapper.DisplayName = stringBuilder.ToString();
 			}
@@ -462,7 +462,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 			{
 				stringBuilder.Append(value);
 			}
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, "{0}[{1}]: {2}", ControlsResources.Graphing_SeekKeys, i + 1, properties[i].GetValue(expandableObjectWrapper).ToString()));
+			stringBuilder.Append("{0}[{1}]: {2}".Fmt(ControlsResources.Graphing_SeekKeys, i + 1, properties[i].GetValue(expandableObjectWrapper).ToString()));
 		}
 		expandableObjectWrapper.DisplayName = stringBuilder.ToString();
 		return expandableObjectWrapper;
@@ -482,7 +482,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 				{
 					stringBuilder.Append(value);
 				}
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, "{0} {1}", properties[i].DisplayName, properties[i].GetValue(expandableObjectWrapper).ToString()));
+				stringBuilder.Append("{0} {1}".Fmt(properties[i].DisplayName, properties[i].GetValue(expandableObjectWrapper).ToString()));
 			}
 			expandableObjectWrapper.DisplayName = stringBuilder.ToString();
 		}
@@ -496,7 +496,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		object obj2 = expandableObjectWrapper["OuterSideJoinColumns"];
 		if (obj != null && obj2 != null)
 		{
-			expandableObjectWrapper.DisplayName = string.Format(CultureInfo.CurrentCulture, "({0}) = ({1})", obj, obj2);
+			expandableObjectWrapper.DisplayName = "({0}) = ({1})".Fmt(obj, obj2);
 		}
 		return expandableObjectWrapper;
 	}
@@ -611,7 +611,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 
 	public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 	{
-		if (convertMethods.TryGetValue(value.GetType(), out var value2))
+		if (convertMethods.TryGetValue(value.GetType(), out MethodInfo value2))
 		{
 			return value2.Invoke(null, BindingFlags.Static | BindingFlags.Public, null, new object[1] { value }, CultureInfo.CurrentCulture);
 		}
@@ -620,7 +620,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 
 	public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destType)
 	{
-		if (convertMethods.TryGetValue(value.GetType(), out var value2) && value2.ReturnType == destType)
+		if (convertMethods.TryGetValue(value.GetType(), out MethodInfo value2) && value2.ReturnType == destType)
 		{
 			return value2.Invoke(this, new object[1] { value });
 		}
@@ -717,7 +717,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 				stringBuilder.Append(CultureInfo.CurrentCulture.TextInfo.ListSeparator);
 				stringBuilder.Append(" ");
 			}
-			stringBuilder.Append(string.Format(ControlsResources.Graphing_NameValuePair, property.DisplayName, value.ToString()));
+			stringBuilder.Append(ControlsResources.Graphing_NameValuePair.Fmt(property.DisplayName, value.ToString()));
 		}
 	}
 }

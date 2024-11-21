@@ -42,8 +42,8 @@ internal class DslTables : AbstractDslSchema
 	{
 		// Evs.Trace(GetType(), "DslTables.GetCommandText");
 
-		var sql = new StringBuilder();
-		var where = new StringBuilder();
+		StringBuilder sql = new();
+		StringBuilder where = new();
 
 		// BlackbirdSql added index, foreign key and trigger counts
 		sql.Append(
@@ -72,7 +72,7 @@ internal class DslTables : AbstractDslSchema
 
 		if (restrictions != null)
 		{
-			var index = 0;
+			int index = 0;
 
 			/* TABLE_CATALOG */
 			if (restrictions.Length >= 1 && restrictions[0] != null)
@@ -152,7 +152,7 @@ internal class DslTables : AbstractDslSchema
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 	}
 

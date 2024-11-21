@@ -79,7 +79,7 @@ public static class EnNodeSystemTypeExtensions
 			return EnNodeSystemType.User;
 		}
 
-		// Evs.Trace(typeof(EnNodeSystemTypeExtensions), "NodeSystemType()", "Node {0} has no system type flag.", node.Name);
+		// Evs.Trace(typeof(EnNodeSystemTypeExtensions), nameof(NodeSystemType), "Node {0} has no system type flag.", node.Name);
 
 		return EnNodeSystemType.Global;
 

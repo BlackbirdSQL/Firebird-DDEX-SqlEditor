@@ -439,20 +439,38 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to save file: {0}.
-        /// </summary>
-        public static string Exception_FailedToSaveFile {
-            get {
-                return ResourceManager.GetString("Exception_FailedToSaveFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Attempt to add a null connection.
         /// </summary>
         public static string ExceptionAttemptToAddNullConnection {
             get {
                 return ResourceManager.GetString("ExceptionAttemptToAddNullConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BeginTransaction failed. Transaction already exists..
+        /// </summary>
+        public static string ExceptionBeginTransactionAlreadyExists {
+            get {
+                return ResourceManager.GetString("ExceptionBeginTransactionAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BeginTransaction failed. Connection is null or not open..
+        /// </summary>
+        public static string ExceptionBeginTransactionConnectionUnavailable {
+            get {
+                return ResourceManager.GetString("ExceptionBeginTransactionConnectionUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot store null in settings store. SettingsModel&lt;{0}&gt;. CollectionName:{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}.
+        /// </summary>
+        public static string ExceptionCannotStoreNullInSettingsStore {
+            get {
+                return ResourceManager.GetString("ExceptionCannotStoreNullInSettingsStore", resourceCulture);
             }
         }
         
@@ -475,6 +493,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ConnectionKey for explorer connection {0} for node {1} is null.
+        /// </summary>
+        public static string ExceptionConnectionKeyNull {
+            get {
+                return ResourceManager.GetString("ExceptionConnectionKeyNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connection is null.
         /// </summary>
         public static string ExceptionConnectionNull {
@@ -493,11 +520,74 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Singleton instance already exists. Attempt to create duplicate {0} instances..
+        ///   Looks up a localized string similar to Must create Rdt Manager on the UI Thread.
         /// </summary>
-        public static string ExceptionDuplicateSingletonInstances {
+        public static string ExceptionCreateRdtManagerOnUiThread {
             get {
-                return ResourceManager.GetString("ExceptionDuplicateSingletonInstances", resourceCulture);
+                return ResourceManager.GetString("ExceptionCreateRdtManagerOnUiThread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DataType {0} is not capable of supporting native storage type {1}.
+        /// </summary>
+        public static string ExceptionDataTypeStorageTypeNotSupported {
+            get {
+                return ResourceManager.GetString("ExceptionDataTypeStorageTypeNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data..
+        /// </summary>
+        public static string ExceptionDocDataKeepAlive {
+            get {
+                return ResourceManager.GetString("ExceptionDocDataKeepAlive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Events already enabled..
+        /// </summary>
+        public static string ExceptionEventsAlreadyEnabled {
+            get {
+                return ResourceManager.GetString("ExceptionEventsAlreadyEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save file: {0}.
+        /// </summary>
+        public static string ExceptionFailedToSaveFile {
+            get {
+                return ResourceManager.GetString("ExceptionFailedToSaveFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not get method &apos;{0}&apos; for property {1}.
+        /// </summary>
+        public static string ExceptionGetMethodForPropertyFailed {
+            get {
+                return ResourceManager.GetString("ExceptionGetMethodForPropertyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GetCommand() GlobalNewQuery returned null.
+        /// </summary>
+        public static string ExceptionGlobalNewQueryCommandNotFound {
+            get {
+                return ResourceManager.GetString("ExceptionGlobalNewQueryCommandNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} method of SettingsModel {1} for property {2} returned a null value..
+        /// </summary>
+        public static string ExceptionMethodPropertyReturnedNull {
+            get {
+                return ResourceManager.GetString("ExceptionMethodPropertyReturnedNull", resourceCulture);
             }
         }
         
@@ -511,11 +601,101 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to GetCommand() NewQueryGlobal returned null.
+        /// </summary>
+        public static string ExceptionNewQueryGlobalCommandNotFound {
+            get {
+                return ResourceManager.GetString("ExceptionNewQueryGlobalCommandNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get next tree child item returned null..
+        /// </summary>
+        public static string ExceptionNextTreeChildItemNull {
+            get {
+                return ResourceManager.GetString("ExceptionNextTreeChildItemNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get next tree item from caret returned null..
+        /// </summary>
+        public static string ExceptionNextTreeItemFromCaretNull {
+            get {
+                return ResourceManager.GetString("ExceptionNextTreeItemFromCaretNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get next tree item from root returned null..
+        /// </summary>
+        public static string ExceptionNextTreeItemFromRootNull {
+            get {
+                return ResourceManager.GetString("ExceptionNextTreeItemFromRootNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not locate Describer for connection parameter &apos;{0}&apos;..
         /// </summary>
         public static string ExceptionParameterDescriberNotFound {
             get {
                 return ResourceManager.GetString("ExceptionParameterDescriberNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error retrieving node {0} property: {1}.
+        /// </summary>
+        public static string ExceptionRetrievingNodeProperty {
+            get {
+                return ResourceManager.GetString("ExceptionRetrievingNodeProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default Load failed for Settings Model {0}. CollectionName:{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}.
+        /// </summary>
+        public static string ExceptionSettingsModelLoadDefaultFailed {
+            get {
+                return ResourceManager.GetString("ExceptionSettingsModelLoadDefaultFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load failed for Settings Model {0}. PropertyName:{1} dataType:{2} PropertyType:{3} Value:{4}.
+        /// </summary>
+        public static string ExceptionSettingsModelLoadFailed {
+            get {
+                return ResourceManager.GetString("ExceptionSettingsModelLoadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save failed for Settings Model {0}. CollectionName:{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}.
+        /// </summary>
+        public static string ExceptionSettingsModelSaveFailed {
+            get {
+                return ResourceManager.GetString("ExceptionSettingsModelSaveFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find window &apos;SHBrowseForFolder ShellNameSpace Control&apos;..
+        /// </summary>
+        public static string ExceptionSHBrowseForFolderNotFound {
+            get {
+                return ResourceManager.GetString("ExceptionSHBrowseForFolderNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find window &apos;SysTreeView32&apos;..
+        /// </summary>
+        public static string ExceptionSysTreeView32NotFound {
+            get {
+                return ResourceManager.GetString("ExceptionSysTreeView32NotFound", resourceCulture);
             }
         }
         
@@ -538,20 +718,29 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Events already enabled..
-        /// </summary>
-        public static string ExEventsAlreadyEnabled {
-            get {
-                return ResourceManager.GetString("ExEventsAlreadyEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Retry number {0}. Ignoring Exception: {1}.
         /// </summary>
         public static string IgnoreOnException {
             get {
                 return ResourceManager.GetString("IgnoreOnException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database path: {0}..
+        /// </summary>
+        public static string LabelDatabasePath {
+            get {
+                return ResourceManager.GetString("LabelDatabasePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frame file: {0}, Moniker: {1}..
+        /// </summary>
+        public static string LabelFrameFileAndMoniker {
+            get {
+                return ResourceManager.GetString("LabelFrameFileAndMoniker", resourceCulture);
             }
         }
         
@@ -641,6 +830,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resource not found: {0}.
+        /// </summary>
+        public static string ResourceNotFound {
+            get {
+                return ResourceManager.GetString("ResourceNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retry number {0}. Delaying {1} ms before next retry. Exception: {2}.
         /// </summary>
         public static string RetryOnException {
@@ -655,6 +853,15 @@ namespace BlackbirdSql.Core.Properties {
         public static string TextBoxRequiredFieldToolTip {
             get {
                 return ResourceManager.GetString("TextBoxRequiredFieldToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FAILED to find window frame for mkDocument: {0}.
+        /// </summary>
+        public static string WarningWindowFrameForDocumentNotFound {
+            get {
+                return ResourceManager.GetString("WarningWindowFrameForDocumentNotFound", resourceCulture);
             }
         }
     }

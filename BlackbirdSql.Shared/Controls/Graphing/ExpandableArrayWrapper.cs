@@ -41,6 +41,6 @@ public class ExpandableArrayWrapper : ExpandableObjectWrapper
 
 	public static string GetPropertyName(int index)
 	{
-		return string.Format(CultureInfo.CurrentCulture, "[{0}]", index);
+		return "[{0}]".Fmt(index);
 	}
 }

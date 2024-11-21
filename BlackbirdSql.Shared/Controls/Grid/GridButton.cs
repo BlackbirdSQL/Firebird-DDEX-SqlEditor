@@ -86,7 +86,7 @@ public sealed class GridButton
 			if (value == null)
 			{
 				ArgumentNullException ex = new();
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 			m_textFont = value;
@@ -104,7 +104,7 @@ public sealed class GridButton
 			if (value == null)
 			{
 				ArgumentNullException ex = new();
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -115,7 +115,7 @@ public sealed class GridButton
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 		}

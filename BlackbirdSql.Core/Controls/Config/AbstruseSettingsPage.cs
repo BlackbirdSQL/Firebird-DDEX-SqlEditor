@@ -1,5 +1,5 @@
 ﻿//
-// Plagiarized from Community.VisualStudio.Toolkit extension
+// Original code plagiarized from Community.VisualStudio.Toolkit extension
 //
 using System;
 using System.ComponentModel;
@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Events;
 using Microsoft.VisualStudio.Shell;
 
@@ -326,7 +325,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 			if (_EventCardinal <= 0)
 			{
 				ApplicationException ex = new($"Attempt to exit event when not in an event. _EventCardinal: {_EventCardinal}");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 			_EventCardinal--;
@@ -457,7 +456,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -584,7 +583,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -653,7 +652,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -686,7 +685,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -752,7 +751,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 			}
 			finally
 			{

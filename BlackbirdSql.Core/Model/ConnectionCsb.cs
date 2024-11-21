@@ -12,6 +12,7 @@ using Microsoft.Data.ConnectionUI;
 using static BlackbirdSql.CoreConstants;
 using static BlackbirdSql.SysConstants;
 using Microsoft.VisualStudio.LanguageServer.Client;
+using BlackbirdSql.Core.Properties;
 
 
 
@@ -424,7 +425,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 		if (transaction != null)
 		{
-			Diag.Debug(new ApplicationException("BeginTransaction failed. Transaction already exists."));
+			Diag.Debug(new ApplicationException(Resources.ExceptionBeginTransactionAlreadyExists));
 			return true;
 		}
 
@@ -432,7 +433,7 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 		if (connection == null || connection.State != ConnectionState.Open)
 		{
-			Diag.Debug(new ApplicationException("BeginTransaction failed. Connection is nul or not open."));
+			Diag.Debug(new ApplicationException(Resources.ExceptionBeginTransactionConnectionUnavailable));
 			return false;
 		}
 

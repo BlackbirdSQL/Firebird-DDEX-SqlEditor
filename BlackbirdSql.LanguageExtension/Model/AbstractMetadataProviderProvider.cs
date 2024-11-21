@@ -220,7 +220,7 @@ public abstract class AbstractMetadataProviderProvider : IBsMetadataProviderProv
 						}
 						catch (Exception e)
 						{
-							Diag.Dug(e);
+							Diag.Ex(e);
 						}
 						tuple.Item2.Complete(isCompleted: true);
 					}
@@ -256,7 +256,7 @@ public abstract class AbstractMetadataProviderProvider : IBsMetadataProviderProv
 				}
 				catch (Exception e2)
 				{
-					Diag.Dug(e2);
+					Diag.Ex(e2);
 				}
 			}
 		}

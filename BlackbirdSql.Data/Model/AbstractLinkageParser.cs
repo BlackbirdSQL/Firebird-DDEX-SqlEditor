@@ -146,7 +146,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		if (root == null)
 		{
 			ArgumentNullException ex = new ArgumentNullException(Resources.ExceptionAttemptToAddNullConnection);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -513,7 +513,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// cancellation tokens during the total delay time of 'delay * multiplier'.
 	/// </param>
 	/// <returns>True if the linkage was successfully completed, else false.</returns>
-	protected abstract bool AsyncExecute(int delay, int multiplier);
+	protected abstract bool ExecuteAsyin(int delay, int multiplier);
 
 
 
@@ -652,7 +652,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex, Resources.ExceptionTriggerErrorAtColumnIndex.FmtRes(i));
+					Diag.Ex(ex, Resources.ExceptionTriggerErrorAtColumnIndex.Fmt(i));
 				}
 			}
 
@@ -670,7 +670,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex, Resources.ExceptionTriggerGeneratorErrorAtColumnIndex.FmtRes(i, j));
+					Diag.Ex(ex, Resources.ExceptionTriggerGeneratorErrorAtColumnIndex.Fmt(i, j));
 				}
 			}
 
@@ -828,7 +828,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 		finally
@@ -870,7 +870,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 		finally
@@ -910,7 +910,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 		finally
@@ -976,18 +976,18 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected static AbstractLinkageParser FindEquivalentParser(string connectionString, bool mustBeLoaded = false)
 	{
-		// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
+		// Evs.Trace(typeof(AbstractLinkageParser), nameof(FindEquivalentParser));
 
 		lock (_LockGlobal)
 		{
 
 			if (_Instances == null)
 			{
-				// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Not found. _Instances is null.");
+				// Evs.Trace(typeof(AbstractLinkageParser), nameof(FindEquivalentParser), "Not found. _Instances is null.");
 				return null;
 			}
 
-			// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Searching instances. Count: {0}.", _Instances.Count);
+			// Evs.Trace(typeof(AbstractLinkageParser), nameof(FindEquivalentParser), "Searching instances. Count: {0}.", _Instances.Count);
 
 
 			foreach (KeyValuePair<IVsDataExplorerConnection, IBsNativeDbLinkageParser> pair in _Instances)
@@ -1004,7 +1004,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				}
 			}
 
-			// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found in instances. Count: {0}", _Instances.Count);
+			// Evs.Trace(typeof(AbstractLinkageParser), nameof(FindEquivalentParser), "No equivalent found in instances. Count: {0}", _Instances.Count);
 
 			return null;
 		}
@@ -1014,7 +1014,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected static AbstractLinkageParser FindInstanceOrTransient(string connectionString)
 	{
-		// Evs.Trace(typeof(AbstractLinkageParser), "FindParser()", "connectionString: {0}.", connectionString);
+		// Evs.Trace(typeof(AbstractLinkageParser), nameof(FindParser), "connectionString: {0}.", connectionString);
 
 		string connectionUrl = null;
 
@@ -1026,7 +1026,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		connectionUrl ??= ApcManager.CreateConnectionUrl(connectionString);
 
-		// Evs.Trace(typeof(AbstractLinkageParser), "FindParser()", "Searching instances. connectionUrl: {0}.", connectionUrl);
+		// Evs.Trace(typeof(AbstractLinkageParser), nameof(FindParser), "Searching instances. connectionUrl: {0}.", connectionUrl);
 
 		lock (_LockGlobal)
 		{
@@ -1037,14 +1037,14 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				if (!parser._Enabled || parser._IsIntransient)
 					continue;
 
-				// Evs.Trace(typeof(AbstractLinkageParser), "FindParser()", "Comparing instance. parser._ConnectionUrl: {0}.", parser._ConnectionUrl);
+				// Evs.Trace(typeof(AbstractLinkageParser), nameof(FindParser), "Comparing instance. parser._ConnectionUrl: {0}.", parser._ConnectionUrl);
 
 				if (connectionUrl.Equals(parser._ConnectionUrl))
 					return parser;
 			}
 		}
 
-		// Evs.Trace(typeof(AbstractLinkageParser), "FindParser()", "No parser found in instances. Count: {0}", _Instances.Count);
+		// Evs.Trace(typeof(AbstractLinkageParser), nameof(FindParser), "No parser found in instances. Count: {0}", _Instances.Count);
 
 		return null;
 	}
@@ -1076,11 +1076,11 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		EnsureLoaded();
 
-		var where = new StringBuilder();
+		StringBuilder where = new();
 
 		if (restrictions != null)
 		{
-			// var index = 0;
+			// int index = 0;
 
 			/* GENERATOR_CATALOG */
 			if (restrictions.Length >= 1 && restrictions[0] != null)
@@ -1139,7 +1139,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		EnsureLoaded();
 
-		var where = new StringBuilder();
+		StringBuilder where = new();
 
 		if (systemFlag == 1)
 		{
@@ -1166,7 +1166,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		if (restrictions != null)
 		{
-			// var index = 0;
+			// int index = 0;
 
 			/* TABLE_CATALOG */
 			if (restrictions.Length >= 1 && restrictions[0] != null)
@@ -1220,7 +1220,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// as potential transients so that they cannot be used.
 	protected static void InvalidateEquivalentParsers(string connectionString)
 	{
-		// Evs.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
+		// Evs.Trace(typeof(AbstractLinkageParser), nameof(FindEquivalentParser));
 
 		lock (_LockGlobal)
 		{
@@ -1229,12 +1229,12 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 			if (_Instances == null)
 			{
-				// Evs.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Not found. _Instances is null.");
+				// Evs.Trace(typeof(AbstractLinkageParser), nameof(InvalidateEquivalentParsers), "Not found. _Instances is null.");
 				return;
 			}
 
 
-			// Evs.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Searching instances. Count: {0}.", _Instances.Count);
+			// Evs.Trace(typeof(AbstractLinkageParser), nameof(InvalidateEquivalentParsers), "Searching instances. Count: {0}.", _Instances.Count);
 
 			int i = -1;
 

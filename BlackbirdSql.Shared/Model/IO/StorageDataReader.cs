@@ -51,7 +51,7 @@ public class StorageDataReader
 			if (_KeepStoringDataDelegate != null && !_KeepStoringDataDelegate())
 			{
 				StorageAbortedException ex = new();
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -73,7 +73,7 @@ public class StorageDataReader
 			if (_KeepStoringDataDelegate != null && !_KeepStoringDataDelegate())
 			{
 				StorageAbortedException ex = new();
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -101,7 +101,7 @@ public class StorageDataReader
 			if (_KeepStoringDataDelegate != null && !_KeepStoringDataDelegate())
 			{
 				StorageAbortedException ex = new();
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -191,7 +191,7 @@ public class StorageDataReader
 		if (_DbDataReader == null)
 		{
 			ArgumentException ex = new("Invalid IDataReader", "reader");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -316,7 +316,7 @@ public class StorageDataReader
 		if (maxNumBytesToReturn <= 0)
 		{
 			ArgumentException ex = new("maxNumBytesToReturn");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -347,7 +347,7 @@ public class StorageDataReader
 		if (maxNumBytesToReturn <= 0)
 		{
 			ArgumentException ex = new("maxNumBytesToReturn");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -373,7 +373,7 @@ public class StorageDataReader
 		if (maxCharsToReturn <= 0)
 		{
 			ArgumentException ex = new("maxNumBytesToReturn");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -411,7 +411,7 @@ public class StorageDataReader
 		if (maxCharsToReturn <= 0)
 		{
 			ArgumentException ex = new("maxNumBytesToReturn");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -434,7 +434,7 @@ public class StorageDataReader
 	public string GetXmlWithMaxCapacity(int iCol, int maxCharsToReturn, QueryKeepStoringData _KeepStoringDataDelegate)
 	{
 		NotImplementedException ex = new("GetXmlWithMaxCapacity()");
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 		/*
 		if (SupportSqlXml)
@@ -576,7 +576,7 @@ public class StorageDataReader
 		}
 
 		InvalidOperationException ex = new();
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 	*/

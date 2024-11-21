@@ -263,7 +263,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		}
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "TBC")]
 	private void InitializeDriftDetectionConnection()
 	{
 		lock (_LockLocal)
@@ -408,7 +408,7 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 						else if (_catalogStamps.TryGetValue(item, out value))
 						{
 							DriftDetectionConnection.ChangeDatabase(item);
-							DatabaseCatalog.DetectChanges(DriftDetectionConnection, DriftDetectionConnection, value, out var updated, out var delta);
+							DatabaseCatalog.DetectChanges(DriftDetectionConnection, DriftDetectionConnection, value, out CatalogStamp updated, out CatalogStampDelta delta);
 							dictionary[item] = updated;
 							if (delta.HasChanges)
 							{

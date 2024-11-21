@@ -23,7 +23,7 @@ public class BinaryEncoding : Encoding
 	{
 		// This code isn't great because it requires a double copy,
 		// but it requires unsafe code to solve the problem efficiently.
-		var charArray = new char[byteArray.GetLength(0)];
+		char[] charArray = new char[byteArray.GetLength(0)];
 		Array.Copy(byteArray, charArray, byteArray.Length);
 
 		return new string(charArray);
@@ -35,14 +35,14 @@ public class BinaryEncoding : Encoding
 		if (data == null)
 		{
 			ArgumentNullException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (index < 0 || count < 0 || dataLength - index < count)
 		{
 			ArgumentOutOfRangeException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -66,21 +66,20 @@ public class BinaryEncoding : Encoding
 		if (index < 0 || index > bytes.Length)
 		{
 			ArgumentOutOfRangeException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		if (bytes.Length - index < charCount)
 		{
 			ArgumentException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		var charEnd = charIndex + charCount;
+		int charEnd = charIndex + charCount;
+
 		while (charIndex < charEnd)
-		{
 			bytes[index++] = (byte)chars[charIndex++];
-		}
 
 		return charCount;
 	}
@@ -92,21 +91,20 @@ public class BinaryEncoding : Encoding
 		if (index < 0 || index > bytes.Length)
 		{
 			ArgumentOutOfRangeException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		if (bytes.Length - index < charCount)
 		{
 			ArgumentException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		var charEnd = charIndex + charCount;
+		int charEnd = charIndex + charCount;
+
 		while (charIndex < charEnd)
-		{
 			bytes[index++] = (byte)chars[charIndex++];
-		}
 
 		return charCount;
 	}
@@ -125,21 +123,20 @@ public class BinaryEncoding : Encoding
 		if (charIndex < 0 || charIndex > chars.Length)
 		{
 			ArgumentOutOfRangeException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		if (chars.Length - charIndex < count)
 		{
 			ArgumentException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		var byteEnd = index + count;
+		int byteEnd = index + count;
+
 		while (index < byteEnd)
-		{
 			chars[charIndex++] = (char)bytes[index++];
-		}
 
 		return count;
 	}

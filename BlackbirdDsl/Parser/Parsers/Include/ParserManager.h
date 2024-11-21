@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "DslOptions.h"
+#include "EnParserOptions.h"
 #include "IParser.h"
 
 
@@ -18,10 +18,10 @@ protected:
 
 public:
 
-	static StringCell^ Parse(StringCell^ root, DslOptions options);
+	static StringCell^ Parse(StringCell^ root, EnParserOptions options);
 
 
-	static IParser^ GetParser(SysStr^ parserType, DslOptions options);
+	static IParser^ GetParser(SysStr^ parserType, EnParserOptions options);
 };
 
 }

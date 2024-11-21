@@ -164,7 +164,7 @@ public class DlgStorage : IBsDlgStorage, IBsGridStorage, IDisposable
 		if (!(cell is not null))
 		{
 			Exception ex = new("Unexpected cell type");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		GridCell obj = cell;
@@ -192,7 +192,7 @@ public class DlgStorage : IBsDlgStorage, IBsGridStorage, IDisposable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

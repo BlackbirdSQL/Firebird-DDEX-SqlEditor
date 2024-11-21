@@ -1,6 +1,7 @@
 // IndexRange, Version=1.0.3.0, Culture=neutral, PublicKeyToken=35e6a3c4212514c6
 // System.Index
 using System.Runtime.CompilerServices;
+using SysResources = BlackbirdSql.Sys.Properties.Resources;
 
 
 namespace System;
@@ -32,7 +33,7 @@ public readonly struct Index : IEquatable<Index>
 	{
 		if (value < 0)
 		{
-			throw new ArgumentOutOfRangeException("value", "value must be non-negative");
+			throw new ArgumentOutOfRangeException(nameof(value), SysResources.ExceptionNonNegativeRequired);
 		}
 		if (fromEnd)
 		{
@@ -54,7 +55,7 @@ public readonly struct Index : IEquatable<Index>
 	{
 		if (value < 0)
 		{
-			throw new ArgumentOutOfRangeException("value", "value must be non-negative");
+			throw new ArgumentOutOfRangeException(nameof(value), SysResources.ExceptionNonNegativeRequired);
 		}
 		return new Index(value);
 	}
@@ -64,7 +65,7 @@ public readonly struct Index : IEquatable<Index>
 	{
 		if (value < 0)
 		{
-			throw new ArgumentOutOfRangeException("value", "value must be non-negative");
+			throw new ArgumentOutOfRangeException(nameof(value), SysResources.ExceptionNonNegativeRequired);
 		}
 		return new Index(~value);
 	}

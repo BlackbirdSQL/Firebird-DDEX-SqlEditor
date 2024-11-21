@@ -185,7 +185,7 @@ public static class DrawManager
 				IntPtr dCEx = Native.GetDCEx(m.HWnd, intPtr, num2);
 				if (dCEx != IntPtr.Zero)
 				{
-					Native.GetWindowRect(m.HWnd, out Native.RECTEx rect);
+					Native.GetWindowRect(m.HWnd, out Native.RECTX rect);
 
 					rect.right -= rect.left;
 					rect.left = 0;

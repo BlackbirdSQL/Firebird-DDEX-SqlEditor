@@ -138,7 +138,7 @@ public abstract class PersistentSettings : LanguageExtension.Ctl.Config.Persiste
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, Resources.ExFailedToSubscribeSettingsEvents);
+			Diag.Ex(ex, Resources.ExFailedToSubscribeSettingsEvents);
 		}
 	}
 

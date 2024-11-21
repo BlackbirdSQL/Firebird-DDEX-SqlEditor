@@ -442,7 +442,7 @@ StringCell^ Scanner::Split(SysStr^ sql)
 	if (SysStr::IsNullOrEmpty(sql))
 	{
 		System::ArgumentNullException^ ex = gcnew System::ArgumentNullException("Argument 'sql' is null or empty");
-		Diag::Dug(ex);
+		Diag::Ex(ex);
 		throw ex;
 	}
 

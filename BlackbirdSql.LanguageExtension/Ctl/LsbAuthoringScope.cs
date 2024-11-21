@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.LanguageExtension.Ctl;
 
 
-internal class LsbAuthoringScope : Microsoft.VisualStudio.Package.AuthoringScope
+internal class LsbAuthoringScope : AuthoringScope
 {
 
 	public LsbAuthoringScope(ParseResult parseResult, MetadataDisplayInfoProvider displayInfoProvider, LsbSource source)

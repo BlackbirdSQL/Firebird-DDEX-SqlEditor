@@ -92,8 +92,8 @@ public class QESplitter : Control, IMessageFilter
 		{
 			if (!Enum.IsDefined(typeof(BorderStyle), value))
 			{
-				InvalidEnumArgumentException ex = new("value", (int)value, typeof(BorderStyle));
-				Diag.Dug(ex);
+				InvalidEnumArgumentException ex = new(nameof(value), (int)value, typeof(BorderStyle));
+				Diag.Ex(ex);
 				throw ex;
 			}
 

@@ -109,7 +109,7 @@ public abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDisposa
 	/// <summary>
 	/// Getter to retrieve or create an instance of the BlackbirdDsl.<see cref="Parser"/>.
 	/// </summary>
-	public Parser DslParser => _DslParser ??= new Parser(DslOptions.TOKENIZE_ONLY);
+	public Parser DslParser => _DslParser ??= new Parser(EnParserOptions.TOKENIZE_ONLY);
 
 	public abstract bool IsLockedLoaded { get; }
 

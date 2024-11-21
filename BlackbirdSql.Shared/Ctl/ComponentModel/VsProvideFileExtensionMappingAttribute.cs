@@ -21,7 +21,7 @@ class VsProvideFileExtensionMappingAttribute(Type factoryType, string defaultNam
 
 
 
-	private string EditorRegKey => string.Format(CultureInfo.InvariantCulture, "FileExtensionMapping\\{0}", FactoryType.GUID.ToString("B"));
+	private string EditorRegKey => "FileExtensionMapping\\{0}".Fmti(FactoryType.GUID.ToString("B"));
 
 	public Type FactoryType => _FactoryType;
 	public short NameResourceID => _NameResourceID;
@@ -35,7 +35,7 @@ class VsProvideFileExtensionMappingAttribute(Type factoryType, string defaultNam
 			key = context.CreateKey(EditorRegKey);
 
 			key.SetValue("", _DefaultName);
-			key.SetValue("DisplayName", string.Format(CultureInfo.InvariantCulture, "#{0}", NameResourceID));
+			key.SetValue("DisplayName", "#{0}".Fmti(NameResourceID));
 			key.SetValue("EditorGUID", FactoryType.GUID.ToString("B"));
 			key.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 			key.SetValue("SortPriority", _SortPriority);
@@ -51,8 +51,8 @@ class VsProvideFileExtensionMappingAttribute(Type factoryType, string defaultNam
 	{
 		if (context == null)
 		{
-			ArgumentNullException ex = new("context");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(context));
+			Diag.Ex(ex);
 			throw ex;
 		}
 		context.RemoveKey(EditorRegKey);

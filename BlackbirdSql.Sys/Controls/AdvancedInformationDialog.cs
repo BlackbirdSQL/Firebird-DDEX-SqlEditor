@@ -113,7 +113,7 @@ public partial class AdvancedInformationDialog : Form
 				bool isDbClientInfo = msg.Contains(NativeDb.DbEngineName);
 				string[] msgList = ex.Message.Split('\n');
 
-				string nodeLabel = ControlsResources.AdvancedInformationDialog_NodeExceptionInfo.FmtRes(isDbClientInfo ? NativeDb.DbEngineName : "BlackbirdSql", msgList[0]);
+				string nodeLabel = ControlsResources.AdvancedInformationDialog_NodeExceptionInfo.Fmt(isDbClientInfo ? NativeDb.DbEngineName : "BlackbirdSql", msgList[0]);
 
 				TreeNode treeNode3 = new(nodeLabel)
 				{
@@ -140,7 +140,7 @@ public partial class AdvancedInformationDialog : Form
 				}
 				catch (Exception ex2)
 				{
-					Diag.Dug(ex2);
+					Diag.Ex(ex2);
 				}
 
 				try
@@ -157,7 +157,7 @@ public partial class AdvancedInformationDialog : Form
 				}
 				catch (Exception ex2)
 				{
-					Diag.Dug(ex2);
+					Diag.Ex(ex2);
 				}
 
 				if (ex.StackTrace != null)
@@ -176,13 +176,13 @@ public partial class AdvancedInformationDialog : Form
 					}
 					catch (Exception ex2)
 					{
-						Diag.Dug(ex2);
+						Diag.Ex(ex2);
 					}
 				}
 			}
 			catch (Exception ex2)
 			{
-				Diag.Dug(ex2);
+				Diag.Ex(ex2);
 			}
 		}
 

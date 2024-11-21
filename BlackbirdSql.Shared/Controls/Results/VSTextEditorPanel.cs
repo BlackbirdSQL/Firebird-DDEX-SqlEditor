@@ -243,7 +243,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		___(_TextViewCtl.TextView.GetScrollInfo(1, out _, out var piMaxUnit, out var piVisibleUnits, out _));
+		___(_TextViewCtl.TextView.GetScrollInfo(1, out _, out int piMaxUnit, out int piVisibleUnits, out _));
 
 		int iFirstVisibleUnit = Math.Max(0, piMaxUnit - piVisibleUnits);
 
@@ -279,7 +279,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 
 	private void OnShowPopupMenu(object sender, SpecialEditorCommandEventArgs a)
 	{
-		_TextViewCtl.GetCoordinatesForPopupMenu(a.VariantIn, out var x, out var y);
+		_TextViewCtl.GetCoordinatesForPopupMenu(a.VariantIn, out int x, out int y);
 		UnsafeCmd.ShowContextMenuEvent(CommandProperties.ClsidCommandSet, (int)EnCommandSet.ContextIdMessageWindow, x, y, this);
 	}
 
@@ -369,8 +369,8 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 				}
 				catch (Exception e)
 				{
-					Diag.Dug(e);
-					MessageCtl.ShowEx(ControlsResources.ExSavingResults, e);
+					Diag.Ex(e);
+					MessageCtl.ShowX(ControlsResources.ExSavingResults, e);
 				}
 			}
 		}

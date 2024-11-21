@@ -3,17 +3,18 @@
 
 using System;
 using System.Data.Common;
-using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl.Config;
-using BlackbirdSql.Sys.Ctl.Diagnostics;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
+using BlackbirdSql.Sys.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
@@ -35,13 +36,13 @@ namespace BlackbirdSql;
 /// <remarks>
 /// Provides 3 levels of diagnostics
 ///		0. Exceptions only	(_EnableTrace = false, _EnableDiagnostics = false)
-///			Only Diag.Dug exceptions are processed.
+///			Only Diag.Ex exceptions are processed.
 ///		1. Debug	(_EnableTrace = false, _EnableDiagnostics = true)
-///			Only Diag.Dug calls are processed
+///			Only Diag.Ex calls are processed
 ///		2. Full trace	(_EnableTrace = true, _EnableDiagnostics = true)
-///			Both Diag.Dug and Diag.Trace calls are processed
+///			Both Diag.Ex and Diag.Trace calls are processed
 ///
-/// Use Diag.Dug for exceptions and in a localized region where you are debugging
+/// Use Diag.Ex for exceptions and in a localized region where you are debugging
 /// Use Diag.Trace freely wherever you want to log a trace and set the EnableTrace option
 /// specifically to perform a trace
 /// </remarks>
@@ -56,15 +57,14 @@ public static class Diag
 
 	// A static class lock
 	private static readonly object _LockGlobal = new();
-	private static int _InternalActive = 0;
-	private static int _TaskLogActive = 0;
+
+	private static string _Context = "APP";
 	private static int _IgnoreSettings = 0;
-
-	static string _Context = "APP";
-
-	static IVsOutputWindowPane _OutputPane = null;
-	static readonly string _OutputPaneName = "BlackbirdSql";
-	static Guid _OutputPaneGuid = default;
+	private static int _InternalActive = 0;
+	private static IVsOutputWindowPane _OutputPane = null;
+	private static Guid _OutputPaneGuid = default;
+	private static readonly string _OutputPaneName = "BlackbirdSql";
+	private static int _TaskLogActive = 0;
 
 
 	#endregion Fields
@@ -93,27 +93,10 @@ public static class Diag
 	}
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns a boolean indicating whether or not task results can be written to the
-	/// output window.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static bool EnableTaskLog => _TaskLogActive == 0
-		&& (_InternalActive > 0 || PersistentSettings.EnableTaskLog);
-
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Flag indicating whether or not <see cref="Diag.Trace"/> calls are logged
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static bool EnableTrace => PersistentSettings.EnableTrace;
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Flag indicating whether or not <see cref="Diag.Dug"/> calls are logged
+	/// Flag indicating whether or not <see cref="Diag"/> messages are logged
 	/// </summary>
 	/// <remarks>
 	/// Exceptions are alweays logged.
@@ -143,6 +126,24 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Returns a boolean indicating whether or not task results can be written to the
+	/// output window.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static bool EnableTaskLog => _TaskLogActive == 0
+		&& (_InternalActive > 0 || PersistentSettings.EnableTaskLog);
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Flag indicating whether or not Evs Trace calls are logged
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static bool EnableTrace => PersistentSettings.EnableTrace;
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The log file path
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -162,344 +163,6 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// The common Diag diagnostics method
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void Dug(bool isException, string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-
-		if (_IgnoreSettings == 0 && !isException && !EnableDiagnostics && !EnableTrace)
-			return;
-
-		int pos;
-		string logfile = LogFile;
-		string str;
-
-		bool enableDiagnosticsLog;
-		bool enableTaskLog;
-
-		lock (_LockGlobal)
-		{
-#if DEBUG
-			enableDiagnosticsLog = EnableDiagnosticsLog || (_IgnoreSettings > 0);
-#else
-			enableDiagnosticsLog = EnableDiagnosticsLog;
-#endif
-			enableTaskLog = EnableTaskLog || (_IgnoreSettings > 0);
-
-			try
-			{
-				if ((pos = sourcePath.IndexOf("\\BlackbirdSql")) == -1)
-					pos = sourcePath.IndexOf("\\BlackbirdDsl");
-
-
-				if (pos != -1)
-					sourcePath = sourcePath[(pos + 1)..];
-
-				if (_TaskLogActive > 0)
-				{
-					str = DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   " + message;
-				}
-				else
-				{
-					string prefix = isException ? ":EXCEPTION: " : " ";
-
-					str = _Context + ":" + prefix + DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   "
-						+ memberName + " :: " + sourcePath + " :: " + line +
-						(message == "" ? "" : Environment.NewLine + "\t" + message) + Environment.NewLine;
-				}
-			}
-			catch (Exception ex)
-			{
-				str = $"{ex.Message} sourcePath: {sourcePath} memberName: {memberName} sourceLineNumber: {line} message: {message}";
-			}
-
-			try
-			{
-				if (enableDiagnosticsLog)
-				{
-					StreamWriter sw = File.AppendText(logfile);
-
-					sw.WriteLine(str);
-
-					sw.Close();
-				}
-			}
-			catch (Exception ex)
-			{
-				str = "DIAG EXCEPTION: " + ex.Message + Environment.NewLine + str;
-			}
-		}
-
-		try
-		{
-			if (enableTaskLog)
-				AsyuiOutputPaneWriteLine(str, isException);
-		}
-		catch (Exception) { }
-
-
-		System.Diagnostics.Debug.WriteLine(str, "BlackbirSql");
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for Exceptions only
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void Dug(Exception ex, string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "",
-		int exceptionType = 0)
-	{
-
-		message ??= "";
-
-		if (message != "")
-			message += ":";
-
-		if (ex is DbException exd && exd.HasSqlException())
-		{
-			message += Environment.NewLine + $"{NativeDb.DbEngineName} error code: {exd.GetErrorCode()}, Class: {exd.GetClass()}, Proc: {exd.GetProcedure()}, Line: {exd.GetLineNumber()}.";
-		}
-		if (ex.StackTrace != null)
-		{
-			message += Environment.NewLine + "TRACE: " + ex.StackTrace.ToString();
-		}
-		else
-		{
-			message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
-		}
-
-		string prefix = exceptionType == 1
-			? $"[DEBUG {ex.GetType()}] "
-			: (exceptionType == 2 ? $"[EXPECTED {ex.GetType()}] " : $"[{ex.GetType()}] ");
-
-		Dug(true, prefix + ex.Message + " " + message, line, memberName, sourcePath);
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for ServiceUnavailableException
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static ServiceUnavailableException ExceptionService(Type type,
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		ServiceUnavailableException ex = new(type);
-		Dug(ex, "", line, memberName, sourcePath);
-
-		return ex;
-	}
-
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Raises excepton for ServiceUnavailableException
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-#if !NEWDEBUG
-	public static async Task<TResult> ThrowExceptionServiceUnavailableAsync<TResult>(Type serviceType,
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-		where TResult : class
-#else
-	public static ServiceUnavailableException ExceptionService(Type type,
-		string memberName = "[Release: MemberName Unavailable]",
-		string sourcePath = "[Release: SourcePath Unavailable]",
-		int sourceLineNumber = -1)
-#endif
-	{
-		if (serviceType != null)
-			throw ExceptionService(serviceType, line, memberName, sourcePath);
-
-		return await Task.FromResult<TResult>(null);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Raises excepton for ServiceUnavailableException
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void ThrowIfServiceUnavailable(object service, Type type,
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		if (service == null)
-			throw ExceptionService(type, line, memberName, sourcePath);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for TypeAccessException
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static TypeAccessException ExceptionInstance(Type type,
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		TypeAccessException ex = new($"The singleton instance for {type.FullName} has not been initialized.");
-		Dug(ex, "", line, memberName, sourcePath);
-
-		return ex;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Throws an exception for TypeAccessException
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void ThrowIfInstanceNull(object instance, Type type,
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		if (instance == null)
-			throw ExceptionInstance(type, line, memberName, sourcePath);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for OnUiThread
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static object ThrowException(Exception ex,
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		Dug(ex, "", line, memberName, sourcePath);
-
-		throw ex;
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for ErrorHandler.ThrowOnFailure
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static int ThrowOnFailure(int hr,
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		try
-		{
-			return ErrorHandler.ThrowOnFailure(hr);
-		}
-		catch (Exception ex)
-		{
-			Stack();
-			// Dug(ex, "", line, memberName, sourcePath);
-			throw ex;
-		}
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for OnUiThread
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static COMException ExceptionThreadOnUI(
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		string message = string.Format(CultureInfo.CurrentCulture, "{0} may NOT be called on the UI thread.", memberName);
-		COMException ex = new(message, VSConstants.RPC_E_WRONG_THREAD);
-
-		Dug(ex, "", line, memberName, sourcePath);
-
-		return ex;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Raises an exception if OnUiThread.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void ThrowIfOnUIThread(
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		if (ThreadHelper.CheckAccess())
-			throw ExceptionThreadOnUI(line, memberName, sourcePath);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for NotOnUiThread
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static COMException ExceptionThreadNotUI(
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		string message = string.Format(CultureInfo.CurrentCulture, "{0} must be called on the UI thread.", memberName);
-		COMException ex = new(message, VSConstants.RPC_E_WRONG_THREAD);
-
-		Dug(ex, "", line, memberName, sourcePath);
-
-		return ex;
-	}
-
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Logs and throws an exception if NotOnUiThread and prevents an unecessary UI
-	/// thread trail by Intellisense.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void ThrowIfNotOnUIThread(
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		if (!ThreadHelper.CheckAccess())
-			throw ExceptionThreadNotUI(line, memberName, sourcePath);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Diagnostics method for outputting unexpected Exceptions that will display on
 	/// DEBUG builds but be swallowed in release builds.
 	/// For example an object that is unavailable on shutdown but that could possibly
@@ -513,272 +176,18 @@ public static class Diag
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 #if DEBUG
-		Dug(ex, message, line, memberName, sourcePath, 1);
+		InternalLog(ex, message, line, memberName, sourcePath, EnEventLevel.Debug);
 #endif
 	}
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for outputting expected Exceptions that will display on
-	/// DEBUG builds but be swallowed in release builds unless EnableExpected is enabled.
-	/// For example a connection that throws an exception due to a broken network
-	/// connection or a temporarily inaccessible tab for text updates. 
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void Expected(Exception ex, string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
 #if DEBUG
-		Dug(ex, message, line, memberName, sourcePath, 2);
-#else
-		if (EnableExpected)
-			Dug(ex, message, line, memberName, sourcePath, 2);
-#endif
-	}
-
-
-
-
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Temporary Diagnostics method for Exceptions only.
-	/// For easy identification of temporary try/catch statements during debugging.
+	/// Diagnostics method for outputting DataExplorerNodeEventArgs info.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void Tug(Exception ex, string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		Dug(ex, message, line, memberName, sourcePath);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for Exceptions only during debug WITHOUT secondary exceptions
-	/// to prevent recursion or when package is not sited yet.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void DebugDug(Exception ex, string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		if (message != "")
-			message += ":";
-
-		if (ex.StackTrace != null)
-		{
-			message += Environment.NewLine + "TRACE: " + ex.StackTrace.ToString();
-		}
-		else
-		{
-			message += " NO STACKTRACE";
-		}
-
-		lock (_LockGlobal)
-			_InternalActive++;
-
-		_IgnoreSettings++;
-
-		try
-		{
-			Dug(true, ex.Message + " " + message, line, memberName, sourcePath);
-		}
-		catch { }
-
-		_IgnoreSettings--;
-
-		lock (_LockGlobal)
-			_InternalActive--;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for full information stack trace
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void Stack(string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		if (message != "")
-			message += ":";
-
-		message += (message != "" ? Environment.NewLine : "") + "INFORMATION TRACE: " + Environment.StackTrace.ToString();
-
-		lock (_LockGlobal)
-			_InternalActive++;
-
-		_IgnoreSettings++;
-
-		try
-		{
-			Dug(false, message, line, memberName, sourcePath);
-		}
-		catch { }
-
-		_IgnoreSettings--;
-
-		lock (_LockGlobal)
-			_InternalActive--;
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for full exception stack trace
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void StackException(Exception ex, string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		if (message != "")
-			message += ":";
-
-		message ??= "";
-
-		if (message != "")
-			message += ":";
-
-
-		if (ex is DbException exd && exd.HasSqlException())
-		{
-			message += Environment.NewLine + $"{NativeDb.DbEngineName}  error code:  {exd.GetErrorCode()} , Class:  {exd.GetClass()}, Proc: {exd.GetProcedure()}, Line: {exd.GetLineNumber()}.";
-		}
-
-		message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
-
-		Dug(true, message, line, memberName, sourcePath);
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Diagnostics method for full exception stack trace
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void StackException(string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		if (message != "")
-			message += ":";
-
-		message += (message != "" ? Environment.NewLine : "") + "TRACE: " + Environment.StackTrace.ToString();
-
-		Dug(true, message, line, memberName, sourcePath);
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Trace method for trace breadcrumbs during debug WITHOUT secondary exceptions
-	/// to prevent recursion or when package is not sited yet
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void DebugTrace(string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		// if (!EnableTrace)
-		//	return;
-
-
-		lock (_LockGlobal)
-			_InternalActive++;
-
-		_IgnoreSettings++;
-
-		try
-		{
-			Dug(false, message, line, memberName, sourcePath);
-		}
-		catch { }
-
-		_IgnoreSettings--;
-
-		lock (_LockGlobal)
-			_InternalActive--;
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Trace method for trace breadcrumbs during debug WITHOUT secondary exceptions to
-	/// prevent recursion or when package is not sited yet
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void DebugWarning(string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		// if (!EnableTrace)
-		//	return;
-
-
-		lock (_LockGlobal)
-			_InternalActive++;
-
-		_IgnoreSettings++;
-
-		try
-		{
-			Dug(false, "WARNING: " + message, line, memberName, sourcePath);
-		}
-		catch { }
-
-		_IgnoreSettings--;
-
-		lock (_LockGlobal)
-			_InternalActive--;
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Trace method for trace breadcrumbs during debug.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void Trace(string message = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
-		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
-	{
-		if (!EnableTrace)
-			return;
-
-		Dug(false, message, line, memberName, sourcePath);
-	}
-
-
-	
-	public static void Trace(Type classType, string method, DataExplorerNodeEventArgs e, EnConnectionSource connectionSource, bool onMainThread, bool initialized)
+	public static void DebugNode(Type classType, string method, DataExplorerNodeEventArgs e, EnConnectionSource connectionSource, bool onMainThread, bool initialized)
 	{
 		if (e.Node != null && e.Node.ExplorerConnection != null
 			&& e.Node.ExplorerConnection.ConnectionNode != null
@@ -819,31 +228,354 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 			}
 		}
 
+	}
+#endif
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for Exceptions only
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void Ex(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		InternalLog(ex, message, line, memberName, sourcePath, EnEventLevel.Error);
 	}
 
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Launches TaskHandlerProgressAsync from a thread in the thread pool so that it
-	/// can switch to the UI thread and be clear to update the IDE task handler progress
-	/// bar.
+	/// Diagnostics method for TypeAccessException instance no initialized.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool TaskHandlerProgress(IBsTaskHandlerClient client, string text, bool completed = false)
+	public static TypeAccessException ExceptionInstance(Type type,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
-		// Fire and forget - Switch to threadpool.
+		TypeAccessException ex = new(Resources.ExceptionSingletonInstanceNotInitialized.Fmt(type.FullName));
+		InternalLog(ex, "", line, memberName, sourcePath, EnEventLevel.Error);
 
-		Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, completed),
-			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
-			TaskScheduler.Default).Forget();
-
-		return true;
+		return ex;
 	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for TypeInitializationException duplicate instance.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static TypeInitializationException ExceptionInstanceExists(Type type,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		TypeInitializationException ex = new (type.FullName,
+			new ArgumentException(Resources.ExceptionDuplicateSingletonInstances.Fmt(type.FullName)));
+		InternalLog(ex, "", line, memberName, sourcePath, EnEventLevel.Error);
+
+		return ex;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for ServiceUnavailableException
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static ServiceUnavailableException ExceptionService(Type type,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		ServiceUnavailableException ex = new(type);
+		InternalLog(ex, "", line, memberName, sourcePath, EnEventLevel.Error);
+
+		return ex;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for outputting expected Exceptions that will display on
+	/// DEBUG builds but be swallowed in release builds unless EnableExpected is enabled.
+	/// For example a connection that throws an exception due to a broken network
+	/// connection or a temporarily inaccessible tab for text updates. 
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void Expected(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		if (EnableExpected)
+			InternalLog(ex, message, line, memberName, sourcePath, EnEventLevel.Expected);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Creates the BlackbirdSql output pane.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static async Task InternalEnsureOutputPaneAsync()
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		if (_OutputPane == null)
+		{
+			IVsOutputWindow outputWindow;
+
+			try
+			{
+				outputWindow = await ServiceProvider.GetGlobalServiceAsync<SVsOutputWindow, IVsOutputWindow>(swallowExceptions: false);
+
+				if (outputWindow == null)
+					throw new ServiceUnavailableException(typeof(IVsOutputWindow));
+			}
+			catch (Exception ex)
+			{
+				if (_IgnoreSettings == 0)
+				{
+					lock (_LockGlobal)
+					{
+						_TaskLogActive++;
+						Ex(ex);
+						_TaskLogActive--;
+					}
+				}
+				throw;
+			}
+
+			if (_OutputPaneGuid == default)
+				_OutputPaneGuid = new(LibraryData.C_OutputPaneGuid);
+
+			const int visible = 1;
+			const int clearWithSolution = 1;
+
+			try
+			{
+				outputWindow.CreatePane(ref _OutputPaneGuid, _OutputPaneName, visible, clearWithSolution);
+			}
+			catch (Exception ex)
+			{
+				if (_IgnoreSettings == 0)
+				{
+					lock (_LockGlobal)
+					{
+						_TaskLogActive++;
+						Ex(ex);
+						_TaskLogActive--;
+					}
+				}
+				throw;
+			}
+
+			try
+			{
+				outputWindow.GetPane(ref _OutputPaneGuid, out _OutputPane);
+			}
+			catch (Exception ex)
+			{
+				if (_IgnoreSettings == 0)
+				{
+					lock (_LockGlobal)
+					{
+						_TaskLogActive++;
+						Ex(ex);
+						_TaskLogActive--;
+					}
+				}
+				throw;
+			}
+		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// The common Diag diagnostics method
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static void InternalLog(bool isException, string message, int line,
+		string memberName, string sourcePath)
+	{
+
+		if (_IgnoreSettings == 0 && !isException && !EnableDiagnostics && !EnableTrace)
+			return;
+
+		int pos;
+		string logfile = LogFile;
+		string str;
+
+		bool enableDiagnosticsLog;
+		bool enableTaskLog;
+
+		lock (_LockGlobal)
+		{
+#if DEBUG
+			enableDiagnosticsLog = EnableDiagnosticsLog || (_IgnoreSettings > 0);
+#else
+			enableDiagnosticsLog = EnableDiagnosticsLog;
+#endif
+			enableTaskLog = EnableTaskLog || (_IgnoreSettings > 0);
+
+			try
+			{
+				if ((pos = sourcePath.IndexOf("\\BlackbirdSql")) == -1)
+					pos = sourcePath.IndexOf("\\BlackbirdDsl");
+
+
+				if (pos != -1)
+					sourcePath = sourcePath[(pos + 1)..];
+
+				if (_TaskLogActive > 0)
+				{
+					str = Resources.Diag_FormatMessageOnly.Fmt(DateTime.Now.ToString("hh.mm.ss.ffffff"), message);
+				}
+				else
+				{
+					string format;
+
+					string prefix = isException ? ":EXCEPTION: " : " ";
+					string datetime = DateTime.Now.ToString("hh.mm.ss.ffffff");
+
+					if (isException && message != "")
+						format = Resources.Diag_FormatIsExceptionWithMessage;
+					else if (isException)
+						format = Resources.Diag_FormatIsExceptionWithoutMessage;
+					else if (message != "")
+						format = Resources.Diag_FormatNotExceptionWithMessage;
+					else
+						format = Resources.Diag_FormatNotExceptionWithoutMessage;
+
+					str = InternalFormat(format, _Context, datetime, memberName, sourcePath, line, message);
+				}
+			}
+			catch (Exception ex)
+			{
+				str = Resources.ExceptionDiagInternalLog.Fmt(ex.Message, sourcePath, memberName, line, message);
+			}
+
+			try
+			{
+				if (enableDiagnosticsLog)
+				{
+					StreamWriter sw = File.AppendText(logfile);
+
+					sw.WriteLine(str);
+
+					sw.Close();
+				}
+			}
+			catch (Exception ex)
+			{
+				str = Resources.ExceptionDiagStreamWriter.Fmt(ex.Message, str);
+			}
+		}
+
+		try
+		{
+			if (enableTaskLog)
+				OutputPaneWriteLineAsyui(str, isException);
+		}
+		catch (Exception) { }
+
+
+		System.Diagnostics.Debug.WriteLine(str, "BlackbirdSql");
+	}
+
+
+
+	/// <summary>
+	/// Replaces named diagnostic message format strings with sequential integers.
+	/// </summary>
+	/// <param name="format"></param>
+	/// <param name="args"></param>
+	/// <returns></returns>
+	private static string InternalFormat(string format, params object[] args)
+	{
+		string[] paramList = ["{@context}", "{@datetime}", "{@memberName}", "{@sourcePath}", "{@line}", "{@message}"];
+
+		for (int i = 0; i < paramList.Length; i++)
+			format = format.Replace(paramList[i], $"{{{i}}}");
+
+		return format.Fmt(args);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// The common Diag exceptions method
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static void InternalLog(Exception ex, string message, int line,
+		string memberName, string sourcePath, EnEventLevel exceptionLevel)
+	{
+
+		message ??= "";
+
+		if (ex is DbException exd && exd.HasSqlException())
+		{
+			if (message != "")
+				message += Environment.NewLine;
+
+			message += InternalFormatSqlException(NativeDb.DbEngineName, exd.GetErrorCode(), exd.GetClass(), exd.GetProcedure(), exd.GetLineNumber());
+		}
+
+		if (message != "")
+			message += Environment.NewLine;
+
+		message += Resources.Diag_FormatExceptionStackTrace.Fmt(ex.StackTrace != null ? ex.StackTrace.ToString() : Environment.StackTrace.ToString());
+
+
+		string exMsg = ex.Message;
+
+		if (ex.InnerException != null)
+			exMsg += $"\n{ex.InnerException.Message}";
+
+		if (exceptionLevel <= EnEventLevel.Error)
+			message = Resources.Diag_FormatExceptionError.Fmt(ex.GetType(), exMsg, message);
+		else
+			message = Resources.Diag_FormatExceptionNoError.Fmt(exceptionLevel.ToString().ToUpper(), ex.GetType(), exMsg, message);
+
+
+		InternalLog(true, message, line, memberName, sourcePath);
+
+	}
+
+
+
+	/// <summary>
+	/// Replaces named sql exception diagnostic message format strings with sequential integers.
+	/// </summary>
+	/// <param name="args"></param>
+	/// <returns></returns>
+	private static string InternalFormatSqlException(params object[] args)
+	{
+		string format = Resources.Diag_FormatExceptionSqlException;
+		string[] paramList = ["{@dbEngine}", "{@errorCode}", "{@class}", "{@procedure}", "{@line}"];
+
+		for (int i = 0; i < paramList.Length; i++)
+			format = format.Replace(paramList[i], $"{{{i}}}");
+
+		return format.Fmt(args);
+	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -851,7 +583,7 @@ public static class Diag
 	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static async Task<bool> TaskHandlerProgressAsync(IBsTaskHandlerClient client, string text, bool completed = false)
+	private static async Task<bool> InternalTaskHandlerProgressAsync(IBsTaskHandlerClient client, string text, bool completed = false)
 	{
 		bool enableDiagnosticsLog;
 		bool enableTaskLog;
@@ -934,7 +666,7 @@ public static class Diag
 			lock (_LockGlobal)
 			{
 				_TaskLogActive++;
-				Dug(ex);
+				Ex(ex);
 				_TaskLogActive--;
 			}
 
@@ -948,30 +680,10 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Launches UpdateStatusBarAsync from a thread in the thread pool so that it can
-	/// switch to the UI thread and be clear to update the IDE status bar.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static bool UpdateStatusBar(string value, bool clear)
-	{
-		// Fire and discard remember.
-
-		_ = Task.Factory.StartNew(() => UpdateStatusBarAsync(value, clear), default,
-			TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
-			TaskScheduler.Default);
-
-		return true;
-	}
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Moves back onto the UI thread and updates the IDE status bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static async Task<bool> UpdateStatusBarAsync(string value, bool clear)
+	private static async Task<bool> InternalUpdateStatusBarAsync(string value, bool clear)
 	{
 		// Switch to main thread
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -997,7 +709,7 @@ public static class Diag
 					_ = Task.Run(async delegate
 					{
 						await Task.Delay(4000);
-						_ = UpdateStatusBarAsync(null, true);
+						_ = InternalUpdateStatusBarAsync(null, true);
 					});
 				}
 			}
@@ -1007,7 +719,7 @@ public static class Diag
 			lock (_LockGlobal)
 			{
 				_TaskLogActive++;
-				Dug(ex);
+				Ex(ex);
 				_TaskLogActive--;
 			}
 
@@ -1021,15 +733,14 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// [Async on UI thread]: Writes the given text followed by a new line to the Output
-	/// window pane.
+	/// The logs a trace message.
 	/// </summary>
-	/// <param name="value">The text value to write.</param>
 	// ---------------------------------------------------------------------------------
-	public static void AsyuiOutputPaneWriteLine(string value, bool isException)
+	public static void LogEvs(string message, int line, string memberName,
+		string sourcePath, 
+		EnEventLevel exceptionType = EnEventLevel.Error)
 	{
-		string outputMsg = value;
-		_ = Task.Run(() => OutputPaneWriteLineAsync(outputMsg, isException));
+		InternalLog(false, message, line, memberName, sourcePath);
 	}
 
 
@@ -1049,18 +760,18 @@ public static class Diag
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		if (_OutputPane == null)
-			await EnsureOutputPaneAsync();
+			await InternalEnsureOutputPaneAsync();
 
 		if (_OutputPane == null)
 		{
-			NullReferenceException ex = new("OutputWindowPane is null");
+			NullReferenceException ex = new(Resources.ExceptionOutputWindowPaneNull);
 
 			if (_IgnoreSettings == 0)
 			{
 				lock (_LockGlobal)
 				{
 					_TaskLogActive++;
-					Dug(ex);
+					Ex(ex);
 					_TaskLogActive--;
 				}
 			}
@@ -1086,7 +797,7 @@ public static class Diag
 				lock (_LockGlobal)
 				{
 					_TaskLogActive++;
-					Dug(ex);
+					Ex(ex);
 					_TaskLogActive--;
 				}
 			}
@@ -1103,81 +814,275 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Creates the BlackbirdSql output pane.
+	/// [Async on UI thread]: Writes the given text followed by a new line to the Output
+	/// window pane.
+	/// </summary>
+	/// <param name="value">The text value to write.</param>
+	// ---------------------------------------------------------------------------------
+	public static void OutputPaneWriteLineAsyui(string value, bool isException)
+	{
+		string outputMsg = value;
+		_ = Task.Run(() => OutputPaneWriteLineAsync(outputMsg, isException));
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for full information stack trace
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static async Task EnsureOutputPaneAsync()
+	public static void Stack(string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+		if (message != "")
+			message += ":";
 
-		if (_OutputPane == null)
+		message += (message != "" ? Environment.NewLine : "") + "INFORMATION TRACE: " + Environment.StackTrace.ToString();
+
+		lock (_LockGlobal)
+			_InternalActive++;
+
+		_IgnoreSettings++;
+
+		try
 		{
-			IVsOutputWindow outputWindow;
-
-			try
-			{
-				outputWindow = await ServiceProvider.GetGlobalServiceAsync<SVsOutputWindow, IVsOutputWindow>(swallowExceptions: false);
-
-				if (outputWindow == null)
-					throw new ServiceUnavailableException(typeof(IVsOutputWindow));
-			}
-			catch (Exception ex)
-			{
-				if (_IgnoreSettings == 0)
-				{
-					lock (_LockGlobal)
-					{
-						_TaskLogActive++;
-						Dug(ex);
-						_TaskLogActive--;
-					}
-				}
-				throw;
-			}
-
-			if (_OutputPaneGuid == default)
-				_OutputPaneGuid = new(LibraryData.C_OutputPaneGuid);
-
-			const int visible = 1;
-			const int clearWithSolution = 1;
-
-			try
-			{
-				outputWindow.CreatePane(ref _OutputPaneGuid, _OutputPaneName, visible, clearWithSolution);
-			}
-			catch (Exception ex)
-			{
-				if (_IgnoreSettings == 0)
-				{
-					lock (_LockGlobal)
-					{
-						_TaskLogActive++;
-						Dug(ex);
-						_TaskLogActive--;
-					}
-				}
-				throw;
-			}
-
-			try
-			{
-				outputWindow.GetPane(ref _OutputPaneGuid, out _OutputPane);
-			}
-			catch (Exception ex)
-			{
-				if (_IgnoreSettings == 0)
-				{
-					lock (_LockGlobal)
-					{
-						_TaskLogActive++;
-						Dug(ex);
-						_TaskLogActive--;
-					}
-				}
-				throw;
-			}
+			InternalLog(false, message, line, memberName, sourcePath);
 		}
+		catch { }
+
+		_IgnoreSettings--;
+
+		lock (_LockGlobal)
+			_InternalActive--;
+
 	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for full exception stack trace
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void StackException(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		if (message != "")
+			message += ":";
+
+		message ??= "";
+
+		if (message != "")
+			message += ":";
+
+
+		if (ex is DbException exd && exd.HasSqlException())
+		{
+			message += Environment.NewLine + $"{NativeDb.DbEngineName}  error code:  {exd.GetErrorCode()} , Class:  {exd.GetClass()}, Proc: {exd.GetProcedure()}, Line: {exd.GetLineNumber()}.";
+		}
+
+		message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
+
+		InternalLog(true, message, line, memberName, sourcePath);
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for full exception stack trace
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void StackException(string message = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		if (message != "")
+			message += ":";
+
+		message += (message != "" ? Environment.NewLine : "") + "TRACE: " + Environment.StackTrace.ToString();
+
+		InternalLog(true, message, line, memberName, sourcePath);
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Launches TaskHandlerProgressAsync from a thread in the thread pool so that it
+	/// can switch to the UI thread and be clear to update the IDE task handler progress
+	/// bar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool TaskHandlerProgress(IBsTaskHandlerClient client, string text, bool completed = false)
+	{
+		// Fire and forget - Switch to threadpool.
+
+		Task.Factory.StartNew(() => InternalTaskHandlerProgressAsync(client, text, completed),
+			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
+			TaskScheduler.Default).Forget();
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for OnUiThread
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static object ThrowException(Exception ex,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		InternalLog(ex, "", line, memberName, sourcePath, EnEventLevel.Error);
+
+		throw ex;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Raises excepton for ServiceUnavailableException
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static async Task<TResult> ThrowExceptionServiceUnavailableAsync<TResult>(Type serviceType,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+		where TResult : class
+	{
+		if (serviceType != null)
+			throw ExceptionService(serviceType, line, memberName, sourcePath);
+
+		return await Task.FromResult<TResult>(null);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Throws an exception for TypeAccessException instance exists.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void ThrowIfInstanceExists(object instance,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		if (instance != null)
+			throw ExceptionInstance(instance.GetType(), line, memberName, sourcePath);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Throws an exception for TypeInitializationException duplicate instance.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void ThrowIfInstanceNull(object instance, Type type,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		if (instance == null)
+			throw ExceptionInstanceExists(type, line, memberName, sourcePath);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Logs and throws an exception if NotOnUiThread and prevents an unecessary UI
+	/// thread trail by Intellisense.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void ThrowIfNotOnUIThread(
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		if (ThreadHelper.CheckAccess())
+			return;
+
+		string message = Resources.ExceptionNotOnUiThread.Fmt(memberName);
+		COMException ex = new(message, VSConstants.RPC_E_WRONG_THREAD);
+
+		InternalLog(ex, "", line, memberName, sourcePath, EnEventLevel.Error);
+
+		throw ex;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Raises an exception if OnUiThread.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void ThrowIfOnUIThread(
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		if (!ThreadHelper.CheckAccess())
+			return;
+
+		string message = Resources.ExceptionIsOnUiThread.Fmt(memberName);
+		COMException ex = new(message, VSConstants.RPC_E_WRONG_THREAD);
+
+		InternalLog(ex, "", line, memberName, sourcePath, EnEventLevel.Error);
+
+		throw ex;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Raises excepton for ServiceUnavailableException
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void ThrowIfServiceUnavailable(object service, Type type,
+		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
+	{
+		if (service == null)
+			throw ExceptionService(type, line, memberName, sourcePath);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Launches UpdateStatusBarAsync from a thread in the thread pool so that it can
+	/// switch to the UI thread and be clear to update the IDE status bar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool UpdateStatusBar(string value, bool clear)
+	{
+		// Fire and discard remember.
+
+		_ = Task.Factory.StartNew(() => InternalUpdateStatusBarAsync(value, clear), default,
+			TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
+			TaskScheduler.Default);
+
+		return true;
+	}
+
 
 #endregion Methods
 

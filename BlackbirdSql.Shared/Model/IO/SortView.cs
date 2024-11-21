@@ -35,8 +35,8 @@ public class SortView : IBsSortView, IDisposable
 
 	protected SortView()
 	{
-		Exception ex = new(Resources.ExSortViewDefaultConstructorCannotBeUsed);
-		Diag.Dug(ex);
+		Exception ex = new(Resources.ExceptionSortViewDefaultConstructorCannotBeUsed);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -71,8 +71,8 @@ public class SortView : IBsSortView, IDisposable
 	{
 		if (m_bKeepSortingData)
 		{
-			Exception ex = new(Resources.ExAlreadySortingData);
-			Diag.Dug(ex);
+			Exception ex = new(Resources.ExceptionAlreadySortingData);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -83,8 +83,8 @@ public class SortView : IBsSortView, IDisposable
 	{
 		if (m_bKeepSortingData)
 		{
-			Exception ex = new(Resources.ExAlreadySortingData);
-			Diag.Dug(ex);
+			Exception ex = new(Resources.ExceptionAlreadySortingData);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

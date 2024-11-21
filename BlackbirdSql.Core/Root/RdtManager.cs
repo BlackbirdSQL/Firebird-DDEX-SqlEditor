@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Interfaces;
+using EnvDTE;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
@@ -62,6 +63,23 @@ public sealed class RdtManager : AbstractRdtManager
 
 
 	#endregion Constructors / Destructors
+
+
+
+
+
+	// =====================================================================================================
+	#region Fields - AbstractRdtManager
+	// =====================================================================================================
+
+
+	private static int _InflightMonikerCursor = -1;
+	private static int _InflightMonikerSeed = -1;
+
+	private static Dictionary<int, string> _InflightMonikers = null;
+	private static Dictionary<string, IBsCsb> _InflightMonikerCsbTable = null;
+
+	#endregion Fields
 
 
 
@@ -174,7 +192,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// [Launch ensure UI thread]: Invalidates the document window's toolbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void AsyeuInvalidateToolbar(uint dwCookie)
+	public static void InvalidateToolbarAsyeu(uint dwCookie)
 	{
 		if (dwCookie == 0)
 			return;
@@ -187,7 +205,7 @@ public sealed class RdtManager : AbstractRdtManager
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-				AsyeuInvalidateToolbarImpl(dwCookie);
+				InvalidateToolbarImplAsyeu(dwCookie);
 
 				return true;
 			});
@@ -196,7 +214,7 @@ public sealed class RdtManager : AbstractRdtManager
 		}
 
 
-		AsyeuInvalidateToolbarImpl(dwCookie);
+		InvalidateToolbarImplAsyeu(dwCookie);
 	}
 
 
@@ -206,7 +224,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// [Launch ensure UI thread]: Invalidates the document window's toolbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static void AsyeuInvalidateToolbarImpl(uint dwCookie)
+	private static void InvalidateToolbarImplAsyeu(uint dwCookie)
 	{
 		IVsWindowFrame frame = GetWindowFrame(dwCookie);
 
@@ -222,38 +240,6 @@ public sealed class RdtManager : AbstractRdtManager
 		toolbarHost.ForceUpdateUI();
 
 		Application.DoEvents();
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// [Launch ensure UI thread]: Switches to the document's window.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static void AsyeuShowWindowFrame(uint cookie)
-	{
-		if (cookie == 0)
-			return;
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			// Fire and wait.
-
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-				ShowFrame(cookie);
-
-				return true;
-			});
-
-		}
-		else
-		{
-			ShowFrame(cookie);
-		}
 	}
 
 
@@ -311,18 +297,18 @@ public sealed class RdtManager : AbstractRdtManager
 
 		if (docData == null)
 		{
-			ArgumentNullException ex = new("docData");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(docData));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		___((serviceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell).GetDocumentWindowEnum(out var windowFramesEnum));
+		___((serviceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell).GetDocumentWindowEnum(out IEnumWindowFrames windowFramesEnum));
 		IVsWindowFrame[] windowFrames = new IVsWindowFrame[1];
 
 		while (windowFramesEnum.Next(1u, windowFrames, out uint pceltFetched) == 0 && pceltFetched == 1)
 		{
 			IVsWindowFrame vsWindowFrame = windowFrames[0];
-			___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out var pvar));
+			___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out object pvar));
 			if (pvar == docData)
 			{
 				yield return vsWindowFrame;
@@ -351,7 +337,7 @@ public sealed class RdtManager : AbstractRdtManager
 
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		AsyeuInvalidateToolbarImpl(dwCookie);
+		InvalidateToolbarImplAsyeu(dwCookie);
 	}
 
 
@@ -385,7 +371,7 @@ public sealed class RdtManager : AbstractRdtManager
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"Inflight moniker: {pair.Key}.");
+				Diag.Ex(ex, $"Inflight moniker: {pair.Key}.");
 				throw;
 			}
 		}
@@ -455,6 +441,38 @@ public sealed class RdtManager : AbstractRdtManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// [Launch ensure UI thread]: Switches to the document's window.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void ShowWindowFrameAsyeu(uint cookie)
+	{
+		if (cookie == 0)
+			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and wait.
+
+			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+				ShowFrame(cookie);
+
+				return true;
+			});
+
+		}
+		else
+		{
+			ShowFrame(cookie);
+		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Deprecated because we let the shell create the document so we don't do any of
 	/// the prep, but leaving this method in, in case we ever need it again.
 	/// Provide either a moniker or codeWindow.
@@ -462,7 +480,7 @@ public sealed class RdtManager : AbstractRdtManager
 	// ---------------------------------------------------------------------------------
 	public static void SuppressChangeTracking(string mkDocument, IVsCodeWindow codeWindow, bool suppress)
 	{
-		// Evs.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "mkDocument: {0}.", mkDocument);
+		// Evs.Trace(typeof(AbstractDesignerServices), nameof(SuppressChangeTracking), "mkDocument: {0}.", mkDocument);
 
 		if (codeWindow == null && !TryGetCodeWindow(mkDocument, out codeWindow))
 			return;
@@ -545,7 +563,7 @@ public sealed class RdtManager : AbstractRdtManager
 		}
 		catch (Exception ex)
 		{
-			Diag.DebugDug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 	}

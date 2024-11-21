@@ -56,7 +56,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataS
 	{
 		if (!_IsClosed)
 		{
-			throw new InvalidOperationException(Resources.ExStorageAlreadyStoring);
+			throw new InvalidOperationException(Resources.ExceptionStorageAlreadyStoring);
 		}
 		_IsClosed = false;
 

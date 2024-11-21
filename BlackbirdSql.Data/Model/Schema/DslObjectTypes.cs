@@ -44,6 +44,8 @@ internal static class DslObjectTypes
 	public const string Function = "Function";
 	public const string FunctionParameter = "FunctionParameter";
 	public const string FunctionColumn = "FunctionColumn";
+	public const string User = "User";
+	public const string Role = "Role";
 
 
 
@@ -60,6 +62,8 @@ internal static class DslObjectTypes
 				return 0;
 
 			case DslObjectTypes.Database:
+			case DslObjectTypes.User:
+			case DslObjectTypes.Role:
 				return 1;
 
 			case DslObjectTypes.Table:

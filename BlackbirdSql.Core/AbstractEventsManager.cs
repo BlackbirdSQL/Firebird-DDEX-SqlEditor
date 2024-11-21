@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -34,12 +35,7 @@ public abstract class AbstractEventsManager : IBsEventsManager
 
 	protected AbstractEventsManager(IBsPackageController controller)
 	{
-		if (InternalInstance != null)
-		{
-			TypeInitializationException ex = new TypeInitializationException(GetType().FullName, new ArgumentException("Instance already exists."));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfInstanceExists(InternalInstance);
 
 		InternalInstance = this;
 		_Controller = controller;
@@ -200,19 +196,7 @@ public abstract class AbstractEventsManager : IBsEventsManager
 	/// with project update information.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public virtual bool TaskHandlerProgress(string text)
-	{
-		if (_ProgressData.PercentComplete == null)
-		{
-			_ProgressData.PercentComplete = 0;
-			if (_TaskHandler != null)
-				Diag.TaskHandlerProgress(this, "Started");
-		}
-
-		Diag.TaskHandlerProgress(this, text);
-
-		return true;
-	}
+	public abstract bool TaskHandlerProgress(string text);
 
 
 
@@ -223,37 +207,7 @@ public abstract class AbstractEventsManager : IBsEventsManager
 	/// <param name="progress">The % completion of TaskHandlerTaskName.</param>
 	/// <param name="elapsed">The time taken to complete the stage.</param>
 	// ---------------------------------------------------------------------------------
-	public virtual bool TaskHandlerProgress(int progress, int elapsed)
-	{
-		bool completed = false;
-		string text;
-
-		if (progress == 0)
-		{
-			text = "Started";
-		}
-		else if (progress == 100)
-		{
-			completed = true;
-			text = $"Completed. Validation took {elapsed}ms.";
-		}
-		else if (_TaskHandler.UserCancellation.Cancelled())
-		{
-			completed = true;
-			text = $"Cancelled. {progress}% completed. Validation took {elapsed}ms.";
-		}
-		else
-		{
-			text = $"{progress}% completed after {elapsed}ms.";
-		}
-
-		_ProgressData.PercentComplete = progress;
-
-		Diag.TaskHandlerProgress(this, text, completed);
-
-		return true;
-
-	}
+	public abstract bool TaskHandlerProgress(int progress, int elapsed);
 
 
 

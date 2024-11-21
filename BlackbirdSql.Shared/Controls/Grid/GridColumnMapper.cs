@@ -30,14 +30,14 @@ public class GridColumnMapper<T>
 		if (oldIndex < 0 || oldIndex >= columnIndexes.Count)
 		{
 			ArgumentOutOfRangeException ex = new("oldIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (newIndex < 0 || newIndex >= columnIndexes.Count)
 		{
 			ArgumentOutOfRangeException ex = new("newIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

@@ -58,13 +58,13 @@ public sealed class FontAndColorProviderGridResults : AbstractFontAndColorProvid
 		CategoryName = ControlsResources.FontAndColorCategoryResultsGrid;
 		Guid = VS.CLSID_FontAndColorsSqlResultsGridCategory;
 		FontDefault = new Font(Control.DefaultFont.Name, Control.DefaultFont.SizeInPoints);
-		FontAndColorUtilities.EncodeAutomaticColor(out var pcrResult);
-		FontAndColorUtilities.EncodeIndexedColor(VsSysColorIndexWindowTextColor, out var pcrResult2);
-		FontAndColorUtilities.EncodeIndexedColor(VsSysColorIndexWindowBkColor, out var pcrResult3);
-		FontAndColorUtilities.EncodeVSColor((int)VsSysColorIndexSelected, out var pcrResult4);
-		FontAndColorUtilities.EncodeVSColor((int)VsSysColorIndexSelectedInactive, out var pcrResult5);
-		FontAndColorUtilities.EncodeVSColor((int)VsSysColorIndexNullCell, out var pcrResult6);
-		FontAndColorUtilities.EncodeVSColor((int)VsSysColorIndexHeaderRow, out var pcrResult7);
+		FontAndColorUtilities.EncodeAutomaticColor(out uint pcrResult);
+		FontAndColorUtilities.EncodeIndexedColor(VsSysColorIndexWindowTextColor, out uint pcrResult2);
+		FontAndColorUtilities.EncodeIndexedColor(VsSysColorIndexWindowBkColor, out uint pcrResult3);
+		FontAndColorUtilities.EncodeVSColor((int)VsSysColorIndexSelected, out uint pcrResult4);
+		FontAndColorUtilities.EncodeVSColor((int)VsSysColorIndexSelectedInactive, out uint pcrResult5);
+		FontAndColorUtilities.EncodeVSColor((int)VsSysColorIndexNullCell, out uint pcrResult6);
+		FontAndColorUtilities.EncodeVSColor((int)VsSysColorIndexHeaderRow, out uint pcrResult7);
 		AllColorableItemInfo allColorableItemInfo = new AllColorableItemInfo
 		{
 			bNameValid = 1,

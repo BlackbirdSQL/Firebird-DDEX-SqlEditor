@@ -60,7 +60,7 @@ public class Hostess(IServiceProvider dataViewHierarchyServiceProvider)
 		}
 		catch (TargetInvocationException ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex.InnerException;
 		}
 	}

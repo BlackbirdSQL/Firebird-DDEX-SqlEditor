@@ -67,15 +67,15 @@ public sealed class VsProvideEditorFactoryAttribute(Type factoryType, short name
 
 	public short NameResourceID => _nameResourceID;
 
-	private string EditorRegKey => string.Format(CultureInfo.InvariantCulture, "Editors\\{0}", FactoryType.GUID.ToString("B"));
+	private string EditorRegKey => "Editors\\{0}".Fmti(FactoryType.GUID.ToString("B"));
 
 
 	public override void Register(RegistrationContext context)
 	{
-		context.Log.WriteLine(AttributeResources.RegNotifyEditorFactory.FmtRes(FactoryType.Name));
+		context.Log.WriteLine(AttributeResources.RegNotifyEditorFactory.Fmt(FactoryType.Name));
 		using Key key = context.CreateKey(EditorRegKey);
 		key.SetValue("", DefaultName);
-		key.SetValue("DisplayName", string.Format(CultureInfo.InvariantCulture, "#{0}", NameResourceID));
+		key.SetValue("DisplayName", "#{0}".Fmti(NameResourceID));
 		key.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 		key.SetValue("EditorTrustLevel", (int)_trustLevel);
 		key.SetValue("CommonPhysicalViewAttributes", CommonPhysicalViewAttributes);
@@ -92,7 +92,7 @@ public sealed class VsProvideEditorFactoryAttribute(Type factoryType, short name
 				ProvideViewAttribute provideViewAttribute = (ProvideViewAttribute)customAttributes[i];
 				if (provideViewAttribute.LogicalView != 0)
 				{
-					context.Log.WriteLine(AttributeResources.RegNotifyEditorView.FmtRes(converter.ConvertToString(provideViewAttribute.LogicalView)));
+					context.Log.WriteLine(AttributeResources.RegNotifyEditorView.Fmt(converter.ConvertToString(provideViewAttribute.LogicalView)));
 					Guid guid = (Guid)converter.ConvertTo(provideViewAttribute.LogicalView, typeof(Guid));
 					string text = provideViewAttribute.PhysicalView;
 					text ??= "";

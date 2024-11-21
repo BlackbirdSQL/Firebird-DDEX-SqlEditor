@@ -92,7 +92,7 @@ public class VxbSourceVersionComparer : DataSourceVersionComparer, IComparer<str
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 

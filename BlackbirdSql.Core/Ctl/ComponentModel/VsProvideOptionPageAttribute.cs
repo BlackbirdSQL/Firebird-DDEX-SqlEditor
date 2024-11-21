@@ -124,23 +124,23 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 	public bool IsServerAware { get; set; }
 
 
-	private string ToolsOptionsCategoryRegKey => string.Format(CultureInfo.InvariantCulture, "ToolsOptionsPages\\{0}", CategoryName);
+	private string ToolsOptionsCategoryRegKey => "ToolsOptionsPages\\{0}".Fmti(CategoryName);
 
-	// private string ToolsOptionsSubCategoryRegKey => string.Format(CultureInfo.InvariantCulture, "ToolsOptionsPages\\{0}\\{1}", CategoryName, SubCategoryName);
+	// private string ToolsOptionsSubCategoryRegKey => "ToolsOptionsPages\\{0}\\{1}".Fmti(CategoryName, SubCategoryName);
 
-	private string AutomationCategoryRegKey => string.Format(CultureInfo.InvariantCulture, "AutomationProperties\\{0}", CategoryName);
-	// private string AutomationSubCategoryRegKey => string.Format(CultureInfo.InvariantCulture, "AutomationProperties\\{0}\\{1}", CategoryName, SubCategoryName);
+	private string AutomationCategoryRegKey => "AutomationProperties\\{0}".Fmti(CategoryName);
+	// private string AutomationSubCategoryRegKey => "AutomationProperties\\{0}\\{1}".Fmti(CategoryName, SubCategoryName);
 
 	private string AutomationCategoryPageRegKey => SubSubCategoryName == null
-		? string.Format(CultureInfo.InvariantCulture, "{0}\\{1}|{2}", AutomationCategoryRegKey, SubCategoryName, PageName)
-		: string.Format(CultureInfo.InvariantCulture, "{0}\\{1}|{2}|{3}", AutomationCategoryRegKey, SubCategoryName, SubSubCategoryName, PageName);
-	// private string AutomationSubCategoryPageRegKey => string.Format(CultureInfo.InvariantCulture, "{0}\\{1}", AutomationSubCategoryRegKey, PageName);
+		? "{0}\\{1}|{2}".Fmti(AutomationCategoryRegKey, SubCategoryName, PageName)
+		: "{0}\\{1}|{2}|{3}".Fmti(AutomationCategoryRegKey, SubCategoryName, SubSubCategoryName, PageName);
+	// private string AutomationSubCategoryPageRegKey => "{0}\\{1}".Fmti(AutomationSubCategoryRegKey, PageName);
 
 
 
 	public override void Register(RegistrationContext context)
 	{
-		context.Log.WriteLine(string.Format(AttributeResources.Culture, AttributeResources.Reg_NotifyOptionPage, CategoryName, SubCategoryName, PageName));
+		context.Log.WriteLine(AttributeResources.Reg_NotifyOptionPage.Fmt(CategoryName, SubCategoryName, PageName));
 
 		Key key = null, key1 = null, key2 = null;
 		Key keyd = null, keye = null, keyf = null;
@@ -152,7 +152,7 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 
 			if (ProvidesLocalizedCategoryName)
 			{
-				key.SetValue("", string.Format(CultureInfo.InvariantCulture, "#{0}", CategoryResourceID));
+				key.SetValue("", "#{0}".Fmti(CategoryResourceID));
 				key.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 			}
 
@@ -163,12 +163,12 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 
 			if (ProvidesLocalizedCategoryName)
 			{
-				key1.SetValue("", string.Format(CultureInfo.InvariantCulture, "#{0}", SubCategoryResourceID));
+				key1.SetValue("", "#{0}".Fmti(SubCategoryResourceID));
 				key1.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 
 				if (SubSubCategoryName != null)
 				{
-					key2.SetValue("", string.Format(CultureInfo.InvariantCulture, "#{0}", SubSubCategoryResourceID));
+					key2.SetValue("", "#{0}".Fmti(SubSubCategoryResourceID));
 					key2.SetValue("Package", context.ComponentType.GUID.ToString("B"));
 				}
 			}
@@ -202,7 +202,7 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 				string[] array2 = array;
 				foreach (string input in array2)
 				{
-					if (Guid.TryParse(input, out var result))
+					if (Guid.TryParse(input, out Guid result))
 					{
 						list.Add(result);
 					}
@@ -228,9 +228,9 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 			keyf = context.CreateKey(AutomationCategoryPageRegKey);
 
 			if (SubSubCategoryName == null)
-				keyf.SetValue("Name", string.Format(CultureInfo.InvariantCulture, "{0}.{1}.{2}", CategoryName, SubCategoryName, PageName));
+				keyf.SetValue("Name", "{0}.{1}.{2}".Fmti(CategoryName, SubCategoryName, PageName));
 			else
-				keyf.SetValue("Name", string.Format(CultureInfo.InvariantCulture, "{0}.{1}.{2}.{3}", CategoryName, SubCategoryName, SubSubCategoryName, PageName));
+				keyf.SetValue("Name", "{0}.{1}.{2}.{3}".Fmti(CategoryName, SubCategoryName, SubSubCategoryName, PageName));
 
 			if (SupportsProfiles)
 			{

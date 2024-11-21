@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using BlackbirdSql.Sys.Properties;
 
 
 
@@ -31,16 +32,16 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 	// Exceptions:
 	//   T:System.ArgumentNullException:
 	//     _Dictionary is null.
-	public PublicValueCollection(PublicDictionary<TKey, TValue> _Dictionary)
+	public PublicValueCollection(PublicDictionary<TKey, TValue> dictionary)
 	{
-		if (_Dictionary == null)
+		if (dictionary == null)
 		{
-			ArgumentNullException ex = new("_Dictionary");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(dictionary));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		this._Dictionary = _Dictionary;
+		_Dictionary = dictionary;
 	}
 
 
@@ -94,8 +95,8 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 			{
 				if (_Index == 0 || _Index == _Dictionary.RawCount + 1)
 				{
-					InvalidOperationException ex = new("EnumOpCantHappen");
-					Diag.Dug(ex);
+					InvalidOperationException ex = new(Resources.ExceptionEnumerationFailed);
+					Diag.Ex(ex);
 					throw ex;
 				}
 				return _Current;
@@ -261,26 +262,26 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 	//     The number of elements in the source BlackbirdSql.Sys.Extensions.PublicValueCollection
 	//     is greater than the available space from _Index to the end of the destination
 	//     array.
-	public void CopyTo(TValue[] array, int _Index)
+	public void CopyTo(TValue[] array, int index)
 	{
 		if (array == null)
 		{
-			ArgumentNullException ex = new("array");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(array));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		if (_Index < 0 || _Index > array.Length)
+		if (index < 0 || index > array.Length)
 		{
-			ArgumentOutOfRangeException ex = new("_Index is negative");
-			Diag.Dug(ex);
+			ArgumentOutOfRangeException ex = new(Resources.ExceptionCopyToIndexOutOfRange.Fmt(index, array.Length));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		if (array.Length - _Index < _Dictionary.Count)
+		if (array.Length - index < _Dictionary.Count)
 		{
-			ArgumentException ex = new("Arg_ArrayPlusOffTooSmall");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToArrayTooSmall.Fmt(array.Length, _Dictionary.Count, index));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -289,29 +290,27 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 		for (int i = 0; i < count; i++)
 		{
 			if (entries[i].HashCode >= 0)
-			{
-				array[_Index++] = entries[i].Value;
-			}
+				array[index++] = entries[i].Value;
 		}
 	}
 
 	void ICollection<TValue>.Add(TValue item)
 	{
-		NotSupportedException ex = new("NotSupported_ValueCollectionSet");
-		Diag.Dug(ex);
+		NotSupportedException ex = new("Add(TValue item)");
+		Diag.Ex(ex);
 	}
 
 	bool ICollection<TValue>.Remove(TValue item)
 	{
-		NotSupportedException ex = new("NotSupported_ValueCollectionSet");
-		Diag.Dug(ex);
+		NotSupportedException ex = new("Remove(TValue item)");
+		Diag.Ex(ex);
 		return false;
 	}
 
 	void ICollection<TValue>.Clear()
 	{
-		NotSupportedException ex = new("NotSupported_ValueCollectionSet");
-		Diag.Dug(ex);
+		NotSupportedException ex = new("Clear()");
+		Diag.Ex(ex);
 	}
 
 	bool ICollection<TValue>.Contains(TValue item)
@@ -361,53 +360,53 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 	//     the available space from _Index to the end of the destination array.-or-The type
 	//     of the source System.Collections.ICollection cannot be cast automatically to
 	//     the type of the destination array.
-	void ICollection.CopyTo(Array array, int _Index)
+	void ICollection.CopyTo(Array array, int index)
 	{
 		if (array == null)
 		{
-			ArgumentNullException ex = new("array");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(array));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.Rank != 1)
 		{
-			ArgumentException ex = new("Arg_RankMultiDimNotSupported");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToRankMultiDimNotSupported);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array.GetLowerBound(0) != 0)
 		{
-			ArgumentException ex = new("Arg_NonZeroLowerBound");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToNonZeroLowerBound);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		if (_Index < 0 || _Index > array.Length)
+		if (index < 0 || index > array.Length)
 		{
-			ArgumentOutOfRangeException ex = new("_Index is negative");
-			Diag.Dug(ex);
+			ArgumentOutOfRangeException ex = new(nameof(index), Resources.ExceptionCopyToIndexOutOfRange.Fmt(index, array.Length));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		if (array.Length - _Index < _Dictionary.Count)
+		if (array.Length - index < _Dictionary.Count)
 		{
-			ArgumentException ex = new("Arg_ArrayPlusOffTooSmall");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToArrayTooSmall.Fmt(array.Length, _Dictionary.Count, index));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (array is TValue[] array2)
 		{
-			CopyTo(array2, _Index);
+			CopyTo(array2, index);
 			return;
 		}
 
 		if (array is not object[] array3)
 		{
-			ArgumentException ex = new("Argument_InvalidArrayType");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToInvalidArrayType.Fmt(array.GetType()), nameof(array));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -419,14 +418,14 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 			{
 				if (entries[i].HashCode >= 0)
 				{
-					array3[_Index++] = entries[i].Value;
+					array3[index++] = entries[i].Value;
 				}
 			}
 		}
 		catch (ArrayTypeMismatchException)
 		{
-			ArgumentException ex = new("Argument_InvalidArrayType");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionCopyToArrayTypeMismatch.Fmt(_Dictionary.Entries.GetType(), array.GetType()));
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

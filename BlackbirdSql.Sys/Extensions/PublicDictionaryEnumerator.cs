@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using BlackbirdSql.Sys.Properties;
 
 
 
@@ -63,8 +64,8 @@ public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePai
 		{
 			if (_Index == 0 || _Index == _Dictionary.RawCount + 1)
 			{
-				InvalidOperationException ex = new("InvalidOperation_EnumOpCantHappen");
-				Diag.Dug(ex);
+				InvalidOperationException ex = new(Resources.ExceptionEnumerationFailed);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -95,8 +96,8 @@ public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePai
 		{
 			if (_Index == 0 || _Index == _Dictionary.RawCount + 1)
 			{
-				InvalidOperationException ex = new("InvalidOperation_EnumOpCantHappen");
-				Diag.Dug(ex);
+				InvalidOperationException ex = new(Resources.ExceptionEnumerationFailed);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -121,8 +122,8 @@ public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePai
 		{
 			if (_Index == 0 || _Index == _Dictionary.RawCount + 1)
 			{
-				InvalidOperationException ex = new("InvalidOperation_EnumOpCantHappen");
-				Diag.Dug(ex);
+				InvalidOperationException ex = new(Resources.ExceptionEnumerationFailed);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -147,8 +148,8 @@ public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePai
 		{
 			if (_Index == 0 || _Index == _Dictionary.RawCount + 1)
 			{
-				InvalidOperationException ex = new("InvalidOperation_EnumOpCantHappen");
-				Diag.Dug(ex);
+				InvalidOperationException ex = new(Resources.ExceptionEnumerationFailed);
+				Diag.Ex(ex);
 				throw ex;
 			}
 			return _Current.Value;

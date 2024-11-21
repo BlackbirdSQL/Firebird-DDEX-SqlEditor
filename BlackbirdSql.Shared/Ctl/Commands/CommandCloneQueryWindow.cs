@@ -41,7 +41,7 @@ public class CommandCloneQueryWindow : AbstractCommand
 
 			string baseName = TabbedEditor.WindowBaseName;
 
-			TextSpanEx textSpanInfo = TabbedEditor.GetSelectedCodeEditorTextSpan();
+			TextSpanX textSpanInfo = TabbedEditor.GetSelectedCodeEditorTextSpan();
 			if (textSpanInfo.Text == null || textSpanInfo.Text.Length == 0)
 			{
 				textSpanInfo = TabbedEditor.GetAllCodeEditorTextSpan();

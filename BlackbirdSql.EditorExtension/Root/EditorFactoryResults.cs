@@ -97,7 +97,7 @@ public sealed class EditorFactoryResults : AbstruseEditorFactory
 		{
 			if (ex is NullReferenceException || ex is ApplicationException || ex is ArgumentException || ex is InvalidOperationException)
 			{
-				MessageCtl.ShowEx(Resources.ExFailedToCreateEditor, ex);
+				MessageCtl.ShowX(Resources.ExFailedToCreateEditor, ex);
 				return VSConstants.E_FAIL;
 			}
 

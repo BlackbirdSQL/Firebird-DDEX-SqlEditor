@@ -28,12 +28,21 @@
     <Compile Include="Evs.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="PackageController.cs" />
+    <Compile Include="Properties\ControlsResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ControlsResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	  <Compile Include="Properties\Resources.Designer.cs">
 		  <AutoGen>True</AutoGen>
 		  <DesignTime>True</DesignTime>
 		  <DependentUpon>Resources.resx</DependentUpon>
 	  </Compile>
+	  <EmbeddedResource Include="Properties\ControlsResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\Resources.resx">
 		  <Generator>PublicResXFileCodeGenerator</Generator>
 		  <LastGenOutput>Resources.Designer.cs</LastGenOutput>

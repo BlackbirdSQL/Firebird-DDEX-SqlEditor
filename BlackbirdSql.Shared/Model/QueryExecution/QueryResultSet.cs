@@ -221,7 +221,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 
 		if (_QeStorage != null)
 		{
-			Exception ex = new InvalidOperationException(Resources.ExResultSetAlreadyInited);
+			Exception ex = new InvalidOperationException(Resources.ExceptionResultSetAlreadyInited);
 			Diag.ThrowException(ex);
 		}
 
@@ -383,13 +383,13 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 		// Evs.Trace(GetType(), nameof(StartConsumingDataWithoutStoring));
 		if (_QeStorage == null)
 		{
-			Exception ex = new InvalidOperationException(Resources.ExResultSetNotInitialized);
+			Exception ex = new InvalidOperationException(Resources.ExceptionResultSetNotInitialized);
 			Diag.ThrowException(ex);
 		}
 
 		if (!_QeStorage.IsClosed())
 		{
-			Exception ex2 = new InvalidOperationException(Resources.ExResultSetAlreadyStoring);
+			Exception ex2 = new InvalidOperationException(Resources.ExceptionResultSetAlreadyStoring);
 			Diag.ThrowException(ex2);
 		}
 
@@ -410,13 +410,13 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 		// Evs.Trace(GetType(), nameof(StartRetrievingData), "nMaxNumCharsToDisplay = {0}", nMaxNumCharsToDisplay);
 		if (_QeStorage == null)
 		{
-			Exception ex = new InvalidOperationException(Resources.ExResultSetNotInitialized);
+			Exception ex = new InvalidOperationException(Resources.ExceptionResultSetNotInitialized);
 			Diag.ThrowException(ex);
 		}
 
 		if (!_QeStorage.IsClosed())
 		{
-			Exception ex2 = new InvalidOperationException(Resources.ExResultSetAlreadyStoring);
+			Exception ex2 = new InvalidOperationException(Resources.ExceptionResultSetAlreadyStoring);
 			Diag.ThrowException(ex2);
 		}
 

@@ -192,6 +192,9 @@
   <data name="IVsDataConnectionProperties_PropertyInvalid" xml:space="preserve">
     <value>Invalid IVsDataConnectionProperties property: {0}.</value>
   </data>
+  <data name="LabelDatabasePath" xml:space="preserve">
+    <value>Database path: {0}.</value>
+  </data>
   <data name="Provider_DisplayName" xml:space="preserve">
     <value>.NET Provider for Firebird (FirebirdClient)</value>
   </data>

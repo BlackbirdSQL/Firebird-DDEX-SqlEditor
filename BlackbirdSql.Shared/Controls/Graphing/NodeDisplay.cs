@@ -91,7 +91,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 			}
 			if (NodeOriginal["PhysicalOperationKind"] is string text2)
 			{
-				text = string.Format(CultureInfo.CurrentCulture, "{0} {1}", text, ControlsResources.Graphing_Parenthesis.FmtRes(text2));
+				text = "{0} {1}".Fmt(text, ControlsResources.Graphing_Parenthesis.Fmt(text2));
 			}
 			object obj = NodeOriginal["Object"];
 			string text3;
@@ -104,12 +104,12 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 				text3 = NodeOriginal["LogicalOp"] as string;
 				if (text3 != null)
 				{
-					text3 = !(text3 != text) ? null : string.Format(ControlsResources.Parenthesis, text3);
+					text3 = !(text3 != text) ? null : ControlsResources.Parenthesis.Fmt(text3);
 				}
 			}
 			if (text3 != null && text3.Length != 0)
 			{
-				return string.Format(CultureInfo.CurrentCulture, "{0}\n{1}", text, text3);
+				return "{0}\n{1}".Fmt(text, text3);
 			}
 			return text;
 		}
@@ -124,9 +124,9 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 			text = text.Replace(")", "");
 			if (text.Length == 0)
 			{
-				return string.Format(ControlsResources.Graphing_NodeDisplayPropertiesName1, ID);
+				return ControlsResources.Graphing_NodeDisplayPropertiesName1.Fmt(ID);
 			}
-			return string.Format(ControlsResources.Graphing_NodeDisplayPropertiesName2, text, ID);
+			return ControlsResources.Graphing_NodeDisplayPropertiesName2.Fmt(text, ID);
 		}
 		set
 		{
@@ -186,7 +186,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 			{
 				return "";
 			}
-			return ControlsResources.Graphing_OperatorDisplayCost.FmtRes(NodeOriginal.Cost, (int)Math.Round(num));
+			return ControlsResources.Graphing_OperatorDisplayCost.Fmt(NodeOriginal.Cost, (int)Math.Round(num));
 		}
 	}
 
@@ -595,7 +595,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		}
 		text = text.PadLeft(text2.Length);
 		text2 = text2.PadLeft(text.Length);
-		return string.Format(ControlsResources.Graphing_ActualOfEstimated, text, text2, num);
+		return text.Fmt(text2, num);
 	}
 
 	protected virtual string[] GetDisplayLinesOfText()
@@ -604,7 +604,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		double num = NodeOriginal.RelativeCost * 100.0;
 		if (!HasPDWCost || num > 0.0)
 		{
-			string text2 = string.Format(ControlsResources.Graphing_CostFormat, (int)Math.Round(num));
+			string text2 = ControlsResources.Graphing_CostFormat.Fmt((int)Math.Round(num));
 			text = text + "\n" + text2;
 		}
 		string elapsedTimeDisplayString = GetElapsedTimeDisplayString();

@@ -523,7 +523,7 @@ public class DlgGridControl : GridControl, IBsDlgGridControl, IBsGridControl
 		if (storageRowAsGridCells.Length != row.Count)
 		{
 			ArgumentException ex = new("row");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		for (int i = 0; i < storageRowAsGridCells.Length; i++)
@@ -685,8 +685,8 @@ public class DlgGridControl : GridControl, IBsDlgGridControl, IBsGridControl
 	{
 		if (row == null)
 		{
-			ArgumentNullException ex = new("row");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(row));
+			Diag.Ex(ex);
 			throw ex;
 		}
 		GridCell[] array = new GridCell[row.Count];

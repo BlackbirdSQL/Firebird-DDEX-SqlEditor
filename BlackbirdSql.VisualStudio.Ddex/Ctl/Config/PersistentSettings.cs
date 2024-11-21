@@ -155,7 +155,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, Resources.ExceptionFailedToSubscribeSettingsEvents);
+			Diag.Ex(ex, Resources.ExceptionFailedToSubscribeSettingsEvents);
 		}
 	}
 
@@ -247,7 +247,7 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 	}
 

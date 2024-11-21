@@ -171,65 +171,6 @@ public static class NativeDb
 	// =========================================================================================================
 
 
-	// -----------------------------------------------------------------------------------------------------
-	/// <summary>
-	/// [Async on UI thread]: Reindex the EntityFramwork ProviderService type in the TypeResolutionService. 
-	/// </summary>
-	// -----------------------------------------------------------------------------------------------------
-	public static void AsyuiReindexEntityFrameworkAssemblies(Project project = null)
-	{
-		// If it's a solution reindex (project == null), lock entry so that only
-		// other solution reindex requests can enter.
-		if (project == null)
-		{
-			if (!EventReindexingEnter(false, true))
-				return;
-		}
-		else
-		{
-			if (!EventReindexingEnter(true))
-				return;
-		}
-
-
-		// Get in behind everyone else so that we're last.
-
-		_ = Task.Factory.StartNew(
-				async () =>
-				{
-					// If it's a solution reindex, unlock. If other solution reindex's
-					// are behind us they'll lock us out when we call EventReindexingEnter()
-					// again after checking for SolutionClosing and switching to the main
-					// thread..
-					// This is perfect code logic because it means only the last solution
-					// reindex will get through. Everything else will be discarded. Even
-					// requests ahead of it.
-					if (project == null)
-						EventReindexingExit();
-
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-					if (!EventReindexingEnter())
-						return;
-
-					try
-					{
-						ReindexEntityFrameworkAssemblies(project);
-					}
-					catch (Exception ex)
-					{
-						Diag.ThrowException(ex);
-					}
-					finally
-					{
-						EventReindexingExit();
-					}
-				},
-				default, TaskCreationOptions.None, TaskScheduler.Default);
-	}
-
-
-
 	public static DbConnection CastToNativeConnection(object connection)
 	{
 		return DatabaseEngineSvc.CastToNativeConnection_(connection);
@@ -293,8 +234,8 @@ public static class NativeDb
 	private static List<Project> ReindexEntityFrameworkAssemblies(Project project = null)
 	{
 		string projectName = project != null
-			? ControlsResources.ReindexAssemblies_ProjectName.FmtRes(project.Name)
-			: ControlsResources.ReindexAssemblies_All;
+			? Resources.ReindexAssemblies_ProjectName.Fmt(project.Name)
+			: Resources.ReindexAssemblies_All;
 
 		_ReindexEvsIndex = Evs.Start(typeof(NativeDb), nameof(ReindexEntityFrameworkAssemblies), projectName,
 			nameof(ReindexEntityFrameworkAssemblies), _ReindexEvsIndex);
@@ -308,7 +249,7 @@ public static class NativeDb
 			if (projects.Count == 0)
 				return projects;
 
-			Evs.Trace(typeof(NativeDb), "ReindexEntityFrameworkAssemblies()", $"Project count: {projects.Count}.");
+			Evs.Trace(typeof(NativeDb), nameof(ReindexEntityFrameworkAssemblies), $"Project count: {projects.Count}.");
 
 			ServiceProvider serviceProvider = null;
 			DynamicTypeService dynamicTypeService = null;
@@ -379,7 +320,7 @@ public static class NativeDb
 					continue;
 				}
 
-				// Evs.Trace(typeof(Cmd), "ReindexEntityFrameworkAssemblies()", "Reindexing EntityFrameworkAssemblies for project: {0}.", proj.Name);
+				// Evs.Trace(typeof(Cmd), nameof(ReindexEntityFrameworkAssemblies), "Reindexing EntityFrameworkAssemblies for project: {0}.", proj.Name);
 
 				typeCache[key] = providerServicesType;
 
@@ -406,6 +347,65 @@ public static class NativeDb
 				nameof(ReindexEntityFrameworkAssemblies), _ReindexEvsIndex);
 		}
 
+	}
+
+
+
+	// -----------------------------------------------------------------------------------------------------
+	/// <summary>
+	/// [Async on UI thread]: Reindex the EntityFramwork ProviderService type in the TypeResolutionService. 
+	/// </summary>
+	// -----------------------------------------------------------------------------------------------------
+	public static void ReindexEntityFrameworkAssembliesAsyui(Project project = null)
+	{
+		// If it's a solution reindex (project == null), lock entry so that only
+		// other solution reindex requests can enter.
+		if (project == null)
+		{
+			if (!EventReindexingEnter(false, true))
+				return;
+		}
+		else
+		{
+			if (!EventReindexingEnter(true))
+				return;
+		}
+
+
+		// Get in behind everyone else so that we're last.
+
+		_ = Task.Factory.StartNew(
+				async () =>
+				{
+					// If it's a solution reindex, unlock. If other solution reindex's
+					// are behind us they'll lock us out when we call EventReindexingEnter()
+					// again after checking for SolutionClosing and switching to the main
+					// thread..
+					// This is perfect code logic because it means only the last solution
+					// reindex will get through. Everything else will be discarded. Even
+					// requests ahead of it.
+					if (project == null)
+						EventReindexingExit();
+
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+					if (!EventReindexingEnter())
+						return;
+
+					try
+					{
+						ReindexEntityFrameworkAssemblies(project);
+					}
+					catch (Exception ex)
+					{
+						Diag.ThrowException(ex);
+					}
+					finally
+					{
+						EventReindexingExit();
+					}
+				},
+				default, TaskCreationOptions.None, TaskScheduler.Default);
 	}
 
 
@@ -454,10 +454,10 @@ public static class NativeDb
 		{
 			Type edmResolverType = Type.GetType("Microsoft.Data.Entity.Design.VersioningFacade.DependencyResolver, " +
 					"Microsoft.Data.Entity.Design.VersioningFacade", true, true)
-				?? throw new TypeAccessException("Could not get EDM VersioningFacade.DependencyResolver type.");
+				?? throw new TypeAccessException(Resources.ExceptionEdmVersioningFacadeDependencyResolverType);
 
 			object edmResolver = Reflect.GetFieldValue(edmResolverType, "Instance")
-				?? throw new TypeAccessException("Could not get EDM VersioningFacade.DependencyResolver Instance.");
+				?? throw new TypeAccessException(Resources.ExceptionEdmVersioningFacadeDependencyResolverInstance);
 
 			Reflect.InvokeMethod(edmResolver, "RegisterProvider", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public,
 				[DatabaseEngineSvc.EFProviderServicesType_, Invariant]);
@@ -466,7 +466,7 @@ public static class NativeDb
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return false;
 		}
 
@@ -506,7 +506,7 @@ public static class NativeDb
 					return null;
 				}
 			}
-			NativeMethods.ThrowOnFailure(vsSolution.GetProjectOfUniqueName(project.UniqueName, out var ppHierarchy));
+			NativeMethods.ThrowOnFailure(vsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy ppHierarchy));
 			if (ppHierarchy == null)
 			{
 				return null;
@@ -605,8 +605,8 @@ public static class NativeDb
 		{
 			if (_EventReindexingCardinal <= 0)
 			{
-				ApplicationException ex = new($"Attempt to exit Reindexing event when not in a Reindexing event. _EventReindexingCardinal: {_EventReindexingCardinal}");
-				Diag.Dug(ex);
+				ApplicationException ex = new(Resources.ExceptionEventReindexingExit.Fmt(_EventReindexingCardinal));
+				Diag.Ex(ex);
 				throw ex;
 			}
 

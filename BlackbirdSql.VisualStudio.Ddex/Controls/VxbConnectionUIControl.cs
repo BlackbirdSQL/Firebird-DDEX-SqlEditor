@@ -21,6 +21,9 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
+using static BlackbirdSql.CoreConstants;
+using static BlackbirdSql.SysConstants;
+
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Controls;
@@ -47,7 +50,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		Diag.ThrowIfNotOnUIThread();
 
 		if (!RctManager.EventConnectionDialogEnter())
-			Diag.Dug(new ApplicationException("Attempt to enter connection dialog when already in a connection dialog"));
+			Diag.Ex(new ApplicationException("Attempt to enter connection dialog when already in a connection dialog"));
 
 
 		try
@@ -60,7 +63,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 					ex = new("RunningConnectionTable is in a shutdown state. Aborting.");
 				else
 					ex = new("RunningConnectionTable is not loaded.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -96,12 +99,12 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 			cmbDatabase.DataSource = DataSources.Dependent;
 			cmbDatabase.ValueMember = "DatabaseLc";
-			cmbDatabase.DisplayMember = CoreConstants.C_KeyExAdornedDisplayName;
+			cmbDatabase.DisplayMember = C_KeyExAdornedDisplayName;
 
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 	}
@@ -122,7 +125,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			// The proposed name properties will have been set to readonly for Application connection dialogs.
 
 			// Evs.Debug(GetType(), nameof(Dispose), "Setting readonly to false.");
-			UpdateDescriptorReadOnlyAttribute(false);
+			UpdateDescriptorAttributes(true, false);
 		}
 
 		if (disposing && (components != null))
@@ -168,6 +171,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 	private bool _HandleNewInternally = false;
 	private bool _HandleModifyInternally = false;
 	private bool _HandleVerification = true;
+	private static bool _BrowsableDescriptors = true;
 	private static bool _ReadOnlyDescriptors = true;
 
 
@@ -233,7 +237,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 	private Form ParentParentForm => Parent?.Parent as Form;
 
 
-	IBsDataConnectionDlg SessionDlg => Parent != null ? Parent.Parent as IBsDataConnectionDlg : null;
+	IBsConnectionDialog SessionDlg => Parent != null ? Parent.Parent as IBsConnectionDialog : null;
 
 	#endregion Property accessors
 
@@ -266,7 +270,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			if (Site != null && Site.TryGetValue("DataSource", out object value))
 				txtDataSource.Text = (string)value;
 			else
-				txtDataSource.Text = SysConstants.C_DefaultDataSource;
+				txtDataSource.Text = C_DefaultDataSource;
 
 			if (txtDataSource.Text != "")
 				cmbDataSource.SelectedValue = txtDataSource.Text.ToLower();
@@ -277,44 +281,44 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			if (Site != null && Site.TryGetValue("User ID", out value))
 				txtUserName.Text = (string)value;
 			else
-				txtUserName.Text = SysConstants.C_DefaultUserID;
+				txtUserName.Text = C_DefaultUserID;
 
 			if (Site != null && Site.TryGetValue("Database", out value))
 				txtDatabase.Text = Cmd.CleanPath((string)value);
 			else
-				txtDatabase.Text = SysConstants.C_DefaultDatabase;
+				txtDatabase.Text = C_DefaultDatabase;
 
 
 			if (Site != null && Site.TryGetValue("Password", out value))
 				txtPassword.Text = (string)value;
 			else
-				txtPassword.Text = SysConstants.C_DefaultPassword;
+				txtPassword.Text = C_DefaultPassword;
 
 
 			if (Site != null && Site.TryGetValue("Role", out value))
 				txtRole.Text = (string)value;
 			else
-				txtRole.Text = SysConstants.C_DefaultRole;
+				txtRole.Text = C_DefaultRole;
 
 			if (Site != null && Site.TryGetValue("Character Set", out value))
 				cboCharset.SetSelectedValueX(value);
 			else
-				cboCharset.SetSelectedValueX(SysConstants.C_DefaultCharset);
+				cboCharset.SetSelectedValueX(C_DefaultCharset);
 
 			if (Site != null && Site.TryGetValue("Port", out value))
 				txtPort.Text = (string)value;
 			else
-				txtPort.Text = SysConstants.C_DefaultPort.ToString();
+				txtPort.Text = C_DefaultPort.ToString();
 
 			if (Site != null && Site.TryGetValue("Dialect", out value))
 				cboDialect.SetSelectedValueX(value);
 			else
-				cboDialect.SetSelectedValueX(SysConstants.C_DefaultDialect);
+				cboDialect.SetSelectedValueX(C_DefaultDialect);
 
 			if (Site != null && Site.TryGetValue("ServerType", out value))
 				cboServerType.SelectedIndex = Convert.ToInt32((string)value);
 			else
-				cboServerType.SelectedIndex = (int)SysConstants.C_DefaultServerType;
+				cboServerType.SelectedIndex = (int)C_DefaultServerType;
 
 
 			// Move the cursor to it's correct position.
@@ -331,7 +335,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 			// Update the database name label.
 
-			@object = DataSources.DependentRow[CoreConstants.C_KeyExAdornedQualifiedName];
+			@object = DataSources.DependentRow[C_KeyExAdornedQualifiedName];
 
 			lblCurrentDisplayName.Text = !Cmd.IsNullValue(@object)
 				? (string)@object : ControlsResources.TConnectionUIControl_NewDatabaseConnection;
@@ -352,44 +356,44 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			{
 				// We're leaving proposed keys from Advanced intact.
 
-				if (Site.ContainsKey(SysConstants.C_KeyExConnectionName)
-					&& string.IsNullOrWhiteSpace((string)Site[SysConstants.C_KeyExConnectionName]))
+				if (Site.ContainsKey(C_KeyExConnectionName)
+					&& string.IsNullOrWhiteSpace((string)Site[C_KeyExConnectionName]))
 				{
-					Site.Remove(SysConstants.C_KeyExConnectionName);
+					Site.Remove(C_KeyExConnectionName);
 				}
 
-				if (Site.ContainsKey(SysConstants.C_KeyExDatasetName)
-					&& string.IsNullOrWhiteSpace((string)Site[SysConstants.C_KeyExDatasetName]))
+				if (Site.ContainsKey(C_KeyExDatasetName)
+					&& string.IsNullOrWhiteSpace((string)Site[C_KeyExDatasetName]))
 				{
-					Site.Remove(SysConstants.C_KeyExDatasetName);
+					Site.Remove(C_KeyExDatasetName);
 				}
 
 
-				@object = DataSources.DependentRow[CoreConstants.C_KeyExDatasetKey];
+				@object = DataSources.DependentRow[C_KeyExDatasetKey];
 				if (!Cmd.IsNullValue(@object) && (string)@object != "")
-					Site[CoreConstants.C_KeyExDatasetKey] = (string)@object;
+					Site[C_KeyExDatasetKey] = (string)@object;
 				else
-					Site.Remove(CoreConstants.C_KeyExDatasetKey);
+					Site.Remove(C_KeyExDatasetKey);
 
-				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionKey];
+				@object = DataSources.DependentRow[C_KeyExConnectionKey];
 				if (!Cmd.IsNullValue(@object) && (string)@object != "")
-					Site[CoreConstants.C_KeyExConnectionKey] = (string)@object;
+					Site[C_KeyExConnectionKey] = (string)@object;
 				else
-					Site.Remove(CoreConstants.C_KeyExConnectionKey);
+					Site.Remove(C_KeyExConnectionKey);
 
-				@object = DataSources.DependentRow[CoreConstants.C_KeyExDataset];
+				@object = DataSources.DependentRow[C_KeyExDataset];
 				if (!Cmd.IsNullValue(@object) && (string)@object != "")
-					Site[CoreConstants.C_KeyExDataset] = (string)@object;
+					Site[C_KeyExDataset] = (string)@object;
 				else
-					Site.Remove(CoreConstants.C_KeyExDataset);
+					Site.Remove(C_KeyExDataset);
 
-				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionSource];
+				@object = DataSources.DependentRow[C_KeyExConnectionSource];
 				if (!Cmd.IsNullValue(@object) && (EnConnectionSource)(int)@object > EnConnectionSource.Unknown)
-					Site[CoreConstants.C_KeyExConnectionSource] = (int)@object;
+					Site[C_KeyExConnectionSource] = (int)@object;
 				else
-					Site.Remove(CoreConstants.C_KeyExConnectionSource);
+					Site.Remove(C_KeyExConnectionSource);
 
-				Site.ValidateKeys();
+				ValidateSiteKeys();
 
 			}
 			finally
@@ -401,7 +405,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -438,7 +442,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 		// Evs.Debug(GetType(), nameof(AddEventHandlers), $"Setting readonly to {(ConnectionSource == EnConnectionSource.Application)}.");
 
-		UpdateDescriptorReadOnlyAttribute(ConnectionSource == EnConnectionSource.Application);
+		UpdateDescriptorAttributes(false, ConnectionSource == EnConnectionSource.Application);
 
 
 		ParentParentForm.FormClosed += OnFormClosed;
@@ -491,7 +495,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			if (_EventCursorCardinal <= 0)
 			{
 				ApplicationException ex = new($"Attempt to exit Cursor event when not in a Cursor event. _EventCursorCardinal: {_EventCursorCardinal}");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 			_EventCursorCardinal--;
@@ -535,7 +539,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			if (_EventInputCardinal <= 0)
 			{
 				ApplicationException ex = new($"Attempt to exit Cursor event when not in a Cursor event. _EventCursorCardinal: {_EventInputCardinal}");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 			_EventInputCardinal--;
@@ -579,7 +583,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			if (_EventPropertyCardinal <= 0)
 			{
 				ApplicationException ex = new($"Attempt to exit Cursor event when not in a Cursor event. _EventCursorCardinal: {_EventPropertyCardinal}");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 			_EventPropertyCardinal--;
@@ -648,7 +652,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		if (!DataSources.IsReady)
 		{
 			ApplicationException ex = new("ErmBindingSource is not configured");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -670,8 +674,8 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 			// First see if the DataSources cursor has changed.
 
-			string dataSource = Site.ContainsKey(SysConstants.C_KeyDataSource)
-				? (string)Site[SysConstants.C_KeyDataSource] : "";
+			string dataSource = Site.ContainsKey(C_KeyDataSource)
+				? (string)Site[C_KeyDataSource] : "";
 
 
 			// Try to move the Datasource combo table to it's correct position.
@@ -694,7 +698,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			// Try to move the Dependent combo table to it's correct position.
 
 			if (connectionUrl != null)
-				dbPosition = DataSources.FindDependent(CoreConstants.C_KeyExConnectionUrl, connectionUrl);
+				dbPosition = DataSources.FindDependent(C_KeyExConnectionUrl, connectionUrl);
 
 			if (dbPosition == -1)
 				dbPosition = 0;
@@ -747,50 +751,79 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 
 	/// <summary>
-	/// Updates Csb descriptor ReadonlyAttributes.
+	/// Updates Csb descriptors ReadonlyAttribute and BrowsableAttribute.
 	/// </summary>
-	public static bool UpdateDescriptorReadOnlyAttribute(bool readOnly)
+	public static bool UpdateDescriptorAttributes(bool browsable, bool readOnly)
 	{
-		if (_ReadOnlyDescriptors == readOnly)
+		if (_BrowsableDescriptors == browsable && _ReadOnlyDescriptors == readOnly)
 			return false;
 
-		_ReadOnlyDescriptors = readOnly;
 
 		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(typeof(Csb));
 
 		if (descriptors.Count == 0)
 			Diag.ThrowException(new ApplicationException("Could not get property descriptors for Csb"));
 
-		bool value;
+
+		bool curr, value;
 		bool updated = false;
-		string[] readOnlyDescriptors = [SysConstants.C_KeyExConnectionName, SysConstants.C_KeyExDatasetName];
+		string[] browsableDescriptors = ["ConnectionString", C_KeyUserID, C_KeyPassword, C_KeyDataSource,
+			C_KeyDatabase, C_KeyPort, C_KeyRole, C_KeyDialect, C_KeyCharset, C_KeyServerType];
+		string[] readOnlyDescriptors = [C_KeyExConnectionName, C_KeyExDatasetName];
+		FieldInfo fieldInfo;
+		PropertyDescriptor descriptor;
 
 		try
 		{
-			foreach (string name in readOnlyDescriptors)
+			if (_BrowsableDescriptors != browsable)
 			{
-				PropertyDescriptor descriptor = descriptors.Find(name, true);
+				_BrowsableDescriptors = browsable;
+				value = browsable;
 
-				if (descriptor == null)
-					continue;
+				foreach (string name in browsableDescriptors)
+				{
+					descriptor = descriptors.Find(name, true);
 
-				if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is not ReadOnlyAttribute attr)
-					throw new IndexOutOfRangeException($"ReadOnlyAttribute not found in PropertyDescriptor for {name}.");
+					if (descriptor.Attributes[typeof(BrowsableAttribute)] is not BrowsableAttribute attr)
+						throw new IndexOutOfRangeException($"BrowsableAttribute not found in PropertyDescriptor for {name}.");
 
-				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly");
+					fieldInfo = Reflect.GetFieldInfo(attr, "browsable");
+					curr = (bool)Reflect.GetFieldInfoValue(attr, fieldInfo);
 
+					if (curr != value)
+					{
+						updated = true;
+						Reflect.SetFieldInfoValue(attr, fieldInfo, value);
+					}
+				}
+			}
+
+			if (_ReadOnlyDescriptors != readOnly)
+			{
+				_ReadOnlyDescriptors = readOnly;
 				value = readOnly;
 
-				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != value)
+				foreach (string name in readOnlyDescriptors)
 				{
-					updated = true;
-					Reflect.SetFieldInfoValue(attr, fieldInfo, value);
+					descriptor = descriptors.Find(name, true);
+
+					if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is not ReadOnlyAttribute attr)
+						throw new IndexOutOfRangeException($"ReadOnlyAttribute not found in PropertyDescriptor for {name}.");
+
+					fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly");
+					curr = (bool)Reflect.GetFieldInfoValue(attr, fieldInfo);
+
+					if (curr != value)
+					{
+						updated = true;
+						Reflect.SetFieldInfoValue(attr, fieldInfo, value);
+					}
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		return updated;
@@ -812,17 +845,17 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 		try
 		{
-			Site.Remove(CoreConstants.C_KeyExDatasetKey);
-			Site.Remove(CoreConstants.C_KeyExConnectionKey);
-			Site.Remove(CoreConstants.C_KeyExDataset);
+			Site.Remove(C_KeyExDatasetKey);
+			Site.Remove(C_KeyExConnectionKey);
+			Site.Remove(C_KeyExDataset);
 
 			if (removeProposed)
 			{
-				Site.Remove(SysConstants.C_KeyExConnectionName);
-				Site.Remove(SysConstants.C_KeyExDatasetName);
+				Site.Remove(C_KeyExConnectionName);
+				Site.Remove(C_KeyExDatasetName);
 			}
 
-			Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
+			Site[C_KeyExConnectionSource] = ConnectionSource;
 
 			lblCurrentDisplayName.Text = ControlsResources.TConnectionUIControl_NewDatabaseConnection;
 
@@ -836,16 +869,141 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 				connectionSource = EnConnectionSource.ServerExplorer;
 			}
 
-			Site[CoreConstants.C_KeyExConnectionSource] = connectionSource;
+			Site[C_KeyExConnectionSource] = connectionSource;
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
 			EventPropertyExit();
 		}
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Validates the IVsDataConnectionProperties Site for redundant or required
+	/// registration properties.
+	/// Determines if the ConnectionName (proposed DatsetKey) and DatasetName (proposed
+	/// database name) are required in the Site.
+	/// This cleanup ensures that proposed keys do not appear in connection dialogs
+	/// and strings if they will have no impact on the final DatsetKey. 
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool ValidateSiteKeys()
+	{
+		bool modified = false;
+		// First the DatasetName. If it's equal to the Dataset we clear it because, by
+		// default the trimmed filepath (Dataset) can be used.
+
+		string database = Site.ContainsKey(C_KeyDatabase)
+			? (string)Site[C_KeyDatabase] : null;
+
+		if (database != null && string.IsNullOrWhiteSpace(database))
+		{
+			modified = true;
+			database = null;
+			Site.Remove(C_KeyDatabase);
+		}
+
+		string dataset;
+
+		try
+		{
+			dataset = database != null
+				? Cmd.GetFileNameWithoutExtension(database) : null;
+		}
+		catch (Exception ex)
+		{
+			Diag.Ex(ex, Resources.LabelDatabasePath.Fmt(database));
+			throw;
+		}
+
+
+		string datasetName = Site.ContainsKey(C_KeyExDatasetName)
+			? (string)Site[C_KeyExDatasetName] : null;
+
+		if (datasetName != null)
+		{
+			if (string.IsNullOrWhiteSpace(datasetName))
+			{
+				// DatasetName exists and is invalid (empty). Delete it.
+				modified = true;
+				datasetName = null;
+				Site.Remove(C_KeyExDatasetName);
+			}
+
+			/*
+			if (datasetName != null && dataset != null && datasetName == dataset)
+			{
+				// If the DatasetName is equal to the Dataset it's also not needed. Delete it.
+				modified = true;
+				datasetName = null;
+				@this.Remove(C_KeyExDatasetName);
+			}
+			*/
+		}
+
+		// Now that the datasetName is established, we can determined its default derived value
+		// and the default derived value of the datasetKey.
+		// string derivedDatasetName = datasetName ?? (dataset ?? null);
+
+		string dataSource = Site.ContainsKey(C_KeyDataSource)
+			? (string)Site[C_KeyDataSource] : null;
+
+		if (dataSource != null && string.IsNullOrWhiteSpace(dataSource))
+		{
+			modified = true;
+			// dataSource = null;
+			Site.Remove(C_KeyDataSource);
+		}
+
+
+		// string derivedConnectionName = (dataSource != null && derivedDatasetName != null)
+		//	? S_DatasetKeyFormat.Fmt(dataSource, derivedDatasetName) : null;
+		// string derivedAlternateConnectionName = (dataSource != null && derivedDatasetName != null)
+		//	? S_DatasetKeyAlternateFormat.Fmt(dataSource, derivedDatasetName) : null;
+
+
+		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived
+		// Datsetkey, it's also not needed.
+
+		string connectionName = Site.ContainsKey(C_KeyExConnectionName)
+			? (string)Site[C_KeyExConnectionName] : null;
+
+		if (connectionName != null && string.IsNullOrWhiteSpace(connectionName))
+		{
+			modified = true;
+			connectionName = null;
+			Site.Remove(C_KeyExConnectionName);
+		}
+
+		if (connectionName != null)
+		{
+			// If the ConnectionName (proposed DatsetKey) is equal to the default
+			// derived datasetkey it also won't be needed, so delete it,
+			// else the ConnectionName still exists and is the determinant, so
+			// any existing proposed DatasetName is not required.
+			/*
+			if (connectionName == derivedConnectionName || connectionName == derivedAlternateConnectionName)
+			{
+				modified = true;
+				@this.Remove(C_KeyExConnectionName);
+			}
+			else */
+			if (datasetName != null)
+			{
+				// If ConnectionName exists the DatasetName is not needed. Delete it.
+				modified = true;
+				Site.Remove(C_KeyExDatasetName);
+			}
+		}
+
+		return modified;
 
 	}
 
@@ -889,6 +1047,25 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			InvalidCastException ex = new($"Cannot cast IVsDataConnectionUIProperties Site to IVsDataConnectionProperties.");
 			throw ex;
 		}
+
+		/*
+		if (ConnectionSource == EnConnectionSource.DataSource)
+		{
+			string connectionUrl = (site as IBsDataConnectionProperties).Csa.LiveDatasetMoniker;
+			EnConnectionSource connectionSource = RctManager.GetRegisteredConnectionSource(connectionUrl);
+
+			// Evs.Debug(GetType(), nameof(OnAccept), $"Registered connectionSource:{connectionSource}.");
+
+			if (connectionSource == EnConnectionSource.ServerExplorer || RctManager.VerifyAppConfigConnectionExists(connectionUrl))
+			{
+				// Evs.Debug(GetType(), nameof(OnAccept), "No verification.");
+				_HandleVerification = false;
+				return;
+			}
+		}
+		*/
+
+
 
 		// Evs.Trace(GetType(), nameof(OnAccept));
 		IDbConnection connection = null;
@@ -953,7 +1130,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 				Csa.ValidateServerName();
 				Csa.ValidateProposedName();
 
-				// Evs.Debug(GetType(), nameof(OnAccept), $"DatasetName: {site[SysConstants.C_KeyExDatasetName]}.");
+				// Evs.Debug(GetType(), nameof(OnAccept), $"DatasetName: {site[C_KeyExDatasetName]}.");
 
 
 				(bool success, bool addInternally, bool modifyInternally)
@@ -988,7 +1165,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 				// If a new unique SE connection is going to be created in a Session set the connection source.
 				if (ConnectionSource == EnConnectionSource.Session && addInternally)
-					site[CoreConstants.C_KeyExConnectionKey] = site[CoreConstants.C_KeyExDatasetKey];
+					site[C_KeyExConnectionKey] = site[C_KeyExDatasetKey];
 
 				_HandleNewInternally = addInternally;
 				_HandleModifyInternally = modifyInternally;
@@ -1112,7 +1289,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			}
 			else if (Site != null)
 			{
-				if (cboCharset.Text.Trim() == "" || cboCharset.Text.Trim().ToUpper() == SysConstants.C_DefaultCharset)
+				if (cboCharset.Text.Trim() == "" || cboCharset.Text.Trim().ToUpper() == C_DefaultCharset)
 					Site.Remove("Character Set");
 				else
 					Site["Character Set"] = cboCharset.Text;
@@ -1141,7 +1318,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 				}
 			}
 
-			object @object = DataSources.DependentRow[CoreConstants.C_KeyExAdornedQualifiedName];
+			object @object = DataSources.DependentRow[C_KeyExAdornedQualifiedName];
 
 			lblCurrentDisplayName.Text = !Cmd.IsNullValue(@object)
 				? (string)@object : ControlsResources.TConnectionUIControl_NewDatabaseConnection;
@@ -1163,7 +1340,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 					}
 				}
 
-				Site.ValidateKeys();
+				ValidateSiteKeys();
 			}
 
 			// If it's an Edm connection dialog the _OriginalConnectionString should be updated
@@ -1172,7 +1349,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			// will already be set.
 			if (ConnectionSource == EnConnectionSource.EntityDataModel || ConnectionSource == EnConnectionSource.DataSource)
 			{
-				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionString];
+				@object = DataSources.DependentRow[C_KeyExConnectionString];
 				_OriginalConnectionString = !Cmd.IsNullValue(@object)
 					? (string)@object : null;
 			}
@@ -1180,7 +1357,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -1225,15 +1402,15 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		{
 			if ((int)DataSources.Row["Orderer"] == 1)
 			{
-				txtDataSource.Text = SysConstants.C_DefaultDataSource;
-				txtPort.Text = SysConstants.C_DefaultPort.ToString();
-				cboServerType.SetSelectedIndexX((int)SysConstants.C_DefaultServerType);
-				txtDatabase.Text = SysConstants.C_DefaultDatabase;
-				cboDialect.SetSelectedValueX(SysConstants.C_DefaultDialect);
-				txtUserName.Text = SysConstants.C_DefaultUserID;
-				txtPassword.Text = SysConstants.C_DefaultPassword;
-				txtRole.Text = SysConstants.C_DefaultRole;
-				cboCharset.SetSelectedValueX(SysConstants.C_DefaultCharset);
+				txtDataSource.Text = C_DefaultDataSource;
+				txtPort.Text = C_DefaultPort.ToString();
+				cboServerType.SetSelectedIndexX((int)C_DefaultServerType);
+				txtDatabase.Text = C_DefaultDatabase;
+				cboDialect.SetSelectedValueX(C_DefaultDialect);
+				txtUserName.Text = C_DefaultUserID;
+				txtPassword.Text = C_DefaultPassword;
+				txtRole.Text = C_DefaultRole;
+				cboCharset.SetSelectedValueX(C_DefaultCharset);
 
 				if (Site != null)
 				{
@@ -1244,7 +1421,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 					}
 				}
 
-				Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
+				Site[C_KeyExConnectionSource] = ConnectionSource;
 
 				DataSources.Position = 0;
 			}
@@ -1268,7 +1445,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 					txtPort.Text = DataSources.Row["Port"].ToString();
 					if (Site != null)
 					{
-						if (Convert.ToInt32(txtPort.Text) == SysConstants.C_DefaultPort)
+						if (Convert.ToInt32(txtPort.Text) == C_DefaultPort)
 							Site.Remove("Port");
 						else
 							Site["Port"] = txtPort.Text;
@@ -1279,7 +1456,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -1297,7 +1474,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			return;
 
 		// Evs.Debug(GetType(), nameof(OnFormClosed), "Setting readonly to false.");
-		UpdateDescriptorReadOnlyAttribute(false);
+		UpdateDescriptorAttributes(true, false);
 
 		// Fire and forget
 
@@ -1340,27 +1517,27 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 			if (sender.Equals(txtDataSource))
 			{
-				propertyName = SysConstants.C_KeyDataSource;
+				propertyName = C_KeyDataSource;
 				Site[propertyName] = txtDataSource.Text.Trim();
 			}
 			else if (sender.Equals(txtDatabase))
 			{
-				propertyName = SysConstants.C_KeyDatabase;
+				propertyName = C_KeyDatabase;
 				Site[propertyName] = Cmd.CleanPath(txtDatabase.Text);
 			}
 			else if (sender.Equals(txtUserName))
 			{
-				propertyName = SysConstants.C_KeyUserID;
+				propertyName = C_KeyUserID;
 				Site[propertyName] = txtUserName.Text.Trim();
 			}
 			else if (sender.Equals(txtPassword))
 			{
-				propertyName = SysConstants.C_KeyPassword;
+				propertyName = C_KeyPassword;
 				Site[propertyName] = txtPassword.Text.Trim();
 			}
 			else if (sender.Equals(txtRole))
 			{
-				propertyName = SysConstants.C_KeyRole;
+				propertyName = C_KeyRole;
 				if (txtRole.Text.Trim() == "")
 					Site.Remove(propertyName);
 				else
@@ -1368,32 +1545,32 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 			}
 			else if (sender.Equals(cboCharset))
 			{
-				propertyName = SysConstants.C_KeyCharset;
-				if (cboCharset.Text.Trim() == "" || cboCharset.Text.Trim().ToUpper() == SysConstants.C_DefaultCharset)
+				propertyName = C_KeyCharset;
+				if (cboCharset.Text.Trim() == "" || cboCharset.Text.Trim().ToUpper() == C_DefaultCharset)
 					Site.Remove(propertyName);
 				else
 					Site[propertyName] = cboCharset.Text.Trim();
 			}
 			else if (sender.Equals(txtPort))
 			{
-				propertyName = SysConstants.C_KeyPort;
-				if (string.IsNullOrWhiteSpace(txtPort.Text) || Convert.ToInt32(txtPort.Text.Trim()) == SysConstants.C_DefaultPort)
+				propertyName = C_KeyPort;
+				if (string.IsNullOrWhiteSpace(txtPort.Text) || Convert.ToInt32(txtPort.Text.Trim()) == C_DefaultPort)
 					Site.Remove(propertyName);
 				else
 					Site[propertyName] = Convert.ToInt32(txtPort.Text);
 			}
 			else if (sender.Equals(cboDialect))
 			{
-				propertyName = SysConstants.C_KeyDialect;
-				if (string.IsNullOrWhiteSpace(cboDialect.Text) || Convert.ToInt32(cboDialect.Text.Trim()) == SysConstants.C_DefaultDialect)
+				propertyName = C_KeyDialect;
+				if (string.IsNullOrWhiteSpace(cboDialect.Text) || Convert.ToInt32(cboDialect.Text.Trim()) == C_DefaultDialect)
 					Site.Remove(propertyName);
 				else
 					Site[propertyName] = Convert.ToInt32(cboDialect.Text);
 			}
 			else if (sender.Equals(cboServerType))
 			{
-				propertyName = SysConstants.C_KeyServerType;
-				if (cboServerType.SelectedIndex == -1 || cboServerType.SelectedIndex == (int)SysConstants.C_DefaultServerType)
+				propertyName = C_KeyServerType;
+				if (cboServerType.SelectedIndex == -1 || cboServerType.SelectedIndex == (int)C_DefaultServerType)
 					Site.Remove(propertyName);
 				else
 					Site[propertyName] = cboServerType.SelectedIndex;
@@ -1410,7 +1587,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -1439,7 +1616,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 		// Evs.Debug(GetType(), nameof(OnSiteChanged), $"Setting readonly to {(ConnectionSource == EnConnectionSource.Application)}.");
 
-		UpdateDescriptorReadOnlyAttribute(ConnectionSource == EnConnectionSource.Application);
+		UpdateDescriptorAttributes(false, ConnectionSource == EnConnectionSource.Application);
 
 		_OriginalConnectionString = null;
 		_InsertMode = true;
@@ -1456,8 +1633,8 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 			_InsertMode = _OriginalConnectionString == null;
 
-			EnConnectionSource storedConnectionSource = Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
-				? (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] : EnConnectionSource.Undefined;
+			EnConnectionSource storedConnectionSource = Site.ContainsKey(C_KeyExConnectionSource)
+				? (EnConnectionSource)Site[C_KeyExConnectionSource] : EnConnectionSource.Undefined;
 
 			EventPropertyEnter(false, true);
 
@@ -1467,12 +1644,12 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 				{
 					foreach (Describer describer in Csb.AdvancedKeys)
 					{
-						if (!describer.IsConnectionParameter && describer.Key != CoreConstants.C_KeyExConnectionSource)
+						if (!describer.IsConnectionParameter && describer.Key != C_KeyExConnectionSource)
 							Site.Remove(describer.Key);
 					}
 
 					if (storedConnectionSource <= EnConnectionSource.Unknown)
-						Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
+						Site[C_KeyExConnectionSource] = ConnectionSource;
 				}
 				else
 				{
@@ -1482,14 +1659,14 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 						string connectionKey = Site.FindConnectionKey();
 
 						if (connectionKey != null)
-							Site[CoreConstants.C_KeyExConnectionKey] = connectionKey;
+							Site[C_KeyExConnectionKey] = connectionKey;
 						else
-							Site.Remove(CoreConstants.C_KeyExConnectionKey);
+							Site.Remove(C_KeyExConnectionKey);
 					}
 
 
-					if (!Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
-						|| (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] <= EnConnectionSource.Unknown)
+					if (!Site.ContainsKey(C_KeyExConnectionSource)
+						|| (EnConnectionSource)Site[C_KeyExConnectionSource] <= EnConnectionSource.Unknown)
 					{
 						EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.EntityDataModel
 							|| ConnectionSource == EnConnectionSource.DataSource
@@ -1501,13 +1678,13 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 							connectionSource = EnConnectionSource.ServerExplorer;
 						}
 
-						Site[CoreConstants.C_KeyExConnectionSource] = connectionSource;
+						Site[C_KeyExConnectionSource] = connectionSource;
 					}
 
 				}
 
 
-				Site.ValidateKeys();
+				ValidateSiteKeys();
 
 				// Site.OnPropertiesChanged += OnPropertyChanged;
 
@@ -1575,7 +1752,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		if (ConnectionSource == EnConnectionSource.ServerExplorer)
@@ -1602,9 +1779,9 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		try
 		{
 			if (SessionDlg.UpdateServerExplorer)
-				Site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
+				Site[C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
 			else
-				Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
+			 	Site[C_KeyExConnectionSource] = ConnectionSource;
 		}
 		finally
 		{

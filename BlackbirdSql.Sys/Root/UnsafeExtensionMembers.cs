@@ -53,7 +53,7 @@ public static class UnsafeExtensionMembers
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -93,7 +93,7 @@ public static class UnsafeExtensionMembers
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -225,7 +225,7 @@ public static class UnsafeExtensionMembers
 	public static Guid Clsid(this IVsHierarchy @this)
 	{
 
-		var itemid = VSConstants.VSITEMID_ROOT;
+		uint itemid = VSConstants.VSITEMID_ROOT;
 		Guid clsid = default;
 
 		// Get the hierarchy root node.
@@ -315,7 +315,7 @@ public static class UnsafeExtensionMembers
 	/// </summary>
 	public static Project ToProject(this IVsHierarchy @this)
 	{
-		var itemid = VSConstants.VSITEMID_ROOT;
+		uint itemid = VSConstants.VSITEMID_ROOT;
 		object objProj;
 
 		// Get the hierarchy root node.

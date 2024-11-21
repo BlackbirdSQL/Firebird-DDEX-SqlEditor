@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Controller.Ctl.Config;
+using BlackbirdSql.Controller.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Extensions;
 using BlackbirdSql.Sys.Interfaces;
@@ -198,48 +199,6 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// =========================================================================================================
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// [Launch ensure UI thread]: Validates and updates a solution projects the
-	/// app.config invariant and Entity Framework settings.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public void AsyeuValidateSolution(Stream stream = null)
-	{
-		if (!EventValidationEnter())
-			return;
-
-		// We're going to check each project that gets loaded (or has a reference added) if it
-		// references the database EntityFramework dll else the invariant dll.
-		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
-		// We also check (once and only once) within a project for any edmxs with legacy settings and update
-		// those, because they cannot work with newer versions of EntityFramework.
-
-		// Fire and wait.
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			bool result = Task.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-				if (ApcManager.SolutionClosing)
-					return true;
-
-				ValidateSolutionImpl();
-
-				return true;
-
-			}).AwaiterResult();
-
-			return;
-		}
-
-		ValidateSolutionImpl();
-	}
-
-
-
 	private void CloseOpenProjectModels(IVsHierarchy hierarchy)
 	{
 		if (hierarchy.IsMiscellaneous())
@@ -334,6 +293,69 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar
+	/// with project update information.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override bool TaskHandlerProgress(string text)
+	{
+		if (_ProgressData.PercentComplete == null)
+		{
+			_ProgressData.PercentComplete = 0;
+			if (_TaskHandler != null)
+				Diag.TaskHandlerProgress(this, ControlsResources.ValidateSolution_Started);
+		}
+
+		Diag.TaskHandlerProgress(this, text);
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
+	/// </summary>
+	/// <param name="progress">The % completion of TaskHandlerTaskName.</param>
+	/// <param name="elapsed">The time taken to complete the stage.</param>
+	// ---------------------------------------------------------------------------------
+	public override bool TaskHandlerProgress(int progress, int elapsed)
+	{
+		bool completed = false;
+		string text;
+
+		if (progress == 0)
+		{
+			text = ControlsResources.ValidateSolution_Started;
+		}
+		else if (progress == 100)
+		{
+			completed = true;
+			text = ControlsResources.ValidateSolution_Completed.Fmt(elapsed);
+		}
+		else if (_TaskHandler.UserCancellation.Cancelled())
+		{
+			completed = true;
+			text = ControlsResources.ValidateSolution_Cancelled.Fmt(progress, elapsed);
+		}
+		else
+		{
+			text = ControlsResources.ValidateSolution_Progress.Fmt(progress, elapsed);
+		}
+
+		_ProgressData.PercentComplete = progress;
+
+		Diag.TaskHandlerProgress(this, text, completed);
+
+		return true;
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Recursively makes calls to <see cref="RecursiveValidateProjectAsync"/>, which is
 	/// on the UI thread, from a thread in the thread pool. This is to ensure the UI
 	/// thread is not locked up processing validations. (No longer does UI switching
@@ -343,11 +365,11 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private async Task<bool> ValidateSolutionAsync(string solutionName)
 	{
-		await Task.Run(() => UpdateStatusBar("BlackbirdSql validating solution: " + solutionName));
+		await Task.Run(() => UpdateStatusBar(ControlsResources.ValidateSolution_StatusBarStart.Fmt(solutionName)));
 
 
 		TaskHandlerOptions options = default;
-		options.Title = $"BlackbirdSql Solution validation > {solutionName}";
+		options.Title = ControlsResources.ValidateSolution_Title.Fmt(solutionName);
 		options.ActionsAfterCompletion = CompletionActions.None;
 
 		_ProgressData = default;
@@ -391,7 +413,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -425,8 +447,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		{
 			if (config.IsOpen)
 			{
-				System.IO.IOException ex = new System.IO.IOException(config.ContainingProject.Name + " File is open: app.config");
-				Diag.Dug(ex);
+				IOException ex = new (Resources.ExceptionAppConfigOpen.Fmt(config.ContainingProject.Name));
+				Diag.Ex(ex);
 				return false;
 			}
 
@@ -441,7 +463,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return false;
 			}
 
@@ -453,19 +475,19 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return false;
 		}
 
 
 		if (modified)
-			TaskHandlerProgress($">  {config.ContainingProject.Name} -> Updated App.config: DbProvider");
+			TaskHandlerProgress(ControlsResources.ValidateSolution_UpdatedAppConfigDbProvider.Fmt(config.ContainingProject.Name));
 
 		return true;
 	}
@@ -497,8 +519,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		{
 			if (config.IsOpen)
 			{
-				Evs.Warning(GetType(), "ConfigureEntityFramework()",
-					$"{config.ContainingProject.Name}: app.config file is open: app.config");
+				Evs.Warning(GetType(), nameof(ValidateSolutionConfigureEntityFramework),
+					ControlsResources.ValidateSolution_WarningAppConfigOpen.Fmt(config.ContainingProject.Name));
 				return false;
 			}
 
@@ -514,7 +536,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return false;
 			}
 
@@ -526,22 +548,64 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return false;
 		}
 
 
 		if (modified)
-			TaskHandlerProgress($">  {config.ContainingProject.Name} -> Updated App.config: DbProvider and EntityFramework");
+			TaskHandlerProgress(ControlsResources.ValidateSoluton_UpdatedAppConfigDbProviderEF.Fmt(config.ContainingProject.Name));
 
 
 		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// [Launch ensure UI thread]: Validates and updates a solution projects the
+	/// app.config invariant and Entity Framework settings.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public void ValidateSolutionAsyeu(Stream stream = null)
+	{
+		if (!EventValidationEnter())
+			return;
+
+		// We're going to check each project that gets loaded (or has a reference added) if it
+		// references the database EntityFramework dll else the invariant dll.
+		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
+		// We also check (once and only once) within a project for any edmxs with legacy settings and update
+		// those, because they cannot work with newer versions of EntityFramework.
+
+		// Fire and wait.
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			bool result = Task.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+				if (ApcManager.SolutionClosing)
+					return true;
+
+				ValidateSolutionImpl();
+
+				return true;
+
+			}).AwaiterResult();
+
+			return;
+		}
+
+		ValidateSolutionImpl();
 	}
 
 
@@ -630,11 +694,11 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 			if (userCancellationToken.Cancelled())
 			{
-				UpdateStatusBar("Cancelled BlackbirdSql solution validation", true);
+				UpdateStatusBar(ControlsResources.ValidateSolution_StatusBarCancelled, true);
 				return false;
 			}
 
-			UpdateStatusBar($"Completed BlackbirdSql solution validation in {stopwatch.ElapsedMilliseconds}ms", true);
+			UpdateStatusBar(ControlsResources.ValidateSolution_StatusBarCompleted.Fmt(stopwatch.ElapsedMilliseconds), true);
 
 			// _TaskHandler = null;
 			// _ProgressData = default;
@@ -644,7 +708,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -744,7 +808,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 	}
 
@@ -802,7 +866,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, item.ContainingProject.Name + ":" + item.Name);
+			Diag.Ex(ex, Resources.LabelColonSeparated.Fmt(item.ContainingProject.Name, item.Name));
 			return false;
 		}
 
@@ -814,7 +878,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 		catch
 		{
-			Diag.StackException(item.ContainingProject.Name + ":" + item.Name + " has no link property");
+			Diag.StackException(Resources.ExceptionProjectItemNoLinkProperty.Fmt(item.ContainingProject.Name, item.Name));
 			return false;
 		}
 
@@ -825,7 +889,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, item.ContainingProject.Name + ":" + item.Name);
+			Diag.Ex(ex, Resources.LabelColonSeparated.Fmt(item.ContainingProject.Name, item.Name));
 			return false;
 		}
 
@@ -837,7 +901,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return false;
 		}
 
@@ -848,7 +912,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return false;
 		}
 
@@ -886,8 +950,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			{
 				if (XmlParser.IsValidEdmx(path))
 				{
-					Evs.Warning(GetType(), "UpdateEdmx()",
-						$"{edmx.ContainingProject.Name}: edmx file is open: {edmx.Name}");
+					Evs.Warning(GetType(), nameof(ValidateSolutionUpdateEdmx),
+						ControlsResources.ValidateSolution_WarningEdmxOpen.Fmt(edmx.ContainingProject.Name, edmx.Name));
 				}
 				return false;
 			}
@@ -896,7 +960,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			if (!XmlParser.UpdateEdmx(path))
 				return true;
 			else
-				TaskHandlerProgress($">  {edmx.ContainingProject.Name} -> Updated {edmx.Name}: Legacy flag");
+				TaskHandlerProgress(ControlsResources.ValidateSoluton_UpdatedEdmxLegacyFlag.Fmt(edmx.ContainingProject.Name, edmx.Name));
 
 
 			if (!invalidate)
@@ -908,12 +972,12 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 			}
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return false;
 		}
 
@@ -974,8 +1038,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		{
 			if (_EventValidationCardinal <= 0)
 			{
-				ApplicationException ex = new($"Attempt to exit Validation event when not in a Validation event. _EventValidationCardinal: {_EventValidationCardinal}");
-				Diag.Dug(ex);
+				ApplicationException ex = new(Resources.ExceptionEventValidationExitError.Fmt(_EventValidationCardinal));
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -997,7 +1061,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			RctManager.LoadConfiguredConnections();
 		}
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui();
 	}
 
 
@@ -1031,11 +1095,11 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (project.EditableObject() == null)
 			return VSConstants.S_OK;
 
-		Evs.Trace(GetType(), nameof(OnAfterOpenProject), $"Project: {project?.Name}.");
+		Evs.Trace(GetType(), nameof(OnAfterOpenProject), Resources.LabelProjectName.Fmt(project?.Name));
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui(project);
 
-		RctManager.AsyuiLoadApplicationConnections(project);
+		RctManager.LoadApplicationConnectionsAsyui(project);
 
 		return VSConstants.S_OK;
 	}
@@ -1054,7 +1118,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Evs.Trace(GetType(), nameof(OnAssemblyObsolete));
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui();
 	}
 	*/
 
@@ -1098,7 +1162,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (project == null)
 			return VSConstants.S_OK;
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui(project);
 
 		return VSConstants.S_OK;
 	}
@@ -1109,7 +1173,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		Evs.Trace(GetType(), nameof(OnBuildDone));
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui();
 	}
 
 
@@ -1141,7 +1205,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Evs.Trace(GetType(), nameof(OnDesignTimeOutputDeleted), $"bstrOutputMoniker: {bstrOutputMoniker}.");
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui();
 	}
 
 
@@ -1150,7 +1214,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Evs.Trace(GetType(), nameof(OnDesignTimeOutputDirty), $"bstrOutputMoniker: {bstrOutputMoniker}.");
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies();
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui();
 	}
 
 
@@ -1159,7 +1223,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Evs.Trace(GetType(), nameof(OnProjectInitialized), $"Project: {project?.Name}.");
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies(project);
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui(project);
 	}
 
 
@@ -1172,7 +1236,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (!projectItem.ContainingProject.IsEditable())
 			return;
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui(projectItem.ContainingProject);
 	}
 
 
@@ -1182,7 +1246,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		// Evs.Trace(GetType(), nameof(OnProjectItemRemoved),
 			$"Removed Project: {projectItem.ContainingProject?.Name}, ProjectItem: {projectItem.Name}.");
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui(projectItem.ContainingProject);
 	}
 
 
@@ -1192,7 +1256,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		// Evs.Trace(GetType(), nameof(OnProjectItemRenamed),
 			$"Renamed Project: {projectItem.ContainingProject?.Name}, ProjectItem: {projectItem.Name}.");
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies(projectItem.ContainingProject);
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui(projectItem.ContainingProject);
 	}
 
 
@@ -1207,7 +1271,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		// Evs.Trace(GetType(), nameof(OnReferenceAdded),
 			$"Project: {reference.ContainingProject?.Name}, Reference: {reference.Name}.");
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies(reference.ContainingProject);
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui(reference.ContainingProject);
 	}
 
 
@@ -1222,7 +1286,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Evs.Trace(GetType(), nameof(OnReferenceChanged), $"Project: {reference?.ContainingProject?.Name}.");
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies(reference.ContainingProject);
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui(reference.ContainingProject);
 	}
 
 
@@ -1237,7 +1301,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Evs.Trace(GetType(), nameof(OnReferenceRemoved), $"Project: {reference?.ContainingProject?.Name}.");
 
-		NativeDb.AsyuiReindexEntityFrameworkAssemblies(reference.ContainingProject);
+		NativeDb.ReindexEntityFrameworkAssembliesAsyui(reference.ContainingProject);
 	}
 	*/
 

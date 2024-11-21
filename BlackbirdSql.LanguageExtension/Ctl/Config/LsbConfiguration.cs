@@ -59,10 +59,9 @@ internal static class LsbConfiguration
 
 	public static TokenDefinition GetDefinition(int token)
 	{
-		if (!definitions.TryGetValue(token, out var value))
-		{
+		if (!definitions.TryGetValue(token, out TokenDefinition value))
 			return defaultDefinition;
-		}
+
 		return value;
 	}
 

@@ -21,7 +21,7 @@ internal static class OperationTable
 
 	public static Operation GetStatement(string statementTypeName)
 	{
-		if (!Statements.TryGetValue(statementTypeName, out var value))
+		if (!Statements.TryGetValue(statementTypeName, out Operation value))
 		{
 			return Operation.CreateUnknown(statementTypeName, "Language_construct_catch_all.ico");
 		}
@@ -30,7 +30,7 @@ internal static class OperationTable
 
 	public static Operation GetCursorType(string cursorTypeName)
 	{
-		if (!CursorTypes.TryGetValue(cursorTypeName, out var value))
+		if (!CursorTypes.TryGetValue(cursorTypeName, out Operation value))
 		{
 			cursorTypeName = GetNameFromXmlEnumAttribute(cursorTypeName, typeof(EnCursorType));
 			return Operation.CreateUnknown(cursorTypeName, "Cursor_catch_all_32x.ico");
@@ -40,7 +40,7 @@ internal static class OperationTable
 
 	public static Operation GetPhysicalOperation(string operationType)
 	{
-		if (!PhysicalOperations.TryGetValue(operationType, out var value))
+		if (!PhysicalOperations.TryGetValue(operationType, out Operation value))
 		{
 			operationType = GetNameFromXmlEnumAttribute(operationType, typeof(EnPhysicalOpType));
 			return Operation.CreateUnknown(operationType, "Iterator_catch_all.ico");
@@ -50,7 +50,7 @@ internal static class OperationTable
 
 	public static Operation GetLogicalOperation(string operationType)
 	{
-		if (!LogicalOperations.TryGetValue(operationType, out var value))
+		if (!LogicalOperations.TryGetValue(operationType, out Operation value))
 		{
 			operationType = GetNameFromXmlEnumAttribute(operationType, typeof(EnLogicalOpType));
 			return new Operation(null, operationType);

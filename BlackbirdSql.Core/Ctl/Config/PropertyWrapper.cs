@@ -1,5 +1,5 @@
 ﻿//
-// Plagiarized from Community.VisualStudio.Toolkit extension
+// Bulk of code plagiarized from Community.VisualStudio.Toolkit extension
 //
 
 using System;
@@ -14,6 +14,7 @@ using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
+using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Settings;
 
@@ -21,7 +22,7 @@ using Microsoft.VisualStudio.Settings;
 
 namespace BlackbirdSql.Core.Ctl.Config;
 
-[SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+[SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used through Reflection")]
 
 
 // =========================================================================================================
@@ -420,8 +421,8 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 
 		if (method == null)
 		{
-			InvalidOperationException ex = new("Could not get method PropertyGetHelper");
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(Resources.ExceptionGetMethodForPropertyFailed.Fmt("PropertyWrapper::PropertyGetHelper", propertyInfo.Name));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -475,8 +476,8 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 
 		if (method == null)
 		{
-			InvalidOperationException ex = new("Could not get method PropertySetHelper for " + propertyInfo.Name);
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(Resources.ExceptionGetMethodForPropertyFailed.Fmt("PropertyWrapper::PropertySetHelper", propertyInfo.Name));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -551,7 +552,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 			obj = ConvertPropertyTypeToStorageType(obj, baseOptionModel);
 			if (obj == null)
 			{
-				Diag.StackException(string.Format("Cannot store null in settings store. AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+				Diag.StackException(Resources.ExceptionCannotStoreNullInSettingsStore.Fmt(typeof(TModel).FullName, collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 				return false;
 			}
 
@@ -561,7 +562,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Save", collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+			Diag.Ex(ex, Resources.ExceptionSettingsModelSaveFailed.Fmt(typeof(TModel).FullName, collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 		}
 
 		return false;
@@ -577,7 +578,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 			obj = WrappedPropertyGetMethod(baseOptionModel);
 			if (obj == null)
 			{
-				Diag.StackException(string.Format("Cannot store null in settings store. AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Save", collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+				Diag.StackException(Resources.ExceptionCannotStoreNullInSettingsStore.Fmt(typeof(TModel).FullName, collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 				return false;
 			}
 
@@ -586,7 +587,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+			Diag.Ex(ex, Resources.ExceptionSettingsModelSaveFailed.Fmt(typeof(TModel).FullName, collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 		}
 
 		return false;
@@ -635,7 +636,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", text, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+			Diag.Ex(ex, Resources.ExceptionSettingsModelSaveFailed.Fmt(typeof(TModel).FullName, text, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 		}
 
 		return false;
@@ -659,7 +660,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}", baseOptionModel.GetType().FullName, "Load", baseOptionModel.PropertyPrefix + PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+			Diag.Ex(ex, Resources.ExceptionSettingsModelLoadFailed.Fmt(typeof(TModel).FullName, baseOptionModel.PropertyPrefix + PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 		}
 
 		return false;
@@ -681,7 +682,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "LoadDefault", text, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+			Diag.Ex(ex, Resources.ExceptionSettingsModelLoadDefaultFailed.Fmt(typeof(TModel).FullName, text, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 		}
 
 		return false;
@@ -717,7 +718,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 				return EnNativeSettingsType.Binary;
 			default:
 				InvalidOperationException ex = new($"GetNativeDataType for SettingDataType {settingDataType} is not supported.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 		}
 	}
@@ -853,8 +854,8 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 			case EnSettingDataType.Serialized:
 				if (NativeStorageType != EnNativeSettingsType.String)
 				{
-					InvalidOperationException ex = new($"The SettingDataType of Serialized is not capable of supporting native storage type {NativeStorageType}");
-					Diag.Dug(ex);
+					InvalidOperationException ex = new(Resources.ExceptionDataTypeStorageTypeNotSupported.Fmt(EnSettingDataType.Serialized, NativeStorageType));
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -862,8 +863,8 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 
 				if (serialized == null)
 				{
-					InvalidOperationException ex = new("The SerializeValue method of " + baseOptionModel.GetType().FullName + " returned  a null value. This method cannot return null.");
-					Diag.Dug(ex);
+					InvalidOperationException ex = new(Resources.ExceptionMethodPropertyReturnedNull.Fmt("SerializeValue", typeof(TModel).FullName, PropertyName));
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -871,8 +872,8 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 			case EnSettingDataType.Legacy:
 				if (NativeStorageType != EnNativeSettingsType.String)
 				{
-					InvalidOperationException ex = new($"The SettingDataType of Legacy is not capable of supporting native storage type {NativeStorageType}");
-					Diag.Dug(ex);
+					InvalidOperationException ex = new(Resources.ExceptionDataTypeStorageTypeNotSupported.Fmt(EnSettingDataType.Legacy, NativeStorageType));
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -892,7 +893,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 						if (!Converter!.CanConvertTo(type))
 						{
 							InvalidOperationException ex = new($"TypeConverter {Converter!.GetType().FullName} can not convert {PropInfo.PropertyType.FullName} to {NativeStorageType} ({type.Name})");
-							Diag.Dug(ex);
+							Diag.Ex(ex);
 							throw ex;
 						}
 
@@ -900,14 +901,14 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 						if (obj == null)
 						{
 							InvalidOperationException ex = new($"TypeConverter {Converter!.GetType().FullName} returned null converting from {PropInfo.PropertyType.FullName} to {NativeStorageType} ({type.Name}), which is not supported.");
-							Diag.Dug(ex);
+							Diag.Ex(ex);
 							throw ex;
 						}
 
 						if (!type.IsInstanceOfType(obj))
 						{
 							InvalidOperationException ex = new($"TypeConverter {Converter!.GetType().FullName} returned type {obj.GetType().FullName} when converting from {PropInfo.PropertyType.FullName} to {NativeStorageType} ({type.Name}).");
-							Diag.Dug(ex);
+							Diag.Ex(ex);
 							throw ex;
 						}
 
@@ -985,7 +986,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 								}
 
 								InvalidOperationException ex = new("Can not convert NativeStorageType of Binary to " + propertyValue!.GetType().FullName + " - property type must be byte[] or MemoryStream.");
-								Diag.Dug(ex);
+								Diag.Ex(ex);
 								throw ex;
 							}
 					}
@@ -993,7 +994,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 					if (propertyValue == null)
 					{
 						InvalidOperationException ex = new($"A null property value with SettingDataType of {DataType} is not supported.");
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						throw ex;
 					}
 
@@ -1040,7 +1041,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 				if (NativeStorageType != EnNativeSettingsType.String)
 				{
 					InvalidOperationException ex = new($"The SettingDataType of Serialized must be SettingsType.String. Was: {NativeStorageType}");
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -1049,7 +1050,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 				if (NativeStorageType != EnNativeSettingsType.String)
 				{
 					InvalidOperationException ex = new($"The SettingDataType of Legacy must be SettingsType.String. Was: {NativeStorageType}");
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -1067,7 +1068,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 					if (!Converter!.CanConvertFrom(type2))
 					{
 						InvalidOperationException ex = new("TypeConverter " + Converter!.GetType().FullName + " can not convert from " + type2.Name + " to " + type.FullName + ".");
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						throw ex;
 					}
 
@@ -1077,7 +1078,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 						if (type.IsValueType)
 						{
 							InvalidOperationException ex = new("TypeConverter " + Converter!.GetType().FullName + " attempt to convert from " + type2.Name + " to " + type.FullName + " returned null for a value type.");
-							Diag.Dug(ex);
+							Diag.Ex(ex);
 							throw ex;
 						}
 
@@ -1087,7 +1088,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 					if (!type.IsInstanceOfType(obj))
 					{
 						InvalidOperationException ex = new("TypeConverter " + Converter!.GetType().FullName + " attempt to convert from " + type2.Name + " to " + type.FullName + " returned incompatible type " + obj.GetType().FullName + ".");
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						throw ex;
 					}
 
@@ -1139,7 +1140,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 						}
 
 						InvalidCastException ex = new("Can not convert SettingsType.Binary to " + type.FullName + " - property type must be byte[] or MemoryStream.");
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						throw ex;
 				}
 

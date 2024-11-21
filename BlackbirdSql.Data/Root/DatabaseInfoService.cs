@@ -77,7 +77,7 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 		if (connection == null)
 		{
 			ArgumentNullException ex = new("DatabaseInfo connection is null.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -85,7 +85,7 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 		if (innerConnection == null)
 		{
 			ArgumentNullException ex = new("DatabaseInfo InnerConnection is null.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -93,7 +93,7 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 		if (database == null)
 		{
 			ArgumentNullException ex = new("DatabaseInfo InnerConnection.Database is null.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -131,7 +131,7 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 
 			if (dataLen == 0)
 			{
-				// Evs.Trace(typeof(DbNativeExtensionMembers), "GetDatabaseInfo()", "Request: {0}, Entities affected: {1}, Value: {2}.", brequest, pairCount, result);
+				// Evs.Trace(typeof(DbNativeExtensionMembers), nameof(GetDatabaseInfo), "Request: {0}, Entities affected: {1}, Value: {2}.", brequest, pairCount, result);
 
 				results.Add(((long, long))(pairCount, result));
 
@@ -149,7 +149,7 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 
 			results.Add(((long, long))(pairCount, result));
 
-			// Evs.Trace(typeof(DbNativeExtensionMembers), "GetDatabaseInfo()", "Request: {0}, Entities affected: {1}, Value: {2}.", brequest, pairCount, result);
+			// Evs.Trace(typeof(DbNativeExtensionMembers), nameof(GetDatabaseInfo), "Request: {0}, Entities affected: {1}, Value: {2}.", brequest, pairCount, result);
 		}
 
 		return results;

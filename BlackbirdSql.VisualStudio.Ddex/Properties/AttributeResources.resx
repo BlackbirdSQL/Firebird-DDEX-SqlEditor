@@ -415,7 +415,7 @@
     <value>Displays the extension's load statistics to the output window if enabled.</value>
   </data>
   <data name="OptionDescriptionGeneralEnableTaskLog" xml:space="preserve">
-    <value>Enables logging of tasks to the output window pane. This option should remain enabled.</value>
+    <value>Enables logging of tasks and diagnostics to the output window pane. This option should remain enabled.</value>
   </data>
   <data name="OptionDescriptionGeneralIncludeAppConnections" xml:space="preserve">
     <value>If enabled, includes any configured connection strings that exist in a solution's projects in the drop down selection lists when adding a new connection.</value>

@@ -125,7 +125,7 @@ public static class DbProviderFactoriesEx
 		}
 		catch (Exception ex)
 		{
-			Diag.DebugDug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -137,7 +137,8 @@ public static class DbProviderFactoriesEx
 
 		if (index == -1)
 		{
-			Diag.DebugWarning(string.Format("Adding \"{0}\" section to assembly register", "DbProviderFactories"));
+			Evs.Warning(typeof(DbProviderFactoriesEx), nameof(ConfigurationManagerRegisterAssembly),
+				"Adding 'DbProviderFactories' section to assembly register");
 			table = dataSet.Tables.Add("DbProviderFactories");
 		}
 		else
@@ -147,10 +148,8 @@ public static class DbProviderFactoriesEx
 
 			if (row != null)
 			{
-				Diag.DebugWarning("DbProviderFactoriesEx::ConfigurationManagerRegisterAssembly()\n"
-					+ string.Format("'DbProviderFactories' section (Columns:{0}) already contains [{1}::{2}::{3}::{4}] as [{5}::{6}::{7}::{8}]",
-					table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName,
-					row[2].ToString(), row[0].ToString(), row[1].ToString(), row[3].ToString()));
+				Evs.Warning(typeof(DbProviderFactoriesEx), nameof(ConfigurationManagerRegisterAssembly),
+					$"'DbProviderFactories' section (Columns:{table.Columns.Count}) already contains [{invariant}::{factoryName}::{factoryDescription}::{assemblyQualifiedName}] as [{row[2]}::{row[0]}::{row[1]}::{row[3]}]");
 
 				return false;
 			}
@@ -188,7 +187,7 @@ public static class DbProviderFactoriesEx
 		}
 		catch (Exception ex)
 		{
-			Diag.DebugDug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -201,7 +200,7 @@ public static class DbProviderFactoriesEx
 
 		if (index == -1)
 		{
-			Diag.Dug(new Exception("No \"DbProviderFactories\" table found in configuration manager!"));
+			Diag.Ex(new Exception("No \"DbProviderFactories\" table found in configuration manager!"));
 			return false;
 		}
 
@@ -240,7 +239,7 @@ public static class DbProviderFactoriesEx
 	// ---------------------------------------------------------------------------------
 	public static bool InvalidatedProviderFactoryRecovery()
 	{
-		Evs.Trace(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()");
+		// Evs.Trace(typeof(DbProviderFactoriesEx), nameof(InvalidatedProviderFactoryRecovery));
 
 		if (!PersistentSettings.ValidateProviderFactories)
 			return true;
@@ -354,7 +353,7 @@ public static class DbProviderFactoriesEx
 
 						if (badCount == 0)
 						{
-							Diag.AsyuiOutputPaneWriteLine(Resources.DbProviderFactoriesEx_Recovery.FmtRes(validationCount), false);
+							Diag.OutputPaneWriteLineAsyui(Resources.DbProviderFactoriesEx_Recovery.Fmt(validationCount), false);
 
 							// Give output time to breath.
 							System.Threading.Thread.Sleep(10);
@@ -363,7 +362,7 @@ public static class DbProviderFactoriesEx
 
 						badCount++;
 
-						Diag.AsyuiOutputPaneWriteLine(Resources.DbProviderFactoriesEx_RecoveryInvariantFaulted.FmtRes(invariant), false);
+						Diag.OutputPaneWriteLineAsyui(Resources.DbProviderFactoriesEx_RecoveryInvariantFaulted.Fmt(invariant), false);
 					}
 
 
@@ -406,7 +405,7 @@ public static class DbProviderFactoriesEx
 							else
 								fmt = Resources.DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated;
 
-							Diag.AsyuiOutputPaneWriteLine(fmt.FmtRes(invariant), false);
+							Diag.OutputPaneWriteLineAsyui(fmt.Fmt(invariant), false);
 
 
 							continue;
@@ -414,7 +413,7 @@ public static class DbProviderFactoriesEx
 					}
 					catch (Exception ex)
 					{
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 					}
 
 				}
@@ -444,7 +443,7 @@ public static class DbProviderFactoriesEx
 					{
 						invariant = (string)pair.Value.GetProperty("InvariantName");
 
-						Diag.AsyuiOutputPaneWriteLine(Resources.DbProviderFactoriesEx_RecoveryInvariantFailed.FmtRes(invariant), false);
+						Diag.OutputPaneWriteLineAsyui(Resources.DbProviderFactoriesEx_RecoveryInvariantFailed.Fmt(invariant), false);
 					}
 				}
 
@@ -453,7 +452,7 @@ public static class DbProviderFactoriesEx
 				//	badCount, badCount - remainingProviders.Count, stopwatch.ElapsedMilliseconds);
 
 
-				fmt = Resources.DbProviderFactoriesEx_RecoveryResult.FmtRes(badCount,
+				fmt = Resources.DbProviderFactoriesEx_RecoveryResult.Fmt(badCount,
 					badCount - remainingProviders.Count, stopwatch.ElapsedMilliseconds);
 
 				StringBuilder sb = new(fmt.Length);
@@ -464,13 +463,13 @@ public static class DbProviderFactoriesEx
 
 				fmt += "\n" + sb + "\n";
 
-				Diag.AsyuiOutputPaneWriteLine(fmt, false);
+				Diag.OutputPaneWriteLineAsyui(fmt, false);
 			}
 
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -522,10 +521,8 @@ public static class DbProviderFactoriesEx
 
 		if (row != null)
 		{
-			Diag.DebugWarning("DbProviderFactoriesEx::RegisterAssemblyDirect()\n"
-				+ string.Format("'DbProviderFactories' section (Columns:{0}) aready contains [{1}::{2}::{3}::{4}] as [{5}::{6}::{7}::{8}]",
-				table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName,
-				row[2].ToString(), row[0].ToString(), row[1].ToString(), row[3].ToString()));
+			Evs.Warning(typeof(DbProviderFactoriesEx), nameof(ConfigurationManagerRegisterAssembly),
+				$"'DbProviderFactories' section (Columns:{table.Columns.Count}) aready contains [{invariant}::{factoryName}::{factoryDescription}::{assemblyQualifiedName}] as [{row[2]}::{row[0]}::{row[1]}::{row[3]}]");
 
 			return false;
 		}

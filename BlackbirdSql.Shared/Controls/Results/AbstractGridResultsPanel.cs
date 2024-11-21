@@ -82,7 +82,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 			if (_MultiControlPnl == null)
 			{
 				InvalidOperationException ex = new(ControlsResources.ExMultiPanelGridContainerIsNotAvailable);
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -158,8 +158,8 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 			}
 			catch (Exception e)
 			{
-				Diag.Dug(e);
-				MessageCtl.ShowEx("", e);
+				Diag.Ex(e);
+				MessageCtl.ShowX("", e);
 			}
 		}
 	}
@@ -187,8 +187,8 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		}
 		catch (Exception e)
 		{
-			Diag.Dug(e);
-			MessageCtl.ShowEx("", e);
+			Diag.Ex(e);
+			MessageCtl.ShowX("", e);
 		}
 		finally
 		{
@@ -216,8 +216,8 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		}
 		catch (Exception e)
 		{
-			Diag.Dug(e);
-			MessageCtl.ShowEx(ControlsResources.ExUnableToPrintResults, e);
+			Diag.Ex(e);
+			MessageCtl.ShowX(ControlsResources.ExUnableToPrintResults, e);
 		}
 	}
 
@@ -238,8 +238,8 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		}
 		catch (Exception e)
 		{
-			Diag.Dug(e);
-			MessageCtl.ShowEx(ControlsResources.ExUnableToPageSetup, e);
+			Diag.Ex(e);
+			MessageCtl.ShowX(ControlsResources.ExUnableToPageSetup, e);
 		}
 	}
 

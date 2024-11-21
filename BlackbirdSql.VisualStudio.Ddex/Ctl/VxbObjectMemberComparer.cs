@@ -91,19 +91,19 @@ public class VxbObjectMemberComparer : DataObjectMemberComparer
 			if (typeName == null)
 			{
 				ArgumentNullException ex = new(nameof(typeName), "Compare(string typeName, object[] identifier, int identifierPart, object value)");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 			if (identifier == null)
 			{
 				ArgumentNullException ex = new(nameof(identifier), "Compare(string typeName, object[] identifier, int identifierPart, object value)");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 			if (identifierPart < 0 || identifierPart >= identifier.Length)
 			{
 				ArgumentOutOfRangeException ex = new(nameof(identifierPart), "Compare(string typeName, object[] identifier, int identifierPart, object value)");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -115,7 +115,7 @@ public class VxbObjectMemberComparer : DataObjectMemberComparer
 				if (value1 == null)
 				{
 					ArgumentException ex = new("Compare(string typeName, object[] identifier, int identifierPart, object value)", "identifier[" + identifierPart.ToString() + "]");
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw ex;
 				}
 			}
@@ -127,7 +127,7 @@ public class VxbObjectMemberComparer : DataObjectMemberComparer
 				if (value2 == null)
 				{
 					ArgumentException ex = new("Compare(string typeName, object[] identifier, int identifierPart, object value)", nameof(value));
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw ex;
 				}
 			}

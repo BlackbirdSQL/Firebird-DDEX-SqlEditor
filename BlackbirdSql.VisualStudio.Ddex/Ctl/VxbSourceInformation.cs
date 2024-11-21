@@ -126,7 +126,7 @@ public class VxbSourceInformation : AdoDotNetSourceInformation
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 

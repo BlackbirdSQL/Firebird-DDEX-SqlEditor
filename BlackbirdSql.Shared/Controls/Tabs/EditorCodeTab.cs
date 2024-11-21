@@ -57,7 +57,7 @@ public class EditorCodeTab : AbstractEditorTab
 		uint[] array = new uint[1];
 		string documentMoniker = DocumentMoniker;
 
-		int hresult = vsUIShellOpenDocument.IsDocumentOpen(null, 0u, documentMoniker, ref _ClsidLogicalView, 0u, out var _, array, out var _, out var _);
+		int hresult = vsUIShellOpenDocument.IsDocumentOpen(null, 0u, documentMoniker, ref _ClsidLogicalView, 0u, out _, array, out _, out _);
 		___(hresult);
 
 		IVsWindowFrame vsWindowFrame = WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame;

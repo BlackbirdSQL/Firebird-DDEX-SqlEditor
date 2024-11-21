@@ -112,7 +112,7 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -177,7 +177,7 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 		catch (Exception ex)
 		{
 			lockedProviderObject = null;
-			Diag.Dug(ex, $"\nConnectionString: {connection?.ConnectionString}");
+			Diag.Ex(ex, $"\nConnectionString: {connection?.ConnectionString}");
 			throw ex;
 		}
 		finally
@@ -413,7 +413,7 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 			if (!retrying)
 				return RetrieveValue(connection, name, true);
 
-			Diag.Dug(ex, $"Error retrieving PropertyName: '{name}'");
+			Diag.Ex(ex, $"Error retrieving PropertyName: '{name}'");
 			return errval;
 		}
 

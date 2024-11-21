@@ -61,7 +61,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 				if (!ContainsKey(key))
 				{
 					if (!IsExtensible)
-						throw new KeyNotFoundException(Resources.IVsDataConnectionProperties_PropertyInvalid.FmtRes(key));
+						throw new KeyNotFoundException(Resources.IVsDataConnectionProperties_PropertyInvalid.Fmt(key));
 
 					ConnectionStringBuilder.Add(key, value);
 					changed = ContainsKey(key);
@@ -108,7 +108,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw;
 			}
 
@@ -193,7 +193,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"ConnectionString: {ConnectionStringBuilder.ConnectionString}.");
+				Diag.Ex(ex, $"ConnectionString: {ConnectionStringBuilder.ConnectionString}.");
 				throw;
 			}
 
@@ -282,7 +282,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 
 						// Evs.Debug(GetType(), nameof(Parse), "Calling ReindexEntityFrameworkAssemblies.");
 
-						NativeDb.AsyuiReindexEntityFrameworkAssemblies(ApcManager.ActiveProject);
+						NativeDb.ReindexEntityFrameworkAssembliesAsyui(ApcManager.ActiveProject);
 					}
 				}
 
@@ -293,7 +293,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}
@@ -353,7 +353,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 		lock (_LockObject)
 		{
 			if (ContainsKey(key))
-				throw new ArgumentException(string.Format(null, "Resources.DataConnectionProperties_PropertyAlreadyExists: {0}", key), "key");
+				throw new ArgumentException("Resources.DataConnectionProperties_PropertyAlreadyExists: {0}".Fmt(key), "key");
 
 			ConnectionStringBuilder.Add(key, value);
 		}
@@ -378,7 +378,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}

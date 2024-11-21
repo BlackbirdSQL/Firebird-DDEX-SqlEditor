@@ -149,135 +149,135 @@ Statement #{0} ({1} row(s) selected, {2} in total)
   <data name="ErrorScriptingNoParam" xml:space="preserve">
     <value>A scripting error occurred.</value>
   </data>
-  <data name="ExAlreadySortingData" xml:space="preserve">
+  <data name="ExceptionAlreadySortingData" xml:space="preserve">
     <value>Invalid calling sequence: already sorting data</value>
   </data>
-  <data name="ExAlreadyStoringData" xml:space="preserve">
+  <data name="ExceptionAlreadyStoringData" xml:space="preserve">
     <value>Invalid calling sequence: already storing data.</value>
   </data>
-  <data name="ExArgumentOnlyFalse" xml:space="preserve">
+  <data name="ExceptionArgumentOnlyFalse" xml:space="preserve">
     <value>'{0}' may only be set to false.</value>
   </data>
-  <data name="ExBufferSizeShouldBePositive" xml:space="preserve">
+  <data name="ExceptionBufferSizeShouldBePositive" xml:space="preserve">
     <value>Invalid argument: buffer size should be a positive number.</value>
   </data>
-  <data name="ExCannotAddReaderWhenStoringData" xml:space="preserve">
+  <data name="ExceptionCannotAddReaderWhenStoringData" xml:space="preserve">
     <value>A new reader cannot be added while storage is storing data.</value>
   </data>
-  <data name="ExCannotCreateTempFile" xml:space="preserve">
+  <data name="ExceptionCannotCreateTempFile" xml:space="preserve">
     <value>Failed to create temporary XML file.</value>
   </data>
-  <data name="ExChangeConnectionCaption" xml:space="preserve">
+  <data name="ExceptionChangeConnectionCaption" xml:space="preserve">
     <value>Connection Selection Error</value>
   </data>
-  <data name="ExColumnsCountDoesNotMatch" xml:space="preserve">
+  <data name="ExceptionColumnsCountDoesNotMatch" xml:space="preserve">
     <value>Number of columns in the new reader does not match storage.</value>
   </data>
-  <data name="ExColumnsDoNotMatch" xml:space="preserve">
+  <data name="ExceptionColumnsDoNotMatch" xml:space="preserve">
     <value>Column definitions do not match those in the storage.</value>
   </data>
-  <data name="ExCommandNotSupported" xml:space="preserve">
+  <data name="ExceptionCommandNotSupported" xml:space="preserve">
     <value>This command is not supported.</value>
   </data>
-  <data name="ExDatabaseConnection" xml:space="preserve">
+  <data name="ExceptionDatabaseConnection" xml:space="preserve">
     <value>Connection failed. ConnectionString: {0}. Error message: {1}.</value>
   </data>
-  <data name="ExDatabaseNotAccessible" xml:space="preserve">
+  <data name="ExceptionDatabaseNotAccessible" xml:space="preserve">
     <value>Database not accessible.</value>
   </data>
-  <data name="ExDatabaseNotAccessibleEx" xml:space="preserve">
+  <data name="ExceptionDatabaseNotAccessibleEx" xml:space="preserve">
     <value>Database not accessible: {0}.</value>
   </data>
-  <data name="ExDisableTtsCaption" xml:space="preserve">
+  <data name="ExceptionDisableTtsCaption" xml:space="preserve">
     <value>Disable TTS Error</value>
   </data>
-  <data name="ExDisconnectCaption" xml:space="preserve">
+  <data name="ExceptionDisconnectCaption" xml:space="preserve">
     <value>Disconnect Error</value>
   </data>
-  <data name="ExEventsAlreadyEnabled" xml:space="preserve">
+  <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
     <value>Events already enabled.</value>
   </data>
-  <data name="ExExecutionNotCompleted" xml:space="preserve">
+  <data name="ExceptionExecutionNotCompleted" xml:space="preserve">
     <value>Previous execution is not yet complete.</value>
   </data>
-  <data name="ExExecutionPlanCaption" xml:space="preserve">
+  <data name="ExceptionExecutionPlanCaption" xml:space="preserve">
     <value>Execution Plan Error</value>
   </data>
-  <data name="ExFailedToGetTempFileName" xml:space="preserve">
+  <data name="ExceptionFailedToGetTempFileName" xml:space="preserve">
     <value>Failed to get temporary file name.</value>
   </data>
-  <data name="ExFileStreamAlreadyInitialized" xml:space="preserve">
+  <data name="ExceptionFileStreamAlreadyInitialized" xml:space="preserve">
     <value>Invalid calling sequence: file stream already initialized.</value>
   </data>
-  <data name="ExFileStreamNeedsToBeInitializedFirst" xml:space="preserve">
+  <data name="ExceptionFileStreamNeedsToBeInitializedFirst" xml:space="preserve">
     <value>Invalid calling sequence: file stream must be initialized first.</value>
   </data>
-  <data name="ExIncorrectGroupNumber" xml:space="preserve">
+  <data name="ExceptionIncorrectGroupNumber" xml:space="preserve">
     <value>The supplied group number is incorrect.</value>
   </data>
-  <data name="ExIncorrectRowNumber" xml:space="preserve">
+  <data name="ExceptionIncorrectRowNumber" xml:space="preserve">
     <value>Row number is incorrect.</value>
   </data>
-  <data name="ExInvalidArgument" xml:space="preserve">
+  <data name="ExceptionInvalidArgument" xml:space="preserve">
     <value>Argument is not valid.</value>
   </data>
-  <data name="ExInvalidCommandType" xml:space="preserve">
+  <data name="ExceptionInvalidCommandType" xml:space="preserve">
     <value>Unsupported command object.  Use SqlCommand or ReliableSqlCommand.</value>
   </data>
-  <data name="ExModifyConnectionCaption" xml:space="preserve">
+  <data name="ExceptionModifyConnectionCaption" xml:space="preserve">
     <value>Modify Connection Error</value>
   </data>
-  <data name="ExQueryBatchError" xml:space="preserve">
+  <data name="ExceptionQueryBatchError" xml:space="preserve">
     <value>An error occurred while executing batch. Error message is:
 {0}</value>
   </data>
-  <data name="ExQueryBatchStatementError" xml:space="preserve">
+  <data name="ExceptionQueryBatchStatementError" xml:space="preserve">
     <value>An error occurred while executing batch statement #{0}. Error message is:
 {1}</value>
   </data>
-  <data name="ExQueryExecutionCaption" xml:space="preserve">
+  <data name="ExceptionQueryExecutionCaption" xml:space="preserve">
     <value>Query execution failed</value>
   </data>
-  <data name="ExReaderCannotBeNull" xml:space="preserve">
+  <data name="ExceptionReaderCannotBeNull" xml:space="preserve">
     <value>Invalid argument: reader cannot be null.</value>
   </data>
-  <data name="ExResultSetAlreadyInited" xml:space="preserve">
+  <data name="ExceptionResultSetAlreadyInited" xml:space="preserve">
     <value>Initialize has already been called.</value>
   </data>
-  <data name="ExResultSetAlreadyStoring" xml:space="preserve">
+  <data name="ExceptionResultSetAlreadyStoring" xml:space="preserve">
     <value>Storage is already storing the data.</value>
   </data>
-  <data name="ExResultSetNotInitialized" xml:space="preserve">
+  <data name="ExceptionResultSetNotInitialized" xml:space="preserve">
     <value>Initialize should be called before.</value>
   </data>
-  <data name="ExScriptingParseFailure" xml:space="preserve">
+  <data name="ExceptionScriptingParseFailure" xml:space="preserve">
     <value>An error was encountered while parsing with message: {0}.</value>
   </data>
-  <data name="ExSortViewDefaultConstructorCannotBeUsed" xml:space="preserve">
+  <data name="ExceptionSortViewDefaultConstructorCannotBeUsed" xml:space="preserve">
     <value>SortView default constructor cannot be used.</value>
   </data>
-  <data name="ExSqlExecutionModeChangeFailed" xml:space="preserve">
+  <data name="ExceptionSqlExecutionModeChangeFailed" xml:space="preserve">
     <value>Execution mode cannot be changed when query is executing</value>
   </data>
-  <data name="ExStorageAlreadyStoring" xml:space="preserve">
+  <data name="ExceptionStorageAlreadyStoring" xml:space="preserve">
     <value>Invalid calling sequence: already storing data.</value>
   </data>
-  <data name="ExStorageNoReader" xml:space="preserve">
+  <data name="ExceptionStorageNoReader" xml:space="preserve">
     <value>Object is not initialized with the reader.</value>
   </data>
-  <data name="ExStorageNotInitialized" xml:space="preserve">
+  <data name="ExceptionStorageNotInitialized" xml:space="preserve">
     <value>Invalid calling sequence: storage must be initialized first.</value>
   </data>
-  <data name="ExStorageViewDefaultConstructorCannotBeUsed" xml:space="preserve">
+  <data name="ExceptionStorageViewDefaultConstructorCannotBeUsed" xml:space="preserve">
     <value>StorageView default constructor cannot be used.</value>
   </data>
-  <data name="ExTransactionsActive" xml:space="preserve">
+  <data name="ExceptionTransactionsActive" xml:space="preserve">
     <value>Transactions are still pending on this connection. You must Commit or Rollback pending Transactions before proceeding.</value>
   </data>
-  <data name="ExUnableToCloseCon" xml:space="preserve">
+  <data name="ExceptionUnableToCloseCon" xml:space="preserve">
     <value>Unable to close connection specified in the SQLCMD script.</value>
   </data>
-  <data name="ExViewHasToBeSetBeforeExecutingDoubleClickEvent" xml:space="preserve">
+  <data name="ExceptionViewHasToBeSetBeforeExecutingDoubleClickEvent" xml:space="preserve">
     <value>View has to be set before executing double click event.</value>
   </data>
   <data name="InfoDisconnectingFromSvr" xml:space="preserve">

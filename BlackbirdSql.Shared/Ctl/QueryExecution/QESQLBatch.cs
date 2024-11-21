@@ -9,20 +9,15 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Shapes;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Data.Model;
 using BlackbirdSql.Shared.Enums;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model.QueryExecution;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys.Ctl.Diagnostics;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
-using static System.Net.Mime.MediaTypeNames;
 
 
 
@@ -204,7 +199,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			}
 			catch (Exception e2)
 			{
-				Diag.Dug(e2);
+				Diag.Ex(e2);
 			}
 			*/
 
@@ -357,8 +352,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		// HandleSqlMessages(ex.GetErrors(), true);
 		string message = statementIndex < 0
-			? Resources.ExQueryBatchError.FmtRes(ex.Message)
-			: Resources.ExQueryBatchStatementError.FmtRes(statementIndex+1, ex.Message);
+			? Resources.ExceptionQueryBatchError.Fmt(ex.Message)
+			: Resources.ExceptionQueryBatchStatementError.Fmt(statementIndex+1, ex.Message);
 
 		BatchErrorMessageEventArgs args = new BatchErrorMessageEventArgs(message, "");
 		RaiseErrorMessage(args);
@@ -366,16 +361,16 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		QryMgr.SetState(EnQueryState.Cancelling, true);
 		QryMgr.SetState(EnQueryState.Faulted, true);
 		QryMgr.SetState(EnQueryState.Prompting, true);
-		RdtManager.AsyeuShowWindowFrame(QryMgr.DocCookie);
+		RdtManager.ShowWindowFrameAsyeu(QryMgr.DocCookie);
 
 		string server = ex.GetServer();
 		string database = ex.GetDatabase();
 
 		message = statementIndex < 0
-			? Resources.BatchParseErrorDialogMessage.FmtRes(server, database, ex.Message)
-			: Resources.BatchErrorDialogMessage.FmtRes(server, database, statementIndex+1, ex.Message);
+			? Resources.BatchParseErrorDialogMessage.Fmt(server, database, ex.Message)
+			: Resources.BatchErrorDialogMessage.Fmt(server, database, statementIndex+1, ex.Message);
 
-		MessageCtl.ShowEx(ex, message, Resources.ExQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+		MessageCtl.ShowX(ex, message, Resources.ExceptionQueryExecutionCaption, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		QryMgr.SetState(EnQueryState.Prompting, false);
 	}
 
@@ -449,7 +444,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		if (statementIndex == -1 && ex is ArgumentException)
 		{
-			string text = Resources.BatchParseErrorMessage.FmtRes(ex.Message);
+			string text = Resources.BatchParseErrorMessage.Fmt(ex.Message);
 
 			_ContainsErrors = true;
 
@@ -473,7 +468,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				text = text.Trim();
 
 				if (statementIndex > -1)
-					text = Resources.BatchErrorMessage.FmtRes(statementIndex + 1, text);
+					text = Resources.BatchErrorMessage.Fmt(statementIndex + 1, text);
 
 				_ContainsErrors = true;
 
@@ -494,8 +489,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		if (dataReader == null)
 		{
-			ArgumentNullException ex = new("dataReader");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(dataReader));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -749,15 +744,15 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			}
 			catch (ThreadAbortException exta)
 			{
-				Diag.Dug(exta);
+				Diag.Ex(exta);
 			}
 			catch (SystemException exsy)
 			{
-				Diag.Dug(exsy);
+				Diag.Ex(exsy);
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 			}
 		}
 
@@ -773,8 +768,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	{
 		if (dataReader == null)
 		{
-			ArgumentNullException ex = new("dataReader");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(dataReader));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -794,8 +789,8 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		if (NewResultSetEventAsync == null)
 		{
-			ArgumentNullException ex = new("NewResultSetEventAsync");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(NewResultSetEventAsync));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -854,7 +849,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		if (dataReader == null && SqlStatement == null)
 		{
 			ArgumentNullException ex = new("dataReader/QESQLBatch::Command");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -866,7 +861,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		{
 			if (SpecialActionEvent == null)
 			{
-				ArgumentNullException ex = new("SpecialActionEvent");
+				ArgumentNullException ex = new(nameof(SpecialActionEvent));
 				throw ex;
 			}
 
@@ -959,7 +954,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 		if (MessageEvent != null)
 		{
-			RaiseMessage(new(Resources.BatchRowsSelectedMessage.FmtRes(
+			RaiseMessage(new(Resources.BatchRowsSelectedMessage.Fmt(
 				statementIndex + 1, rowsSelected.ToString(CultureInfo.InvariantCulture),
 				totalRowsSelected.ToString(CultureInfo.InvariantCulture))));
 		}

@@ -196,7 +196,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 			{
 				if (Package.GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 				{
-					vsShell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out var pvar);
+					vsShell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out object pvar);
 					if (pvar is bool bvar)
 						return bvar;
 				}
@@ -268,7 +268,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return true;
 			}
 
@@ -377,7 +377,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		return;

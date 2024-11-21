@@ -123,6 +123,9 @@
   <data name="PropertyCategoryConnection" xml:space="preserve">
     <value>Connection</value>
   </data>
+  <data name="PropertyCategoryData" xml:space="preserve">
+    <value>Data</value>
+  </data>
   <data name="PropertyCategoryPooling" xml:space="preserve">
     <value>Pooling</value>
   </data>
@@ -149,6 +152,9 @@
   </data>
   <data name="PropertyDescriptionConnectionLifeTime" xml:space="preserve">
     <value>The time (in seconds) before unused connections in the connection pool are disposed.</value>
+  </data>
+  <data name="PropertyDescriptionConnectionString" xml:space="preserve">
+    <value>The connection string used to connect to the Data Source.</value>
   </data>
   <data name="PropertyDescriptionConnectionTimeout" xml:space="preserve">
     <value>The timeout (in seconds) to wait for a connection to open.</value>
@@ -236,6 +242,9 @@
   </data>
   <data name="PropertyDisplayConnectionLifeTime" xml:space="preserve">
     <value>Connection Lifetime</value>
+  </data>
+  <data name="PropertyDisplayConnectionString" xml:space="preserve">
+    <value>ConnectionString</value>
   </data>
   <data name="PropertyDisplayConnectionTimeout" xml:space="preserve">
     <value>Connection Timeout</value>

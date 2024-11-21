@@ -49,7 +49,7 @@ public class CommandExecuteQuery : AbstractCommand
 		// ----------------------------------------------------------------------------------- //
 		// *************** Execution Point (0) - CommandExecuteQuery.OnExec() **************** //
 		// ----------------------------------------------------------------------------------- //
-		TabbedEditor.AsyncExecuteQuery(executionType);
+		TabbedEditor.ExecuteQueryAsyin(executionType);
 
 		return VSConstants.S_OK;
 	}

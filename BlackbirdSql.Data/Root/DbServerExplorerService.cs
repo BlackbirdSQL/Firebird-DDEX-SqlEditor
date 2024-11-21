@@ -38,7 +38,7 @@ public class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNati
 	// ---------------------------------------------------------------------------------
 	public string GetDecoratedDdlSource_(IVsDataExplorerNode node, EnModelTargetType targetType)
 	{
-		// Evs.Trace(typeof(Moniker), "GetDecoratedDdlSource()");
+		// Evs.Trace(typeof(Moniker), nameof(GetDecoratedDdlSource));
 
 		IVsDataObject obj = node.Object;
 

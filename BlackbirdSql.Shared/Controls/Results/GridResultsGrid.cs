@@ -211,7 +211,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 
 	void IBsStatusBarContributer.GetColumnAndRowNumber(out long rowNumber, out long columnNumber)
 	{
-		GetCurrentCell(out rowNumber, out var columnIndex);
+		GetCurrentCell(out rowNumber, out int columnIndex);
 		columnNumber = columnIndex;
 		rowNumber++;
 	}
@@ -233,7 +233,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 			bool flag = false;
 			if (IsHandleCreated)
 			{
-				Native.SCROLLINFOEx sCROLLINFO = new (bInitWithAllMask: true);
+				Native.SCROLLINFOX sCROLLINFO = new (bInitWithAllMask: true);
 				Native.GetScrollInfo(Handle, 0, sCROLLINFO);
 				flag = sCROLLINFO.nMax > sCROLLINFO.nPage;
 			}
@@ -477,7 +477,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}
@@ -773,7 +773,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 			Diag.ThrowIfNotOnUIThread();
 
 			if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell2 vsUIShell
-				&& __(vsUIShell.GetVSSysColorEx((int)__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT, out var pdwRGBval)))
+				&& __(vsUIShell.GetVSSysColorEx((int)__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT, out uint pdwRGBval)))
 			{
 				return ColorTranslator.FromWin32((int)pdwRGBval);
 			}

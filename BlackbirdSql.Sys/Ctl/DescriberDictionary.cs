@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using BlackbirdSql.Sys.Extensions;
 using BlackbirdSql.Sys.Interfaces;
+using BlackbirdSql.Sys.Properties;
 
 
 
@@ -191,22 +192,23 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 	public void AddSynonym(string synonym, string key)
 	{
-		if (!TryGetValue(key, out Describer descriptor))
+		if (!TryGetValue(key, out Describer describer))
 		{
-			ArgumentException ex = new($"Descriptor '{key}' not found for synonym '{synonym}.");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionAddSynonymDescriberKeyNotFound.Fmt(key, synonym));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		_Synonyms ??= new Dictionary<string, Describer>(StringComparer.OrdinalIgnoreCase);
 		try
+
 		{
 			if (!_Synonyms.ContainsKey(synonym))
-				_Synonyms.Add(synonym, descriptor);
+				_Synonyms.Add(synonym, describer);
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, "Synonym: " + synonym);
+			Diag.Ex(ex, Resources.LabelSynonym.Fmt(synonym));
 			throw ex;
 		}
 	}
@@ -254,12 +256,12 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 		{
 			try
 			{
-				Describer describer = this[name] ?? throw new ArgumentException($"Describer {name} not found.");
+				Describer describer = this[name] ?? throw new ArgumentException(Resources.ExceptionDescriberNotFound.Fmt(name));
 				describers.Add(describer);
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"Describer {name} not found or unable to add to array.");
+				Diag.Ex(ex, Resources.ExceptionDescriberNotFoundOrAddFailure.Fmt(name));
 				throw;
 			}
 		}
@@ -271,10 +273,10 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets the default parameter name for a given a descriptor.
+	/// Gets the default parameter name for a given a decsriber.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public string GetDescriptorParameter(string name)
+	public string GetDescriberParameter(string name)
 	{
 		if (!TryGetValue(name, out Describer value))
 		{
@@ -297,7 +299,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets the descriptor name given the default connection parameter name.
+	/// Gets the decsriber name given the default connection parameter name.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public Describer GetParameterDescriber(string parameter)
@@ -327,14 +329,14 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	}
 
 
-	public string GetSynonymDescriptorName(string synonym)
+	public string GetSynonymDescriberName(string synonym)
 	{
-		Describer descriptor = GetSynonymDescriber(synonym);
+		Describer decscriber = GetSynonymDescriber(synonym);
 
-		if (descriptor == null)
+		if (decscriber == null)
 			return null;
 
-		return descriptor.Name;
+		return decscriber.Name;
 	}
 
 	public IList<string> GetSynonyms(string name)
@@ -398,7 +400,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 					}
 					catch (Exception ex)
 					{
-						Diag.Dug(ex, $"Failed to add synonym for {pair.Key}.");
+						Diag.Ex(ex, Resources.ExceptionAddPrimarySynonym.Fmt(pair.Key));
 						throw;
 					}
 				}
@@ -408,7 +410,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -422,55 +424,55 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 	// ---------------------------------------------------------------------------------
 	public Type GetSynonymType(string synonym)
 	{
-		Describer descriptor = GetSynonymDescriber(synonym);
+		Describer describer = GetSynonymDescriber(synonym);
 
-		if (descriptor == null)
+		if (describer == null)
 		{
-			ArgumentException ex = new($"The synonym '{synonym}' has no descriptor");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionSynonymDescriberNotFound.Fmt(synonym));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		return descriptor.PropertyType;
+		return describer.PropertyType;
 	}
 
 
 	public bool IsAdvanced(string key)
 	{
-		if (!TryGetValue(key, out Describer descriptor))
+		if (!TryGetValue(key, out Describer describer))
 		{
-			ArgumentException ex = new("Descriptors: " + key);
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.LabelDescriber.Fmt(key));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		return descriptor.IsAdvanced;
+		return describer.IsAdvanced;
 	}
 
 	public bool IsEquivalency(string key)
 	{
-		if (!TryGetValue(key, out Describer descriptor))
+		if (!TryGetValue(key, out Describer describer))
 		{
-			ArgumentException ex = new("Descriptors: " + key);
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.LabelDescriber.Fmt(key));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		return descriptor.IsEquivalency;
+		return describer.IsEquivalency;
 	}
 
 
 
 	public bool IsParameter(string key)
 	{
-		if (!TryGetValue(key, out Describer descriptor))
+		if (!TryGetValue(key, out Describer describer))
 		{
-			ArgumentException ex = new("Descriptors: " + key);
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.LabelDescriber.Fmt(key));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		return descriptor.IsConnectionParameter;
+		return describer.IsConnectionParameter;
 	}
 
 
@@ -495,14 +497,14 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 	public bool TryGetDefaultValue(string key, out object value)
 	{
-		if (!TryGetValue(key, out Describer descriptor))
+		if (!TryGetValue(key, out Describer decscriber))
 		{
-			ArgumentException ex = new("Descriptors: " + key);
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.LabelDescriber.Fmt(key));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		value = descriptor.DefaultValue;
+		value = decscriber.DefaultValue;
 
 		return true;
 	}

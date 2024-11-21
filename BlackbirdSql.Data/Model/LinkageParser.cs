@@ -163,7 +163,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(string connectionString, string[] restrictions)
 	{
-		// Evs.Trace(typeof(LinkageParser), "EnsureLoaded()");
+		// Evs.Trace(typeof(LinkageParser), nameof(EnsureLoaded));
 
 		
 		LinkageParser parser;
@@ -183,7 +183,7 @@ public class LinkageParser : AbstractLinkageParser
 				return parser;
 
 			if (!parser.Loading && parser._Enabled)
-				parser.AsyncExecute(0, 0);
+				parser.ExecuteAsyin(0, 0);
 		}
 
 
@@ -229,7 +229,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(IDbConnection connection)
 	{
-		// Evs.Trace(typeof(LinkageParser), "EnsureLoaded()");
+		// Evs.Trace(typeof(LinkageParser), nameof(EnsureLoaded));
 
 		IVsDataExplorerConnection root = connection.ExplorerConnection(true);
 
@@ -255,7 +255,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(IVsDataExplorerConnection root)
 	{
-		// Evs.Trace(typeof(LinkageParser), "EnsureLoaded()");
+		// Evs.Trace(typeof(LinkageParser), nameof(EnsureLoaded));
 
 		LinkageParser parser = CreateInstance(root, true);
 
@@ -282,7 +282,7 @@ public class LinkageParser : AbstractLinkageParser
 			return true;
 
 
-		AsyncExecute(0, 0);
+		ExecuteAsyin(0, 0);
 
 		return SyncAsyncWait();
 	}
@@ -473,7 +473,7 @@ public class LinkageParser : AbstractLinkageParser
 			string lockedConnectionUrl = ApcManager.CreateConnectionUrl(_LockedLoadedConnectionString);
 			string disposingConnectionUrl = ApcManager.CreateConnectionUrl(ConnectionString);
 
-			// Evs.Trace(typeof(RctManager), "IsLockedLoaded", "\nlockedConnectionUrl: {0}, disposingConnectionUrl: {1}.", lockedConnectionUrl, disposingConnectionUrl);
+			// Evs.Trace(GetType(), "get_IsLockedLoaded", $"\nlockedConnectionUrl: {lockedConnectionUrl}, disposingConnectionUrl: {disposingConnectionUrl}.");
 			_LockedLoadedConnectionString = null;
 
 			if (lockedConnectionUrl.Equals(disposingConnectionUrl))
@@ -502,103 +502,12 @@ public class LinkageParser : AbstractLinkageParser
 	 * GetInstance - Gets instance else null if no exist.
 	 * EnsureInstance - GetInstance else create if no exist.
 	 * 
-	 * AsyncRequestLoading - GetsInstance then initiate asyncloading if !PersistentSettings.OnDemandLinkage.
-	 * AsyncEnsureLoading - EnsureInstance then initiate asyncloading if !PersistentSettings.OnDemandLinkage.
+	 * RequestLoadingAsyin - GetsInstance then initiate asyncloading if !PersistentSettings.OnDemandLinkage.
+	 * EnsureLoadingAsyin - EnsureInstance then initiate asyncloading if !PersistentSettings.OnDemandLinkage.
 	 * 
-	 * EnsureLoaded - AsyncEnsureLoading and wait for completion.
+	 * EnsureLoaded - EnsureLoadingAsyin and wait for completion.
 	 * 
 	 */
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>1
-	/// [Async launch]: Ensures an instance is retrieved or else created and then
-	/// initiates loading if !PersistentSettings.OnDemandLinkage.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser AsyncEnsureLoading(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
-	{
-		// Evs.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
-
-		if (root == null)
-			return null;
-
-		LinkageParser parser = CreateInstance(root, true);
-
-		if (parser == null)
-			return null;
-
-		if (!parser.Loading && !parser.Loaded /* && parser._TaskHandler != null */
-			&& parser._Enabled && !NativeDb.OnDemandLinkage)
-		{
-			parser.AsyncExecute(delay, multiplier);
-		}
-
-		return parser;
-
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// [Launch async]: Begins or resumes asynchronous linkage build operations.
-	/// </summary>
-	/// <param name="delay">
-	/// The delay in milliseconds before beginning operations if an async build was
-	/// initiated through the creation of a new data connection in the SE. A delay is
-	/// required to allow the SE time to render the initial root node.
-	/// </param>
-	/// <param name="multiplier">
-	/// A multiplier to split the delay into smaller timeslices and allow checking of
-	/// cancellation tokens during the total delay time of 'delay * multiplier'.
-	/// </param>
-	/// <returns>True if the linkage was successfully completed, else false.</returns>
-	// ---------------------------------------------------------------------------------
-	protected override bool AsyncExecute(int delay, int multiplier)
-	{
-		if (!ClearToLoadAsync)
-			return false;
-
-		// Evs.Trace(GetType(), nameof(AsyncExecute));
-
-		int asyncProcessId = _AsyncProcessSeed < 99990 ? ++_AsyncProcessSeed : 90001;
-		_AsyncProcessSeed = asyncProcessId;
-
-		lock (_LockObject)
-		{
-			_AsyncPayloadLaunchState = EnLauncherPayloadLaunchState.Pending;
-		}
-
-
-		_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
-		_TaskHandler.PreRegister(true);
-
-
-		// The following for brevity.
-		CancellationToken userCancellationToken = _TaskHandler.UserCancellation;
-		TaskCreationOptions creationOptions = TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent;
-		TaskScheduler scheduler = TaskScheduler.Default;
-
-		// Evs.Trace(GetType(), nameof(AsyncExecute), "delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
-
-		// For brevity.
-		Task<bool> payloadAsync() =>
-			ExecuteAsync(asyncProcessId, userCancellationToken, delay, multiplier);
-
-		// Start up the payload launcher with tracking.
-		// Fire and remember.
-		_AsyncPayloadLauncher = Task.Factory.StartNew(payloadAsync, default, creationOptions, scheduler).Unwrap();
-
-		_TaskHandler.RegisterTask(_AsyncPayloadLauncher);
-
-		// Evs.Trace(GetType(), nameof(AsyncExecute), "EXIT - AsyncTask registered - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
-
-
-		return true;
-	}
 
 
 
@@ -714,6 +623,97 @@ public class LinkageParser : AbstractLinkageParser
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>1
+	/// [Async launch]: Ensures an instance is retrieved or else created and then
+	/// initiates loading if !PersistentSettings.OnDemandLinkage.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser EnsureLoadingAsyin(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
+	{
+		// Evs.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+
+		if (root == null)
+			return null;
+
+		LinkageParser parser = CreateInstance(root, true);
+
+		if (parser == null)
+			return null;
+
+		if (!parser.Loading && !parser.Loaded /* && parser._TaskHandler != null */
+			&& parser._Enabled && !NativeDb.OnDemandLinkage)
+		{
+			parser.ExecuteAsyin(delay, multiplier);
+		}
+
+		return parser;
+
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// [Launch async]: Begins or resumes asynchronous linkage build operations.
+	/// </summary>
+	/// <param name="delay">
+	/// The delay in milliseconds before beginning operations if an async build was
+	/// initiated through the creation of a new data connection in the SE. A delay is
+	/// required to allow the SE time to render the initial root node.
+	/// </param>
+	/// <param name="multiplier">
+	/// A multiplier to split the delay into smaller timeslices and allow checking of
+	/// cancellation tokens during the total delay time of 'delay * multiplier'.
+	/// </param>
+	/// <returns>True if the linkage was successfully completed, else false.</returns>
+	// ---------------------------------------------------------------------------------
+	protected override bool ExecuteAsyin(int delay, int multiplier)
+	{
+		if (!ClearToLoadAsync)
+			return false;
+
+		// Evs.Trace(GetType(), nameof(AsyncExecute));
+
+		int asyncProcessId = _AsyncProcessSeed < 99990 ? ++_AsyncProcessSeed : 90001;
+		_AsyncProcessSeed = asyncProcessId;
+
+		lock (_LockObject)
+		{
+			_AsyncPayloadLaunchState = EnLauncherPayloadLaunchState.Pending;
+		}
+
+
+		_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
+		_TaskHandler.PreRegister(true);
+
+
+		// The following for brevity.
+		CancellationToken userCancellationToken = _TaskHandler.UserCancellation;
+		TaskCreationOptions creationOptions = TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent;
+		TaskScheduler scheduler = TaskScheduler.Default;
+
+		// Evs.Trace(GetType(), nameof(AsyncExecute), "delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
+
+		// For brevity.
+		Task<bool> payloadAsync() =>
+			ExecuteAsync(asyncProcessId, userCancellationToken, delay, multiplier);
+
+		// Start up the payload launcher with tracking.
+		// Fire and remember.
+		_AsyncPayloadLauncher = Task.Factory.StartNew(payloadAsync, default, creationOptions, scheduler).Unwrap();
+
+		_TaskHandler.RegisterTask(_AsyncPayloadLauncher);
+
+		// Evs.Trace(GetType(), nameof(AsyncExecute), "EXIT - AsyncTask registered - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Stores the ConnectionString of a connection changed by the SE that already has
 	/// it's linkage tables loaded. We don't want linkage tables disposed if The
@@ -726,7 +726,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static bool LockLoadedParser(string originalString, string updatedString)
 	{
-		// Evs.Trace(typeof(RctManager), "LockLoadedParser()");
+		// Evs.Trace(typeof(RctManager), nameof(LockLoadedParser));
 
 		_LockedLoadedConnectionString = null;
 
@@ -741,7 +741,7 @@ public class LinkageParser : AbstractLinkageParser
 		if (!ApcManager.IsConnectionEquivalency(originalString, updatedString))
 			return false;
 
-		// Evs.Trace(typeof(RctManager), "LockLoadedParser()", "LOCKING!!!\nParser TransientString: {0}\nupdatedString: {1}", parser.TransientString, updatedString);
+		// Evs.Trace(typeof(RctManager), nameof(LockLoadedParser), "LOCKING!!!\nParser TransientString: {0}\nupdatedString: {1}", parser.TransientString, updatedString);
 
 		_LockedLoadedConnectionString = updatedString;
 
@@ -781,7 +781,7 @@ public class LinkageParser : AbstractLinkageParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -826,7 +826,7 @@ public class LinkageParser : AbstractLinkageParser
 		{
 			// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "Connection null SyncCardinal: {0}", _SyncCardinal);
 			ObjectDisposedException ex = new(Resources.ExceptionConnectionStringNull);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return false;
 		}
 
@@ -943,7 +943,7 @@ public class LinkageParser : AbstractLinkageParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		finally
@@ -992,7 +992,7 @@ public class LinkageParser : AbstractLinkageParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1020,7 +1020,7 @@ public class LinkageParser : AbstractLinkageParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1029,7 +1029,7 @@ public class LinkageParser : AbstractLinkageParser
 		{
 			if (!IsTransient)
 			{
-				_TaskHandler.Progress(ControlsResources.LinkageParser_StageCompleted.FmtRes(_Triggers.Rows.Count),
+				_TaskHandler.Progress(ControlsResources.LinkageParser_StageCompleted.Fmt(_Triggers.Rows.Count),
 					Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
 			}
 
@@ -1083,7 +1083,7 @@ public class LinkageParser : AbstractLinkageParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1172,9 +1172,9 @@ public class LinkageParser : AbstractLinkageParser
 					// the user has responded.
 
 					string caption = ControlsResources.LinkageParser_CaptionLinkageTimeout;
-					string msg = ControlsResources.LinkageParser_TextLinkageParser.FmtRes(NativeDb.LinkageTimeout);
+					string msg = ControlsResources.LinkageParser_TextLinkageParser.Fmt(NativeDb.LinkageTimeout);
 
-					if (MessageCtl.ShowEx(msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Error, OnMessageBoxShown) == DialogResult.Yes)
+					if (MessageCtl.ShowX(msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Error, OnMessageBoxShown) == DialogResult.Yes)
 					{
 						waitTime = 0;
 
@@ -1195,7 +1195,7 @@ public class LinkageParser : AbstractLinkageParser
 							_TaskHandler.Progress(Percent(_LinkStage), C_Elapsed_Disabling, _TotalElapsed, _Enabled, AsyncActive);
 
 							TimeoutException ex = new($"Timed out waiting for AsyncPayloadLauncher to complete. Timeout (ms): {waitTime}.");
-							Diag.Dug(ex);
+							Diag.Ex(ex);
 							// throw ex;
 						}
 					}
@@ -1242,7 +1242,7 @@ public class LinkageParser : AbstractLinkageParser
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1317,7 +1317,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static void UnlockLoadedParser()
 	{
-		// Evs.Trace(typeof(RctManager), "UnlockLoadedParser()", "\n_LockedLoadedConnectionString: {0}", _LockedLoadedConnectionString);
+		// Evs.Trace(typeof(RctManager), nameof(UnlockLoadedParser), "\n_LockedLoadedConnectionString: {0}", _LockedLoadedConnectionString);
 
 		_LockedLoadedConnectionString = null;
 	}

@@ -92,7 +92,7 @@ public static class FormHost
 			if (vsUIShell != null)
 			{
 				___(vsUIShell.EnableModeless(0));
-				___(vsUIShell.GetDialogOwnerHwnd(out var phwnd));
+				___(vsUIShell.GetDialogOwnerHwnd(out IntPtr phwnd));
 				if (phwnd != (IntPtr)0)
 				{
 					nativeWindow.AssignHandle(phwnd);

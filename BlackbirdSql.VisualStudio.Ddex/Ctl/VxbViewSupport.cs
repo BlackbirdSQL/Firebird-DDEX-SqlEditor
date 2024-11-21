@@ -179,14 +179,14 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 	{
 		if (name == null)
 		{
-			ArgumentNullException ex = new("name");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(name));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (!name.EndsWith("Definitions"))
 		{
-			Diag.StackException(Resources.ExceptionImportResourceNotFound.FmtRes(name));
+			Diag.StackException(Resources.ExceptionImportResourceNotFound.Fmt(name));
 			return null;
 		}
 
@@ -267,7 +267,7 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -297,7 +297,7 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -404,7 +404,7 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 			Stream stream = GetType().Assembly.GetManifestResourceStream(name);
 			if (stream == null)
 			{
-				Diag.StackException(Resources.ExceptionIconResourceNotFound.FmtRes(name));
+				Diag.StackException(Resources.ExceptionIconResourceNotFound.Fmt(name));
 				return null;
 			}
 
@@ -429,12 +429,12 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 			}
 			else
 			{
-				Diag.StackException(Resources.ExceptionIconResourceInvalid.FmtRes(name));
+				Diag.StackException(Resources.ExceptionIconResourceInvalid.Fmt(name));
 			}
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, Resources.ExceptionIconResourceNotFound.FmtRes(name));
+			Diag.Ex(ex, Resources.ExceptionIconResourceNotFound.Fmt(name));
 		}
 
 		return null;
@@ -478,7 +478,7 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}

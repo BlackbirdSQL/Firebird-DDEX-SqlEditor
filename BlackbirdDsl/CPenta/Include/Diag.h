@@ -44,7 +44,7 @@ public:
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Flag indicating whether or not Diag::Dug(bool isException, SysStr^ message, StackTrace^ stack) calls are logged
+	/// Flag indicating whether or not Diag::Ex(bool isException, SysStr^ message, StackTrace^ stack) calls are logged
 	/// </summary>
 	/// <remarks>
 	/// Exceptions are alweays logged.
@@ -109,10 +109,10 @@ private:
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #ifdef _DEBUG
-	static void Dug(bool isException, SysStr^ message, StackTrace^ stack)
+	static void Ex(bool isException, SysStr^ message, StackTrace^ stack)
 	{
 #else // _DEBUG
-	static void Dug(bool isException, SysStr ^ message, SysObj ^ stack)
+	static void Ex(bool isException, SysStr ^ message, SysObj ^ stack)
 	{
 #endif // else _DEBUG
 
@@ -175,7 +175,7 @@ public:
 	/// Diagnostics method that can flag a call as an System::Exception even if no System::Exception
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	static void Dug(bool isException, SysStr^ message)
+	static void Ex(bool isException, SysStr^ message)
 	{
 		if (!isException && !EnableDiagnostics && !EnableTrace)
 			return;
@@ -187,7 +187,7 @@ public:
 #endif // else _DEBUG
 
 
-		Dug(isException, message, stack);
+		Ex(isException, message, stack);
 
 	}
 
@@ -197,7 +197,7 @@ public:
 	/// Diagnostics method for Exceptions only
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	static void Dug(System::Exception^ ex)
+	static void Ex(System::Exception^ ex)
 	{
 
 #ifdef _DEBUG
@@ -206,7 +206,7 @@ public:
 		SysObj^ stack = nullptr;
 #endif // else _DEBUG
 
-		Dug(true, ex->Message + ":" + System::Environment::NewLine
+		Ex(true, ex->Message + ":" + System::Environment::NewLine
 			+ (ex->StackTrace != nullptr ? ex->StackTrace->ToString() : ""),
 			stack);
 	}
@@ -217,7 +217,7 @@ public:
 	/// Diagnostics method for Exceptions with message
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	static void Dug(System::Exception^ ex, SysStr^ message)
+	static void Ex(System::Exception^ ex, SysStr^ message)
 	{
 
 #ifdef _DEBUG
@@ -226,7 +226,7 @@ public:
  		SysObj^ stack = nullptr;
 #endif // else _DEBUG
 
-		Dug(true, ex->Message
+		Ex(true, ex->Message
 			+ (message != "" ? " " + message : "")
 			+ ":" + System::Environment::NewLine
 			+ (ex != nullptr && ex->StackTrace != nullptr ? ex->StackTrace->ToString() : ""),
@@ -251,7 +251,7 @@ public:
 
 		SysStr^ message = "TRACE: " + (System::Environment::StackTrace)->ToString();
 
-		Dug(true, message, stack);
+		Ex(true, message, stack);
 
 	}
 
@@ -271,7 +271,7 @@ public:
 
 		message += ":" + System::Environment::NewLine + "TRACE: " + (System::Environment::StackTrace)->ToString();
 
-		Dug(true, message, stack);
+		Ex(true, message, stack);
 
 	}
 
@@ -292,7 +292,7 @@ public:
 		SysObj^ stack = nullptr;
 #endif // else _DEBUG
 
-		Dug(false, "", stack);
+		Ex(false, "", stack);
 	}
 
 
@@ -312,7 +312,7 @@ public:
  		SysObj^ stack = nullptr;
 #endif // else _DEBUG
 
-		Dug(false, message, stack);
+		Ex(false, message, stack);
 	}
 
 

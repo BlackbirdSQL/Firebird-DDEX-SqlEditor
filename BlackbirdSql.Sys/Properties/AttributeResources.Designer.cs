@@ -79,6 +79,15 @@ namespace BlackbirdSql.Sys.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Data.
+        /// </summary>
+        internal static string PropertyCategoryData {
+            get {
+                return ResourceManager.GetString("PropertyCategoryData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pooling.
         /// </summary>
         internal static string PropertyCategoryPooling {
@@ -156,6 +165,15 @@ namespace BlackbirdSql.Sys.Properties {
         internal static string PropertyDescriptionConnectionLifeTime {
             get {
                 return ResourceManager.GetString("PropertyDescriptionConnectionLifeTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The connection string used to connect to the Data Source..
+        /// </summary>
+        internal static string PropertyDescriptionConnectionString {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionConnectionString", resourceCulture);
             }
         }
         
@@ -417,6 +435,15 @@ namespace BlackbirdSql.Sys.Properties {
         internal static string PropertyDisplayConnectionLifeTime {
             get {
                 return ResourceManager.GetString("PropertyDisplayConnectionLifeTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ConnectionString.
+        /// </summary>
+        internal static string PropertyDisplayConnectionString {
+            get {
+                return ResourceManager.GetString("PropertyDisplayConnectionString", resourceCulture);
             }
         }
         

@@ -143,7 +143,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		Diag.ThrowIfNotOnUIThread();
 
 
-		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
+		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out object pvarValue));
 		CurrentDocumentFrame = pvarValue as IVsWindowFrame;
 
 		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out pvarValue));
@@ -371,7 +371,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 			}
 			finally
 			{
@@ -444,7 +444,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 						if (auxDocData.IsVirtualWindow)
 						{
 							name = Cmd.GetFileName(auxDocData.InflightMoniker);
-							name = Resources.QueryGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, name);
+							name = Resources.QueryGlyphFormat.Fmt(SystemData.C_SessionTitleGlyph, name);
 						}
 						else
 						{
@@ -491,7 +491,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 						if (auxDocData.IsVirtualWindow)
 						{
 							name = Cmd.GetFileName(auxDocData.InflightMoniker);
-							name = Resources.QueryGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, name);
+							name = Resources.QueryGlyphFormat.Fmt(SystemData.C_SessionTitleGlyph, name);
 						}
 						else
 						{
@@ -531,7 +531,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -554,6 +554,20 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	}
 
 
+
+	public override bool TaskHandlerProgress(string text) => true;
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
+	/// </summary>
+	/// <param name="progress">The % completion of TaskHandlerTaskName.</param>
+	/// <param name="elapsed">The time taken to complete the stage.</param>
+	// ---------------------------------------------------------------------------------
+	public override bool TaskHandlerProgress(int progress, int elapsed) => true;
+
 	#endregion Methods
 
 
@@ -566,8 +580,8 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 
 	private int OnAfterAttributeChangeEx(uint docCookie, uint grfAttribs, IVsHierarchy pHierOld,
-		uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew,
-		string pszMkDocumentNew)
+	uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew,
+	string pszMkDocumentNew)
 	{
 		if (ApcManager.IdeShutdownState || !Controller.EventRdtEnter(true))
 			return VSConstants.S_OK;

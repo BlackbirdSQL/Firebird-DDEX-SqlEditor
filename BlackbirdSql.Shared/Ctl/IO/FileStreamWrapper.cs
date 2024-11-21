@@ -56,11 +56,11 @@ public class FileStreamWrapper : IBsFileStreamWrapper, IDisposable
 	{
 		if (m_bInitialized)
 		{
-			throw new Exception(Resources.ExFileStreamAlreadyInitialized);
+			throw new Exception(Resources.ExceptionFileStreamAlreadyInitialized);
 		}
 		if (iBufferSize <= 0)
 		{
-			throw new Exception(Resources.ExBufferSizeShouldBePositive);
+			throw new Exception(Resources.ExceptionBufferSizeShouldBePositive);
 		}
 		m_iBufferSize = iBufferSize;
 		m_fs = new FileStream(sFileName, bOpenExisting ? FileMode.Open : FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite, m_iBufferSize, useAsync: false);
@@ -93,7 +93,7 @@ public class FileStreamWrapper : IBsFileStreamWrapper, IDisposable
 	{
 		if (!m_bInitialized)
 		{
-			throw new Exception(Resources.ExFileStreamNeedsToBeInitializedFirst);
+			throw new Exception(Resources.ExceptionFileStreamNeedsToBeInitializedFirst);
 		}
 		MoveTo(i64Offset);
 		int num = 0;
@@ -123,7 +123,7 @@ public class FileStreamWrapper : IBsFileStreamWrapper, IDisposable
 	{
 		if (!m_bInitialized)
 		{
-			throw new Exception(Resources.ExFileStreamNeedsToBeInitializedFirst);
+			throw new Exception(Resources.ExceptionFileStreamNeedsToBeInitializedFirst);
 		}
 		int num = 0;
 		while (num < iBytes)

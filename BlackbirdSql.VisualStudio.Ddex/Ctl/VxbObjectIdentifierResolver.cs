@@ -62,8 +62,8 @@ public class VxbObjectIdentifierResolver : DataObjectIdentifierResolver
 
 		if (typeName == null)
 		{
-			ArgumentNullException ex = new("typeName");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(typeName));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -78,7 +78,7 @@ public class VxbObjectIdentifierResolver : DataObjectIdentifierResolver
 		if (length == -1)
 		{
 			NotSupportedException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		object[] identifier = new object[length];
@@ -118,8 +118,8 @@ public class VxbObjectIdentifierResolver : DataObjectIdentifierResolver
 
 		if (typeName == null)
 		{
-			ArgumentNullException ex = new("typeName");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(typeName));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -127,7 +127,7 @@ public class VxbObjectIdentifierResolver : DataObjectIdentifierResolver
 		if (length == -1)
 		{
 			NotSupportedException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		// Create an identifier array of the correct full length based on
@@ -144,7 +144,7 @@ public class VxbObjectIdentifierResolver : DataObjectIdentifierResolver
 			if (partialIdentifier.Length > length)
 			{
 				InvalidOperationException ex = new();
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 

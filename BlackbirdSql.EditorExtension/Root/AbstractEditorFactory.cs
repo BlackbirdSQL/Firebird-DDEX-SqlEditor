@@ -120,7 +120,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				if (!string.IsNullOrEmpty(physicalViewName) && physicalViewName != "CodeFrame")
 				{
 					ArgumentException ex = new("physicalView is not CodeFrame or empty: " + physicalViewName);
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					return VSConstants.E_INVALIDARG;
 				}
 
@@ -129,7 +129,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				if ((createFlags & flagSilentOrOpen) == 0)
 				{
 					ArgumentException ex = new("invalid create flags: " + createFlags);
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					return VSConstants.E_INVALIDARG;
 				}
 
@@ -140,7 +140,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 					if (Encoded)
 					{
 						DataException ex = new("Data is not encoding compatible");
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 					}
 
@@ -150,14 +150,14 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 					if (vsTextLines == null)
 					{
 						DataException ex = new("Data is not IVsTextLines compatible");
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 					}
 
 					if (objExistingDocData is not IVsUserData)
 					{
 						DataException ex = new("Data is not IVsUserData compatible");
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 					}
 
@@ -168,7 +168,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 						&& !(clsidExistingLangService == VS.CLSID_LanguageServiceDefault))
 					{
 						InvalidOperationException ex = new("Invalid language service: " + clsidExistingLangService);
-						Diag.Dug(ex);
+						Diag.Ex(ex);
 						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 					}
 
@@ -228,10 +228,10 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				if (ex is NullReferenceException || ex is ApplicationException || ex is ArgumentException || ex is InvalidOperationException)
 				{
-					MessageCtl.ShowEx(Resources.ExFailedToCreateEditor, ex);
+					MessageCtl.ShowX(Resources.ExFailedToCreateEditor, ex);
 					return VSConstants.E_FAIL;
 				}
 

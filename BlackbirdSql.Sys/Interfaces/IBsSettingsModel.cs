@@ -1,7 +1,4 @@
-﻿//
-// Plagiarized from Community.VisualStudio.Toolkit extension
-//
-
+﻿
 using System.Collections.Generic;
 using System.ComponentModel;
 using BlackbirdSql.Sys.Events;

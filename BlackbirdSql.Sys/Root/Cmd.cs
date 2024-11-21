@@ -74,8 +74,8 @@ public abstract class Cmd
 	{
 		if (string.IsNullOrEmpty(fullPathDirName))
 		{
-			ArgumentNullException ex = new("fullPathDirName");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(fullPathDirName));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -137,8 +137,8 @@ public abstract class Cmd
 		CheckForNullReference(variableName, "variableName");
 		if (variable.Length == 0)
 		{
-			ArgumentNullException ex = new("variableName");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(variableName));
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -146,12 +146,12 @@ public abstract class Cmd
 
 
 	// CheckForNull
-	public static void CheckForNull(object var, string varName)
+	public static void CheckForNull(object obj, string varName)
 	{
-		if (var == null)
+		if (obj == null)
 		{
 			ArgumentNullException ex = new(varName);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -163,15 +163,15 @@ public abstract class Cmd
 	{
 		if (variableName == null)
 		{
-			ArgumentNullException ex = new("variableName");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(variableName));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (variable == null)
 		{
 			ArgumentNullException ex = new(variableName);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -195,7 +195,7 @@ public abstract class Cmd
 		if (stringVar.Length == 0)
 		{
 			ArgumentException ex = new("EmptyStringNotAllowed", stringVarName);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -418,8 +418,8 @@ public abstract class Cmd
 
 		try
 		{
-			if (!Uri.TryCreate(file1, UriKind.Absolute, out var result)
-				|| !Uri.TryCreate(file2, UriKind.Absolute, out var result2))
+			if (!Uri.TryCreate(file1, UriKind.Absolute, out Uri result)
+				|| !Uri.TryCreate(file2, UriKind.Absolute, out Uri result2))
 			{
 				return false;
 			}
@@ -455,7 +455,7 @@ public abstract class Cmd
 		}
 		catch (UriFormatException ex5)
 		{
-			Evs.Warning(typeof(Cmd), "IsSamePath()", $"IsSamePath exception: {ex5.Message}");
+			Evs.Warning(typeof(Cmd), nameof(IsSamePath), $"IsSamePath exception: {ex5.Message}");
 		}
 
 		return false;

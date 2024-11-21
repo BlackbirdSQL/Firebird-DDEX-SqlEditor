@@ -12,7 +12,6 @@ using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.Shared.Model.Parsers;
 using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys.Ctl.Diagnostics;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.PlatformUI;
@@ -160,45 +159,6 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 	// =========================================================================================================
 
 
-	public async Task<bool> AsyncExecuteAsync(IBsTextSpan textSpan, EnSqlExecutionType executionType,
-		IDbConnection conn, IBsQESQLBatchConsumer batchConsumer, TransientSettings sqlLiveSettings,
-		CancellationToken cancelToken, CancellationToken syncToken)
-	{
-		if (_AsyncExecState != EnLauncherPayloadLaunchState.Inactive)
-		{
-			InvalidOperationException ex = new(Resources.ExExecutionNotCompleted);
-			Diag.ThrowException(ex);
-		}
-
-		_Conn = conn;
-		_BatchConsumer = batchConsumer;
-		_ExecTimeout = sqlLiveSettings.EditorExecutionTimeout;
-		_ExecLiveSettings = sqlLiveSettings.Clone() as TransientSettings;
-		_TextSpan = textSpan;
-		_ExecutionType = executionType;
-		_SpecialActions = EnSpecialActions.None;
-
-
-		_AsyncExecState = EnLauncherPayloadLaunchState.Pending;
-
-
-		// Fire and remember
-
-		// ------------------------------------------------------------------------- //
-		// ******** Execution Point (3) - AbstractQESQLExec.ExecuteAsync() ********* //
-		// ------------------------------------------------------------------------- //
-
-
-		_AsyncExecTask = Task.Run(() => ExecuteAsync(cancelToken, syncToken));
-
-
-		// Evs.Trace(GetType(), nameof(ExecuteAsync), "ExecuteAsync() Launched.");
-
-		return await Task.FromResult(true);
-	}
-
-
-
 	public async Task<EnScriptExecutionResult> BatchParseCallbackAsync(IBsNativeDbBatchParser batchParser,
 		CancellationToken cancelToken, CancellationToken syncToken)
 	{
@@ -251,7 +211,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 
 			_ExecResult = EnScriptExecutionResult.Failure;
 		}
@@ -266,6 +226,45 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		}
 
 		return result;
+	}
+
+
+
+	public async Task<bool> ExecuteAsyinAsync(IBsTextSpan textSpan, EnSqlExecutionType executionType,
+		IDbConnection conn, IBsQESQLBatchConsumer batchConsumer, TransientSettings sqlLiveSettings,
+		CancellationToken cancelToken, CancellationToken syncToken)
+	{
+		if (_AsyncExecState != EnLauncherPayloadLaunchState.Inactive)
+		{
+			InvalidOperationException ex = new(Resources.ExceptionExecutionNotCompleted);
+			Diag.ThrowException(ex);
+		}
+
+		_Conn = conn;
+		_BatchConsumer = batchConsumer;
+		_ExecTimeout = sqlLiveSettings.EditorExecutionTimeout;
+		_ExecLiveSettings = sqlLiveSettings.Clone() as TransientSettings;
+		_TextSpan = textSpan;
+		_ExecutionType = executionType;
+		_SpecialActions = EnSpecialActions.None;
+
+
+		_AsyncExecState = EnLauncherPayloadLaunchState.Pending;
+
+
+		// Fire and remember
+
+		// ------------------------------------------------------------------------- //
+		// ******** Execution Point (3) - AbstractQESQLExec.ExecuteAsync() ********* //
+		// ------------------------------------------------------------------------- //
+
+
+		_AsyncExecTask = Task.Run(() => ExecuteAsync(cancelToken, syncToken));
+
+
+		// Evs.Trace(GetType(), nameof(ExecuteAsync), "ExecuteAsync() Launched.");
+
+		return await Task.FromResult(true);
 	}
 
 
@@ -406,7 +405,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 			_ExecResult = EnScriptExecutionResult.Failure;
 			string info = ex.Message;
 
-			RaiseScriptProcessingError(Resources.ExScriptingParseFailure.FmtRes(info),
+			RaiseScriptProcessingError(Resources.ExceptionScriptingParseFailure.Fmt(info),
 				EnQESQLScriptProcessingMessageType.FatalError);
 		}
 
@@ -490,7 +489,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		catch (Exception ex)
 		{
 			result = false;
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 
@@ -505,7 +504,7 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 		catch (Exception ex)
 		{
 			result = false;
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		args.Result &= result;

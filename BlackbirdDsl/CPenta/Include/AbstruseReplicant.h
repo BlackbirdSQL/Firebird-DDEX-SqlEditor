@@ -993,7 +993,7 @@ public:
 		if (value == nullptr)
 		{
 			System::ArgumentNullException^ ex = gcnew System::ArgumentNullException("Destination array");
-			Diag::Dug(ex);
+			Diag::Ex(ex);
 			throw ex;
 		}
 
@@ -1001,14 +1001,14 @@ public:
 		{
 			System::ArgumentOutOfRangeException^ ex = gcnew System::ArgumentOutOfRangeException
 			(SysStr::Format("Destination array index {0} with length of {1}.", index, value->Length));
-			Diag::Dug(ex);
+			Diag::Ex(ex);
 			throw ex;
 		}
 
 		if (value->Length - index < Count)
 		{
 			System::ArgumentException^ ex = gcnew System::ArgumentException(SysStr::Format("Destination array size {0} too small for copy to index {1} from source with size {2}.", value->Length, index, Count));
-			Diag::Dug(ex);
+			Diag::Ex(ex);
 			throw ex;
 		}
 
@@ -1021,7 +1021,7 @@ public:
 		if (value == nullptr)
 		{
 			System::ArgumentNullException^ ex = gcnew System::ArgumentNullException("Destination array");
-			Diag::Dug(ex);
+			Diag::Ex(ex);
 			throw ex;
 		}
 
@@ -1029,14 +1029,14 @@ public:
 		{
 			System::ArgumentOutOfRangeException^ ex = gcnew System::ArgumentOutOfRangeException
 				(SysStr::Format("Destination array index {0} with length of {1}.", index, value->Length));
-			Diag::Dug(ex);
+			Diag::Ex(ex);
 			throw ex;
 		}
 
 		if (value->Length - index < Count)
 		{
 			System::ArgumentException^ ex = gcnew System::ArgumentException(SysStr::Format("Destination array size {0} too small for copy to index {1} from source with size {2}.", value->Length, index, Count));
-			Diag::Dug(ex);
+			Diag::Ex(ex);
 			throw ex;
 		}
 
@@ -1110,7 +1110,7 @@ public:
 				SysStr::Format("Attempted insert at index {0} into Nodes array with {1} items.",
 					index, _Items == nullptr ? 0 : Count));
 
-			Diag::Dug(ex);
+			Diag::Ex(ex);
 			throw ex;
 		}
 
@@ -1238,7 +1238,7 @@ public:
 				SysStr::Format("Attempted replace at index {0} into Nodes array with {1} items.",
 					index, _Items == nullptr ? 0 : Count));
 
-			Diag::Dug(ex);
+			Diag::Ex(ex);
 			throw ex;
 		}
 

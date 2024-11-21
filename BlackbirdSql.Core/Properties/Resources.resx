@@ -246,11 +246,23 @@
   <data name="ExceptionAttemptToAddNullConnection" xml:space="preserve">
     <value>Attempt to add a null connection</value>
   </data>
+  <data name="ExceptionBeginTransactionAlreadyExists" xml:space="preserve">
+    <value>BeginTransaction failed. Transaction already exists.</value>
+  </data>
+  <data name="ExceptionBeginTransactionConnectionUnavailable" xml:space="preserve">
+    <value>BeginTransaction failed. Connection is null or not open.</value>
+  </data>
+  <data name="ExceptionCannotStoreNullInSettingsStore" xml:space="preserve">
+    <value>Cannot store null in settings store. SettingsModel&lt;{0}&gt;. CollectionName:{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}</value>
+  </data>
   <data name="ExceptionConnectionClosed" xml:space="preserve">
     <value>Connection closed</value>
   </data>
   <data name="ExceptionConnectionDisposed" xml:space="preserve">
     <value>Connection disposed</value>
+  </data>
+  <data name="ExceptionConnectionKeyNull" xml:space="preserve">
+    <value>ConnectionKey for explorer connection {0} for node {1} is null</value>
   </data>
   <data name="ExceptionConnectionNull" xml:space="preserve">
     <value>Connection is null</value>
@@ -258,14 +270,65 @@
   <data name="ExceptionCreateBatchExecutionObject" xml:space="preserve">
     <value>Unable to create batch execution object: {0}.</value>
   </data>
-  <data name="ExceptionDuplicateSingletonInstances" xml:space="preserve">
-    <value>Singleton instance already exists. Attempt to create duplicate {0} instances.</value>
+  <data name="ExceptionCreateRdtManagerOnUiThread" xml:space="preserve">
+    <value>Must create Rdt Manager on the UI Thread</value>
+  </data>
+  <data name="ExceptionDataTypeStorageTypeNotSupported" xml:space="preserve">
+    <value>DataType {0} is not capable of supporting native storage type {1}</value>
+  </data>
+  <data name="ExceptionDocDataKeepAlive" xml:space="preserve">
+    <value>Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data.</value>
+  </data>
+  <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
+    <value>Events already enabled.</value>
+  </data>
+  <data name="ExceptionFailedToSaveFile" xml:space="preserve">
+    <value>Failed to save file: {0}</value>
+  </data>
+  <data name="ExceptionGetMethodForPropertyFailed" xml:space="preserve">
+    <value>Could not get method '{0}' for property {1}</value>
+  </data>
+  <data name="ExceptionGlobalNewQueryCommandNotFound" xml:space="preserve">
+    <value>GetCommand() GlobalNewQuery returned null</value>
+  </data>
+  <data name="ExceptionMethodPropertyReturnedNull" xml:space="preserve">
+    <value>The {0} method of SettingsModel {1} for property {2} returned a null value.</value>
   </data>
   <data name="ExceptionNetUriNotJustSerialization" xml:space="preserve">
     <value>UriComponents.SerializationInfoString must not be combined with other UriComponents.</value>
   </data>
+  <data name="ExceptionNewQueryGlobalCommandNotFound" xml:space="preserve">
+    <value>GetCommand() NewQueryGlobal returned null</value>
+  </data>
+  <data name="ExceptionNextTreeChildItemNull" xml:space="preserve">
+    <value>Get next tree child item returned null.</value>
+  </data>
+  <data name="ExceptionNextTreeItemFromCaretNull" xml:space="preserve">
+    <value>Get next tree item from caret returned null.</value>
+  </data>
+  <data name="ExceptionNextTreeItemFromRootNull" xml:space="preserve">
+    <value>Get next tree item from root returned null.</value>
+  </data>
   <data name="ExceptionParameterDescriberNotFound" xml:space="preserve">
     <value>Could not locate Describer for connection parameter '{0}'.</value>
+  </data>
+  <data name="ExceptionRetrievingNodeProperty" xml:space="preserve">
+    <value>Error retrieving node {0} property: {1}</value>
+  </data>
+  <data name="ExceptionSettingsModelLoadDefaultFailed" xml:space="preserve">
+    <value>Default Load failed for Settings Model {0}. CollectionName:{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}</value>
+  </data>
+  <data name="ExceptionSettingsModelLoadFailed" xml:space="preserve">
+    <value>Load failed for Settings Model {0}. PropertyName:{1} dataType:{2} PropertyType:{3} Value:{4}</value>
+  </data>
+  <data name="ExceptionSettingsModelSaveFailed" xml:space="preserve">
+    <value>Save failed for Settings Model {0}. CollectionName:{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}</value>
+  </data>
+  <data name="ExceptionSHBrowseForFolderNotFound" xml:space="preserve">
+    <value>Could not find window 'SHBrowseForFolder ShellNameSpace Control'.</value>
+  </data>
+  <data name="ExceptionSysTreeView32NotFound" xml:space="preserve">
+    <value>Could not find window 'SysTreeView32'.</value>
   </data>
   <data name="ExceptionTriggerErrorAtColumnIndex" xml:space="preserve">
     <value>Trigger Error at Column index: {0}.</value>
@@ -273,14 +336,14 @@
   <data name="ExceptionTriggerGeneratorErrorAtColumnIndex" xml:space="preserve">
     <value>Error at Trigger column index: {0}, Generator column index: {1}.</value>
   </data>
-  <data name="Exception_FailedToSaveFile" xml:space="preserve">
-    <value>Failed to save file: {0}</value>
-  </data>
-  <data name="ExEventsAlreadyEnabled" xml:space="preserve">
-    <value>Events already enabled.</value>
-  </data>
   <data name="IgnoreOnException" xml:space="preserve">
     <value>Retry number {0}. Ignoring Exception: {1}</value>
+  </data>
+  <data name="LabelDatabasePath" xml:space="preserve">
+    <value>Database path: {0}.</value>
+  </data>
+  <data name="LabelFrameFileAndMoniker" xml:space="preserve">
+    <value>Frame file: {0}, Moniker: {1}.</value>
   </data>
   <data name="LoadTimeStatistics" xml:space="preserve">
     <value>Extension load statistics:
@@ -313,10 +376,16 @@
   <data name="Remove_Failed_Property_NotFound" xml:space="preserve">
     <value>Remove failed. Property {0} does not exist.</value>
   </data>
+  <data name="ResourceNotFound" xml:space="preserve">
+    <value>Resource not found: {0}</value>
+  </data>
   <data name="RetryOnException" xml:space="preserve">
     <value>Retry number {0}. Delaying {1} ms before next retry. Exception: {2}</value>
   </data>
   <data name="TextBoxRequiredFieldToolTip" xml:space="preserve">
     <value>This field cannot be empty</value>
+  </data>
+  <data name="WarningWindowFrameForDocumentNotFound" xml:space="preserve">
+    <value>FAILED to find window frame for mkDocument: {0}</value>
   </data>
 </root>

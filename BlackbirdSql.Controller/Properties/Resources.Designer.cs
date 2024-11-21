@@ -61,11 +61,38 @@ namespace BlackbirdSql.Controller.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding event handlers for {0} EF projects.
+        /// </summary>
+        public static string EvsAddingEventHandlers {
+            get {
+                return ResourceManager.GetString("EvsAddingEventHandlers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} app.config is open. Cannot update..
+        /// </summary>
+        public static string ExceptionAppConfigOpen {
+            get {
+                return ResourceManager.GetString("ExceptionAppConfigOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DTE is null.
         /// </summary>
         public static string ExceptionDteIsNull {
             get {
                 return ResourceManager.GetString("ExceptionDteIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempt to exit Validation event when not in a Validation event. _EventValidationCardinal: {1}.
+        /// </summary>
+        public static string ExceptionEventValidationExitError {
+            get {
+                return ResourceManager.GetString("ExceptionEventValidationExitError", resourceCulture);
             }
         }
         
@@ -88,11 +115,38 @@ namespace BlackbirdSql.Controller.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}:{1} has no link property.
+        /// </summary>
+        public static string ExceptionProjectItemNoLinkProperty {
+            get {
+                return ResourceManager.GetString("ExceptionProjectItemNoLinkProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SVsSolution is null.
         /// </summary>
         public static string ExceptionSVsSolutionIsNull {
             get {
                 return ResourceManager.GetString("ExceptionSVsSolutionIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}:{1}.
+        /// </summary>
+        public static string LabelColonSeparated {
+            get {
+                return ResourceManager.GetString("LabelColonSeparated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project: {0}..
+        /// </summary>
+        public static string LabelProjectName {
+            get {
+                return ResourceManager.GetString("LabelProjectName", resourceCulture);
             }
         }
     }

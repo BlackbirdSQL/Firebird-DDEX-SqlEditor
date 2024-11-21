@@ -21,7 +21,7 @@ public class GridColumnInfoCollection : CollectionBase
 		set
 		{
 			InvalidOperationException ex = new(ControlsResources.ExGridColumnInfoCollectionIsReadOnly);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

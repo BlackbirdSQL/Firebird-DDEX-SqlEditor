@@ -131,7 +131,7 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 
 	internal void ResetTextMarker()
 	{
-		___(_TextView.GetCaretPos(out var piLine, out var piColumn));
+		___(_TextView.GetCaretPos(out int piLine, out int piColumn));
 
 		TokenInfo tokenInfo = _Source.GetTokenInfo(piLine, piColumn);
 
@@ -148,8 +148,8 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 		}
 
 		IVsTextLines textLines = _Source.GetTextLines();
-		textLines.GetLineCount(out var _);
-		textLines.GetLengthOfLine(piLine, out var piLength);
+		textLines.GetLineCount(out _);
+		textLines.GetLengthOfLine(piLine, out int piLength);
 		_TextmarkerSpan.iEndLine = piLine;
 		_TextmarkerSpan.iEndIndex = Math.Min(piColumn + 1, piLength - 1);
 	}
@@ -198,7 +198,7 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 			return "";
 		}
 
-		___(_TextView.GetCaretPos(out var piLine, out var piColumn));
+		___(_TextView.GetCaretPos(out int piLine, out int piColumn));
 
 		TokenInfo tokenInfo = _Source.GetTokenInfo(piLine, piColumn);
 		bool flag = tokenInfo.Type.Equals(TokenType.Delimiter) || tokenInfo.Type.Equals(TokenType.Unknown);
@@ -243,11 +243,11 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 			result = false;
 		}
 		IVsTextLines textLines = _Source.GetTextLines();
-		textLines.GetLineCount(out var piLineCount);
+		textLines.GetLineCount(out int piLineCount);
 		if (_TextmarkerSpan.iStartLine >= 0 && _TextmarkerSpan.iEndLine < piLineCount)
 		{
-			textLines.GetLengthOfLine(_TextmarkerSpan.iStartLine, out var piLength);
-			textLines.GetLengthOfLine(_TextmarkerSpan.iEndLine, out var piLength2);
+			textLines.GetLengthOfLine(_TextmarkerSpan.iStartLine, out int piLength);
+			textLines.GetLengthOfLine(_TextmarkerSpan.iEndLine, out int piLength2);
 			if (_TextmarkerSpan.iStartIndex < 0 || _TextmarkerSpan.iStartIndex > piLength)
 			{
 				result = false;
@@ -335,14 +335,14 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 	public int GetBuilderDescriptionText(int iIndex, out string pbstrDescription)
 	{
 		pbstrDescription = "";
+
 		if (iIndex == 0)
 		{
 			string firstBindingForCommand = GetFirstBindingForCommand("Edit.ToggleCompletionMode");
 			if (!string.IsNullOrEmpty(firstBindingForCommand))
-			{
-				pbstrDescription = string.Format(CultureInfo.CurrentCulture, Resources.PreviewModeCompletionDescription, firstBindingForCommand);
-			}
+				pbstrDescription = Resources.PreviewModeCompletionDescription.Fmt(firstBindingForCommand);
 		}
+
 		return 0;
 	}
 

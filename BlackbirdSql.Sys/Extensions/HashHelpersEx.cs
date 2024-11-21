@@ -6,6 +6,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Threading;
+using BlackbirdSql.Sys.Properties;
 
 
 
@@ -82,8 +83,8 @@ internal static class HashHelpersEx
 	{
 		if (min < 0)
 		{
-			ArgumentException ex = new("Arg_HTCapacityOverflow");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionHashTagCapacityOverflow);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		for (int i = 0; i < primes.Length; i++)

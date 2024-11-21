@@ -3,6 +3,25 @@
 ## Change log
 
 
+### v14.5.4.0 Added option to output expected exceptions and minor bug fixes.
+
+#### New / Enhancements
+- Added __User Option__ `BlackbirdSQL Server Tools > Ddex Provider > Debug > Expected exceptions`. Enabling this option causes expected exceptions to be output to the __BlackbirdSql__ section of the VS output window for Release builds.
+- In the connection dialog, set the `Csb BrowsableAttribute` to false for the `ConnectionString` property and all properties that appear in the Main form. This is to unclutter the `Advanced` popup dialog and also to prevent direct modification of `ConnectionString`.
+- Removed the `Add new connections to Server Explorer` checkbox from the connection dialog when it is shown from within a query session. New Server Explorer connections can now only be created from within the SE or if required by EDM wizards.
+- Code cleanup: Renamed all `C++` classes using the `Borland` type naming convention of prefixing classes with a `T`. The `T` has been stripped from `C++` class names to avoid ambiguity between type names and the `C#` `T` prefix convention for type parameter names. This applies to the `BlackbirdDsl` `C++` class library.
+- Code cleanup: Implemented strongly typed declarations in all instances where `var` has been used in legacy code. The use of `var` was especially prevalant in the __Microsoft SqlServer SqlEditor__ declarations of arguments with the `out` parameter modifier.
+- Code cleanup: Ongoing localization of string values continued.
+#### Fixes
+- Fixed anomaly where defining a property's `ReadOnlyAttribute` as false causes the property to attach to the Class `ReadonlyAttribute`. This caused a programmatic  change to property's `ReadOnlyAttribute` to modify the Class level `ReadOnlyAttribute`, and by default to modify all properties without a `ReadOnlyAttribute`.
+- Fixed issue in Connection Dialog where a dummy blank database was not inserted if no Server Explorer or FlameRobin database existed for the selected DataSource/Server.
+
+
+#### Tips
+- To prevent case name mangling of the ServerName/DataSource, the __Running Connection Table Manager__ (`Rct`) uses the ServerName/DataSource of the first connection registered in the `Rct` for each unique server. Connections are registered in the order `ServerExplorer > Utility (FlameRobin) > Application EntityDataModel/Project`. Whenever a new connection is added and it's DataSource has not been used in a previously registered connection, that DataSource/ServerName becomes the unmangled name that will be used for any future connections using that server. For that reason it is important you case your DataSource/ServerNames correctly for the first connection you add for a database server. You can then use the DataSource dropdown to select the DataSource when adding additional connections for the database server.
+
+
+
 ### v14.5.3.1002 Fixed Connection Dialog database dropdown .
 
 #### New / Enhancements
@@ -33,7 +52,7 @@
 ### v14.5.3.1 Added User Option to output Expected Exceptions.
 
 #### New / Enhancements
-- Added __User Option__ `BlackbirdSQL Server Tools > Ddex Provider > Debug > Expected exceptions`. Enabling this option causes expected exceptions to be output to the __BlackbirdSql__ section of the VS output window for Release builds. 
+- Added __User Option__ `BlackbirdSQL Server Tools > Ddex Provider > Debug > Expected exceptions`. Enabling this option causes expected exceptions to be output to the __BlackbirdSql__ section of the VS output window for Release builds.
 #### Fixes
 - Fixed possible bug where an attempt is made to open an open connection for a second time in the connection dialog.
 

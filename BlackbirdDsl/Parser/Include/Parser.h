@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "DslOptions.h"
+#include "EnParserOptions.h"
 #include "AbstractParser.h"
 
 // $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
@@ -31,7 +31,7 @@ public:
 	{
 	};
 
-	Parser(DslOptions options) : AbstractParser(options)
+	Parser(EnParserOptions options) : AbstractParser(options)
 	{
 	};
 

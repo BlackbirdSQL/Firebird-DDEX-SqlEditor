@@ -347,8 +347,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		catch (Exception ex)
 
 		{
-			Diag.Dug(ex);
-			return "Resource not found: " + resource;
+			Diag.Ex(ex);
+			return Resources.ResourceNotFound.Fmt(resource);
 		}
 	}
 
@@ -435,7 +435,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		Hostess host = new(Site.ServiceProvider);
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
 
-		if (host.ActivateDocumentIfOpen("DataExplorer://{0}/{1}/{2}".FmtRes(node.ExplorerConnection.DisplayName, node.Object.Type.Name, node.Object.Identifier.ToString())))
+		if (host.ActivateDocumentIfOpen("DataExplorer://{0}/{1}/{2}".Fmti(node.ExplorerConnection.DisplayName, node.Object.Type.Name, node.Object.Identifier.ToString())))
 		{
 			return;
 		}
@@ -448,8 +448,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		if (globalCommand == null)
 		{
-			ArgumentException ex = new("GetCommand() GlobalNewQuery returned null");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionGlobalNewQueryCommandNotFound);
+			Diag.Ex(ex);
 			return;
 		}
 
@@ -474,7 +474,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 
@@ -506,8 +506,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		if (command == null)
 		{
-			ArgumentException ex = new("GetCommand() NewQueryGlobal returned null");
-			Diag.Dug(ex);
+			ArgumentException ex = new(Resources.ExceptionNewQueryGlobalCommandNotFound);
+			Diag.Ex(ex);
 			return;
 		}
 
@@ -520,7 +520,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		catch (Exception ex)
 		{
 			CommandProperties.CommandNodeSystemType = EnNodeSystemType.Undefined;
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 	}
 

@@ -115,9 +115,9 @@ public static class NativeDbExtensionMembers
 		return NativeDb.DatabaseEngineSvc.DisposeLinkageParserInstance_(@this, disposing);
 	}
 
-	public static void AsyncEnsureLinkageLoading(this IVsDataExplorerConnection @this, int delay = 0, int multiplier = 1)
+	public static void EnsureLinkageLoadingAsyin(this IVsDataExplorerConnection @this, int delay = 0, int multiplier = 1)
 	{
-		NativeDb.DatabaseEngineSvc.AsyncEnsureLinkageLoading_(@this, delay, multiplier);
+		NativeDb.DatabaseEngineSvc.EnsureLinkageLoadingAsyin_(@this, delay, multiplier);
 	}
 
 

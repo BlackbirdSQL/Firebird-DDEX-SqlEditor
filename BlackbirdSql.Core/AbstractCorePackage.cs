@@ -46,12 +46,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 	// ---------------------------------------------------------------------------------
 	protected AbstractCorePackage() : base()
 	{
-		if (_Instance != null)
-		{
-			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes("Ddex extension package instances"));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfInstanceExists(_Instance);
 
 		_Instance = this;
 
@@ -419,7 +414,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 
 			if (checkIfInstalled)
 			{
-				vsShell.IsPackageInstalled(ref guidPackage, out var pfInstalled);
+				vsShell.IsPackageInstalled(ref guidPackage, out int pfInstalled);
 				isInstalled = Convert.ToBoolean(pfInstalled);
 			}
 
@@ -471,17 +466,17 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 
 			if (enableLoadStatistics)
 			{
-				long asyncInitTime = _LoadStatisticsMainThreadStartTime;
-				long mainThreadSwitchTime = _LoadStatisticsMainThreadEndTime - _LoadStatisticsMainThreadStartTime;
-				long mainThreadInitTime = _LoadStatisticsEndTime - _LoadStatisticsMainThreadEndTime;
-				long totalTime = asyncInitTime + mainThreadInitTime;
+				TimeSpan asyncInitTime = new(_LoadStatisticsMainThreadStartTime);
+				TimeSpan mainThreadSwitchTime = new(_LoadStatisticsMainThreadEndTime - _LoadStatisticsMainThreadStartTime);
+				TimeSpan mainThreadInitTime = new(_LoadStatisticsEndTime - _LoadStatisticsMainThreadEndTime);
+				TimeSpan totalTime = asyncInitTime + mainThreadInitTime;
 
 				_LoadStatisticsMainThreadStartTime = 0L;
 				_LoadStatisticsMainThreadEndTime = 0L;
 				_LoadStatisticsEndTime = 0L;
 
-				string outputMsg = Resources.LoadTimeStatistics.FmtRes(asyncInitTime.FmtStats(true), mainThreadInitTime.FmtStats(true),
-					mainThreadSwitchTime.FmtStats(true), totalTime.FmtStats(true));
+				string outputMsg = Resources.LoadTimeStatistics.Fmt(asyncInitTime.Fmt(true), mainThreadInitTime.Fmt(true),
+					mainThreadSwitchTime.Fmt(true), totalTime.Fmt(true));
 
 				if (_LoadStatisticsOutputFailed)
 					Diag.OutputPaneWriteLineAsync(outputMsg, true).Forget();
@@ -500,7 +495,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 			return;
 		}
 
-		Diag.AsyuiOutputPaneWriteLine(_LoadStatisticsMsg, true);
+		Diag.OutputPaneWriteLineAsyui(_LoadStatisticsMsg, true);
 
 		_LoadStatisticsMsg = null;
 	}

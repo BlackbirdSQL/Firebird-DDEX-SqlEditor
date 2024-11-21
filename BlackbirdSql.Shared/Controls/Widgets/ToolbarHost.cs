@@ -65,7 +65,7 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -170,7 +170,7 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"TOOL Handle: {Handle}   CommandTarget: {_CommandTarget}   ToolbarHost: {_VsToolbarHost}   ClsidCmdSet: {_ClsidCmdSet}   MenuId: {_ToolbarMenuId}");
+			Diag.Ex(ex, $"TOOL Handle: {Handle}   CommandTarget: {_CommandTarget}   ToolbarHost: {_VsToolbarHost}   ClsidCmdSet: {_ClsidCmdSet}   MenuId: {_ToolbarMenuId}");
 
 			throw ex;
 		}

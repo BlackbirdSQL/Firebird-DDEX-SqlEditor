@@ -62,8 +62,8 @@ public class SortingArray : IBsSortingArray
 			return InsertWith(iGroup, val);
 		}
 
-		Exception ex = new(Resources.ExIncorrectGroupNumber);
-		Diag.Dug(ex);
+		Exception ex = new(Resources.ExceptionIncorrectGroupNumber);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -76,8 +76,8 @@ public class SortingArray : IBsSortingArray
 			return m_iRows;
 		}
 
-		Exception ex = new(Resources.ExIncorrectGroupNumber);
-		Diag.Dug(ex);
+		Exception ex = new(Resources.ExceptionIncorrectGroupNumber);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -85,8 +85,8 @@ public class SortingArray : IBsSortingArray
 	{
 		if (iRow >= m_iRows)
 		{
-			Exception ex = new(Resources.ExIncorrectRowNumber);
-			Diag.Dug(ex);
+			Exception ex = new(Resources.ExceptionIncorrectRowNumber);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

@@ -106,6 +106,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.Shared", "Blac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.Sys", "BlackbirdSql.Sys\BlackbirdSql.Sys.csproj", "{CC782342-698C-465F-8707-7DCDBC5255E3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{813B8658-2B6F-4522-9EE7-5B09EB2FDC0B}"
+	ProjectSection(SolutionItems) = preProject
+		Lib\EntityFramework.dll = Lib\EntityFramework.dll
+		Lib\EntityFramework.Firebird.dll = Lib\EntityFramework.Firebird.dll
+		Lib\EntityFramework.Firebird.pdb = Lib\EntityFramework.Firebird.pdb
+		Lib\EntityFramework.SqlServer.dll = Lib\EntityFramework.SqlServer.dll
+		Lib\FirebirdSql.Data.FirebirdClient.dll = Lib\FirebirdSql.Data.FirebirdClient.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

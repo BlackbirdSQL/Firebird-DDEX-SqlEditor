@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "IParser.h"
 #include "GramConsts.h"
-#include "DslOptions.h"
+#include "EnParserOptions.h"
 
 
 using namespace C5;
@@ -22,7 +22,7 @@ public ref class AbstractParser abstract : public IParser
 
 protected:
 
-	DslOptions _Options;
+	EnParserOptions _Options;
 
 	SysStr^ _Sql;
 	SysStr^ _Key = nullptr;
@@ -32,23 +32,23 @@ public:
 
 	property bool ConsistentSubtrees
 	{
-		bool get() { return ((_Options & DslOptions::CONSISTENT_SUBTREES) != DslOptions::NONE); }
+		bool get() { return ((_Options & EnParserOptions::CONSISTENT_SUBTREES) != EnParserOptions::NONE); }
 	};
 
 	property bool AnsiQuotes
 	{
-		bool get() { return ((_Options & DslOptions::ANSI_QUOTES) != DslOptions::NONE); }
+		bool get() { return ((_Options & EnParserOptions::ANSI_QUOTES) != EnParserOptions::NONE); }
 	};
 
 	property bool OffsetCapture
 	{
-		bool get() { return ((_Options & DslOptions::OFFSET_CAPTURE) != DslOptions::NONE); }
+		bool get() { return ((_Options & EnParserOptions::OFFSET_CAPTURE) != EnParserOptions::NONE); }
 	};
 
 
 	property bool TokenizeOnly
 	{
-		bool get() { return ((_Options & DslOptions::TOKENIZE_ONLY) != DslOptions::NONE); }
+		bool get() { return ((_Options & EnParserOptions::TOKENIZE_ONLY) != EnParserOptions::NONE); }
 	};
 
 
@@ -62,9 +62,9 @@ public:
 		void set(SysStr^ value) { _Sql = value; }
 	};
 
-	property DslOptions Options
+	property EnParserOptions Options
 	{
-		DslOptions get() { return _Options; }
+		EnParserOptions get() { return _Options; }
 	};
 
 	static StringCell^ ExtractQuotesPairs(SysStr^ sql);
@@ -73,10 +73,10 @@ public:
 
 	AbstractParser()
 	{
-		_Options = DslOptions::NONE;
+		_Options = EnParserOptions::NONE;
 	};
 
-	AbstractParser(DslOptions options)
+	AbstractParser(EnParserOptions options)
 	{
 		_Options = options;
 	};

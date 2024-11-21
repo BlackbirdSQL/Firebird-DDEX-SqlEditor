@@ -105,7 +105,7 @@ public abstract class AbstractFileNameEditor : UITypeEditor
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

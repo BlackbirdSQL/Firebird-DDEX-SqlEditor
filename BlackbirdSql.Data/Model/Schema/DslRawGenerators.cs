@@ -39,7 +39,7 @@ internal class DslRawGenerators : AbstractDslSchema
 	{
 		// Evs.Trace(GetType(), "DslRawGenerators.GetCommandText");
 
-		var sql = new StringBuilder();
+		StringBuilder sql = new();
 
 		sql.Append(
 @"EXECUTE BLOCK

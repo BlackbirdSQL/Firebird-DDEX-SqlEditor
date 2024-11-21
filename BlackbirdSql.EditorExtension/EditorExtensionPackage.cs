@@ -771,7 +771,7 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw;
 			}
 

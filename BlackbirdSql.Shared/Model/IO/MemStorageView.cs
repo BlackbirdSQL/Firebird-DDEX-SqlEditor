@@ -44,8 +44,8 @@ public class MemStorageView : AbstractStorageView
 	{
 		if (i64Row > int.MaxValue)
 		{
-			Exception ex = new(string.Format(CultureInfo.CurrentCulture, ControlsResources.ExMemoryBasedStorageIsLimitedToNRows, int.MaxValue));
-			Diag.Dug(ex);
+			Exception ex = new(ControlsResources.ExMemoryBasedStorageIsLimitedToNRows.Fmt(int.MaxValue));
+			Diag.Ex(ex);
 			throw ex;
 		}
 		int iRow = Convert.ToInt32(i64Row);

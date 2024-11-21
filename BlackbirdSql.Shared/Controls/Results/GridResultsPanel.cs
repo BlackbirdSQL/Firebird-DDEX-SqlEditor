@@ -105,7 +105,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		if (m.Msg == Native.WM_CONTEXTMENU)
 		{
-			if (FocusedGrid != null && GetCoordinatesForPopupMenuFromWM_Context(ref m, out var x, out var y, (Control)(object)FocusedGrid))
+			if (FocusedGrid != null && GetCoordinatesForPopupMenuFromWM_Context(ref m, out int x, out int y, (Control)(object)FocusedGrid))
 			{
 				UnsafeCmd.ShowContextMenuEvent(CommandProperties.ClsidCommandSet, (int)EnCommandSet.ContextIdResultsWindow, x, y, this);
 			}
@@ -723,8 +723,8 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			}
 			catch (Exception e)
 			{
-				Diag.Dug(e);
-				MessageCtl.ShowEx(ControlsResources.ExSavingResults, e);
+				Diag.Ex(e);
+				MessageCtl.ShowX(ControlsResources.ExSavingResults, e);
 			}
 			finally
 			{

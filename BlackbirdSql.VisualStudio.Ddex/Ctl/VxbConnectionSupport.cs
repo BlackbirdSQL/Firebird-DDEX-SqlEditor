@@ -83,7 +83,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw;
 			}
 
@@ -117,7 +117,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 			catch (Exception ex)
 			{
 				ArgumentException exa = new(ex.Message, "value", ex);
-				Diag.Dug(exa);
+				Diag.Ex(exa);
 				throw exa;
 			}
 		}

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using BlackbirdSql.Sys.Properties;
 using EnvDTE;
 using Microsoft;
 using Microsoft.VisualStudio;
@@ -138,14 +139,14 @@ public abstract class UnsafeCmd
 				}
 				catch (Exception e)
 				{
-					Diag.Dug(e);
+					Diag.Ex(e);
 					return null;
 				}
 			}
 			catch (Exception e2)
 			{
-				Diag.Dug(e2);
-				MessageCtl.ShowEx("", e2);
+				Diag.Ex(e2);
+				MessageCtl.ShowX("", e2);
 				return null;
 			}
 			finally
@@ -290,7 +291,9 @@ public abstract class UnsafeCmd
 			}
 			catch (Exception ex)
 			{
-				Diag.Debug(ex, $"Type: {link.Value.GetType().FullName}, Value: {link.Value}.");
+				object linkValue = link?.Value ?? Resources.StringNullValue;
+				string linkType = link?.Value?.GetType()?.FullName ?? Resources.StringNullValue;
+				Diag.Debug(ex, Resources.LabelProjectItemIsLink.Fmt(linkType, linkValue));
 			}
 
 

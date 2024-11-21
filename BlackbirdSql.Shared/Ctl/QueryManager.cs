@@ -86,7 +86,7 @@ public sealed class QueryManager : IBsQueryManager
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 			}
 
 			UnRegisterEventHandlers();
@@ -375,7 +375,7 @@ public sealed class QueryManager : IBsQueryManager
 	/// <summary>
 	/// <see cref="ErrorHandler.Succeeded"/> token.
 	/// </summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Future usage")]
 	private bool __(int hr) => ErrorHandler.Succeeded(hr);
 
 
@@ -385,7 +385,7 @@ public sealed class QueryManager : IBsQueryManager
 	/// [Launch async]: Executes a query.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool AsyncExecute(IBsTextSpan textSpan, EnSqlExecutionType executionType)
+	public bool ExecuteAsyin(IBsTextSpan textSpan, EnSqlExecutionType executionType)
 	{
 		// Evs.Trace(GetType(), nameof(AsyncExecute), " Enter. : ExecutionOptions.EstimatedPlanOnly: " + LiveSettings.EstimatedPlanOnly);
 
@@ -393,8 +393,8 @@ public sealed class QueryManager : IBsQueryManager
 
 		if (!EventExecutingEnter())
 		{
-			InvalidOperationException ex = new(Resources.ExExecutionNotCompleted);
-			Diag.Dug(ex);
+			InvalidOperationException ex = new(Resources.ExceptionExecutionNotCompleted);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -403,7 +403,7 @@ public sealed class QueryManager : IBsQueryManager
 			SetStateValue(EnQueryState.Faulted, true);
 			SetStateValue(EnQueryState.Prompting, true);
 			ArgumentException ex = new("Query is empty");
-			MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowX(ex, Resources.ExceptionDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			SetStateValue(EnQueryState.Prompting, false);
 
 			EventExecutingExit();
@@ -491,7 +491,7 @@ public sealed class QueryManager : IBsQueryManager
 							ex.SetDatabase(str);
 					}
 
-					MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+					MessageCtl.ShowX(ex, Resources.ExceptionDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				}
 				finally
 				{
@@ -564,7 +564,7 @@ public sealed class QueryManager : IBsQueryManager
 
 		try
 		{
-			result = await _SqlExec.AsyncExecuteAsync(textSpan, executionType, connection, ResultsConsumer, liveSettings, cancelToken, syncToken);
+			result = await _SqlExec.ExecuteAsyinAsync(textSpan, executionType, connection, ResultsConsumer, liveSettings, cancelToken, syncToken);
 		}
 		finally
 		{
@@ -786,7 +786,7 @@ public sealed class QueryManager : IBsQueryManager
 					if (!string.IsNullOrWhiteSpace(server))
 						ex.SetServer(server);
 
-					MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+					MessageCtl.ShowX(ex, Resources.ExceptionDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 					SetStateValue(EnQueryState.Prompting, false);
 				}
 				finally
@@ -838,7 +838,7 @@ public sealed class QueryManager : IBsQueryManager
 					ex.SetDatabase(str);
 			}
 
-			MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowX(ex, Resources.ExceptionDatabaseNotAccessible, null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			SetStateValue(EnQueryState.Prompting, false);
 		}
 		finally
@@ -861,12 +861,12 @@ public sealed class QueryManager : IBsQueryManager
 		if (!IsConnected && state == EnNotifyConnectionState.ConfirmedOpen)
 		{
 			SetStateValue(EnQueryState.Connected, true);
-			RdtManager.AsyeuInvalidateToolbar(DocCookie);
+			RdtManager.InvalidateToolbarAsyeu(DocCookie);
 		}
 		else if (IsConnected && state == EnNotifyConnectionState.ConfirmedClosed)
 		{
 			SetStateValue(EnQueryState.Connected, false);
-			RdtManager.AsyeuInvalidateToolbar(DocCookie);
+			RdtManager.InvalidateToolbarAsyeu(DocCookie);
 		}
 
 
@@ -1079,7 +1079,7 @@ public sealed class QueryManager : IBsQueryManager
 			SetStateValue(EnQueryState.Connecting, true);
 			SetStateValue(EnQueryState.Prompting, true);
 
-			MessageCtl.ShowEx(ex, Resources.ExDatabaseNotAccessibleEx.FmtRes(selectedQualifiedName), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowX(ex, Resources.ExceptionDatabaseNotAccessibleEx.Fmt(selectedQualifiedName), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 
 			SetStateValue(EnQueryState.Prompting, false);
 			SetStateValue(EnQueryState.Connecting, false);
@@ -1087,7 +1087,7 @@ public sealed class QueryManager : IBsQueryManager
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		finally
 		{
@@ -1192,7 +1192,7 @@ public sealed class QueryManager : IBsQueryManager
 		}
 
 		SetStateValue(EnQueryState.Executing, true);
-		RdtManager.AsyeuInvalidateToolbar(DocCookie);
+		RdtManager.InvalidateToolbarAsyeu(DocCookie);
 
 		return true;
 	}
@@ -1212,7 +1212,7 @@ public sealed class QueryManager : IBsQueryManager
 			if (_EventExecutingCardinal <= 0)
 			{
 				ApplicationException ex = new($"Attempt to exit event when not in an event. _EventCardinal: {_EventExecutingCardinal}");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -1256,7 +1256,7 @@ public sealed class QueryManager : IBsQueryManager
 		}
 
 		if (invalidateToolbar)
-			RdtManager.AsyeuInvalidateToolbar(DocCookie);
+			RdtManager.InvalidateToolbarAsyeu(DocCookie);
 
 		return true;
 	}
@@ -1276,7 +1276,7 @@ public sealed class QueryManager : IBsQueryManager
 			if (_EventExecutingCardinal <= 0)
 			{
 				ApplicationException ex = new($"Attempt to exit event when not in an event. _EventCardinal: {_EventExecutingCardinal}");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -1452,7 +1452,7 @@ public sealed class QueryManager : IBsQueryManager
 		catch (Exception ex)
 		{
 			result = false;
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 
@@ -1464,7 +1464,7 @@ public sealed class QueryManager : IBsQueryManager
 		catch (Exception ex)
 		{
 			result = false;
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		if (args.Launched && !args.SyncToken.Cancelled())
@@ -1542,7 +1542,7 @@ public sealed class QueryManager : IBsQueryManager
 		catch (Exception ex)
 		{
 			result = false;
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		args.Result &= result;

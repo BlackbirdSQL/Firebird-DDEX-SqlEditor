@@ -98,13 +98,6 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 
 
-	public void AsyncEnsureLinkageLoading_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
-	{
-		LinkageParser.AsyncEnsureLoading(root, delay, multiplier);
-	}
-
-
-
 	public DbConnection CastToNativeConnection_(object connection)
 	{
 		return connection as FbConnection;
@@ -167,6 +160,13 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 	public bool DisposeLinkageParserInstance_(IVsDataExplorerConnection root, bool disposing)
 	{
 		return LinkageParser.DisposeInstance(root, disposing);
+	}
+
+
+
+	public void EnsureLinkageLoadingAsyin_(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
+	{
+		LinkageParser.EnsureLoadingAsyin(root, delay, multiplier);
 	}
 
 
@@ -246,7 +246,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		/*
 		foreach (string version in LibraryData.S_EntityFrameworkVersions)
 		{
-			if (LibraryData.C_EntityFrameworkAssemblyFullName.FmtRes(version).Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
+			if (LibraryData.C_EntityFrameworkAssemblyFullName.Fmt(version).Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
 				return true;
 		}
 		*/
@@ -267,7 +267,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		/*
 		foreach (string version in LibraryData.S_InvariantVersions)
 		{
-			if (LibraryData.C_InvariantAssemblyFullName.FmtRes(version).Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
+			if (LibraryData.C_InvariantAssemblyFullName.Fmt(version).Equals(assemblyName, StringComparison.OrdinalIgnoreCase))
 				return true;
 		}
 		*/
@@ -316,7 +316,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		if (@this is not FbConnection connection)
 		{
 			ArgumentException ex = new("IDbConnection is not of type FbConnection");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -369,7 +369,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 

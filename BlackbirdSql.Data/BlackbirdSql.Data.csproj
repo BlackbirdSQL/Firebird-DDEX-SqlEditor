@@ -21,8 +21,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Model\Schema\DslMetaData.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Include="Evs.cs" />
 	  <Compile Include="Ctl\LinkageParserTaskHandler.cs" />
+	  <Compile Include="Model\Schema\DslUsers.cs" />
+	  <Compile Include="Model\Schema\DslRoles.cs" />
 	  <Compile Include="Properties\ControlsResources.Designer.cs">
 	    <DependentUpon>ControlsResources.resx</DependentUpon>
 	    <DesignTime>True</DesignTime>
@@ -73,6 +79,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Model\Schema\DslMetaData.xml" />
 	  <EmbeddedResource Include="Properties\ControlsResources.resx">
 	    <SubType>Designer</SubType>
 	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
@@ -91,16 +98,16 @@
 
 	<ItemGroup>
 	  <Reference Include="EntityFramework">
-	    <HintPath>..\..\Firebird\EntityFramework.Firebird\bin\Release\net48\EntityFramework.dll</HintPath>
+	    <HintPath>..\Lib\EntityFramework.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EntityFramework.Firebird">
-	    <HintPath>..\..\Firebird\EntityFramework.Firebird\bin\Release\net48\EntityFramework.Firebird.dll</HintPath>
+	    <HintPath>..\Lib\EntityFramework.Firebird.dll</HintPath>
 	  </Reference>
 	  <Reference Include="EntityFramework.SqlServer">
-	    <HintPath>..\..\Firebird\EntityFramework.Firebird\bin\Release\net48\EntityFramework.SqlServer.dll</HintPath>
+	    <HintPath>..\Lib\EntityFramework.SqlServer.dll</HintPath>
 	  </Reference>
 	  <Reference Include="FirebirdSql.Data.FirebirdClient">
-	    <HintPath>..\..\Firebird\EntityFramework.Firebird\bin\Release\net48\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+	    <HintPath>..\Lib\FirebirdSql.Data.FirebirdClient.dll</HintPath>
 	  </Reference>
 	  <Reference Include="System.Windows.Forms" />
 	</ItemGroup>

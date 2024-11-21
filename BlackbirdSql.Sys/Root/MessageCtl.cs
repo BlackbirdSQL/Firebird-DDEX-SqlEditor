@@ -453,50 +453,50 @@ public class MessageCtl
 	{
 		if (_ExMessage == null && string.IsNullOrEmpty(Text))
 		{
-			ArgumentNullException ex = new("Message");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(_ExMessage));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (_Buttons < EnMessageBoxButtons.OK || _Buttons > EnMessageBoxButtons.Custom)
 		{
-			InvalidEnumArgumentException ex = new("Buttons", (int)_Buttons, typeof(EnMessageBoxButtons));
-			Diag.Dug(ex);
+			InvalidEnumArgumentException ex = new(nameof(_Buttons), (int)_Buttons, typeof(EnMessageBoxButtons));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (_Symbol < EnMessageBoxSymbol.None || _Symbol > EnMessageBoxSymbol.Hand)
 		{
-			InvalidEnumArgumentException ex = new("Symbol", (int)_Symbol, typeof(EnMessageBoxSymbol));
-			Diag.Dug(ex);
+			InvalidEnumArgumentException ex = new(nameof(_Symbol), (int)_Symbol, typeof(EnMessageBoxSymbol));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (_DefaultButton < EnMessageBoxDefaultButton.Button1 || _DefaultButton > EnMessageBoxDefaultButton.Button5)
 		{
-			InvalidEnumArgumentException ex = new("DefaultButton", (int)_DefaultButton, typeof(EnMessageBoxDefaultButton));
-			Diag.Dug(ex);
+			InvalidEnumArgumentException ex = new(nameof(_DefaultButton), (int)_DefaultButton, typeof(EnMessageBoxDefaultButton));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (((uint)_Options & 0xFFFFFFFCu) != 0)
 		{
-			InvalidEnumArgumentException ex = new("Options", (int)_Options, typeof(EnMessageBoxOptions));
-			Diag.Dug(ex);
+			InvalidEnumArgumentException ex = new(nameof(_Options), (int)_Options, typeof(EnMessageBoxOptions));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (_Buttons == EnMessageBoxButtons.Custom && _ButtonCount == 0)
 		{
 			Exception ex = new(ControlsResources.MessageCtl_CustomButtonTextError);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (_MessageLevelCount != -1 && _MessageLevelCount < 1)
 		{
 			ArgumentOutOfRangeException ex = new("MessageLevelDefault", _MessageLevelCount, ControlsResources.MessageCtl_MessageLevelCountError);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -658,69 +658,69 @@ public class MessageCtl
 	}
 
 
-	public static DialogResult ShowEx(string message, string caption)
+	public static DialogResult ShowX(string message, string caption)
 	{
-		return ShowEx(null, message, caption, null, MessageBoxButtons.OK, MessageBoxIcon.Hand, null, -1);
+		return ShowX(null, message, caption, null, MessageBoxButtons.OK, MessageBoxIcon.Hand, null, -1);
 	}
 
 
-	public static DialogResult ShowEx(string message, string caption, MessageBoxButtons buttons)
+	public static DialogResult ShowX(string message, string caption, MessageBoxButtons buttons)
 	{
-		return ShowEx(null, message, caption, null, buttons, MessageBoxIcon.Hand, null, -1);
+		return ShowX(null, message, caption, null, buttons, MessageBoxIcon.Hand, null, -1);
 	}
 
 
 
 
 	// ShowExceptionInDialog
-	public static void ShowEx(string message, Exception ex)
+	public static void ShowX(string message, Exception ex)
 	{
-		ShowEx(ex, "", null, null, MessageBoxButtons.OK, MessageBoxIcon.Hand, null, -1);
+		ShowX(ex, "", null, null, MessageBoxButtons.OK, MessageBoxIcon.Hand, null, -1);
 
-		// VS.SafeShowMessageBox(null, string.Format(CultureInfo.CurrentCulture, "{0} {1}", message, e.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+		// VS.SafeShowMessageBox(null, "{0} {1}".Fmt(message, e.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 	}
 
-	public static DialogResult ShowEx(string text, MessageBoxButtons buttons, MessageBoxIcon icon)
+	public static DialogResult ShowX(string text, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
-		return ShowEx(null, text, null, null, buttons, icon, null, -1);
+		return ShowX(null, text, null, null, buttons, icon, null, -1);
 	}
 
 
-	public static DialogResult ShowEx(string text, string title, MessageBoxButtons buttons,
+	public static DialogResult ShowX(string text, string title, MessageBoxButtons buttons,
 		MessageBoxIcon icon, MessageBoxShownDelegate messageBoxShownDelegate = null)
 	{
-		return ShowEx(null, text, title, null, buttons, icon, null, -1, messageBoxShownDelegate);
+		return ShowX(null, text, title, null, buttons, icon, null, -1, messageBoxShownDelegate);
 	}
 
-	public static DialogResult ShowEx(string text, string title, string helpKeyword,
+	public static DialogResult ShowX(string text, string title, string helpKeyword,
 		MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
-		return ShowEx(null, text, title, helpKeyword, buttons, icon, null, -1);
+		return ShowX(null, text, title, helpKeyword, buttons, icon, null, -1);
 	}
 
-	public static DialogResult ShowEx(Exception ex, MessageBoxButtons buttons, MessageBoxIcon icon)
+	public static DialogResult ShowX(Exception ex, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
-		return ShowEx(ex, "", null, null, buttons, icon, null, -1);
+		return ShowX(ex, "", null, null, buttons, icon, null, -1);
 	}
 
 
-	public static DialogResult ShowEx(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
+	public static DialogResult ShowX(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
-		return ShowEx(ex, "", caption, null, buttons, icon, null, -1);
+		return ShowX(ex, "", caption, null, buttons, icon, null, -1);
 	}
 
-	public static DialogResult ShowEx(Exception ex, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
+	public static DialogResult ShowX(Exception ex, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
-		return ShowEx(ex, text, caption, null, buttons, icon, null, -1);
+		return ShowX(ex, text, caption, null, buttons, icon, null, -1);
 	}
 
 
-	public static DialogResult ShowEx(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner)
+	public static DialogResult ShowX(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner)
 	{
-		return ShowEx(ex, "", caption, null, buttons, icon, owner, -1);
+		return ShowX(ex, "", caption, null, buttons, icon, owner, -1);
 	}
 
-	public static DialogResult ShowEx(Exception ex, string text, string caption, string helpLink, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner, int exceptionLevel, MessageBoxShownDelegate messageBoxShownDelegate = null)
+	public static DialogResult ShowX(Exception ex, string text, string caption, string helpLink, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner, int exceptionLevel, MessageBoxShownDelegate messageBoxShownDelegate = null)
 	{
 		if (caption == null || caption == "")
 		{
@@ -793,7 +793,7 @@ public class MessageCtl
 				}
 				catch (Exception exw)
 				{
-					Diag.Dug(exw);
+					Diag.Ex(exw);
 					throw;
 				}
 			}

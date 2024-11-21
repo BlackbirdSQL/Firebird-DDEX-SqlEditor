@@ -190,7 +190,7 @@ public sealed class ShellBufferWriter : AbstractResultsWriter
 			buffer.ReplaceText(textLength, 0, text);
 			foreach (Marker errorMarker in errorMarkers)
 			{
-				buffer.CreateStreamMarker(1, errorMarker.Position + textLength, errorMarker.Length, errorMarker.ErrorLine, (TextSpanEx)(object)errorMarker.TextSpan);
+				buffer.CreateStreamMarker(1, errorMarker.Position + textLength, errorMarker.Length, errorMarker.ErrorLine, (TextSpanX)(object)errorMarker.TextSpan);
 			}
 
 			Reset();

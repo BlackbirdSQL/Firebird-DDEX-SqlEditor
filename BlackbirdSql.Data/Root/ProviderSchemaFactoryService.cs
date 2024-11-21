@@ -23,6 +23,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -80,7 +81,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 	// Schema factory to handle custom collections
 	public static DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
-		// Evs.Trace(typeof(ProviderSchemaFactoryService), "GetSchema()", "collectionName: {0}", collectionName);
+		// Evs.Trace(typeof(ProviderSchemaFactoryService), nameof(GetSchema), "collectionName: {0}", collectionName);
 
 		string schemaCollection;
 
@@ -97,8 +98,10 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			case "Indexes":
 			case "Procedures":
 			case "ProcedureParameters":
+			case "Roles":
 			case "Tables":
 			case "Triggers":
+			case "Users":
 			case "ViewColumns":
 				schemaCollection = collectionName;
 				break;
@@ -138,29 +141,30 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		}
 
 
-		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
-		var ds = new DataSet();
+		string filter = "CollectionName = '{0}'".Fmt(schemaCollection);
+		DataSet ds = new ();
 
-		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
+		Assembly assembly = typeof(ProviderSchemaFactoryService).Assembly;
 
 		if (assembly == null)
 		{
-			DllNotFoundException ex = new(typeof(FirebirdClientFactory).Name + " class assembly not found");
-			Diag.Dug(ex);
+			DllNotFoundException ex = new(typeof(ProviderSchemaFactoryService).Name + " class assembly not found");
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		// Evs.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", parser == null ? "no parser to pause" : "making linker pause request");
+		// Evs.Trace(typeof(DslProviderSchemaFactory), nameof(GetSchema), parser == null ? "no parser to pause" : "making linker pause request");
 
-		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
+		Stream xmlStream = assembly.GetManifestResourceStream(ResourceName);
+
 		if (xmlStream == null)
 		{
 			NullReferenceException ex = new("Resource not found: " + ResourceName);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		var oldCulture = Thread.CurrentThread.CurrentCulture;
+		CultureInfo oldCulture = Thread.CurrentThread.CurrentCulture;
 
 		try
 		{
@@ -178,26 +182,26 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			Thread.CurrentThread.CurrentCulture = oldCulture;
 		}
 
-		var collection = ds.Tables[DbMetaDataCollectionNames.MetaDataCollections].Select(filter);
+		DataRow[] collection = ds.Tables[DbMetaDataCollectionNames.MetaDataCollections].Select(filter);
 
 		if (collection.Length != 1)
 		{
 			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
 			InvalidOperationException ex = new("The number of specified restrictions is not valid.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
 			InvalidOperationException ex = new("Incorrect restriction definition.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -216,7 +220,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				break;
 			default:
 				NotSupportedException ex = new("Unsupported population mechanism");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 		}
 
@@ -253,8 +257,10 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			case "Indexes":
 			case "Procedures":
 			case "ProcedureParameters":
+			case "Roles":
 			case "Triggers":
 			case "Tables":
+			case "Users":
 			case "ViewColumns":
 				schemaCollection = collectionName;
 				break;
@@ -306,33 +312,33 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		}
 
 
-		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
-		var ds = new DataSet();
+		string filter = "CollectionName = '{0}'".Fmt(schemaCollection);
+		DataSet ds = new ();
 
-		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
+		Assembly assembly = typeof(ProviderSchemaFactoryService).Assembly;
 
 		if (assembly == null)
 		{
-			DllNotFoundException ex = new(Resources.ExceptionClassAssemblyNotFound.FmtRes(typeof(FirebirdClientFactory).Name));
-			Diag.Dug(ex);
+			DllNotFoundException ex = new(Resources.ExceptionClassAssemblyNotFound.Fmt(typeof(ProviderSchemaFactoryService).Name));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
+		Stream xmlStream = assembly.GetManifestResourceStream(ResourceName);
 
 		if (cancelToken.Cancelled())
 			return new DataTable();
 
 		if (xmlStream == null)
 		{
-			NullReferenceException ex = new(Resources.ExceptionResourceNotFound.FmtRes(ResourceName));
-			Diag.Dug(ex);
+			NullReferenceException ex = new(Resources.ExceptionResourceNotFound.Fmt(ResourceName));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
-		var oldCulture = Thread.CurrentThread.CurrentCulture;
+		CultureInfo oldCulture = Thread.CurrentThread.CurrentCulture;
 
-		// Evs.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
+		// Evs.Trace(typeof(DslProviderSchemaFactory), nameof(GetSchemaAsync), parser == null ? "no parser to pause" : "making linker pause request");
 
 		try
 		{
@@ -362,7 +368,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -373,17 +379,17 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 		if (collection.Length != 1)
 		{
-			NotSupportedException ex = new(Resources.ExceptionCollectionNotSupported.FmtRes(schemaCollection));
-			Diag.Dug(ex);
+			NotSupportedException ex = new(Resources.ExceptionCollectionNotSupported.Fmt(schemaCollection));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (restrictions != null && restrictions.Length != (int)collection[0]["NumberOfRestrictions"])
 		{
 			InvalidOperationException exbb =
-				new(Resources.ExceptionRestrictionsNotEqualToSpecified.FmtRes(restrictions.Length,
+				new(Resources.ExceptionRestrictionsNotEqualToSpecified.Fmt(restrictions.Length,
 				(int)collection[0]["NumberOfRestrictions"]));
-			Diag.Dug(exbb);
+			Diag.Ex(exbb);
 			throw exbb;
 		}
 
@@ -402,8 +408,8 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 				table = await SqlCommandSchemaAsync(connection, collectionName, restrictions, cancelToken);
 				break;
 			default:
-				NotSupportedException ex = new(Resources.ExceptionUnsupportedPopulationMechanism.FmtRes(collection[0]["PopulationMechanism"].ToString()));
-				Diag.Dug(ex);
+				NotSupportedException ex = new(Resources.ExceptionUnsupportedPopulationMechanism.Fmt(collection[0]["PopulationMechanism"].ToString()));
+				Diag.Ex(ex);
 				throw ex;
 		}
 
@@ -461,11 +467,17 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			case "RAWTRIGGERDEPENDENCIES":
 				dslSchema = new DslRawTriggerDependencies();
 				break;
+			case "ROLES":
+				dslSchema = new DslRoles();
+				break;
 			case "TABLES":
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
 				dslSchema = new DslTriggerColumns();
+				break;
+			case "USERS":
+				dslSchema = new DslUsers();
 				break;
 			case "VIEWCOLUMNS":
 				dslSchema = new DslViewColumns();
@@ -476,12 +488,12 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			case "IDENTITYTRIGGERS":
 			case "STANDARDTRIGGERS":
 			case "SYSTEMTRIGGERS":
-				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.FmtRes(collectionName));
-				Diag.Dug(ex);
+				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.Fmt(collectionName));
+				Diag.Ex(ex);
 				throw ex;
 			default:
-				ex = new(Resources.ExceptionCollectionNotSupported.FmtRes(collectionName));
-				Diag.Dug(ex);
+				ex = new(Resources.ExceptionCollectionNotSupported.Fmt(collectionName));
+				Diag.Ex(ex);
 				throw ex;
 		}
 
@@ -536,11 +548,17 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			case "RAWTRIGGERDEPENDENCIES":
 				dslSchema = new DslRawTriggerDependencies();
 				break;
+			case "ROLES":
+				dslSchema = new DslRoles();
+				break;
 			case "TABLES":
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
 				dslSchema = new DslTriggerColumns();
+				break;
+			case "USERS":
+				dslSchema = new DslUsers();
 				break;
 			case "VIEWCOLUMNS":
 				dslSchema = new DslViewColumns();
@@ -551,12 +569,12 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 			case "IDENTITYTRIGGERS":
 			case "STANDARDTRIGGERS":
 			case "SYSTEMTRIGGERS":
-				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.FmtRes(collectionName));
-				Diag.Dug(ex);
+				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.Fmt(collectionName));
+				Diag.Ex(ex);
 				throw ex;
 			default:
-				ex = new(Resources.ExceptionCollectionNotSupported.FmtRes(collectionName));
-				Diag.Dug(ex);
+				ex = new(Resources.ExceptionCollectionNotSupported.Fmt(collectionName));
+				Diag.Ex(ex);
 				throw ex;
 		}
 
@@ -568,7 +586,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 	private static DataTable SqlCommandSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
 		NotImplementedException exbb = new();
-		Diag.Dug(exbb);
+		Diag.Ex(exbb);
 		throw exbb;
 	}
 	private static async Task<DataTable> SqlCommandSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken = default)
@@ -576,7 +594,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		await Cmd.AwaitableAsync();
 
 		NotImplementedException exbb = new();
-		Diag.Dug(exbb);
+		Diag.Ex(exbb);
 		throw exbb;
 	}
 

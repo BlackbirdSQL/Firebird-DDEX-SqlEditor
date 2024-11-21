@@ -283,7 +283,7 @@ public class EmbeddedComboBox : ComboBox, IBsGridEmbeddedControl, IBsGridEmbedde
 			if (DropDownStyle != ComboBoxStyle.DropDown)
 			{
 				InvalidOperationException ex = new(ControlsResources.ExInvalidSelStringInEmbeddedCombo);
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -303,7 +303,7 @@ public class EmbeddedComboBox : ComboBox, IBsGridEmbeddedControl, IBsGridEmbedde
 		if (nIndex < 0 || nIndex >= Items.Count)
 		{
 			ArgumentException ex = new(ControlsResources.ExInvalidSelIndexInEmbeddedCombo, "nIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

@@ -92,10 +92,8 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 	{
 		if (m.Msg == Native.WM_CONTEXTMENU)
 		{
-			if (VS.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, this))
-			{
+			if (VS.GetCoordinatesForPopupMenuFromWM_Context(ref m, out int xPos, out int yPos, this))
 				VS.ShowContextMenuEvent(264, xPos, yPos, this);
-			}
 		}
 		else
 		{

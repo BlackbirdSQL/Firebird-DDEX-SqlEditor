@@ -14,6 +14,7 @@ public enum EnEventLevel
 	Information = 0x8,
 	Trace = 0x10,
 	Debug = 0x20,
+	Expected = 0x40,
 	Verbose = 0x1F,
 	ActivityTracing = 0xFF00,
 }

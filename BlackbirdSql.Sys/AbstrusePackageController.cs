@@ -53,12 +53,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// </summary>
 	protected AbstrusePackageController(IBsAsyncPackage ddex)
 	{
-		if (_Instance != null)
-		{
-			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes(GetType().FullName));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfInstanceExists(_Instance);
 
 		_Instance = this;
 
@@ -107,7 +102,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 				if (_Instance == null)
 				{
 					TypeAccessException ex = new("Cannot instantiate PackageController service from abstract ancestor");
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw ex;
 				}
 			}
@@ -721,7 +716,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}
@@ -733,7 +728,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// handling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract bool AsyeuAdviseUnsafeEvents();
+	public abstract bool AdviseUnsafeEventsAsyeu();
 
 
 
@@ -796,8 +791,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 			if (_EventProjectCardinal <= 0)
 			{
-				ApplicationException ex = new($"Attempt to exit project event when not in a project event. _EventProjectCardinal: {_EventProjectCardinal}");
-				Diag.Dug(ex);
+				ApplicationException ex = new(Resources.ExceptionEventProjectExit.Fmt(_EventProjectCardinal));
+				Diag.Ex(ex);
 				throw ex;
 			}
 			_EventProjectCardinal--;
@@ -837,8 +832,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 			if (_EventProjectCardinal != -1)
 			{
-				ApplicationException ex = new("Attempt to exit project event registration when events were not being registered.");
-				Diag.Dug(ex);
+				ApplicationException ex = new(Resources.ExceptionEventProjectRegistrationExit.Fmt(_EventProjectCardinal));
+				Diag.Ex(ex);
 				throw ex;
 			}
 			_EventProjectCardinal = 0;
@@ -889,8 +884,8 @@ public abstract class AbstrusePackageController : IBsPackageController
 		{
 			if (_EventRdtCardinal <= 0)
 			{
-				ApplicationException ex = new($"Attempt to exit RDT event when not in an Rdt event. _EventRdtCardinal: {_EventRdtCardinal}");
-				Diag.Dug(ex);
+				ApplicationException ex = new(Resources.ExceptionEventRdtExit.Fmt(_EventRdtCardinal));
+				Diag.Ex(ex);
 				throw ex;
 			}
 			_EventRdtCardinal--;
@@ -918,7 +913,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	protected abstract void InternalShutdownDte();
 
 
-	public abstract void AsyeuRegisterProjectEventHandlers();
+	public abstract void RegisterProjectEventHandlersAsyeu();
 
 
 	public abstract Task<bool> RegisterProjectEventHandlersAsync();
@@ -968,7 +963,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 	}
 
@@ -1053,7 +1048,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	protected void OnProjectItemRemoved(ProjectItem projectItem)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnProjectItemRemoved()", projectItem.ContainingProject.Name);
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnProjectItemRemoved), projectItem.ContainingProject.Name);
 
 		if (_OnProjectItemRemovedEvent == null || projectItem.ContainingProject == null
 			|| projectItem.ContainingProject.EditableObject() == null)
@@ -1070,7 +1065,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	protected void OnProjectItemRenamed(ProjectItem projectItem, string oldName)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnProjectItemRenamed()", projectItem.ContainingProject.Name);
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnProjectItemRenamed), projectItem.ContainingProject.Name);
 
 		if (_OnProjectItemRenamedEvent == null || projectItem.ContainingProject == null
 			|| projectItem.ContainingProject.EditableObject() == null)
@@ -1092,7 +1087,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// ---------------------------------------------------------------------------------
 	private void OnReferenceAdded(Reference reference)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnReferenceAdded()", reference.ContainingProject.Name);
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnReferenceAdded), reference.ContainingProject.Name);
 
 		if (_OnReferenceAddedEvent == null || reference.ContainingProject == null
 			|| reference.ContainingProject.EditableObject() == null)
@@ -1120,7 +1115,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 	private void OnReferenceRemoved(Reference reference)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnReferenceRemoved()", reference.ContainingProject.Name);
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnReferenceRemoved), reference.ContainingProject.Name);
 
 		if (_OnReferenceRemovedEvent == null || reference.ContainingProject == null
 			|| reference.ContainingProject.EditableObject() == null)
@@ -1158,7 +1153,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// ---------------------------------------------------------------------------------
 	public int OnAfterCloseSolution(object pUnkReserved)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnAfterCloseSolution()", "pUnkReserved: {0}.", pUnkReserved);
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnAfterCloseSolution), $"pUnkReserved: {pUnkReserved}.");
 
 		_SolutionLoaded = false;
 		_ProjectReferencesEvents = null;
@@ -1174,7 +1169,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnAfterLoadProject()");
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnAfterLoadProject));
 
 		Project project = pRealHierarchy.ToEditableProject();
 
@@ -1260,7 +1255,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 				return;
 			}
 
-			Diag.Dug(new ApplicationException($"Time out waiting for project properties to load: {project.Name}."));
+			Diag.Ex(new ApplicationException(Resources.ExceptionProjectPropertiesTimeout.Fmt(project.Name)));
 
 			return;
 		}
@@ -1301,7 +1296,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnAfterOpenProject()");
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnAfterOpenProject));
 
 		Project project = pHierarchy.ToEditableProject();
 
@@ -1387,7 +1382,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 				return;
 			}
 
-			Diag.Dug(new ApplicationException($"Time out waiting for project properties to load: {project.Name}."));
+			Diag.Ex(new ApplicationException(Resources.ExceptionProjectPropertiesTimeout.Fmt(project.Name)));
 
 			return;
 		}
@@ -1436,7 +1431,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnBeforeCloseProject()", "Guid: {0}.", pHierarchy.Kind());
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnBeforeCloseProject), $"Guid: {pHierarchy.Kind()}.");
 
 		if (!pHierarchy.IsDesignTimeProject())
 			return VSConstants.S_OK;
@@ -1467,7 +1462,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnBeforeUnloadProject()");
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnBeforeUnloadProject));
 
 		RemoveProjectEventHandlers(pRealHierarchy);
 
@@ -1480,7 +1475,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Diag.DebugTrace("OnLoadSolutionOptions()");
 
-		AsyeuRegisterProjectEventHandlers();
+		RegisterProjectEventHandlersAsyeu();
 
 
 		if (_SolutionLoaded)
@@ -1503,7 +1498,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// ---------------------------------------------------------------------------------
 	public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
 	{
-		// Evs.Trace(typeof(AbstrusePackageController), "OnQueryCloseProject()", "Guid: {0}.", pHierarchy.ProjectKind());
+		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnQueryCloseProject), "Guid: {0}.", pHierarchy.ProjectKind());
 
 		if (_OnQueryCloseProjectEvent == null || !pHierarchy.IsDesignTimeProject())
 		{

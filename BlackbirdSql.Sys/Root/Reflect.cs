@@ -3,12 +3,13 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Sys.Properties;
 
 
 
 namespace BlackbirdSql;
 
-[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "<Pending>")]
+//[SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "<Pending>")]
 
 
 // =========================================================================================================
@@ -28,8 +29,8 @@ public abstract class Reflect
 	{
 		// Evs.Trace(typeof(Reflect), "CreateInstance<T>()", "Instance Type: {0}.", typeof(T).FullName);
 
-		var type = typeof(T);
-		var instance = type.Assembly.CreateInstance(type.FullName, false,
+		Type type = typeof(T);
+		object instance = type.Assembly.CreateInstance(type.FullName, false,
 			BindingFlags.Instance | BindingFlags.NonPublic, null, args, null, null);
 
 		return (T)instance;
@@ -45,14 +46,14 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
 		if (typeContainerClass == null)
 		{
-			TypeLoadException ex = new($"Could not get type: {containerClassName}. Aborting.");
-			Diag.Dug(ex);
+			TypeLoadException ex = new(Resources.ExceptionGetTypeAbort.Fmt(containerClassName));
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -65,14 +66,14 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
 		if (instance == null)
 		{
 			NotSupportedException ex = new($"Could not create instance of type: {typeContainerClass.AssemblyQualifiedName}. Aborting.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -100,7 +101,7 @@ public abstract class Reflect
 	public static Delegate AddEventHandler(object handlerMethodContainerInstance, string handlerMethodName,
 		object eventContainerClassInstance, string eventName, BindingFlags eventBindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "AddEventHandler()", "Handler name: {0}, event name: {1}.", handlerMethodName, eventName);
+		// Evs.Trace(typeof(Reflect), nameof(AddEventHandler), "Handler name: {0}, event name: {1}.", handlerMethodName, eventName);
 
 		if (eventBindingFlags == BindingFlags.Default)
 			eventBindingFlags = BindingFlags.Instance | BindingFlags.Public;
@@ -111,7 +112,7 @@ public abstract class Reflect
 		if (handlerMethodInfo == null)
 		{
 			COMException ex = new($"Could not find method info for '{handlerMethodName}()' in container class '{handlerMethodContainerInstance.GetType()}'. Aborting.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -122,7 +123,7 @@ public abstract class Reflect
 		if (eventInfo == null)
 		{
 			COMException ex = new($"Could not get EventInfo for adding a delegate to event '{eventName}' in container class '{typeEventContainerClassInstance}'.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -137,7 +138,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		return eventHandlerDelegate;
@@ -159,7 +160,7 @@ public abstract class Reflect
 	public static object GetAttributeValue(PropertyDescriptor descriptor, Type attributeType,
 		string attributeValueFieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "GetAttributeValue()", "Attribute type: {0}, attribute field: {1}.", attributeType.FullName, attributeValueFieldName);
+		// Evs.Trace(typeof(Reflect), nameof(GetAttributeValue), "Attribute type: {0}, attribute field: {1}.", attributeType.FullName, attributeValueFieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
@@ -198,7 +199,7 @@ public abstract class Reflect
 	// ---------------------------------------------------------------------------------
 	public static object GetField(object containerClassInstance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "GetField()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), nameof(GetField), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
@@ -215,7 +216,7 @@ public abstract class Reflect
 		if (fieldObject == null)
 		{
 			COMException ex = new($"Field '{fieldName}' in container class '{typeClassInstance}' is uninitialized and returned null.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -267,7 +268,7 @@ public abstract class Reflect
 		if (fieldInfo == null)
 		{
 			COMException ex = new($"Could not get FieldInfo for static field '{fieldName}' in container class '{typeContainerClass}'.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -299,7 +300,7 @@ public abstract class Reflect
 		if (fieldInfo == null)
 		{
 			COMException ex = new($"Could not get FieldInfo for field '{fieldName}' in container class '{typeContainerClassInstance}'.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -330,7 +331,7 @@ public abstract class Reflect
 		if (fieldInfo == null)
 		{
 			COMException ex = new($"Could not get FieldInfo for field '{fieldName}' in container class '{typeContainerClassInstance}'.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -363,7 +364,7 @@ public abstract class Reflect
 		if (fieldInfo == null)
 		{
 			COMException ex = new($"Could not get FieldInfo for field '{fieldName}' in container class '{containerClassInstance.GetType()}', base class '{typeClassInstance}'.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -384,7 +385,7 @@ public abstract class Reflect
 	// ---------------------------------------------------------------------------------
 	public static object GetFieldInfoValue(object containerClassInstance, FieldInfo fieldInfo)
 	{
-		// Evs.Trace(typeof(Reflect), "GetFieldInfoValue()", "Container class: {0}, fieldinfo name: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
+		// Evs.Trace(typeof(Reflect), nameof(GetFieldInfoValue), "Container class: {0}, fieldinfo name: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
 
 		return GetFieldInfoValueImpl(containerClassInstance, fieldInfo);
 	}
@@ -412,7 +413,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not get Field Value for field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not get Field Value for field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
 			return null;
 		}
 
@@ -434,7 +435,7 @@ public abstract class Reflect
 	public static object GetFieldValue(object containerClassInstance, string fieldName, 
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "GetFieldValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), nameof(GetFieldValue), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
@@ -457,7 +458,7 @@ public abstract class Reflect
 	public static object GetFieldValue(Type typeContainerClass, string fieldName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "GetFieldValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), nameof(GetFieldValue), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
@@ -469,7 +470,7 @@ public abstract class Reflect
 		if (fieldInfo == null)
 		{
 			COMException ex = new($"Could not get FieldInfo for static field '{fieldName}' in container class '{typeContainerClass}'.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -479,7 +480,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not get Field Value for static field '{fieldInfo.Name}' in container class '{typeContainerClass}'.");
+			Diag.Ex(ex, $"Could not get Field Value for static field '{fieldInfo.Name}' in container class '{typeContainerClass}'.");
 			return false;
 		}
 
@@ -526,7 +527,7 @@ public abstract class Reflect
 	public static object GetFieldValueBase(object containerClassInstance, string fieldName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "GetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), nameof(GetFieldValueBase), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
@@ -553,7 +554,7 @@ public abstract class Reflect
 	public static object GetFieldValueBase(object containerClassInstance, string fieldName,
 		int depth, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "GetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), nameof(GetFieldValueBase), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
@@ -609,7 +610,7 @@ public abstract class Reflect
 		if (propertyInfo == null)
 		{
 			COMException ex = new($"Could not get PropertyInfo for property '{propertyName}' in container class '{typeContainerClass}'.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -630,7 +631,7 @@ public abstract class Reflect
 	// ---------------------------------------------------------------------------------
 	private static object GetPropertyInfoValue(object containerClassInstance, PropertyInfo propertyInfo)
 	{
-		// Evs.Trace(typeof(Reflect), "GetPropertyInfoValue()");
+		// Evs.Trace(typeof(Reflect), nameof(GetPropertyInfoValue));
 
 		object value;
 
@@ -640,7 +641,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not get Property Value for property '{propertyInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not get Property Value for property '{propertyInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
 			return null;
 		}
 
@@ -758,10 +759,13 @@ public abstract class Reflect
 	///  or void.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	private static object InvokeAmbiguousMethod(object containerClassInstance, string method,
+	public static object InvokeAmbiguousMethod(object containerClassInstance, string method,
 		BindingFlags bindingFlags, object[] args = null, Type[] argTypes = null,
 		ParameterModifier[] argModifiers = null)
 	{
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
 		try
 		{
 			args ??= [];
@@ -783,7 +787,7 @@ public abstract class Reflect
 			if (methodInfo == null)
 			{
 				COMException ex = new($"Could not find ambiguous method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return null;
 			}
 
@@ -792,7 +796,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not invoke ambiguous method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not invoke ambiguous method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
 		}
 
 		return null;
@@ -828,7 +832,10 @@ public abstract class Reflect
 		int depth, BindingFlags bindingFlags, object[] args = null, Type[] argTypes = null,
 		ParameterModifier[] argModifiers = null)
 	{
-		// Evs.Trace(typeof(Reflect), "InvokeAmbiguousMethodBaseType()", "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
+		// Evs.Trace(typeof(Reflect), nameof(InvokeAmbiguousMethodBaseType), "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
+
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
 		try
 		{
@@ -855,7 +862,7 @@ public abstract class Reflect
 			if (methodInfo == null)
 			{
 				COMException ex = new($"Could not find ambiguous method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return null;
 			}
 
@@ -864,7 +871,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not invoke ambiguous method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not invoke ambiguous method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
 		}
 
 		return null;
@@ -889,7 +896,8 @@ public abstract class Reflect
 		//	containerClassInstance.GetType().FullName, method, typeof(T).FullName);
 
 		if (bindingFlags == BindingFlags.Default)
-			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+			bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
 		Type typeClassInstance = containerClassInstance.GetType();
 
 		args ??= [];
@@ -903,19 +911,20 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"GetMethod failure for '{method}<{typeof(T)}>()' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"GetMethod failure for '{method}<{typeof(T)}>()' in container class '{containerClassInstance.GetType()}'.");
 			return null;
 		}
 
 		if (methodInfo == null)
 		{
 			COMException ex = new($"Could not find method info for '{method}<{typeof(T)}>()' in container class '{containerClassInstance.GetType()}'. Aborting.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
 
 		MethodInfo genericMethodInfo;
+
 		try
 		{ 
 			genericMethodInfo = methodInfo.MakeGenericMethod(typeof(T));
@@ -923,15 +932,15 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"MakeGenericMethod failure for '{method}<{typeof(T)}>()' in container class '{containerClassInstance.GetType()}'.");
-			return null;
+			Diag.Ex(ex, $"MakeGenericMethod failure for '{method}<{typeof(T)}>()' in container class '{containerClassInstance.GetType()}'.");
+			throw;
 		}
 
 
 		if (genericMethodInfo == null)
 		{
 			COMException ex = new($"Could not find generic method info for '{method}<{typeof(T)}>()' in container class '{containerClassInstance.GetType()}'. Aborting.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return null;
 		}
 
@@ -942,7 +951,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
 		}
 
 		return null;
@@ -983,7 +992,7 @@ public abstract class Reflect
 			if (throwExeption)
 				throw;
 
-			Diag.Dug(ex, $"Could not find method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
+			Diag.Expected(ex, $"Could not find method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
 			return null;
 		}
 
@@ -995,7 +1004,7 @@ public abstract class Reflect
 			if (throwExeption)
 				throw (ex);
 
-			Diag.Dug(ex);
+			Diag.Expected(ex);
 			return null;
 		}
 
@@ -1008,7 +1017,7 @@ public abstract class Reflect
 			if (throwExeption)
 				throw;
 
-			Diag.Dug(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Expected(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
 		}
 
 		return null;
@@ -1044,7 +1053,7 @@ public abstract class Reflect
 			if (methodInfo == null)
 			{
 				COMException ex = new($"Could not find method info for '{method}()' in container class '{typeContainerClass}'. Aborting.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return null;
 			}
 
@@ -1053,7 +1062,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not invoke method for '{method}()' in container class '{typeContainerClass}'.");
+			Diag.Ex(ex, $"Could not invoke method for '{method}()' in container class '{typeContainerClass}'.");
 		}
 
 		return null;
@@ -1076,7 +1085,7 @@ public abstract class Reflect
 	public static object InvokeMethodBaseType(object containerClassInstance, string method,
 		int depth, BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
 	{
-		// Evs.Trace(typeof(Reflect), "InvokeMethodBaseType()", "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
+		// Evs.Trace(typeof(Reflect), nameof(InvokeMethodBaseType), "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -1097,7 +1106,7 @@ public abstract class Reflect
 			if (methodInfo == null)
 			{
 				COMException ex = new($"Could not find method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return null;
 			}
 
@@ -1106,7 +1115,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
 		}
 
 		return null;
@@ -1124,7 +1133,7 @@ public abstract class Reflect
 	public static void RemoveEventHandler(object containerClassInstance, string eventName,
 		Delegate eventHandler, BindingFlags eventBindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "RemoveEventHandler()", "Container class: {0}, event: {1}.", containerClassInstance.GetType().FullName, eventName);
+		// Evs.Trace(typeof(Reflect), nameof(RemoveEventHandler), "Container class: {0}, event: {1}.", containerClassInstance.GetType().FullName, eventName);
 
 		if (eventBindingFlags == BindingFlags.Default)
 			eventBindingFlags = BindingFlags.Instance | BindingFlags.Public;
@@ -1136,7 +1145,7 @@ public abstract class Reflect
 		if (eventInfo == null)
 		{
 			COMException ex = new($"Could not get EventInfo for removing a delegate from event '{eventName}' in container class '{typeContainerClassInstance}'.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			return;
 		}
 
@@ -1147,7 +1156,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 	}
@@ -1166,7 +1175,7 @@ public abstract class Reflect
 	// ---------------------------------------------------------------------------------
 	public static bool SetFieldInfoValue(object containerClassInstance, FieldInfo fieldInfo, object value)
 	{
-		// Evs.Trace(typeof(Reflect), "SetFieldInfoValue()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
+		// Evs.Trace(typeof(Reflect), nameof(SetFieldInfoValue), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
 
 		try
 		{
@@ -1174,7 +1183,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not set Field Value for field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not set Field Value for field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
 			return false;
 		}
 
@@ -1212,7 +1221,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not set Field Value for static field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not set Field Value for static field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
 			return false;
 		}
 
@@ -1250,7 +1259,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not set Field Value for static field '{fieldInfo.Name}' in container class '{typeContainerClass}'.");
+			Diag.Ex(ex, $"Could not set Field Value for static field '{fieldInfo.Name}' in container class '{typeContainerClass}'.");
 			return false;
 		}
 
@@ -1272,7 +1281,7 @@ public abstract class Reflect
 	public static bool SetFieldValueBase(object containerClassInstance, string fieldName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "SetFieldValueBase()", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+		// Evs.Trace(typeof(Reflect), nameof(SetFieldValueBase), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -1288,7 +1297,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not set Field Value for field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not set Field Value for field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
 			return false;
 		}
 
@@ -1308,7 +1317,7 @@ public abstract class Reflect
 	public static bool SetPropertyValue(object containerClassInstance, string propertyName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
-		// Evs.Trace(typeof(Reflect), "SetPropertyValue()", "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);
+		// Evs.Trace(typeof(Reflect), nameof(SetPropertyValue), "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);
 
 		if (bindingFlags == BindingFlags.Default)
 			bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
@@ -1324,7 +1333,7 @@ public abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"Could not set Property Value for property '{propInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
+			Diag.Ex(ex, $"Could not set Property Value for property '{propInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
 			return false;
 		}
 

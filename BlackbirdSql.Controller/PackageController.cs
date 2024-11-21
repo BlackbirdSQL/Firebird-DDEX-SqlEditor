@@ -115,6 +115,7 @@ public sealed class PackageController : AbstractPackageController
 
 
 
+
 	// =========================================================================================================
 	#region Methods - PackageController
 	// =========================================================================================================
@@ -154,6 +155,38 @@ public sealed class PackageController : AbstractPackageController
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// [Launch ensure UI thread]: Enables unsafe solution, running document table and
+	/// selection monitor event handling on the UI and safe solution OnLoadOptions and
+	/// OnSaveOptions event handling.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override bool AdviseUnsafeEventsAsyeu()
+	{
+		lock (_LockObject)
+		{
+			if (_EventsAdvisedUnsafe)
+				return false;
+		}
+
+
+		// Ensure UI thread call is made for unsafe events.
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and forget async
+
+			Task.Run(AdviseUnsafeEventsAsync).Forget();
+
+			return true;
+		}
+
+		return AdviseUnsafeEventsImpl();
+	}
+
+
+
 	private bool AdviseUnsafeEventsImpl()
 	{
 		Diag.ThrowIfNotOnUIThread();
@@ -174,7 +207,7 @@ public sealed class PackageController : AbstractPackageController
 
 			if (_Dte == null)
 			{
-				Diag.DebugDug(new NullReferenceException(Resources.ExceptionDteIsNull));
+				Diag.Ex(new NullReferenceException(Resources.ExceptionDteIsNull));
 				return false;
 			}
 		}
@@ -205,12 +238,13 @@ public sealed class PackageController : AbstractPackageController
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 			}
 		}
 
 		return true;
 	}
+
 
 
 	public override async Task<bool> RegisterProjectEventHandlersAsync()
@@ -231,6 +265,7 @@ public sealed class PackageController : AbstractPackageController
 	}
 
 
+
 	private bool RegisterProjectEventHandlersImpl()
 	{
 		if (!EventProjectRegistrationEnter())
@@ -241,7 +276,7 @@ public sealed class PackageController : AbstractPackageController
 		{
 			List<Project> projects = UnsafeCmd.RecursiveGetDesignTimeProjects();
 
-			Evs.Trace(GetType(), nameof(RegisterProjectEventHandlersImpl), $"Adding event handlers for {projects.Count} EF projects");
+			Evs.Trace(GetType(), nameof(RegisterProjectEventHandlersImpl), Resources.EvsAddingEventHandlers.Fmt(projects.Count));
 
 			foreach (Project project in projects)
 				AddProjectEventHandlers(project);
@@ -258,42 +293,10 @@ public sealed class PackageController : AbstractPackageController
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// [Launch ensure UI thread]: Enables unsafe solution, running document table and
-	/// selection monitor event handling on the UI and safe solution OnLoadOptions and
-	/// OnSaveOptions event handling.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override bool AsyeuAdviseUnsafeEvents()
-	{
-		lock (_LockObject)
-		{
-			if (_EventsAdvisedUnsafe)
-				return false;
-		}
-
-
-		// Ensure UI thread call is made for unsafe events.
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			// Fire and forget async
-
-			Task.Run(AdviseUnsafeEventsAsync).Forget();
-
-			return true;
-		}
-
-		return AdviseUnsafeEventsImpl();
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// [Launch ensure UI thread]: Registers project event handlers.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override void AsyeuRegisterProjectEventHandlers()
+	public override void RegisterProjectEventHandlersAsyeu()
 	{
 		if (!EventProjectRegistrationEnter(true))
 			return;
@@ -315,7 +318,7 @@ public sealed class PackageController : AbstractPackageController
 
 	public override void ValidateSolution()
 	{
-		((ControllerEventsManager)ControllerPackage.EventsManager).AsyeuValidateSolution();
+		((ControllerEventsManager)ControllerPackage.EventsManager).ValidateSolutionAsyeu();
 	}
 
 	#endregion Methods

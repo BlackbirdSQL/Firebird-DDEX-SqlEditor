@@ -248,7 +248,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				result = false;
 				break;
 			}
@@ -474,7 +474,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 			}
 			catch (Exception ex)
 			{
-				Diag.DebugDug(ex);
+				Diag.Ex(ex);
 			}
 
 			if (!onScreen)

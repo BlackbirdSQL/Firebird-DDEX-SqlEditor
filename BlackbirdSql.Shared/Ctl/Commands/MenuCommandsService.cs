@@ -52,7 +52,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 		get
 		{
 			NotSupportedException ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}
@@ -62,7 +62,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 	void IMenuCommandService.AddVerb(DesignerVerb verb)
 	{
 		NotSupportedException ex = new();
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -75,7 +75,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 	void IMenuCommandService.RemoveVerb(DesignerVerb verb)
 	{
 		NotSupportedException ex = new();
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 

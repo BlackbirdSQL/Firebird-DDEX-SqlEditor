@@ -118,7 +118,7 @@ public class GridButtonColumn : GridTextColumn
 	protected void DrawCellCommon(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBsGridStorage storage, long nRowIndex, bool bEnabled, bool useGdiPlus)
 	{
 		ButtonState btnState = ButtonState.Normal;
-		storage.GetCellDataForButton(nRowIndex, m_myColumnIndex, out var state, out Bitmap image, out string buttonLabel);
+		storage.GetCellDataForButton(nRowIndex, m_myColumnIndex, out EnButtonCellState state, out Bitmap image, out string buttonLabel);
 		if (state != EnButtonCellState.Empty)
 		{
 			switch (state)

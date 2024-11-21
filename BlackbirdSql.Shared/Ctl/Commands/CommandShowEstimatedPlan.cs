@@ -44,7 +44,7 @@ public class CommandShowEstimatedPlan : AbstractCommand
 		CachedStrategy?.DisposeTransaction();
 
 		// Evs.Trace(GetType(), Tracer.EnLevel.Verbose, "OnExec", "calling ISqlEditorWindowPane.OnExec");
-		TabbedEditor.AsyncExecuteQuery(EnSqlExecutionType.PlanOnly);
+		TabbedEditor.ExecuteQueryAsyin(EnSqlExecutionType.PlanOnly);
 
 
 		return VSConstants.S_OK;

@@ -405,7 +405,7 @@ public partial class AdvancedMessageBox : Form
 			if (text.Length > 0)
 			{
 				stringBuilder2.Append(Environment.NewLine);
-				stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ClipboardOrEmailHelpLink, text));
+				stringBuilder2.Append(ControlsResources.AdvancedMessageBox_ClipboardOrEmailHelpLink.Fmt(text));
 				stringBuilder2.Append(Environment.NewLine);
 			}
 
@@ -424,7 +424,7 @@ public partial class AdvancedMessageBox : Form
 		if (ex == null)
 		{
 			ex = new ArgumentNullException("ex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -480,7 +480,7 @@ public partial class AdvancedMessageBox : Form
 
 				if (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.HelpLink)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ClipboardOrEmailHelpLink, text));
+					stringBuilder.Append(ControlsResources.AdvancedMessageBox_ClipboardOrEmailHelpLink.Fmt(text));
 				}
 
 				if (type == EnAdvancedInfoType.All)
@@ -536,7 +536,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception ex2)
 		{
-			Diag.Dug(ex2);
+			Diag.Ex(ex2);
 		}
 
 		return stringBuilder.ToString();
@@ -556,31 +556,31 @@ public partial class AdvancedMessageBox : Form
 				string str = ex.GetServer();
 				if (!string.IsNullOrEmpty(str))
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlServerName, str));
+					stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlServerName.Fmt(str));
 					str = ex.GetDatabase();
 					if (!string.IsNullOrEmpty(str))
-						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlDatabaseName, str));
+						stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlDatabaseName.Fmt(str));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlError, ex.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlError.Fmt(ex.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlSeverity, ex.GetClass().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlSeverity.Fmt(ex.GetClass().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlState, ex.GetState().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlState.Fmt(ex.GetState().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
 
 				str = ex.GetProcedure();
 				if (!string.IsNullOrEmpty(str))
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlProcedure, str));
+					stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlProcedure.Fmt(str));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
 				int lineno = ex.GetLineNumber();
 				if (lineno != 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlLineNumber, lineno.ToString(CultureInfo.CurrentCulture)));
+					stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlLineNumber.Fmt(lineno.ToString(CultureInfo.CurrentCulture)));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
@@ -604,7 +604,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception ex2)
 		{
-			Diag.Dug(ex2);
+			Diag.Ex(ex2);
 		}
 
 		return stringBuilder.ToString();
@@ -638,7 +638,7 @@ public partial class AdvancedMessageBox : Form
 			/*
 			if (ex is FbException)
 			{
-				return string.Format(CultureInfo.CurrentCulture, "https://www.microsoft.com/products/ee/transform.aspx?ProdName=Microsoft%20SQL%20Server&ProdVer={0}.00.0000.00&EvtSrc=MSSQLServer&EvtID={1}", AssemblyVersionInfo.HighestSqlMajorVersionString, Uri.EscapeUriString(((FbException)ex).Number.ToString(CultureInfo.CurrentCulture)));
+				return "https://www.microsoft.com/products/ee/transform.aspx?ProdName=Microsoft%20SQL%20Server&ProdVer={0}.00.0000.00&EvtSrc=MSSQLServer&EvtID={1}".Fmt(AssemblyVersionInfo.HighestSqlMajorVersionString, Uri.EscapeUriString(((FbException)ex).Number.ToString(CultureInfo.CurrentCulture)));
 			}
 			*/
 			return "";
@@ -759,11 +759,11 @@ public partial class AdvancedMessageBox : Form
 					stringBuilder2.Append(' ');
 					if (innerException.HasSqlException())
 					{
-						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSourceNumber, NativeDb.DataProviderName, innerException.GetErrorCode()));
+						stringBuilder2.Append(ControlsResources.AdvancedMessageBox_ErrorSourceNumber.Fmt(NativeDb.DataProviderName, innerException.GetErrorCode()));
 					}
 					else
 					{
-						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ErrorSource, innerException.Source));
+						stringBuilder2.Append(ControlsResources.AdvancedMessageBox_ErrorSource.Fmt(innerException.Source));
 					}
 				}
 
@@ -772,7 +772,7 @@ public partial class AdvancedMessageBox : Form
 				if (text.Length > 0)
 				{
 					stringBuilder2.Append(Environment.NewLine);
-					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_ClipboardOrEmailHelpLink, text));
+					stringBuilder2.Append(ControlsResources.AdvancedMessageBox_ClipboardOrEmailHelpLink.Fmt(text));
 					stringBuilder2.Append(Environment.NewLine);
 				}
 
@@ -795,7 +795,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 		
 		return stringBuilder2.ToString();
@@ -823,25 +823,25 @@ public partial class AdvancedMessageBox : Form
 
 				if (!string.IsNullOrEmpty(str))
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlServerName, str));
+					stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlServerName.Fmt(str));
 					str = ex.GetDatabase();
 					if (!string.IsNullOrEmpty(str))
-						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlDatabaseName, str));
+						stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlDatabaseName.Fmt(str));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlError, ex.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlError.Fmt(ex.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlSeverity, ex.GetClass().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlSeverity.Fmt(ex.GetClass().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlState, ex.GetState().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlState.Fmt(ex.GetState().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
 
 				str = ex.GetProcedure();
 
 				if (!string.IsNullOrEmpty(str))
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlProcedure, str));
+					stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlProcedure.Fmt(str));
 					stringBuilder.Append(Environment.NewLine);
 				}
 
@@ -849,7 +849,7 @@ public partial class AdvancedMessageBox : Form
 
 				if (lineno != 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_SqlLineNumber, lineno.ToString(CultureInfo.CurrentCulture)));
+					stringBuilder.Append(ControlsResources.AdvancedMessageBox_SqlLineNumber.Fmt(lineno.ToString(CultureInfo.CurrentCulture)));
 					stringBuilder.Append(Environment.NewLine);
 				}
 			}
@@ -868,7 +868,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception ex2)
 		{
-			Diag.Dug(ex2);
+			Diag.Ex(ex2);
 		}
 
 		return stringBuilder.ToString();
@@ -949,7 +949,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception)
 		{
-			ShowError(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_CantStartHelpLink, text), null);
+			ShowError(ControlsResources.AdvancedMessageBox_CantStartHelpLink.Fmt(text), null);
 			return;
 		}
 
@@ -961,7 +961,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception exError)
 		{
-			ShowError(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_CantStartHelpLink, text), exError);
+			ShowError(ControlsResources.AdvancedMessageBox_CantStartHelpLink.Fmt(text), exError);
 		}
 	}
 
@@ -990,7 +990,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		return false;
@@ -1077,8 +1077,8 @@ public partial class AdvancedMessageBox : Form
 		AdjustDialogWidth(pnlButtons.GetPreferredSize(Size.Empty).Width - width, isAdjustingForButtons: true);
 		if ((int)_DefaultButton >= _ButtonCount)
 		{
-			InvalidEnumArgumentException ex = new("DefaultButton", (int)_DefaultButton, typeof(EnMessageBoxDefaultButton));
-			Diag.Dug(ex);
+			InvalidEnumArgumentException ex = new(nameof(_DefaultButton), (int)_DefaultButton, typeof(EnMessageBoxDefaultButton));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1151,16 +1151,16 @@ public partial class AdvancedMessageBox : Form
 					string helpUrl = BuildHelpURL(exception);
 					bool hasHelp = helpUrl.Length > 0;
 					_HelpUrlArray.Add(helpUrl);
-					helpUrl = text.Length <= 50 ? text : string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_AddEllipsis, text[..50]);
+					helpUrl = text.Length <= 50 ? text : ControlsResources.AdvancedMessageBox_AddEllipsis.Fmt(text[..50]);
 					ToolStripItem toolStripItem;
 					if (hasHelp)
 					{
-						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_HelpMenuText, helpUrl), null, ItemHelp_Click);
+						toolStripItem = _Dropdown.Items.Add(ControlsResources.AdvancedMessageBox_HelpMenuText.Fmt(helpUrl), null, ItemHelp_Click);
 						_HelpUrlCount++;
 					}
 					else
 					{
-						toolStripItem = _Dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.AdvancedMessageBox_NoHelpMenuText, helpUrl), null, ItemHelp_Click);
+						toolStripItem = _Dropdown.Items.Add(ControlsResources.AdvancedMessageBox_NoHelpMenuText.Fmt(helpUrl), null, ItemHelp_Click);
 						toolStripItem.Enabled = false;
 					}
 
@@ -1181,21 +1181,14 @@ public partial class AdvancedMessageBox : Form
 					string arg = (exception is DbException) ? exception.Source : NativeDb.DataProviderName;
 
 					if (errorCode > 0)
-					{
-						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture,
-							ControlsResources.AdvancedMessageBox_ErrorSourceNumber, arg, errorCode));
-					}
+						stringBuilder.Append(ControlsResources.AdvancedMessageBox_ErrorSourceNumber.Fmt(arg, errorCode));
 					else
-					{
-						stringBuilder.Append(string.Format(CultureInfo.CurrentCulture,
-							ControlsResources.AdvancedMessageBox_ErrorSource, arg));
-					}
+						stringBuilder.Append(ControlsResources.AdvancedMessageBox_ErrorSource.Fmt(arg));
 				}
 				else if (errorCode > 0)
 				{
 					stringBuilder.Append(' ');
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture,
-						ControlsResources.AdvancedMessageBox_ErrorNumber, errorCode));
+					stringBuilder.Append(ControlsResources.AdvancedMessageBox_ErrorNumber.Fmt(errorCode));
 				}
 
 				if (i == 0)
@@ -1220,7 +1213,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 	}
 
@@ -1273,21 +1266,21 @@ public partial class AdvancedMessageBox : Form
 		if (_ExMessage == null)
 		{
 			Exception ex = new();
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (_ButtonTextArray == null || _ButtonTextArray.Length < 5)
 		{
 			ApplicationException ex = new(ControlsResources.AdvancedMessageBox_CantComplete);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (_IsButtonPressed)
 		{
 			ApplicationException ex = new(ControlsResources.AdvancedMessageBox_CantReuseObject);
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -1453,7 +1446,7 @@ public partial class AdvancedMessageBox : Form
 		}
 		catch (Exception exError)
 		{
-			Diag.Dug(exError);
+			Diag.Ex(exError);
 			ShowError(ControlsResources.AdvancedMessageBox_CantShowTechnicalDetailsError, exError);
 		}
 	}

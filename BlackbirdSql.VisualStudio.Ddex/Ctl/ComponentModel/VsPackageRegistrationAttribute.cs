@@ -33,8 +33,8 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 	{
 		if (context == null)
 		{
-			ArgumentNullException ex = new("context");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(context));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -83,7 +83,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			key = context.CreateKey("DataProviders\\" + providerGuid);
 
 			string providerName = Properties.Resources.DataProvider_Name
-				.FmtRes(GetType().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
+				.Fmt(GetType().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
 			key.SetValue(null, providerName);
 			key.SetValue("Assembly", providerObjectFactoryAssembly);
 
@@ -108,7 +108,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			{
 				Debug.Assert(condition: false);
 				ApplicationException ex = new("IBsProviderObjectFactory doesn't have Guid attribute.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -117,7 +117,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 			{
 				Debug.Assert(condition: false);
 				ApplicationException ex = new("IBsProviderObjectFactory's Guid attribute has the incorrect type.");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -161,8 +161,8 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 	{
 		if (context == null)
 		{
-			ArgumentNullException ex = new("context");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(context));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -181,7 +181,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 		{
 			Debug.Assert(condition: false);
 			ApplicationException ex = new("[BUG CHECK] IBsProviderObjectFactory doesn't have Guid attribute.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -189,7 +189,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 		{
 			Debug.Assert(condition: false);
 			ApplicationException ex = new("[BUG CHECK] IBsProviderObjectFactory's Guid attribute has the incorrect type.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		Debug.Assert(guidAttribute.Value == SystemData.C_ProviderObjectFactoryServiceGuid);

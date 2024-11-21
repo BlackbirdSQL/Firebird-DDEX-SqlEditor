@@ -121,6 +121,26 @@
 			</Services>
 		</Type>
 
+		<!-- User -->
+		<Type name="User" preferredOrdering="USER_LOGIN">
+			<Identifier>
+				<Part name="USER_LOGIN" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="USER_LOGIN" isIdentifierPart="true" />
+				<Property name="USER_NAME" type="System.String" />
+				<Property name="IS_ADMIN" type="System.Boolean" />
+				<Property name="DESCRIPTION" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.VxbObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Users" />
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
 		<!-- Role -->
 		<Type name="Role" preferredOrdering="ROLE_NAME">
 			<Identifier>
@@ -138,7 +158,6 @@
 				</Service>
 			</Services>
 		</Type>
-
 
 		<!-- Table -->
 		<Type name="Table" preferredOrdering="TABLE_NAME" >

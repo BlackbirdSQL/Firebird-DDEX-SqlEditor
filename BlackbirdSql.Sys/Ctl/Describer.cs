@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-
+using BlackbirdSql.Sys.Properties;
 using static BlackbirdSql.SysConstants;
 
 
@@ -267,16 +267,16 @@ public class Describer
 
 			if (pinfo == null)
 			{
-				ArgumentNullException ex = new ArgumentNullException($"Property {_Name} not found in csb.");
-				Diag.Dug(ex);
+				ArgumentNullException ex = new ArgumentNullException(Resources.ExceptionCsbPropertyNotFound.Fmt(_Name));
+				Diag.Ex(ex);
 				return null;
 			}
 
 			DisplayNameAttribute attr = pinfo.GetCustomAttribute<DisplayNameAttribute>();
 			if (attr == null)
 			{
-				ArgumentNullException ex = new ArgumentNullException($"Property {_Name} DisplayNameAttribute not found in csb.");
-				Diag.Dug(ex);
+				ArgumentNullException ex = new ArgumentNullException(Resources.ExceptionCsbAttributeNotFound.Fmt(_Name, nameof(DisplayNameAttribute)));
+				Diag.Ex(ex);
 				return null;
 			}
 

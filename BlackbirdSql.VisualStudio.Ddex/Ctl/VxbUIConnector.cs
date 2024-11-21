@@ -56,7 +56,7 @@ public class VxbUIConnector : DataConnectionUIConnector
 		if (connection == null)
 		{
 			ArgumentNullException ex = new ArgumentNullException("connection");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

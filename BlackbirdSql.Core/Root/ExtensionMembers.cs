@@ -124,7 +124,7 @@ public static partial class ExtensionMembers
 		if (explorerConnection == null)
 		{
 			COMException ex = new($"Failed to find ExplorerConnection for IVsDataConnectionProperties ConnectionString: {@this.ToString()}.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -151,7 +151,7 @@ public static partial class ExtensionMembers
 		if (@this.ConnectionNode == null)
 		{
 			ArgumentException exa = new($"Failed to retrieve ConnectionKey. Connection Node for IVsDataExplorerConnection {@this.SafeName()} is null");
-			Diag.Dug(exa);
+			Diag.Ex(exa);
 			throw exa;
 		}
 
@@ -163,7 +163,7 @@ public static partial class ExtensionMembers
 		if (!deepSearch && @object == null)
 		{
 			ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.SafeName()}. ConnectionNode._object returned null");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -174,7 +174,7 @@ public static partial class ExtensionMembers
 			if (!deepSearch && leaf == null)
 			{
 				ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.SafeName()}. ConnectionNode.Object._leaf returned null");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -185,7 +185,7 @@ public static partial class ExtensionMembers
 				if (!deepSearch && retval == null)
 				{
 					ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.SafeName()}. ConnectionNode.Object._leaf.Id returned null");
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw ex;
 				}
 
@@ -202,7 +202,7 @@ public static partial class ExtensionMembers
 		if (retval == null)
 		{
 			ex = new($"Failed to get ConnectionKey for ExplorerConnection {@this.SafeName()}. No entry exists in the ExplorerConnectionManager.");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

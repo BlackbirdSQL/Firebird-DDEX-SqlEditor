@@ -40,7 +40,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 	// ---------------------------------------------------------
 	#region Constructors / Destructors - AbstractLanguageService
-	// ----------------------------------------------------------
+	// ---------------------------------------------------------
 
 
 	public AbstractLanguageService(object site) : base()
@@ -54,155 +54,6 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 
 	#endregion Constructors / Destructors
-
-
-
-
-	// =========================================================================================================
-	#region Private classes - AbstractLanguageService
-	// =========================================================================================================
-
-
-	public class CustomViewFilter : ViewFilter
-	{
-		private static Guid _ClsidSqlLanguageServiceCommands = new(VS.SqlEditorCommandsGuid);
-
-		// private readonly AbstractLanguageService _SqlLanguageService;
-
-		public CustomViewFilter(AbstractLanguageService service, CodeWindowManager mgr, IVsTextView view)
-			: base(mgr, view)
-		{
-			// _SqlLanguageService = service;
-		}
-
-		protected override int QueryCommandStatus(ref Guid guidCmdGroup, uint nCmdId)
-		{
-			VSConstants.VSStd2KCmdID cmdId = (VSConstants.VSStd2KCmdID)nCmdId;
-
-			if (guidCmdGroup == VSConstants.VSStd2K && (nCmdId == 112 || nCmdId == 323 || nCmdId == 1561))
-			{
-				return VSConstants.E_FAIL;
-			}
-
-			if (guidCmdGroup == VSConstants.GUID_VSStandardCommandSet97
-				&& (nCmdId - (uint)VSConstants.VSStd97CmdID.GotoDefn <= 1
-				|| nCmdId == (uint)VSConstants.VSStd97CmdID.GotoRef
-				|| nCmdId == (uint)VSConstants.VSStd97CmdID.FindReferences))
-			{
-				return VSConstants.E_FAIL;
-			}
-
-			if (guidCmdGroup == VSConstants.VSStd2K)
-			{
-				switch (cmdId)
-				{
-					case VSConstants.VSStd2KCmdID.OUTLN_COLLAPSE_TO_DEF:
-						return (int)OLECMDF.OLECMDF_INVISIBLE;
-					case VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_CURRENT:
-					case VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL:
-					case VSConstants.VSStd2KCmdID.OUTLN_STOP_HIDING_ALL:
-						if (Source.OutliningEnabled)
-						{
-							return (int)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
-						}
-						return 16;
-					case VSConstants.VSStd2KCmdID.OUTLN_START_AUTOHIDING:
-						if (Source.OutliningEnabled)
-						{
-							return 16;
-						}
-						return 3;
-					case VSConstants.VSStd2KCmdID.ToggleConsumeFirstCompletionMode:
-						{
-							LsbCompletionSet obj = Source.CompletionSet as LsbCompletionSet;
-							int num = 3;
-							if (obj.InPreviewMode)
-							{
-								num |= 4;
-							}
-							return num;
-						}
-				}
-			}
-			return base.QueryCommandStatus(ref guidCmdGroup, nCmdId);
-		}
-
-		private void InvokeSnippetBrowser(string prompt, string[] snippetTypes)
-		{
-			ExpansionProvider expansionProvider = GetExpansionProvider();
-			if (expansionProvider != null && TextView != null)
-			{
-				expansionProvider.DisplayExpansionBrowser(TextView, prompt, snippetTypes, includeNullType: true, null, includeNullKind: true);
-			}
-		}
-
-		private static string[] GetExpansionTypes(uint cmd)
-		{
-			string text = cmd == 323 ? "Expansion" : "SurroundsWith";
-			return [text];
-		}
-
-		public override bool HandlePreExec(ref Guid guidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
-		{
-			if (guidCmdGroup == VSConstants.VSStd2K)
-			{
-				switch (nCmdId)
-				{
-					case 323u:
-						InvokeSnippetBrowser(Resources.InsertSnippet, GetExpansionTypes(nCmdId));
-						return true;
-					case 1561u:
-						InvokeSnippetBrowser(Resources.SurroundWith, GetExpansionTypes(nCmdId));
-						return true;
-					case 2303u:
-						{
-							// SqlCompletionSet sqlCompletionSet = (Source as Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.Source).CompletionSet as SqlCompletionSet;
-							LsbCompletionSet sqlCompletionSet = Source.CompletionSet as LsbCompletionSet;
-
-							sqlCompletionSet.InPreviewMode = !sqlCompletionSet.InPreviewMode;
-							sqlCompletionSet.InPreviewModeOutline = sqlCompletionSet.InPreviewMode;
-
-							if (sqlCompletionSet.IsDisplayed)
-								___(TextView.UpdateCompletionStatus(sqlCompletionSet, 1u));
-
-							return true;
-						}
-				}
-			}
-			if (guidCmdGroup == VSConstants.GUID_VSStandardCommandSet97
-				&& nCmdId == (uint)VSConstants.VSStd97CmdID.FindReferences)
-			{
-				HandleGotoReference();
-				return true;
-			}
-
-			if (guidCmdGroup == _ClsidSqlLanguageServiceCommands && nCmdId == 70)
-			{
-				return true;
-			}
-
-			return base.HandlePreExec(ref guidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
-		}
-
-		private void HandleGotoReference()
-		{
-			// ServiceProviderUtil.GetService<ISqlEditorServices>(base.TextView)?.HandleGotoReference();
-		}
-
-		public override void HandleGoto(VSConstants.VSStd97CmdID cmd)
-		{
-			/*
-			ISqlEditorServices sqlEditorServices = ServiceProviderUtil.GetService<ISqlEditorServices>(base.TextView);
-			if (sqlEditorServices != null && cmd == VSConstants.VSStd97CmdID.GotoDefn)
-			{
-				sqlEditorServices.HandleGotoDefinition();
-			}
-			*/
-		}
-	}
-
-
-	#endregion Private classes
 
 
 
@@ -291,7 +142,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 		string first = string.Join(", ", normalized);
 		string second = string.Join(";", normalized);
 
-		return Resources.FormatFilterList.FmtRes(Name, first, second);
+		return Resources.FormatFilterList.Fmt(Name, first, second);
 	}
 
 
@@ -345,8 +196,8 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 		// TraceUtils.Trace(GetType(), "LanguageService.ValidateBreakpointLocation", "buffer: {0}, line: {1}, col: {2}, pCodeSpan: {3}", buffer, line, col, pCodeSpan);
 		IVsTextLines obj = buffer as IVsTextLines;
 
-		___(obj.GetLastLineIndex(out var piLine, out var piIndex));
-		___(obj.GetLineText(0, 0, piLine, piIndex, out var pbstrBuf));
+		___(obj.GetLastLineIndex(out int piLine, out int piIndex));
+		___(obj.GetLineText(0, 0, piLine, piIndex, out string pbstrBuf));
 
 		Resolver.BlockInformation blockInformation = Resolver.FindBreakPointInformation(Parser.Parse(pbstrBuf), line + 1, col + 1);
 
@@ -676,7 +527,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 		context.RemoveAttribute(null, null);
 		context.AddAttribute(VSUSERCONTEXTATTRIBUTEUSAGE.VSUC_Usage_Filter, "DevLang", "TSQL");
 		TextSpan textSpan = ptsSelection[0];
-		buffer.GetLineText(textSpan.iStartLine, textSpan.iStartIndex, textSpan.iEndLine, textSpan.iEndIndex, out var pbstrBuf);
+		buffer.GetLineText(textSpan.iStartLine, textSpan.iStartIndex, textSpan.iEndLine, textSpan.iEndIndex, out string pbstrBuf);
 		if (string.IsNullOrEmpty(pbstrBuf))
 		{
 			textSpan = ComputeWordExtent(buffer, textSpan.iStartLine, textSpan.iStartIndex);
@@ -705,8 +556,8 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 	private TextSpan ComputeWordExtent(IVsTextLines buffer, int line, int index)
 	{
 		TextSpan result = default;
-		buffer.GetLengthOfLine(line, out var piLength);
-		buffer.GetLineText(line, 0, line, piLength, out var pbstrBuf);
+		buffer.GetLengthOfLine(line, out int piLength);
+		buffer.GetLineText(line, 0, line, piLength, out string pbstrBuf);
 		if (pbstrBuf.Length == 0)
 		{
 			return result;
@@ -820,6 +671,158 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 	#endregion Event handling
 
 
+
+
+	// =========================================================================================================
+	#region Subclasses - AbstractLanguageService
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// CustomViewFilter Class
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public class CustomViewFilter : ViewFilter
+	{
+		private static Guid _ClsidSqlLanguageServiceCommands = new(VS.SqlEditorCommandsGuid);
+
+		// private readonly AbstractLanguageService _SqlLanguageService;
+
+		public CustomViewFilter(AbstractLanguageService service, CodeWindowManager mgr, IVsTextView view)
+			: base(mgr, view)
+		{
+			// _SqlLanguageService = service;
+		}
+
+		protected override int QueryCommandStatus(ref Guid guidCmdGroup, uint nCmdId)
+		{
+			VSConstants.VSStd2KCmdID cmdId = (VSConstants.VSStd2KCmdID)nCmdId;
+
+			if (guidCmdGroup == VSConstants.VSStd2K && (nCmdId == 112 || nCmdId == 323 || nCmdId == 1561))
+			{
+				return VSConstants.E_FAIL;
+			}
+
+			if (guidCmdGroup == VSConstants.GUID_VSStandardCommandSet97
+				&& (nCmdId - (uint)VSConstants.VSStd97CmdID.GotoDefn <= 1
+				|| nCmdId == (uint)VSConstants.VSStd97CmdID.GotoRef
+				|| nCmdId == (uint)VSConstants.VSStd97CmdID.FindReferences))
+			{
+				return VSConstants.E_FAIL;
+			}
+
+			if (guidCmdGroup == VSConstants.VSStd2K)
+			{
+				switch (cmdId)
+				{
+					case VSConstants.VSStd2KCmdID.OUTLN_COLLAPSE_TO_DEF:
+						return (int)OLECMDF.OLECMDF_INVISIBLE;
+					case VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_CURRENT:
+					case VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL:
+					case VSConstants.VSStd2KCmdID.OUTLN_STOP_HIDING_ALL:
+						if (Source.OutliningEnabled)
+						{
+							return (int)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
+						}
+						return 16;
+					case VSConstants.VSStd2KCmdID.OUTLN_START_AUTOHIDING:
+						if (Source.OutliningEnabled)
+						{
+							return 16;
+						}
+						return 3;
+					case VSConstants.VSStd2KCmdID.ToggleConsumeFirstCompletionMode:
+						{
+							LsbCompletionSet obj = Source.CompletionSet as LsbCompletionSet;
+							int num = 3;
+							if (obj.InPreviewMode)
+							{
+								num |= 4;
+							}
+							return num;
+						}
+				}
+			}
+			return base.QueryCommandStatus(ref guidCmdGroup, nCmdId);
+		}
+
+		private void InvokeSnippetBrowser(string prompt, string[] snippetTypes)
+		{
+			ExpansionProvider expansionProvider = GetExpansionProvider();
+			if (expansionProvider != null && TextView != null)
+			{
+				expansionProvider.DisplayExpansionBrowser(TextView, prompt, snippetTypes, includeNullType: true, null, includeNullKind: true);
+			}
+		}
+
+		private static string[] GetExpansionTypes(uint cmd)
+		{
+			string text = cmd == 323 ? "Expansion" : "SurroundsWith";
+			return [text];
+		}
+
+		public override bool HandlePreExec(ref Guid guidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+		{
+			if (guidCmdGroup == VSConstants.VSStd2K)
+			{
+				switch (nCmdId)
+				{
+					case 323u:
+						InvokeSnippetBrowser(Resources.InsertSnippet, GetExpansionTypes(nCmdId));
+						return true;
+					case 1561u:
+						InvokeSnippetBrowser(Resources.SurroundWith, GetExpansionTypes(nCmdId));
+						return true;
+					case 2303u:
+						{
+							// SqlCompletionSet sqlCompletionSet = (Source as Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.Source).CompletionSet as SqlCompletionSet;
+							LsbCompletionSet sqlCompletionSet = Source.CompletionSet as LsbCompletionSet;
+
+							sqlCompletionSet.InPreviewMode = !sqlCompletionSet.InPreviewMode;
+							sqlCompletionSet.InPreviewModeOutline = sqlCompletionSet.InPreviewMode;
+
+							if (sqlCompletionSet.IsDisplayed)
+								___(TextView.UpdateCompletionStatus(sqlCompletionSet, 1u));
+
+							return true;
+						}
+				}
+			}
+			if (guidCmdGroup == VSConstants.GUID_VSStandardCommandSet97
+				&& nCmdId == (uint)VSConstants.VSStd97CmdID.FindReferences)
+			{
+				HandleGotoReference();
+				return true;
+			}
+
+			if (guidCmdGroup == _ClsidSqlLanguageServiceCommands && nCmdId == 70)
+			{
+				return true;
+			}
+
+			return base.HandlePreExec(ref guidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
+		}
+
+		private void HandleGotoReference()
+		{
+			// ServiceProviderUtil.GetService<ISqlEditorServices>(base.TextView)?.HandleGotoReference();
+		}
+
+		public override void HandleGoto(VSConstants.VSStd97CmdID cmd)
+		{
+			/*
+			ISqlEditorServices sqlEditorServices = ServiceProviderUtil.GetService<ISqlEditorServices>(base.TextView);
+			if (sqlEditorServices != null && cmd == VSConstants.VSStd97CmdID.GotoDefn)
+			{
+				sqlEditorServices.HandleGotoDefinition();
+			}
+			*/
+		}
+	}
+
+
+	#endregion Subclasses
 
 
 }

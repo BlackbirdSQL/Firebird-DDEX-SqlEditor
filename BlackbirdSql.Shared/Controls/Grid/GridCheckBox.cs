@@ -89,7 +89,7 @@ public sealed class GridCheckBox
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 		}
@@ -106,14 +106,14 @@ public sealed class GridCheckBox
 			if (value == null)
 			{
 				ArgumentNullException ex = new();
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
 			if (value is not SolidBrush solidBrush)
 			{
 				ArgumentException ex = new(ControlsResources.ExOnlySolidBrush, "value");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 

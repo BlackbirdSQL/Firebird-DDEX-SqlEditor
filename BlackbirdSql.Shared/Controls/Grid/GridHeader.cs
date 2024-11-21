@@ -275,7 +275,7 @@ public sealed class GridHeader : IDisposable
 		if (headerItem.MergedWithRight)
 		{
 			ArgumentException ex = new(ControlsResources.ExShouldBeNoDataForMergedColumHeader, "nIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -290,7 +290,7 @@ public sealed class GridHeader : IDisposable
 		if (headerItem.MergedWithRight)
 		{
 			ArgumentException ex = new(ControlsResources.ExCannotSetMergeItemState, "nIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

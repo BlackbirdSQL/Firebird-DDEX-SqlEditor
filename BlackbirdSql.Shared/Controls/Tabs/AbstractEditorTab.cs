@@ -108,7 +108,7 @@ public abstract class AbstractEditorTab : AbstruseEditorTab
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 		finally

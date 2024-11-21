@@ -117,8 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="EvsAddingEventHandlers" xml:space="preserve">
+    <value>Adding event handlers for {0} EF projects</value>
+  </data>
+  <data name="ExceptionAppConfigOpen" xml:space="preserve">
+    <value>{0} app.config is open. Cannot update.</value>
+  </data>
   <data name="ExceptionDteIsNull" xml:space="preserve">
     <value>DTE is null</value>
+  </data>
+  <data name="ExceptionEventValidationExitError" xml:space="preserve">
+    <value>Attempt to exit Validation event when not in a Validation event. _EventValidationCardinal: {1}</value>
   </data>
   <data name="ExceptionIBPackageControllerIsNull" xml:space="preserve">
     <value>IBsPackageController is null</value>
@@ -126,7 +135,16 @@
   <data name="ExceptionIVsRunningDocumentTableIsNull" xml:space="preserve">
     <value>IVsRunningDocumentTable is null</value>
   </data>
+  <data name="ExceptionProjectItemNoLinkProperty" xml:space="preserve">
+    <value>{0}:{1} has no link property</value>
+  </data>
   <data name="ExceptionSVsSolutionIsNull" xml:space="preserve">
     <value>SVsSolution is null</value>
+  </data>
+  <data name="LabelColonSeparated" xml:space="preserve">
+    <value>{0}:{1}</value>
+  </data>
+  <data name="LabelProjectName" xml:space="preserve">
+    <value>Project: {0}.</value>
   </data>
 </root>

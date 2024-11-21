@@ -114,9 +114,9 @@ internal class LsbParseManager
 						string exceptionName = ex.GetType().Name;
 
 						if (exceptionName.EndsWith("ConnectionException"))
-							Diag.Dug(ex, "bindFunction() - Hit ConnectionException while binding.");
+							Diag.Ex(ex, "bindFunction() - Hit ConnectionException while binding.");
 						else if (exceptionName.EndsWith("SqlParserInternalBinderError"))
-							Diag.Dug(ex, "bindFunction() - Hit SqlParserInternalBinderError while binding.");
+							Diag.Ex(ex, "bindFunction() - Hit SqlParserInternalBinderError while binding.");
 						else
 							Diag.ThrowException(ex);
 

@@ -26,7 +26,7 @@ public sealed class LiveSettingsDialog : AbstractTransientSettingsDialog
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 	}

@@ -161,7 +161,7 @@ public sealed class BlockOfCells
 		if (!Contains(rowIndex, columnIndex))
 		{
 			ArgumentException ex = new("", "rowIndex or columnIndex");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 

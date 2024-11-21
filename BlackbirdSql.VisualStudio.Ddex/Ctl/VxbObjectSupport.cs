@@ -128,14 +128,14 @@ public class VxbObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 	{
 		if (name == null)
 		{
-			ArgumentNullException ex = new("name");
-			Diag.Dug(ex);
+			ArgumentNullException ex = new(nameof(name));
+			Diag.Ex(ex);
 			throw ex;
 		}
 
 		if (!name.EndsWith("Definitions"))
 		{
-			Diag.StackException(Resources.ExceptionImportResourceNotFound.FmtRes(name));
+			Diag.StackException(Resources.ExceptionImportResourceNotFound.Fmt(name));
 			return null;
 		}
 
@@ -262,7 +262,7 @@ public class VxbObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 

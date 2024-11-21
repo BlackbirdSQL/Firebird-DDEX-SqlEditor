@@ -40,7 +40,7 @@ public class CommandDatabaseList : AbstractCommand
 
 			if (StoredDatabaseList == null || StoredRctStamp != RctManager.Stamp)
 			{
-				// Evs.Trace(typeof(CommandDatabaseList), "get_DatabaseList", "Rebuilding list. Csb.DatasetKey: {0}.", _Csa == null ? "null" : _Csa.DatasetKey);
+				// Evs.Trace(typeof(CommandDatabaseList), "get_DatabaseList", "Rebuilding list.");
 
 				string nodeDisplayMember = CachedLiveQualifiedName;
 

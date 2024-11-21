@@ -92,7 +92,7 @@ public sealed class ConnectionPointCookie : IDisposable
 				{
 					_Cookie = 0u;
 					_ConnectionPoint = null;
-					ex = new Exception(string.Format(CultureInfo.CurrentCulture, "IConnectionPoint::Advise failed with for event interface '" + eventInterface.Name));
+					ex = new Exception($"IConnectionPoint::Advise failed with for event interface '{eventInterface.Name}");
 				}
 			}
 		}
@@ -106,11 +106,11 @@ public sealed class ConnectionPointCookie : IDisposable
 			if (ex == null)
 			{
 				ex = new ArgumentException("Could not create connection point for event interface '" + eventInterface.Name + "'");
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

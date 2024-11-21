@@ -219,7 +219,7 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 					}
 					catch (Exception ex)
 					{
-						Diag.Dug(ex, string.Format("AbstractSettingsModel<{0}>.{1} Property:{2} PropertyType:{3} is not a valid property.", typeof(TModel).FullName, "GetPropertyWrappersEnumeration", property.Name, property.PropertyType));
+						Diag.Ex(ex, "AbstractSettingsModel<{0}>.{1} Property:{2} PropertyType:{3} is not a valid property.".Fmt(typeof(TModel).FullName, "GetPropertyWrappersEnumeration", property.Name, property.PropertyType));
 					}
 				}
 

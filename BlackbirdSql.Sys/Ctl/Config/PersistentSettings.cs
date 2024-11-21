@@ -42,13 +42,7 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	// ---------------------------------------------------------------------------------
 	protected PersistentSettings()
 	{
-		if (_Instance != null)
-		{
-			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes(GetType().FullName));
-			Diag.Dug(ex);
-			throw ex;
-		}
-
+		Diag.ThrowIfInstanceExists(_Instance);
 
 		_Instance = this;
 	}
@@ -81,8 +75,8 @@ public abstract class PersistentSettings : IBsSettingsProvider
 		{
 			if (_Instance == null)
 			{
-				NullReferenceException ex = new("Cannot instantiate PersistentSettings from abstract ancestor");
-				Diag.Dug(ex);
+				NullReferenceException ex = new(Resources.ExceptionCreateAbstractClass.Fmt(nameof(PersistentSettings)));
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -162,7 +156,7 @@ public abstract class PersistentSettings : IBsSettingsProvider
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Flag indicating whether or not <see cref="Diag.Dug"/> calls are logged
+	/// Flag indicating whether or not <see cref="Diag"/> messages are logged
 	/// </summary>
 	/// <remarks>
 	/// Exceptions are always logged.
@@ -204,7 +198,7 @@ public abstract class PersistentSettings : IBsSettingsProvider
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Flag indicating whether or not <see cref="Diag.Trace"/> calls are logged
+	/// Flag indicating whether or not Evs Trace calls are logged
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static bool EnableTrace => (bool)GetPersistentSetting("DdexDebugEnableTrace", false)
@@ -258,8 +252,8 @@ public abstract class PersistentSettings : IBsSettingsProvider
 
 			if (equivalencyKeys.Count == 0)
 			{
-				ApplicationException ex = new("Could not extract Equivalency keys from User Options");
-				Diag.DebugDug(ex);
+				ApplicationException ex = new(Resources.ExceptionExtractEquivalencyKeys);
+				Diag.Ex(ex);
 				throw (ex);
 			}
 
@@ -326,7 +320,7 @@ public abstract class PersistentSettings : IBsSettingsProvider
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 	}

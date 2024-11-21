@@ -70,7 +70,7 @@ public class CommandDatabaseSelect : AbstractCommand
 	{
 		// SelectedValue changed, probably by user from dropdown.
 
-		if (ExecutionLocked || !RequestDisposeTts(Resources.ExChangeConnectionCaption))
+		if (ExecutionLocked || !RequestDisposeTts(Resources.ExceptionChangeConnectionCaption))
 			return VSConstants.S_OK;
 
 

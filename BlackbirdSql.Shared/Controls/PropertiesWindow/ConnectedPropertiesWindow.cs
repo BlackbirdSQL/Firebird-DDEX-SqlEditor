@@ -191,7 +191,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 				return "";
 			}
 
-			return (QryMgr.QueryExecutionEndTime.Value - QryMgr.QueryExecutionStartTime.Value).FmtStats();
+			return (QryMgr.QueryExecutionEndTime.Value - QryMgr.QueryExecutionStartTime.Value).Fmt();
 		}
 	}
 

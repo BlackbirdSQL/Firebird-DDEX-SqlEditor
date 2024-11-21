@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QEOLESQLExec
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Net;
@@ -368,10 +369,8 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 			throw;
 
 			/*
-			string message = string.Format("An exception was thrown when executing command: {1}.{0}Batch execution aborted.{0}The returned message was: {2}.",
-				Environment.NewLine,
-				statement.Text,
-				ex.Message);
+			string message = "An exception was thrown when executing command: {1}.{0}Batch execution aborted.{0}The returned message was: {2}."
+				.Fmt(Environment.NewLine, statement.Text, ex.Message);
 			throw new SqlException(message);
 			*/
 		}
@@ -429,7 +428,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 					return false;
 				}
 
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				return false;
 			}
 		}
@@ -541,13 +540,14 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		// [LENGTH [=] int [PAGE[S]]]
 		// [DEFAULT CHARACTER SET charset]
 		// [<secondary_file>];
-		var pageSize = 0;
-		var parser = new StringParser(createDatabaseStatement)
+		int pageSize = 0;
+
+		StringParser parser = new (createDatabaseStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
 
-		using (var enumerator = parser.Parse().GetEnumerator())
+		using (IEnumerator<FbStatement> enumerator = parser.Parse().GetEnumerator())
 		{
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "CREATE")
@@ -612,11 +612,13 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 		// [PASSWORD 'password']
 		// [CACHE int]
 		// [ROLE 'rolename']
-		var parser = new StringParser(connectDbStatement)
+
+		StringParser parser = new (connectDbStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
-		using (var enumerator = parser.Parse().GetEnumerator())
+
+		using (IEnumerator<FbStatement> enumerator = parser.Parse().GetEnumerator())
 		{
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "CONNECT")
@@ -665,34 +667,32 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 	private void SetAutoDdl(string setAutoDdlStatement, ref bool autoCommit)
 	{
 		// SET AUTODDL [ON | OFF]
-		var parser = new StringParser(setAutoDdlStatement)
+
+		StringParser parser = new (setAutoDdlStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
 
-		using (var enumerator = parser.Parse().GetEnumerator())
+		using (IEnumerator<FbStatement> enumerator = parser.Parse().GetEnumerator())
 		{
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "SET")
 			{
 				throw new ArgumentException("Malformed isql SET statement. Expected keyword SET but something else was found.");
 			}
+
 			enumerator.MoveNext(); // AUTO
+
 			if (enumerator.MoveNext())
 			{
-				var onOff = enumerator.Current.Text.ToUpperInvariant();
+				string onOff = enumerator.Current.Text.ToUpperInvariant();
+
 				if (onOff == "ON")
-				{
 					autoCommit = true;
-				}
 				else if (onOff == "OFF")
-				{
 					autoCommit = false;
-				}
 				else
-				{
 					throw new ArgumentException("Expected the ON or OFF but something else was found.");
-				}
 			}
 			else
 			{
@@ -705,18 +705,18 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 	private void SetNames(string setNamesStatement)
 	{
 		// SET NAMES charset
-		var parser = new StringParser(setNamesStatement)
+		StringParser parser = new (setNamesStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
 
-		using (var enumerator = parser.Parse().GetEnumerator())
+		using (IEnumerator<FbStatement> enumerator = parser.Parse().GetEnumerator())
 		{
 			enumerator.MoveNext();
+
 			if (enumerator.Current.Text.ToUpperInvariant() != "SET")
-			{
 				throw new ArgumentException("Malformed isql SET statement. Expected keyword SET but something else was found.");
-			}
+
 			enumerator.MoveNext(); // NAMES
 			enumerator.MoveNext();
 			_Csb ??= new(_Owner.Connection.ConnectionString);
@@ -731,22 +731,25 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 	private void SetSqlDialect(string setSqlDialectStatement)
 	{
 		// SET SQL DIALECT dialect
-		var parser = new StringParser(setSqlDialectStatement)
+		StringParser parser = new (setSqlDialectStatement)
 		{
 			Tokens = _StandardParseTokens
 		};
 
-		using (var enumerator = parser.Parse().GetEnumerator())
+		using (IEnumerator<FbStatement> enumerator = parser.Parse().GetEnumerator())
 		{
 			enumerator.MoveNext();
+
 			if (enumerator.Current.Text.ToUpperInvariant() != "SET")
 			{
 				throw new ArgumentException("Malformed isql SET statement. Expected keyword SET but something else was found.");
 			}
+
 			enumerator.MoveNext(); // SQL
 			enumerator.MoveNext(); // DIALECT
 			enumerator.MoveNext();
-			int.TryParse(enumerator.Current.Text, out var dialect);
+
+			int.TryParse(enumerator.Current.Text, out int dialect);
 			_Csb.Dialect = dialect;
 		}
 	}

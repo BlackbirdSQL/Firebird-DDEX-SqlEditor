@@ -59,7 +59,7 @@ public sealed class ScrollManager
 			if (value < 0)
 			{
 				ArgumentException ex = new(ControlsResources.ExNumOfRowsShouldBeGreaterThanZero);
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -90,7 +90,7 @@ public sealed class ScrollManager
 			if (value <= 0)
 			{
 				ArgumentException ex = new(ControlsResources.ExCellHeightShouldBeGreaterThanZero);
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -109,7 +109,7 @@ public sealed class ScrollManager
 			if (value < 0)
 			{
 				ArgumentException ex = new(ControlsResources.ExFirstScrollableColumnShouldBeValid);
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -121,7 +121,7 @@ public sealed class ScrollManager
 			m_firstScrollableColIndex = value;
 			if (m_hWnd != IntPtr.Zero)
 			{
-				Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+				Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 				if (Native.GetScrollInfo(m_hWnd, 0, sCROLLINFO))
 				{
 					CalcFirstColumnIndexAndPosFromScrollPos(sCROLLINFO.nPos);
@@ -148,7 +148,7 @@ public sealed class ScrollManager
 			m_firstRowIndex = m_firstScrollableRowIndex;
 			if (!(m_hWnd == IntPtr.Zero))
 			{
-				Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+				Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 				if (Native.GetScrollInfo(m_hWnd, 1, sCROLLINFO))
 				{
 					CalcFirstRowIndexAndPosFromScrollPos(sCROLLINFO.nPos);
@@ -287,7 +287,7 @@ public sealed class ScrollManager
 
 		if (nRowIndex < m_firstRowIndex || nRowIndex > m_lastRowIndex || nRowIndex == m_lastRowIndex && !bMakeRowTheTopOne)
 		{
-			Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+			Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 			Native.GetScrollInfo(m_hWnd, 1, sCROLLINFO);
 			long firstRowIndex = m_firstRowIndex;
 			if (bMakeRowTheTopOne)
@@ -317,9 +317,9 @@ public sealed class ScrollManager
 
 	public void EnsureRowIsVisible(long nRowIndex, bool bMakeRowTheTopOne)
 	{
-		if (EnsureRowIsVisibleNoRedraw(nRowIndex, bMakeRowTheTopOne, out var yDelta))
+		if (EnsureRowIsVisibleNoRedraw(nRowIndex, bMakeRowTheTopOne, out int yDelta))
 		{
-			Native.RECTEx rectScrollRegion = Native.RECTEx.FromXYWH(0, m_SARect.Y, m_SARect.Right, m_SARect.Height);
+			Native.RECTX rectScrollRegion = Native.RECTX.FromXYWH(0, m_SARect.Y, m_SARect.Right, m_SARect.Height);
 			Native.ScrollWindow(m_hWnd, 0, yDelta, ref rectScrollRegion, ref rectScrollRegion);
 		}
 	}
@@ -340,7 +340,7 @@ public sealed class ScrollManager
 			}
 			else
 			{
-				AdjustGridByHorizScrollBarPosWithoutClientRedraw(num / 1, out var _);
+				AdjustGridByHorizScrollBarPosWithoutClientRedraw(num / 1, out _);
 			}
 		}
 	}
@@ -353,7 +353,7 @@ public sealed class ScrollManager
 		}
 		else
 		{
-			EnsureRowIsVisibleNoRedraw(nRowIndex, bMakeRowTheTopOne: true, out var _);
+			EnsureRowIsVisibleNoRedraw(nRowIndex, bMakeRowTheTopOne: true, out _);
 		}
 
 		EnsureColumnIsVisible(nColIndex, bMakeFirstColFullyVisible, bRedraw);
@@ -368,7 +368,7 @@ public sealed class ScrollManager
 	{
 		if (m_lastColIndex < m_Columns.Count - 1)
 		{
-			Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+			Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 			Native.GetScrollInfo(m_hWnd, 0, sCROLLINFO);
 			int num = GRID_LINE_WIDTH + m_Columns[m_firstColIndex].WidthInPixels - Math.Abs(m_SARect.X + GRID_LINE_WIDTH - m_firstColPos);
 			for (int i = m_firstColIndex + C_HorizScrollUnit; i <= m_lastColIndex; i++)
@@ -383,7 +383,7 @@ public sealed class ScrollManager
 			}
 			else
 			{
-				AdjustGridByHorizScrollBarPosWithoutClientRedraw(sCROLLINFO.nPos + num2, out var _);
+				AdjustGridByHorizScrollBarPosWithoutClientRedraw(sCROLLINFO.nPos + num2, out _);
 			}
 		}
 	}
@@ -453,17 +453,17 @@ public sealed class ScrollManager
 	public void HandleVScroll(int nScrollRequest)
 	{
 		int yDelta = -1;
-		Native.RECTEx scrollRect = new(0, 0, 0, 0);
+		Native.RECTX scrollRect = new(0, 0, 0, 0);
 		if (HandleVScrollWithoutClientRedraw(nScrollRequest, ref yDelta, ref scrollRect))
 		{
 			Native.ScrollWindow(m_hWnd, 0, yDelta, ref scrollRect, ref scrollRect);
 		}
 	}
 
-	public bool HandleVScrollWithoutClientRedraw(int nScrollRequest, ref int yDelta, ref Native.RECTEx scrollRect)
+	public bool HandleVScrollWithoutClientRedraw(int nScrollRequest, ref int yDelta, ref Native.RECTX scrollRect)
 	{
 		bool result = false;
-		Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+		Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 		Native.GetScrollInfo(m_hWnd, 1, sCROLLINFO);
 		long firstRowIndex = m_firstRowIndex;
 		bool flag = true;
@@ -511,7 +511,7 @@ public sealed class ScrollManager
 		{
 			result = true;
 			CalcLastRowIndex();
-			scrollRect = Native.RECTEx.FromXYWH(0, m_SARect.Y, m_SARect.Right, m_SARect.Height);
+			scrollRect = Native.RECTX.FromXYWH(0, m_SARect.Y, m_SARect.Right, m_SARect.Height);
 			yDelta = (int)(firstRowIndex - m_firstRowIndex) * (m_nCellHeight + GRID_LINE_WIDTH);
 		}
 
@@ -521,7 +521,7 @@ public sealed class ScrollManager
 	public void HandleHScroll(int nScrollRequest)
 	{
 		int xDelta = -1;
-		Native.RECTEx scrollRect = new(0, 0, 0, 0);
+		Native.RECTX scrollRect = new(0, 0, 0, 0);
 		if (HandleHScrollWithoutClientRedraw(nScrollRequest, ref xDelta, ref scrollRect))
 		{
 			Native.ScrollWindow(m_hWnd, xDelta, 0, ref scrollRect, ref scrollRect);
@@ -549,10 +549,10 @@ public sealed class ScrollManager
 		}
 	}
 
-	public bool HandleHScrollWithoutClientRedraw(int nScrollRequest, ref int xDelta, ref Native.RECTEx scrollRect)
+	public bool HandleHScrollWithoutClientRedraw(int nScrollRequest, ref int xDelta, ref Native.RECTX scrollRect)
 	{
 		bool result = false;
-		Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+		Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 		Native.GetScrollInfo(m_hWnd, 0, sCROLLINFO);
 		int nPos = sCROLLINFO.nPos;
 		switch (nScrollRequest)
@@ -588,7 +588,7 @@ public sealed class ScrollManager
 			result = true;
 			CalcFirstColumnIndexAndPosFromScrollPos(sCROLLINFO.nPos);
 			CalcLastColumnIndex();
-			scrollRect = Native.RECTEx.FromXYWH(m_SARect.X, 0, m_SARect.Width, m_SARect.Height + m_SARect.Y);
+			scrollRect = Native.RECTX.FromXYWH(m_SARect.X, 0, m_SARect.Width, m_SARect.Height + m_SARect.Y);
 			xDelta = nPos - sCROLLINFO.nPos;
 		}
 
@@ -597,7 +597,7 @@ public sealed class ScrollManager
 
 	private long ProcessVertChange()
 	{
-		Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+		Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 		Native.GetScrollInfo(m_hWnd, 1, sCROLLINFO);
 		sCROLLINFO.nPage = CalcVertPageSize();
 		sCROLLINFO.nMin = 0;
@@ -615,7 +615,7 @@ public sealed class ScrollManager
 
 	private int ProcessHorizChange(ref int nOldScrollPos)
 	{
-		Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+		Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 		Native.GetScrollInfo(m_hWnd, 0, sCROLLINFO);
 		nOldScrollPos = sCROLLINFO.nPos;
 		sCROLLINFO.nMin = 0;
@@ -699,7 +699,7 @@ public sealed class ScrollManager
 		if (nPos < 0)
 		{
 			ArgumentException ex = new(ControlsResources.Grid_ScrollPosShouldBeMoreOrEqualZero, "nPos");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -739,7 +739,7 @@ public sealed class ScrollManager
 
 	private void ResetScrollBars()
 	{
-		Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+		Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 		sCROLLINFO.nPage = sCROLLINFO.nMin = sCROLLINFO.nMax = 0;
 		Native.SetScrollInfo(m_hWnd, 1, sCROLLINFO, redraw: true);
 		Native.SetScrollInfo(m_hWnd, 0, sCROLLINFO, redraw: true);
@@ -747,7 +747,7 @@ public sealed class ScrollManager
 
 	private void AdjustGridByHorizScrollBarPosWithoutClientRedraw(int nHorizScrollPos, out int xDelta)
 	{
-		Native.SCROLLINFOEx sCROLLINFO = new(bInitWithAllMask: true);
+		Native.SCROLLINFOX sCROLLINFO = new(bInitWithAllMask: true);
 		Native.GetScrollInfo(m_hWnd, 0, sCROLLINFO);
 		int nPos = sCROLLINFO.nPos;
 		sCROLLINFO.nPos = nHorizScrollPos;
@@ -761,8 +761,8 @@ public sealed class ScrollManager
 
 	private void AdjustGridByHorizScrollBarPos(int nHorizScrollPos)
 	{
-		AdjustGridByHorizScrollBarPosWithoutClientRedraw(nHorizScrollPos, out var xDelta);
-		Native.RECTEx rectScrollRegion = Native.RECTEx.FromXYWH(m_SARect.X, 0, m_SARect.Width, m_SARect.Height + m_SARect.Y);
+		AdjustGridByHorizScrollBarPosWithoutClientRedraw(nHorizScrollPos, out int xDelta);
+		Native.RECTX rectScrollRegion = Native.RECTX.FromXYWH(m_SARect.X, 0, m_SARect.Width, m_SARect.Height + m_SARect.Y);
 		Native.ScrollWindow(m_hWnd, xDelta, 0, ref rectScrollRegion, ref rectScrollRegion);
 	}
 

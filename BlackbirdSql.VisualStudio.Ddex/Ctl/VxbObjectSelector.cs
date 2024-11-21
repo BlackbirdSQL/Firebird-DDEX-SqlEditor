@@ -95,7 +95,7 @@ public class VxbObjectSelector : VxbObjectSelectorTable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -119,7 +119,7 @@ public class VxbObjectSelector : VxbObjectSelectorTable
 		if (lockedProviderObject == null)
 		{
 			NotImplementedException ex = new("Site.GetLockedProviderObject()");
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw ex;
 		}
 
@@ -165,7 +165,7 @@ public class VxbObjectSelector : VxbObjectSelectorTable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"CollectionName: {parameters[0]}\nConnectionString: {connection?.ConnectionString}");
+			Diag.Ex(ex, $"CollectionName: {parameters[0]}\nConnectionString: {connection?.ConnectionString}");
 			throw;
 		}
 		finally

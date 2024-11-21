@@ -172,8 +172,8 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		IVsFontAndColorStorage vsFontAndColorStorage = ApcManager.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
 
 		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsGridCategory,
-			FontAndColorProviderGridResults.GridCell, vsFontAndColorStorage, out var categoryFont, out var foreColor,
-			out var bkColor, readFont: true))
+			FontAndColorProviderGridResults.GridCell, vsFontAndColorStorage, out Font categoryFont, out Color? foreColor,
+			out Color? bkColor, true))
 		{
 			if (categoryFont != null)
 			{
@@ -490,7 +490,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 	public static StreamWriter GetTextWriterForResultsToFile(bool xmlResults, ref string intialDirectory)
 	{
-		// Evs.Trace(typeof(VS), "GetTextWriterForQueryResultsToFile()");
+		// Evs.Trace(typeof(VS), nameof(GetTextWriterForQueryResultsToFile));
 
 		FileEncodingDialog fileEncodingDlg = new FileEncodingDialog();
 		string text = Properties.Resources.SqlExportFromGridFilterTabDelimitted;
@@ -890,7 +890,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		}
 		catch (NullReferenceException e)
 		{
-			Diag.Dug(e);
+			Diag.Ex(e);
 		}
 		catch (FbException val)
 		{
@@ -899,11 +899,11 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		}
 		catch (ArgumentException e3)
 		{
-			Diag.Dug(e3);
+			Diag.Ex(e3);
 		}
 		catch (OutOfMemoryException e4)
 		{
-			Diag.Dug(e4);
+			Diag.Ex(e4);
 		}
 		catch (InvalidOperationException e5)
 		{
@@ -911,7 +911,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		}
 		catch (ApplicationException ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			AddStringToErrors(ex.Message, flush: true);
 		}
 	}
@@ -947,7 +947,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		return true;
@@ -958,7 +958,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 	public void ProcessNewXml(string xmlString, bool cleanPreviousResults)
 	{
 		NotSupportedException ex = new();
-		Diag.Dug(ex);
+		Diag.Ex(ex);
 		throw ex;
 	}
 
@@ -984,8 +984,8 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 				text += ex.InnerException.Message;
 			}
 
-			ApplicationException exo = new(ControlsResources.ExFailedToReadExecutionPlan.FmtRes(text), ex);
-			Diag.Dug(exo);
+			ApplicationException exo = new(ControlsResources.ExFailedToReadExecutionPlan.Fmt(text), ex);
+			Diag.Ex(exo);
 			throw exo;
 		}
 	}
@@ -1010,7 +1010,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 				text += ex.InnerException.Message;
 			}
 
-			ApplicationException exo = new(ControlsResources.ExFailedToReadExecutionPlan.FmtRes(text), ex);
+			ApplicationException exo = new(ControlsResources.ExFailedToReadExecutionPlan.Fmt(text), ex);
 			throw exo;
 		}
 	}
@@ -1049,7 +1049,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 			{
 
 				InvalidOperationException ex = new(ControlsResources.ExCannotFindDataForExecutionPlan);
-				Diag.Dug(ex);
+				Diag.Ex(ex);
 				throw ex;
 			}
 
@@ -1262,7 +1262,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		if (_GridCount == C_MaxGridResultSets)
 		{
 			MarkAsCouldNotAddMoreGrids();
-			Exception ex = new ResultsException(ControlsResources.ExCanDisplayOnlyNGridResults.FmtRes(C_MaxGridResultSets));
+			Exception ex = new ResultsException(ControlsResources.ExCanDisplayOnlyNGridResults.Fmt(C_MaxGridResultSets));
 			throw ex;
 		}
 
@@ -1547,14 +1547,14 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex);
+					Diag.Ex(ex);
 					throw;
 				}
 			}
 
 			if (_ExecutionPlanMaxCountExceeded)
 			{
-				_TextMessagesPage.ResultsWriter.AppendNormal(ControlsResources.ExCanDisplayOnlyNExecutionPlanControls.FmtRes(C_MaxExecutionPlanControls), noCRLF: true);
+				_TextMessagesPage.ResultsWriter.AppendNormal(ControlsResources.ExCanDisplayOnlyNExecutionPlanControls.Fmt(C_MaxExecutionPlanControls), noCRLF: true);
 			}
 		}
 		*/
@@ -1622,7 +1622,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 			if (AuxDocData.SqlOutputMode == EnSqlOutputMode.ToGrid && CouldNotShowSomeGridResults)
 			{
-				_TextMessagesPage.ResultsWriter.AppendError(ControlsResources.ExCanDisplayOnlyNGridResults.FmtRes(C_MaxGridResultSets));
+				_TextMessagesPage.ResultsWriter.AppendError(ControlsResources.ExCanDisplayOnlyNGridResults.Fmt(C_MaxGridResultSets));
 
 				_HasMessages = true;
 				_HadExecutionErrors = true;
@@ -1657,7 +1657,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		catch (Exception e)
 		{
 			result = false;
-			Diag.Dug(e);
+			Diag.Ex(e);
 		}
 		finally
 		{
@@ -1670,7 +1670,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 				catch (Exception e2)
 				{
 					result = false;
-					Diag.Dug(e2);
+					Diag.Ex(e2);
 				}
 			}
 		}

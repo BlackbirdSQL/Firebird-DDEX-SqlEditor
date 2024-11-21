@@ -114,7 +114,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		if (m.Msg == Native.WM_CONTEXTMENU)
 		{
-			if (FocusedGrid != null && GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, FocusedGrid))
+			if (FocusedGrid != null && GetCoordinatesForPopupMenuFromWM_Context(ref m, out int xPos, out int yPos, FocusedGrid))
 			{
 				UnsafeCmd.ShowContextMenuEvent(CommandProperties.ClsidCommandSet, (int)EnCommandSet.ContextIdResultsWindow, xPos, yPos, this);
 			}
@@ -153,7 +153,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		{
 			Diag.Expected(ex);
 
-			MessageCtl.ShowEx(ex, "", MessageBoxButtons.OK, MessageBoxIcon.Hand, null);
+			MessageCtl.ShowX(ex, "", MessageBoxButtons.OK, MessageBoxIcon.Hand, null);
 
 			return;
 		}
@@ -204,6 +204,8 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		float result = 0f;
 		float cellValue = 0f;
 		long longres = 0;
+		TimeSpan timeres;
+
 		switch (sn.SpecialAction)
 		{
 			case EnStatisticSpecialAction.NoAction:
@@ -212,11 +214,13 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				break;
 			case EnStatisticSpecialAction.ClientProcessingTimeAction:
 				result = cellValue = longres = (long)snapshotData["ExecutionTime"] - (long)snapshotData["NetworkServerTime"];
-				stringValue = longres.FmtStats();
+				timeres = new(longres);
+				stringValue = timeres.Fmt();
 				break;
 			case EnStatisticSpecialAction.ElapsedTimeFormat:
 				result = cellValue = longres = (long)snapshotData[sn.Name];
-				stringValue = longres.FmtStats();
+				timeres = new(longres);
+				stringValue = timeres.Fmt();
 				break;
 			case EnStatisticSpecialAction.DateTimeFormat:
 				result = cellValue = longres = (long)snapshotData[sn.Name];
@@ -253,7 +257,8 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				stringValue = value.ToString(CultureInfo.InvariantCulture);
 				break;
 			case EnStatisticSpecialAction.ElapsedTimeFormat:
-				stringValue = ((long)value).FmtStats();
+				TimeSpan timeres = new((long)value);
+				stringValue = timeres.Fmt();
 				break;
 			case EnStatisticSpecialAction.DateTimeFormat:
 				stringValue = "";
@@ -297,7 +302,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex, $"Statistic: {sn.Name}.");
+					Diag.Ex(ex, $"Statistic: {sn.Name}.");
 					throw;
 				}
 
@@ -312,7 +317,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 					}
 					catch (Exception ex)
 					{
-						Diag.Dug(ex, $"Statistic: {sn.Name}.");
+						Diag.Ex(ex, $"Statistic: {sn.Name}.");
 						throw;
 					}
 				}
@@ -415,8 +420,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 			// Set the header text for the trial column. Changed +2 to +1 because bitmap header column
 			// and column to it's left are no longer merged.
-			gridControl.SetHeaderInfo(2 * i + 1, string.Format(CultureInfo.CurrentCulture,
-				AttributeResources.StatisticsPanelSnapshotClientStatsTrial, snapshots.Count - i), null);
+			gridControl.SetHeaderInfo(2 * i + 1, AttributeResources.StatisticsPanelSnapshotClientStatsTrial.Fmt(snapshots.Count - i), null);
 
 			for (int j = 0; j < gridCollections.Length; j++)
 				AddDarkColoredCell(gridCollections[j], useNullBitmap: true);

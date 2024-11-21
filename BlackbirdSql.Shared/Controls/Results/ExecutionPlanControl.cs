@@ -105,7 +105,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		}
 		catch (Exception innerException)
 		{
-			throw new ApplicationException(ControlsResources.ExFailedToLoadExecutionPlanFile.FmtRes(xmlFile), innerException);
+			throw new ApplicationException(ControlsResources.ExFailedToLoadExecutionPlanFile.Fmt(xmlFile), innerException);
 		}
 	}
 
@@ -232,7 +232,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 			}
 			catch (Exception e)
 			{
-				Diag.Dug(e);
+				Diag.Ex(e);
 				Cmd.ShowExceptionInDialog("", e);
 			}
 			return 0;
@@ -315,20 +315,20 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		try
 		{
 			string showPlanXml = GetShowPlanXml();
-			string pszItemName = string.Format(CultureInfo.InvariantCulture, "{0}.xml", ControlsResources.ExecutionPlan);
+			string pszItemName = "{0}.xml".Fmti(ControlsResources.ExecutionPlan);
 			if (!string.IsNullOrEmpty(sqlplanFile))
 			{
 				string name = new System.IO.FileInfo(sqlplanFile).Name;
 				if (name.EndsWith(".sqlplan", StringComparison.OrdinalIgnoreCase))
 				{
-					pszItemName = string.Format(CultureInfo.InvariantCulture, "{0}.xml", name[..^8]);
+					pszItemName = "{0}.xml".Fmti(name[..^8]);
 				}
 			}
 			int num = 0;
 			do
 			{
 				string tempFileName = Path.GetTempFileName();
-				text = string.Format(CultureInfo.InvariantCulture, "{0}.xml", tempFileName);
+				text = "{0}.xml".Fmti(tempFileName);
 				File.Delete(tempFileName);
 				num++;
 			}
@@ -386,12 +386,12 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 			string text = pvar.ToString();
 			text = text.Replace("*", "");
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine(string.Format(CultureInfo.CurrentCulture, ControlsResources.ExecutionPlan_MissingIndexDetailsTitle, text, missingIndexImpact));
+			stringBuilder.AppendLine(ControlsResources.ExecutionPlan_MissingIndexDetailsTitle.Fmt(text, missingIndexImpact));
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine("/ * ");
-			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "USE {0}", missingIndexDatabase));
+			stringBuilder.AppendLine("USE {0}".Fmti(missingIndexDatabase));
 			stringBuilder.AppendLine(?Settings.EditorExecutionBatchSeparator);
-			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0}", missingIndexQueryText));
+			stringBuilder.AppendLine("{0}".Fmti(missingIndexQueryText));
 			stringBuilder.AppendLine(?Settings.EditorExecutionBatchSeparator);
 			stringBuilder.AppendLine("* /");
 			Cmd.OpenNewMiscellaneousSqlFile(new ServiceProvider(Controller.OleServiceProvider), stringBuilder.ToString());
@@ -427,7 +427,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		}
 		catch (Exception e)
 		{
-			Diag.Dug(e);
+			Diag.Ex(e);
 			Cmd.ShowExceptionInDialog(ControlsResources.ExSavingExecutionPlan, e);
 		}
 	}
@@ -697,7 +697,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 			panel.DescriptionCtl.ClusteredMode = ControlsResources.ExecutionPlan_ClusteredMode;
 		}
 		int num = ((totalCost > 0.0) ? ((int)Math.Round(panel.GraphControl.Cost * 100.0 / totalCost)) : ((int)Math.Round(100.0 / (double)GraphPanelCount)));
-		panel.Title = string.Format(CultureInfo.CurrentCulture, ControlsResources.ExecutionPlan_QueryCostFormat, queryNumber, num);
+		panel.Title = ControlsResources.ExecutionPlan_QueryCostFormat.Fmt(queryNumber, num);
 		SetOptionalMissingIndex(panel);
 	}
 
@@ -731,7 +731,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		Diag.ThrowIfNotOnUIThread();
 
 		IVsFontAndColorStorage vsFontAndColorStorage = (IVsFontAndColorStorage)GetService(typeof(SVsFontAndColorStorage));
-		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory, FontAndColorProviderExecutionPlan.Text, vsFontAndColorStorage, out var categoryFont, out var _, out var _, readFont: true))
+		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory, FontAndColorProviderExecutionPlan.Text, vsFontAndColorStorage, out Font categoryFont, out _, out _, readFont: true))
 		{
 			return categoryFont;
 		}
@@ -773,21 +773,21 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 				string value5 = childNode.Attributes["Name"].Value;
 				if (string.Compare(item.Attributes["Usage"].Value, "INCLUDE", StringComparison.Ordinal) != 0)
 				{
-					text = ((!(text == "")) ? string.Format(CultureInfo.InvariantCulture, "{0},{1}", text, value5) : value5);
+					text = ((!(text == "")) ? "{0},{1}".Fmti(text, value5) : value5);
 				}
 				else
 				{
-					text2 = ((!(text2 == "")) ? string.Format(CultureInfo.InvariantCulture, "{0},{1}", text2, value5) : value5);
+					text2 = ((!(text2 == "")) ? "{0},{1}".Fmti(text2, value5) : value5);
 				}
 			}
 		}
-		string text3 = string.Format(CultureInfo.InvariantCulture, "CREATE NONCLUSTERED INDEX [<Name of Missing Index, sysname,>]\r\nON {0}.{1} ({2})\r\n", value3, value4, text);
+		string text3 = "CREATE NONCLUSTERED INDEX [<Name of Missing Index, sysname,>]\r\nON {0}.{1} ({2})\r\n".Fmti(value3, value4, text);
 		if (!string.IsNullOrEmpty(text2))
 		{
-			text3 += string.Format(CultureInfo.InvariantCulture, "INCLUDE ({0})", text2);
+			text3 += "INCLUDE ({0})".Fmti(text2);
 		}
 		string value6 = xmlNode2.Attributes["Impact"].Value;
-		string caption = string.Format(CultureInfo.InvariantCulture, ControlsResources.ExecutionPlan_MissingIndexFormat, value6, text3);
+		string caption = ControlsResources.ExecutionPlan_MissingIndexFormat.Fmti(value6, text3);
 		panel.DescriptionCtl.SetOptionalMissingIndex(caption, text3, value6, value2);
 	}
 	*/

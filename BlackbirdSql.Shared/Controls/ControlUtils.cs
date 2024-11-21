@@ -71,7 +71,7 @@ public static class ControlUtils
 			}
 			catch (Exception e)
 			{
-				Diag.Dug(e);
+				Diag.Ex(e);
 				return false;
 			}
 		}

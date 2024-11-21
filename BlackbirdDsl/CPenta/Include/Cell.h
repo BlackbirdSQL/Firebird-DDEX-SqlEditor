@@ -870,7 +870,7 @@ public:
 					SysStr::Format("Offset {0} requested on string length of {1}.", index,
 						TransientObject == nullptr ? "nullptr" : len.ToString()));
 
-				Diag::Dug(ex);
+				Diag::Ex(ex);
 				throw ex;
 			}
 
@@ -892,7 +892,7 @@ public:
 					SysStr::Format("Offset {0} requested on string length of {1}.", index,
 						(TransientObject == nullptr) ? "nullptr" : len.ToString()));
 
-				Diag::Dug(ex);
+				Diag::Ex(ex);
 				throw ex;
 			}
 
@@ -919,7 +919,7 @@ public:
 				if (str == nullptr)
 				{
 					System::InvalidCastException^ ex = gcnew System::InvalidCastException("Could not cast stored typr to SysStr^");
-					Diag::Dug(ex);
+					Diag::Ex(ex);
 					throw ex;
 				}
 				LocalString = MarshalSetChar(str, index, value);

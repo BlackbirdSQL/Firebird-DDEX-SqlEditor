@@ -348,7 +348,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		set
 		{
 			if (value)
-				Diag.ThrowException(new ArgumentException(Resources.ExArgumentOnlyFalse.FmtRes(nameof(IsVirtualWindow))));
+				Diag.ThrowException(new ArgumentException(Resources.ExceptionArgumentOnlyFalse.Fmt(nameof(IsVirtualWindow))));
 
 			if (_InflightMoniker == null)
 				return;
@@ -386,7 +386,7 @@ public sealed class AuxilliaryDocData : IDisposable
 			// Evs.Trace(GetType(), "set_SqlOutputMode", "value = {0}", value);
 			if (QryMgr.IsLocked)
 			{
-				InvalidOperationException ex = new(Resources.ExSqlExecutionModeChangeFailed);
+				InvalidOperationException ex = new(Resources.ExceptionSqlExecutionModeChangeFailed);
 				Diag.ThrowException(ex);
 			}
 
@@ -502,7 +502,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 			throw;
 		}
 
@@ -538,7 +538,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, "GetData failed on DocData for LibraryData.AuxilliaryDocDataGuid.");
+			Diag.Ex(ex, "GetData failed on DocData for LibraryData.AuxilliaryDocDataGuid.");
 		}
 
 		return value;
@@ -564,9 +564,9 @@ public sealed class AuxilliaryDocData : IDisposable
 		{
 			if (!inAutomation)
 			{
-				RdtManager.AsyeuShowWindowFrame(_DocCookie);
+				RdtManager.ShowWindowFrameAsyeu(_DocCookie);
 				msgResource ??= Resources.MsgAbortExecutionAndClose;
-				dialogResult = MessageCtl.ShowEx(msgResource,
+				dialogResult = MessageCtl.ShowX(msgResource,
 					Resources.MsgQueryAbort_IsExecutingCaption,
 					MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 			}
@@ -593,11 +593,11 @@ public sealed class AuxilliaryDocData : IDisposable
 
 			if (!inAutomation)
 			{
-				RdtManager.AsyeuShowWindowFrame(_DocCookie);
+				RdtManager.ShowWindowFrameAsyeu(_DocCookie);
 
 				msgResource ??= Resources.MsgQueryAbort_UncommittedTransactionsClose;
 
-				dialogResult = MessageCtl.ShowEx(msgResource,
+				dialogResult = MessageCtl.ShowX(msgResource,
 					Resources.MsgQueryAbort_UncommittedTransactionsCaption,
 					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
 			}
@@ -655,13 +655,13 @@ public sealed class AuxilliaryDocData : IDisposable
 
 				if (pair.Key.IsVirtualWindow)
 				{
-					str = Resources.MsgQueryAbort_QualifiedName.FmtRes(pair.Value, datasetKey);
+					str = Resources.MsgQueryAbort_QualifiedName.Fmt(pair.Value, datasetKey);
 					sortList.Add(str);
 				}
 				else
 				{
 					str = Cmd.GetShortenedMonikerPath(pair.Value, 72 - datasetKey.Length);
-					str = Resources.MsgQueryAbort_QualifiedName.FmtRes(str, datasetKey);
+					str = Resources.MsgQueryAbort_QualifiedName.Fmt(str, datasetKey);
 					savedList.Add(str);
 				}
 			}
@@ -676,9 +676,9 @@ public sealed class AuxilliaryDocData : IDisposable
 				sortList.Add(str);
 
 			foreach (string name in sortList)
-				names += (names != "" ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.FmtRes(name);
+				names += (names != "" ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.Fmt(name);
 
-			dialogResult = MessageCtl.ShowEx(Resources.MsgQueryAbort_IsExecutingList.FmtRes(names),
+			dialogResult = MessageCtl.ShowX(Resources.MsgQueryAbort_IsExecutingList.Fmt(names),
 				Resources.MsgQueryAbort_IsExecutingCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 		}
 
@@ -718,13 +718,13 @@ public sealed class AuxilliaryDocData : IDisposable
 
 				if (pair.Key.IsVirtualWindow)
 				{
-					str = Resources.MsgQueryAbort_QualifiedName.FmtRes(pair.Value, datasetKey);
+					str = Resources.MsgQueryAbort_QualifiedName.Fmt(pair.Value, datasetKey);
 					sortList.Add(str);
 				}
 				else
 				{
 					str = Cmd.GetShortenedMonikerPath(pair.Value, 72 - datasetKey.Length);
-					str = Resources.MsgQueryAbort_QualifiedName.FmtRes(str, datasetKey);
+					str = Resources.MsgQueryAbort_QualifiedName.Fmt(str, datasetKey);
 					savedList.Add(str);
 				}
 			}
@@ -740,9 +740,9 @@ public sealed class AuxilliaryDocData : IDisposable
 
 
 			foreach (string name in sortList)
-				names += (names != "" ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.FmtRes(name);
+				names += (names != "" ? "\n" : "") + Resources.MsgQueryAbort_NameIndent.Fmt(name);
 
-			dialogResult = MessageCtl.ShowEx(Resources.MsgQueryAbort_UncommittedTransactionsList.FmtRes(names),
+			dialogResult = MessageCtl.ShowX(Resources.MsgQueryAbort_UncommittedTransactionsList.Fmt(names),
 				Resources.MsgQueryAbort_UncommittedTransactionsCaption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
 		}
 
@@ -786,7 +786,7 @@ public sealed class AuxilliaryDocData : IDisposable
 			ArgumentException ex = new ArgumentException($"DocData is not IVsUserData: {type.FullName}. SetData failed on DocData for LibraryData.AuxilliaryDocDataGuid.",
 				nameof(docData));
 
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 
 			return;
 		}
@@ -799,7 +799,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, "SetData failed on DocData for LibraryData.AuxilliaryDocDataGuid.");
+			Diag.Ex(ex, "SetData failed on DocData for LibraryData.AuxilliaryDocDataGuid.");
 		}
 	}
 
@@ -841,11 +841,11 @@ public sealed class AuxilliaryDocData : IDisposable
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"Inflight moniker: {InflightMoniker}.");
+				Diag.Ex(ex, $"Inflight moniker: {InflightMoniker}.");
 				throw;
 			}
 
-			name = Resources.QueryGlyphFormat.FmtRes(SystemData.C_SessionTitleGlyph, name);
+			name = Resources.QueryGlyphFormat.Fmt(SystemData.C_SessionTitleGlyph, name);
 		}
 		else
 		{
@@ -862,29 +862,29 @@ public sealed class AuxilliaryDocData : IDisposable
 
 
 		string msg;
-		string ttsMsg = args.TtsDiscarded ? Resources.WarnQueryTtsDiscarded.FmtRes(indent) : "";
+		string ttsMsg = args.TtsDiscarded ? Resources.WarnQueryTtsDiscarded.Fmt(indent) : "";
 
 
 		switch (args.State)
 		{
 			case EnNotifyConnectionState.NotifyAutoClosed:
-				prefix = Resources.InfoQueryPrefix.FmtRes(indent);
-				msg = Resources.InfoQueryConnectionAutoClosed.FmtRes(prefix, indent,
+				prefix = Resources.InfoQueryPrefix.Fmt(indent);
+				msg = Resources.InfoQueryConnectionAutoClosed.Fmt(prefix, indent,
 					datasetKey, QryMgr.Strategy.MdlCsb.ConnectionLifeTime, name);
 				break;
 			case EnNotifyConnectionState.NotifyBroken:
-				prefix = Resources.WarnQueryPrefix.FmtRes(indent);
-				msg = Resources.WarnQueryConnectionBroken.FmtRes(prefix, indent,
+				prefix = Resources.WarnQueryPrefix.Fmt(indent);
+				msg = Resources.WarnQueryConnectionBroken.Fmt(prefix, indent,
 					datasetKey, ttsMsg, name);
 				break;
 			case EnNotifyConnectionState.NotifyDead:
-				prefix = Resources.WarnQueryPrefix.FmtRes(indent);
-				msg = Resources.WarnQueryConnectionDead.FmtRes(prefix, indent,
+				prefix = Resources.WarnQueryPrefix.Fmt(indent);
+				msg = Resources.WarnQueryConnectionDead.Fmt(prefix, indent,
 					datasetKey, ttsMsg, name);
 				break;
 			case EnNotifyConnectionState.NotifyReset:
-				prefix = Resources.WarnQueryPrefix.FmtRes(indent);
-				msg = Resources.WarnQueryConnectionReset.FmtRes(prefix, indent,
+				prefix = Resources.WarnQueryPrefix.Fmt(indent);
+				msg = Resources.WarnQueryConnectionReset.Fmt(prefix, indent,
 					datasetKey, ttsMsg, name);
 				break;
 			default:
@@ -892,7 +892,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		}
 
 
-		Diag.AsyuiOutputPaneWriteLine(msg, true);
+		Diag.OutputPaneWriteLineAsyui(msg, true);
 
 		return isUnlocked;
 	}

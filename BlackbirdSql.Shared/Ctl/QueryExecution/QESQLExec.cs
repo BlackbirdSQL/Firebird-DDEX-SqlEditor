@@ -160,12 +160,12 @@ public class QESQLExec : AbstractQESQLExec
 			{
 				if (_CurrentConnInfo.UserID != null && _CurrentConnInfo.UserID.Length != 0)
 				{
-					OnInfoMessage(Resources.InfoDisconnectingFromSvrAsUser.FmtRes(string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetName) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetName,
+					OnInfoMessage(Resources.InfoDisconnectingFromSvrAsUser.Fmt(string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetName) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetName,
 						_CurrentConnInfo.UserID));
 				}
 				else
 				{
-					OnInfoMessage(Resources.InfoDisconnectingFromSvr.FmtRes(string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetName) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetName));
+					OnInfoMessage(Resources.InfoDisconnectingFromSvr.Fmt(string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetName) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetName));
 				}
 			}
 			*/
@@ -176,8 +176,8 @@ public class QESQLExec : AbstractQESQLExec
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
-			RaiseErrorMessage(Resources.ExUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
+			Diag.Ex(ex);
+			RaiseErrorMessage(Resources.ExceptionUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 	}
 
@@ -238,7 +238,7 @@ public class QESQLExec : AbstractQESQLExec
 			}
 
 			if (multi)
-				RaiseInfoMessage(Resources.QueryBatchExecCompleted.FmtRes(_ExecBatchNumOfTimes));
+				RaiseInfoMessage(Resources.QueryBatchExecCompleted.Fmt(_ExecBatchNumOfTimes));
 
 			return scriptExecutionResult;
 		}
@@ -434,7 +434,7 @@ public class QESQLExec : AbstractQESQLExec
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			Diag.Ex(ex);
 		}
 
 		return await base.RaiseExecutionCompletedAsync(execResult, launched, cancelToken, syncToken);

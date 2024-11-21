@@ -80,7 +80,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 
 
 	// GetClientRect
-	public static bool GetClientRect(IntPtr hwnd, out UIRECTEx lpRect)
+	public static bool GetClientRect(IntPtr hwnd, out UIRECTX lpRect)
 	{
 		bool result = GetClientRect(hwnd, out OLERECT lpOleRect);
 
@@ -357,7 +357,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 
 
 	[Serializable]
-	public struct UIRECTEx
+	public struct UIRECTX
 	{
 		// Microsoft.SqlServer.ConnectionDlg.UI.WPF.PlatformUI.RECT
 
@@ -403,7 +403,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			}
 		}
 
-		public UIRECTEx(int left, int top, int right, int bottom)
+		public UIRECTX(int left, int top, int right, int bottom)
 		{
 			Left = left;
 			Top = top;
@@ -411,7 +411,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			Bottom = bottom;
 		}
 
-		public UIRECTEx(Rect rect)
+		public UIRECTX(Rect rect)
 		{
 			Left = (int)rect.Left;
 			Top = (int)rect.Top;
@@ -419,7 +419,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			Bottom = (int)rect.Bottom;
 		}
 
-		public UIRECTEx(Microsoft.VisualStudio.OLE.Interop.RECT rect)
+		public UIRECTX(Microsoft.VisualStudio.OLE.Interop.RECT rect)
 		{
 			Left = rect.left;
 			Top = rect.top;

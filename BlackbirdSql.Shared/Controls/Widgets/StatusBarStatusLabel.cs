@@ -26,14 +26,11 @@ public sealed class StatusBarStatusLabel : ToolStripStatusLabel
 		set
 		{
 			ToolTipText = value;
+
 			if (!string.IsNullOrEmpty(value) && maxCharacters < value.Length)
-			{
-				base.Text = string.Format(CultureInfo.InvariantCulture, "{0}...", value[..(maxCharacters - 3)]);
-			}
+				base.Text = "{0}...".Fmti(value[..(maxCharacters - 3)]);
 			else
-			{
 				base.Text = value;
-			}
 		}
 	}
 
@@ -41,7 +38,7 @@ public sealed class StatusBarStatusLabel : ToolStripStatusLabel
 	{
 		if (maxCharacters < 4)
 		{
-			Diag.Dug(new ArgumentException("minimum number of characters is 4, otherwise truncation results in just \"...\""));
+			Diag.Ex(new ArgumentException("minimum number of characters is 4, otherwise truncation results in just \"...\""));
 		}
 
 		this.maxCharacters = maxCharacters;

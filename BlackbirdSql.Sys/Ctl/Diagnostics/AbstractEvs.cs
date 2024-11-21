@@ -126,9 +126,10 @@ public class AbstractEvs<TEventSource> : EvsProvider<TEventSource> where TEventS
 		else
 			strEvent = "ACTIVITY" + eventId.ToString().ToUpperInvariant();
 
-		Diag.Dug(eventLevel == EnEventLevel.Critical,
-			$"[{strEvent}] {type.FullName}::{method}" + (msg),
-			line, memberName ?? "UNK_METHOD", filename ?? "UNK_SOURCEFILE");
+		memberName ??= "UNK_METHOD";
+		filename ??= "UNK_SOURCEFILE";
+
+		Diag.LogEvs($"[{strEvent}] {type.FullName}::{method}{msg}", line, memberName, filename, eventLevel);
 	}
 
 

@@ -495,7 +495,7 @@
 		<Compile Include="Ctl\Commands\MenuCommandTextChanges.cs" />
 		<Compile Include="Ctl\IO\SortingArray.cs" />
 		<Compile Include="Ctl\Commands\ViewCommandFilter.cs" />
-		<Compile Include="Ctl\TextSpanEx.cs" />
+		<Compile Include="Ctl\TextSpanX.cs" />
 		<Compile Include="Ctl\CommandMapper.cs" />
 		<Compile Include="Ctl\TextEditorProxy.cs" />
 		<Compile Include="Ctl\VsColorUtilities.cs" />
