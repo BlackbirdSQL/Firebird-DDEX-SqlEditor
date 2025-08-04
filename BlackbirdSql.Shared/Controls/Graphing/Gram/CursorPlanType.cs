@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class CursorPlanType
+internal class CursorPlanType
 {
 	private CursorPlanTypeOperation[] operationField;
 
@@ -37,7 +37,7 @@ public class CursorPlanType
 	private bool forwardOnlyFieldSpecified;
 
 	[XmlElement("Operation")]
-	public CursorPlanTypeOperation[] Operation
+	internal CursorPlanTypeOperation[] Operation
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class CursorPlanType
 	}
 
 	[XmlAttribute]
-	public string CursorName
+	internal string CursorName
 	{
 		get
 		{
@@ -63,7 +63,7 @@ public class CursorPlanType
 	}
 
 	[XmlAttribute]
-	public EnCursorType CursorActualType
+	internal EnCursorType CursorActualType
 	{
 		get
 		{
@@ -76,7 +76,7 @@ public class CursorPlanType
 	}
 
 	[XmlIgnore]
-	public bool CursorActualTypeSpecified
+	internal bool CursorActualTypeSpecified
 	{
 		get
 		{
@@ -89,7 +89,7 @@ public class CursorPlanType
 	}
 
 	[XmlAttribute]
-	public EnCursorType CursorRequestedType
+	internal EnCursorType CursorRequestedType
 	{
 		get
 		{
@@ -102,7 +102,7 @@ public class CursorPlanType
 	}
 
 	[XmlIgnore]
-	public bool CursorRequestedTypeSpecified
+	internal bool CursorRequestedTypeSpecified
 	{
 		get
 		{
@@ -115,7 +115,7 @@ public class CursorPlanType
 	}
 
 	[XmlAttribute]
-	public EnCursorPlanTypeCursorConcurrency CursorConcurrency
+	internal EnCursorPlanTypeCursorConcurrency CursorConcurrency
 	{
 		get
 		{
@@ -128,7 +128,7 @@ public class CursorPlanType
 	}
 
 	[XmlIgnore]
-	public bool CursorConcurrencySpecified
+	internal bool CursorConcurrencySpecified
 	{
 		get
 		{
@@ -141,7 +141,7 @@ public class CursorPlanType
 	}
 
 	[XmlAttribute]
-	public bool ForwardOnly
+	internal bool ForwardOnly
 	{
 		get
 		{
@@ -154,7 +154,7 @@ public class CursorPlanType
 	}
 
 	[XmlIgnore]
-	public bool ForwardOnlySpecified
+	internal bool ForwardOnlySpecified
 	{
 		get
 		{

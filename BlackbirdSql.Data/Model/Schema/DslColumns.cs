@@ -39,7 +39,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 /// </summary>
 internal class DslColumns : AbstractDslSchema
 {
-	internal DslColumns() : base()
+	public DslColumns() : base()
 	{
 	}
 
@@ -600,10 +600,10 @@ END",
 	/// A container class for additional columns.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public class ColumnType(string column, string type)
+	internal class ColumnType(string column, string type)
 	{
-		public readonly string Column = column;
-		public readonly string Type = type;
+		internal readonly string Column = column;
+		internal readonly string Type = type;
 	}
 
 

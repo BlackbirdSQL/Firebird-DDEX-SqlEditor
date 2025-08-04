@@ -17,9 +17,9 @@ public class ToolboxEventArgs : EventArgs
 
 	private int _hresult;
 
-	public IDataObject Data => _data;
+	internal IDataObject Data => _data;
 
-	public bool Handled
+	internal bool Handled
 	{
 		get
 		{
@@ -31,7 +31,7 @@ public class ToolboxEventArgs : EventArgs
 		}
 	}
 
-	public int HResult
+	internal int HResult
 	{
 		get
 		{

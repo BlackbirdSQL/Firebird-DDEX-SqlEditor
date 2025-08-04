@@ -10,16 +10,16 @@ using System.Drawing;
 namespace BlackbirdSql.Shared.Events;
 
 
-public delegate void ColorChangedEventHandler(object sender, ColorChangedEventArgs e);
+internal delegate void ColorChangedEventHandler(object sender, ColorChangedEventArgs e);
 
 
-public class ColorChangedEventArgs : EventArgs
+internal class ColorChangedEventArgs : EventArgs
 {
-	public string ItemName { get; private set; }
+	internal string ItemName { get; private set; }
 
-	public Color? BkColor { get; private set; }
+	internal Color? BkColor { get; private set; }
 
-	public Color? FgColor { get; private set; }
+	internal Color? FgColor { get; private set; }
 
 	public ColorChangedEventArgs(string itemName, Color? bkColor, Color? fgColor)
 	{

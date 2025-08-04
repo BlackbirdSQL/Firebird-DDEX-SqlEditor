@@ -35,7 +35,7 @@ namespace BlackbirdSql.Shared.Controls.Widgets;
 /// Manages the status bar output.
 /// </summary>
 // =========================================================================================================
-public sealed class StatusBarManager : IDisposable
+internal sealed class StatusBarManager : IDisposable
 {
 
 	// ----------------------------------------------------
@@ -158,7 +158,7 @@ public sealed class StatusBarManager : IDisposable
 	}
 
 
-	public void Initialize(StatusStrip statusStrip, bool rowCountValid, IBsTabbedEditorPane editorWindowPane)
+	internal void Initialize(StatusStrip statusStrip, bool rowCountValid, IBsTabbedEditorPane editorWindowPane)
 	{
 		EditorWindowPane = editorWindowPane;
 		QryMgr.StatusChangedEvent += OnStatusChanged;
@@ -178,7 +178,7 @@ public sealed class StatusBarManager : IDisposable
 
 		// Invert.
 		bool isOnline = QryMgr.IsOnline;
-		_ModeState = isOnline ? EnState.Offline : EnState.Disconnected;
+		_ModeState = isOnline ? EniState.Offline : EniState.Disconnected;
 
 		QueryStateChangedEventArgs args = new(QryMgr.StateFlags, EnQueryState.Online, isOnline,
 			EnQueryState.None, EnQueryState.None);
@@ -210,8 +210,8 @@ public sealed class StatusBarManager : IDisposable
 
 	private bool _Disposed = false;
 	private bool _RowCountValid;
-	private EnState _CurrentState = EnState.Unknown;
-	private EnState _ModeState = EnState.Offline;
+	private EniState _CurrentState = EniState.Unknown;
+	private EniState _ModeState = EniState.Offline;
 	private readonly Queue<Action> _UpdateActionsQueue = new Queue<Action>();
 	private System.Timers.Timer _ElapsedExecutionTimer;
 
@@ -245,24 +245,24 @@ public sealed class StatusBarManager : IDisposable
 	// =========================================================================================================
 
 
-	public EnState CurrentState => _CurrentState;
+	internal EniState CurrentState => _CurrentState;
 
-	public StatusStrip StatusStrip => _StatusStrip;
+	internal StatusStrip StatusStrip => _StatusStrip;
 
 
-	public AnimatedStatusStripItem GeneralPanel => _GeneralPanel;
+	internal AnimatedStatusStripItem GeneralPanel => _GeneralPanel;
 
-	public StatusBarStatusLabel ServerNamePanel => _ServerNamePanel;
+	internal StatusBarStatusLabel ServerNamePanel => _ServerNamePanel;
 
-	public StatusBarStatusLabel UserNamePanel => _UserNamePanel;
+	internal StatusBarStatusLabel UserNamePanel => _UserNamePanel;
 
-	public StatusBarStatusLabel DatabaseNamePanel => _DatabaseNamePanel;
+	internal StatusBarStatusLabel DatabaseNamePanel => _DatabaseNamePanel;
 
-	public StatusBarStatusLabel ExecutionTimePanel => _ExecutionTimePanel;
+	internal StatusBarStatusLabel ExecutionTimePanel => _ExecutionTimePanel;
 
-	public StatusBarStatusLabel CompletedTimePanel => _CompletedTimePanel;
+	internal StatusBarStatusLabel CompletedTimePanel => _CompletedTimePanel;
 
-	public StatusBarStatusLabel NumOfRowsPanel => _NumOfRowsPanel;
+	internal StatusBarStatusLabel NumOfRowsPanel => _NumOfRowsPanel;
 
 	private DateTime ExecutionStartTime { get; set; }
 
@@ -430,7 +430,7 @@ public sealed class StatusBarManager : IDisposable
 
 
 
-	private string SetBarState(EnState newState)
+	private string SetBarState(EniState newState)
 	{
 		// Evs.Trace(GetType(), nameof(SetBarState), "StatusBarCurrentState: {0}, StatusBarNewState: {1}", CurrentState, newState);
 
@@ -444,10 +444,10 @@ public sealed class StatusBarManager : IDisposable
 		}
 
 
-		if (newState > EnState.ModeMarker)
+		if (newState > EniState.ModeMarker)
 		{
-			_ModeState = newState == EnState.NewConnectionOpened
-				? EnState.Connected : newState;
+			_ModeState = newState == EniState.NewConnectionOpened
+				? EniState.Connected : newState;
 		}
 
 		_CurrentState = newState;
@@ -456,48 +456,48 @@ public sealed class StatusBarManager : IDisposable
 
 		switch (newState)
 		{
-			case EnState.Connecting:
+			case EniState.Connecting:
 				_GeneralPanel.SetOneImage(S_OfflineBitmap);
 				toolStripItem.Text = ControlsResources.StatusBar_Connecting;
 				break;
-			case EnState.Connected:
+			case EniState.Connected:
 				_GeneralPanel.SetOneImage(S_NumOfRowsPanel);
 				toolStripItem.Text = ControlsResources.StatusBar_Connected;
 				break;
-			case EnState.Disconnected:
+			case EniState.Disconnected:
 				_GeneralPanel.SetOneImage(S_NumOfRowsPanel);
 				toolStripItem.Text = ControlsResources.StatusBar_Disconnected;
 				break;
-			case EnState.NewConnectionOpened:
+			case EniState.NewConnectionOpened:
 				_GeneralPanel.SetOneImage(S_NumOfRowsPanel);
 				toolStripItem.Text = ControlsResources.StatusBar_NewConnectionOpened;
 				break;
-			case EnState.Executing:
+			case EniState.Executing:
 				_GeneralPanel.SetImages(S_ExecutingBitmaps, false);
 				toolStripItem.Text = ControlsResources.StatusBar_ExecutingQuery;
 				_GeneralPanel.StartAnimate();
 				break;
-			case EnState.Cancelling:
+			case EniState.Cancelling:
 				_GeneralPanel.SetImages(S_ExecutingCancelBitmaps, false);
 				toolStripItem.Text = ControlsResources.StatusBar_Cancelling;
 				_GeneralPanel.StartAnimate();
 				break;
-			case EnState.CancellingPrompt:
+			case EniState.CancellingPrompt:
 				_GeneralPanel.SetImages(S_ExecutingCancelBitmaps, false);
 				toolStripItem.Text = ControlsResources.StatusBar_CancellingAndPrompt;
 				_GeneralPanel.StartAnimate();
 				break;
-			case EnState.ConnectFailedPrompt:
+			case EniState.ConnectFailedPrompt:
 				_GeneralPanel.SetImages(S_ExecutingCancelBitmaps, false);
 				toolStripItem.Text = ControlsResources.StatusBar_ConnectFailedAndPrompt;
 				_GeneralPanel.StartAnimate();
 				break;
-			case EnState.ExecutionFailedPrompt:
+			case EniState.ExecutionFailedPrompt:
 				_GeneralPanel.SetImages(S_ExecutingCancelBitmaps, false);
 				toolStripItem.Text = ControlsResources.StatusBar_ExecutionFailedAndPrompt;
 				_GeneralPanel.StartAnimate();
 				break;
-			case EnState.ExecutionCancelled:
+			case EniState.ExecutionCancelled:
 				_GeneralPanel.SetOneImage(S_ExecCancelledBitmap);
 				toolStripItem.Text = QryMgr.HadTransactions && !QryMgr.PeekTransactions
 					? ControlsResources.StatusBar_QueryCancelledTtsLost
@@ -506,7 +506,7 @@ public sealed class StatusBarManager : IDisposable
 						: ControlsResources.StatusBar_QueryCancelled);
 				ResetDatasetName();
 				break;
-			case EnState.ExecutionFailed:
+			case EniState.ExecutionFailed:
 				_GeneralPanel.SetOneImage(S_ExecWithErrorBitmap);
 				toolStripItem.Text = QryMgr.HadTransactions && !QryMgr.PeekTransactions
 					? ControlsResources.StatusBar_QueryCompletedWithErrorsTtsLost
@@ -515,41 +515,41 @@ public sealed class StatusBarManager : IDisposable
 						: ControlsResources.StatusBar_QueryCompletedWithErrors);
 				ResetDatasetName();
 				break;
-			case EnState.ExecutionOk:
+			case EniState.ExecutionOk:
 				_GeneralPanel.SetOneImage(S_ExecSuccessBitmap);
 				toolStripItem.Text =
 					ControlsResources.StatusBar_QueryCompletedSuccessfully.Fmt(!QryMgr.QueryExecutionEndTime.HasValue ? "" : QryMgr.QueryExecutionEndTime);
 				ResetDatasetName();
 				break;
-			case EnState.ExecutionTimedOut:
+			case EniState.ExecutionTimedOut:
 				_GeneralPanel.SetOneImage(S_ExecWithErrorBitmap);
 				toolStripItem.Text = ControlsResources.StatusBar_QueryTimedOut;
 				ResetDatasetName();
 				break;
-			case EnState.Offline:
+			case EniState.Offline:
 				_GeneralPanel.SetOneImage(S_OfflineBitmap);
 				toolStripItem.Text = ControlsResources.StatusBar_Offline;
 				break;
-			case EnState.Parsing:
+			case EniState.Parsing:
 				_GeneralPanel.SetImages(S_ExecutingBitmaps, false);
 				toolStripItem.Text = ControlsResources.StatusBar_ParsingQueryBatch;
 				_GeneralPanel.StartAnimate();
 				break;
-			case EnState.Unknown:
+			case EniState.Unknown:
 				_GeneralPanel.SetOneImage(null);
 				toolStripItem.Text = "";
 				break;
 		}
 
-		if (newState == EnState.Executing || newState == EnState.Offline)
+		if (newState == EniState.Executing || newState == EniState.Offline)
 		{
 			DateTime now = DateTime.Now;
 			SetExecutionCompletedTime(now);
 			SetRowsAffected(0L);
 		}
 
-		if (newState == EnState.ExecutionTimedOut || newState == EnState.ExecutionOk
-			|| newState == EnState.ExecutionFailed || newState == EnState.ExecutionCancelled)
+		if (newState == EniState.ExecutionTimedOut || newState == EniState.ExecutionOk
+			|| newState == EniState.ExecutionFailed || newState == EniState.ExecutionCancelled)
 		{
 			if (QryMgr.QueryExecutionStartTime.HasValue && QryMgr.QueryExecutionEndTime.HasValue)
 			{
@@ -593,9 +593,9 @@ public sealed class StatusBarManager : IDisposable
 	{
 		// Evs.Trace(GetType(), "StatusBarManager.TransitionIntoOfflineMode", "", null);
 
-		_ModeState = EnState.Offline;
+		_ModeState = EniState.Offline;
 
-		if (CurrentState != EnState.Offline)
+		if (CurrentState != EniState.Offline)
 		{
 			_StatusStrip.Items.Clear();
 			_StatusStrip.Items.Add((ToolStripItem)(object)_GeneralPanel);
@@ -606,8 +606,8 @@ public sealed class StatusBarManager : IDisposable
 
 	private void TransitionIntoOnlineMode()
 	{
-		if (_ModeState == EnState.Offline)
-			_ModeState = EnState.Disconnected;
+		if (_ModeState == EniState.Offline)
+			_ModeState = EniState.Disconnected;
 
 		ResetPanelsForOnlineMode();
 	}
@@ -691,19 +691,19 @@ public sealed class StatusBarManager : IDisposable
 		{
 			if ((a.ExecutionResult & EnScriptExecutionResult.Cancel) == EnScriptExecutionResult.Cancel)
 			{
-				SetBarState(EnState.ExecutionCancelled);
+				SetBarState(EniState.ExecutionCancelled);
 			}
 			else if ((a.ExecutionResult & EnScriptExecutionResult.Failure) == EnScriptExecutionResult.Failure)
 			{
-				SetBarState(EnState.ExecutionFailed);
+				SetBarState(EniState.ExecutionFailed);
 			}
 			else if ((a.ExecutionResult & EnScriptExecutionResult.Timeout) == EnScriptExecutionResult.Timeout)
 			{
-				SetBarState(EnState.ExecutionTimedOut);
+				SetBarState(EniState.ExecutionTimedOut);
 			}
 			else if ((a.ExecutionResult & EnScriptExecutionResult.Success) == EnScriptExecutionResult.Success)
 			{
-				SetBarState(EnState.ExecutionOk);
+				SetBarState(EniState.ExecutionOk);
 			}
 
 			if (PersistentSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
@@ -765,17 +765,17 @@ public sealed class StatusBarManager : IDisposable
 
 			if (isOnline)
 			{
-				if (_ModeState == EnState.Offline || (a.IsStateConnected && a.Value && a.DatabaseChanged))
+				if (_ModeState == EniState.Offline || (a.IsStateConnected && a.Value && a.DatabaseChanged))
 					TransitionIntoOnlineMode();
 			}
-			else if (!isOnline && _ModeState != EnState.Offline)
+			else if (!isOnline && _ModeState != EniState.Offline)
 			{
 				TransitionIntoOfflineMode();
 			}
 
 			while (true)
 			{
-				EnState result = EnState.Unknown;
+				EniState result = EniState.Unknown;
 
 
 				// --------------------------------------------
@@ -786,14 +786,14 @@ public sealed class StatusBarManager : IDisposable
 				{
 					if (a.IsStateConnecting)
 					{
-						result = EnState.Connecting;
+						result = EniState.Connecting;
 						SetBarState(result);
 						return;
 					}
 
 					if (a.IsStateExecuting)
 					{
-						result = EnState.Executing;
+						result = EniState.Executing;
 						SetBarState(result);
 						return;
 					}
@@ -802,11 +802,11 @@ public sealed class StatusBarManager : IDisposable
 					if (a.IsStatePrompting)
 					{
 						if (a.PrevState == EnQueryState.Connecting)
-							result = EnState.ConnectFailedPrompt;
+							result = EniState.ConnectFailedPrompt;
 						else if (a.PrevState == EnQueryState.Cancelling)
-							result = EnState.CancellingPrompt;
+							result = EniState.CancellingPrompt;
 						else // if (a.PrevState == EnQueryState.Executing)
-							result = EnState.ExecutionFailedPrompt;
+							result = EniState.ExecutionFailedPrompt;
 
 						SetBarState(result);
 						return;
@@ -816,11 +816,11 @@ public sealed class StatusBarManager : IDisposable
 					if (a.IsStateConnected)
 					{
 						if (a.Executing)
-							result = EnState.Executing;
+							result = EniState.Executing;
 						else if (a.DatabaseChanged)
-							result = EnState.NewConnectionOpened;
+							result = EniState.NewConnectionOpened;
 						else
-							result = EnState.Connected;
+							result = EniState.Connected;
 
 						SetBarState(result);
 						ResetDatasetName();
@@ -830,7 +830,7 @@ public sealed class StatusBarManager : IDisposable
 
 					if (a.IsStateOnline)
 					{
-						result = EnState.Disconnected;
+						result = EniState.Disconnected;
 
 						SetBarState(result);
 						ResetDatasetName();
@@ -856,7 +856,7 @@ public sealed class StatusBarManager : IDisposable
 
 				if (a.IsStateOnline)
 				{
-					result = EnState.Offline;
+					result = EniState.Offline;
 					SetBarState(result);
 					ResetDatasetName();
 
@@ -892,11 +892,11 @@ public sealed class StatusBarManager : IDisposable
 
 
 	// =========================================================================================================
-	#region Sub-Classes - StatusBarManager
+	#region									Nested types - StatusBarManager
 	// =========================================================================================================
 
 
-	public enum EnState
+	internal enum EniState
 	{
 		Unknown,
 		Connecting,
@@ -918,5 +918,5 @@ public sealed class StatusBarManager : IDisposable
 	}
 
 
-	#endregion Sub-Classes
+	#endregion Nested types
 }

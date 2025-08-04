@@ -8,18 +8,18 @@ using System;
 namespace BlackbirdSql.Sys.Events;
 
 
-public delegate void CopyToClipboardEventHandler(object sender, CopyToClipboardEventArgs e);
+internal delegate void CopyToClipboardEventHandler(object sender, CopyToClipboardEventArgs e);
 
 
-public sealed class CopyToClipboardEventArgs : EventArgs
+internal sealed class CopyToClipboardEventArgs : EventArgs
 {
 	private readonly string m_clipboardText;
 
 	private bool m_eventHandled;
 
-	public string ClipboardText => m_clipboardText;
+	internal string ClipboardText => m_clipboardText;
 
-	public bool EventHandled
+	internal bool EventHandled
 	{
 		get
 		{

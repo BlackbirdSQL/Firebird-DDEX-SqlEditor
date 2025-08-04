@@ -14,7 +14,7 @@ namespace BlackbirdSql.Sys.Controls;
 [Guid(LibraryData.C_MessageBoxParentGuid)]
 
 
-public sealed class MessageBoxParent(IntPtr HWnd) : IWin32Window
+internal sealed class MessageBoxParent(IntPtr HWnd) : IWin32Window
 {
 	private readonly IntPtr _Handle = HWnd;
 

@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class MergeType : RelOpBaseType
+internal class MergeType : RelOpBaseType
 {
 	private ColumnReferenceType[] innerSideJoinColumnsField;
 
@@ -34,7 +34,7 @@ public class MergeType : RelOpBaseType
 	private bool manyToManyFieldSpecified;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] InnerSideJoinColumns
+	internal ColumnReferenceType[] InnerSideJoinColumns
 	{
 		get
 		{
@@ -47,7 +47,7 @@ public class MergeType : RelOpBaseType
 	}
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] OuterSideJoinColumns
+	internal ColumnReferenceType[] OuterSideJoinColumns
 	{
 		get
 		{
@@ -59,7 +59,7 @@ public class MergeType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType Residual
+	internal ScalarExpressionType Residual
 	{
 		get
 		{
@@ -71,7 +71,7 @@ public class MergeType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType PassThru
+	internal ScalarExpressionType PassThru
 	{
 		get
 		{
@@ -83,7 +83,7 @@ public class MergeType : RelOpBaseType
 		}
 	}
 
-	public StarJoinInfoType StarJoinInfo
+	internal StarJoinInfoType StarJoinInfo
 	{
 		get
 		{
@@ -96,7 +96,7 @@ public class MergeType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -109,7 +109,7 @@ public class MergeType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool ManyToMany
+	internal bool ManyToMany
 	{
 		get
 		{
@@ -122,7 +122,7 @@ public class MergeType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool ManyToManySpecified
+	internal bool ManyToManySpecified
 	{
 		get
 		{

@@ -9,10 +9,10 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Events;
 
 
-public delegate void SetCellDataFromControlEventHandler(object sender, SetCellDataFromControlEventArgs e);
+internal delegate void SetCellDataFromControlEventHandler(object sender, SetCellDataFromControlEventArgs e);
 
 
-public class SetCellDataFromControlEventArgs : EventArgs
+internal class SetCellDataFromControlEventArgs : EventArgs
 {
 	private readonly int m_RowNum;
 
@@ -22,13 +22,13 @@ public class SetCellDataFromControlEventArgs : EventArgs
 
 	private bool m_Valid;
 
-	public int RowIndex => m_RowNum;
+	internal int RowIndex => m_RowNum;
 
-	public int ColumnIndex => m_ColNum;
+	internal int ColumnIndex => m_ColNum;
 
-	public IBsGridEmbeddedControl Control => m_Control;
+	internal IBsGridEmbeddedControl Control => m_Control;
 
-	public bool Valid
+	internal bool Valid
 	{
 		get
 		{

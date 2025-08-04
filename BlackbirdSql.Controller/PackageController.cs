@@ -27,7 +27,7 @@ namespace BlackbirdSql.Controller;
 /// Aslo performs cleanups of any sql editor documents that may be left dangling on solution close.
 /// </remarks>
 // =========================================================================================================
-public sealed class PackageController : AbstractPackageController
+internal sealed class PackageController : AbstractPackageController
 {
 
 	// =========================================================================================================

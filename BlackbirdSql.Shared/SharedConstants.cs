@@ -14,7 +14,7 @@ namespace BlackbirdSql;
 /// Shared db constants class.
 /// </summary>
 // =========================================================================================================
-public static class SharedConstants
+internal static class SharedConstants
 {
 
 	// ---------------------------------------------------------------------------------
@@ -33,31 +33,31 @@ public static class SharedConstants
 	// ---------------------------------------------------------------------------------
 
 
-	public const string C_DefaultBatchSeparator = ";";
+	internal const string C_DefaultBatchSeparator = ";";
 
-	public const int C_DefaultInitialMaxCharsPerColumnForGrid = 50;
-	public const int C_DefaultInitialMinNumberOfVisibleRows = 8;
-	public const int C_DefaultMaxCharsPerColumnForGrid = 43679;
-	public const int C_DefaultSetRowCount = 0;
-	public const EnBlobSubType C_DefaultSetBlobDisplay = EnBlobSubType.Text;
-	public const int C_DefaultExecutionTimeout = 0;
-	public const bool C_DefaultSetCount = true;
-	public const bool C_DefaultSetPlanOnly = false;
-	public const bool C_DefaultSetPlan = false;
-	public const bool C_DefaultSetExplain = false;
-	public const bool C_DefaultSetParseOnly = false;
-	public const bool C_DefaultSetConcatenationNull = true;
-	public const bool C_DefaultSetBail = true;
-	public const bool C_DefaultSetPlanText = false;
-	public const bool C_DefaultSetStats = false;
-	public const bool C_DefaultSetWarnings = false;
-	public const bool C_DefaultSetStatisticsIO = false;
-	public const int C_DefaultLockTimeout = 0;
-	public const bool C_DefaultSuppressHeaders = false;
-	public const int C_DefaultGridMaxCharsPerColumnStd = 65535;
-	public const int C_DefaultGridMaxCharsPerColumnXml = 2097152;
-	public const int C_DefaultTextMaxCharsPerColumnStd = 256;
-	public const char C_DefaultTextDelimiter = '\0';
+	internal const int C_DefaultInitialMaxCharsPerColumnForGrid = 50;
+	internal const int C_DefaultInitialMinNumberOfVisibleRows = 8;
+	internal const int C_DefaultMaxCharsPerColumnForGrid = 43679;
+	internal const int C_DefaultSetRowCount = 0;
+	internal const EnBlobSubType C_DefaultSetBlobDisplay = EnBlobSubType.Text;
+	internal const int C_DefaultExecutionTimeout = 0;
+	internal const bool C_DefaultSetCount = true;
+	internal const bool C_DefaultSetPlanOnly = false;
+	internal const bool C_DefaultSetPlan = false;
+	internal const bool C_DefaultSetExplain = false;
+	internal const bool C_DefaultSetParseOnly = false;
+	internal const bool C_DefaultSetConcatenationNull = true;
+	internal const bool C_DefaultSetBail = true;
+	internal const bool C_DefaultSetPlanText = false;
+	internal const bool C_DefaultSetStats = false;
+	internal const bool C_DefaultSetWarnings = false;
+	internal const bool C_DefaultSetStatisticsIO = false;
+	internal const int C_DefaultLockTimeout = 0;
+	internal const bool C_DefaultSuppressHeaders = false;
+	internal const int C_DefaultGridMaxCharsPerColumnStd = 65535;
+	internal const int C_DefaultGridMaxCharsPerColumnXml = 2097152;
+	internal const int C_DefaultTextMaxCharsPerColumnStd = 256;
+	internal const char C_DefaultTextDelimiter = '\0';
 
 
 	#endregion Model Engine Miscellaneous keys and defaults
@@ -72,7 +72,7 @@ public static class SharedConstants
 
 
 	// External (non-paramameter) property descriptor
-	public const string C_KeyExCreationFlags = "CreationFlags";
+	internal const string C_KeyExCreationFlags = "CreationFlags";
 
 
 	#endregion DbConnectionString Property Names
@@ -86,7 +86,7 @@ public static class SharedConstants
 
 
 	// External (non-paramameter) property defaults 
-	public const EnCreationFlags C_DefaultExCreationFlags = EnCreationFlags.None;
+	internal const EnCreationFlags C_DefaultExCreationFlags = EnCreationFlags.None;
 
 
 	#endregion DbConnectionString Property Default Values

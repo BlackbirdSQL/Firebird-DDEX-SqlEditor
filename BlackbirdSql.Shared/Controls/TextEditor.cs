@@ -65,7 +65,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		}
 	}
 
-	public int SelectionStart
+	internal int SelectionStart
 	{
 		get
 		{
@@ -87,7 +87,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		}
 	}
 
-	public bool IsActive
+	internal bool IsActive
 	{
 		get
 		{

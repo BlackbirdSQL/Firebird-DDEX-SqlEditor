@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RunTimeInformationTypeRunTimeCountersPerThread
+internal class RunTimeInformationTypeRunTimeCountersPerThread
 {
 	private int threadField;
 
@@ -197,7 +197,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	private bool actualPageServerPushedReadsFieldSpecified;
 
 	[XmlAttribute]
-	public int Thread
+	internal int Thread
 	{
 		get
 		{
@@ -210,7 +210,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public int BrickId
+	internal int BrickId
 	{
 		get
 		{
@@ -223,7 +223,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool BrickIdSpecified
+	internal bool BrickIdSpecified
 	{
 		get
 		{
@@ -236,7 +236,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualRebinds
+	internal ulong ActualRebinds
 	{
 		get
 		{
@@ -249,7 +249,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualRebindsSpecified
+	internal bool ActualRebindsSpecified
 	{
 		get
 		{
@@ -262,7 +262,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualRewinds
+	internal ulong ActualRewinds
 	{
 		get
 		{
@@ -275,7 +275,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualRewindsSpecified
+	internal bool ActualRewindsSpecified
 	{
 		get
 		{
@@ -288,7 +288,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualRows
+	internal ulong ActualRows
 	{
 		get
 		{
@@ -301,7 +301,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualRowsRead
+	internal ulong ActualRowsRead
 	{
 		get
 		{
@@ -314,7 +314,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualRowsReadSpecified
+	internal bool ActualRowsReadSpecified
 	{
 		get
 		{
@@ -327,7 +327,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong Batches
+	internal ulong Batches
 	{
 		get
 		{
@@ -340,7 +340,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool BatchesSpecified
+	internal bool BatchesSpecified
 	{
 		get
 		{
@@ -353,7 +353,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualEndOfScans
+	internal ulong ActualEndOfScans
 	{
 		get
 		{
@@ -366,7 +366,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualExecutions
+	internal ulong ActualExecutions
 	{
 		get
 		{
@@ -379,7 +379,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public EnExecutionModeType ActualExecutionMode
+	internal EnExecutionModeType ActualExecutionMode
 	{
 		get
 		{
@@ -392,7 +392,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualExecutionModeSpecified
+	internal bool ActualExecutionModeSpecified
 	{
 		get
 		{
@@ -405,7 +405,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong TaskAddr
+	internal ulong TaskAddr
 	{
 		get
 		{
@@ -418,7 +418,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool TaskAddrSpecified
+	internal bool TaskAddrSpecified
 	{
 		get
 		{
@@ -431,7 +431,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong SchedulerId
+	internal ulong SchedulerId
 	{
 		get
 		{
@@ -444,7 +444,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool SchedulerIdSpecified
+	internal bool SchedulerIdSpecified
 	{
 		get
 		{
@@ -457,7 +457,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong FirstActiveTime
+	internal ulong FirstActiveTime
 	{
 		get
 		{
@@ -470,7 +470,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool FirstActiveTimeSpecified
+	internal bool FirstActiveTimeSpecified
 	{
 		get
 		{
@@ -483,7 +483,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong LastActiveTime
+	internal ulong LastActiveTime
 	{
 		get
 		{
@@ -496,7 +496,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool LastActiveTimeSpecified
+	internal bool LastActiveTimeSpecified
 	{
 		get
 		{
@@ -509,7 +509,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong OpenTime
+	internal ulong OpenTime
 	{
 		get
 		{
@@ -522,7 +522,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool OpenTimeSpecified
+	internal bool OpenTimeSpecified
 	{
 		get
 		{
@@ -535,7 +535,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong FirstRowTime
+	internal ulong FirstRowTime
 	{
 		get
 		{
@@ -548,7 +548,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool FirstRowTimeSpecified
+	internal bool FirstRowTimeSpecified
 	{
 		get
 		{
@@ -561,7 +561,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong LastRowTime
+	internal ulong LastRowTime
 	{
 		get
 		{
@@ -574,7 +574,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool LastRowTimeSpecified
+	internal bool LastRowTimeSpecified
 	{
 		get
 		{
@@ -587,7 +587,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong CloseTime
+	internal ulong CloseTime
 	{
 		get
 		{
@@ -600,7 +600,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool CloseTimeSpecified
+	internal bool CloseTimeSpecified
 	{
 		get
 		{
@@ -613,7 +613,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualElapsedms
+	internal ulong ActualElapsedms
 	{
 		get
 		{
@@ -626,7 +626,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualElapsedmsSpecified
+	internal bool ActualElapsedmsSpecified
 	{
 		get
 		{
@@ -639,7 +639,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualCPUms
+	internal ulong ActualCPUms
 	{
 		get
 		{
@@ -652,7 +652,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualCPUmsSpecified
+	internal bool ActualCPUmsSpecified
 	{
 		get
 		{
@@ -665,7 +665,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualScans
+	internal ulong ActualScans
 	{
 		get
 		{
@@ -678,7 +678,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualScansSpecified
+	internal bool ActualScansSpecified
 	{
 		get
 		{
@@ -691,7 +691,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualLogicalReads
+	internal ulong ActualLogicalReads
 	{
 		get
 		{
@@ -704,7 +704,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualLogicalReadsSpecified
+	internal bool ActualLogicalReadsSpecified
 	{
 		get
 		{
@@ -717,7 +717,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualPhysicalReads
+	internal ulong ActualPhysicalReads
 	{
 		get
 		{
@@ -730,7 +730,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualPhysicalReadsSpecified
+	internal bool ActualPhysicalReadsSpecified
 	{
 		get
 		{
@@ -743,7 +743,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualPageServerReads
+	internal ulong ActualPageServerReads
 	{
 		get
 		{
@@ -756,7 +756,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualPageServerReadsSpecified
+	internal bool ActualPageServerReadsSpecified
 	{
 		get
 		{
@@ -769,7 +769,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualReadAheads
+	internal ulong ActualReadAheads
 	{
 		get
 		{
@@ -782,7 +782,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualReadAheadsSpecified
+	internal bool ActualReadAheadsSpecified
 	{
 		get
 		{
@@ -795,7 +795,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualPageServerReadAheads
+	internal ulong ActualPageServerReadAheads
 	{
 		get
 		{
@@ -808,7 +808,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualPageServerReadAheadsSpecified
+	internal bool ActualPageServerReadAheadsSpecified
 	{
 		get
 		{
@@ -821,7 +821,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualLobLogicalReads
+	internal ulong ActualLobLogicalReads
 	{
 		get
 		{
@@ -834,7 +834,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualLobLogicalReadsSpecified
+	internal bool ActualLobLogicalReadsSpecified
 	{
 		get
 		{
@@ -847,7 +847,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualLobPhysicalReads
+	internal ulong ActualLobPhysicalReads
 	{
 		get
 		{
@@ -860,7 +860,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualLobPhysicalReadsSpecified
+	internal bool ActualLobPhysicalReadsSpecified
 	{
 		get
 		{
@@ -873,7 +873,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualLobPageServerReads
+	internal ulong ActualLobPageServerReads
 	{
 		get
 		{
@@ -886,7 +886,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualLobPageServerReadsSpecified
+	internal bool ActualLobPageServerReadsSpecified
 	{
 		get
 		{
@@ -899,7 +899,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualLobReadAheads
+	internal ulong ActualLobReadAheads
 	{
 		get
 		{
@@ -912,7 +912,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualLobReadAheadsSpecified
+	internal bool ActualLobReadAheadsSpecified
 	{
 		get
 		{
@@ -925,7 +925,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualLobPageServerReadAheads
+	internal ulong ActualLobPageServerReadAheads
 	{
 		get
 		{
@@ -938,7 +938,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualLobPageServerReadAheadsSpecified
+	internal bool ActualLobPageServerReadAheadsSpecified
 	{
 		get
 		{
@@ -951,7 +951,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public int SegmentReads
+	internal int SegmentReads
 	{
 		get
 		{
@@ -964,7 +964,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool SegmentReadsSpecified
+	internal bool SegmentReadsSpecified
 	{
 		get
 		{
@@ -977,7 +977,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public int SegmentSkips
+	internal int SegmentSkips
 	{
 		get
 		{
@@ -990,7 +990,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool SegmentSkipsSpecified
+	internal bool SegmentSkipsSpecified
 	{
 		get
 		{
@@ -1003,7 +1003,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualLocallyAggregatedRows
+	internal ulong ActualLocallyAggregatedRows
 	{
 		get
 		{
@@ -1016,7 +1016,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualLocallyAggregatedRowsSpecified
+	internal bool ActualLocallyAggregatedRowsSpecified
 	{
 		get
 		{
@@ -1029,7 +1029,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong InputMemoryGrant
+	internal ulong InputMemoryGrant
 	{
 		get
 		{
@@ -1042,7 +1042,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool InputMemoryGrantSpecified
+	internal bool InputMemoryGrantSpecified
 	{
 		get
 		{
@@ -1055,7 +1055,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong OutputMemoryGrant
+	internal ulong OutputMemoryGrant
 	{
 		get
 		{
@@ -1068,7 +1068,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool OutputMemoryGrantSpecified
+	internal bool OutputMemoryGrantSpecified
 	{
 		get
 		{
@@ -1081,7 +1081,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong UsedMemoryGrant
+	internal ulong UsedMemoryGrant
 	{
 		get
 		{
@@ -1094,7 +1094,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool UsedMemoryGrantSpecified
+	internal bool UsedMemoryGrantSpecified
 	{
 		get
 		{
@@ -1107,7 +1107,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public bool IsInterleavedExecuted
+	internal bool IsInterleavedExecuted
 	{
 		get
 		{
@@ -1120,7 +1120,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool IsInterleavedExecutedSpecified
+	internal bool IsInterleavedExecutedSpecified
 	{
 		get
 		{
@@ -1133,7 +1133,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public EnPhysicalOpType ActualJoinType
+	internal EnPhysicalOpType ActualJoinType
 	{
 		get
 		{
@@ -1146,7 +1146,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualJoinTypeSpecified
+	internal bool ActualJoinTypeSpecified
 	{
 		get
 		{
@@ -1159,7 +1159,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong HpcRowCount
+	internal ulong HpcRowCount
 	{
 		get
 		{
@@ -1172,7 +1172,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool HpcRowCountSpecified
+	internal bool HpcRowCountSpecified
 	{
 		get
 		{
@@ -1185,7 +1185,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong HpcKernelElapsedUs
+	internal ulong HpcKernelElapsedUs
 	{
 		get
 		{
@@ -1198,7 +1198,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool HpcKernelElapsedUsSpecified
+	internal bool HpcKernelElapsedUsSpecified
 	{
 		get
 		{
@@ -1211,7 +1211,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong HpcHostToDeviceBytes
+	internal ulong HpcHostToDeviceBytes
 	{
 		get
 		{
@@ -1224,7 +1224,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool HpcHostToDeviceBytesSpecified
+	internal bool HpcHostToDeviceBytesSpecified
 	{
 		get
 		{
@@ -1237,7 +1237,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong HpcDeviceToHostBytes
+	internal ulong HpcDeviceToHostBytes
 	{
 		get
 		{
@@ -1250,7 +1250,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool HpcDeviceToHostBytesSpecified
+	internal bool HpcDeviceToHostBytesSpecified
 	{
 		get
 		{
@@ -1263,7 +1263,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualPageServerPushedPageIDs
+	internal ulong ActualPageServerPushedPageIDs
 	{
 		get
 		{
@@ -1276,7 +1276,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualPageServerPushedPageIDsSpecified
+	internal bool ActualPageServerPushedPageIDsSpecified
 	{
 		get
 		{
@@ -1289,7 +1289,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualPageServerRowsReturned
+	internal ulong ActualPageServerRowsReturned
 	{
 		get
 		{
@@ -1302,7 +1302,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualPageServerRowsReturnedSpecified
+	internal bool ActualPageServerRowsReturnedSpecified
 	{
 		get
 		{
@@ -1315,7 +1315,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualPageServerRowsRead
+	internal ulong ActualPageServerRowsRead
 	{
 		get
 		{
@@ -1328,7 +1328,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualPageServerRowsReadSpecified
+	internal bool ActualPageServerRowsReadSpecified
 	{
 		get
 		{
@@ -1341,7 +1341,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlAttribute]
-	public ulong ActualPageServerPushedReads
+	internal ulong ActualPageServerPushedReads
 	{
 		get
 		{
@@ -1354,7 +1354,7 @@ public class RunTimeInformationTypeRunTimeCountersPerThread
 	}
 
 	[XmlIgnore]
-	public bool ActualPageServerPushedReadsSpecified
+	internal bool ActualPageServerPushedReadsSpecified
 	{
 		get
 		{

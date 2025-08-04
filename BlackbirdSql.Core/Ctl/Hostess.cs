@@ -13,10 +13,10 @@ namespace BlackbirdSql.Core.Ctl;
 /// <summary>
 /// Editor related Host services.
 /// </summary>
-public class Hostess(IServiceProvider dataViewHierarchyServiceProvider)
+internal class Hostess(IServiceProvider dataViewHierarchyServiceProvider)
 	: AbstractHostess(dataViewHierarchyServiceProvider)
 {
-	public static Type GetManagedTypeFromCLSID(Guid classId)
+	internal static Type GetManagedTypeFromCLSID(Guid classId)
 	{
 		Type type = Type.GetTypeFromCLSID(classId);
 
@@ -27,20 +27,20 @@ public class Hostess(IServiceProvider dataViewHierarchyServiceProvider)
 	}
 
 
-	public static Type GetTypeFromAssembly(Assembly assembly, string typeName, bool throwOnError = false)
+	internal static Type GetTypeFromAssembly(Assembly assembly, string typeName, bool throwOnError = false)
 	{
 		return assembly.GetType(typeName, throwOnError);
 	}
 
 
-	public static Assembly LoadAssemblyFrom(string fileName)
+	internal static Assembly LoadAssemblyFrom(string fileName)
 		=> Assembly.LoadFrom(fileName);
 
 
 
 
 
-	public static object CreateManagedInstance(Guid classId)
+	internal static object CreateManagedInstance(Guid classId)
 	{
 		Type managedTypeFromCLSID = GetManagedTypeFromCLSID(classId)
 			?? throw new TypeLoadException(classId.ToString("B"));
@@ -49,7 +49,7 @@ public class Hostess(IServiceProvider dataViewHierarchyServiceProvider)
 
 
 
-	public static object CreateInstance(Type type, params object[] args)
+	internal static object CreateInstance(Type type, params object[] args)
 	{
 		try
 		{

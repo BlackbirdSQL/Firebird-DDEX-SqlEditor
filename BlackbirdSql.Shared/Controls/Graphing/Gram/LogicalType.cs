@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class LogicalType
+internal class LogicalType
 {
 	private ScalarType[] scalarOperatorField;
 
 	private EnLogicalOperationType operationField;
 
 	[XmlElement("ScalarOperator")]
-	public ScalarType[] ScalarOperator
+	internal ScalarType[] ScalarOperator
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class LogicalType
 	}
 
 	[XmlAttribute]
-	public EnLogicalOperationType Operation
+	internal EnLogicalOperationType Operation
 	{
 		get
 		{

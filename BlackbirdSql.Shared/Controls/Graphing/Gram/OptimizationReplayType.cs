@@ -14,12 +14,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class OptimizationReplayType
+internal class OptimizationReplayType
 {
 	private string scriptField;
 
 	[XmlAttribute]
-	public string Script
+	internal string Script
 	{
 		get
 		{

@@ -24,7 +24,7 @@ namespace BlackbirdSql;
 /// Central class for package external class extension methods. 
 /// </summary>
 // =========================================================================================================
-public static class UnsafeExtensionMembers
+internal static class UnsafeExtensionMembers
 {
 
 	// ---------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ public static class UnsafeExtensionMembers
 	/// <param name="project"></param>
 	/// <returns>true if app.config was updated else false</returns>
 	// ---------------------------------------------------------------------------------
-	public static ProjectItem GetAppConfig(this Project @this, bool createIfNotFound = false)
+	internal static ProjectItem GetAppConfig(this Project @this, bool createIfNotFound = false)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
@@ -82,7 +82,7 @@ public static class UnsafeExtensionMembers
 	/// <summary>
 	/// Gets the EnvDTE.Project for this hierarchy if it exists else null.
 	/// </summary>
-	public static ProjectItem GetProjectItem(this IVsHierarchy @this, uint itemId)
+	internal static ProjectItem GetProjectItem(this IVsHierarchy @this, uint itemId)
 	{
 		object objProj;
 
@@ -106,20 +106,20 @@ public static class UnsafeExtensionMembers
 
 
 
-	public static bool IsFolder(this Project @this)
+	internal static bool IsFolder(this Project @this)
 	{
 		return UnsafeCmd.IsProjectFolderKind(@this.Kind);
 	}
 
 
 
-	public static bool IsMiscellaneous(this Project @this)
+	internal static bool IsMiscellaneous(this Project @this)
 	{
 		return UnsafeCmd.IsMiscProjectKind(@this.Kind);
 	}
 
 
-	public static bool IsMiscellaneous(this IVsHierarchy @this)
+	internal static bool IsMiscellaneous(this IVsHierarchy @this)
 	{
 		string kind = @this.Kind();
 
@@ -140,7 +140,7 @@ public static class UnsafeExtensionMembers
 	/// True if the project is valid else false.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool IsDesignTimeProject(this IVsHierarchy @this)
+	internal static bool IsDesignTimeProject(this IVsHierarchy @this)
 	{
 		Guid clsid = @this.Clsid();
 
@@ -170,7 +170,7 @@ public static class UnsafeExtensionMembers
 	/// True if the project is valid else false.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool IsDesignTime(this Project @this)
+	internal static bool IsDesignTime(this Project @this)
 	{
 		// We're just peeking.
 		// Diag.ThrowIfNotOnUIThread();
@@ -194,7 +194,7 @@ public static class UnsafeExtensionMembers
 	/// The VSProject object if the project is valid else null.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static VSProject EditableObject(this Project @this)
+	internal static VSProject EditableObject(this Project @this)
 	{
 		// We're just peeking.
 		// Diag.ThrowIfNotOnUIThread();
@@ -222,7 +222,7 @@ public static class UnsafeExtensionMembers
 
 
 
-	public static Guid Clsid(this IVsHierarchy @this)
+	internal static Guid Clsid(this IVsHierarchy @this)
 	{
 
 		uint itemid = VSConstants.VSITEMID_ROOT;
@@ -242,7 +242,7 @@ public static class UnsafeExtensionMembers
 	}
 
 
-	public static string Kind(this IVsHierarchy @this)
+	internal static string Kind(this IVsHierarchy @this)
 	{
 		return @this.Clsid().ToString("D");
 	}
@@ -255,7 +255,7 @@ public static class UnsafeExtensionMembers
 	/// else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static Project ToDesignTimeProject(this IVsHierarchy @this)
+	internal static Project ToDesignTimeProject(this IVsHierarchy @this)
 	{
 		Guid clsid = @this.Clsid();
 
@@ -278,7 +278,7 @@ public static class UnsafeExtensionMembers
 	/// else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static Project ToEditableProject(this IVsHierarchy @this)
+	internal static Project ToEditableProject(this IVsHierarchy @this)
 	{
 		Project project = ToDesignTimeProject(@this);
 
@@ -293,7 +293,7 @@ public static class UnsafeExtensionMembers
 	/// <summary>
 	/// Gets the EnvDTE.Project for this hierarchy if it exists else null.
 	/// </summary>
-	public static Project ToProject(this IVsUIHierarchy @this)
+	internal static Project ToProject(this IVsUIHierarchy @this)
 	{
 		return (@this as IVsHierarchy).ToProject();
 	}
@@ -303,7 +303,7 @@ public static class UnsafeExtensionMembers
 	/// <summary>
 	/// Gets the EnvDTE.Project for this hierarchy if it exists else null.
 	/// </summary>
-	public static Project ToProject(this IVsProject3 @this)
+	internal static Project ToProject(this IVsProject3 @this)
 	{
 		return (@this as IVsHierarchy).ToProject();
 	}
@@ -313,7 +313,7 @@ public static class UnsafeExtensionMembers
 	/// <summary>
 	/// Gets the EnvDTE.Project for this hierarchy if it exists else null.
 	/// </summary>
-	public static Project ToProject(this IVsHierarchy @this)
+	internal static Project ToProject(this IVsHierarchy @this)
 	{
 		uint itemid = VSConstants.VSITEMID_ROOT;
 		object objProj;

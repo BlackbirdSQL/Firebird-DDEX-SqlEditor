@@ -10,7 +10,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [Serializable]
 [GeneratedCode("xsd", "4.8.3928.0")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public enum EnMemoryGrantFeedbackInfoType
+internal enum EnMemoryGrantFeedbackInfoType
 {
 	[XmlEnum("Yes: Adjusting")]
 	YesAdjusting,

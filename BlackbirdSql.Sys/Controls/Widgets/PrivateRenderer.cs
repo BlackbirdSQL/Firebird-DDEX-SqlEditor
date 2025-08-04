@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace BlackbirdSql.Sys.Controls.Widgets;
 
 
-public class PrivateRenderer : ToolStripSystemRenderer
+internal class PrivateRenderer : ToolStripSystemRenderer
 {
 	protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
 	{

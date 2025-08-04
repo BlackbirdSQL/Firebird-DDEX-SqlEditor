@@ -16,7 +16,7 @@ using BlackbirdSql.Shared.Properties;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public sealed class XmlPlanNodeBuilder : INodeBuilder, IXmlBatchParser
+internal sealed class XmlPlanNodeBuilder : INodeBuilder, IXmlBatchParser
 {
 	private static readonly XmlSerializer Serializer = new XmlSerializer(typeof(ExecutionPlanXML));
 
@@ -29,7 +29,7 @@ public sealed class XmlPlanNodeBuilder : INodeBuilder, IXmlBatchParser
 		this.showPlanType = showPlanType;
 	}
 
-	public ExecutionPlanGraph[] Execute(object dataSource)
+	internal ExecutionPlanGraph[] Execute(object dataSource)
 	{
 		if (dataSource is not ExecutionPlanXML showPlanXML)
 		{
@@ -46,7 +46,7 @@ public sealed class XmlPlanNodeBuilder : INodeBuilder, IXmlBatchParser
 		return list.ToArray();
 	}
 
-	public string GetSingleStatementXml(object dataSource, int statementIndex)
+	internal string GetSingleStatementXml(object dataSource, int statementIndex)
 	{
 		StmtBlockType singleStatementObject = GetSingleStatementObject(dataSource, statementIndex);
 		ExecutionPlanXML showPlanXML = ReadXmlExecutionPlan(dataSource);
@@ -56,7 +56,7 @@ public sealed class XmlPlanNodeBuilder : INodeBuilder, IXmlBatchParser
 		return stringBuilder.ToString();
 	}
 
-	public StmtBlockType GetSingleStatementObject(object dataSource, int statementIndex)
+	internal StmtBlockType GetSingleStatementObject(object dataSource, int statementIndex)
 	{
 		ExecutionPlanXML plan = ReadXmlExecutionPlan(dataSource);
 		int num = 0;

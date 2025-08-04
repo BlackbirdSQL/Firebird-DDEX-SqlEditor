@@ -8,9 +8,9 @@ using BlackbirdSql.Shared.Enums;
 namespace BlackbirdSql.Shared.Ctl.QueryExecution;
 
 
-public class SaveFormatInfo(EnGridSaveFormats saveFormat, string description)
+internal class SaveFormatInfo(EnGridSaveFormats saveFormat, string description)
 {
-	public EnGridSaveFormats SaveFormat { get; set; } = saveFormat;
+	internal EnGridSaveFormats SaveFormat { get; set; } = saveFormat;
 
-	public string Description { get; set; } = description;
+	internal string Description { get; set; } = description;
 }

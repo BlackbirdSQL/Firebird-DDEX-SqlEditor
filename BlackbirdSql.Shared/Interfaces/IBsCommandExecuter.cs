@@ -11,7 +11,7 @@ using BlackbirdSql.Sys.Interfaces;
 
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsCommandExecuter
+internal interface IBsCommandExecuter
 {
 	Task<EnScriptExecutionResult> BatchParseCallbackAsync(IBsNativeDbBatchParser batchParser,
 		CancellationToken cancelToken, CancellationToken syncToken);

@@ -18,12 +18,12 @@ namespace BlackbirdSql.Sys.Ctl.Diagnostics;
 /// Common EventSource base class. The class family uses a type parameter/specifier of the
 /// final descendent class for creating the object so that we can have a separate singleton
 /// instance for each assembly using minimal implementation code in the final class.
-/// Inclusion of an interface, <see cref="IBsEventSource"/>, is redundant and purely for brevity.
 /// </summary>
-public class EvsProvider<TEventSource> : EventSource where TEventSource : EvsProvider<TEventSource>
+public class EvsProvider<TEvs> : EventSource where TEvs : EvsProvider<TEvs>
 {
-	protected EvsProvider()
+	protected EvsProvider(string identifier)
 	{
+		_Identifier = identifier;
 		_DummyCounter = new EventCounter(nameof(_DummyCounter), this);
 	}
 
@@ -31,11 +31,20 @@ public class EvsProvider<TEventSource> : EventSource where TEventSource : EvsPro
 	/// <summary>
 	/// Creates a new instance of the EventSource class.
 	/// </summary>
-	public static TEventSource CreateInstance()
+	public static TEvs CreateInstance()
 	{
-		return (TEventSource)Activator.CreateInstance(typeof(TEventSource));
+		try
+		{
+			return (TEvs)Activator.CreateInstance(typeof(TEvs));
+		}
+		catch (Exception ex)
+		{
+			Diag.Ex(ex);
+			throw;
+		}
 	}
 
+	private readonly string _Identifier;
 	private readonly EventCounter _DummyCounter;
 
 	private List<EventCounter> _OpCounters = null;
@@ -45,10 +54,11 @@ public class EvsProvider<TEventSource> : EventSource where TEventSource : EvsPro
 	private List<long> _StartTimes = null;
 	private Stopwatch _ElapsedTimer = null;
 
-	private static TEventSource _Log = null;
+	private static TEvs _Log = null;
 
-	public static TEventSource Log => _Log ??= CreateInstance();
+	public static TEvs Log => _Log ??= CreateInstance();
 
+	protected string Identifier => _Identifier;
 	private List<EventCounter> OpCounters => _OpCounters ??= [];
 	private List<EventCounter> TelemCounters => _TelemCounters ??= [];
 	protected List<long> TelemCardinals => _TelemCardinals ??= [];
@@ -74,7 +84,7 @@ public class EvsProvider<TEventSource> : EventSource where TEventSource : EvsPro
 
 	[NonEvent]
 	protected static bool CanTrace(EnEventLevel level) =>
-		((int)level & (int)PersistentSettings.SourceLevel) > 0;
+		((int)level & (int)PersistentSettings.GetEvsLevel(Log.Identifier)) > 0;
 
 
 

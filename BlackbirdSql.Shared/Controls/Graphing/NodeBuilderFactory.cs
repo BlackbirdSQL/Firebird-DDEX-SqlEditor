@@ -8,9 +8,9 @@ using BlackbirdSql.Shared.Properties;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public static class NodeBuilderFactory
+internal static class NodeBuilderFactory
 {
-	public static INodeBuilder Create(object dataSource, EnExecutionPlanType type)
+	internal static INodeBuilder Create(object dataSource, EnExecutionPlanType type)
 	{
 		if (dataSource is string || dataSource is byte[] || dataSource is ExecutionPlanXML)
 		{

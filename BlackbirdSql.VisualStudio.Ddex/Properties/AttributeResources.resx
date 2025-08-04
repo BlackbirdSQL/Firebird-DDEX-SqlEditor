@@ -285,6 +285,9 @@
   <data name="OptionCategoryEquivalencyOptional" xml:space="preserve">
     <value>Optional equivalency keys (Requires IDE restart)</value>
   </data>
+  <data name="OptionCategoryEvsLevel" xml:space="preserve">
+    <value>EventSource trace levels</value>
+  </data>
   <data name="OptionCategoryGeneral" xml:space="preserve">
     <value> General</value>
   </data>
@@ -296,6 +299,9 @@
   </data>
   <data name="OptionDescriptionDebugEnableActivityTracing" xml:space="preserve">
     <value>Enables Stop, Start, Suspend, Transfer and Resume event tracing.</value>
+  </data>
+  <data name="OptionDescriptionDebugEnableDebugExceptions" xml:space="preserve">
+    <value>Enables output of exceptions thrown for debugging . Only applicable to release builds. Debug exceptions are always output in debug builds.</value>
   </data>
   <data name="OptionDescriptionDebugEnableDiagnosticsLog" xml:space="preserve">
     <value>Enables diagnostics logging to a log file.</value>
@@ -314,9 +320,6 @@
   </data>
   <data name="OptionDescriptionDebugSaveExtrapolatedXml" xml:space="preserve">
     <value>Saves the extrapolated IVsDataObjectSupport xml (VxbObjectSupport.xml), after imports, to the directory location of the diagnostics log file.</value>
-  </data>
-  <data name="OptionDescriptionDebugSourceLevel" xml:space="preserve">
-    <value>The EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
   </data>
   <data name="OptionDescriptionEquivalencyApplicationName" xml:space="preserve">
     <value>The name of the application making the connection.</value>
@@ -402,6 +405,30 @@
   <data name="OptionDescriptionEquivalencyWireCrypt" xml:space="preserve">
     <value>Selection for wire encryption.</value>
   </data>
+  <data name="OptionDescriptionEvsLevelController" xml:space="preserve">
+    <value>The Controller assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
+  </data>
+  <data name="OptionDescriptionEvsLevelCore" xml:space="preserve">
+    <value>Core assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
+  </data>
+  <data name="OptionDescriptionEvsLevelData" xml:space="preserve">
+    <value>Database service EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
+  </data>
+  <data name="OptionDescriptionEvsLevelDdex" xml:space="preserve">
+    <value>The Ddex assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
+  </data>
+  <data name="OptionDescriptionEvsLevelEditor" xml:space="preserve">
+    <value>Editor extension EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
+  </data>
+  <data name="OptionDescriptionEvsLevelLanguage" xml:space="preserve">
+    <value>Language service EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
+  </data>
+  <data name="OptionDescriptionEvsLevelShared" xml:space="preserve">
+    <value>Shared services assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
+  </data>
+  <data name="OptionDescriptionEvsLevelSys" xml:space="preserve">
+    <value>Sys assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
+  </data>
   <data name="OptionDescriptionGeneralAutoCloseOffScreenEdmx" xml:space="preserve">
     <value>If enabled, closes edmx data models that are not on screen when a solution closes. Enable this option to avoid potential Visual Studio model load errors.</value>
   </data>
@@ -459,6 +486,9 @@
   <data name="OptionDisplayDebugEnableActivityTracing" xml:space="preserve">
     <value>Activity tracing</value>
   </data>
+  <data name="OptionDisplayDebugEnableDebugExceptions" xml:space="preserve">
+    <value>Debug exceptions</value>
+  </data>
   <data name="OptionDisplayDebugEnableDiagnosticsLog" xml:space="preserve">
     <value>Diagnostics logging</value>
   </data>
@@ -476,9 +506,6 @@
   </data>
   <data name="OptionDisplayDebugLogFile" xml:space="preserve">
     <value>Log file</value>
-  </data>
-  <data name="OptionDisplayDebugSourceLevel" xml:space="preserve">
-    <value>Event trace level</value>
   </data>
   <data name="OptionDisplayEquivalencyApplicationName" xml:space="preserve">
     <value>Application name</value>
@@ -563,6 +590,30 @@
   </data>
   <data name="OptionDisplayEquivalencyWireCrypt" xml:space="preserve">
     <value>Wire crypt</value>
+  </data>
+  <data name="OptionDisplayEvsLevelController" xml:space="preserve">
+    <value>Controller assembly</value>
+  </data>
+  <data name="OptionDisplayEvsLevelCore" xml:space="preserve">
+    <value>Core assembly</value>
+  </data>
+  <data name="OptionDisplayEvsLevelData" xml:space="preserve">
+    <value>Data access service</value>
+  </data>
+  <data name="OptionDisplayEvsLevelDdex" xml:space="preserve">
+    <value>Ddex extension</value>
+  </data>
+  <data name="OptionDisplayEvsLevelEditor" xml:space="preserve">
+    <value>Editor extension</value>
+  </data>
+  <data name="OptionDisplayEvsLevelLanguage" xml:space="preserve">
+    <value>Language service</value>
+  </data>
+  <data name="OptionDisplayEvsLevelShared" xml:space="preserve">
+    <value>Shared services</value>
+  </data>
+  <data name="OptionDisplayEvsLevelSys" xml:space="preserve">
+    <value>Sys assembly</value>
   </data>
   <data name="OptionDisplayGeneralAutoCloseOffScreenEdmx" xml:space="preserve">
     <value>Auto-close edmx models</value>

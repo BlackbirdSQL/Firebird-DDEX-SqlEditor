@@ -31,7 +31,7 @@ namespace BlackbirdSql.EditorExtension;
 /// Manages Solution, RDT and Selection events for the editor extension.
 /// </summary>
 // =========================================================================================================
-public sealed class EditorEventsManager : AbstractEventsManager
+internal sealed class EditorEventsManager : AbstractEventsManager
 {
 
 	// -----------------------------------------------------

@@ -29,7 +29,7 @@ namespace BlackbirdSql.Data.Model;
 internal static class DbTypeHelper
 {
 
-	public static int GetSqlTypeFromBlrType(int type)
+	internal static int GetSqlTypeFromBlrType(int type)
 	{
 		switch (type)
 		{
@@ -106,7 +106,7 @@ internal static class DbTypeHelper
 		}
 	}
 
-	public static string GetDataTypeName(EnDbDataType type)
+	internal static string GetDataTypeName(EnDbDataType type)
 	{
 		switch (type)
 		{
@@ -179,7 +179,7 @@ internal static class DbTypeHelper
 		}
 	}
 
-	public static Type GetTypeFromDbDataType(EnDbDataType type)
+	internal static Type GetTypeFromDbDataType(EnDbDataType type)
 	{
 		switch (type)
 		{
@@ -246,7 +246,7 @@ internal static class DbTypeHelper
 		}
 	}
 
-	public static FbDbType GetFbDataTypeFromType(Type type)
+	internal static FbDbType GetFbDataTypeFromType(Type type)
 	{
 		if (type.IsEnum)
 		{
@@ -348,12 +348,12 @@ internal static class DbTypeHelper
 
 
 
-	public static EnDbDataType GetDbDataTypeFromBlrType(int type, int subType, int scale)
+	internal static EnDbDataType GetDbDataTypeFromBlrType(int type, int subType, int scale)
 	{
 		return GetDbDataTypeFromSqlType(GetSqlTypeFromBlrType(type), subType, scale);
 	}
 
-	public static EnDbDataType GetDbDataTypeFromSqlType(int type, int subType, int scale, int? length = null, Charset charset = null)
+	internal static EnDbDataType GetDbDataTypeFromSqlType(int type, int subType, int scale, int? length = null, Charset charset = null)
 	{
 		// Special case for Guid handling
 		if ((type == IscCodes.SQL_TEXT || type == IscCodes.SQL_VARYING) && length == 16 && (charset?.IsOctetsCharset ?? false))
@@ -516,7 +516,7 @@ internal static class DbTypeHelper
 	}
 
 
-	public static string ConvertDataTypeToSql(string type, int length, int precision, int scale)
+	internal static string ConvertDataTypeToSql(string type, int length, int precision, int scale)
 	{
 		type = type.ToUpper();
 
@@ -555,14 +555,14 @@ internal static class DbTypeHelper
 		return sql;
 	}
 
-	public static string ConvertDataTypeToSql(object type, object length, object precision, object scale)
+	internal static string ConvertDataTypeToSql(object type, object length, object precision, object scale)
 	{
 		return ConvertDataTypeToSql((string)type, (int)length, (int)precision, (int)scale);
 	}
 
 
 
-		public static Exception InvalidDataType(int type)
+		internal static Exception InvalidDataType(int type)
 	{
 		return new ArgumentException($"Invalid data type: {type}.");
 	}

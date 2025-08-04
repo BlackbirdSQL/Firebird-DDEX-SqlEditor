@@ -35,7 +35,7 @@ static class ExtensionData
 	public const string C_VsixProduct = "BlackbirdSql.VisualStudio.Ddex";
 	public const string C_VsixName = "BlackbirdSql DDEX and SqlEditor for Firebird";
 	public const string C_VsixDescription = "The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the \"look and feel\" of Microsoft's SqlServer extensions";
-	public const string C_VsixVersion = "14.5.4.0";
+	public const string C_VsixVersion = "14.5.4.001";
 
 
 	public const string C_PackageControllerServiceName = "SBsPackageController";
@@ -155,13 +155,13 @@ static class ExtensionData
 	/// <remarks>
 	/// The dictionary key is the interface (aka registry key) followed by the registry
 	/// value's unique index (:index), for indexes > 0.
-	/// The dictionary value is the <see cref="RegistryValue"/> for that registry value
+	/// The dictionary value is the <see cref="RegistryValueI"/> for that registry value
 	/// entry.
 	/// Note: Microsoft uses null as the name of the default value of a registry key.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 
-	public static readonly IDictionary<string, RegistryValue> ImplementationValues = new Dictionary<string, RegistryValue>()
+	public static readonly IDictionary<string, RegistryValueI> ImplementationValues = new Dictionary<string, RegistryValueI>()
 	{
 		{ nameof(IVsDataConnectionEquivalencyComparer), new(null, typeof(VxbEquivalencyComparer).FullName) },
 		{ nameof(IVsDataConnectionPromptDialog), new(null, typeof(VxbConnectionPromptDialog).FullName) },
@@ -198,7 +198,7 @@ static class ExtensionData
 
 
 	// =====================================================================================================
-	#region Sub-classes - ExtensionData
+	#region								Nested types - ExtensionData
 	// =====================================================================================================
 
 
@@ -207,14 +207,14 @@ static class ExtensionData
 	/// A container class for a registry value consisting of the value's name and value.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public readonly struct RegistryValue(string name, Object value)
+	public readonly struct RegistryValueI(string name, Object value)
 	{
 		public readonly string Name = name;
 		public readonly object Value = value;
 	}
 
 
-	#endregion Sub-classes
+	#endregion Nested types
 
 
 

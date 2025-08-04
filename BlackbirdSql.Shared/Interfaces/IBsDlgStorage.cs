@@ -12,7 +12,7 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 
 // [CLSCompliant(false)]
-public interface IBsDlgStorage : IBsGridStorage
+internal interface IBsDlgStorage : IBsGridStorage
 {
 	IBsMemDataStorage Storage { get; }
 

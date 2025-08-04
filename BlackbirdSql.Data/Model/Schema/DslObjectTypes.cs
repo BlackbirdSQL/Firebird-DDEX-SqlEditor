@@ -20,32 +20,32 @@ namespace BlackbirdSql.Data.Model.Schema;
 // =========================================================================================================
 internal static class DslObjectTypes
 {
-	public const string Root = "";
-	public const string Domain = "Domain";
-	public const string Database = "Database";
-	public const string Table = "Table";
-	public const string TableColumn = "TableColumn";
-	public const string TableIndex = "TableIndex";
-	public const string TableIndexColumn = "TableIndexColumn";
-	public const string TableUniqueKey = "TableUniqueKey";
-	public const string TableUniqueKeyColumn = "TableUniqueKeyColumn";
-	public const string TableForeignKey = "TableForeignKey";
-	public const string TableForeignKeyColumn = "TableForeignKeyColumn";
-	public const string Trigger = "Trigger";
-	public const string IdentityTrigger = "IdentityTrigger";
-	public const string StandardTrigger = "StandardTrigger";
-	public const string SystemTrigger = "SystemTrigger";
-	public const string TriggerColumn = "TriggerColumn";
-	public const string View = "View";
-	public const string ViewColumn = "ViewColumn";
-	public const string StoredProcedure = "StoredProcedure";
-	public const string StoredProcedureParameter = "StoredProcedureParameter";
-	public const string StoredProcedureColumn = "StoredProcedureColumn";
-	public const string Function = "Function";
-	public const string FunctionParameter = "FunctionParameter";
-	public const string FunctionColumn = "FunctionColumn";
-	public const string User = "User";
-	public const string Role = "Role";
+	internal const string Root = "";
+	internal const string Domain = "Domain";
+	internal const string Database = "Database";
+	internal const string Table = "Table";
+	internal const string TableColumn = "TableColumn";
+	internal const string TableIndex = "TableIndex";
+	internal const string TableIndexColumn = "TableIndexColumn";
+	internal const string TableUniqueKey = "TableUniqueKey";
+	internal const string TableUniqueKeyColumn = "TableUniqueKeyColumn";
+	internal const string TableForeignKey = "TableForeignKey";
+	internal const string TableForeignKeyColumn = "TableForeignKeyColumn";
+	internal const string Trigger = "Trigger";
+	internal const string IdentityTrigger = "IdentityTrigger";
+	internal const string StandardTrigger = "StandardTrigger";
+	internal const string SystemTrigger = "SystemTrigger";
+	internal const string TriggerColumn = "TriggerColumn";
+	internal const string View = "View";
+	internal const string ViewColumn = "ViewColumn";
+	internal const string StoredProcedure = "StoredProcedure";
+	internal const string StoredProcedureParameter = "StoredProcedureParameter";
+	internal const string StoredProcedureColumn = "StoredProcedureColumn";
+	internal const string Function = "Function";
+	internal const string FunctionParameter = "FunctionParameter";
+	internal const string FunctionColumn = "FunctionColumn";
+	internal const string User = "User";
+	internal const string Role = "Role";
 
 
 
@@ -54,7 +54,7 @@ internal static class DslObjectTypes
 	/// </summary>
 	/// <param name="typeName"></param>
 	/// <returns></returns>
-	public static int GetIdentifierLength(string typeName)
+	internal static int GetIdentifierLength(string typeName)
 	{
 		switch (typeName)
 		{

@@ -9,7 +9,7 @@ internal sealed class FunctionTypeParser : AbstractXmlPlanParser
 {
 	private static FunctionTypeParser functionTypeParser;
 
-	public static FunctionTypeParser Instance
+	internal static FunctionTypeParser Instance
 	{
 		get
 		{
@@ -18,7 +18,7 @@ internal sealed class FunctionTypeParser : AbstractXmlPlanParser
 		}
 	}
 
-	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
+	internal override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
 		Node node = AbstractXmlPlanParser.NewNode(context);
 		bool flag = false;

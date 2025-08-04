@@ -24,7 +24,7 @@ namespace BlackbirdSql.Core.Extensions;
 /// Static class for adding a DotNet Invariant's DBProviderFactory into assembly register on the fly.
 /// </summary>
 // =========================================================================================================
-public static class DbProviderFactoriesEx
+internal static class DbProviderFactoriesEx
 {
 
 
@@ -45,7 +45,7 @@ public static class DbProviderFactoriesEx
 	// =====================================================================================================
 
 
-	public static IDictionary<Guid, IVsDataSource> DataSources
+	internal static IDictionary<Guid, IVsDataSource> DataSources
 	{
 		get
 		{
@@ -57,7 +57,7 @@ public static class DbProviderFactoriesEx
 
 
 
-	public static IDictionary<Guid, IVsDataProvider> Providers
+	internal static IDictionary<Guid, IVsDataProvider> Providers
 	{
 		get
 		{
@@ -88,7 +88,7 @@ public static class DbProviderFactoriesEx
 	/// (DO NOT USE!!! ConfigurationManager may not be ready)
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ConfigurationManagerRegisterAssembly(string invariant, string factoryName,
+	internal static bool ConfigurationManagerRegisterAssembly(string invariant, string factoryName,
 		string factoryDescription, string assemblyQualifiedName)
 	{
 		/*
@@ -237,7 +237,7 @@ public static class DbProviderFactoriesEx
 	/// True if successful else false if grace period expired and gave up waiting.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool InvalidatedProviderFactoryRecovery()
+	internal static bool InvalidatedProviderFactoryRecovery()
 	{
 		// Evs.Trace(typeof(DbProviderFactoriesEx), nameof(InvalidatedProviderFactoryRecovery));
 
@@ -487,7 +487,7 @@ public static class DbProviderFactoriesEx
 	/// register.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool RegisterAssemblyDirect(string invariant, string factoryName, string factoryDescription, string assemblyQualifiedName)
+	internal static bool RegisterAssemblyDirect(string invariant, string factoryName, string factoryDescription, string assemblyQualifiedName)
 	{
 		/*
 		 * Spreading this code out for brevity

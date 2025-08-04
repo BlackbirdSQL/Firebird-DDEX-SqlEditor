@@ -10,7 +10,7 @@ using BlackbirdSql.Shared.Properties;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class CustomZoomDlg : Form
+internal class CustomZoomDlg : Form
 {
 	private Label zoomLabel;
 
@@ -26,9 +26,9 @@ public class CustomZoomDlg : Form
 	private readonly Container components;
 #pragma warning restore CS0649 // Field 'FileEncodingDialog.components' is never assigned to, and will always have its default value null
 
-	public decimal Zoom => zoomNumber.Value;
+	internal decimal Zoom => zoomNumber.Value;
 
-	public event EventHandler ZoomChangedEvent;
+	internal event EventHandler ZoomChangedEvent;
 
 	public CustomZoomDlg(decimal zoom)
 	{

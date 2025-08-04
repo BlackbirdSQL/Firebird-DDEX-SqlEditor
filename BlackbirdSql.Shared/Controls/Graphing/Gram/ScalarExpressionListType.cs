@@ -14,12 +14,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ScalarExpressionListType
+internal class ScalarExpressionListType
 {
 	private ScalarType[] scalarOperatorField;
 
 	[XmlElement("ScalarOperator")]
-	public ScalarType[] ScalarOperator
+	internal ScalarType[] ScalarOperator
 	{
 		get
 		{

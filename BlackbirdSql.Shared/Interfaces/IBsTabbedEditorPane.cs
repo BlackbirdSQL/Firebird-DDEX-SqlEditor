@@ -65,7 +65,7 @@ public interface IBsTabbedEditorPane : IBsEditorPaneServiceProvider, IBsEditorPa
 	TextSpanX GetAllCodeEditorTextSpan();
 	IWpfTextView GetCodeEditorWpfTextView();
 	string GetCodeText();
-	public T GetEditorTab<T>(Guid guidTab) where T : class;
+	internal T GetEditorTab<T>(Guid guidTab) where T : class;
 	string GetSelectedCodeEditorText();
 	TextSpanX GetSelectedCodeEditorTextSpan();
 	void SetCodeEditorSelection(int startIndex, int length);

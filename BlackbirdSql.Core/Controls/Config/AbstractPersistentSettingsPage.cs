@@ -34,8 +34,6 @@ public abstract class AbstractPersistentSettingsPage<TPage, T> : AbstractSetting
 
 	public AbstractPersistentSettingsPage()
 	{
-		// Diag.DebugTrace($"{typeof(T)}: Requesting model from page.");
-
 		_Model = ThreadHelper.JoinableTaskFactory.Run(new Func<Task<T>>(AbstractSettingsModel<T>.CreateInstanceAsync));
 		_Model.SettingsResetEvent += OnResetSettings;
 

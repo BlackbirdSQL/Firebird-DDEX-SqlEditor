@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Settings;
 
 namespace BlackbirdSql.Core.Interfaces;
 
-public interface IBSettingsModelPropertyWrapper : IBsModelPropertyWrapper
+internal interface IBSettingsModelPropertyWrapper : IBsModelPropertyWrapper
 {
 
 	bool Load<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, SettingsStore settingsStore) where TOptMdl : AbstractSettingsModel<TOptMdl>;

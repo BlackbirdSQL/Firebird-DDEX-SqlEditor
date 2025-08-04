@@ -10,12 +10,12 @@ using System.Drawing;
 namespace BlackbirdSql.Shared.Events;
 
 
-public delegate void FontChangedEventHandler(object sender, FontChangedEventArgs e);
+internal delegate void FontChangedEventHandler(object sender, FontChangedEventArgs e);
 
 
-public class FontChangedEventArgs : EventArgs
+internal class FontChangedEventArgs : EventArgs
 {
-	public Font Font { get; private set; }
+	internal Font Font { get; private set; }
 
 	public FontChangedEventArgs(Font font)
 	{

@@ -16,7 +16,7 @@ using Microsoft.VisualStudio;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridEmbeddedControlManagement2, IBsGridEmbeddedControlManagement, IBsGridEmbeddedSpinControl
+internal class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridEmbeddedControlManagement2, IBsGridEmbeddedControlManagement, IBsGridEmbeddedSpinControl
 {
 	protected int m_MarginsWidth;
 
@@ -30,7 +30,7 @@ public class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridEmb
 
 	public bool WantMouseClick => true;
 
-	public new decimal Increment
+	internal new decimal Increment
 	{
 		get
 		{
@@ -42,7 +42,7 @@ public class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridEmb
 		}
 	}
 
-	public new decimal Minimum
+	internal new decimal Minimum
 	{
 		get
 		{
@@ -54,7 +54,7 @@ public class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridEmb
 		}
 	}
 
-	public new decimal Maximum
+	internal new decimal Maximum
 	{
 		get
 		{
@@ -90,7 +90,7 @@ public class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridEmb
 		}
 	}
 
-	public new bool Enabled
+	internal new bool Enabled
 	{
 		get
 		{
@@ -132,7 +132,7 @@ public class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridEmb
 		{
 			if (control is TextBox)
 			{
-				Native.SendMessage(control.Handle, 211, (IntPtr)3, Native.Util.MAKELPARAM(m_MarginsWidth, m_MarginsWidth));
+				Native.SendMessage(control.Handle, 211, (IntPtr)3, Native.UtilI.MAKELPARAM(m_MarginsWidth, m_MarginsWidth));
 			}
 		}
 	}

@@ -8,7 +8,7 @@ namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
-internal sealed class ValueDependsOnCollectionAttribute : Attribute
+public sealed class ValueDependsOnCollectionAttribute : Attribute
 {
 	private readonly string m_sourceName;
 

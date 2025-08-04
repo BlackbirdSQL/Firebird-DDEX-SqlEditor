@@ -12,7 +12,7 @@ namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 
 
 // =========================================================================================================
-//										OptionsProvider Class
+//										SettingsProvider Class
 //
 /// <summary>
 /// Provider for <see cref="ProvideLanguageEditorOptionPageAttribute"/>, <see cref="ProvideProfileAttribute"/>
@@ -21,8 +21,8 @@ namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 // =========================================================================================================
 public class SettingsProvider
 {
-	public const string CategoryName = PackageData.C_LanguageLongName;
-	public const string SubCategoryName = "LanguageService";
+	internal const string CategoryName = PackageData.C_LanguageLongName;
+	internal const string SubCategoryName = "LanguageService";
 
 
 	[ComVisible(true)]

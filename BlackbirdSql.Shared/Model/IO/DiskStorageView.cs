@@ -14,7 +14,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, IDataRecord
+internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, IDataRecord
 {
 	protected IBsFileStreamReader _FsReader;
 
@@ -53,7 +53,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 		throw new Exception(Resources.ExceptionStorageViewDefaultConstructorCannotBeUsed);
 	}
 
-	protected internal DiskStorageView(IBsDiskDataStorage storage)
+	public DiskStorageView(IBsDiskDataStorage storage)
 	{
 		_DiskDataStorage = storage;
 		_CurrentOffset = 0L;
@@ -89,7 +89,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 		}
 	}
 
-	public override void Dispose(bool disposing)
+	internal override void Dispose(bool disposing)
 	{
 		if (disposing && _FsReader != null)
 		{
@@ -604,7 +604,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 		return num;
 	}
 
-	public void WriteInt32(int i, int value)
+	internal void WriteInt32(int i, int value)
 	{
 		if (m_i64CurrentRow - 1 >= RowCount || i >= ColumnCount)
 		{

@@ -14,13 +14,13 @@ using Microsoft.Win32;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public static class DrawManager
+internal static class DrawManager
 {
 
 	[ThreadStatic]
 	private static Pen borderPen;
 
-	public static Pen BorderPen
+	internal static Pen BorderPen
 	{
 		get
 		{
@@ -33,7 +33,7 @@ public static class DrawManager
 		}
 	}
 
-	public static Color BorderColor
+	internal static Color BorderColor
 	{
 		get
 		{
@@ -56,7 +56,7 @@ public static class DrawManager
 		borderPen = null;
 	}
 
-	public static VisualStyleElement GetButton(ButtonState state)
+	internal static VisualStyleElement GetButton(ButtonState state)
 	{
 		VisualStyleElement result = null;
 		if (Application.RenderWithVisualStyles)
@@ -76,7 +76,7 @@ public static class DrawManager
 		return result;
 	}
 
-	public static VisualStyleElement GetHeader(ButtonState state)
+	internal static VisualStyleElement GetHeader(ButtonState state)
 	{
 		VisualStyleElement result = null;
 		if (Application.RenderWithVisualStyles)
@@ -96,7 +96,7 @@ public static class DrawManager
 		return result;
 	}
 
-	public static VisualStyleElement GetLineIndexButton(ButtonState state)
+	internal static VisualStyleElement GetLineIndexButton(ButtonState state)
 	{
 		VisualStyleElement visualStyleElement = null;
 		if (Application.RenderWithVisualStyles)
@@ -144,7 +144,7 @@ public static class DrawManager
 		return visualStyleElement;
 	}
 
-	public static VisualStyleElement GetCheckBox(ButtonState state)
+	internal static VisualStyleElement GetCheckBox(ButtonState state)
 	{
 		VisualStyleElement result = null;
 		if (Application.RenderWithVisualStyles)
@@ -169,7 +169,7 @@ public static class DrawManager
 		return result;
 	}
 
-	public static bool DrawNCBorder(ref Message m)
+	internal static bool DrawNCBorder(ref Message m)
 	{
 		bool result = false;
 		int num = Native.GetWindowLongPtrPtr(m.HWnd, -16).ToInt32();

@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Shell;
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 
 // =========================================================================================================
-//										OptionsProvider Class
+//										SettingsProvider Class
 //
 /// <summary>
 /// Provider for <see cref="ProvideOptionPageAttribute"/> in <see cref="BlackbirdSqlDdexExtension"/>

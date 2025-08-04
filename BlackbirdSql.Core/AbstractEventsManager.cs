@@ -26,7 +26,7 @@ namespace BlackbirdSql.Core;
 /// The events manager can handle an ide event by hooking onto Controller.On[event]. 
 /// </remarks>
 // =========================================================================================================
-public abstract class AbstractEventsManager : IBsEventsManager
+internal abstract class AbstractEventsManager : IBsEventsManager
 {
 
 	// -------------------------------------------------------
@@ -60,7 +60,7 @@ public abstract class AbstractEventsManager : IBsEventsManager
 	protected abstract void Dispose(bool disposing);
 
 
-	public static void DisposeInstances()
+	internal static void DisposeInstances()
 	{
 		if (_Instances == null)
 			return;

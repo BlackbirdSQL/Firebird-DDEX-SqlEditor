@@ -14,11 +14,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StmtCondTypeThen
+internal class StmtCondTypeThen
 {
 	private StmtBlockType statementsField;
 
-	public StmtBlockType Statements
+	internal StmtBlockType Statements
 	{
 		get
 		{

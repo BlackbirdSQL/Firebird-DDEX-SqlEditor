@@ -4,7 +4,7 @@
 namespace BlackbirdSql.Sys.Enums;
 
 
-public enum EnEvsId : int
+internal enum EnEvsId : int
 {
 	Critical = 1,
 	Error,

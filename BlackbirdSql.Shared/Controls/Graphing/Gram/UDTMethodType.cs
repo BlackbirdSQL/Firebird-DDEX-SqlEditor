@@ -13,13 +13,13 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class UDTMethodType
+internal class UDTMethodType
 {
 	private CLRFunctionType cLRFunctionField;
 
 	private ScalarType[] scalarOperatorField;
 
-	public CLRFunctionType CLRFunction
+	internal CLRFunctionType CLRFunction
 	{
 		get
 		{
@@ -32,7 +32,7 @@ public class UDTMethodType
 	}
 
 	[XmlElement("ScalarOperator")]
-	public ScalarType[] ScalarOperator
+	internal ScalarType[] ScalarOperator
 	{
 		get
 		{

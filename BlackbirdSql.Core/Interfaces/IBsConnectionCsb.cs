@@ -22,7 +22,7 @@ public interface IBsConnectionCsb : IDataConnectionProperties, IBsCsb
 	DbTransaction DataTransaction { get; }
 	bool HasTransactions { get; }
 	bool PeekTransactions { get; }
-	public Version ServerVersion { get; set; }
+	internal Version ServerVersion { get; set; }
 	ConnectionState State { get; }
 
 

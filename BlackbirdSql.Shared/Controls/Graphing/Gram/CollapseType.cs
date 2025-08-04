@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class CollapseType : RelOpBaseType
+internal class CollapseType : RelOpBaseType
 {
 	private ColumnReferenceType[] groupByField;
 
 	private RelOpType relOpField;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] GroupBy
+	internal ColumnReferenceType[] GroupBy
 	{
 		get
 		{
@@ -33,7 +33,7 @@ public class CollapseType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{

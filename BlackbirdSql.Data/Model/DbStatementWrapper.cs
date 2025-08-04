@@ -22,7 +22,7 @@ namespace BlackbirdSql.Data.Model;
 
 
 
-public class DbStatementWrapper : IBsNativeDbStatementWrapper
+internal class DbStatementWrapper : IBsNativeDbStatementWrapper
 {
 	private DbStatementWrapper()
 	{
@@ -120,7 +120,7 @@ public class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 
 	/*
-	public void Cancel()
+	internal void Cancel()
 	{
 		_Owner.Cancel();
 	}

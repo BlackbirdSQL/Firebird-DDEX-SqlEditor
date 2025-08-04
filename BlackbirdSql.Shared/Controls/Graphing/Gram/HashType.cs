@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class HashType : RelOpBaseType
+internal class HashType : RelOpBaseType
 {
 	private ColumnReferenceType[] hashKeysBuildField;
 
@@ -33,7 +33,7 @@ public class HashType : RelOpBaseType
 	private bool bitmapCreatorFieldSpecified;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] HashKeysBuild
+	internal ColumnReferenceType[] HashKeysBuild
 	{
 		get
 		{
@@ -46,7 +46,7 @@ public class HashType : RelOpBaseType
 	}
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] HashKeysProbe
+	internal ColumnReferenceType[] HashKeysProbe
 	{
 		get
 		{
@@ -58,7 +58,7 @@ public class HashType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType BuildResidual
+	internal ScalarExpressionType BuildResidual
 	{
 		get
 		{
@@ -70,7 +70,7 @@ public class HashType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType ProbeResidual
+	internal ScalarExpressionType ProbeResidual
 	{
 		get
 		{
@@ -82,7 +82,7 @@ public class HashType : RelOpBaseType
 		}
 	}
 
-	public StarJoinInfoType StarJoinInfo
+	internal StarJoinInfoType StarJoinInfo
 	{
 		get
 		{
@@ -95,7 +95,7 @@ public class HashType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -108,7 +108,7 @@ public class HashType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool BitmapCreator
+	internal bool BitmapCreator
 	{
 		get
 		{
@@ -121,7 +121,7 @@ public class HashType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool BitmapCreatorSpecified
+	internal bool BitmapCreatorSpecified
 	{
 		get
 		{

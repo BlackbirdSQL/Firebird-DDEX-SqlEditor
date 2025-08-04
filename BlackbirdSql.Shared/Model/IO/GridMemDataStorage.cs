@@ -11,7 +11,7 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public class GridMemDataStorage : AbstractMemDataStorage, IBsGridMemDataStorage, IBsMemDataStorage, IBsDataStorage, IDisposable
+internal class GridMemDataStorage : AbstractMemDataStorage, IBsGridMemDataStorage, IBsMemDataStorage, IBsDataStorage, IDisposable
 {
 	private class ComparerWrapper : IComparer
 	{

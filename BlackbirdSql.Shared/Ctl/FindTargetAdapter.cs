@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.Shared.Ctl;
 
 
-public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
+internal class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBsVsFindTarget3
 {
 
 	public FindTargetAdapter(AbstractTabbedEditorPane tabbedEditor)

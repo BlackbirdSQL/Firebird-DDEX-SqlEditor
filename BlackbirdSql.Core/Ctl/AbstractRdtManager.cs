@@ -3,12 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
 using Microsoft.VisualStudio;
@@ -28,7 +28,7 @@ namespace BlackbirdSql.Core.Ctl;
 /// Implementation of instance members of the <see cref="RdtManager"/>.
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractRdtManager : IDisposable
+internal abstract class AbstractRdtManager : IDisposable
 {
 
 	// ----------------------------------------------------
@@ -450,6 +450,9 @@ public abstract class AbstractRdtManager : IDisposable
 		SaveDirtyFiles(GetDirtyFiles(shouldSave));
 	}
 
+
+
+	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 	protected List<string> GetDirtyFiles(Predicate<string> shouldHandle)
 	{
 		Cmd.CheckForNullReference((object)shouldHandle, "shouldHandle");

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -31,7 +32,7 @@ namespace BlackbirdSql;
 /// access the Rdt through this class.
 /// </summary>
 // =========================================================================================================
-public sealed class RdtManager : AbstractRdtManager
+internal sealed class RdtManager : AbstractRdtManager
 {
 
 	// ----------------------------------------------------
@@ -100,12 +101,12 @@ public sealed class RdtManager : AbstractRdtManager
 	/// to null but leave the entry intact.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static Dictionary<string, IBsCsb> InflightMonikerCsbTable => _InflightMonikerCsbTable ??= [];
+	internal static Dictionary<string, IBsCsb> InflightMonikerCsbTable => _InflightMonikerCsbTable ??= [];
 
 
-	public static IEnumerable<RunningDocumentInfo> Enumerator => Instance.Rdt;
+	internal static IEnumerable<RunningDocumentInfo> Enumerator => Instance.Rdt;
 
-	public static object LockGlobal => _LockGlobal;
+	internal static object LockGlobal => _LockGlobal;
 
 
 	// ---------------------------------------------------------------------------------
@@ -117,7 +118,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// against a new AuxilliaryDocData object.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string PopInflightMonikerStack
+	internal static string PopInflightMonikerStack
 	{
 		get
 		{
@@ -151,7 +152,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// against a new AuxilliaryDocData object.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string PushInflightMonikerStack
+	internal static string PushInflightMonikerStack
 	{
 		set
 		{
@@ -168,7 +169,7 @@ public sealed class RdtManager : AbstractRdtManager
 	}
 
 
-	public static bool ServiceAvailable => Instance.RdtSvc != null;
+	internal static bool ServiceAvailable => Instance.RdtSvc != null;
 
 
 	#endregion Property Accessors
@@ -182,7 +183,7 @@ public sealed class RdtManager : AbstractRdtManager
 	// =====================================================================================================
 
 
-	public static int AdviseRunningDocTableEvents(IVsRunningDocTableEvents pSink, out uint pdwCookie) =>
+	internal static int AdviseRunningDocTableEvents(IVsRunningDocTableEvents pSink, out uint pdwCookie) =>
 		Instance.RdtSvc.AdviseRunningDocTableEvents(pSink, out pdwCookie);
 
 
@@ -192,7 +193,8 @@ public sealed class RdtManager : AbstractRdtManager
 	/// [Launch ensure UI thread]: Invalidates the document window's toolbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void InvalidateToolbarAsyeu(uint dwCookie)
+	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
+	internal static void InvalidateToolbarAsyeu(uint dwCookie)
 	{
 		if (dwCookie == 0)
 			return;
@@ -244,23 +246,23 @@ public sealed class RdtManager : AbstractRdtManager
 
 
 
-	public static CloseResult CloseDocument(__FRAMECLOSE options, uint docCookie) =>
+	internal static CloseResult CloseDocument(__FRAMECLOSE options, uint docCookie) =>
 		Instance.Rdt.CloseDocument(options, docCookie);
 
 
 
-	public static int FindAndLockDocument(uint dwRDTLockType, string pszMkDocument,
+	internal static int FindAndLockDocument(uint dwRDTLockType, string pszMkDocument,
 			out IVsHierarchy ppHier, out uint pitemid, out IntPtr ppunkDocData, out uint pdwCookie) =>
 		Instance.FindAndLockDocumentImpl(dwRDTLockType, pszMkDocument, out ppHier, out pitemid,
 			out ppunkDocData, out pdwCookie);
 
 
 
-	public static RunningDocumentInfo GetDocumentInfo(uint docCookie) =>
+	internal static RunningDocumentInfo GetDocumentInfo(uint docCookie) =>
 		Instance.Rdt.GetDocumentInfo(docCookie);
 
 
-	public static int GetDocumentInfo(uint docCookie, out uint pgrfRDTFlags, out uint pdwReadLocks,
+	internal static int GetDocumentInfo(uint docCookie, out uint pgrfRDTFlags, out uint pdwReadLocks,
 			out uint pdwEditLocks, out string pbstrMkDocument, out IVsHierarchy ppHier,
 			out uint pitemid, out IntPtr ppunkDocData) =>
 		Instance.RdtSvc.GetDocumentInfo(docCookie, out pgrfRDTFlags, out pdwReadLocks,
@@ -268,18 +270,18 @@ public sealed class RdtManager : AbstractRdtManager
 
 
 
-	public static string GetDocumentMoniker(uint cookie) =>
+	internal static string GetDocumentMoniker(uint cookie) =>
 		Instance.RdtSvc4.GetDocumentMoniker(cookie);
 
 
 
 
-	public static uint GetRdtCookie(string mkDocument) =>
+	internal static uint GetRdtCookie(string mkDocument) =>
 		Instance.GetRdtCookieImpl(mkDocument);
 
 
 
-	public static IVsWindowFrame GetWindowFrameForDocData(object docData, System.IServiceProvider serviceProvider)
+	internal static IVsWindowFrame GetWindowFrameForDocData(object docData, System.IServiceProvider serviceProvider)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
@@ -291,7 +293,7 @@ public sealed class RdtManager : AbstractRdtManager
 
 
 
-	public static IEnumerable<IVsWindowFrame> GetWindowFramesForDocData(object docData, System.IServiceProvider serviceProvider)
+	internal static IEnumerable<IVsWindowFrame> GetWindowFramesForDocData(object docData, System.IServiceProvider serviceProvider)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
@@ -317,11 +319,11 @@ public sealed class RdtManager : AbstractRdtManager
 	}
 
 
-	public static void HandsOffDocument(uint cookie, string moniker) =>
+	internal static void HandsOffDocument(uint cookie, string moniker) =>
 		Instance.HandsOffDocumentImpl(cookie, moniker);
 
 
-	public static void HandsOnDocument(uint cookie, string moniker) =>
+	internal static void HandsOnDocument(uint cookie, string moniker) =>
 		Instance.HandsOnDocumentImpl(cookie, moniker);
 
 
@@ -330,7 +332,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// Invalidates the document window's toolbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static async Task InvalidateToolbarAsync(uint dwCookie)
+	internal static async Task InvalidateToolbarAsync(uint dwCookie)
 	{
 		if (dwCookie == 0)
 			return;
@@ -342,14 +344,14 @@ public sealed class RdtManager : AbstractRdtManager
 
 
 
-	public static bool IsDirty(uint cookie) =>
+	internal static bool IsDirty(uint cookie) =>
 		Instance.IsDirtyImpl(cookie);
 
 
-	public static bool IsFileInRdt(string mkDocument) =>
+	internal static bool IsFileInRdt(string mkDocument) =>
 		Instance.IsFileInRdtImpl(mkDocument);
 
-	public static bool IsInflightMonikerRegistered(string mkDocument)
+	internal static bool IsInflightMonikerRegistered(string mkDocument)
 	{
 		if (_InflightMonikerCsbTable == null)
 			return false;
@@ -357,7 +359,7 @@ public sealed class RdtManager : AbstractRdtManager
 		return _InflightMonikerCsbTable.ContainsKey(mkDocument);
 	}
 
-	public static bool IsInflightMonikerFilenameRegistered(string filename)
+	internal static bool IsInflightMonikerFilenameRegistered(string filename)
 	{
 		if (_InflightMonikerCsbTable == null)
 			return false;
@@ -380,44 +382,44 @@ public sealed class RdtManager : AbstractRdtManager
 	}
 
 
-	public static int QueryCloseRunningDocument(string pszMkDocument, out int pfFoundAndClosed) =>
+	internal static int QueryCloseRunningDocument(string pszMkDocument, out int pfFoundAndClosed) =>
 		Instance.QueryCloseRunningDocumentImpl(pszMkDocument, out pfFoundAndClosed);
 
 
 
-	public static int LockDocument(uint grfRDTLockType, uint dwCookie) =>
+	internal static int LockDocument(uint grfRDTLockType, uint dwCookie) =>
 		Instance.RdtSvc.LockDocument(grfRDTLockType, dwCookie);
 
 
 
-	public static int NotifyDocumentChanged(uint dwCookie, uint grfDocChanged)
+	internal static int NotifyDocumentChanged(uint dwCookie, uint grfDocChanged)
 		=> Instance.RdtSvc.NotifyDocumentChanged(dwCookie, grfDocChanged);
 
 
 
-	public static int RegisterAndLockDocument(uint grfRDTLockType, string pszMkDocument,
+	internal static int RegisterAndLockDocument(uint grfRDTLockType, string pszMkDocument,
 			IVsHierarchy pHier, uint itemid, IntPtr punkDocData, out uint pdwCookie) =>
 		Instance.RdtSvc.RegisterAndLockDocument(grfRDTLockType, pszMkDocument,
 			pHier, itemid, punkDocData, out pdwCookie);
 
 
 
-	public static int RegisterDocumentLockHolder(uint grfRDLH, uint dwCookie, IVsDocumentLockHolder
+	internal static int RegisterDocumentLockHolder(uint grfRDLH, uint dwCookie, IVsDocumentLockHolder
 			pLockHolder, out uint pdwLHCookie) =>
 		Instance.RdtSvc.RegisterDocumentLockHolder(grfRDLH, dwCookie, pLockHolder, out pdwLHCookie);
 
 
-	public static int RenameDocument(string pszMkDocumentOld, string pszMkDocumentNew, IntPtr pHier, uint itemidNew) =>
+	internal static int RenameDocument(string pszMkDocumentOld, string pszMkDocumentNew, IntPtr pHier, uint itemidNew) =>
 		Instance.RdtSvc.RenameDocument(pszMkDocumentOld, pszMkDocumentNew, pHier, itemidNew);
 
 
-	public static int SaveDocuments(uint grfSaveOpts, IVsHierarchy pHier, uint itemid, uint docCookie) =>
+	internal static int SaveDocuments(uint grfSaveOpts, IVsHierarchy pHier, uint itemid, uint docCookie) =>
 		Instance.RdtSvc.SaveDocuments(grfSaveOpts, pHier, itemid, docCookie);
 
 
 
 
-	public static bool ShouldKeepDocDataAliveOnClose(uint docCookie) =>
+	internal static bool ShouldKeepDocDataAliveOnClose(uint docCookie) =>
 		Instance.ShouldKeepDocDataAliveOnCloseImpl(docCookie);
 
 
@@ -427,7 +429,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// Switches to the document's window.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static async Task ShowWindowFrameAsync(uint cookie)
+	internal static async Task ShowWindowFrameAsync(uint cookie)
 	{
 		if (cookie == 0)
 			return;
@@ -444,7 +446,8 @@ public sealed class RdtManager : AbstractRdtManager
 	/// [Launch ensure UI thread]: Switches to the document's window.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void ShowWindowFrameAsyeu(uint cookie)
+	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
+	internal static void ShowWindowFrameAsyeu(uint cookie)
 	{
 		if (cookie == 0)
 			return;
@@ -478,7 +481,7 @@ public sealed class RdtManager : AbstractRdtManager
 	/// Provide either a moniker or codeWindow.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void SuppressChangeTracking(string mkDocument, IVsCodeWindow codeWindow, bool suppress)
+	internal static void SuppressChangeTracking(string mkDocument, IVsCodeWindow codeWindow, bool suppress)
 	{
 		// Evs.Trace(typeof(AbstractDesignerServices), nameof(SuppressChangeTracking), "mkDocument: {0}.", mkDocument);
 
@@ -508,11 +511,11 @@ public sealed class RdtManager : AbstractRdtManager
 	}
 
 
-	public static object GetDocDataFromCookie(uint cookie) =>
+	internal static object GetDocDataFromCookie(uint cookie) =>
 		Instance.GetDocDataFromCookieImpl(cookie);
 
 
-	public static void ShowFrame(uint cookie)
+	internal static void ShowFrame(uint cookie)
 	{
 		string mkDocument = Instance.RdtSvc4.GetDocumentMoniker(cookie);
 
@@ -523,7 +526,7 @@ public sealed class RdtManager : AbstractRdtManager
 	}
 
 
-	public static bool TryGetCodeWindow(string mkDocument, out IVsCodeWindow codeWindow)
+	internal static bool TryGetCodeWindow(string mkDocument, out IVsCodeWindow codeWindow)
 	{
 		codeWindow = null;
 
@@ -553,7 +556,7 @@ public sealed class RdtManager : AbstractRdtManager
 
 
 
-	public static async Task<IVsWindowFrame> GetWindowFrameAsync(uint cookie)
+	internal static async Task<IVsWindowFrame> GetWindowFrameAsync(uint cookie)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -570,16 +573,16 @@ public sealed class RdtManager : AbstractRdtManager
 
 
 
-	public static int UnadviseRunningDocTableEvents(uint dwCookie) =>
+	internal static int UnadviseRunningDocTableEvents(uint dwCookie) =>
 		Instance.RdtSvc.UnadviseRunningDocTableEvents(dwCookie);
 
 
 
-	public static int UnregisterDocumentLockHolder(uint dwLHCookie) =>
+	internal static int UnregisterDocumentLockHolder(uint dwLHCookie) =>
 		Instance.RdtSvc.UnregisterDocumentLockHolder(dwLHCookie);
 
 
-	public static bool WindowFrameIsOnScreen(string mkDocument)
+	internal static bool WindowFrameIsOnScreen(string mkDocument)
 	{
 		IVsWindowFrame frame = Instance.GetWindowFrameImpl(mkDocument);
 

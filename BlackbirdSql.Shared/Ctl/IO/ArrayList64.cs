@@ -9,7 +9,7 @@ using System.Collections;
 namespace BlackbirdSql.Shared.Ctl.IO;
 
 
-public class ArrayList64
+internal class ArrayList64
 {
 	protected ArrayList m_arr32;
 
@@ -17,7 +17,7 @@ public class ArrayList64
 
 	protected ArrayList m_arrArr;
 
-	public long Count => _Count;
+	internal long Count => _Count;
 
 	public ArrayList64()
 	{
@@ -25,7 +25,7 @@ public class ArrayList64
 		_Count = 0L;
 	}
 
-	public long Add(object val)
+	internal long Add(object val)
 	{
 		if (_Count <= int.MaxValue)
 		{
@@ -53,7 +53,7 @@ public class ArrayList64
 		return ++_Count;
 	}
 
-	public void RemoveAt(long index)
+	internal void RemoveAt(long index)
 	{
 		if (_Count <= int.MaxValue)
 		{
@@ -78,7 +78,7 @@ public class ArrayList64
 		_Count--;
 	}
 
-	public object GetItem(long index)
+	internal object GetItem(long index)
 	{
 		object result = null;
 		if (_Count <= int.MaxValue)

@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SequenceType : RelOpBaseType
+internal class SequenceType : RelOpBaseType
 {
 	private RelOpType[] relOpField;
 
@@ -26,7 +26,7 @@ public class SequenceType : RelOpBaseType
 	private string graphSequenceIdentifierField;
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -39,7 +39,7 @@ public class SequenceType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsGraphDBTransitiveClosure
+	internal bool IsGraphDBTransitiveClosure
 	{
 		get
 		{
@@ -52,7 +52,7 @@ public class SequenceType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsGraphDBTransitiveClosureSpecified
+	internal bool IsGraphDBTransitiveClosureSpecified
 	{
 		get
 		{
@@ -65,7 +65,7 @@ public class SequenceType : RelOpBaseType
 	}
 
 	[XmlAttribute(DataType = "integer")]
-	public string GraphSequenceIdentifier
+	internal string GraphSequenceIdentifier
 	{
 		get
 		{

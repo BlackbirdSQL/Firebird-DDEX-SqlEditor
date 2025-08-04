@@ -9,10 +9,12 @@ using System.Globalization;
 using System.Text;
 using BlackbirdSql.Shared.Interfaces;
 
+
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Shared.Model.IO;
 
-public abstract class AbstractStorageView : IBsStorageView, IDisposable
+
+internal abstract class AbstractStorageView : IBsStorageView, IDisposable
 {
 	protected const int C_DEFAULT_MAX_NUM_BYTES_TO_DISPLAY = 256;
 
@@ -24,19 +26,19 @@ public abstract class AbstractStorageView : IBsStorageView, IDisposable
 
 	private readonly StorageDataEntity _StorageViewDataEntity;
 
-	public const string C_DateTimeFormatString = "yyyy-MM-dd HH:mm:ss.fff";
+	internal const string C_DateTimeFormatString = "yyyy-MM-dd HH:mm:ss.fff";
 
-	public const string C_DateFormatString = "yyyy-MM-dd";
+	internal const string C_DateFormatString = "yyyy-MM-dd";
 
-	public const string C_DateTime2FormatString = "yyyy-MM-dd HH:mm:ss{0}";
+	internal const string C_DateTime2FormatString = "yyyy-MM-dd HH:mm:ss{0}";
 
-	public const string C_SmallDateTimeFormatString = "yyyy-MM-dd HH:mm:ss";
+	internal const string C_SmallDateTimeFormatString = "yyyy-MM-dd HH:mm:ss";
 
-	public const string C_DateTimeOffsetFormatString = "yyyy-MM-dd HH:mm:ss{0} zzz";
+	internal const string C_DateTimeOffsetFormatString = "yyyy-MM-dd HH:mm:ss{0} zzz";
 
 
 
-	public StorageDataEntity StorageViewDataEntity => _StorageViewDataEntity;
+	internal StorageDataEntity StorageViewDataEntity => _StorageViewDataEntity;
 
 	public abstract long EnsureRowsInBuf(long startRow, long totalRowCount);
 
@@ -235,7 +237,7 @@ public abstract class AbstractStorageView : IBsStorageView, IDisposable
 		Dispose(disposing: true);
 	}
 
-	public virtual void Dispose(bool disposing)
+	internal virtual void Dispose(bool disposing)
 	{
 	}
 }

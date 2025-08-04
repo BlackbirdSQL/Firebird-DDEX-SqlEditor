@@ -1,10 +1,10 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.ParseManager
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Babel;
-using BlackbirdSql.Core;
 using BlackbirdSql.LanguageExtension.Interfaces;
 using BlackbirdSql.LanguageExtension.Services;
 using Microsoft.SqlServer.Management.SqlParser;
@@ -17,8 +17,21 @@ using Microsoft.SqlServer.Management.SqlParser.Parser;
 namespace BlackbirdSql.LanguageExtension.Ctl;
 
 
+// =========================================================================================================
+//
+//										LsbParseManager Class
+//
+/// <summary>
+/// Language service Parser Manager.
+/// </summary>
+// =========================================================================================================
 internal class LsbParseManager
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - LsbParseManager
+	// ---------------------------------------------------------------------------------
+
 
 	public LsbParseManager(LsbSource source)
 	{
@@ -29,24 +42,41 @@ internal class LsbParseManager
 	}
 
 
+	#endregion Constructors / Destructors
 
-	private string _InputSql;
 
-	private ParseOptions _ParseOptions;
 
-	private IBinder _LastBinderUsed;
+
+
+	// =========================================================================================================
+	#region Fields - LsbParseManager
+	// =========================================================================================================
+
 
 	private string _DatabaseName;
-
+	private IEnumerable<Region> _HiddenRegions;
+	private string _InputSql;
+	private IBinder _LastBinderUsed;
+	private ParseOptions _ParseOptions;
+	private ParseResult _ParseResult;
 	private readonly LsbSource _Source;
 
-	private ParseResult _ParseResult;
 
-	private IEnumerable<Region> _HiddenRegions;
+	#endregion Fields
 
-	public ParseResult ParseResult => _ParseResult;
 
-	public IEnumerable<Error> Errors
+
+
+
+	// =========================================================================================================
+	#region Property accessors - LsbParseManager
+	// =========================================================================================================
+
+
+	internal ParseResult ParseResult => _ParseResult;
+
+
+	internal IEnumerable<Error> Errors
 	{
 		get
 		{
@@ -58,10 +88,22 @@ internal class LsbParseManager
 		}
 	}
 
-	public IEnumerable<Region> HiddenRegions => _HiddenRegions;
+
+	internal IEnumerable<Region> HiddenRegions => _HiddenRegions;
 
 
-	public bool ExecuteParseRequest(string text, ParseOptions parseOptions, IBinder binder, string databaseName)
+	#endregion Property accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - LsbParseManager
+	// =========================================================================================================
+
+
+	internal bool ExecuteParseRequest(string text, ParseOptions parseOptions, IBinder binder, string databaseName)
 	{
 		bool flag = !parseOptions.Equals(_ParseOptions) || !IsInputSqlSameAs(text);
 		bool flag2 = binder != null && databaseName != null && (flag || !binder.Equals(_LastBinderUsed)
@@ -141,6 +183,8 @@ internal class LsbParseManager
 		return flag || flag2;
 	}
 
+
+
 	private IEnumerable<Region> FilterHiddenRegions(IEnumerable<Region> inputRegions)
 	{
 		List<Region> list = new List<Region>(inputRegions);
@@ -193,6 +237,8 @@ internal class LsbParseManager
 		return list;
 	}
 
+
+
 	private static void SortRegionsByStartLine(List<Region> regions)
 	{
 		regions.Sort((Region x, Region y) => ((Comparison<int>)delegate(int a, int b)
@@ -205,7 +251,9 @@ internal class LsbParseManager
 		})(x.StartLocation.LineNumber, y.StartLocation.LineNumber));
 	}
 
-	public void Reset()
+
+
+	internal void Reset()
 	{
 		_InputSql = null;
 		_ParseOptions = null;
@@ -214,6 +262,8 @@ internal class LsbParseManager
 		_ParseResult = null;
 		_HiddenRegions = null;
 	}
+
+
 
 	private bool IsInputSqlSameAs(string newSql)
 	{
@@ -224,4 +274,8 @@ internal class LsbParseManager
 		}
 		return result;
 	}
+
+
+	#endregion Methods
+
 }

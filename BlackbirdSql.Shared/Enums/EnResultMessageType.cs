@@ -5,7 +5,7 @@
 namespace BlackbirdSql.Shared.Enums;
 
 
-public enum EnResultMessageType
+internal enum EnResultMessageType
 {
 	Normal,
 	Warning,

@@ -43,7 +43,7 @@ namespace BlackbirdSql.Core.Model;
 /// in the Rct.
 /// </remarks>
 // =========================================================================================================
-public abstract class RunningConnectionTable : AbstractRunningConnectionTable
+internal abstract class RunningConnectionTable : AbstractRunningConnectionTable
 {
 
 

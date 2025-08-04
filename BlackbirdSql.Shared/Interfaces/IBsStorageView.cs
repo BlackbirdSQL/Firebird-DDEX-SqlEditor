@@ -8,7 +8,7 @@ using System;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsStorageView : IDisposable
+internal interface IBsStorageView : IDisposable
 {
 	long EnsureRowsInBuf(long startRow, long totalRowCount);
 

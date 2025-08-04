@@ -14,7 +14,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 /// Interface for the native db trigger linkage parser.
 /// </summary>
 // =========================================================================================================
-public interface IBsNativeDbLinkageParser
+internal interface IBsNativeDbLinkageParser
 {
 	string ConnectionString { get; }
 	bool IsLockedLoaded { get; }

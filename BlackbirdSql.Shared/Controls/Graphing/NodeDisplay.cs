@@ -17,9 +17,9 @@ using Microsoft.AnalysisServices.Graphing;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRenderable, ICustomTypeDescriptor
+internal class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRenderable, ICustomTypeDescriptor
 {
-	public int MaxChildrenXPosition;
+	internal int MaxChildrenXPosition;
 
 	private readonly NodeCollection<NodeDisplay> _Children;
 
@@ -43,11 +43,11 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 
 	private readonly Dictionary<PropertyDescriptor, bool> diffMap;
 
-	public Dictionary<PropertyDescriptor, bool> DiffMap => diffMap;
+	internal Dictionary<PropertyDescriptor, bool> DiffMap => diffMap;
 
-	public new NodeCollection<NodeDisplay> Children => _Children;
+	internal new NodeCollection<NodeDisplay> Children => _Children;
 
-	public NodeDisplay Parent
+	internal NodeDisplay Parent
 	{
 		get
 		{
@@ -60,19 +60,19 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		}
 	}
 
-	public Image Image => NodeOriginal.Operation.Image;
+	internal Image Image => NodeOriginal.Operation.Image;
 
-	public Color BackgroundColor { get; set; }
+	internal Color BackgroundColor { get; set; }
 
-	public bool UseBackgroundColor { get; set; }
+	internal bool UseBackgroundColor { get; set; }
 
-	public int GroupIndex { get; set; }
+	internal int GroupIndex { get; set; }
 
-	public Color TextColor { get; set; }
+	internal Color TextColor { get; set; }
 
-	public StringFormat TextFormat { get; set; }
+	internal StringFormat TextFormat { get; set; }
 
-	public virtual string DisplayName
+	internal virtual string DisplayName
 	{
 		get
 		{
@@ -115,7 +115,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		}
 	}
 
-	public override string Name
+	internal override string Name
 	{
 		get
 		{
@@ -136,10 +136,10 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 	[DisplayOrder(2)]
 	[DisplayNameDescription("OperationDescriptionShort", "OperationDescription")]
 	[Editor(typeof(DiffImageUITypeEditor), typeof(UITypeEditor))]
-	public string Description => NodeOriginal.Operation.Description;
+	internal string Description => NodeOriginal.Operation.Description;
 
 	[Browsable(false)]
-	public bool IsParallel
+	internal bool IsParallel
 	{
 		get
 		{
@@ -153,7 +153,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 	}
 
 	[Browsable(false)]
-	public bool HasWarnings => NodeOriginal["Warnings"] != null;
+	internal bool HasWarnings => NodeOriginal["Warnings"] != null;
 
 	private bool HasCriticalWarnings
 	{
@@ -177,7 +177,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 	[DisplayOrder(8)]
 	[DisplayNameDescription("EstimatedOperatorCost", "EstimatedOperatorCostDescription")]
 	[Editor(typeof(DiffImageUITypeEditor), typeof(UITypeEditor))]
-	public string DisplayCost
+	internal string DisplayCost
 	{
 		get
 		{
@@ -195,11 +195,11 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 	[DisplayNameDescription("EstimatedSubtreeCost", "EstimatedSubtreeCostDescription")]
 	[TypeConverter(typeof(FloatTypeConverter))]
 	[Editor(typeof(DiffImageUITypeEditor), typeof(UITypeEditor))]
-	public double SubtreeCost => NodeOriginal.SubtreeCost;
+	internal double SubtreeCost => NodeOriginal.SubtreeCost;
 
-	public string HelpKeyword => NodeOriginal.Operation.HelpKeyword;
+	internal string HelpKeyword => NodeOriginal.Operation.HelpKeyword;
 
-	public new BlackbirdSql.Shared.Controls.Graphing.Node NodeOriginal => (BlackbirdSql.Shared.Controls.Graphing.Node)base.NodeOriginal;
+	internal new BlackbirdSql.Shared.Controls.Graphing.Node NodeOriginal => (BlackbirdSql.Shared.Controls.Graphing.Node)base.NodeOriginal;
 
 	private NodeDisplayProperties DisplayProperties => _nodedisplayproperties;
 
@@ -243,7 +243,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		};
 	}
 
-	public void CompareAndUpdateDiffMaps(NodeDisplay ndCompareTo)
+	internal void CompareAndUpdateDiffMaps(NodeDisplay ndCompareTo)
 	{
 		PropertyDescriptorCollection propertyDescriptorCollection = InitDiffMap(initialDiff: true);
 		PropertyDescriptorCollection propertyDescriptorCollection2 = ndCompareTo.InitDiffMap(initialDiff: true);
@@ -276,7 +276,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		}
 	}
 
-	public PropertyDescriptor GetArgumentProperty()
+	internal PropertyDescriptor GetArgumentProperty()
 	{
 		PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(this);
 		string[] argumentPropertyNames = ArgumentPropertyNames;
@@ -427,7 +427,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		return "";
 	}
 
-	public override void UpdateBoundingRectangle(Graphics graphics)
+	internal override void UpdateBoundingRectangle(Graphics graphics)
 	{
 		if (DisplayProperties.FixedRectangleSize == DisplayPropertiesDefault.FixedRectangleSize)
 		{
@@ -437,7 +437,7 @@ public class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IRen
 		base.UpdateBoundingRectangle(graphics);
 	}
 
-	public override Point ConnectionPoint(Point sourcePoint)
+	internal override Point ConnectionPoint(Point sourcePoint)
 	{
 		return new Point(sourcePoint.X < BoundingRect.Left ? BoundingRect.Left : BoundingRect.Right, (BoundingRect.Top + BoundingRect.Bottom) / 2);
 	}

@@ -6,7 +6,7 @@ using BlackbirdSql.Shared.Controls.Graphing.Enums;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class NodeBuilderContext
+internal class NodeBuilderContext
 {
 	private readonly ExecutionPlanGraph _Graph;
 
@@ -14,11 +14,11 @@ public class NodeBuilderContext
 
 	private readonly object _Context;
 
-	public ExecutionPlanGraph Graph => _Graph;
+	internal ExecutionPlanGraph Graph => _Graph;
 
-	public EnExecutionPlanType ExecutionPlanType => _ExecutionPlanType;
+	internal EnExecutionPlanType ExecutionPlanType => _ExecutionPlanType;
 
-	public object Context => _Context;
+	internal object Context => _Context;
 
 	public NodeBuilderContext(ExecutionPlanGraph graph, EnExecutionPlanType type, object context)
 	{

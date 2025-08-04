@@ -88,6 +88,24 @@ namespace BlackbirdSql.LanguageExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type {0} cannot have default init fields..
+        /// </summary>
+        public static string ExceptionCannotSetDefInitFlds {
+            get {
+                return ResourceManager.GetString("ExceptionCannotSetDefInitFlds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set default init fields.
+        /// </summary>
+        public static string ExceptionSetDefaultInitFields {
+            get {
+                return ResourceManager.GetString("ExceptionSetDefaultInitFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to subscribe to Settings events.
         /// </summary>
         public static string ExFailedToSubscribeSettingsEvents {

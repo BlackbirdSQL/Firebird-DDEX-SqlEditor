@@ -23,54 +23,54 @@ namespace BlackbirdSql.Data;
 /// System wide and the current data provider (in this case Firebird) specific constants and statics
 /// </summary>
 // =========================================================================================================
-public static class LibraryData
+internal static class LibraryData
 {
-	public const string C_Invariant = "FirebirdSql.Data.FirebirdClient";
-	public const string C_ProviderFactoryName = "FirebirdClient Data Provider";
-	public const string C_ProviderFactoryClassName = "FirebirdSql.Data.FirebirdClient.FirebirdClientFactory";
-	public const string C_ProviderFactoryDescription = ".NET Framework Data Provider for Firebird";
+	internal const string C_Invariant = "FirebirdSql.Data.FirebirdClient";
+	internal const string C_ProviderFactoryName = "FirebirdClient Data Provider";
+	internal const string C_ProviderFactoryClassName = "FirebirdSql.Data.FirebirdClient.FirebirdClientFactory";
+	internal const string C_ProviderFactoryDescription = ".NET Framework Data Provider for Firebird";
 
-	public const string C_EFProvider = "EntityFramework.Firebird";
-	public const string C_EFProviderServices = "EntityFramework.Firebird.FbProviderServices";
-	public const string C_EFConnectionFactory = "EntityFramework.Firebird.FbConnectionFactory";
+	internal const string C_EFProvider = "EntityFramework.Firebird";
+	internal const string C_EFProviderServices = "EntityFramework.Firebird.FbProviderServices";
+	internal const string C_EFConnectionFactory = "EntityFramework.Firebird.FbConnectionFactory";
 
-	public const string C_DataProviderName = "Firebird Server"; // Firebird
-	public const string C_DbEngineName = "Firebird";
-	public const string C_SchemaMetaDataXml = "BlackbirdSql.Data.Model.Schema.DslMetaData.xml";
+	internal const string C_DataProviderName = "Firebird Server"; // Firebird
+	internal const string C_DbEngineName = "Firebird";
+	internal const string C_SchemaMetaDataXml = "BlackbirdSql.Data.Model.Schema.DslMetaData.xml";
 
 	/// <summary>
 	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).
 	/// </summary>
-	public static string S_ExternalUtilityConfigurationPath
+	internal static string S_ExternalUtilityConfigurationPath
 		=> Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 		+ "\\flamerobin\\fr_databases.conf";
 
 
-	public const string C_Protocol = "fbsql++";
-	public static string S_Scheme => C_Protocol + "://";
-	public const string C_Extension = ".fbsql";
+	internal const string C_Protocol = "fbsql++";
+	internal static string S_Scheme => C_Protocol + "://";
+	internal const string C_Extension = ".fbsql";
 
-	public const string C_SqlLanguageName = "FB-SQL";
+	internal const string C_SqlLanguageName = "FB-SQL";
 
-	public const string C_XmlActualPlanColumn = "Firebird_SQL_Server_XML_ActualPlan";
-	public const string C_XmlEstimatedPlanColumn = "Firebird_SQL_Server_XML_EstimatedPlan";
+	internal const string C_XmlActualPlanColumn = "Firebird_SQL_Server_XML_ActualPlan";
+	internal const string C_XmlEstimatedPlanColumn = "Firebird_SQL_Server_XML_EstimatedPlan";
 
 
-	public const string C_InvariantAssemblyFullName = "FirebirdSql.Data.FirebirdClient, Version={0}, Culture=neutral, PublicKeyToken=3750abcc3150b00c";
-	public const string C_InvariantAssemblyPrefix = "FirebirdSql.Data.FirebirdClient,";
-	public const string C_InvariantAssemblySuffix = ", PublicKeyToken=3750abcc3150b00c";
+	internal const string C_InvariantAssemblyFullName = "FirebirdSql.Data.FirebirdClient, Version={0}, Culture=neutral, PublicKeyToken=3750abcc3150b00c";
+	internal const string C_InvariantAssemblyPrefix = "FirebirdSql.Data.FirebirdClient,";
+	internal const string C_InvariantAssemblySuffix = ", PublicKeyToken=3750abcc3150b00c";
 
-	public const string C_EntityFrameworkAssemblyFullName = "EntityFramework.Firebird, Version={0}, Culture=neutral, PublicKeyToken=42d22d092898e5f8";
-	public const string C_EntityFrameworkAssemblyPrefix = "EntityFramework.Firebird,";
-	public const string C_EntityFrameworkAssemblySuffix = ", PublicKeyToken=42d22d092898e5f8";
+	internal const string C_EntityFrameworkAssemblyFullName = "EntityFramework.Firebird, Version={0}, Culture=neutral, PublicKeyToken=42d22d092898e5f8";
+	internal const string C_EntityFrameworkAssemblyPrefix = "EntityFramework.Firebird,";
+	internal const string C_EntityFrameworkAssemblySuffix = ", PublicKeyToken=42d22d092898e5f8";
 
-	public const string C_EFProviderServicesTypeFullName = "EntityFramework.Firebird.FbProviderServices, EntityFramework.Firebird, Version={0}, Culture=neutral, PublicKeyToken=42d22d092898e5f8";
+	internal const string C_EFProviderServicesTypeFullName = "EntityFramework.Firebird.FbProviderServices, EntityFramework.Firebird, Version={0}, Culture=neutral, PublicKeyToken=42d22d092898e5f8";
 
 
 
 	// Deprecated. Known previous version of FirebirdSql.Data.FirebirdClient that could cause conflicts.
 	/*
-	public static readonly string[] S_InvariantVersions =
+	internal static readonly string[] S_InvariantVersions =
 		[
 			"10.3.1.0", "10.3.0.0", "10.2.0.0", "10.1.0.0", "10.0.0.0", "9.1.1.0", "9.1.0.0", "9.0.2.0",
 			"9.0.1.0", "9.0.0.0", "8.5.4.0", "8.5.3.0", "8.5.2.0", "8.5.1.1", "8.5.1.0", "8.5.0.0",
@@ -88,7 +88,7 @@ public static class LibraryData
 
 	// Deprecated. Known previous version of EntityFramework.Firebird that could cause conflicts.
 	/*
-	public static readonly string[] S_EntityFrameworkVersions =
+	internal static readonly string[] S_EntityFrameworkVersions =
 		[
 			"10.0.1.0", "10.0.0.0", "9.1.1.0", "9.1.0.0", "9.0.2.0", "9.0.1.0", "9.0.0.0", "8.5.4.0",
 			"8.5.3.0", "8.5.2.0", "8.5.1.1", "8.5.1.0", "8.5.0.0", "8.0.1.0", "8.0.0.0", "7.10.1.0",
@@ -109,7 +109,7 @@ public static class LibraryData
 	/// replacement, Csb.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static readonly Describer[] Describers =
+	internal static readonly Describer[] Describers =
 	[
 		new Describer(C_KeyDataSource, C_KeyDbDataSource, typeof(string), C_DefaultDataSource, D_Connection | D_Public | D_Mandatory), // *
 		new Describer(C_KeyPort, C_KeyDbPort, typeof(int), C_DefaultPort, D_Connection | D_Public), // *
@@ -143,7 +143,7 @@ public static class LibraryData
 		new Describer(C_KeyParallelWorkers, C_KeyDbParallelWorkers, typeof(int), C_DefaultParallelWorkers, D_Default | D_Connection),
 	];
 
-	public static KeyValuePair<string, string>[] DescriberSynonyms =
+	internal static KeyValuePair<string, string>[] DescriberSynonyms =
 	[
 		Pair("server", C_KeyDataSource),
 		Pair("host", C_KeyDataSource),

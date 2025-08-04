@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Ctl;
 [ComVisible(false)]
 
 
-public class Marker(IDictionary markers) : IVsTextMarkerClient
+internal class Marker(IDictionary markers) : IVsTextMarkerClient
 {
 	private readonly IDictionary _markers = markers;
 
@@ -64,7 +64,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 
 	private TextSpanX _TextSpan;
 
-	public IVsTextStreamMarker VsMarker
+	internal IVsTextStreamMarker VsMarker
 	{
 		get
 		{
@@ -76,9 +76,9 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		}
 	}
 
-	public int Id => _Id;
+	internal int Id => _Id;
 
-	public int MarkerType
+	internal int MarkerType
 	{
 		get
 		{
@@ -90,7 +90,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		}
 	}
 
-	public TextSpanX TextSpan
+	internal TextSpanX TextSpan
 	{
 		get
 		{
@@ -102,7 +102,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		}
 	}
 
-	public int DoubleClickLine
+	internal int DoubleClickLine
 	{
 		get
 		{
@@ -120,7 +120,7 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
-	public void SetMarkerTooltip(string newToolTip)
+	internal void SetMarkerTooltip(string newToolTip)
 	{
 		newToolTip ??= "";
 

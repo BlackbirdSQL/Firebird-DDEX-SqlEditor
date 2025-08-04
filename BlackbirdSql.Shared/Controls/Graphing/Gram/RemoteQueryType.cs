@@ -16,12 +16,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RemoteQueryType : RemoteType
+internal class RemoteQueryType : RemoteType
 {
 	private string remoteQueryField;
 
 	[XmlAttribute]
-	public string RemoteQuery
+	internal string RemoteQuery
 	{
 		get
 		{

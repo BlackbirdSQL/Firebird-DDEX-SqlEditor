@@ -16,13 +16,13 @@ using Microsoft.Win32;
 namespace BlackbirdSql.Shared.Ctl.Config;
 
 
-public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
+internal class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 {
 	private ConnectionPointCookie _TextManagerEventsCookie;
 
 	private bool _IsFireEventPending;
 
-	public static Font EnvironmentFont
+	internal static Font EnvironmentFont
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 		}
 	}
 
-	public event EventHandler PreferencesChangedEvent;
+	internal event EventHandler PreferencesChangedEvent;
 
 	public VsFontColorPreferences()
 	{

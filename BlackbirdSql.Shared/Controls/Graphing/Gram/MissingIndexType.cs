@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class MissingIndexType
+internal class MissingIndexType
 {
 	private ColumnGroupType[] columnGroupField;
 
@@ -25,7 +25,7 @@ public class MissingIndexType
 	private string tableField;
 
 	[XmlElement("ColumnGroup")]
-	public ColumnGroupType[] ColumnGroup
+	internal ColumnGroupType[] ColumnGroup
 	{
 		get
 		{
@@ -38,7 +38,7 @@ public class MissingIndexType
 	}
 
 	[XmlAttribute]
-	public string Database
+	internal string Database
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class MissingIndexType
 	}
 
 	[XmlAttribute]
-	public string Schema
+	internal string Schema
 	{
 		get
 		{
@@ -64,7 +64,7 @@ public class MissingIndexType
 	}
 
 	[XmlAttribute]
-	public string Table
+	internal string Table
 	{
 		get
 		{

@@ -36,7 +36,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 
 		private FolderBrowserFolder _StartLocation;
 		private FolderBrowserStyles _PublicOptions = FolderBrowserStyles.RestrictToFilesystem;
-		private readonly Native.EnBrowseInfos _PrivateOptions = Native.EnBrowseInfos.NewDialogStyle;
+		private readonly Native.EniBrowseInfos _PrivateOptions = Native.EniBrowseInfos.NewDialogStyle;
 		private string _Title = "";
 		private string _DirectoryPath = "";
 		private string _InitialDirectory;
@@ -135,7 +135,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 			IntPtr handle = owner?.Handle ?? Native.GetActiveWindow();
 
 			int flags = (int)_PublicOptions | (int)_PrivateOptions;
-			if ((flags & (int)Native.EnBrowseInfos.NewDialogStyle) != 0)
+			if ((flags & (int)Native.EniBrowseInfos.NewDialogStyle) != 0)
 			{
 				Application.OleRequired();
 			}
@@ -149,13 +149,13 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 			else
 			{
 				_BrowserCallback = null;
-				Native.Shell32.SHGetSpecialFolderLocation(handle, (int)_StartLocation, ref ppIdl);
+				Native.Shell32I.SHGetSpecialFolderLocation(handle, (int)_StartLocation, ref ppIdl);
 
 				if (ppIdl == IntPtr.Zero)
 					return DialogResult.Cancel;
 			}
 
-			Native.BROWSEINFOEx browseInfo = null;
+			Native.BROWSEINFOX browseInfo = null;
 
 			try
 			{
@@ -173,7 +173,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 
 
 				// Call dialog SHBrowseForFolder
-				idListPtr = Native.Shell32.SHBrowseForFolder(browseInfo);
+				idListPtr = Native.Shell32I.SHBrowseForFolder(browseInfo);
 
 				// check if the user cancelled out of the dialog or not.
 				if (idListPtr == IntPtr.Zero)
@@ -182,7 +182,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 				// allocate ncessary memory buffer to receive the folder path.
 				pszPath = Marshal.AllocHGlobal(MAX_PATH);
 				// call shgetpathfromidlist to get folder path.
-				bool bret = Native.Shell32.SHGetPathFromIDList(idListPtr, pszPath);
+				bool bret = Native.Shell32I.SHGetPathFromIDList(idListPtr, pszPath);
 				// convert the returned native poiner to string.
 				_DirectoryPath = Marshal.PtrToStringAuto(pszPath);
 				DisplayName = Marshal.PtrToStringAuto(browseInfo.pszDisplayName);
@@ -213,15 +213,15 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 
 		private int BrowserCallback(IntPtr hwnd, int umsg, IntPtr wparam, IntPtr lpdata)
 		{
-			if (!string.IsNullOrWhiteSpace(_InitialDirectory) && umsg == (int)Native.EnBrowseForFolderMessages.Initialized)
+			if (!string.IsNullOrWhiteSpace(_InitialDirectory) && umsg == (int)Native.EniBrowseForFolderMessages.Initialized)
 			{
 				HandleRef href = new HandleRef(null, hwnd);
 
-				Native.SendMessage(href, (int)Native.EnBrowseForFolderMessages.SetSelectionW, 1, _InitialDirectory);
-				Native.SendMessage(href, (int)Native.EnBrowseForFolderMessages.SetExpanded, 1, _InitialDirectory);
+				Native.SendMessage(href, (int)Native.EniBrowseForFolderMessages.SetSelectionW, 1, _InitialDirectory);
+				Native.SendMessage(href, (int)Native.EniBrowseForFolderMessages.SetExpanded, 1, _InitialDirectory);
 
 			}
-			else if (umsg == (int)Native.EnBrowseForFolderMessages.SelChanged)
+			else if (umsg == (int)Native.EniBrowseForFolderMessages.SelChanged)
 			{
 				// We get in here whenever the selection in the dialog box changes. To cope with the bug in Win7 
 				// (and above?) whereby the SHBrowseForFolder dialog won't always scroll the selection into view (see 

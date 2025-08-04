@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Web.UI.Design.WebControls;
 using BlackbirdSql.Sys.Ctl.Config;
 using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio;
@@ -24,10 +25,10 @@ namespace BlackbirdSql.Sys.Ctl.Diagnostics;
 /// object so that we can have a separate singleton instance for each assembly using minimal
 /// implementation code in the final class.
 /// </summary>
-/// <typeparam name="TEventSource"></typeparam>
-public class AbstractEvs<TEventSource> : EvsProvider<TEventSource> where TEventSource : AbstractEvs<TEventSource>
+/// <typeparam name="TEvs"></typeparam>
+public class AbstractEvs<TEvs> : EvsProvider<TEvs> where TEvs : AbstractEvs<TEvs>
 {
-	protected AbstractEvs() : base()
+	protected AbstractEvs(string identifier) : base(identifier)
 	{
 	}
 
@@ -190,71 +191,78 @@ public class AbstractEvs<TEventSource> : EvsProvider<TEventSource> where TEventS
 	{
 		int result = VSConstants.E_NOTIMPL;
 
-		if (!CanTrace(eventLevel))
-			return result;
-
-		if (eventLevel == EnEventLevel.ActivityTracing && eventId != EnEvsId.OpStart && Convert.ToInt32(args[1]) < 0)
-			return result;
-
-		if (string.IsNullOrEmpty(memberName))
-			memberName = method;
-
-		string componentName = type.FullName;
-
-		StringBuilder sb = new StringBuilder();
-		sb.Append(componentName ?? "null");
-		sb.Append("::");
-		sb.Append(memberName ?? "null");
-		if (line != -1)
-			sb.Append($"[#{line}]");
-		sb.Append(" - ");
-		if (msg == "")
-			sb.Append("null");
-		else
-			sb.Append(msg);
-
-		string evsMsg = sb.ToString();
-
-		switch (eventId)
+		try
 		{
-			case EnEvsId.Critical:
-				result = Log.CriticalEvent(evsMsg);
-				break;
-			case EnEvsId.Error:
-				result = Log.ErrorEvent(evsMsg);
-				break;
-			case EnEvsId.Warning:
-				result = Log.WarnEvent(evsMsg);
-				break;
-			case EnEvsId.Information:
-				result = Log.InfoEvent(evsMsg);
-				break;
-			case EnEvsId.Trace:
-				result = Log.TraceEvent(evsMsg);
-				break;
-			case EnEvsId.Debug:
-				result = Log.DebugEvent(evsMsg);
-				break;
-			case EnEvsId.OpStart:
-				result = Log.StartEvent((string)args[0], Convert.ToInt32(args[1]), evsMsg);
-				break;
-			case EnEvsId.OpStop:
-				result = Log.StopEvent((string)args[0], Convert.ToInt32(args[1]), evsMsg);
-				break;
-			case EnEvsId.OpSuspend:
-				result = Log.SuspendEvent((string)args[0], Convert.ToInt32(args[1]), evsMsg);
-				break;
-			case EnEvsId.OpResume:
-				result = Log.ResumeEvent((string)args[0], Convert.ToInt32(args[1]), evsMsg);
-				break;
-			default:
-				break;
+			if (!CanTrace(eventLevel))
+				return result;
+
+			if (eventLevel == EnEventLevel.ActivityTracing && eventId != EnEvsId.OpStart && Convert.ToInt32(args[1]) < 0)
+				return result;
+
+			if (string.IsNullOrEmpty(memberName))
+				memberName = method;
+
+			string componentName = type.FullName;
+
+			StringBuilder sb = new StringBuilder();
+			sb.Append(componentName ?? "null");
+			sb.Append("::");
+			sb.Append(memberName ?? "null");
+			if (line != -1)
+				sb.Append($"[#{line}]");
+			sb.Append(" - ");
+			if (msg == "")
+				sb.Append("null");
+			else
+				sb.Append(msg);
+
+			string evsMsg = sb.ToString();
+
+			switch (eventId)
+			{
+				case EnEvsId.Critical:
+					result = Log.CriticalEvent(evsMsg);
+					break;
+				case EnEvsId.Error:
+					result = Log.ErrorEvent(evsMsg);
+					break;
+				case EnEvsId.Warning:
+					result = Log.WarnEvent(evsMsg);
+					break;
+				case EnEvsId.Information:
+					result = Log.InfoEvent(evsMsg);
+					break;
+				case EnEvsId.Trace:
+					result = Log.TraceEvent(evsMsg);
+					break;
+				case EnEvsId.Debug:
+					result = Log.DebugEvent(evsMsg);
+					break;
+				case EnEvsId.OpStart:
+					result = Log.StartEvent((string)args[0], Convert.ToInt32(args[1]), evsMsg);
+					break;
+				case EnEvsId.OpStop:
+					result = Log.StopEvent((string)args[0], Convert.ToInt32(args[1]), evsMsg);
+					break;
+				case EnEvsId.OpSuspend:
+					result = Log.SuspendEvent((string)args[0], Convert.ToInt32(args[1]), evsMsg);
+					break;
+				case EnEvsId.OpResume:
+					result = Log.ResumeEvent((string)args[0], Convert.ToInt32(args[1]), evsMsg);
+					break;
+				default:
+					break;
+			}
+
+			if ((eventLevel != EnEventLevel.ActivityTracing && PersistentSettings.EnableEventSourceLogging)
+				|| (eventLevel == EnEventLevel.ActivityTracing && PersistentSettings.EnableActivityLogging))
+			{
+				LogTrace(eventId, eventLevel, result, type, method, msg, line, memberName, sourcePath);
+			}
 		}
-
-		if ((eventLevel != EnEventLevel.ActivityTracing && PersistentSettings.EnableEventSourceLogging)
-			|| (eventLevel == EnEventLevel.ActivityTracing && PersistentSettings.EnableActivityLogging))
+		catch (Exception ex)
 		{
-			LogTrace(eventId, eventLevel, result, type, method, msg, line, memberName, sourcePath);
+			Diag.Ex(ex);
 		}
 
 		return result;

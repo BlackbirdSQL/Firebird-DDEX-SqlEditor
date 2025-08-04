@@ -8,7 +8,7 @@ internal class CursorStatementParser : StatementParser
 {
 	private static CursorStatementParser cursorStatementParser;
 
-	public new static CursorStatementParser Instance
+	internal new static CursorStatementParser Instance
 	{
 		get
 		{

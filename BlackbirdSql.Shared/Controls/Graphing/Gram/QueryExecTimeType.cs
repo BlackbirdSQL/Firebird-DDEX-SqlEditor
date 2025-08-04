@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class QueryExecTimeType
+internal class QueryExecTimeType
 {
 	private ulong cpuTimeField;
 
@@ -29,7 +29,7 @@ public class QueryExecTimeType
 	private bool udfElapsedTimeFieldSpecified;
 
 	[XmlAttribute]
-	public ulong CpuTime
+	internal ulong CpuTime
 	{
 		get
 		{
@@ -42,7 +42,7 @@ public class QueryExecTimeType
 	}
 
 	[XmlAttribute]
-	public ulong ElapsedTime
+	internal ulong ElapsedTime
 	{
 		get
 		{
@@ -55,7 +55,7 @@ public class QueryExecTimeType
 	}
 
 	[XmlAttribute]
-	public ulong UdfCpuTime
+	internal ulong UdfCpuTime
 	{
 		get
 		{
@@ -68,7 +68,7 @@ public class QueryExecTimeType
 	}
 
 	[XmlIgnore]
-	public bool UdfCpuTimeSpecified
+	internal bool UdfCpuTimeSpecified
 	{
 		get
 		{
@@ -81,7 +81,7 @@ public class QueryExecTimeType
 	}
 
 	[XmlAttribute]
-	public ulong UdfElapsedTime
+	internal ulong UdfElapsedTime
 	{
 		get
 		{
@@ -94,7 +94,7 @@ public class QueryExecTimeType
 	}
 
 	[XmlIgnore]
-	public bool UdfElapsedTimeSpecified
+	internal bool UdfElapsedTimeSpecified
 	{
 		get
 		{

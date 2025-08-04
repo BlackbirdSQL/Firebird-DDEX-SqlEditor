@@ -10,7 +10,7 @@ using BlackbirdSql.Sys.Interfaces;
 namespace BlackbirdSql.Sys.Model;
 
 
-public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
+internal class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 {
 	private NativeDbBatchParserProxy()
 	{
@@ -22,7 +22,7 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 	}
 
 
-	public static IBsNativeDbBatchParser CreateInstance(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
+	internal static IBsNativeDbBatchParser CreateInstance(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
 	{
 		return new NativeDbBatchParserProxy(executionType, qryMgr, script);
 	}
@@ -76,13 +76,13 @@ public class NativeDbBatchParserProxy : IBsNativeDbBatchParser
 	public IDbTransaction Transaction => _NativeObject.Transaction;
 
 
-	public void BeginTransaction()
+	internal void BeginTransaction()
 	{
 		_NativeObject.BeginTransaction();
 	}
 
 	/*
-	public void Cancel()
+	internal void Cancel()
 	{
 		_NativeObject.Cancel();
 	}

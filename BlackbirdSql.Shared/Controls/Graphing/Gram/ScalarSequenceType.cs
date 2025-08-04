@@ -14,12 +14,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ScalarSequenceType
+internal class ScalarSequenceType
 {
 	private string functionNameField;
 
 	[XmlAttribute]
-	public string FunctionName
+	internal string FunctionName
 	{
 		get
 		{

@@ -9,7 +9,7 @@ internal sealed class IndexOpTypeParser : RelOpBaseTypeParser
 {
 	private static IndexOpTypeParser indexOpTypeParser;
 
-	public new static IndexOpTypeParser Instance
+	internal new static IndexOpTypeParser Instance
 	{
 		get
 		{
@@ -49,7 +49,7 @@ internal sealed class IndexOpTypeParser : RelOpBaseTypeParser
 		}
 	}
 
-	public override void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
+	internal override void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
 	{
 		base.ParseProperties(parsedItem, targetPropertyBag, context);
 		if (parsedItem is IndexScanType || parsedItem is CreateIndexType)

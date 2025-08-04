@@ -7,9 +7,9 @@ using System.Globalization;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public sealed class FloatTypeConverter : TypeConverter
+internal sealed class FloatTypeConverter : TypeConverter
 {
-	public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+	internal override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 	{
 		if (destinationType == typeof(string))
 		{

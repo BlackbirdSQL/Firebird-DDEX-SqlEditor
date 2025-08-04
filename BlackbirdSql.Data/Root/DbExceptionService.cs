@@ -21,16 +21,16 @@ namespace BlackbirdSql.Data;
 /// service so that BlackbirdSql can provide support for additional database engines.
 /// </summary>
 // =========================================================================================================
-public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
+internal class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 {
 	private DbExceptionService()
 	{
 	}
 
-	public static IBsNativeDbException EnsureInstance() => _Instance ??= new DbExceptionService();
+	internal static IBsNativeDbException EnsureInstance() => _Instance ??= new DbExceptionService();
 
 
-	public static IBsNativeDbException _Instance = null;
+	internal static IBsNativeDbException _Instance = null;
 
 
 
@@ -306,7 +306,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	/// is of a specific type.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool HasExceptionType<T>(Exception @this) where T : class
+	internal bool HasExceptionType<T>(Exception @this) where T : class
 	{
 		if (@this == null)
 			return false;
@@ -342,7 +342,7 @@ public class DbExceptionService : SBsNativeDbException, IBsNativeDbException
 	/// is of a specific type.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool HasExceptionType(Exception @this, string type)
+	internal bool HasExceptionType(Exception @this, string type)
 	{
 		if (@this == null)
 			return false;

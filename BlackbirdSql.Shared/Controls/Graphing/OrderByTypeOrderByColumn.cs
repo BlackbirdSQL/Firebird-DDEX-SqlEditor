@@ -14,13 +14,13 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class OrderByTypeOrderByColumn
+internal class OrderByTypeOrderByColumn
 {
 	private ColumnReferenceType columnReferenceField;
 
 	private bool ascendingField;
 
-	public ColumnReferenceType ColumnReference
+	internal ColumnReferenceType ColumnReference
 	{
 		get
 		{
@@ -33,7 +33,7 @@ public class OrderByTypeOrderByColumn
 	}
 
 	[XmlAttribute]
-	public bool Ascending
+	internal bool Ascending
 	{
 		get
 		{

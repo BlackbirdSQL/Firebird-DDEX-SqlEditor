@@ -527,7 +527,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 
 	TypeConverter ICustomTypeDescriptor.GetConverter()
 	{
-		return new Csb.CsbConverter();
+		return new Csb.CollectionConverterI();
 	}
 
 	PropertyDescriptor ICustomTypeDescriptor.GetDefaultProperty()

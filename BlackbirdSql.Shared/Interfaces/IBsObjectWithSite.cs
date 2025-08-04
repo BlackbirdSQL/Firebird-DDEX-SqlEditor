@@ -5,7 +5,7 @@ using System;
 
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsObjectWithSite
+internal interface IBsObjectWithSite
 {
 	void SetSite(IServiceProvider sp);
 }

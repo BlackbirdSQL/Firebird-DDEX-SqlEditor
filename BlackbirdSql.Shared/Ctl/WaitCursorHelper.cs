@@ -9,7 +9,7 @@ using System.Windows.Forms;
 namespace BlackbirdSql.Shared.Ctl;
 
 
-public sealed class WaitCursorHelper
+internal sealed class WaitCursorHelper
 {
 	private class WaitCursor : IDisposable
 	{
@@ -50,7 +50,7 @@ public sealed class WaitCursorHelper
 		}
 	}
 
-	public static IDisposable NewWaitCursor()
+	internal static IDisposable NewWaitCursor()
 	{
 		return new WaitCursor();
 	}

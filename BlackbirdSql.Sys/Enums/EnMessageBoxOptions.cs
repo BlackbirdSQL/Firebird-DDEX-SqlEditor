@@ -10,7 +10,7 @@ using System;
 namespace BlackbirdSql.Sys.Enums;
 
 [Flags]
-public enum EnMessageBoxOptions
+internal enum EnMessageBoxOptions
 {
 	None = 0x0,
 	RightAlign = 0x1,

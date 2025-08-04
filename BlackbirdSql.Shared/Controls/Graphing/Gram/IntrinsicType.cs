@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class IntrinsicType
+internal class IntrinsicType
 {
 	private ScalarType[] scalarOperatorField;
 
 	private string functionNameField;
 
 	[XmlElement("ScalarOperator")]
-	public ScalarType[] ScalarOperator
+	internal ScalarType[] ScalarOperator
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class IntrinsicType
 	}
 
 	[XmlAttribute]
-	public string FunctionName
+	internal string FunctionName
 	{
 		get
 		{

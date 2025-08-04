@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class DefinedValuesListTypeDefinedValue
+internal class DefinedValuesListTypeDefinedValue
 {
 	private object itemField;
 
@@ -22,7 +22,7 @@ public class DefinedValuesListTypeDefinedValue
 
 	[XmlElement("ColumnReference", typeof(ColumnReferenceType), Order = 0)]
 	[XmlElement("ValueVector", typeof(DefinedValuesListTypeDefinedValueValueVector), Order = 0)]
-	public object Item
+	internal object Item
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class DefinedValuesListTypeDefinedValue
 
 	[XmlElement("ColumnReference", typeof(ColumnReferenceType), Order = 1)]
 	[XmlElement("ScalarOperator", typeof(ScalarType), Order = 1)]
-	public object[] Items
+	internal object[] Items
 	{
 		get
 		{

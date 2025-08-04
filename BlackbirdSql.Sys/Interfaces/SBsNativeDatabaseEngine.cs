@@ -21,6 +21,6 @@ namespace BlackbirdSql.Sys.Interfaces;
 /// </summary>
 /// <remarks>
 // =========================================================================================================
-public interface SBsNativeDatabaseEngine
+internal interface SBsNativeDatabaseEngine
 {
 }

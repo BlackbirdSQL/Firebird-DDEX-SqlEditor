@@ -13,7 +13,7 @@ namespace BlackbirdSql.Shared.Ctl.Commands;
 [ComVisible(false)]
 
 
-public class MenuCommandTextChanges : MenuCommand, IBsMenuCommandTextChanges
+internal class MenuCommandTextChanges : MenuCommand, IBsMenuCommandTextChanges
 {
 
 	public MenuCommandTextChanges(EventHandler handler, CommandID command)

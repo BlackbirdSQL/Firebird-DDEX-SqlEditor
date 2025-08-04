@@ -9,7 +9,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 
 [TypeConverter(typeof(ExpandableObjectConverter))]
 [Editor(typeof(LongStringUITypeEditor), typeof(UITypeEditor))]
-public class ExpandableObjectWrapper : AbstractObjectParser, ICustomTypeDescriptor
+internal class ExpandableObjectWrapper : AbstractObjectParser, ICustomTypeDescriptor
 {
 	private readonly PropertyDescriptorCollection properties;
 
@@ -17,7 +17,7 @@ public class ExpandableObjectWrapper : AbstractObjectParser, ICustomTypeDescript
 
 	private string displayName;
 
-	public object this[string propertyName]
+	internal object this[string propertyName]
 	{
 		get
 		{
@@ -41,7 +41,7 @@ public class ExpandableObjectWrapper : AbstractObjectParser, ICustomTypeDescript
 	}
 
 	[Browsable(false)]
-	public string DisplayName
+	internal string DisplayName
 	{
 		get
 		{
@@ -54,7 +54,7 @@ public class ExpandableObjectWrapper : AbstractObjectParser, ICustomTypeDescript
 	}
 
 	[Browsable(false)]
-	public PropertyDescriptorCollection Properties => properties;
+	internal PropertyDescriptorCollection Properties => properties;
 
 	public ExpandableObjectWrapper()
 		: this(null, null, "")
@@ -85,12 +85,12 @@ public class ExpandableObjectWrapper : AbstractObjectParser, ICustomTypeDescript
 		this.displayName = displayName;
 	}
 
-	public override string ToString()
+	internal override string ToString()
 	{
 		return displayName;
 	}
 
-	public static string GetDefaultDisplayName(object item)
+	internal static string GetDefaultDisplayName(object item)
 	{
 		string text = item.ToString();
 		if (!(text != item.GetType().ToString()))

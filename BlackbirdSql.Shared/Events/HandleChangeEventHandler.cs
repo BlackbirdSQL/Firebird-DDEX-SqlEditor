@@ -5,4 +5,4 @@ using System;
 
 namespace BlackbirdSql.Shared.Events;
 
-public delegate void HandleChangeEventHandler(string handleType, IntPtr handleValue, int currentHandleCount);
+internal delegate void HandleChangeEventHandler(string handleType, IntPtr handleValue, int currentHandleCount);

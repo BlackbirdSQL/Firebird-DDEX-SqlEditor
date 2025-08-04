@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class LocalCubeType : RelOpBaseType
+internal class LocalCubeType : RelOpBaseType
 {
 	private ColumnReferenceType[] groupByField;
 
@@ -24,7 +24,7 @@ public class LocalCubeType : RelOpBaseType
 	private RelOpType[] relOpField;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] GroupBy
+	internal ColumnReferenceType[] GroupBy
 	{
 		get
 		{
@@ -37,7 +37,7 @@ public class LocalCubeType : RelOpBaseType
 	}
 
 	[XmlArrayItem("GroupingSet", IsNullable = false)]
-	public GroupingSetReferenceType[] GroupingSets
+	internal GroupingSetReferenceType[] GroupingSets
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class LocalCubeType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{

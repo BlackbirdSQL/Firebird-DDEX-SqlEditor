@@ -27,7 +27,7 @@ namespace BlackbirdSql;
 /// Displays extension wide messages and detailed exception messages. 
 /// </summary>
 // =========================================================================================================
-public class MessageCtl
+internal class MessageCtl
 {
 
 	// ---------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ public class MessageCtl
 	// =========================================================================================================
 
 
-	public static string ApplicationTitle
+	internal static string ApplicationTitle
 	{
 		get
 		{
@@ -217,159 +217,159 @@ public class MessageCtl
 		}
 	}
 
-	public Exception ExMessage
+	internal Exception ExMessage
 	{
 		get { return _ExMessage; }
 		set { _ExMessage = value; }
 	}
 
-	public string Caption
+	internal string Caption
 	{
 		get { return _Caption; }
 		set { _Caption = value; }
 	}
 
-	public string Text
+	internal string Text
 	{
 		get { return _Text; }
 		set { _Text = value; }
 	}
 
-	public string HelpLink
+	internal string HelpLink
 	{
 		get { return _HelpLink; }
 		set { _HelpLink = value; }
 	}
 
-	public IDictionary Data => _ExContainer.Data;
+	internal IDictionary Data => _ExContainer.Data;
 
-	public Exception InnerException
+	internal Exception InnerException
 	{
 		get { return _InnerException; }
 		set { _InnerException = value; }
 	}
 
-	public EnMessageBoxButtons Buttons
+	internal EnMessageBoxButtons Buttons
 	{
 		get { return _Buttons; }
 		set { _Buttons = value; }
 	}
 
-	public EnMessageBoxSymbol Symbol
+	internal EnMessageBoxSymbol Symbol
 	{
 		get { return _Symbol; }
 		set { _Symbol = value; }
 	}
 
-	public Bitmap CustomSymbol
+	internal Bitmap CustomSymbol
 	{
 		get { return _CustomSymbol; }
 		set { _CustomSymbol = value; }
 	}
 
-	public EnMessageBoxDefaultButton DefaultButton
+	internal EnMessageBoxDefaultButton DefaultButton
 	{
 		get { return _DefaultButton; }
 		set { _DefaultButton = value; }
 	}
 
-	public EnMessageBoxOptions Options
+	internal EnMessageBoxOptions Options
 	{
 		get { return _Options; }
 		set { _Options = value; }
 	}
 
-	public int MessageLevelDefault
+	internal int MessageLevelDefault
 	{
 		get { return _MessageLevelCount; }
 		set { _MessageLevelCount = value; }
 	}
 
-	public bool ShowToolBar
+	internal bool ShowToolBar
 	{
 		get { return _ShowToolBar; }
 		set { _ShowToolBar = value; }
 	}
 
-	public bool UseOwnerFont
+	internal bool UseOwnerFont
 	{
 		get { return _UseOwnerFont; }
 		set { _UseOwnerFont = value; }
 	}
 
-	public Font MessageFont
+	internal Font MessageFont
 	{
 		get { return _MessageFont; }
 		set { _MessageFont = value; _UseOwnerFont = false; }
 	}
 
-	public bool ShowCheckBox
+	internal bool ShowCheckBox
 	{
 		get { return _ShowCheckBox; }
 		set { _ShowCheckBox = value; }
 	}
 
-	public bool IsCheckBoxChecked
+	internal bool IsCheckBoxChecked
 	{
 		get { return _IsCheckBoxChecked; }
 		set { _IsCheckBoxChecked = value; }
 	}
 
-	public string CheckBoxText
+	internal string CheckBoxText
 	{
 		get { return _CheckBoxText; }
 		set { _CheckBoxText = value; }
 	}
 
-	public RegistryKey CheckBoxRegistryKey
+	internal RegistryKey CheckBoxRegistryKey
 	{
 		get { return _CheckBoxRegistryKey; }
 		set { _CheckBoxRegistryKey = value; }
 	}
 
-	public string CheckBoxRegistryValue
+	internal string CheckBoxRegistryValue
 	{
 		get { return _CheckBoxRegistryValue; }
 		set { _CheckBoxRegistryValue = value; }
 	}
 
-	public bool CheckBoxRegistryMeansDoNotShowDialog
+	internal bool CheckBoxRegistryMeansDoNotShowDialog
 	{
 		get { return _CheckBoxRegistryMeansDoNotShowDialog; }
 		set { _CheckBoxRegistryMeansDoNotShowDialog = value; }
 	}
 
-	public DialogResult DefaultDialogResult
+	internal DialogResult DefaultDialogResult
 	{
 		get { return _DefaultDialogResult; }
 		set { _DefaultDialogResult = value; }
 	}
 
-	public EnMessageBoxDialogResult CustomDialogResult => _CustomDialogResult;
+	internal EnMessageBoxDialogResult CustomDialogResult => _CustomDialogResult;
 
-	public static string OKButtonText => ControlsResources.MessageCtl_OKButton;
+	internal static string OKButtonText => ControlsResources.MessageCtl_OKButton;
 
-	public static string CancelButtonText => ControlsResources.AdvancedMessageBox_CancelButton;
+	internal static string CancelButtonText => ControlsResources.AdvancedMessageBox_CancelButton;
 
-	public static string YesButtonText => ControlsResources.MessageCtl_YesButton;
+	internal static string YesButtonText => ControlsResources.MessageCtl_YesButton;
 
-	public static string NoButtonText => ControlsResources.MessageCtl_NoButton;
+	internal static string NoButtonText => ControlsResources.MessageCtl_NoButton;
 
-	public static string AbortButtonText => ControlsResources.AdvancedMessageBox_AbortButton;
+	internal static string AbortButtonText => ControlsResources.AdvancedMessageBox_AbortButton;
 
-	public static string RetryButtonText => ControlsResources.MessageCtl_RetryButton;
+	internal static string RetryButtonText => ControlsResources.MessageCtl_RetryButton;
 
-	public static string FailButtonText => ControlsResources.MessageCtl_FailButton;
+	internal static string FailButtonText => ControlsResources.MessageCtl_FailButton;
 
-	public static string IgnoreButtonText => ControlsResources.MessageCtl_IgnoreButton;
+	internal static string IgnoreButtonText => ControlsResources.MessageCtl_IgnoreButton;
 
-	public bool Beep
+	internal bool Beep
 	{
 		get { return _Beep; }
 		set { _Beep = value; }
 	}
 
-	public event CopyToClipboardEventHandler CopyToClipboardEvent;
+	internal event CopyToClipboardEventHandler CopyToClipboardEvent;
 
 
 	#endregion Property accessors
@@ -384,7 +384,7 @@ public class MessageCtl
 
 
 
-	public void SetButtonText(string button1Text, string button2Text, string button3Text, string button4Text, string button5Text)
+	internal void SetButtonText(string button1Text, string button2Text, string button3Text, string button4Text, string button5Text)
 	{
 		_ButtonTextArray[0] = button1Text;
 		_ButtonTextArray[1] = button2Text;
@@ -417,31 +417,31 @@ public class MessageCtl
 		}
 	}
 
-	public void SetButtonText(string button1Text, string button2Text, string button3Text, string button4Text)
+	internal void SetButtonText(string button1Text, string button2Text, string button3Text, string button4Text)
 	{
 		SetButtonText(button1Text, button2Text, button3Text, button4Text, null);
 	}
 
-	public void SetButtonText(string button1Text, string button2Text, string button3Text)
+	internal void SetButtonText(string button1Text, string button2Text, string button3Text)
 	{
 		SetButtonText(button1Text, button2Text, button3Text, null, null);
 	}
 
-	public void SetButtonText(string button1Text, string button2Text)
+	internal void SetButtonText(string button1Text, string button2Text)
 	{
 		SetButtonText(button1Text, button2Text, null, null, null);
 	}
 
-	public void SetButtonText(string button1Text)
+	internal void SetButtonText(string button1Text)
 	{
 		SetButtonText(button1Text, null, null, null, null);
 	}
 
 	delegate int BeforeCloseSolutionDelegate(object pUnkReserved);
 
-	public DialogResult Show(IntPtr hwnd, string message, string source, string sourceAppName, string sourceAppVersion, string sourceModule, string sourceMessageId, string sourceLanguage)
+	internal DialogResult Show(IntPtr hwnd, string message, string source, string sourceAppName, string sourceAppVersion, string sourceModule, string sourceMessageId, string sourceLanguage)
 	{
-		MessageBoxParent owner = new MessageBoxParent(hwnd);
+		MessageBoxParent owner = new (hwnd);
 		_ExMessage = new(message)
 		{
 			Source = source
@@ -449,7 +449,7 @@ public class MessageCtl
 		return Show(owner);
 	}
 
-	public DialogResult Show(IWin32Window owner)
+	internal DialogResult Show(IWin32Window owner)
 	{
 		if (_ExMessage == null && string.IsNullOrEmpty(Text))
 		{
@@ -630,10 +630,10 @@ public class MessageCtl
 		return result;
 	}
 
-	public delegate void MessageBoxShownDelegate(object sender, EventArgs e);
+	internal delegate void MessageBoxShownDelegate(object sender, EventArgs e);
 	private MessageBoxShownDelegate _OnMessageBoxShownEvent;
 
-	public event MessageBoxShownDelegate OnMessageBoxShownEvent
+	internal event MessageBoxShownDelegate OnMessageBoxShownEvent
 	{
 		add { _OnMessageBoxShownEvent += value; }
 		remove { _OnMessageBoxShownEvent -= value; }
@@ -650,7 +650,7 @@ public class MessageCtl
 		CopyToClipboardEvent?.Invoke(this, e);
 	}
 
-	public static string GetMessageText(Exception exception)
+	internal static string GetMessageText(Exception exception)
 	{
 		using AdvancedMessageBox messageBoxForm = new AdvancedMessageBox();
 		messageBoxForm.ExMessage = exception;
@@ -658,13 +658,13 @@ public class MessageCtl
 	}
 
 
-	public static DialogResult ShowX(string message, string caption)
+	internal static DialogResult ShowX(string message, string caption)
 	{
 		return ShowX(null, message, caption, null, MessageBoxButtons.OK, MessageBoxIcon.Hand, null, -1);
 	}
 
 
-	public static DialogResult ShowX(string message, string caption, MessageBoxButtons buttons)
+	internal static DialogResult ShowX(string message, string caption, MessageBoxButtons buttons)
 	{
 		return ShowX(null, message, caption, null, buttons, MessageBoxIcon.Hand, null, -1);
 	}
@@ -673,54 +673,54 @@ public class MessageCtl
 
 
 	// ShowExceptionInDialog
-	public static void ShowX(string message, Exception ex)
+	internal static void ShowX(string message, Exception ex)
 	{
 		ShowX(ex, "", null, null, MessageBoxButtons.OK, MessageBoxIcon.Hand, null, -1);
 
 		// VS.SafeShowMessageBox(null, "{0} {1}".Fmt(message, e.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 	}
 
-	public static DialogResult ShowX(string text, MessageBoxButtons buttons, MessageBoxIcon icon)
+	internal static DialogResult ShowX(string text, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
 		return ShowX(null, text, null, null, buttons, icon, null, -1);
 	}
 
 
-	public static DialogResult ShowX(string text, string title, MessageBoxButtons buttons,
+	internal static DialogResult ShowX(string text, string title, MessageBoxButtons buttons,
 		MessageBoxIcon icon, MessageBoxShownDelegate messageBoxShownDelegate = null)
 	{
 		return ShowX(null, text, title, null, buttons, icon, null, -1, messageBoxShownDelegate);
 	}
 
-	public static DialogResult ShowX(string text, string title, string helpKeyword,
+	internal static DialogResult ShowX(string text, string title, string helpKeyword,
 		MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
 		return ShowX(null, text, title, helpKeyword, buttons, icon, null, -1);
 	}
 
-	public static DialogResult ShowX(Exception ex, MessageBoxButtons buttons, MessageBoxIcon icon)
+	internal static DialogResult ShowX(Exception ex, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
 		return ShowX(ex, "", null, null, buttons, icon, null, -1);
 	}
 
 
-	public static DialogResult ShowX(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
+	internal static DialogResult ShowX(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
 		return ShowX(ex, "", caption, null, buttons, icon, null, -1);
 	}
 
-	public static DialogResult ShowX(Exception ex, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
+	internal static DialogResult ShowX(Exception ex, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
 		return ShowX(ex, text, caption, null, buttons, icon, null, -1);
 	}
 
 
-	public static DialogResult ShowX(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner)
+	internal static DialogResult ShowX(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner)
 	{
 		return ShowX(ex, "", caption, null, buttons, icon, owner, -1);
 	}
 
-	public static DialogResult ShowX(Exception ex, string text, string caption, string helpLink, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner, int exceptionLevel, MessageBoxShownDelegate messageBoxShownDelegate = null)
+	internal static DialogResult ShowX(Exception ex, string text, string caption, string helpLink, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner, int exceptionLevel, MessageBoxShownDelegate messageBoxShownDelegate = null)
 	{
 		if (caption == null || caption == "")
 		{

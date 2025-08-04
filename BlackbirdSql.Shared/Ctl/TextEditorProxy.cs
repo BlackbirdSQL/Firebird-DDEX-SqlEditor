@@ -9,7 +9,7 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Ctl;
 
 
-public class TextEditorProxy : MarshalByRefObject, IBsTextEditor, IDisposable
+internal class TextEditorProxy : MarshalByRefObject, IBsTextEditor, IDisposable
 {
 
 	public TextEditorProxy(IBsTextEditor editor)
@@ -23,7 +23,7 @@ public class TextEditorProxy : MarshalByRefObject, IBsTextEditor, IDisposable
 
 	private IBsTextEditorEvents _TextEditorEvents;
 
-	public IBsTextEditorEvents TextEditorEvents => _TextEditorEvents;
+	internal IBsTextEditorEvents TextEditorEvents => _TextEditorEvents;
 
 
 	public void Select(int offset, int length)

@@ -9,13 +9,13 @@ using System.Collections.Generic;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class GridColumnMapper<T>
+internal class GridColumnMapper<T>
 {
-	public delegate TResult Func<out TResult, in T1>(T1 i);
+	internal delegate TResult Func<out TResult, in T1>(T1 i);
 
 	private readonly Dictionary<int, T> columnIndexes = [];
 
-	public T this[int index] => columnIndexes[index];
+	internal T this[int index] => columnIndexes[index];
 
 	public GridColumnMapper(int n, Func<T, int> incrFunc)
 	{
@@ -25,7 +25,7 @@ public class GridColumnMapper<T>
 		}
 	}
 
-	public void ShiftColumnIndexes(int oldIndex, int newIndex)
+	internal void ShiftColumnIndexes(int oldIndex, int newIndex)
 	{
 		if (oldIndex < 0 || oldIndex >= columnIndexes.Count)
 		{

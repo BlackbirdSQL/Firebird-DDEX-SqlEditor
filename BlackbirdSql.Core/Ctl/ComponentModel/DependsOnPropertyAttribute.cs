@@ -7,7 +7,7 @@ using System;
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
 [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-internal abstract class DependsOnPropertyAttribute : Attribute
+public abstract class DependsOnPropertyAttribute : Attribute
 {
 	private readonly string[] _PropertyNames;
 

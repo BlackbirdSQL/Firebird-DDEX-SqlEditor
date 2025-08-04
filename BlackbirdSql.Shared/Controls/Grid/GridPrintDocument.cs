@@ -8,7 +8,7 @@ using System.Drawing.Printing;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class GridPrintDocument : PrintDocument
+internal class GridPrintDocument : PrintDocument
 {
 	private readonly GridControl.GridPrinter m_gridPrinter;
 

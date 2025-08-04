@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SpoolType : RelOpBaseType
+internal class SpoolType : RelOpBaseType
 {
 	private object itemField;
 
@@ -31,7 +31,7 @@ public class SpoolType : RelOpBaseType
 
 	[XmlElement("SeekPredicate", typeof(SeekPredicateType))]
 	[XmlElement("SeekPredicateNew", typeof(SeekPredicateNewType))]
-	public object Item
+	internal object Item
 	{
 		get
 		{
@@ -43,7 +43,7 @@ public class SpoolType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -56,7 +56,7 @@ public class SpoolType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool Stack
+	internal bool Stack
 	{
 		get
 		{
@@ -69,7 +69,7 @@ public class SpoolType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool StackSpecified
+	internal bool StackSpecified
 	{
 		get
 		{
@@ -82,7 +82,7 @@ public class SpoolType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public int PrimaryNodeId
+	internal int PrimaryNodeId
 	{
 		get
 		{
@@ -95,7 +95,7 @@ public class SpoolType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool PrimaryNodeIdSpecified
+	internal bool PrimaryNodeIdSpecified
 	{
 		get
 		{

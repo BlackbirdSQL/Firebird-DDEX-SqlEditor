@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Shared.Model;
 
 
-public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IVsFontAndColorEvents
+internal abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IVsFontAndColorEvents
 {
 	private readonly ArrayList fontColorDefaults;
 
@@ -81,9 +81,9 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 
 	protected virtual uint FontColorFlags => 0u;
 
-	public event FontChangedEventHandler FontChangedEvent;
+	internal event FontChangedEventHandler FontChangedEvent;
 
-	public event ColorChangedEventHandler ColorChangedEvent;
+	internal event ColorChangedEventHandler ColorChangedEvent;
 
 	protected AbstractFontAndColorProvider()
 	{
@@ -162,7 +162,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		return VSConstants.S_OK;
 	}
 
-	public virtual void OnApply()
+	internal virtual void OnApply()
 	{
 	}
 
@@ -176,7 +176,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		return VSConstants.S_OK;
 	}
 
-	public virtual void OnFontChanged(ref Guid guid, FontInfo[] fontInfo, LOGFONTW[] logFont, IntPtr hFont)
+	internal virtual void OnFontChanged(ref Guid guid, FontInfo[] fontInfo, LOGFONTW[] logFont, IntPtr hFont)
 	{
 		if (fontInfo[0].bFaceNameValid != 0 && fontInfo[0].bPointSizeValid != 0)
 		{
@@ -199,7 +199,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		return VSConstants.S_OK;
 	}
 
-	public virtual void OnItemChanged(ref Guid guid, string itemName, int itemID, ColorableItemInfo[] itemInfo, uint literalForeground, uint literalBackground)
+	internal virtual void OnItemChanged(ref Guid guid, string itemName, int itemID, ColorableItemInfo[] itemInfo, uint literalForeground, uint literalBackground)
 	{
 		Color? bkColor = null;
 		Color? fgColor = null;
@@ -226,7 +226,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		return VSConstants.S_OK;
 	}
 
-	public static bool GetFontAndColorSettingsForCategory(Guid categoryGuid, string itemName, IVsFontAndColorStorage vsFontAndColorStorage, out Font categoryFont, out Color? foreColor, out Color? bkColor, bool readFont)
+	internal static bool GetFontAndColorSettingsForCategory(Guid categoryGuid, string itemName, IVsFontAndColorStorage vsFontAndColorStorage, out Font categoryFont, out Color? foreColor, out Color? bkColor, bool readFont)
 	{
 		Diag.ThrowIfNotOnUIThread();
 

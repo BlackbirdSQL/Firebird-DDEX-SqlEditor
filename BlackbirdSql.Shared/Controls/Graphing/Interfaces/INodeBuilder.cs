@@ -6,7 +6,7 @@ using BlackbirdSql.Shared.Controls.Graphing;
 
 namespace BlackbirdSql.Shared.Controls.Graphing.Interfaces;
 
-public interface INodeBuilder
+internal interface INodeBuilder
 {
 	ExecutionPlanGraph[] Execute(object dataSource);
 }

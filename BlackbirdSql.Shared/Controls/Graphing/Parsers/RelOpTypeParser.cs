@@ -50,7 +50,7 @@ internal sealed class RelOpTypeParser : AbstractXmlPlanParser
 
 	private static RelOpTypeParser relOpTypeParser;
 
-	public static RelOpTypeParser Instance
+	internal static RelOpTypeParser Instance
 	{
 		get
 		{
@@ -59,12 +59,12 @@ internal sealed class RelOpTypeParser : AbstractXmlPlanParser
 		}
 	}
 
-	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
+	internal override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
 		return AbstractXmlPlanParser.NewNode(context);
 	}
 
-	public override IEnumerable GetChildren(object parsedItem)
+	internal override IEnumerable GetChildren(object parsedItem)
 	{
 		RelOpType relOpType = parsedItem as RelOpType;
 		if (relOpType.Item != null)
@@ -150,7 +150,7 @@ internal sealed class RelOpTypeParser : AbstractXmlPlanParser
 		return Convert.ToDouble(obj, CultureInfo.CurrentCulture);
 	}
 
-	public override void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
+	internal override void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
 	{
 		base.ParseProperties(parsedItem, targetPropertyBag, context);
 		RelOpType relOpType = parsedItem as RelOpType;

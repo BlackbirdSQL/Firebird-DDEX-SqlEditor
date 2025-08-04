@@ -16,7 +16,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class IndexScanType : RowsetType
+internal class IndexScanType : RowsetType
 {
 	private SeekPredicatesType seekPredicatesField;
 
@@ -66,7 +66,7 @@ public class IndexScanType : RowsetType
 
 	private string sBSFileUrlField;
 
-	public SeekPredicatesType SeekPredicates
+	internal SeekPredicatesType SeekPredicates
 	{
 		get
 		{
@@ -79,7 +79,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlElement("Predicate")]
-	public ScalarExpressionType[] Predicate
+	internal ScalarExpressionType[] Predicate
 	{
 		get
 		{
@@ -91,7 +91,7 @@ public class IndexScanType : RowsetType
 		}
 	}
 
-	public SingleColumnReferenceType PartitionId
+	internal SingleColumnReferenceType PartitionId
 	{
 		get
 		{
@@ -104,7 +104,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlArrayItem("Object", IsNullable = false)]
-	public ObjectType[] IndexedViewInfo
+	internal ObjectType[] IndexedViewInfo
 	{
 		get
 		{
@@ -117,7 +117,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool Lookup
+	internal bool Lookup
 	{
 		get
 		{
@@ -130,7 +130,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool LookupSpecified
+	internal bool LookupSpecified
 	{
 		get
 		{
@@ -143,7 +143,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool Ordered
+	internal bool Ordered
 	{
 		get
 		{
@@ -156,7 +156,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public EnOrderType ScanDirection
+	internal EnOrderType ScanDirection
 	{
 		get
 		{
@@ -169,7 +169,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool ScanDirectionSpecified
+	internal bool ScanDirectionSpecified
 	{
 		get
 		{
@@ -182,7 +182,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool ForcedIndex
+	internal bool ForcedIndex
 	{
 		get
 		{
@@ -195,7 +195,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool ForcedIndexSpecified
+	internal bool ForcedIndexSpecified
 	{
 		get
 		{
@@ -208,7 +208,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool ForceSeek
+	internal bool ForceSeek
 	{
 		get
 		{
@@ -221,7 +221,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool ForceSeekSpecified
+	internal bool ForceSeekSpecified
 	{
 		get
 		{
@@ -234,7 +234,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public int ForceSeekColumnCount
+	internal int ForceSeekColumnCount
 	{
 		get
 		{
@@ -247,7 +247,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool ForceSeekColumnCountSpecified
+	internal bool ForceSeekColumnCountSpecified
 	{
 		get
 		{
@@ -260,7 +260,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool ForceScan
+	internal bool ForceScan
 	{
 		get
 		{
@@ -273,7 +273,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool ForceScanSpecified
+	internal bool ForceScanSpecified
 	{
 		get
 		{
@@ -286,7 +286,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool NoExpandHint
+	internal bool NoExpandHint
 	{
 		get
 		{
@@ -299,7 +299,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool NoExpandHintSpecified
+	internal bool NoExpandHintSpecified
 	{
 		get
 		{
@@ -312,7 +312,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public EnStorageType Storage
+	internal EnStorageType Storage
 	{
 		get
 		{
@@ -325,7 +325,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool StorageSpecified
+	internal bool StorageSpecified
 	{
 		get
 		{
@@ -338,7 +338,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool DynamicSeek
+	internal bool DynamicSeek
 	{
 		get
 		{
@@ -351,7 +351,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool DynamicSeekSpecified
+	internal bool DynamicSeekSpecified
 	{
 		get
 		{
@@ -364,7 +364,7 @@ public class IndexScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public string SBSFileUrl
+	internal string SBSFileUrl
 	{
 		get
 		{

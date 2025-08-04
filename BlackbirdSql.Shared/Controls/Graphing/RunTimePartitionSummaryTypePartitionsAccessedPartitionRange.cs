@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RunTimePartitionSummaryTypePartitionsAccessedPartitionRange
+internal class RunTimePartitionSummaryTypePartitionsAccessedPartitionRange
 {
 	private ulong startField;
 
 	private ulong endField;
 
 	[XmlAttribute]
-	public ulong Start
+	internal ulong Start
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class RunTimePartitionSummaryTypePartitionsAccessedPartitionRange
 	}
 
 	[XmlAttribute]
-	public ulong End
+	internal ulong End
 	{
 		get
 		{

@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class TableValuedFunctionType : RelOpBaseType
+internal class TableValuedFunctionType : RelOpBaseType
 {
 	private ObjectType objectField;
 
@@ -24,7 +24,7 @@ public class TableValuedFunctionType : RelOpBaseType
 
 	private ScalarType[] parameterListField;
 
-	public ObjectType Object
+	internal ObjectType Object
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class TableValuedFunctionType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType Predicate
+	internal ScalarExpressionType Predicate
 	{
 		get
 		{
@@ -48,7 +48,7 @@ public class TableValuedFunctionType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -61,7 +61,7 @@ public class TableValuedFunctionType : RelOpBaseType
 	}
 
 	[XmlArrayItem("ScalarOperator", IsNullable = false)]
-	public ScalarType[] ParameterList
+	internal ScalarType[] ParameterList
 	{
 		get
 		{

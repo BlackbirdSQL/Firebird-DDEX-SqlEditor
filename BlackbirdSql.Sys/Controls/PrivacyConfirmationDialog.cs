@@ -21,7 +21,7 @@ namespace BlackbirdSql.Sys.Controls;
 [CompilerGenerated]
 
 
-public partial class PrivacyConfirmationDialog : Form
+internal partial class PrivacyConfirmationDialog : Form
 {
 	public PrivacyConfirmationDialog()
 	{

@@ -12,7 +12,7 @@ using BlackbirdSql.Shared.Events;
 namespace BlackbirdSql.Shared.Interfaces;
 
 
-public interface IBsQueryExecutionHandler : IBsExecutionHandler
+internal interface IBsQueryExecutionHandler : IBsExecutionHandler
 {
 	EnSqlOutputMode SqlOutputMode { get; }
 

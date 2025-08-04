@@ -2,7 +2,6 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System.ComponentModel;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;

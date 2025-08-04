@@ -8,7 +8,7 @@ using BlackbirdSql.Shared.Events;
 
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsDiskDataStorage : IBsDataStorage, IDisposable
+internal interface IBsDiskDataStorage : IBsDataStorage, IDisposable
 {
 	event StorageNotifyDelegate StorageNotifyEventAsync;
 

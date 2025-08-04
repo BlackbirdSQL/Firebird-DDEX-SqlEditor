@@ -1408,7 +1408,7 @@ public partial class VxbConnectionDialog : Form, IBsConnectionDialog
 
 
 	// =========================================================================================================
-	#region Sub-Classes - VxbConnectionDialog
+	#region								Nested types - VxbConnectionDialog
 	// =========================================================================================================
 
 
@@ -1612,7 +1612,7 @@ public partial class VxbConnectionDialog : Form, IBsConnectionDialog
 	}
 
 
-	#endregion Sub-Classes
+	#endregion Nested types
 
 
 }

@@ -13,7 +13,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class UDAggregateType
+internal class UDAggregateType
 {
 	private ObjectType uDAggObjectField;
 
@@ -21,7 +21,7 @@ public class UDAggregateType
 
 	private bool distinctField;
 
-	public ObjectType UDAggObject
+	internal ObjectType UDAggObject
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class UDAggregateType
 	}
 
 	[XmlElement("ScalarOperator")]
-	public ScalarType[] ScalarOperator
+	internal ScalarType[] ScalarOperator
 	{
 		get
 		{
@@ -47,7 +47,7 @@ public class UDAggregateType
 	}
 
 	[XmlAttribute]
-	public bool Distinct
+	internal bool Distinct
 	{
 		get
 		{

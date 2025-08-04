@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ScalarInsertType : RowsetType
+internal class ScalarInsertType : RowsetType
 {
 	private ScalarExpressionType setPredicateField;
 
@@ -22,7 +22,7 @@ public class ScalarInsertType : RowsetType
 
 	private bool dMLRequestSortFieldSpecified;
 
-	public ScalarExpressionType SetPredicate
+	internal ScalarExpressionType SetPredicate
 	{
 		get
 		{
@@ -35,7 +35,7 @@ public class ScalarInsertType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool DMLRequestSort
+	internal bool DMLRequestSort
 	{
 		get
 		{
@@ -48,7 +48,7 @@ public class ScalarInsertType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool DMLRequestSortSpecified
+	internal bool DMLRequestSortSpecified
 	{
 		get
 		{

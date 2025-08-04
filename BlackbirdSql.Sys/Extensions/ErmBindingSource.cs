@@ -61,7 +61,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// Gets the value of the <see cref="PrimaryKey"/> for the <see cref="Current"/> object
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public object CurrentValue
+	internal object CurrentValue
 	{
 		get
 		{
@@ -82,7 +82,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	///  Gets or sets the <see cref="BindingSource.DataSource"/> for the master <see cref="BindingSource"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public new object DataSource
+	internal new object DataSource
 	{
 		get
 		{
@@ -106,7 +106,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// Do not directly add to the CurrerntChanged delegate of <see cref="Dependent"/>.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public event EventHandler DependencyCurrentChanged
+	internal event EventHandler DependencyCurrentChanged
 	{
 		add
 		{
@@ -135,7 +135,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// Occurs when the <see cref="Dependent"/>'s list changes as a result of a row change in the master
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public event ListChangedEventHandler DependencyListChanged
+	internal event ListChangedEventHandler DependencyListChanged
 	{
 		add
 		{
@@ -157,7 +157,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// Do not directly add to the PositionChanged delegate of <see cref="Dependent"/>.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public event EventHandler DependencyPositionChanged
+	internal event EventHandler DependencyPositionChanged
 	{
 		add
 		{
@@ -182,7 +182,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// Returns the internal dependent <see cref="BindingSource"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public BindingSource Dependent
+	internal BindingSource Dependent
 	{
 		get
 		{
@@ -212,7 +212,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// Gets the value of the <see cref="ForeignKey"/> for the <see cref="Dependent.Current"/> object
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public object DependentCurrentValue
+	internal object DependentCurrentValue
 	{
 		get
 		{
@@ -233,7 +233,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// Gets or sets the cursor <see cref="BindingSource.Position"/> of the internal <see cref="Dependent"/> <see cref="BindingSource"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public int DependentPosition
+	internal int DependentPosition
 	{
 		get
 		{
@@ -257,7 +257,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// Gets the <see cref="Dependent.Current"/> object of <see cref="Dependent"/> as a DataRow else returns null
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public DataRow DependentRow
+	internal DataRow DependentRow
 	{
 		get
 		{
@@ -285,7 +285,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	///  dependent <see cref="BindingSource"/> <see cref="Dependent"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public object DependentSource
+	internal object DependentSource
 	{
 		get
 		{
@@ -308,7 +308,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// the selector for the <see cref="Dependent"/> BindingSource
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public string ForeignKey
+	internal string ForeignKey
 	{
 		get
 		{
@@ -334,7 +334,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// Once <see cref="ErmBindingSource"/> is in a ready state
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public bool IsReady
+	internal bool IsReady
 	{
 		get
 		{
@@ -352,7 +352,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// [and type] that will return an empty set for <see cref="DependentSource"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public object NullableConstraintValue
+	internal object NullableConstraintValue
 	{
 		get { return _NullableConstraintValue; }
 		set { _NullableConstraintValue = value; }
@@ -366,7 +366,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// as the primary key in the ERM
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public string PrimaryKey
+	internal string PrimaryKey
 	{
 		get
 		{
@@ -390,7 +390,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// </summary>
 	///
 	// ---------------------------------------------------------------------------------
-	public DataRow Row
+	internal DataRow Row
 	{
 		get
 		{
@@ -446,7 +446,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// <param name="key">The <see cref="PrimaryKey"/> value to find</param>
 	/// <returns>The zero-based Position of the row else -1</returns>
 	// ---------------------------------------------------------------------------------
-	public int Find(object key)
+	internal int Find(object key)
 	{
 		if (_PrimaryKey == "")
 			return -1;
@@ -463,7 +463,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// <param name="key">The <see cref="ForeignKey"/> value to find</param>
 	/// <returns>The zero-based Position of the row else -1</returns>
 	// ---------------------------------------------------------------------------------
-	public int FindDependent(object key)
+	internal int FindDependent(object key)
 	{
 		if (Dependent == null || _ForeignKey == "")
 			return -1;
@@ -481,7 +481,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	/// <param name="key">The value to find</param>
 	/// <returns>The zero-based Position of the row else -1</returns>
 	// ---------------------------------------------------------------------------------
-	public int FindDependent(string propertyName, object key)
+	internal int FindDependent(string propertyName, object key)
 	{
 		if (Dependent == null)
 			return -1;

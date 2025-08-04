@@ -25,10 +25,10 @@ using System.Text;
 
 namespace BlackbirdSql.Data.Model;
 
-public sealed class Charset
+internal sealed class Charset
 {
-	public const string Octets = "OCTETS";
-	public const string None = "NONE";
+	internal const string Octets = "OCTETS";
+	internal const string None = "NONE";
 
 	private readonly static Dictionary<int, Charset> charsetsById;
 	private readonly static Dictionary<string, Charset> charsetsByName;
@@ -40,11 +40,11 @@ public sealed class Charset
 		charsetsByName = charsets.ToDictionary(x => x.Name, StringComparer.CurrentCultureIgnoreCase);
 	}
 
-	public static Charset DefaultCharset => charsetsByName[None];
+	internal static Charset DefaultCharset => charsetsByName[None];
 
-	public static bool TryGetById(int id, out Charset charset) => charsetsById.TryGetValue(id, out charset);
+	internal static bool TryGetById(int id, out Charset charset) => charsetsById.TryGetValue(id, out charset);
 
-	public static bool TryGetByName(string name, out Charset charset) => charsetsByName.TryGetValue(name, out charset);
+	internal static bool TryGetByName(string name, out Charset charset) => charsetsByName.TryGetValue(name, out charset);
 
 	private static List<Charset> GetSupportedCharsets()
 	{
@@ -98,13 +98,13 @@ public sealed class Charset
 		{ }
 	}
 
-	public int Identifier { get; }
-	public string Name { get; }
-	public string SystemName { get; private set; }
-	public int BytesPerCharacter { get; }
-	public Encoding Encoding { get; }
-	public bool IsOctetsCharset { get; }
-	public bool IsNoneCharset { get; }
+	internal int Identifier { get; }
+	internal string Name { get; }
+	internal string SystemName { get; private set; }
+	internal int BytesPerCharacter { get; }
+	internal Encoding Encoding { get; }
+	internal bool IsOctetsCharset { get; }
+	internal bool IsNoneCharset { get; }
 
 	public Charset(int id, string name, int bytesPerCharacter, string systemName)
 	{
@@ -130,22 +130,22 @@ public sealed class Charset
 		}
 	}
 
-	public byte[] GetBytes(string s)
+	internal byte[] GetBytes(string s)
 	{
 		return Encoding.GetBytes(s);
 	}
 
-	public int GetBytes(string s, int charIndex, int charCount, byte[] bytes, int byteIndex)
+	internal int GetBytes(string s, int charIndex, int charCount, byte[] bytes, int byteIndex)
 	{
 		return Encoding.GetBytes(s, charIndex, charCount, bytes, byteIndex);
 	}
 
-	public string GetString(byte[] buffer)
+	internal string GetString(byte[] buffer)
 	{
 		return Encoding.GetString(buffer);
 	}
 
-	public string GetString(byte[] buffer, int index, int count)
+	internal string GetString(byte[] buffer, int index, int count)
 	{
 		return Encoding.GetString(buffer, index, count);
 	}

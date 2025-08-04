@@ -6,7 +6,7 @@
 
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsMenuCommandTextChanges
+internal interface IBsMenuCommandTextChanges
 {
 	string Text { get; set; }
 }

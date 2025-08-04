@@ -19,7 +19,7 @@ internal static class OperationTable
 
 	private static readonly Dictionary<string, Operation> CursorTypes;
 
-	public static Operation GetStatement(string statementTypeName)
+	internal static Operation GetStatement(string statementTypeName)
 	{
 		if (!Statements.TryGetValue(statementTypeName, out Operation value))
 		{
@@ -28,7 +28,7 @@ internal static class OperationTable
 		return value;
 	}
 
-	public static Operation GetCursorType(string cursorTypeName)
+	internal static Operation GetCursorType(string cursorTypeName)
 	{
 		if (!CursorTypes.TryGetValue(cursorTypeName, out Operation value))
 		{
@@ -38,7 +38,7 @@ internal static class OperationTable
 		return value;
 	}
 
-	public static Operation GetPhysicalOperation(string operationType)
+	internal static Operation GetPhysicalOperation(string operationType)
 	{
 		if (!PhysicalOperations.TryGetValue(operationType, out Operation value))
 		{
@@ -48,7 +48,7 @@ internal static class OperationTable
 		return value;
 	}
 
-	public static Operation GetLogicalOperation(string operationType)
+	internal static Operation GetLogicalOperation(string operationType)
 	{
 		if (!LogicalOperations.TryGetValue(operationType, out Operation value))
 		{
@@ -58,12 +58,12 @@ internal static class OperationTable
 		return value;
 	}
 
-	public static Operation GetUdf()
+	internal static Operation GetUdf()
 	{
 		return new Operation(null, "Udf", null, "Language_construct_catch_all.ico", "");
 	}
 
-	public static Operation GetStoredProc()
+	internal static Operation GetStoredProc()
 	{
 		return new Operation(null, "StoredProc", null, "Language_construct_catch_all.ico", "");
 	}

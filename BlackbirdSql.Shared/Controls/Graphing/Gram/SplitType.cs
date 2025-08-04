@@ -14,13 +14,13 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SplitType : RelOpBaseType
+internal class SplitType : RelOpBaseType
 {
 	private SingleColumnReferenceType actionColumnField;
 
 	private RelOpType relOpField;
 
-	public SingleColumnReferenceType ActionColumn
+	internal SingleColumnReferenceType ActionColumn
 	{
 		get
 		{
@@ -32,7 +32,7 @@ public class SplitType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{

@@ -3262,7 +3262,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 				break;
 			case 276:
-				_ScrollMgr.HandleHScroll(Native.Util.LOWORD(m.WParam));
+				_ScrollMgr.HandleHScroll(Native.UtilI.LOWORD(m.WParam));
 				if (!m_withHeader)
 				{
 					CheckAndRePositionEmbeddedControlForSmallSizes();
@@ -3270,7 +3270,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 				break;
 			case 277:
-				_ScrollMgr.HandleVScroll(Native.Util.LOWORD(m.WParam));
+				_ScrollMgr.HandleVScroll(Native.UtilI.LOWORD(m.WParam));
 				CheckAndRePositionEmbeddedControlForSmallSizes();
 				break;
 			case 526:
@@ -4951,7 +4951,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 	private Color ColorFromWin32(int nWin32ColorIndex)
 	{
 		int sysColor = (int)Native.GetSysColor(nWin32ColorIndex);
-		return Color.FromArgb(Native.Util.RGB_GETRED(sysColor), Native.Util.RGB_GETGREEN(sysColor), Native.Util.RGB_GETBLUE(sysColor));
+		return Color.FromArgb(Native.UtilI.RGB_GETRED(sysColor), Native.UtilI.RGB_GETGREEN(sysColor), Native.UtilI.RGB_GETBLUE(sysColor));
 	}
 
 	private SolidBrush GetSeeThroghBkBrush(Color systemBaseColor)
@@ -5965,8 +5965,8 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			mousePosition = m_curEmbeddedControl.PointToClient(mousePosition);
 			if (m_curEmbeddedControl.ClientRectangle.Contains(mousePosition))
 			{
-				Native.SendMessage(m_curEmbeddedControl.Handle, 513, (IntPtr)0, Native.Util.MAKELPARAM(mousePosition.X, 2));
-				Native.SendMessage(m_curEmbeddedControl.Handle, 514, (IntPtr)0, Native.Util.MAKELPARAM(mousePosition.X, 2));
+				Native.SendMessage(m_curEmbeddedControl.Handle, 513, (IntPtr)0, Native.UtilI.MAKELPARAM(mousePosition.X, 2));
+				Native.SendMessage(m_curEmbeddedControl.Handle, 514, (IntPtr)0, Native.UtilI.MAKELPARAM(mousePosition.X, 2));
 			}
 		}
 	}

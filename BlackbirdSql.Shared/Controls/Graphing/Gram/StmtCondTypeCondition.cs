@@ -14,13 +14,13 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StmtCondTypeCondition
+internal class StmtCondTypeCondition
 {
 	private QueryPlanType queryPlanField;
 
 	private FunctionType[] uDFField;
 
-	public QueryPlanType QueryPlan
+	internal QueryPlanType QueryPlan
 	{
 		get
 		{
@@ -33,7 +33,7 @@ public class StmtCondTypeCondition
 	}
 
 	[XmlElement("UDF")]
-	public FunctionType[] UDF
+	internal FunctionType[] UDF
 	{
 		get
 		{

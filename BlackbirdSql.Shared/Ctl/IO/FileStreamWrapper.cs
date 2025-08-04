@@ -11,9 +11,9 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Ctl.IO;
 
 
-public class FileStreamWrapper : IBsFileStreamWrapper, IDisposable
+internal class FileStreamWrapper : IBsFileStreamWrapper, IDisposable
 {
-	public const int DEFAULT_BUFFER_SIZE = 8192;
+	internal const int DEFAULT_BUFFER_SIZE = 8192;
 
 	private bool m_bInitialized;
 

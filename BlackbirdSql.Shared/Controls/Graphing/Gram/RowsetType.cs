@@ -22,12 +22,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RowsetType : RelOpBaseType
+internal class RowsetType : RelOpBaseType
 {
 	private ObjectType[] objectField;
 
 	[XmlElement("Object")]
-	public ObjectType[] Object
+	internal ObjectType[] Object
 	{
 		get
 		{

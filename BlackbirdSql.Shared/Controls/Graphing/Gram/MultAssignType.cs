@@ -14,12 +14,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class MultAssignType
+internal class MultAssignType
 {
 	private AssignType[] assignField;
 
 	[XmlElement("Assign")]
-	public AssignType[] Assign
+	internal AssignType[] Assign
 	{
 		get
 		{

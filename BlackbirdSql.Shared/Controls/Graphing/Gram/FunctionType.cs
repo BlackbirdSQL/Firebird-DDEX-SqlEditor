@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class FunctionType
+internal class FunctionType
 {
 	private StmtBlockType statementsField;
 
@@ -24,7 +24,7 @@ public class FunctionType
 
 	private bool isNativelyCompiledFieldSpecified;
 
-	public StmtBlockType Statements
+	internal StmtBlockType Statements
 	{
 		get
 		{
@@ -37,7 +37,7 @@ public class FunctionType
 	}
 
 	[XmlAttribute]
-	public string ProcName
+	internal string ProcName
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class FunctionType
 	}
 
 	[XmlAttribute]
-	public bool IsNativelyCompiled
+	internal bool IsNativelyCompiled
 	{
 		get
 		{
@@ -63,7 +63,7 @@ public class FunctionType
 	}
 
 	[XmlIgnore]
-	public bool IsNativelyCompiledSpecified
+	internal bool IsNativelyCompiledSpecified
 	{
 		get
 		{

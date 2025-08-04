@@ -557,7 +557,6 @@
 		<Compile Include="Interfaces\IBsQEStorage.cs" />
 		<Compile Include="Interfaces\IBsQEStorageView.cs" />
 		<Compile Include="Interfaces\IBsExecutionHandler.cs" />
-		<Compile Include="Interfaces\IBsConnectionStrategyFactory.cs" />
 		<Compile Include="Interfaces\IBsQueryExecutionHandler.cs" />
 		<Compile Include="Model\Parsers\ManagedBatchParser.cs" />
 		<Compile Include="Ctl\Commands\OLECMDTEXT.cs" />

@@ -9,7 +9,7 @@ internal class XmlPlanHierarchyParser : AbstractXmlPlanParser
 {
 	private static XmlPlanHierarchyParser xmlPlanHierarchyParser;
 
-	public static XmlPlanHierarchyParser Instance
+	internal static XmlPlanHierarchyParser Instance
 	{
 		get
 		{
@@ -18,12 +18,12 @@ internal class XmlPlanHierarchyParser : AbstractXmlPlanParser
 		}
 	}
 
-	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
+	internal override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
 		return parentNode;
 	}
 
-	public override IEnumerable<FunctionTypeItem> ExtractFunctions(object parsedItem)
+	internal override IEnumerable<FunctionTypeItem> ExtractFunctions(object parsedItem)
 	{
 		foreach (object child in GetChildren(parsedItem))
 		{

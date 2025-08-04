@@ -19,16 +19,16 @@ namespace BlackbirdSql.Data;
 /// Provides native db services for Server Explorer.
 /// </summary>
 // =========================================================================================================
-public class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNativeDbServerExplorerService
+internal class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNativeDbServerExplorerService
 {
 	private DbServerExplorerService()
 	{
 	}
 
-	public static IBsNativeDbServerExplorerService EnsureInstance() => _Instance ??= new DbServerExplorerService();
+	internal static IBsNativeDbServerExplorerService EnsureInstance() => _Instance ??= new DbServerExplorerService();
 
 
-	public static IBsNativeDbServerExplorerService _Instance = null;
+	internal static IBsNativeDbServerExplorerService _Instance = null;
 
 
 	// ---------------------------------------------------------------------------------

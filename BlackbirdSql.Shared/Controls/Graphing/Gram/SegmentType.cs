@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SegmentType : RelOpBaseType
+internal class SegmentType : RelOpBaseType
 {
 	private ColumnReferenceType[] groupByField;
 
@@ -24,7 +24,7 @@ public class SegmentType : RelOpBaseType
 	private RelOpType relOpField;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] GroupBy
+	internal ColumnReferenceType[] GroupBy
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class SegmentType : RelOpBaseType
 		}
 	}
 
-	public SingleColumnReferenceType SegmentColumn
+	internal SingleColumnReferenceType SegmentColumn
 	{
 		get
 		{
@@ -48,7 +48,7 @@ public class SegmentType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{

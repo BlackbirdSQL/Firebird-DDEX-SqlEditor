@@ -14,12 +14,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ColumnReferenceListType
+internal class ColumnReferenceListType
 {
 	private ColumnReferenceType[] columnReferenceField;
 
 	[XmlElement("ColumnReference")]
-	public ColumnReferenceType[] ColumnReference
+	internal ColumnReferenceType[] ColumnReference
 	{
 		get
 		{

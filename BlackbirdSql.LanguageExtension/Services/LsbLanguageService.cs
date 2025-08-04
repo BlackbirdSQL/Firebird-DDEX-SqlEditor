@@ -1,5 +1,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.LanguageService
+
 using System.Runtime.InteropServices;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 
@@ -26,6 +27,7 @@ public class LsbLanguageService : AbstractLanguageService
 
 	public LsbLanguageService(object site) : base(site)
 	{
+		Evs.Trace(typeof(LsbLanguageService), ".ctor");
 	}
 
 

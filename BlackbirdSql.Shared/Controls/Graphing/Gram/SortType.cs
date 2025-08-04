@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SortType : RelOpBaseType
+internal class SortType : RelOpBaseType
 {
 	private OrderByTypeOrderByColumn[] orderByField;
 
@@ -26,7 +26,7 @@ public class SortType : RelOpBaseType
 	private bool distinctField;
 
 	[XmlArrayItem("OrderByColumn", IsNullable = false)]
-	public OrderByTypeOrderByColumn[] OrderBy
+	internal OrderByTypeOrderByColumn[] OrderBy
 	{
 		get
 		{
@@ -38,7 +38,7 @@ public class SortType : RelOpBaseType
 		}
 	}
 
-	public SingleColumnReferenceType PartitionId
+	internal SingleColumnReferenceType PartitionId
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class SortType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -63,7 +63,7 @@ public class SortType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool Distinct
+	internal bool Distinct
 	{
 		get
 		{

@@ -7,7 +7,7 @@
 
 namespace BlackbirdSql.Shared.Interfaces
 {
-	public interface IBsGridEmbeddedSpinControl
+	internal interface IBsGridEmbeddedSpinControl
 	{
 		decimal Increment { get; set; }
 

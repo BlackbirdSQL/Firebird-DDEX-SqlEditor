@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Babel;
@@ -28,8 +27,21 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.LanguageExtension.Ctl;
 
 
+// =========================================================================================================
+//
+//											LsbSource Class
+//
+/// <summary>
+/// Language service Source implementation.
+/// </summary>
+// =========================================================================================================
 public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDataEvents
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - LsbSource
+	// ---------------------------------------------------------------------------------
+
 
 	public LsbSource(AbstractLanguageService service, IVsTextLines textLines, Colorizer colorizer)
 		: base(service, textLines, colorizer)
@@ -62,24 +74,68 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 	}
 
 
+
+	public override void Dispose()
+	{
+		lock (_LockObject)
+		{
+			base.Dispose();
+			ReleaseSmoMetadataProviderProvider();
+			AuxilliaryDocData auxDocData = AuxDocData;
+			if (auxDocData != null)
+			{
+				auxDocData.QryMgr.BatchExecutionCompletedEventAsync -= OnBatchExecutionCompletedAsync;
+				auxDocData.QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
+			}
+		}
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Constants - LsbSource
+	// =========================================================================================================
+
+
 	public const int C_MinServerVersionSupported = 9;
+
+
+	#endregion Constants
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - LsbSource
+	// =========================================================================================================
+
 
 	private readonly object _LockObject = new object();
 
-	private bool _IntelliSenseEnabled;
-
-	private int _PrvChangeCount;
-
-	private bool _IsReallyDirty;
-
 	private bool _HasPendingRegions;
-
+	private bool _IntelliSenseEnabled;
+	private bool _IsReallyDirty;
 	private bool _IsServerSupported;
-
 	private readonly LsbParseManager _ParseManager;
-
+	private int _PrvChangeCount;
 	private readonly LsbLanguageService _SqlLanguageService;
 
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - LsbSource
+	// =========================================================================================================
 
 
 	private AuxilliaryDocData AuxDocData
@@ -122,6 +178,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		}
 	}
 
+
 	public ParseResult ParseResult => _ParseManager.ParseResult;
 
 	public bool IntelliSenseEnabled => _IntelliSenseEnabled;
@@ -132,20 +189,26 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	public bool IsReallyDirty => _IsReallyDirty;
 
+
 	public bool HasPendingRegions
 	{
-		get
-		{
-			return _HasPendingRegions;
-		}
-		set
-		{
-			_HasPendingRegions = value;
-		}
+		get { return _HasPendingRegions; }
+		set { _HasPendingRegions = value; }
 	}
+
 
 	public IBsModelCsb MdlCsb => AuxDocData?.QryMgr?.Strategy?.MdlCsb;
 
+
+	#endregion Property accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - LsbSource
+	// =========================================================================================================
 
 
 	public IBsMetadataProviderProvider GetMetadataProviderProvider()
@@ -170,7 +233,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 				IBsCsb csb = auxDocData.QryMgr.Strategy.MdlCsb;
 				if (csb?.IsCompleteMandatory ?? false)
 				{
-					MetadataProviderProviderInstance = LsbMetadataProviderProvider.Cache.Instance.Acquire(auxDocData.QryMgr);
+					MetadataProviderProviderInstance = LsbMetadataProviderProvider.CacheI.Instance.Acquire(auxDocData.QryMgr);
 					metadataProviderProvider = MetadataProviderProviderInstance;
 				}
 			}
@@ -179,43 +242,6 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		return metadataProviderProvider;
 	}
 
-
-	private async Task OnBatchExecutionCompletedAsync(object sender, BatchExecutionCompletedEventArgs args)
-	{
-		await Cmd.AwaitableAsync();
-
-		IBsModelCsb mdlCsb = MdlCsb;
-
-		if (GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
-			&& mdlCsb != null && LsbMetadataProviderProvider.CheckForDatabaseChangesAfterQueryExecution)
-		{
-			smoMetadataProviderProvider.AddDatabaseToDriftDetectionSet(mdlCsb.Moniker);
-		}
-	}
-
-	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
-	{
-		bool result = true;
-
-		try
-		{
-			if (args.Launched &&
-				GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
-				&& LsbMetadataProviderProvider.CheckForDatabaseChangesAfterQueryExecution)
-			{
-				smoMetadataProviderProvider.CheckForDatabaseChanges();
-			}
-		}
-		catch (Exception ex)
-		{
-			result = false;
-			Diag.Ex(ex);
-		}
-
-		args.Result &= result;
-
-		return await Task.FromResult(result);
-	}
 
 
 	public bool ExecuteParseRequest(string text)
@@ -232,16 +258,16 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			try
 			{
 				ManualResetEvent buildEvent = metadataProviderProvider.BuildEvent;
-				// TraceUtils.Trace(GetType(), "ExecuteParseRequest()", "waiting for metadata provider...(ThreadName = " + Thread.CurrentThread.Name + ")");
+				Evs.Trace(GetType(), nameof(ExecuteParseRequest), "waiting for metadata provider...");
 
 				if (buildEvent.WaitOne(2000))
 				{
 					binder = metadataProviderProvider.Binder;
-					// TraceUtils.Trace(GetType(), "ExecuteParseRequest()", "...done waiting for metadata provider(ThreadName = " + Thread.CurrentThread.Name + ")");
+					Evs.Trace(GetType(), nameof(ExecuteParseRequest), "...done waiting for metadata");
 				}
 				else
 				{
-					// TraceUtils.Trace(GetType(), "ExecuteParseRequest()", "...timed out waiting for metadata provider(ThreadName = " + Thread.CurrentThread.Name + ")");
+					Evs.Trace(GetType(), nameof(ExecuteParseRequest), "...timed out waiting for metadata");
 				}
 			}
 			catch (Exception ex)
@@ -288,7 +314,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 	public override CommentInfo GetCommentFormat()
 	{
-		return LsbConfiguration.MyCommentInfo;
+		return LsbConfiguration.S_CommentInfo;
 	}
 
 	public override TextSpan CommentLines(TextSpan span, string lineComment)
@@ -391,6 +417,123 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		return true;
 	}
 
+
+
+	public override DocumentTask CreateErrorTaskItem(TextSpan span, MARKERTYPE markerType, string filename)
+	{
+		AuxilliaryDocData auxDocData = ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
+
+		if (auxDocData != null)
+		{
+			IBsErrorTaskFactory errorTaskFactory = auxDocData.GetErrorTaskFactory();
+
+			if (errorTaskFactory != null)
+				return errorTaskFactory.CreateErrorTaskItem(span, markerType, filename, GetTextLines());
+		}
+
+		return base.CreateErrorTaskItem(span, markerType, filename);
+	}
+
+	public override DocumentTask CreateErrorTaskItem(TextSpan span, string filename, string message, TaskPriority priority, TaskCategory category, MARKERTYPE markerType, TaskErrorCategory errorCategory)
+	{
+		AuxilliaryDocData auxDocData = ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
+
+		if (auxDocData != null)
+		{
+			IBsErrorTaskFactory errorTaskFactory = auxDocData.GetErrorTaskFactory();
+
+			if (errorTaskFactory != null)
+			{
+				DocumentTask documentTask = errorTaskFactory.CreateErrorTaskItem(span, markerType, filename, GetTextLines());
+				if (documentTask != null)
+				{
+					documentTask.Priority = priority;
+					documentTask.Category = category;
+					documentTask.ErrorCategory = errorCategory;
+					documentTask.Text = message;
+					documentTask.IsTextEditable = false;
+					documentTask.IsCheckedEditable = false;
+				}
+				return documentTask;
+			}
+		}
+		return base.CreateErrorTaskItem(span, filename, message, priority, category, markerType, errorCategory);
+	}
+
+
+
+	public bool TryEnterDisposeLock()
+	{
+		return Monitor.TryEnter(_LockObject);
+	}
+
+	public void ExitDisposeLock()
+	{
+		Monitor.Exit(_LockObject);
+	}
+
+	private void ReleaseSmoMetadataProviderProvider()
+	{
+		if (MetadataProviderProviderInstance != null)
+		{
+			LsbMetadataProviderProvider.CacheI.Instance.Release(MetadataProviderProviderInstance);
+			MetadataProviderProviderInstance = null;
+		}
+	}
+
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - LsbSource
+	// =========================================================================================================
+
+
+	private async Task OnBatchExecutionCompletedAsync(object sender, BatchExecutionCompletedEventArgs args)
+	{
+		await Cmd.AwaitableAsync();
+
+		IBsModelCsb mdlCsb = MdlCsb;
+
+		if (GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
+			&& mdlCsb != null && LsbMetadataProviderProvider.S_CheckForDatabaseChangesAfterQueryExecution)
+		{
+			smoMetadataProviderProvider.AddDatabaseToDriftDetectionSet(mdlCsb.Moniker);
+		}
+	}
+
+
+
+	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
+	{
+		bool result = true;
+
+		try
+		{
+			if (args.Launched &&
+				GetMetadataProviderProvider() is LsbMetadataProviderProvider smoMetadataProviderProvider
+				&& LsbMetadataProviderProvider.S_CheckForDatabaseChangesAfterQueryExecution)
+			{
+				smoMetadataProviderProvider.CheckForDatabaseChanges();
+			}
+		}
+		catch (Exception ex)
+		{
+			result = false;
+			Diag.Ex(ex);
+		}
+
+		args.Result &= result;
+
+		return await Task.FromResult(result);
+	}
+
+
+
 	void IVsUserDataEvents.OnUserDataChange(ref Guid riidKey, object vtNewValue)
 	{
 		if (riidKey.Equals(VS.CLSID_PropBatchSeparator))
@@ -444,78 +587,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 		}
 	}
 
-	public override DocumentTask CreateErrorTaskItem(TextSpan span, MARKERTYPE markerType, string filename)
-	{
-		AuxilliaryDocData auxDocData = ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
 
-		if (auxDocData != null)
-		{
-			IBsErrorTaskFactory errorTaskFactory = auxDocData.GetErrorTaskFactory();
+	#endregion Event Handling
 
-			if (errorTaskFactory != null)
-				return errorTaskFactory.CreateErrorTaskItem(span, markerType, filename, GetTextLines());
-		}
-
-		return base.CreateErrorTaskItem(span, markerType, filename);
-	}
-
-	public override DocumentTask CreateErrorTaskItem(TextSpan span, string filename, string message, TaskPriority priority, TaskCategory category, MARKERTYPE markerType, TaskErrorCategory errorCategory)
-	{
-		AuxilliaryDocData auxDocData = ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(GetTextLines());
-
-		if (auxDocData != null)
-		{
-			IBsErrorTaskFactory errorTaskFactory = auxDocData.GetErrorTaskFactory();
-
-			if (errorTaskFactory != null)
-			{
-				DocumentTask documentTask = errorTaskFactory.CreateErrorTaskItem(span, markerType, filename, GetTextLines());
-				if (documentTask != null)
-				{
-					documentTask.Priority = priority;
-					documentTask.Category = category;
-					documentTask.ErrorCategory = errorCategory;
-					documentTask.Text = message;
-					documentTask.IsTextEditable = false;
-					documentTask.IsCheckedEditable = false;
-				}
-				return documentTask;
-			}
-		}
-		return base.CreateErrorTaskItem(span, filename, message, priority, category, markerType, errorCategory);
-	}
-
-	public override void Dispose()
-	{
-		lock (_LockObject)
-		{
-			base.Dispose();
-			ReleaseSmoMetadataProviderProvider();
-			AuxilliaryDocData auxDocData = AuxDocData;
-			if (auxDocData != null)
-			{
-				auxDocData.QryMgr.BatchExecutionCompletedEventAsync -= OnBatchExecutionCompletedAsync;
-				auxDocData.QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
-			}
-		}
-	}
-
-	public bool TryEnterDisposeLock()
-	{
-		return Monitor.TryEnter(_LockObject);
-	}
-
-	public void ExitDisposeLock()
-	{
-		Monitor.Exit(_LockObject);
-	}
-
-	private void ReleaseSmoMetadataProviderProvider()
-	{
-		if (MetadataProviderProviderInstance != null)
-		{
-			LsbMetadataProviderProvider.Cache.Instance.Release(MetadataProviderProviderInstance);
-			MetadataProviderProviderInstance = null;
-		}
-	}
 }

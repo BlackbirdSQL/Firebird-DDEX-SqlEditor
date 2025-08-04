@@ -39,7 +39,7 @@ namespace BlackbirdSql.Data.Model;
 /// from the async thread to complete the build.
 /// </remarks>
 // =========================================================================================================
-public class LinkageParser : AbstractLinkageParser
+internal class LinkageParser : AbstractLinkageParser
 {
 
 
@@ -161,7 +161,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// has linked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(string connectionString, string[] restrictions)
+	internal static LinkageParser EnsureLoaded(string connectionString, string[] restrictions)
 	{
 		// Evs.Trace(typeof(LinkageParser), nameof(EnsureLoaded));
 
@@ -227,7 +227,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// has linked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(IDbConnection connection)
+	internal static LinkageParser EnsureLoaded(IDbConnection connection)
 	{
 		// Evs.Trace(typeof(LinkageParser), nameof(EnsureLoaded));
 
@@ -253,7 +253,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// has linked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(IVsDataExplorerConnection root)
+	internal static LinkageParser EnsureLoaded(IVsDataExplorerConnection root)
 	{
 		// Evs.Trace(typeof(LinkageParser), nameof(EnsureLoaded));
 
@@ -295,7 +295,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// </summary>
 	/// <returns>True if successfully loaded or already loaded else false</returns>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
+	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 	public override bool EnsureLoadedRestricted()
 	{
 		// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
@@ -319,7 +319,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves an existing parser for a Site else null if no LinkageParser exists.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser GetInstance(IVsDataExplorerConnection root)
+	internal static LinkageParser GetInstance(IVsDataExplorerConnection root)
 	{
 		// Evs.Trace(typeof(LinkageParser), "GetInstance(IVsDataConnection)");
 
@@ -334,7 +334,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// LinkageParser exists.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser GetInstanceOrTransient(string connectionString)
+	internal static LinkageParser GetInstanceOrTransient(string connectionString)
 	{
 		// Evs.Trace(typeof(LinkageParser), "GetInstance(connectionString)", "connectionString: {0}.", connectionString);
 
@@ -364,9 +364,9 @@ public class LinkageParser : AbstractLinkageParser
 	// =========================================================================================================
 
 
-	public const int C_Elapsed_Resuming = -1;
-	public const int C_Elapsed_Disabling = -2;
-	public const int C_Elapsed_StageCompleted = -3;
+	internal const int C_Elapsed_Resuming = -1;
+	internal const int C_Elapsed_Disabling = -2;
+	internal const int C_Elapsed_StageCompleted = -3;
 
 
 
@@ -484,7 +484,7 @@ public class LinkageParser : AbstractLinkageParser
 	}
 
 
-	public bool Loading => AsyncActive;
+	internal bool Loading => AsyncActive;
 
 
 	#endregion Property accessors
@@ -611,7 +611,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
 	// -------------------------------------------------------------------------
-	public static bool DisposeInstance(IVsDataExplorerConnection root, bool disposing)
+	internal static bool DisposeInstance(IVsDataExplorerConnection root, bool disposing)
 	{
 
 		if (root == null)
@@ -628,7 +628,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// initiates loading if !PersistentSettings.OnDemandLinkage.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoadingAsyin(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
+	internal static LinkageParser EnsureLoadingAsyin(IVsDataExplorerConnection root, int delay = 0, int multiplier = 1)
 	{
 		// Evs.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
 
@@ -724,7 +724,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Returns true if the connection strings are equivalent and a parser was locked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool LockLoadedParser(string originalString, string updatedString)
+	internal static bool LockLoadedParser(string originalString, string updatedString)
 	{
 		// Evs.Trace(typeof(RctManager), nameof(LockLoadedParser));
 
@@ -1113,7 +1113,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// if their task has not been completed synchronously or asynchronously.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public bool SyncAsyncWait(bool disabling = false)
+	internal bool SyncAsyncWait(bool disabling = false)
 	{
 
 		lock (_LockObject)
@@ -1255,7 +1255,7 @@ public class LinkageParser : AbstractLinkageParser
 
 
 
-	public void ThreadSafeCloseMessageBox()
+	internal void ThreadSafeCloseMessageBox()
 	{
 			lock (_LockObject)
 			{
@@ -1282,7 +1282,7 @@ public class LinkageParser : AbstractLinkageParser
 
 
 
-	public void ThreadSafeInitializeMessageBox(object sender)
+	internal void ThreadSafeInitializeMessageBox(object sender)
 	{
 		lock (_LockObject)
 		{
@@ -1315,7 +1315,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Clears a connection that has been locked against disposal by
 	/// <see cref="LockLoadedParser"/>.
 	// ---------------------------------------------------------------------------------
-	public static void UnlockLoadedParser()
+	internal static void UnlockLoadedParser()
 	{
 		// Evs.Trace(typeof(RctManager), nameof(UnlockLoadedParser), "\n_LockedLoadedConnectionString: {0}", _LockedLoadedConnectionString);
 
@@ -1353,7 +1353,7 @@ public class LinkageParser : AbstractLinkageParser
 
 
 
-	public void OnMessageBoxClose(object sender, FormClosedEventArgs e)
+	internal void OnMessageBoxClose(object sender, FormClosedEventArgs e)
 	{
 		lock (_LockObject)
 			_MessageBoxDlg = null;

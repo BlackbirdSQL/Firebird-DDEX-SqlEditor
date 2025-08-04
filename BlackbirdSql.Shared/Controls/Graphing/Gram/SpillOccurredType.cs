@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SpillOccurredType
+internal class SpillOccurredType
 {
 	private bool detailField;
 
 	private bool detailFieldSpecified;
 
 	[XmlAttribute]
-	public bool Detail
+	internal bool Detail
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class SpillOccurredType
 	}
 
 	[XmlIgnore]
-	public bool DetailSpecified
+	internal bool DetailSpecified
 	{
 		get
 		{

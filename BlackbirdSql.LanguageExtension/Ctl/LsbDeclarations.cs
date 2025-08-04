@@ -1,5 +1,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.Declarations
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -14,17 +15,27 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
+
 namespace BlackbirdSql.LanguageExtension.Ctl;
 
-public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
+
+
+
+// =========================================================================================================
+//
+//										LsbDeclarations Class
+//
+/// <summary>
+/// Language service Declarations implementation.
+/// </summary>
+// =========================================================================================================
+internal class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 {
-	private List<Declaration> _FilteredDeclarations;
 
-	private readonly LsbSource _Source;
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - LsbDeclarations
+	// ---------------------------------------------------------------------------------
 
-	private readonly IList<Declaration> _UnderlyingDeclarations;
-
-	private static readonly char[] _SLikelyDelimiters = [' ', '\t', '.', '\r'];
 
 	public LsbDeclarations()
 		: this([], null)
@@ -33,7 +44,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 
 	public LsbDeclarations(IList<Declaration> declarations, LsbSource source)
 	{
-		// TraceUtils.Trace(GetType(), "Declarations() ctor", "starting...(ThreadName = " + Thread.CurrentThread.Name + ")");
+		Evs.Trace(typeof(LsbDeclarations), ".ctor");
 
 		_Source = source;
 
@@ -56,10 +67,42 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 		_UnderlyingDeclarations = list;
 		_FilteredDeclarations = new List<Declaration>(list);
 
-		// TraceUtils.Trace(GetType(), "Declarations() ctor", "...ending(ThreadName = " + Thread.CurrentThread.Name + ")");
+		Evs.Trace(typeof(LsbDeclarations), ".ctor", "...ending");
 	}
 
-	public bool Filter(string textSoFar, bool isDisplayed)
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - LsbDeclarations
+	// =========================================================================================================
+
+
+	private List<Declaration> _FilteredDeclarations;
+
+	private readonly LsbSource _Source;
+
+	private readonly IList<Declaration> _UnderlyingDeclarations;
+
+	private static readonly char[] _SLikelyDelimiters = [' ', '\t', '.', '\r'];
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - LsbDeclarations
+	// =========================================================================================================
+
+
+	internal bool Filter(string textSoFar, bool isDisplayed)
 	{
 		if (textSoFar == null)
 			return false;
@@ -109,10 +152,14 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 		return result;
 	}
 
+
+
 	public override int GetCount()
 	{
 		return _FilteredDeclarations.Count;
 	}
+
+
 
 	public override string GetDescription(int index)
 	{
@@ -132,6 +179,8 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 
 		return "";
 	}
+
+
 
 	public override string GetDisplayText(int index)
 	{
@@ -153,6 +202,7 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 
 		return "";
 	}
+
 
 
 	public override int GetGlyph(int index)
@@ -218,6 +268,8 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 		}
 	}
 
+
+
 	public override void GetBestMatch(string textSoFar, out int index, out bool uniqueMatch)
 	{
 		index = -1;
@@ -273,13 +325,17 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 		throw new COMException("", 1);
 	}
 
+
+
 	public override bool IsMatch(string textSoFar, int index)
 	{
 		textSoFar = EscapeSequence.UnescapeIdentifier(textSoFar);
 		return base.IsMatch(textSoFar, index);
 	}
 
-	public string GetIntendedBestMatch(string typedSoFar)
+
+
+	internal string GetIntendedBestMatch(string typedSoFar)
 	{
 		base.GetBestMatch(typedSoFar, out int index, out _);
 
@@ -327,6 +383,8 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 		return text;
 	}
 
+
+
 	public override string GetName(int index)
 	{
 		if (index < 0)
@@ -335,6 +393,8 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 		}
 		return _FilteredDeclarations[index].Title;
 	}
+
+
 
 	public override string OnCommit(IVsTextView textView, string textSoFar, char commitCharacter, int index, ref TextSpan initialExtent)
 	{
@@ -378,6 +438,8 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 		}
 		return text;
 	}
+
+
 
 	public override bool IsCommitChar(string textSoFar, int selected, char commitCharacter)
 	{
@@ -438,4 +500,8 @@ public class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 			return false;
 		}
 	}
+
+
+	#endregion Methods
+
 }

@@ -54,7 +54,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		// Evs.Trace(GetType(), "DslProviderSchemaFactory.DslProviderSchemaFactory");
 	}
 
-	public static IBsNativeProviderSchemaFactory EnsureInstance() => _Instance ??= new ProviderSchemaFactoryService();
+	internal static IBsNativeProviderSchemaFactory EnsureInstance() => _Instance ??= new ProviderSchemaFactoryService();
 
 
 	#endregion
@@ -62,7 +62,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 	#region Fields
 
-	public static ProviderSchemaFactoryService _Instance = null;
+	internal static ProviderSchemaFactoryService _Instance = null;
 
 	#endregion Fields
 
@@ -79,7 +79,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 	}
 
 	// Schema factory to handle custom collections
-	public static DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
+	internal static DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
 		// Evs.Trace(typeof(ProviderSchemaFactoryService), nameof(GetSchema), "collectionName: {0}", collectionName);
 
@@ -237,7 +237,7 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 
 
 
-	public static async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions,
+	internal static async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions,
 		CancellationToken cancelToken)
 	{
 		// Evs.Trace(typeof(ProviderSchemaFactoryService), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);

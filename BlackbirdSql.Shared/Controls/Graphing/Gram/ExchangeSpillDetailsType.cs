@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ExchangeSpillDetailsType
+internal class ExchangeSpillDetailsType
 {
 	private ulong writesToTempDbField;
 
 	private bool writesToTempDbFieldSpecified;
 
 	[XmlAttribute]
-	public ulong WritesToTempDb
+	internal ulong WritesToTempDb
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class ExchangeSpillDetailsType
 	}
 
 	[XmlIgnore]
-	public bool WritesToTempDbSpecified
+	internal bool WritesToTempDbSpecified
 	{
 		get
 		{

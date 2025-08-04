@@ -13,27 +13,27 @@ using Microsoft.VisualStudio.Utilities;
 namespace BlackbirdSql.Shared.Controls;
 
 
-public static class ControlUtils
+internal static class ControlUtils
 {
 	private static readonly SizeF DefaultScaleFactor = new SizeF(1f, 1f);
 
-	public static double DisplayScalePercentX => DpiAwareness.SystemDpiXScale; // DpiHelper.DpiScalePercentX / 100;
+	internal static double DisplayScalePercentX => DpiAwareness.SystemDpiXScale; // DpiHelper.DpiScalePercentX / 100;
 
-	public static double DisplayScalePercentY => DpiAwareness.SystemDpiYScale; // DpiHelper.DpiScalePercentY / 100;
+	internal static double DisplayScalePercentY => DpiAwareness.SystemDpiYScale; // DpiHelper.DpiScalePercentY / 100;
 
 
-	public static int GetScaledImageSize(int imageSize = 16)
+	internal static int GetScaledImageSize(int imageSize = 16)
 	{
 		return Convert.ToInt32((float)imageSize * DisplayScalePercentX);
 	}
 
-	public static Icon GetScaledIcon(Icon originalIcon, int iconWidth = 16)
+	internal static Icon GetScaledIcon(Icon originalIcon, int iconWidth = 16)
 	{
 		int scaledImageSize = GetScaledImageSize(iconWidth);
 		return new Icon(originalIcon, scaledImageSize, scaledImageSize);
 	}
 
-	public static SizeF GetScaleFactor(Control control)
+	internal static SizeF GetScaleFactor(Control control)
 	{
 		if (control == null)
 		{
@@ -43,7 +43,7 @@ public static class ControlUtils
 		return new SizeF(graphics.DpiX / 96f, graphics.DpiY / 96f);
 	}
 
-	public static Size GetScaledSize(Control control, Size size)
+	internal static Size GetScaledSize(Control control, Size size)
 	{
 		SizeF scaleFactor = GetScaleFactor(control);
 		if (scaleFactor.Width != 1f || scaleFactor.Height != 1f)
@@ -54,13 +54,13 @@ public static class ControlUtils
 		return size;
 	}
 
-	public static Size GetScaledSizeForSmallBitmap(Control control)
+	internal static Size GetScaledSizeForSmallBitmap(Control control)
 	{
 		Size size = new Size(16, 16);
 		return GetScaledSize(control, size);
 	}
 
-	public static bool IsGb18030Supported
+	internal static bool IsGb18030Supported
 	{
 		get
 		{
@@ -79,7 +79,7 @@ public static class ControlUtils
 
 
 
-	public static Bitmap ScaleImage(Bitmap image, Control control, bool keepSmooth = true)
+	internal static Bitmap ScaleImage(Bitmap image, Control control, bool keepSmooth = true)
 	{
 		if (control == null)
 		{
@@ -88,7 +88,7 @@ public static class ControlUtils
 		return ScaleImage(image, GetScaleFactor(control), keepSmooth);
 	}
 
-	public static Bitmap ScaleImage(Image image, SizeF scaleFactor, bool keepSmooth = true)
+	internal static Bitmap ScaleImage(Image image, SizeF scaleFactor, bool keepSmooth = true)
 	{
 		if (keepSmooth)
 		{
@@ -97,7 +97,7 @@ public static class ControlUtils
 		return ScaleImageInternal(image, scaleFactor, InterpolationMode.NearestNeighbor);
 	}
 
-	public static Bitmap ScaleImageInternal(Image image, SizeF scaleFactor, InterpolationMode interpolationMode)
+	internal static Bitmap ScaleImageInternal(Image image, SizeF scaleFactor, InterpolationMode interpolationMode)
 	{
 		Bitmap bitmap = new Bitmap((int)((float)image.Width * scaleFactor.Width), (int)((float)image.Height * scaleFactor.Height));
 		using (Graphics graphics = Graphics.FromImage(bitmap))
@@ -109,7 +109,7 @@ public static class ControlUtils
 		return bitmap;
 	}
 
-	public static Image GenerateBlankImage(Control control)
+	internal static Image GenerateBlankImage(Control control)
 	{
 		Size size = new Size(16, 16);
 		if (control != null)

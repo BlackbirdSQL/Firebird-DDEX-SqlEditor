@@ -3,14 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
-using System.Globalization;
-using System.Resources;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Shared.Enums;
-using BlackbirdSql.Shared.Properties;
-using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Events;
 
 
@@ -67,8 +62,6 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	#region Fields - PersistentSettings
 	// =========================================================================================================
 
-
-	private int _AssemblyId = -1;
 
 	// Tracking variables
 	private static bool _LayoutPropertyChanged = false;
@@ -140,26 +133,6 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	// =========================================================================================================
 	#region Methods - PersistentSettings
 	// =========================================================================================================
-
-
-	public override int GetEvsAssemblyId(Type type)
-	{
-		int id = base.GetEvsAssemblyId(type);
-
-		if (id > 0)
-			return id;
-
-		--id;
-
-		if (type.Assembly.FullName == typeof(PersistentSettings).Assembly.FullName)
-		{
-			_AssemblyId = -id;
-			return _AssemblyId;
-		}
-
-		return id;
-	}
-
 
 
 	public static char GetTextDelimiter(object format, object delimiter) =>

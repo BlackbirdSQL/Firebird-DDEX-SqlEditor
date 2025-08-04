@@ -15,11 +15,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RemoteFetchType : RemoteType
+internal class RemoteFetchType : RemoteType
 {
 	private RelOpType relOpField;
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{

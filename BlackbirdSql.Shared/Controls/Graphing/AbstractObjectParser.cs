@@ -8,11 +8,11 @@ using System.Xml.Serialization;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public abstract class AbstractObjectParser
+internal abstract class AbstractObjectParser
 {
 	private static readonly Attribute XmlIgnoreAttribute = new XmlIgnoreAttribute();
 
-	public virtual void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
+	internal virtual void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
 	{
 		PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(parsedItem);
 		foreach (PropertyDescriptor item in properties)

@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Shell;
 namespace BlackbirdSql.EditorExtension.Ctl.Config;
 
 // =========================================================================================================
-//										OptionsProvider Class
+//										SettingsProvider Class
 //
 /// <summary>
 /// Provider for <see cref="ProvideOptionPageAttribute"/> in <see cref="EditorExtensionPackage"/>

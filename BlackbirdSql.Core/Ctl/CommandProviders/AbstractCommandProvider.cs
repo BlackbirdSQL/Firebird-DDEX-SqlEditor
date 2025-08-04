@@ -25,7 +25,7 @@ namespace BlackbirdSql.Core.Ctl.CommandProviders;
 /// The base IVsDataViewCommandProvider class
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractCommandProvider : DataViewCommandProvider
+internal abstract class AbstractCommandProvider : DataViewCommandProvider
 {
 
 	// -----------------------------------------------------------------------------------------------------
@@ -334,7 +334,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 
 
-	public static string GetResourceString(string commandFunction, string nodeType, string targetType)
+	internal static string GetResourceString(string commandFunction, string nodeType, string targetType)
 	{
 		string resource = $"CommandProvider_{commandFunction}{nodeType}{targetType}";
 
@@ -366,7 +366,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 
 
-	public static string GlobalizeLabel(DataViewMenuCommand cmd, IVsDataExplorerNode node)
+	internal static string GlobalizeLabel(DataViewMenuCommand cmd, IVsDataExplorerNode node)
 	{
 		if (!cmd.Visible)
 			return "";
@@ -388,7 +388,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		return text;
 	}
 
-	public static string GlobalizeLabel(DataViewMenuCommand cmd, EnNodeSystemType nodeSystemType)
+	internal static string GlobalizeLabel(DataViewMenuCommand cmd, EnNodeSystemType nodeSystemType)
 	{
 		if (!cmd.Visible)
 			return "";

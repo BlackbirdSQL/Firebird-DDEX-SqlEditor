@@ -1,6 +1,8 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.ColorableItem
+
 using System;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
@@ -8,33 +10,64 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.LanguageExtension.Ctl;
 
 
+// =========================================================================================================
+//
+//										LsbColorableItem Class
+//
+/// <summary>
+/// Language service IVsColorableItem implementation.
+/// </summary>
+// =========================================================================================================
 public class LsbColorableItem : IVsColorableItem, IVsMergeableUIItem
 {
-	private readonly string _displayName;
 
-	private readonly string _canonicalName;
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - LsbColorableItem
+	// ---------------------------------------------------------------------------------
 
-	private readonly COLORINDEX _backgroundColor;
-
-	private readonly COLORINDEX _foregroundColor;
-
-	private readonly uint _fontFlags;
 
 	public LsbColorableItem(string displayName, string canonicalName, COLORINDEX foreground, COLORINDEX background, bool bold, bool strikethrough)
 	{
-		_displayName = displayName;
-		_canonicalName = canonicalName;
-		_backgroundColor = background;
-		_foregroundColor = foreground;
+		_DisplayName = displayName;
+		_CanonicalName = canonicalName;
+		_BackgroundColor = background;
+		_ForegroundColor = foreground;
+
 		if (bold)
-		{
-			_fontFlags |= 1u;
-		}
+			_FontFlags |= FONTFLAGS.FF_BOLD;
 		if (strikethrough)
-		{
-			_fontFlags |= 2u;
-		}
+			_FontFlags |= FONTFLAGS.FF_STRIKETHROUGH;
 	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - LsbColorableItem
+	// =========================================================================================================
+
+
+	private readonly COLORINDEX _BackgroundColor;
+	private readonly string _CanonicalName;
+	private readonly string _DisplayName;
+	private readonly FONTFLAGS _FontFlags;
+	private readonly COLORINDEX _ForegroundColor;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - LsbColorableItem
+	// =========================================================================================================
+
 
 	public int GetDefaultColors(COLORINDEX[] piForeground, COLORINDEX[] piBackground)
 	{
@@ -46,7 +79,7 @@ public class LsbColorableItem : IVsColorableItem, IVsMergeableUIItem
 		{
 			throw new ArgumentOutOfRangeException("piForeground");
 		}
-		piForeground[0] = _foregroundColor;
+		piForeground[0] = _ForegroundColor;
 		if (piBackground == null)
 		{
 			throw new ArgumentNullException("piBackground");
@@ -55,37 +88,44 @@ public class LsbColorableItem : IVsColorableItem, IVsMergeableUIItem
 		{
 			throw new ArgumentOutOfRangeException("piBackground");
 		}
-		piBackground[0] = _backgroundColor;
-		return 0;
+		piBackground[0] = _BackgroundColor;
+
+		return VSConstants.S_OK;
 	}
 
 	public int GetDefaultFontFlags(out uint pdwFontFlags)
 	{
-		pdwFontFlags = _fontFlags;
-		return 0;
+		pdwFontFlags = (uint)_FontFlags;
+
+		return VSConstants.S_OK;
 	}
 
 	public int GetDisplayName(out string pbstrName)
 	{
-		pbstrName = _displayName;
-		return 0;
+		pbstrName = _DisplayName;
+
+		return VSConstants.S_OK;
 	}
 
 	public int GetCanonicalName(out string pbstrNonLocalizeName)
 	{
-		pbstrNonLocalizeName = _canonicalName;
-		return 0;
+		pbstrNonLocalizeName = _CanonicalName;
+		return VSConstants.S_OK;
 	}
 
 	public int GetDescription(out string pbstrDesc)
 	{
 		pbstrDesc = "";
-		return 0;
+		return VSConstants.S_OK;
 	}
 
 	public int GetMergingPriority(out int piMergingPriority)
 	{
 		piMergingPriority = 4096;
-		return 0;
+		return VSConstants.S_OK;
 	}
+
+
+	#endregion Methods
+
 }

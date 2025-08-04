@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class ExpandableArrayWrapper : ExpandableObjectWrapper
+internal class ExpandableArrayWrapper : ExpandableObjectWrapper
 {
 	public ExpandableArrayWrapper(ICollection collection)
 	{
@@ -39,7 +39,7 @@ public class ExpandableArrayWrapper : ExpandableObjectWrapper
 		base.DisplayName = stringBuilder.ToString();
 	}
 
-	public static string GetPropertyName(int index)
+	internal static string GetPropertyName(int index)
 	{
 		return "[{0}]".Fmt(index);
 	}

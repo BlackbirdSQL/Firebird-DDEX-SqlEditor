@@ -15,11 +15,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RemoteRangeType : RemoteType
+internal class RemoteRangeType : RemoteType
 {
 	private SeekPredicatesType seekPredicatesField;
 
-	public SeekPredicatesType SeekPredicates
+	internal SeekPredicatesType SeekPredicates
 	{
 		get
 		{

@@ -16,7 +16,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 {
 	internal sealed class OrderComparer : IComparer
 	{
-		public static readonly OrderComparer Default = new OrderComparer();
+		internal static readonly OrderComparer Default = new OrderComparer();
 
 		int IComparer.Compare(object x, object y)
 		{
@@ -57,7 +57,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 
 	private bool _Initialized;
 
-	public object Value
+	internal object Value
 	{
 		get
 		{
@@ -69,7 +69,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 		}
 	}
 
-	public int DisplayOrder
+	internal int DisplayOrder
 	{
 		get
 		{
@@ -78,7 +78,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 		}
 	}
 
-	public bool IsLongString
+	internal bool IsLongString
 	{
 		get
 		{
@@ -87,7 +87,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 		}
 	}
 
-	public override AttributeCollection Attributes
+	internal override AttributeCollection Attributes
 	{
 		get
 		{
@@ -99,11 +99,11 @@ internal sealed class PropertyValue : PropertyDescriptor
 		}
 	}
 
-	public override bool IsReadOnly => true;
+	internal override bool IsReadOnly => true;
 
-	public override Type ComponentType => GetType();
+	internal override Type ComponentType => GetType();
 
-	public override Type PropertyType
+	internal override Type PropertyType
 	{
 		get
 		{
@@ -115,7 +115,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 		}
 	}
 
-	public override string DisplayName
+	internal override string DisplayName
 	{
 		get
 		{
@@ -129,7 +129,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 		}
 	}
 
-	public override string Description
+	internal override string Description
 	{
 		get
 		{
@@ -155,31 +155,31 @@ internal sealed class PropertyValue : PropertyDescriptor
 		_BaseProperty = baseProperty;
 	}
 
-	public void SetDisplayNameAndDescription(string newDisplayName, string newDescription)
+	internal void SetDisplayNameAndDescription(string newDisplayName, string newDescription)
 	{
 		_DisplayName = newDisplayName;
 		_Description = newDescription;
 	}
 
-	public override bool CanResetValue(object component)
+	internal override bool CanResetValue(object component)
 	{
 		return false;
 	}
 
-	public override object GetValue(object component)
+	internal override object GetValue(object component)
 	{
 		return _Value;
 	}
 
-	public override void ResetValue(object component)
+	internal override void ResetValue(object component)
 	{
 	}
 
-	public override void SetValue(object component, object value)
+	internal override void SetValue(object component, object value)
 	{
 	}
 
-	public override bool ShouldSerializeValue(object component)
+	internal override bool ShouldSerializeValue(object component)
 	{
 		return false;
 	}

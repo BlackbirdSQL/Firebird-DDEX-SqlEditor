@@ -22,21 +22,21 @@ namespace BlackbirdSql.Core.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        public Resources() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BlackbirdSql.Core.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace BlackbirdSql.Core.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The argument string is missing a closing double quote..
         /// </summary>
-        public static string ArgumentParsing_DoubleQuoteMissingError {
+        internal static string ArgumentParsing_DoubleQuoteMissingError {
             get {
                 return ResourceManager.GetString("ArgumentParsing_DoubleQuoteMissingError", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Class: {0} Number: {1} .
         /// </summary>
-        public static string ClassNumber {
+        internal static string ClassNumber {
             get {
                 return ResourceManager.GetString("ClassNumber", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Open &amp;Alter Function Source.
         /// </summary>
-        public static string CommandProvider_AlterFunctionScript {
+        internal static string CommandProvider_AlterFunctionScript {
             get {
                 return ResourceManager.GetString("CommandProvider_AlterFunctionScript", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Open &amp;Alter Procedure Source.
         /// </summary>
-        public static string CommandProvider_AlterStoredProcedureScript {
+        internal static string CommandProvider_AlterStoredProcedureScript {
             get {
                 return ResourceManager.GetString("CommandProvider_AlterStoredProcedureScript", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Open &amp;Alter Trigger Expression.
         /// </summary>
-        public static string CommandProvider_AlterTriggerScript {
+        internal static string CommandProvider_AlterTriggerScript {
             get {
                 return ResourceManager.GetString("CommandProvider_AlterTriggerScript", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Open &amp;Alter View Definition.
         /// </summary>
-        public static string CommandProvider_AlterViewScript {
+        internal static string CommandProvider_AlterViewScript {
             get {
                 return ResourceManager.GetString("CommandProvider_AlterViewScript", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_CancelExecution.
         /// </summary>
-        public static string CommandProvider_CancelExecution {
+        internal static string CommandProvider_CancelExecution {
             get {
                 return ResourceManager.GetString("CommandProvider_CancelExecution", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Open &amp;Create Procedure Source.
         /// </summary>
-        public static string CommandProvider_CreateStoredProcedureScript {
+        internal static string CommandProvider_CreateStoredProcedureScript {
             get {
                 return ResourceManager.GetString("CommandProvider_CreateStoredProcedureScript", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Open &amp;Create View Definition.
         /// </summary>
-        public static string CommandProvider_CreateViewScript {
+        internal static string CommandProvider_CreateViewScript {
             get {
                 return ResourceManager.GetString("CommandProvider_CreateViewScript", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Remove Connection.
         /// </summary>
-        public static string CommandProvider_DeleteDatabaseConnection {
+        internal static string CommandProvider_DeleteDatabaseConnection {
             get {
                 return ResourceManager.GetString("CommandProvider_DeleteDatabaseConnection", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Rename Connection.
         /// </summary>
-        public static string CommandProvider_EditDatabaseLabel {
+        internal static string CommandProvider_EditDatabaseLabel {
             get {
                 return ResourceManager.GetString("CommandProvider_EditDatabaseLabel", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;New Designer Query.
         /// </summary>
-        public static string CommandProvider_NewGlobalDesigner {
+        internal static string CommandProvider_NewGlobalDesigner {
             get {
                 return ResourceManager.GetString("CommandProvider_NewGlobalDesigner", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to New SQL &amp;Query.
         /// </summary>
-        public static string CommandProvider_NewQuery {
+        internal static string CommandProvider_NewQuery {
             get {
                 return ResourceManager.GetString("CommandProvider_NewQuery", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;New System Designer Query.
         /// </summary>
-        public static string CommandProvider_NewSystemDesigner {
+        internal static string CommandProvider_NewSystemDesigner {
             get {
                 return ResourceManager.GetString("CommandProvider_NewSystemDesigner", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;New User Designer Query.
         /// </summary>
-        public static string CommandProvider_NewUserDesigner {
+        internal static string CommandProvider_NewUserDesigner {
             get {
                 return ResourceManager.GetString("CommandProvider_NewUserDesigner", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No source available.
         /// </summary>
-        public static string CommandProvider_NoSourceAvailable {
+        internal static string CommandProvider_NoSourceAvailable {
             get {
                 return ResourceManager.GetString("CommandProvider_NoSourceAvailable", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open Column Expression.
         /// </summary>
-        public static string CommandProvider_OpenColumnScript {
+        internal static string CommandProvider_OpenColumnScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenColumnScript", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open Foreign Key Expression.
         /// </summary>
-        public static string CommandProvider_OpenForeignKeyScript {
+        internal static string CommandProvider_OpenForeignKeyScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenForeignKeyScript", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open Create Function Source.
         /// </summary>
-        public static string CommandProvider_OpenFunctionScript {
+        internal static string CommandProvider_OpenFunctionScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenFunctionScript", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open Index Expression.
         /// </summary>
-        public static string CommandProvider_OpenIndexScript {
+        internal static string CommandProvider_OpenIndexScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenIndexScript", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open Script.
         /// </summary>
-        public static string CommandProvider_OpenScript {
+        internal static string CommandProvider_OpenScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenScript", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open Execute Procedure Script.
         /// </summary>
-        public static string CommandProvider_OpenStoredProcedureScript {
+        internal static string CommandProvider_OpenStoredProcedureScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenStoredProcedureScript", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open System Script.
         /// </summary>
-        public static string CommandProvider_OpenSystemScript {
+        internal static string CommandProvider_OpenSystemScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenSystemScript", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open Table SQL Query.
         /// </summary>
-        public static string CommandProvider_OpenTableScript {
+        internal static string CommandProvider_OpenTableScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenTableScript", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open Create Trigger Expression.
         /// </summary>
-        public static string CommandProvider_OpenTriggerScript {
+        internal static string CommandProvider_OpenTriggerScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenTriggerScript", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open User Script.
         /// </summary>
-        public static string CommandProvider_OpenUserScript {
+        internal static string CommandProvider_OpenUserScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenUserScript", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &amp;Open View Query.
         /// </summary>
-        public static string CommandProvider_OpenViewScript {
+        internal static string CommandProvider_OpenViewScript {
             get {
                 return ResourceManager.GetString("CommandProvider_OpenViewScript", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The document moniker path name is too long.
         /// </summary>
-        public static string CommandProvider_PathTooLong {
+        internal static string CommandProvider_PathTooLong {
             get {
                 return ResourceManager.GetString("CommandProvider_PathTooLong", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_PromptSaveObject.
         /// </summary>
-        public static string CommandProvider_PromptSaveObject {
+        internal static string CommandProvider_PromptSaveObject {
             get {
                 return ResourceManager.GetString("CommandProvider_PromptSaveObject", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Open Table in &amp;Designer.
         /// </summary>
-        public static string CommandProvider_RetrieveTableDesignerData {
+        internal static string CommandProvider_RetrieveTableDesignerData {
             get {
                 return ResourceManager.GetString("CommandProvider_RetrieveTableDesignerData", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Open View in &amp;Designer.
         /// </summary>
-        public static string CommandProvider_RetrieveViewDesignerData {
+        internal static string CommandProvider_RetrieveViewDesignerData {
             get {
                 return ResourceManager.GetString("CommandProvider_RetrieveViewDesignerData", resourceCulture);
             }
@@ -342,7 +342,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Validate Solution Config.
         /// </summary>
-        public static string CommandProvider_ValidateGlobalSolution {
+        internal static string CommandProvider_ValidateGlobalSolution {
             get {
                 return ResourceManager.GetString("CommandProvider_ValidateGlobalSolution", resourceCulture);
             }
@@ -351,7 +351,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Validating {0} factories....
         /// </summary>
-        public static string DbProviderFactoriesEx_Recovery {
+        internal static string DbProviderFactoriesEx_Recovery {
             get {
                 return ResourceManager.GetString("DbProviderFactoriesEx_Recovery", resourceCulture);
             }
@@ -360,7 +360,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; recovered using ConfigurationManager removal after registration failure..
         /// </summary>
-        public static string DbProviderFactoriesEx_RecoveryConfigurationManagerConfigurationManager {
+        internal static string DbProviderFactoriesEx_RecoveryConfigurationManagerConfigurationManager {
             get {
                 return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryConfigurationManagerConfigurationManager", resourceCulture);
             }
@@ -369,7 +369,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; recovered using ConfigurationManager removal after load error..
         /// </summary>
-        public static string DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated {
+        internal static string DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated {
             get {
                 return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated", resourceCulture);
             }
@@ -378,7 +378,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; recovered using direct removal after registration failure..
         /// </summary>
-        public static string DbProviderFactoriesEx_RecoveryDirectConfigurationManager {
+        internal static string DbProviderFactoriesEx_RecoveryDirectConfigurationManager {
             get {
                 return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryDirectConfigurationManager", resourceCulture);
             }
@@ -387,7 +387,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; recovered using direct removal after load error..
         /// </summary>
-        public static string DbProviderFactoriesEx_RecoveryDirectInvalidated {
+        internal static string DbProviderFactoriesEx_RecoveryDirectInvalidated {
             get {
                 return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryDirectInvalidated", resourceCulture);
             }
@@ -396,7 +396,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; error. Timed out waiting for factory to appear..
         /// </summary>
-        public static string DbProviderFactoriesEx_RecoveryInvariantFailed {
+        internal static string DbProviderFactoriesEx_RecoveryInvariantFailed {
             get {
                 return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryInvariantFailed", resourceCulture);
             }
@@ -405,7 +405,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; has faulted. Attempting recovery....
         /// </summary>
-        public static string DbProviderFactoriesEx_RecoveryInvariantFaulted {
+        internal static string DbProviderFactoriesEx_RecoveryInvariantFaulted {
             get {
                 return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryInvariantFaulted", resourceCulture);
             }
@@ -414,7 +414,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DbProviderFactory recovery completed: Found {0} faulted invariants, {1} recovered. Total recovery time was {2}ms..
         /// </summary>
-        public static string DbProviderFactoriesEx_RecoveryResult {
+        internal static string DbProviderFactoriesEx_RecoveryResult {
             get {
                 return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryResult", resourceCulture);
             }
@@ -423,7 +423,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Could not locate icon for Server Engine Type {0}..
         /// </summary>
-        public static string EngineTypeIconNotfound {
+        internal static string EngineTypeIconNotfound {
             get {
                 return ResourceManager.GetString("EngineTypeIconNotfound", resourceCulture);
             }
@@ -432,7 +432,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Reset.
         /// </summary>
-        public static string ErmBindingSource_Reset {
+        internal static string ErmBindingSource_Reset {
             get {
                 return ResourceManager.GetString("ErmBindingSource_Reset", resourceCulture);
             }
@@ -441,7 +441,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Attempt to add a null connection.
         /// </summary>
-        public static string ExceptionAttemptToAddNullConnection {
+        internal static string ExceptionAttemptToAddNullConnection {
             get {
                 return ResourceManager.GetString("ExceptionAttemptToAddNullConnection", resourceCulture);
             }
@@ -450,7 +450,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to BeginTransaction failed. Transaction already exists..
         /// </summary>
-        public static string ExceptionBeginTransactionAlreadyExists {
+        internal static string ExceptionBeginTransactionAlreadyExists {
             get {
                 return ResourceManager.GetString("ExceptionBeginTransactionAlreadyExists", resourceCulture);
             }
@@ -459,7 +459,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to BeginTransaction failed. Connection is null or not open..
         /// </summary>
-        public static string ExceptionBeginTransactionConnectionUnavailable {
+        internal static string ExceptionBeginTransactionConnectionUnavailable {
             get {
                 return ResourceManager.GetString("ExceptionBeginTransactionConnectionUnavailable", resourceCulture);
             }
@@ -468,7 +468,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Cannot store null in settings store. SettingsModel&lt;{0}&gt;. CollectionName:{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}.
         /// </summary>
-        public static string ExceptionCannotStoreNullInSettingsStore {
+        internal static string ExceptionCannotStoreNullInSettingsStore {
             get {
                 return ResourceManager.GetString("ExceptionCannotStoreNullInSettingsStore", resourceCulture);
             }
@@ -477,7 +477,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Connection closed.
         /// </summary>
-        public static string ExceptionConnectionClosed {
+        internal static string ExceptionConnectionClosed {
             get {
                 return ResourceManager.GetString("ExceptionConnectionClosed", resourceCulture);
             }
@@ -486,7 +486,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Connection disposed.
         /// </summary>
-        public static string ExceptionConnectionDisposed {
+        internal static string ExceptionConnectionDisposed {
             get {
                 return ResourceManager.GetString("ExceptionConnectionDisposed", resourceCulture);
             }
@@ -495,7 +495,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to ConnectionKey for explorer connection {0} for node {1} is null.
         /// </summary>
-        public static string ExceptionConnectionKeyNull {
+        internal static string ExceptionConnectionKeyNull {
             get {
                 return ResourceManager.GetString("ExceptionConnectionKeyNull", resourceCulture);
             }
@@ -504,7 +504,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Connection is null.
         /// </summary>
-        public static string ExceptionConnectionNull {
+        internal static string ExceptionConnectionNull {
             get {
                 return ResourceManager.GetString("ExceptionConnectionNull", resourceCulture);
             }
@@ -513,7 +513,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unable to create batch execution object: {0}..
         /// </summary>
-        public static string ExceptionCreateBatchExecutionObject {
+        internal static string ExceptionCreateBatchExecutionObject {
             get {
                 return ResourceManager.GetString("ExceptionCreateBatchExecutionObject", resourceCulture);
             }
@@ -522,7 +522,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Must create Rdt Manager on the UI Thread.
         /// </summary>
-        public static string ExceptionCreateRdtManagerOnUiThread {
+        internal static string ExceptionCreateRdtManagerOnUiThread {
             get {
                 return ResourceManager.GetString("ExceptionCreateRdtManagerOnUiThread", resourceCulture);
             }
@@ -531,7 +531,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to DataType {0} is not capable of supporting native storage type {1}.
         /// </summary>
-        public static string ExceptionDataTypeStorageTypeNotSupported {
+        internal static string ExceptionDataTypeStorageTypeNotSupported {
             get {
                 return ResourceManager.GetString("ExceptionDataTypeStorageTypeNotSupported", resourceCulture);
             }
@@ -540,7 +540,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data..
         /// </summary>
-        public static string ExceptionDocDataKeepAlive {
+        internal static string ExceptionDocDataKeepAlive {
             get {
                 return ResourceManager.GetString("ExceptionDocDataKeepAlive", resourceCulture);
             }
@@ -549,7 +549,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Events already enabled..
         /// </summary>
-        public static string ExceptionEventsAlreadyEnabled {
+        internal static string ExceptionEventsAlreadyEnabled {
             get {
                 return ResourceManager.GetString("ExceptionEventsAlreadyEnabled", resourceCulture);
             }
@@ -558,7 +558,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Failed to save file: {0}.
         /// </summary>
-        public static string ExceptionFailedToSaveFile {
+        internal static string ExceptionFailedToSaveFile {
             get {
                 return ResourceManager.GetString("ExceptionFailedToSaveFile", resourceCulture);
             }
@@ -567,7 +567,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Could not get method &apos;{0}&apos; for property {1}.
         /// </summary>
-        public static string ExceptionGetMethodForPropertyFailed {
+        internal static string ExceptionGetMethodForPropertyFailed {
             get {
                 return ResourceManager.GetString("ExceptionGetMethodForPropertyFailed", resourceCulture);
             }
@@ -576,7 +576,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to GetCommand() GlobalNewQuery returned null.
         /// </summary>
-        public static string ExceptionGlobalNewQueryCommandNotFound {
+        internal static string ExceptionGlobalNewQueryCommandNotFound {
             get {
                 return ResourceManager.GetString("ExceptionGlobalNewQueryCommandNotFound", resourceCulture);
             }
@@ -585,7 +585,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The {0} method of SettingsModel {1} for property {2} returned a null value..
         /// </summary>
-        public static string ExceptionMethodPropertyReturnedNull {
+        internal static string ExceptionMethodPropertyReturnedNull {
             get {
                 return ResourceManager.GetString("ExceptionMethodPropertyReturnedNull", resourceCulture);
             }
@@ -594,7 +594,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to UriComponents.SerializationInfoString must not be combined with other UriComponents..
         /// </summary>
-        public static string ExceptionNetUriNotJustSerialization {
+        internal static string ExceptionNetUriNotJustSerialization {
             get {
                 return ResourceManager.GetString("ExceptionNetUriNotJustSerialization", resourceCulture);
             }
@@ -603,7 +603,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to GetCommand() NewQueryGlobal returned null.
         /// </summary>
-        public static string ExceptionNewQueryGlobalCommandNotFound {
+        internal static string ExceptionNewQueryGlobalCommandNotFound {
             get {
                 return ResourceManager.GetString("ExceptionNewQueryGlobalCommandNotFound", resourceCulture);
             }
@@ -612,7 +612,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Get next tree child item returned null..
         /// </summary>
-        public static string ExceptionNextTreeChildItemNull {
+        internal static string ExceptionNextTreeChildItemNull {
             get {
                 return ResourceManager.GetString("ExceptionNextTreeChildItemNull", resourceCulture);
             }
@@ -621,7 +621,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Get next tree item from caret returned null..
         /// </summary>
-        public static string ExceptionNextTreeItemFromCaretNull {
+        internal static string ExceptionNextTreeItemFromCaretNull {
             get {
                 return ResourceManager.GetString("ExceptionNextTreeItemFromCaretNull", resourceCulture);
             }
@@ -630,7 +630,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Get next tree item from root returned null..
         /// </summary>
-        public static string ExceptionNextTreeItemFromRootNull {
+        internal static string ExceptionNextTreeItemFromRootNull {
             get {
                 return ResourceManager.GetString("ExceptionNextTreeItemFromRootNull", resourceCulture);
             }
@@ -639,7 +639,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Could not locate Describer for connection parameter &apos;{0}&apos;..
         /// </summary>
-        public static string ExceptionParameterDescriberNotFound {
+        internal static string ExceptionParameterDescriberNotFound {
             get {
                 return ResourceManager.GetString("ExceptionParameterDescriberNotFound", resourceCulture);
             }
@@ -648,7 +648,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Error retrieving node {0} property: {1}.
         /// </summary>
-        public static string ExceptionRetrievingNodeProperty {
+        internal static string ExceptionRetrievingNodeProperty {
             get {
                 return ResourceManager.GetString("ExceptionRetrievingNodeProperty", resourceCulture);
             }
@@ -657,7 +657,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Default Load failed for Settings Model {0}. CollectionName:{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}.
         /// </summary>
-        public static string ExceptionSettingsModelLoadDefaultFailed {
+        internal static string ExceptionSettingsModelLoadDefaultFailed {
             get {
                 return ResourceManager.GetString("ExceptionSettingsModelLoadDefaultFailed", resourceCulture);
             }
@@ -666,7 +666,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Load failed for Settings Model {0}. PropertyName:{1} dataType:{2} PropertyType:{3} Value:{4}.
         /// </summary>
-        public static string ExceptionSettingsModelLoadFailed {
+        internal static string ExceptionSettingsModelLoadFailed {
             get {
                 return ResourceManager.GetString("ExceptionSettingsModelLoadFailed", resourceCulture);
             }
@@ -675,7 +675,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Save failed for Settings Model {0}. CollectionName:{1} PropertyName:{2} dataType:{3} PropertyType:{4} Value:{5}.
         /// </summary>
-        public static string ExceptionSettingsModelSaveFailed {
+        internal static string ExceptionSettingsModelSaveFailed {
             get {
                 return ResourceManager.GetString("ExceptionSettingsModelSaveFailed", resourceCulture);
             }
@@ -684,7 +684,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Could not find window &apos;SHBrowseForFolder ShellNameSpace Control&apos;..
         /// </summary>
-        public static string ExceptionSHBrowseForFolderNotFound {
+        internal static string ExceptionSHBrowseForFolderNotFound {
             get {
                 return ResourceManager.GetString("ExceptionSHBrowseForFolderNotFound", resourceCulture);
             }
@@ -693,7 +693,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Could not find window &apos;SysTreeView32&apos;..
         /// </summary>
-        public static string ExceptionSysTreeView32NotFound {
+        internal static string ExceptionSysTreeView32NotFound {
             get {
                 return ResourceManager.GetString("ExceptionSysTreeView32NotFound", resourceCulture);
             }
@@ -702,7 +702,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Trigger Error at Column index: {0}..
         /// </summary>
-        public static string ExceptionTriggerErrorAtColumnIndex {
+        internal static string ExceptionTriggerErrorAtColumnIndex {
             get {
                 return ResourceManager.GetString("ExceptionTriggerErrorAtColumnIndex", resourceCulture);
             }
@@ -711,7 +711,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Error at Trigger column index: {0}, Generator column index: {1}..
         /// </summary>
-        public static string ExceptionTriggerGeneratorErrorAtColumnIndex {
+        internal static string ExceptionTriggerGeneratorErrorAtColumnIndex {
             get {
                 return ResourceManager.GetString("ExceptionTriggerGeneratorErrorAtColumnIndex", resourceCulture);
             }
@@ -720,7 +720,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Retry number {0}. Ignoring Exception: {1}.
         /// </summary>
-        public static string IgnoreOnException {
+        internal static string IgnoreOnException {
             get {
                 return ResourceManager.GetString("IgnoreOnException", resourceCulture);
             }
@@ -729,7 +729,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Database path: {0}..
         /// </summary>
-        public static string LabelDatabasePath {
+        internal static string LabelDatabasePath {
             get {
                 return ResourceManager.GetString("LabelDatabasePath", resourceCulture);
             }
@@ -738,7 +738,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Frame file: {0}, Moniker: {1}..
         /// </summary>
-        public static string LabelFrameFileAndMoniker {
+        internal static string LabelFrameFileAndMoniker {
             get {
                 return ResourceManager.GetString("LabelFrameFileAndMoniker", resourceCulture);
             }
@@ -751,7 +751,7 @@ namespace BlackbirdSql.Core.Properties {
         ///      Total time (excl. SwitchToMainThread): {3}ms.
         ///.
         /// </summary>
-        public static string LoadTimeStatistics {
+        internal static string LoadTimeStatistics {
             get {
                 return ResourceManager.GetString("LoadTimeStatistics", resourceCulture);
             }
@@ -760,7 +760,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to NewQuery.
         /// </summary>
-        public static string NewQueryBaseName {
+        internal static string NewQueryBaseName {
             get {
                 return ResourceManager.GetString("NewQueryBaseName", resourceCulture);
             }
@@ -769,7 +769,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The properties are not extensible..
         /// </summary>
-        public static string Properties_NotExtensible {
+        internal static string Properties_NotExtensible {
             get {
                 return ResourceManager.GetString("Properties_NotExtensible", resourceCulture);
             }
@@ -778,7 +778,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to [{0}] {1}.
         /// </summary>
-        public static string RctEdmDatasetFormat {
+        internal static string RctEdmDatasetFormat {
             get {
                 return ResourceManager.GetString("RctEdmDatasetFormat", resourceCulture);
             }
@@ -787,7 +787,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}  {1}.
         /// </summary>
-        public static string RctGlyphFormat {
+        internal static string RctGlyphFormat {
             get {
                 return ResourceManager.GetString("RctGlyphFormat", resourceCulture);
             }
@@ -796,7 +796,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to  {0}   {1}.
         /// </summary>
-        public static string RctGlyphFormat2 {
+        internal static string RctGlyphFormat2 {
             get {
                 return ResourceManager.GetString("RctGlyphFormat2", resourceCulture);
             }
@@ -805,7 +805,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to [{0}] {1}.
         /// </summary>
-        public static string RctProjectDatasetNameFormat {
+        internal static string RctProjectDatasetNameFormat {
             get {
                 return ResourceManager.GetString("RctProjectDatasetNameFormat", resourceCulture);
             }
@@ -814,7 +814,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}.
         /// </summary>
-        public static string RctUtilityDatasetNameFormat {
+        internal static string RctUtilityDatasetNameFormat {
             get {
                 return ResourceManager.GetString("RctUtilityDatasetNameFormat", resourceCulture);
             }
@@ -823,7 +823,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Remove failed. Property {0} does not exist..
         /// </summary>
-        public static string Remove_Failed_Property_NotFound {
+        internal static string Remove_Failed_Property_NotFound {
             get {
                 return ResourceManager.GetString("Remove_Failed_Property_NotFound", resourceCulture);
             }
@@ -832,7 +832,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Resource not found: {0}.
         /// </summary>
-        public static string ResourceNotFound {
+        internal static string ResourceNotFound {
             get {
                 return ResourceManager.GetString("ResourceNotFound", resourceCulture);
             }
@@ -841,7 +841,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Retry number {0}. Delaying {1} ms before next retry. Exception: {2}.
         /// </summary>
-        public static string RetryOnException {
+        internal static string RetryOnException {
             get {
                 return ResourceManager.GetString("RetryOnException", resourceCulture);
             }
@@ -850,7 +850,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This field cannot be empty.
         /// </summary>
-        public static string TextBoxRequiredFieldToolTip {
+        internal static string TextBoxRequiredFieldToolTip {
             get {
                 return ResourceManager.GetString("TextBoxRequiredFieldToolTip", resourceCulture);
             }
@@ -859,7 +859,7 @@ namespace BlackbirdSql.Core.Properties {
         /// <summary>
         ///   Looks up a localized string similar to FAILED to find window frame for mkDocument: {0}.
         /// </summary>
-        public static string WarningWindowFrameForDocumentNotFound {
+        internal static string WarningWindowFrameForDocumentNotFound {
             get {
                 return ResourceManager.GetString("WarningWindowFrameForDocumentNotFound", resourceCulture);
             }

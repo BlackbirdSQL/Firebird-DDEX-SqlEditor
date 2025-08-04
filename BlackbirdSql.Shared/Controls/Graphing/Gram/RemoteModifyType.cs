@@ -15,13 +15,13 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RemoteModifyType : RemoteType
+internal class RemoteModifyType : RemoteType
 {
 	private ScalarExpressionType setPredicateField;
 
 	private RelOpType relOpField;
 
-	public ScalarExpressionType SetPredicate
+	internal ScalarExpressionType SetPredicate
 	{
 		get
 		{
@@ -33,7 +33,7 @@ public class RemoteModifyType : RemoteType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{

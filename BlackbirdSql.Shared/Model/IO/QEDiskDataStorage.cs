@@ -8,7 +8,7 @@ using BlackbirdSql.Shared.Properties;
 
 namespace BlackbirdSql.Shared.Model.IO;
 
-public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataStorage, IDisposable
+internal class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataStorage, IDisposable
 {
 	private bool _IsClosed = true;
 
@@ -47,12 +47,12 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDataS
 		return !cancelToken.Cancelled();
 	}
 
-	public new bool IsClosed()
+	internal new bool IsClosed()
 	{
 		return _IsClosed;
 	}
 
-	public new async Task<bool> StartStoringDataAsync(CancellationToken cancelToken)
+	internal new async Task<bool> StartStoringDataAsync(CancellationToken cancelToken)
 	{
 		if (!_IsClosed)
 		{

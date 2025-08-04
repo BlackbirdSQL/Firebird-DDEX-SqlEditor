@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ConvertType
+internal class ConvertType
 {
 	private ScalarExpressionType styleField;
 
@@ -38,7 +38,7 @@ public class ConvertType
 
 	private bool implicitField;
 
-	public ScalarExpressionType Style
+	internal ScalarExpressionType Style
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class ConvertType
 		}
 	}
 
-	public ScalarType ScalarOperator
+	internal ScalarType ScalarOperator
 	{
 		get
 		{
@@ -63,7 +63,7 @@ public class ConvertType
 	}
 
 	[XmlAttribute]
-	public string DataType
+	internal string DataType
 	{
 		get
 		{
@@ -76,7 +76,7 @@ public class ConvertType
 	}
 
 	[XmlAttribute]
-	public int Length
+	internal int Length
 	{
 		get
 		{
@@ -89,7 +89,7 @@ public class ConvertType
 	}
 
 	[XmlIgnore]
-	public bool LengthSpecified
+	internal bool LengthSpecified
 	{
 		get
 		{
@@ -102,7 +102,7 @@ public class ConvertType
 	}
 
 	[XmlAttribute]
-	public int Precision
+	internal int Precision
 	{
 		get
 		{
@@ -115,7 +115,7 @@ public class ConvertType
 	}
 
 	[XmlIgnore]
-	public bool PrecisionSpecified
+	internal bool PrecisionSpecified
 	{
 		get
 		{
@@ -128,7 +128,7 @@ public class ConvertType
 	}
 
 	[XmlAttribute]
-	public int Scale
+	internal int Scale
 	{
 		get
 		{
@@ -141,7 +141,7 @@ public class ConvertType
 	}
 
 	[XmlIgnore]
-	public bool ScaleSpecified
+	internal bool ScaleSpecified
 	{
 		get
 		{
@@ -154,7 +154,7 @@ public class ConvertType
 	}
 
 	[XmlAttribute("Style")]
-	public int Style1
+	internal int Style1
 	{
 		get
 		{
@@ -167,7 +167,7 @@ public class ConvertType
 	}
 
 	[XmlAttribute]
-	public bool Implicit
+	internal bool Implicit
 	{
 		get
 		{

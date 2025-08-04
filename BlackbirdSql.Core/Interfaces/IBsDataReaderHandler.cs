@@ -8,7 +8,7 @@ using BlackbirdSql.Core.Enums;
 namespace BlackbirdSql.Core.Interfaces;
 
 
-public interface IBsDataReaderHandler
+internal interface IBsDataReaderHandler
 {
 
 	EnScriptExecutionResult HandleExecutionExceptions(Exception exception, int statementIndex, CancellationToken cancelToken);

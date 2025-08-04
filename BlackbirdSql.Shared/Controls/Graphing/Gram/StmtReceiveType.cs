@@ -13,12 +13,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StmtReceiveType : AbstractStmtInfoType
+internal class StmtReceiveType : AbstractStmtInfoType
 {
 	private ReceivePlanTypeOperation[] receivePlanField;
 
 	[XmlArrayItem("Operation", IsNullable = false)]
-	public ReceivePlanTypeOperation[] ReceivePlan
+	internal ReceivePlanTypeOperation[] ReceivePlan
 	{
 		get
 		{

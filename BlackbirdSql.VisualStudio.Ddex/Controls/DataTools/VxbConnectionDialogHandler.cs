@@ -899,12 +899,12 @@ public class VxbConnectionDialogHandler : IBsConnectionDialogHandler
 
 
 	// =========================================================================================================
-	#region						Sub-Classes - VxbConnectionDialogHandler
+	#region							Nested types - VxbConnectionDialogHandler
 	// =========================================================================================================
 
 
 	// ---------------------------------------------------------------------------------
-	//					   Internal Class VxiConnectionDialogContainer
+	//					   VxiConnectionDialogContainer Nested Class
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Orignal class: Microsoft.VisualStudio.Data.HostServices.Environment.ConnectionDialogContainer.
@@ -1265,7 +1265,7 @@ public class VxbConnectionDialogHandler : IBsConnectionDialogHandler
 
 
 	// ---------------------------------------------------------------------------------
-	//						Internal Class VxiDataConnectionUIControl
+	//						VxiDataConnectionUIControl Sub-class
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Orignal name: UIDataConnectionUIControl.
@@ -1309,7 +1309,7 @@ public class VxbConnectionDialogHandler : IBsConnectionDialogHandler
 
 
 	// ---------------------------------------------------------------------------------
-	//					   Internal Class VxiDataConnectionUIProperties
+	//					   VxiDataConnectionUIProperties Sub-class
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Orignal name: UIDataConnectionProperties.
@@ -1528,7 +1528,7 @@ public class VxbConnectionDialogHandler : IBsConnectionDialogHandler
 	}
 
 
-	#endregion Sub-Classes
+	#endregion Nested types
 
 
 }

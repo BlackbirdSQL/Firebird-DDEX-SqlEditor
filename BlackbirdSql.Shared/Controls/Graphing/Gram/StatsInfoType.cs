@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StatsInfoType
+internal class StatsInfoType
 {
 	private string databaseField;
 
@@ -33,7 +33,7 @@ public class StatsInfoType
 	private bool lastUpdateFieldSpecified;
 
 	[XmlAttribute]
-	public string Database
+	internal string Database
 	{
 		get
 		{
@@ -46,7 +46,7 @@ public class StatsInfoType
 	}
 
 	[XmlAttribute]
-	public string Schema
+	internal string Schema
 	{
 		get
 		{
@@ -59,7 +59,7 @@ public class StatsInfoType
 	}
 
 	[XmlAttribute]
-	public string Table
+	internal string Table
 	{
 		get
 		{
@@ -72,7 +72,7 @@ public class StatsInfoType
 	}
 
 	[XmlAttribute]
-	public string StatisticsField
+	internal string StatisticsField
 	{
 		get
 		{
@@ -85,7 +85,7 @@ public class StatsInfoType
 	}
 
 	[XmlAttribute]
-	public ulong ModificationCount
+	internal ulong ModificationCount
 	{
 		get
 		{
@@ -98,7 +98,7 @@ public class StatsInfoType
 	}
 
 	[XmlAttribute]
-	public double SamplingPercent
+	internal double SamplingPercent
 	{
 		get
 		{
@@ -111,7 +111,7 @@ public class StatsInfoType
 	}
 
 	[XmlAttribute]
-	public DateTime LastUpdate
+	internal DateTime LastUpdate
 	{
 		get
 		{
@@ -124,7 +124,7 @@ public class StatsInfoType
 	}
 
 	[XmlIgnore]
-	public bool LastUpdateSpecified
+	internal bool LastUpdateSpecified
 	{
 		get
 		{

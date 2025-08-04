@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ParameterSensitivePredicateType
+internal class ParameterSensitivePredicateType
 {
 	private StatsInfoType[] statisticsInfoField;
 
@@ -25,7 +25,7 @@ public class ParameterSensitivePredicateType
 	private double highBoundaryField;
 
 	[XmlElement("StatisticsInfo")]
-	public StatsInfoType[] StatisticsInfo
+	internal StatsInfoType[] StatisticsInfo
 	{
 		get
 		{
@@ -37,7 +37,7 @@ public class ParameterSensitivePredicateType
 		}
 	}
 
-	public ScalarExpressionType Predicate
+	internal ScalarExpressionType Predicate
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class ParameterSensitivePredicateType
 	}
 
 	[XmlAttribute]
-	public double LowBoundary
+	internal double LowBoundary
 	{
 		get
 		{
@@ -63,7 +63,7 @@ public class ParameterSensitivePredicateType
 	}
 
 	[XmlAttribute]
-	public double HighBoundary
+	internal double HighBoundary
 	{
 		get
 		{

@@ -6,7 +6,7 @@
 namespace BlackbirdSql.Shared.Interfaces;
 
 
-public interface IBsLanguagePackage
+internal interface IBsLanguagePackage
 {
 	IBsLanguageService LanguageSvc { get; }
 }

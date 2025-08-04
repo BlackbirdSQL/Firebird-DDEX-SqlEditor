@@ -93,7 +93,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>
 
 
 	/// <summary>
-	/// Returns an enumerable of all internal store describers in the <see cref="DescriberDictionary"/>.
+	/// Returns an enumerable of all public store describers in the <see cref="DescriberDictionary"/>.
 	/// A <see cref="Describer"/> is a detailed class equivalent of a descriptor. The database engine's
 	/// <see cref="DescriberDictionary"/> is defined in the native database
 	/// <see cref="IBsNativeDatabaseEngine"/> service.

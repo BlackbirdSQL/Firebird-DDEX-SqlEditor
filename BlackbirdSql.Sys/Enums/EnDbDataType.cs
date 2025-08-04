@@ -22,7 +22,7 @@
 namespace BlackbirdSql.Sys.Enums;
 
 
-public enum EnDbDataType
+internal enum EnDbDataType
 {
 	Array,
 	BigInt,

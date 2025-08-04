@@ -7,9 +7,9 @@ using System.Globalization;
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
 [TypeConverter(typeof(ExpandableObjectConverter))]
-public class MemGrantRunTimeCounters : RunTimeCounters
+internal class MemGrantRunTimeCounters : RunTimeCounters
 {
-	public override string ToString()
+	internal override string ToString()
 	{
 		ulong num = base.TotalCounters;
 		if (base.NumOfCounters > 1)

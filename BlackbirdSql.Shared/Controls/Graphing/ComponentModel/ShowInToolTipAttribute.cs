@@ -10,15 +10,15 @@ namespace BlackbirdSql.Shared.Controls.Graphing.ComponentModel;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 
 
-public sealed class ShowInToolTipAttribute : Attribute
+internal sealed class ShowInToolTipAttribute : Attribute
 {
 	private bool value = true;
 
 	private bool longString;
 
-	public bool Value => value;
+	internal bool Value => value;
 
-	public bool LongString
+	internal bool LongString
 	{
 		get
 		{

@@ -1,5 +1,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.AuthoringScope
+
 using System;
 using System.Collections.Generic;
 using Babel;
@@ -17,24 +18,57 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.LanguageExtension.Ctl;
 
 
-internal class LsbAuthoringScope : AuthoringScope
+// =========================================================================================================
+//
+//										LsbAuthoringScope Class
+//
+/// <summary>
+/// Language service AuthoringScope implementation.
+/// </summary>
+// =========================================================================================================
+public class LsbAuthoringScope : AuthoringScope
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - LsbAuthoringScope
+	// ---------------------------------------------------------------------------------
+
 
 	public LsbAuthoringScope(ParseResult parseResult, MetadataDisplayInfoProvider displayInfoProvider, LsbSource source)
 	{
+		Evs.Trace(typeof(LsbAuthoringScope), ".ctor");
+
 		_ParseResult = parseResult;
 		_DisplayInfoProvider = displayInfoProvider;
 		_Source = source;
 	}
 
 
+	#endregion Constructors / Destructors
 
 
-	private readonly ParseResult _ParseResult;
+
+
+
+	// =========================================================================================================
+	#region Fields - LsbAuthoringScope
+	// =========================================================================================================
+
 
 	private readonly MetadataDisplayInfoProvider _DisplayInfoProvider;
-
+	private readonly ParseResult _ParseResult;
 	private readonly LsbSource _Source;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - LsbAuthoringScope
+	// =========================================================================================================
 
 
 	public override string GetDataTipText(int line, int col, out TextSpan span)
@@ -68,7 +102,9 @@ internal class LsbAuthoringScope : AuthoringScope
 		return result;
 	}
 
-	public override Microsoft.VisualStudio.Package.Declarations GetDeclarations(IVsTextView view,
+
+
+	public override Declarations GetDeclarations(IVsTextView view,
 		int line, int col, Microsoft.VisualStudio.Package.TokenInfo info, ParseReason reason)
 	{
 		switch (reason)
@@ -80,7 +116,7 @@ internal class LsbAuthoringScope : AuthoringScope
 			case ParseReason.MethodTip:
 				LsbSource source = LanguageExtensionPackage.Instance.LsbLanguageSvc.GetSource(view) as LsbSource;
 
-				// TraceUtils.Trace(GetType(), "GetDeclarations()", "GetDeclarations() started... (ThreadName = " + Thread.CurrentThread.Name + ")");
+				Evs.Trace(GetType(), nameof(GetDeclarations), "GetDeclarations() started...");
 				LsbDeclarations declarations;
 				if (source.CompletionSet.IsDisplayed)
 				{
@@ -105,25 +141,35 @@ internal class LsbAuthoringScope : AuthoringScope
 				}
 				if (LsbLanguageServiceTestEvents.Instance.EnableTestEvents)
 				{
-					// TraceUtils.Trace(GetType(), "GetDeclarations()", "raising DeclarationsRequestedEvent (ThreadName = " + Thread.CurrentThread.Name + ")");
+					Evs.Trace(GetType(), nameof(GetDeclarations), "raising DeclarationsRequestedEvent");
 					LsbLanguageServiceTestEvents.Instance.RaiseDeclarationsRequestedEvent(declarations, view, line, col, info, reason);
-					// TraceUtils.Trace(GetType(), "GetDeclarations()", "raised DeclarationsRequestedEvent (ThreadName = " + Thread.CurrentThread.Name + ")");
+					Evs.Trace(GetType(), nameof(GetDeclarations), "raised DeclarationsRequestedEvent");
 				}
-				// TraceUtils.Trace(GetType(), "GetDeclarations()", "GetDeclarations() ending  (ThreadName = " + Thread.CurrentThread.Name + ")");
+
+				Evs.Trace(GetType(), nameof(GetDeclarations), "GetDeclarations() ending");
+
 				return declarations;
 			default:
 				throw new ArgumentOutOfRangeException("reason");
 		}
 	}
 
-	public override Microsoft.VisualStudio.Package.Methods GetMethods(int line, int col, string name)
+
+
+	public override Methods GetMethods(int line, int col, string name)
 	{
 		return new LsbMethods(Resolver.FindMethods(_ParseResult, line + 1, col + 2, _DisplayInfoProvider));
 	}
+
+
 
 	public override string Goto(VSConstants.VSStd97CmdID cmd, IVsTextView textView, int line, int col, out TextSpan span)
 	{
 		span = default;
 		return null;
 	}
+
+
+	#endregion Methods
+
 }

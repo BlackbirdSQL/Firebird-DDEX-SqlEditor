@@ -19,7 +19,7 @@ namespace BlackbirdSql.Shared.Model.QueryExecution;
 //										TextOrFileBatchConsumer Class
 //
 // =========================================================================================================
-public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
+internal sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 {
 
 	// ---------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 	// =========================================================================================================
 
 
-	public char ColumnsDelimiter
+	internal char ColumnsDelimiter
 	{
 		get
 		{
@@ -101,7 +101,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 		}
 	}
 
-	public bool PrintColumnHeaders
+	internal bool PrintColumnHeaders
 	{
 		get
 		{
@@ -113,7 +113,7 @@ public sealed class TextOrFileBatchConsumer : AbstractBatchConsumer
 		}
 	}
 
-	public bool RightAlignNumerics
+	internal bool RightAlignNumerics
 	{
 		get
 		{

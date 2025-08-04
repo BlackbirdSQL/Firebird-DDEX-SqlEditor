@@ -7,7 +7,7 @@ using System.Data;
 
 namespace BlackbirdSql.Sys.Interfaces;
 
-public interface IBsQueryManager : IDisposable
+internal interface IBsQueryManager : IDisposable
 {
 	IDbConnection DataConnection { get; }
 	ConnectionState DataConnectionState { get; }

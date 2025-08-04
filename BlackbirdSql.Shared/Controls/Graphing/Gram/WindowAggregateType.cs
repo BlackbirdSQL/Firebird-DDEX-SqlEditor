@@ -14,11 +14,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class WindowAggregateType : RelOpBaseType
+internal class WindowAggregateType : RelOpBaseType
 {
 	private RelOpType relOpField;
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{

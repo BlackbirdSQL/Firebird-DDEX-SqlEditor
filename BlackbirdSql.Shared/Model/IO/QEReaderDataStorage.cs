@@ -16,7 +16,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposable
+internal sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposable
 {
 	private const int C_ColumnSizeIndex = 2;
 
@@ -34,7 +34,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 
 	private int _MaxXmlCharsToStore = -1;
 
-	public StorageDataReader StorageReader => _StorageReader;
+	internal StorageDataReader StorageReader => _StorageReader;
 
 	public int MaxCharsToStore
 	{
@@ -82,7 +82,7 @@ public sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDisposa
 		_DataStorageEnabled = true;
 	}
 
-	public async Task<bool> StartConsumingDataWithoutStoringAsync(CancellationToken canceltoken)
+	internal async Task<bool> StartConsumingDataWithoutStoringAsync(CancellationToken canceltoken)
 	{
 		// Evs.Trace(GetType(), "QEDiskDataStorage.StartConsumingDataWithoutStoring", "", null);
 		if (_StorageReader == null)

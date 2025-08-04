@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class GetType : RelOpBaseType
+internal class GetType : RelOpBaseType
 {
 	private ColumnReferenceType[] bookmarksField;
 
@@ -49,7 +49,7 @@ public class GetType : RelOpBaseType
 	private bool isRoundRobinFieldSpecified;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] Bookmarks
+	internal ColumnReferenceType[] Bookmarks
 	{
 		get
 		{
@@ -61,7 +61,7 @@ public class GetType : RelOpBaseType
 		}
 	}
 
-	public OutputColumnsType OutputColumns
+	internal OutputColumnsType OutputColumns
 	{
 		get
 		{
@@ -74,7 +74,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlArrayItem("ScalarOperator", IsNullable = false)]
-	public ScalarType[] GeneratedData
+	internal ScalarType[] GeneratedData
 	{
 		get
 		{
@@ -87,7 +87,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -100,7 +100,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public int NumRows
+	internal int NumRows
 	{
 		get
 		{
@@ -113,7 +113,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool NumRowsSpecified
+	internal bool NumRowsSpecified
 	{
 		get
 		{
@@ -126,7 +126,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsExternal
+	internal bool IsExternal
 	{
 		get
 		{
@@ -139,7 +139,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsExternalSpecified
+	internal bool IsExternalSpecified
 	{
 		get
 		{
@@ -152,7 +152,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsDistributed
+	internal bool IsDistributed
 	{
 		get
 		{
@@ -165,7 +165,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsDistributedSpecified
+	internal bool IsDistributedSpecified
 	{
 		get
 		{
@@ -178,7 +178,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsHashDistributed
+	internal bool IsHashDistributed
 	{
 		get
 		{
@@ -191,7 +191,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsHashDistributedSpecified
+	internal bool IsHashDistributedSpecified
 	{
 		get
 		{
@@ -204,7 +204,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsReplicated
+	internal bool IsReplicated
 	{
 		get
 		{
@@ -217,7 +217,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsReplicatedSpecified
+	internal bool IsReplicatedSpecified
 	{
 		get
 		{
@@ -230,7 +230,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsRoundRobin
+	internal bool IsRoundRobin
 	{
 		get
 		{
@@ -243,7 +243,7 @@ public class GetType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsRoundRobinSpecified
+	internal bool IsRoundRobinSpecified
 	{
 		get
 		{

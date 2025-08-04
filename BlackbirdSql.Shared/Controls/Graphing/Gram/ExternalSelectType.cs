@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ExternalSelectType : RelOpBaseType
+internal class ExternalSelectType : RelOpBaseType
 {
 	private RelOpType[] relOpField;
 
@@ -35,7 +35,7 @@ public class ExternalSelectType : RelOpBaseType
 	private bool isFullFieldSpecified;
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -48,7 +48,7 @@ public class ExternalSelectType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string MaterializeOperation
+	internal string MaterializeOperation
 	{
 		get
 		{
@@ -61,7 +61,7 @@ public class ExternalSelectType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string DistributionType
+	internal string DistributionType
 	{
 		get
 		{
@@ -74,7 +74,7 @@ public class ExternalSelectType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsDistributed
+	internal bool IsDistributed
 	{
 		get
 		{
@@ -87,7 +87,7 @@ public class ExternalSelectType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsDistributedSpecified
+	internal bool IsDistributedSpecified
 	{
 		get
 		{
@@ -100,7 +100,7 @@ public class ExternalSelectType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsExternal
+	internal bool IsExternal
 	{
 		get
 		{
@@ -113,7 +113,7 @@ public class ExternalSelectType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsExternalSpecified
+	internal bool IsExternalSpecified
 	{
 		get
 		{
@@ -126,7 +126,7 @@ public class ExternalSelectType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsFull
+	internal bool IsFull
 	{
 		get
 		{
@@ -139,7 +139,7 @@ public class ExternalSelectType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsFullSpecified
+	internal bool IsFullSpecified
 	{
 		get
 		{

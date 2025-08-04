@@ -9,7 +9,7 @@ using BlackbirdSql.Shared.Controls.Grid;
 namespace BlackbirdSql.Shared.Controls.Results;
 
 
-public class StatisticsDlgGridControl : DlgGridControl
+internal class StatisticsDlgGridControl : DlgGridControl
 {
 	private SolidBrush _bkBrush;
 
@@ -51,7 +51,7 @@ public class StatisticsDlgGridControl : DlgGridControl
 		}
 	}
 
-	public void SetBkAndForeColors(Color bkColor, Color foreColor)
+	internal void SetBkAndForeColors(Color bkColor, Color foreColor)
 	{
 		if (_bkBrush != null)
 		{
@@ -72,7 +72,7 @@ public class StatisticsDlgGridControl : DlgGridControl
 		}
 	}
 
-	public void SetSelectedCellColor(Color selectedCellFocusedColor)
+	internal void SetSelectedCellColor(Color selectedCellFocusedColor)
 	{
 		_selectedCellBrush?.Dispose();
 		_selectedCellBrush = new SolidBrush(selectedCellFocusedColor);
@@ -82,7 +82,7 @@ public class StatisticsDlgGridControl : DlgGridControl
 		}
 	}
 
-	public void SetInactiveSelectedCellColor(Color inactiveSelectedCellFocusedColor)
+	internal void SetInactiveSelectedCellColor(Color inactiveSelectedCellFocusedColor)
 	{
 		_InactiveSelectedCellBrush?.Dispose();
 		_InactiveSelectedCellBrush = new SolidBrush(inactiveSelectedCellFocusedColor);
@@ -92,7 +92,7 @@ public class StatisticsDlgGridControl : DlgGridControl
 		}
 	}
 
-	public void SetHighlightedCellColor(Color highlightedCellColor)
+	internal void SetHighlightedCellColor(Color highlightedCellColor)
 	{
 		_highlightedCellBrush?.Dispose();
 		_highlightedCellBrush = new SolidBrush(highlightedCellColor);

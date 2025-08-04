@@ -26,7 +26,7 @@ namespace BlackbirdSql.Shared.Ctl;
 /// Base class service for handling open query commands.
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractDesignerServices
+internal abstract class AbstractDesignerServices
 {
 
 	// ----------------------------------------------------------
@@ -64,7 +64,7 @@ public abstract class AbstractDesignerServices
 	// =====================================================================================================
 
 
-	public static event EventHandler<BeforeOpenDocumentEventArgs> SBeforeOpenDocumentEvent
+	internal static event EventHandler<BeforeOpenDocumentEventArgs> SBeforeOpenDocumentEvent
 	{
 		add { _S_BeforeOpenDocumentEvent += value; }
 		remove { _S_BeforeOpenDocumentEvent -= value; }
@@ -99,7 +99,7 @@ public abstract class AbstractDesignerServices
 
 
 
-	public static void SetDocumentReadOnly(uint docCookie, bool readOnly)
+	internal static void SetDocumentReadOnly(uint docCookie, bool readOnly)
 	{
 		object docData = RdtManager.GetDocDataFromCookie(docCookie);
 

@@ -11,7 +11,7 @@ using BlackbirdSql.Shared.Ctl.Config;
 namespace BlackbirdSql.Shared.Controls.Widgets;
 
 
-public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
+internal sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 {
 	// private static string TName = typeof(AnimatedStatusStripItem).Name;
 
@@ -80,7 +80,7 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 		_VsFontColorPreferences.PreferencesChangedEvent += VsFontColorPreferences_PreferencesChanged;
 	}
 
-	public void SetImages(Image[] images, bool forceWhiteBg)
+	internal void SetImages(Image[] images, bool forceWhiteBg)
 	{
 		this._Images = images;
 		CurrentImageIndex = 0;
@@ -88,7 +88,7 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 		parentStatusStrip.Invalidate(invalidateChildren: true);
 	}
 
-	public void SetOneImage(Image image)
+	internal void SetOneImage(Image image)
 	{
 		StopAnimate();
 		_Images = [image];
@@ -97,13 +97,13 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 		parentStatusStrip.Invalidate(invalidateChildren: true);
 	}
 
-	public void SetParent(StatusStrip parent)
+	internal void SetParent(StatusStrip parent)
 	{
 		parentStatusStrip = parent;
 		parentStatusStrip.Font = VsFontColorPreferences.EnvironmentFont;
 	}
 
-	public void StartAnimate()
+	internal void StartAnimate()
 	{
 		invalidateRect.Height = parentStatusStrip.Height;
 		if (_Images != null && _Images.Length != 0)
@@ -117,18 +117,18 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 		_Timer.Start();
 	}
 
-	public void StopAnimate()
+	internal void StopAnimate()
 	{
 		if (_Timer.Enabled)
 			_Timer.Stop();
 	}
 
-	public void BeginInit()
+	internal void BeginInit()
 	{
 		initializing = true;
 	}
 
-	public void EndInit()
+	internal void EndInit()
 	{
 		initializing = false;
 	}

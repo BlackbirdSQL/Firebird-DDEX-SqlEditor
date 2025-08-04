@@ -8,7 +8,7 @@ using BlackbirdSql.Shared.Properties;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public sealed class Operation
+internal sealed class Operation
 {
 	private readonly string name;
 
@@ -32,9 +32,9 @@ public sealed class Operation
 
 	private static readonly Operation unknown = new Operation("", "Unknown", "UnknownDescription", "Result_32x.ico", ".swb.showplan.result.f1");
 
-	public string Name => name;
+	internal string Name => name;
 
-	public string DisplayName
+	internal string DisplayName
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public sealed class Operation
 		}
 	}
 
-	public string Description
+	internal string Description
 	{
 		get
 		{
@@ -62,7 +62,7 @@ public sealed class Operation
 		}
 	}
 
-	public Image Image
+	internal Image Image
 	{
 		get
 		{
@@ -85,11 +85,11 @@ public sealed class Operation
 		}
 	}
 
-	public string HelpKeyword => helpKeyword;
+	internal string HelpKeyword => helpKeyword;
 
-	public Type DisplayNodeType => displayNodeType;
+	internal Type DisplayNodeType => displayNodeType;
 
-	public static Operation Unknown => unknown;
+	internal static Operation Unknown => unknown;
 
 	public Operation(string name, string displayNameKey)
 		: this(name, displayNameKey, null, null, null)
@@ -111,7 +111,7 @@ public sealed class Operation
 		this.displayNodeType = displayNodeType;
 	}
 
-	public static Operation CreateUnknown(string operationDisplayName, string iconName)
+	internal static Operation CreateUnknown(string operationDisplayName, string iconName)
 	{
 		return new Operation(operationDisplayName, null, null, iconName, Unknown.HelpKeyword);
 	}

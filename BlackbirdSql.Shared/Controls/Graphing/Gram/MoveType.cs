@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class MoveType : RelOpBaseType
+internal class MoveType : RelOpBaseType
 {
 	private ColumnReferenceType[] distributionKeyField;
 
@@ -38,7 +38,7 @@ public class MoveType : RelOpBaseType
 	private bool isFullFieldSpecified;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] DistributionKey
+	internal ColumnReferenceType[] DistributionKey
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class MoveType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -64,7 +64,7 @@ public class MoveType : RelOpBaseType
 	}
 
 	[XmlAttribute("MoveType")]
-	public string MoveType1
+	internal string MoveType1
 	{
 		get
 		{
@@ -77,7 +77,7 @@ public class MoveType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string DistributionType
+	internal string DistributionType
 	{
 		get
 		{
@@ -90,7 +90,7 @@ public class MoveType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsDistributed
+	internal bool IsDistributed
 	{
 		get
 		{
@@ -103,7 +103,7 @@ public class MoveType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsDistributedSpecified
+	internal bool IsDistributedSpecified
 	{
 		get
 		{
@@ -116,7 +116,7 @@ public class MoveType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsExternal
+	internal bool IsExternal
 	{
 		get
 		{
@@ -129,7 +129,7 @@ public class MoveType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsExternalSpecified
+	internal bool IsExternalSpecified
 	{
 		get
 		{
@@ -142,7 +142,7 @@ public class MoveType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsFull
+	internal bool IsFull
 	{
 		get
 		{
@@ -155,7 +155,7 @@ public class MoveType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsFullSpecified
+	internal bool IsFullSpecified
 	{
 		get
 		{

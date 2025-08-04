@@ -11,7 +11,7 @@ internal sealed class FilterTypeParser : RelOpBaseTypeParser
 {
 	private static FilterTypeParser filterTypeParser;
 
-	public new static FilterTypeParser Instance
+	internal new static FilterTypeParser Instance
 	{
 		get
 		{
@@ -24,7 +24,7 @@ internal sealed class FilterTypeParser : RelOpBaseTypeParser
 	{
 	}
 
-	public override void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
+	internal override void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
 	{
 		base.ParseProperties(parsedItem, targetPropertyBag, context);
 		if ((parsedItem as FilterType).StartupExpression && targetPropertyBag["Predicate"] is PropertyValue propertyValue)

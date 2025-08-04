@@ -41,7 +41,7 @@ internal class VsPackageRegistrationAttribute: RegistrationAttribute
 		Key key = null;
 		Key key2 = null;
 		Key key3;
-		ExtensionData.RegistryValue registryValue;
+		ExtensionData.RegistryValueI registryValue;
 
 		try
 		{

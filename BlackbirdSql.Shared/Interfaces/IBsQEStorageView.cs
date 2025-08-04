@@ -13,7 +13,7 @@ using System;
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution
 namespace BlackbirdSql.Shared.Interfaces
 {
-	public interface IBsQEStorageView : IBsStorageView, IDisposable
+	internal interface IBsQEStorageView : IBsStorageView, IDisposable
 	{
 		int MaxNumBytesToDisplay { get; set; }
 	}

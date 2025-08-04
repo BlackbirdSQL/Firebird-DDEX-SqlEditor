@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Shared.Controls.Widgets;
 
 
-public class BarBackgroundRenderer : ToolStripProfessionalRenderer
+internal class BarBackgroundRenderer : ToolStripProfessionalRenderer
 {
 	private readonly IServiceProvider _Provider;
 

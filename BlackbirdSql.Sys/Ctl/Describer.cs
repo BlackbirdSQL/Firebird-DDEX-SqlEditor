@@ -191,7 +191,7 @@ public class Describer
 
 	/// <summary>
 	/// True if this describer is a valid browsable property else false
-	/// if it's for internal storage.
+	/// if it's for public storage.
 	/// </summary>
 	public bool IsInternalStore => (_DType & D_InternalType) > 0;
 

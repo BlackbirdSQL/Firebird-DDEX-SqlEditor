@@ -114,7 +114,7 @@ public interface IBsEditorTransientSettings
 	bool WithStatisticsIO { get; set; }
 	bool WithStatisticsProfile { get; set; }
 	bool TtsEnabled { get; set; }
-	public bool SuppressProviderMessageHeaders { get; set; }
+	internal bool SuppressProviderMessageHeaders { get; set; }
 
 
 	#endregion Property Accessors

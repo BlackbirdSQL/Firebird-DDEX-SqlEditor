@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ConditionalType
+internal class ConditionalType
 {
 	private ScalarExpressionType conditionField;
 
@@ -22,7 +22,7 @@ public class ConditionalType
 
 	private ScalarExpressionType elseField;
 
-	public ScalarExpressionType Condition
+	internal ScalarExpressionType Condition
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class ConditionalType
 		}
 	}
 
-	public ScalarExpressionType Then
+	internal ScalarExpressionType Then
 	{
 		get
 		{
@@ -46,7 +46,7 @@ public class ConditionalType
 		}
 	}
 
-	public ScalarExpressionType Else
+	internal ScalarExpressionType Else
 	{
 		get
 		{

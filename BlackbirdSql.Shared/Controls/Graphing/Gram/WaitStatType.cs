@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class WaitStatType
+internal class WaitStatType
 {
 	private string waitTypeField;
 
@@ -23,7 +23,7 @@ public class WaitStatType
 	private ulong waitCountField;
 
 	[XmlAttribute]
-	public string WaitType
+	internal string WaitType
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class WaitStatType
 	}
 
 	[XmlAttribute]
-	public ulong WaitTimeMs
+	internal ulong WaitTimeMs
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class WaitStatType
 	}
 
 	[XmlAttribute]
-	public ulong WaitCount
+	internal ulong WaitCount
 	{
 		get
 		{

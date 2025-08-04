@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ColumnGroupType
+internal class ColumnGroupType
 {
 	private ColumnType[] columnField;
 
 	private EnColumnGroupTypeUsage usageField;
 
 	[XmlElement("Column")]
-	public ColumnType[] Column
+	internal ColumnType[] Column
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class ColumnGroupType
 	}
 
 	[XmlAttribute]
-	public EnColumnGroupTypeUsage Usage
+	internal EnColumnGroupTypeUsage Usage
 	{
 		get
 		{

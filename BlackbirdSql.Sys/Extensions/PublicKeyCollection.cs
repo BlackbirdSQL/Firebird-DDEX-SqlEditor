@@ -100,7 +100,7 @@ public sealed class PublicKeyCollection<TKey, TValue> : ICollection<TKey>, IEnum
 			}
 		}
 
-		internal Enumerator(PublicDictionary<TKey, TValue> dictionary)
+		public Enumerator(PublicDictionary<TKey, TValue> dictionary)
 		{
 			_Dictionary = dictionary;
 			_Index = 0;

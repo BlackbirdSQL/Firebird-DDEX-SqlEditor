@@ -18,7 +18,7 @@ using BlackbirdSql.Shared.Enums;
 namespace BlackbirdSql.Shared.Interfaces;
 
 
-public interface IBsExecutionHandler
+internal interface IBsExecutionHandler
 {
 	void SetSite(object serviceProvider);
 

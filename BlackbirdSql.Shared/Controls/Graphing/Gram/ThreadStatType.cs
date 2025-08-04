@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ThreadStatType
+internal class ThreadStatType
 {
 	private ThreadReservationType[] threadReservationField;
 
@@ -25,7 +25,7 @@ public class ThreadStatType
 	private bool usedThreadsFieldSpecified;
 
 	[XmlElement("ThreadReservation")]
-	public ThreadReservationType[] ThreadReservation
+	internal ThreadReservationType[] ThreadReservation
 	{
 		get
 		{
@@ -38,7 +38,7 @@ public class ThreadStatType
 	}
 
 	[XmlAttribute]
-	public int Branches
+	internal int Branches
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class ThreadStatType
 	}
 
 	[XmlAttribute]
-	public int UsedThreads
+	internal int UsedThreads
 	{
 		get
 		{
@@ -64,7 +64,7 @@ public class ThreadStatType
 	}
 
 	[XmlIgnore]
-	public bool UsedThreadsSpecified
+	internal bool UsedThreadsSpecified
 	{
 		get
 		{

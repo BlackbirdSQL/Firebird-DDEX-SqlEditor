@@ -6,15 +6,15 @@ using BlackbirdSql.Shared.Controls.Graphing.Gram;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public sealed class MergeColumns
+internal sealed class MergeColumns
 {
 	private readonly ColumnReferenceType[] innerSideJoinColumnsField;
 
 	private readonly ColumnReferenceType[] outerSideJoinColumnsField;
 
-	public ColumnReferenceType[] InnerSideJoinColumns => innerSideJoinColumnsField;
+	internal ColumnReferenceType[] InnerSideJoinColumns => innerSideJoinColumnsField;
 
-	public ColumnReferenceType[] OuterSideJoinColumns => outerSideJoinColumnsField;
+	internal ColumnReferenceType[] OuterSideJoinColumns => outerSideJoinColumnsField;
 
 	public MergeColumns(MergeType mergeType)
 	{

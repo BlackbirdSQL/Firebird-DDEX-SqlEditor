@@ -13,7 +13,7 @@ namespace BlackbirdSql.Shared.Exceptions;
 
 
 [Serializable]
-public class ResultsException : ApplicationException
+internal class ResultsException : ApplicationException
 {
 	public ResultsException(string errorString) : base(errorString)
 	{

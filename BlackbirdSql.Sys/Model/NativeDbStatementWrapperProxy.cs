@@ -14,7 +14,7 @@ using BlackbirdSql.Sys.Interfaces;
 namespace BlackbirdSql.Sys.Model;
 
 
-public class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
+internal class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
 {
 
 	private NativeDbStatementWrapperProxy()
@@ -26,7 +26,7 @@ public class NativeDbStatementWrapperProxy : IBsNativeDbStatementWrapper
 		_NativeObject = NativeDb.CreateDbStatementWrapper(owner, statement, index);
 	}
 
-	public static IBsNativeDbStatementWrapper CreateInstance(IBsNativeDbBatchParser owner, object statement, int index)
+	internal static IBsNativeDbStatementWrapper CreateInstance(IBsNativeDbBatchParser owner, object statement, int index)
 	{
 		return new NativeDbStatementWrapperProxy(owner, statement, index);
 	}

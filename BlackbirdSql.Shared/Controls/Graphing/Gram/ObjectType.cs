@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ObjectType
+internal class ObjectType
 {
 	private string serverField;
 
@@ -65,7 +65,7 @@ public class ObjectType
 	private bool graphWorkTableIdentifierFieldSpecified;
 
 	[XmlAttribute]
-	public string Server
+	internal string Server
 	{
 		get
 		{
@@ -78,7 +78,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public string Database
+	internal string Database
 	{
 		get
 		{
@@ -91,7 +91,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public string Schema
+	internal string Schema
 	{
 		get
 		{
@@ -104,7 +104,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public string Table
+	internal string Table
 	{
 		get
 		{
@@ -117,7 +117,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public string Index
+	internal string Index
 	{
 		get
 		{
@@ -130,7 +130,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public bool Filtered
+	internal bool Filtered
 	{
 		get
 		{
@@ -143,7 +143,7 @@ public class ObjectType
 	}
 
 	[XmlIgnore]
-	public bool FilteredSpecified
+	internal bool FilteredSpecified
 	{
 		get
 		{
@@ -156,7 +156,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public int OnlineInbuildIndex
+	internal int OnlineInbuildIndex
 	{
 		get
 		{
@@ -169,7 +169,7 @@ public class ObjectType
 	}
 
 	[XmlIgnore]
-	public bool OnlineInbuildIndexSpecified
+	internal bool OnlineInbuildIndexSpecified
 	{
 		get
 		{
@@ -182,7 +182,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public int OnlineIndexBuildMappingIndex
+	internal int OnlineIndexBuildMappingIndex
 	{
 		get
 		{
@@ -195,7 +195,7 @@ public class ObjectType
 	}
 
 	[XmlIgnore]
-	public bool OnlineIndexBuildMappingIndexSpecified
+	internal bool OnlineIndexBuildMappingIndexSpecified
 	{
 		get
 		{
@@ -208,7 +208,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public string Alias
+	internal string Alias
 	{
 		get
 		{
@@ -221,7 +221,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public int TableReferenceId
+	internal int TableReferenceId
 	{
 		get
 		{
@@ -234,7 +234,7 @@ public class ObjectType
 	}
 
 	[XmlIgnore]
-	public bool TableReferenceIdSpecified
+	internal bool TableReferenceIdSpecified
 	{
 		get
 		{
@@ -247,7 +247,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public EnIndexKindType IndexKind
+	internal EnIndexKindType IndexKind
 	{
 		get
 		{
@@ -260,7 +260,7 @@ public class ObjectType
 	}
 
 	[XmlIgnore]
-	public bool IndexKindSpecified
+	internal bool IndexKindSpecified
 	{
 		get
 		{
@@ -273,7 +273,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public EnCloneAccessScopeType CloneAccessScope
+	internal EnCloneAccessScopeType CloneAccessScope
 	{
 		get
 		{
@@ -286,7 +286,7 @@ public class ObjectType
 	}
 
 	[XmlIgnore]
-	public bool CloneAccessScopeSpecified
+	internal bool CloneAccessScopeSpecified
 	{
 		get
 		{
@@ -299,7 +299,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public EnStorageType Storage
+	internal EnStorageType Storage
 	{
 		get
 		{
@@ -312,7 +312,7 @@ public class ObjectType
 	}
 
 	[XmlIgnore]
-	public bool StorageSpecified
+	internal bool StorageSpecified
 	{
 		get
 		{
@@ -325,7 +325,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public int GraphWorkTableType
+	internal int GraphWorkTableType
 	{
 		get
 		{
@@ -338,7 +338,7 @@ public class ObjectType
 	}
 
 	[XmlIgnore]
-	public bool GraphWorkTableTypeSpecified
+	internal bool GraphWorkTableTypeSpecified
 	{
 		get
 		{
@@ -351,7 +351,7 @@ public class ObjectType
 	}
 
 	[XmlAttribute]
-	public int GraphWorkTableIdentifier
+	internal int GraphWorkTableIdentifier
 	{
 		get
 		{
@@ -364,7 +364,7 @@ public class ObjectType
 	}
 
 	[XmlIgnore]
-	public bool GraphWorkTableIdentifierSpecified
+	internal bool GraphWorkTableIdentifierSpecified
 	{
 		get
 		{

@@ -5,7 +5,7 @@ using System;
 
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsFileStreamWrapper : IDisposable
+internal interface IBsFileStreamWrapper : IDisposable
 {
 	void Init(string sFileName, bool bOpenExisting);
 

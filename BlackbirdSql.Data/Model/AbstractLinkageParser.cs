@@ -23,7 +23,7 @@ namespace BlackbirdSql.Data.Model;
 /// Handles Trigger / Generator linkage building tasks of the LinkageParser class.
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractLinkageParser : AbstruseLinkageParser
+internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 {
 
 	// ---------------------------------------------------------------------------------
@@ -280,7 +280,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// checked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public enum EnLinkStage
+	internal enum EnLinkStage
 	{
 		Start = 0,
 		GeneratorsLoaded = 1,
@@ -426,7 +426,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	public override string ConnectionString => _ConnectionString;
 
-	public bool IsTransient => _TransientRestrictions != null;
+	internal bool IsTransient => _TransientRestrictions != null;
 
 
 	/// <summary>

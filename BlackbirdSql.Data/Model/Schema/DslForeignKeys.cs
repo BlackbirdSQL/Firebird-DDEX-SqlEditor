@@ -24,7 +24,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslForeignKeys : AbstractDslSchema
 {
-	internal DslForeignKeys() : base()
+	public DslForeignKeys() : base()
 	{
 	}
 

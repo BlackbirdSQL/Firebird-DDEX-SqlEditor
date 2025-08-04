@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class AssignType
+internal class AssignType
 {
 	private object itemField;
 
@@ -26,7 +26,7 @@ public class AssignType
 
 	[XmlElement("ColumnReference", typeof(ColumnReferenceType), Order = 0)]
 	[XmlElement("ScalarOperator", typeof(ScalarType), Order = 0)]
-	public object Item
+	internal object Item
 	{
 		get
 		{
@@ -39,7 +39,7 @@ public class AssignType
 	}
 
 	[XmlElement(Order = 1)]
-	public ScalarType ScalarOperator
+	internal ScalarType ScalarOperator
 	{
 		get
 		{
@@ -52,7 +52,7 @@ public class AssignType
 	}
 
 	[XmlElement("SourceColumn", Order = 2)]
-	public ColumnReferenceType[] SourceColumn
+	internal ColumnReferenceType[] SourceColumn
 	{
 		get
 		{
@@ -65,7 +65,7 @@ public class AssignType
 	}
 
 	[XmlElement("TargetColumn", Order = 3)]
-	public ColumnReferenceType[] TargetColumn
+	internal ColumnReferenceType[] TargetColumn
 	{
 		get
 		{

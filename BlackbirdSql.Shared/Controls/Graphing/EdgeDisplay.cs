@@ -15,7 +15,7 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 {
 	private const int C_MinWidth = 1;
 
-	public const int C_MaxWidth = 12;
+	internal const int C_MaxWidth = 12;
 
 	private Size connectionOffset;
 
@@ -25,9 +25,9 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 
 	private const int C_ExtendedWidthExtra = 5;
 
-	public new BlackbirdSql.Shared.Controls.Graphing.Edge EdgeOriginal => (BlackbirdSql.Shared.Controls.Graphing.Edge)base.EdgeOriginal;
+	internal new BlackbirdSql.Shared.Controls.Graphing.Edge EdgeOriginal => (BlackbirdSql.Shared.Controls.Graphing.Edge)base.EdgeOriginal;
 
-	public virtual int Width
+	internal virtual int Width
 	{
 		get
 		{
@@ -49,13 +49,13 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 
 	protected virtual int MinWidth => C_MinWidth;
 
-	public int ExtendedWidth => Width + C_ExtendedWidthExtra;
+	internal int ExtendedWidth => Width + C_ExtendedWidthExtra;
 
-	public new BlackbirdSql.Shared.Controls.Graphing.NodeDisplay NodeFrom => base.NodeFrom as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
+	internal new BlackbirdSql.Shared.Controls.Graphing.NodeDisplay NodeFrom => base.NodeFrom as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
 
-	public new BlackbirdSql.Shared.Controls.Graphing.NodeDisplay NodeTo => base.NodeTo as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
+	internal new BlackbirdSql.Shared.Controls.Graphing.NodeDisplay NodeTo => base.NodeTo as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
 
-	public override string Name
+	internal override string Name
 	{
 		get
 		{
@@ -90,7 +90,7 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 		}
 	}
 
-	public float ArrowWidth => (float)(Width - C_MinWidth) / 2f + 2f;
+	internal float ArrowWidth => (float)(Width - C_MinWidth) / 2f + 2f;
 
 	public EdgeDisplay(GraphCtrl graphctrl, IGraphModify igraphmodify, IEdge iedgeOriginal, IEdgeDisplayProperties iedgedisplaypropertiesDefault, IList ilistDisplayable, INode inodeFrom, INode inodeTo)
 		: base(graphctrl, igraphmodify, iedgeOriginal, iedgedisplaypropertiesDefault, ilistDisplayable, inodeFrom, inodeTo)
@@ -180,7 +180,7 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 		return "";
 	}
 
-	public override bool HitTest(Point point)
+	internal override bool HitTest(Point point)
 	{
 		RectangleF[] rectangles = GetRectangles();
 		foreach (RectangleF rectangleF in rectangles)
@@ -193,7 +193,7 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 		return false;
 	}
 
-	public int GetMidpoint()
+	internal int GetMidpoint()
 	{
 		int num = Math.Min((NodeFrom.BoundingRect.Right + NodeTo.BoundingRect.Left) / 2, Math.Max(NodeTo.BoundingRect.Left - MinimalMidpointOffsetFromTheEnd, NodeTo.BoundingRect.Right + MinimalMidpointOffsetFromTheEnd));
 		foreach (NodeDisplay child in NodeFrom.Children)

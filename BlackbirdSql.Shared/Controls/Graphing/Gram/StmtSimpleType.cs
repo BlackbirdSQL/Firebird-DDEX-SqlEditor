@@ -13,7 +13,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StmtSimpleType : AbstractStmtInfoType
+internal class StmtSimpleType : AbstractStmtInfoType
 {
 	private ParameterSensitivePredicateType[] dispatcherField;
 
@@ -24,7 +24,7 @@ public class StmtSimpleType : AbstractStmtInfoType
 	private FunctionType storedProcField;
 
 	[XmlArrayItem("ParameterSensitivePredicate", IsNullable = false)]
-	public ParameterSensitivePredicateType[] Dispatcher
+	internal ParameterSensitivePredicateType[] Dispatcher
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class StmtSimpleType : AbstractStmtInfoType
 		}
 	}
 
-	public QueryPlanType QueryPlan
+	internal QueryPlanType QueryPlan
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class StmtSimpleType : AbstractStmtInfoType
 	}
 
 	[XmlElement("UDF")]
-	public FunctionType[] UDF
+	internal FunctionType[] UDF
 	{
 		get
 		{
@@ -61,7 +61,7 @@ public class StmtSimpleType : AbstractStmtInfoType
 		}
 	}
 
-	public FunctionType StoredProc
+	internal FunctionType StoredProc
 	{
 		get
 		{

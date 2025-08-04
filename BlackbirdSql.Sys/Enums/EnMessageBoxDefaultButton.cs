@@ -7,7 +7,7 @@
 
 namespace BlackbirdSql.Sys.Enums;
 
-public enum EnMessageBoxDefaultButton
+internal enum EnMessageBoxDefaultButton
 {
 	Button1,
 	Button2,

@@ -15,7 +15,7 @@ namespace BlackbirdSql;
 /// Core db constants class.
 /// </summary>
 // =========================================================================================================
-public static class CoreConstants
+internal static class CoreConstants
 {
 
 	// ---------------------------------------------------------------------------------
@@ -35,34 +35,34 @@ public static class CoreConstants
 
 
 	// External (non-paramameter) property defaults 
-	public const string C_KeyExClientVersion = "ClientVersion";
-	public const string C_KeyExMemoryUsage = "MemoryUsage";
-	public const string C_KeyExActiveUsers = "ActiveUsers";
+	internal const string C_KeyExClientVersion = "ClientVersion";
+	internal const string C_KeyExMemoryUsage = "MemoryUsage";
+	internal const string C_KeyExActiveUsers = "ActiveUsers";
 
 
 	// Extended property descriptor keys
-	public const string C_KeyExDataset = "Dataset";
-	public const string C_KeyExDatasetKey = "DatasetKey";
-	public const string C_KeyExConnectionKey = "ConnectionKey";
-	public const string C_KeyExConnectionSource = "ConnectionSource";
-	public const string C_KeyExAdornedDisplayName = "AdornedDisplayName";
-	public const string C_KeyExAdornedQualifiedName = "AdornedQualifiedName";
-	public const string C_KeyExAdornedQualifiedTitle = "AdornedQualifiedTitle";
+	internal const string C_KeyExDataset = "Dataset";
+	internal const string C_KeyExDatasetKey = "DatasetKey";
+	internal const string C_KeyExConnectionKey = "ConnectionKey";
+	internal const string C_KeyExConnectionSource = "ConnectionSource";
+	internal const string C_KeyExAdornedDisplayName = "AdornedDisplayName";
+	internal const string C_KeyExAdornedQualifiedName = "AdornedQualifiedName";
+	internal const string C_KeyExAdornedQualifiedTitle = "AdornedQualifiedTitle";
 
 
 	// External (non-paramameter) property descriptor
-	public const string C_KeyExServerVersion = "ServerVersion";
-	public const string C_KeyExPersistPassword = "PersistPassword";
-	public const string C_KeyExEdmx = "edmx";
-	public const string C_KeyExEdmu = "edmu";
+	internal const string C_KeyExServerVersion = "ServerVersion";
+	internal const string C_KeyExPersistPassword = "PersistPassword";
+	internal const string C_KeyExEdmx = "edmx";
+	internal const string C_KeyExEdmu = "edmu";
 
 	// Internal (hidden) property keys
-	public const string C_KeyExInMemoryPassword = "InMemoryPassword";
+	internal const string C_KeyExInMemoryPassword = "InMemoryPassword";
 
 
 	// Other connection constants.
-	public const string C_KeyExConnectionUrl = "ConnectionUrl";
-	public const string C_KeyExConnectionString = "ConnectionString";
+	internal const string C_KeyExConnectionUrl = "ConnectionUrl";
+	internal const string C_KeyExConnectionString = "ConnectionString";
 
 
 	#endregion DbConnectionString Property Names
@@ -76,23 +76,23 @@ public static class CoreConstants
 
 
 	// External (non-paramameter) property defaults 
-	public const Version C_DefaultExClientVersion = null;
-	public const string C_DefaultExMemoryUsage = null;
-	public const int C_DefaultExActiveUsers = int.MinValue;
+	internal const Version C_DefaultExClientVersion = null;
+	internal const string C_DefaultExMemoryUsage = null;
+	internal const int C_DefaultExActiveUsers = int.MinValue;
 
 
 	// Extended property defaults
-	public const string C_DefaultExDataset = "";
-	public const string C_DefaultExDatasetKey = "";
-	public const string C_DefaultExConnectionKey = "";
-	public const EnConnectionSource C_DefaultExConnectionSource = EnConnectionSource.Unknown;
+	internal const string C_DefaultExDataset = "";
+	internal const string C_DefaultExDatasetKey = "";
+	internal const string C_DefaultExConnectionKey = "";
+	internal const EnConnectionSource C_DefaultExConnectionSource = EnConnectionSource.Unknown;
 
 	// External (non-paramameter) property defaults 
-	public const Version C_DefaultExServerVersion = null;
-	public const bool C_DefaultExPersistPassword = false;
+	internal const Version C_DefaultExServerVersion = null;
+	internal const bool C_DefaultExPersistPassword = false;
 
 	// Internal (hidden) property defaults
-	public const SecureString C_DefaultExInMemoryPassword = null;
+	internal const SecureString C_DefaultExInMemoryPassword = null;
 
 
 	#endregion DbConnectionString Property Default Values

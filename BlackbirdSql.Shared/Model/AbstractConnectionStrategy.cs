@@ -933,20 +933,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	}
 
 
-	#endregion Event Handling
-
-
-
-
-
-	// =========================================================================================================
-	#region Sub-Classes - AbstractConnectionStrategy
-	// =========================================================================================================
-
 
 	protected abstract bool RaiseNotifyConnectionState(EnNotifyConnectionState state, bool ttsDiscarded);
 
 
-	#endregion Sub-Classes
+	#endregion Event Handling
 
 }

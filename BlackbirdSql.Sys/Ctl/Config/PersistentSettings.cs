@@ -103,7 +103,6 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	protected static readonly object _LockGlobal = new object();
 	protected readonly object _LockObject = new object();
 
-	private int _AssemblyId = -1;
 	private static string[] _EquivalencyKeys = null;
 	protected static IBsSettingsProvider _Instance = null;
 	protected static Dictionary<string, object> _SettingsStore = null;
@@ -219,20 +218,19 @@ public abstract class PersistentSettings : IBsSettingsProvider
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Flag indicating whether or not <see cref="Diag.Expected"/> exceptions are output.
+	/// Flag indicating whether or not <see cref="Diag.Debug"/> exceptions are output.
+	/// Debug exceptions are always displayed in debug builds.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableExpected => (bool)GetPersistentSetting("DdexDebugEnableExpected", false);
+	public static bool EnableDebugExceptions => (bool)GetPersistentSetting("DdexDebugEnableDebugExceptions", false);
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Specifies the level of trace messages filtered by the source switch and event
-	/// type filter.
+	/// Flag indicating whether or not <see cref="Diag.Expected"/> exceptions are output.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static EnSourceLevels SourceLevel => (EnSourceLevels)(int)GetPersistentSetting("DdexDebugSourceLevel", EnSourceLevels.Off)
-		| (EnableActivityTracing ? EnSourceLevels.ActivityTracing : EnSourceLevels.Off);
+	public static bool EnableExpected => (bool)GetPersistentSetting("DdexDebugEnableExpected", false);
 
 
 	public static string[] EquivalencyKeys
@@ -296,19 +294,6 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	// =========================================================================================================
 
 
-	public virtual int GetEvsAssemblyId(Type type)
-	{
-		if (type.Assembly.FullName == typeof(PersistentSettings).Assembly.FullName)
-		{
-			_AssemblyId = 1;
-			return _AssemblyId;
-		}
-
-		return -1;
-	}
-
-
-
 	protected static object GetPersistentSetting(string name, object defaultValue)
 	{
 		try
@@ -324,6 +309,18 @@ public abstract class PersistentSettings : IBsSettingsProvider
 			throw ex;
 		}
 	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Specifies the level of trace messages filtered by the source switch and event
+	/// type filter.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static EnSourceLevels GetEvsLevel(string identifier) =>
+		(EnSourceLevels)(int)GetPersistentSetting($"DdexDebugEvsLevel{identifier}", EnSourceLevels.Off)
+			| (EnableActivityTracing ? EnSourceLevels.ActivityTracing : EnSourceLevels.Off);
 
 
 

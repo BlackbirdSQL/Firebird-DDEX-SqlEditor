@@ -11,17 +11,17 @@ using BlackbirdSql.Sys.Enums;
 namespace BlackbirdSql.Shared.Events;
 
 
-public class BeforeOpenDocumentEventArgs(string mkDocument, DbConnectionStringBuilder scsb,
+internal class BeforeOpenDocumentEventArgs(string mkDocument, DbConnectionStringBuilder scsb,
 	IList<string> identifierList, EnModelObjectType elementType, EnModelTargetType targetType) : EventArgs
 {
-	public string MkDocument { get; private set; } = mkDocument;
+	internal string MkDocument { get; private set; } = mkDocument;
 
-	public DbConnectionStringBuilder ConnectionString { get; private set; } = scsb;
+	internal DbConnectionStringBuilder ConnectionString { get; private set; } = scsb;
 
-	public IList<string> IdentifierList { get; private set; } = identifierList;
+	internal IList<string> IdentifierList { get; private set; } = identifierList;
 
-	public EnModelObjectType ElementType { get; private set; } = elementType;
-	public EnModelTargetType TargetType { get; private set; } = targetType;
+	internal EnModelObjectType ElementType { get; private set; } = elementType;
+	internal EnModelTargetType TargetType { get; private set; } = targetType;
 
 
 

@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StreamAggregateType : RelOpBaseType
+internal class StreamAggregateType : RelOpBaseType
 {
 	private ColumnReferenceType[] groupByField;
 
@@ -23,7 +23,7 @@ public class StreamAggregateType : RelOpBaseType
 	private RelOpType relOpField;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] GroupBy
+	internal ColumnReferenceType[] GroupBy
 	{
 		get
 		{
@@ -35,7 +35,7 @@ public class StreamAggregateType : RelOpBaseType
 		}
 	}
 
-	public RollupInfoType RollupInfo
+	internal RollupInfoType RollupInfo
 	{
 		get
 		{
@@ -47,7 +47,7 @@ public class StreamAggregateType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{

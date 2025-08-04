@@ -20,7 +20,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RemoteType : RelOpBaseType
+internal class RemoteType : RelOpBaseType
 {
 	private string remoteDestinationField;
 
@@ -29,7 +29,7 @@ public class RemoteType : RelOpBaseType
 	private string remoteObjectField;
 
 	[XmlAttribute]
-	public string RemoteDestination
+	internal string RemoteDestination
 	{
 		get
 		{
@@ -42,7 +42,7 @@ public class RemoteType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string RemoteSource
+	internal string RemoteSource
 	{
 		get
 		{
@@ -55,7 +55,7 @@ public class RemoteType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string RemoteObject
+	internal string RemoteObject
 	{
 		get
 		{

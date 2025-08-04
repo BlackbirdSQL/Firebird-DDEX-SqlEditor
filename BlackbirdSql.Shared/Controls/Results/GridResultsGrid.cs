@@ -173,7 +173,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 			_NumberOfCharsToShow = Math.Min(value, 43679);
 			foreach (AbstractGridColumn column in m_Columns)
 			{
-				(column as GridHyperlinkColumnWithLimit)?.SetMaxNumOfChars(_NumberOfCharsToShow);
+				(column as GridHyperlinkColumnWithLimitI)?.SetMaxNumOfChars(_NumberOfCharsToShow);
 			}
 		}
 	}
@@ -252,7 +252,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 
 	protected override GridTextColumn AllocateTextColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
 	{
-		GridHyperlinkColumnWithLimit gridHyperlinkColumnWithLimit = new GridHyperlinkColumnWithLimit(ci, nWidthInPixels, colIndex, isRealHyperlink: false);
+		GridHyperlinkColumnWithLimitI gridHyperlinkColumnWithLimit = new GridHyperlinkColumnWithLimitI(ci, nWidthInPixels, colIndex, isRealHyperlink: false);
 		gridHyperlinkColumnWithLimit.SetMaxNumOfChars(_NumberOfCharsToShow);
 		return gridHyperlinkColumnWithLimit;
 	}
@@ -275,7 +275,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 	protected override GridHyperlinkColumn AllocateHyperlinkColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
 	{
 		// Evs.Trace(GetType(), "GridHyperlinkColumn.AllocateHyperlinkColumn", "ci = {0}, nWidthInPixels = {1}, colIndex = {2}", ci, nWidthInPixels, colIndex);
-		GridHyperlinkColumnWithLimit gridHyperlinkColumnWithLimit = new GridHyperlinkColumnWithLimit(ci, nWidthInPixels, colIndex, isRealHyperlink: true);
+		GridHyperlinkColumnWithLimitI gridHyperlinkColumnWithLimit = new GridHyperlinkColumnWithLimitI(ci, nWidthInPixels, colIndex, isRealHyperlink: true);
 		LinkLabel linkLabel = new LinkLabel();
 		gridHyperlinkColumnWithLimit.TextBrush = new SolidBrush(linkLabel.LinkColor);
 		gridHyperlinkColumnWithLimit.SetMaxNumOfChars(_NumberOfCharsToShow);
@@ -317,7 +317,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 
 		_CellMetricsString.Length = 0;
 		_CellMetricsString.Append(cellStringForResizeToShowAll);
-		GridHyperlinkColumnWithLimit.AdjustCellString(_CellMetricsString, removeCR: true);
+		GridHyperlinkColumnWithLimitI.AdjustCellString(_CellMetricsString, removeCR: true);
 		if (_CellMetricsString.Length > _NumberOfCharsToShow)
 		{
 			_CellMetricsString.Length = _NumberOfCharsToShow;
@@ -334,7 +334,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 		_SbCustomClipboardText.Append(m_gridStorage.GetCellDataAsString(rowIndex, m_Columns[colIndex].ColumnIndex));
 		if (m_Columns[colIndex].ColumnType != 5)
 		{
-			GridHyperlinkColumnWithLimit.AdjustCellString(_SbCustomClipboardText, removeCR: true);
+			GridHyperlinkColumnWithLimitI.AdjustCellString(_SbCustomClipboardText, removeCR: true);
 			if (_SbCustomClipboardText.Length > _NumberOfCharsToShow)
 			{
 				_SbCustomClipboardText.Length = _NumberOfCharsToShow;
@@ -387,7 +387,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 		BackColor = bkColor;
 		foreach (AbstractGridColumn column in m_Columns)
 		{
-			(column as GridHyperlinkColumnWithLimit)?.SetNewTextBrush(_FgBrush);
+			(column as GridHyperlinkColumnWithLimitI)?.SetNewTextBrush(_FgBrush);
 		}
 
 		if (IsHandleCreated)
@@ -590,11 +590,11 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 
 
 	// =========================================================================================================
-	#region Sub-Classes - GridResultsGrid
+	#region								Nested types - GridResultsGrid
 	// =========================================================================================================
 
 
-	private class GridHyperlinkColumnWithLimit : GridHyperlinkColumn
+	private class GridHyperlinkColumnWithLimitI : GridHyperlinkColumn
 	{
 		protected int m_maxNumOfChars = SharedConstants.C_DefaultMaxCharsPerColumnForGrid;
 
@@ -608,7 +608,7 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 
 		protected Font cachedGridFont;
 
-		public GridHyperlinkColumnWithLimit(GridColumnInfo ci, int nWidthInPixels, int colIndex, bool isRealHyperlink)
+		public GridHyperlinkColumnWithLimitI(GridColumnInfo ci, int nWidthInPixels, int colIndex, bool isRealHyperlink)
 			: base(ci, nWidthInPixels, colIndex)
 		{
 			this.isRealHyperlink = isRealHyperlink;
@@ -783,5 +783,5 @@ public class GridResultsGrid : GridControl, IBsGridControl2, IBsGridControl, IBs
 	}
 
 
-	#endregion Sub-Classes
+	#endregion Nested types
 }

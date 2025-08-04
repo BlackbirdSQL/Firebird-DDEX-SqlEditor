@@ -6,7 +6,7 @@ using BlackbirdSql.Sys.Events;
 namespace BlackbirdSql.Core.Interfaces;
 
 
-public interface IBsAutomatorConverter
+internal interface IBsAutomatorConverter
 {
 	void OnAutomatorPropertyValueChanged(object sender, AutomatorPropertyValueChangedEventArgs e);
 

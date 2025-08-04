@@ -17,7 +17,7 @@ using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 namespace BlackbirdSql.Shared.Controls.Tabs;
 
 
-public class EditorCodeTab : AbstractEditorTab
+internal class EditorCodeTab : AbstractEditorTab
 {
 
 	public EditorCodeTab(IBsTabbedEditorPane tabbedEditor, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
@@ -32,7 +32,7 @@ public class EditorCodeTab : AbstractEditorTab
 
 	private Guid _ClsidLogicalView = VSConstants.LOGVIEWID_TextView;
 
-	public static readonly string S_FramePhysicalViewString = "CodeFrame";
+	internal static readonly string S_FramePhysicalViewString = "CodeFrame";
 
 	private Guid _ClsidEditorFactory = VSConstants.GUID_TextEditorFactory;
 

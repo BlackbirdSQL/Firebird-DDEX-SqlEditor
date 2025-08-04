@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class GbAggType : RelOpBaseType
+internal class GbAggType : RelOpBaseType
 {
 	private ColumnReferenceType[] groupByField;
 
@@ -31,7 +31,7 @@ public class GbAggType : RelOpBaseType
 	private string hintTypeField;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] GroupBy
+	internal ColumnReferenceType[] GroupBy
 	{
 		get
 		{
@@ -44,7 +44,7 @@ public class GbAggType : RelOpBaseType
 	}
 
 	[XmlArrayItem("DefinedValue", IsNullable = false)]
-	public DefinedValuesListTypeDefinedValue[] AggFunctions
+	internal DefinedValuesListTypeDefinedValue[] AggFunctions
 	{
 		get
 		{
@@ -57,7 +57,7 @@ public class GbAggType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -70,7 +70,7 @@ public class GbAggType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsScalar
+	internal bool IsScalar
 	{
 		get
 		{
@@ -83,7 +83,7 @@ public class GbAggType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsScalarSpecified
+	internal bool IsScalarSpecified
 	{
 		get
 		{
@@ -96,7 +96,7 @@ public class GbAggType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string AggType
+	internal string AggType
 	{
 		get
 		{
@@ -109,7 +109,7 @@ public class GbAggType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string HintType
+	internal string HintType
 	{
 		get
 		{

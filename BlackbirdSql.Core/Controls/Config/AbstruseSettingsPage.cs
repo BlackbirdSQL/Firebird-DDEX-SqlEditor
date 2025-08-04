@@ -40,7 +40,6 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 	public AbstruseSettingsPage()
 	{
-		Evs.Trace(typeof(AbstruseSettingsPage), ".ctor");
 	}
 
 
@@ -48,8 +47,6 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 	protected override void Dispose(bool disposing)
 	{
-		Evs.Trace(GetType(), "Dispose(bool)");
-
 		if (disposing)
 		{
 			if (_Window != null)

@@ -28,7 +28,7 @@ internal abstract class AbstractDataReaderNodeBuilder : INodeBuilder
 	{
 	}
 
-	public ExecutionPlanGraph[] Execute(object dataSource)
+	internal ExecutionPlanGraph[] Execute(object dataSource)
 	{
 		if (dataSource is not IDataReader dataReader)
 		{

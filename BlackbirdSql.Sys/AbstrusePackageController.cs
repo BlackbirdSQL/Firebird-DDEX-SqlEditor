@@ -40,7 +40,7 @@ namespace BlackbirdSql.Sys;
 /// Aslo performs cleanups of any sql editor documents that may be left dangling on solution close.
 /// </remarks>
 // =========================================================================================================
-public abstract class AbstrusePackageController : IBsPackageController
+internal abstract class AbstrusePackageController : IBsPackageController
 {
 
 	// ---------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// Gets the singleton AbstrusePackageController instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IBsPackageController Instance
+	internal static IBsPackageController Instance
 	{
 		get
 		{
@@ -237,7 +237,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	// =========================================================================================================
 
 
-	public static bool IdeShutdownState => _IdeShutdownState;
+	internal static bool IdeShutdownState => _IdeShutdownState;
 
 	public abstract DTE Dte { get; }
 	public abstract DTE2 Dte2 { get; }
@@ -894,7 +894,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	public TInterface GetService<TInterface>() where TInterface : class
+	internal TInterface GetService<TInterface>() where TInterface : class
 		=> GetService<TInterface, TInterface>();
 
 
@@ -969,7 +969,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	public static void ShutdownDte()
+	internal static void ShutdownDte()
 	{
 		((AbstrusePackageController)_Instance)?.InternalShutdownDte();
 
@@ -984,7 +984,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 	/// </summary>
 	/// <param name="disposing"></param>
 	// ---------------------------------------------------------------------------------
-	public abstract void UnadviseEvents(bool disposing);
+	internal abstract void UnadviseEvents(bool disposing);
 
 
 
@@ -1600,7 +1600,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	public IVsTask OnAfterSaveAsync(uint cookie, uint flags) => _OnAfterSaveAsyncEvent?.Invoke(cookie, flags);
+	internal IVsTask OnAfterSaveAsync(uint cookie, uint flags) => _OnAfterSaveAsyncEvent?.Invoke(cookie, flags);
 
 
 
@@ -1623,7 +1623,7 @@ public abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	public IVsTask OnBeforeSaveAsync(uint cookie, uint flags, IVsTask saveTask) =>
+	internal IVsTask OnBeforeSaveAsync(uint cookie, uint flags, IVsTask saveTask) =>
 		_OnBeforeSaveAsyncEvent?.Invoke(cookie, flags, saveTask);
 
 

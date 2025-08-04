@@ -26,7 +26,7 @@ namespace BlackbirdSql.Core.Model;
 /// also by the identifier keys of a document.
 /// </remarks>
 // =========================================================================================================
-public class Moniker
+internal class Moniker
 {
 
 	// -----------------------------------------------------------------------------------------------------
@@ -228,7 +228,7 @@ public class Moniker
 	private string DataSource => _DataSource ??= (string)Csb.Describers[SysConstants.C_KeyDataSource].DefaultValue;
 
 
-	public string[] Identifier => ObjectName.Split(SystemData.C_CompositeSeparator);
+	internal string[] Identifier => ObjectName.Split(SystemData.C_CompositeSeparator);
 
 
 	/// <summary>
@@ -240,7 +240,7 @@ public class Moniker
 	/// <summary>
 	/// The Server Explorer node object type.
 	/// </summary>
-	public EnModelObjectType ObjectType => _ObjectType;
+	internal EnModelObjectType ObjectType => _ObjectType;
 
 
 	/// <summary>
@@ -411,7 +411,7 @@ public class Moniker
 
 
 
-	public static string BuildDocumentMoniker(IVsDataExplorerNode node,
+	internal static string BuildDocumentMoniker(IVsDataExplorerNode node,
 		ref IList<string> identifierArray, EnModelTargetType targetType)
 	{
 		Moniker moniker = new(node, targetType);
@@ -422,7 +422,7 @@ public class Moniker
 
 
 
-	public static string BuildDocumentMoniker(string server, string database, EnModelObjectType elementType,
+	internal static string BuildDocumentMoniker(string server, string database, EnModelObjectType elementType,
 	ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique, bool isClone)
 	{
 		Moniker moniker = new(server, database, elementType, identifierArray, targetType, isUnique, isClone);

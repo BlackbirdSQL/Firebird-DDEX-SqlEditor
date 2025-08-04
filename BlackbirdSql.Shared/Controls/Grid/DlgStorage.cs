@@ -14,7 +14,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class DlgStorage : IBsDlgStorage, IBsGridStorage, IDisposable
+internal class DlgStorage : IBsDlgStorage, IBsGridStorage, IDisposable
 {
 	protected IBsGridMemDataStorage _GridMemStorage;
 

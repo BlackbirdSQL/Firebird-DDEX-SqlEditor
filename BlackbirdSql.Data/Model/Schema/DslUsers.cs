@@ -10,7 +10,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslUsers : AbstractDslSchema
 {
-	internal DslUsers() : base()
+	public DslUsers() : base()
 	{
 	}
 

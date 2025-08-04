@@ -20,7 +20,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 /// Interface for native db Server Explorer service.
 /// </summary>
 // =========================================================================================================
-public interface IBsNativeDbServerExplorerService
+internal interface IBsNativeDbServerExplorerService
 {
 	string GetDecoratedDdlSource_(IVsDataExplorerNode node, EnModelTargetType targetType);
 	int GetObjectTypeIdentifierLength_(string typeName);

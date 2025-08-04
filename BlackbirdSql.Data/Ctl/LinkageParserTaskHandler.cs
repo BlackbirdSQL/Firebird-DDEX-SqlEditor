@@ -2,14 +2,11 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Data.Model;
 using BlackbirdSql.Data.Properties;
-using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Interfaces;
-using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 using static BlackbirdSql.Data.Model.AbstractLinkageParser;
@@ -26,7 +23,7 @@ namespace BlackbirdSql.Data.Ctl;
 /// Handles TaskHandler and statusbar output for the LinkageParser.
 /// </summary>
 // =========================================================================================================
-public class LinkageParserTaskHandler : IBsTaskHandlerClient
+internal class LinkageParserTaskHandler : IBsTaskHandlerClient
 {
 
 	// -----------------------------------------------------------------------------------------------------
@@ -101,7 +98,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 		}
 	}
 
-	
+
 	/// <summary>
 	/// The name of the running task if the object is currently using the task handler.
 	/// </summary>
@@ -111,7 +108,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 		ApcManager.StatusCenterService;
 
 
-	public CancellationToken UserCancellation
+	internal CancellationToken UserCancellation
 	{
 		get
 		{
@@ -146,7 +143,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 
 
 
-	public void PreRegister(bool canBeCancelled)
+	internal void PreRegister(bool canBeCancelled)
 	{
 		TaskHandlerOptions options = default;
 		options.Title = ControlsResources.LinkageParser_TaskHandlerTitle.Fmt(DatasetKey);
@@ -161,7 +158,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	}
 
 
-	public void RegisterTask(Task<bool> payloadLauncher)
+	internal void RegisterTask(Task<bool> payloadLauncher)
 	{
 		try
 		{
@@ -174,18 +171,18 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	}
 
 
-	public virtual bool Progress(string text)
+	internal virtual bool Progress(string text)
 	{
 		return TaskHandlerProgress(text);
 	}
 
 
 	// ---------------------------------------------------------------------------------
-		/// <summary>
-		/// Moves back onto the UI thread and updates the IDE task handler progress bar
-		/// with project update information.
-		/// </summary>
-		// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar
+	/// with project update information.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public virtual bool TaskHandlerProgress(string text)
 	{
 		if (_ProgressData.PercentComplete == null)
@@ -202,7 +199,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 
 
 
-	public virtual bool Progress(int progress, int elapsed, long totalElapsed, bool enabled, bool asyncActive)
+	internal virtual bool Progress(int progress, int elapsed, long totalElapsed, bool enabled, bool asyncActive)
 	{
 		return Progress(null, progress, elapsed, totalElapsed, enabled, asyncActive);
 	}
@@ -231,7 +228,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	/// <param name="progress">The % completion of the linkage build.</param>
 	/// <param name="elapsed">The time taken to complete the stage.</param>
 	// ---------------------------------------------------------------------------------
-	public bool Progress(string stage, int progress, long elapsed, long totalElapsed, bool enabled, bool asyncActive)
+	internal bool Progress(string stage, int progress, long elapsed, long totalElapsed, bool enabled, bool asyncActive)
 	{
 		bool completed = false;
 		string text;
@@ -305,7 +302,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	/// Updates the status bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool Status(EnLinkStage stage, long totalElapsed, bool enabled, bool asyncActive)
+	internal bool Status(EnLinkStage stage, long totalElapsed, bool enabled, bool asyncActive)
 	{
 		// string async;
 		string catalog = DatasetKey;
@@ -364,7 +361,7 @@ public class LinkageParserTaskHandler : IBsTaskHandlerClient
 	}
 
 
-	public static int GetPercentageComplete(EnLinkStage stage, bool starting = false)
+	internal static int GetPercentageComplete(EnLinkStage stage, bool starting = false)
 	{
 		switch (stage)
 		{

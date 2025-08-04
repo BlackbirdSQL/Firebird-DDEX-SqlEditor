@@ -29,7 +29,7 @@ namespace BlackbirdSql.Sys.Controls;
 /// Universal MessageBox for all BlackbirdSql messages.
 /// </summary>
 // =========================================================================================================
-public partial class AdvancedMessageBox : Form
+internal partial class AdvancedMessageBox : Form
 {
 
 	// ----------------------------------------------------
@@ -50,28 +50,6 @@ public partial class AdvancedMessageBox : Form
 
 
 	#endregion Constructors / Destructors
-
-
-
-
-
-	// =========================================================================================================
-	#region Internal Classes - AdvancedMessageBox
-	// =========================================================================================================
-
-
-	public enum EnBeepType
-	{
-		Standard = -1,
-		Default = 0,
-		Hand = 0x10,
-		Question = 0x20,
-		Exclamation = 48,
-		Asterisk = 0x40
-	}
-
-
-	#endregion Internal Classes
 
 
 
@@ -165,7 +143,7 @@ public partial class AdvancedMessageBox : Form
 		set { _DefaultButton = value; }
 	}
 
-	public bool DoBeep
+	internal bool DoBeep
 	{
 		get { return _DoBeep; }
 		set { _DoBeep = value; }
@@ -227,7 +205,7 @@ public partial class AdvancedMessageBox : Form
 
 
 
-	public event CopyToClipboardEventHandler CopyToClipboardInternalEvent;
+	internal event CopyToClipboardEventHandler CopyToClipboardInternalEvent;
 
 
 	#endregion Property Accessors
@@ -331,20 +309,20 @@ public partial class AdvancedMessageBox : Form
 		{
 			case EnMessageBoxSymbol.None:
 			case EnMessageBoxSymbol.Warning:
-				MessageBeep(EnBeepType.Asterisk);
+				MessageBeep(EniBeepType.Asterisk);
 				break;
 			case EnMessageBoxSymbol.Information:
-				MessageBeep(EnBeepType.Exclamation);
+				MessageBeep(EniBeepType.Exclamation);
 				break;
 			case EnMessageBoxSymbol.Error:
-				MessageBeep(EnBeepType.Hand);
+				MessageBeep(EniBeepType.Hand);
 				break;
 		}
 	}
 
 
 
-	public string BuildAdvancedInfo<T>() where T : class
+	internal string BuildAdvancedInfo<T>() where T : class
 	{
 		if (_ExMessage == null)
 			return "";
@@ -418,7 +396,7 @@ public partial class AdvancedMessageBox : Form
 
 
 
-	public string BuildAdvancedInfo(Exception ex, EnAdvancedInfoType type)
+	internal string BuildAdvancedInfo(Exception ex, EnAdvancedInfoType type)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		if (ex == null)
@@ -612,7 +590,7 @@ public partial class AdvancedMessageBox : Form
 
 
 
-	public string BuildHelpURL(Exception ex)
+	internal string BuildHelpURL(Exception ex)
 	{
 		int num = 0;
 		string text = null;
@@ -703,7 +681,7 @@ public partial class AdvancedMessageBox : Form
 
 
 
-	public string BuildMessageText(bool isForEmail, bool isInternal)
+	internal string BuildMessageText(bool isForEmail, bool isInternal)
 	{
 		if (_ExMessage == null)
 		{
@@ -1257,11 +1235,11 @@ public partial class AdvancedMessageBox : Form
 
 
 	[DllImport("user32.dll", CharSet = CharSet.Auto)]
-	public static extern bool MessageBeep(EnBeepType type);
+	internal static extern bool MessageBeep(EniBeepType type);
 
 
 
-	public void PrepareToShow()
+	internal void PrepareToShow()
 	{
 		if (_ExMessage == null)
 		{
@@ -1453,7 +1431,7 @@ public partial class AdvancedMessageBox : Form
 
 
 
-	public void ShowError(string str, Exception exError)
+	internal void ShowError(string str, Exception exError)
 	{
 		MessageCtl exceptionMessageBox = new(new Exception(str, exError)
 		{
@@ -1574,7 +1552,7 @@ public partial class AdvancedMessageBox : Form
 				if (!_IsButtonPressed)
 				{
 					e.Cancel = true;
-					MessageBeep(EnBeepType.Hand);
+					MessageBeep(EniBeepType.Hand);
 				}
 
 				break;
@@ -1696,5 +1674,28 @@ public partial class AdvancedMessageBox : Form
 
 
 	#endregion Event Handling
+
+
+
+
+
+	// =========================================================================================================
+	#region									Nested types - AdvancedMessageBox
+	// =========================================================================================================
+
+
+	internal enum EniBeepType
+	{
+		Standard = -1,
+		Default = 0,
+		Hand = 0x10,
+		Question = 0x20,
+		Exclamation = 48,
+		Asterisk = 0x40
+	}
+
+
+	#endregion Nested types
+
 
 }

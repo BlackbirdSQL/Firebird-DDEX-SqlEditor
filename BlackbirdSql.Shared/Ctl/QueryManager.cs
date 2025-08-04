@@ -135,7 +135,7 @@ public sealed class QueryManager : IBsQueryManager
 	private CancellationToken _AsyncCancelToken;
 	private CancellationTokenSource _AsyncCancelTokenSource = null;
 	private uint _DocCookie = 0;
-	private QESQLExec.GetCurrentWorkingDirectoryPath _CurrentWorkingDirectoryPath;
+	private QESQLExec.GetCwdPathDelegateI _CwdPath;
 	private int _EventExecutingCardinal = 0;
 	private bool _HadTransactions = false;
 	private TransientSettings _LiveSettings;
@@ -203,14 +203,14 @@ public sealed class QueryManager : IBsQueryManager
 	}
 
 
-	public QESQLExec.GetCurrentWorkingDirectoryPath CurrentWorkingDirectoryPath
+	public QESQLExec.GetCwdPathDelegateI CwdPath
 	{
 		set
 		{
 			lock (_LockLocal)
 			{
-				_CurrentWorkingDirectoryPath = value;
-				_SqlExec.CurrentWorkingDirectoryPath = _CurrentWorkingDirectoryPath;
+				_CwdPath = value;
+				_SqlExec.CwdPath = _CwdPath;
 			}
 		}
 	}
@@ -1615,16 +1615,5 @@ public sealed class QueryManager : IBsQueryManager
 
 
 	#endregion Event Handling
-
-
-
-
-
-	// =========================================================================================================
-	#region Sub-Classes- QueryManager
-	// =========================================================================================================
-
-
-	#endregion Sub-Classes
 
 }

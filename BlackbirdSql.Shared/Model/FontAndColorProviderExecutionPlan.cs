@@ -13,15 +13,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.Shared.Model;
 
 
-public sealed class FontAndColorProviderExecutionPlan : AbstractFontAndColorProvider
+internal sealed class FontAndColorProviderExecutionPlan : AbstractFontAndColorProvider
 {
 	private static FontAndColorProviderExecutionPlan instance = null;
 
-	public static readonly string Text = "Text";
+	internal static readonly string Text = "Text";
 
 
 
-	public static AbstractFontAndColorProvider Instance
+	internal static AbstractFontAndColorProvider Instance
 	{
 		get
 		{

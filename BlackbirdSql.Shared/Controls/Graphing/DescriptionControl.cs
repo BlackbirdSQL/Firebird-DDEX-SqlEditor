@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class DescriptionControl : UserControl
+internal class DescriptionControl : UserControl
 {
 	private string title = "";
 
@@ -43,7 +43,7 @@ public class DescriptionControl : UserControl
 
 	private static readonly Regex whitespaceExpression = new Regex("[\n\r\t ]+", RegexOptions.Compiled);
 
-	public string Title
+	internal string Title
 	{
 		get
 		{
@@ -57,7 +57,7 @@ public class DescriptionControl : UserControl
 		}
 	}
 
-	public string QueryText
+	internal string QueryText
 	{
 		get
 		{
@@ -77,7 +77,7 @@ public class DescriptionControl : UserControl
 		}
 	}
 
-	public string ClusteredMode
+	internal string ClusteredMode
 	{
 		get
 		{
@@ -91,7 +91,7 @@ public class DescriptionControl : UserControl
 		}
 	}
 
-	public bool IsClusteredMode
+	internal bool IsClusteredMode
 	{
 		set
 		{
@@ -100,13 +100,13 @@ public class DescriptionControl : UserControl
 		}
 	}
 
-	public bool HasMissingIndex => hasMissingIndex;
+	internal bool HasMissingIndex => hasMissingIndex;
 
-	public string MissingIndexQueryText => missingIndexQueryText;
+	internal string MissingIndexQueryText => missingIndexQueryText;
 
-	public string MissingIndexImpact => missingIndexImpact;
+	internal string MissingIndexImpact => missingIndexImpact;
 
-	public string MissingIndexDatabase => missingIndexDatabase;
+	internal string MissingIndexDatabase => missingIndexDatabase;
 
 	internal StringFormat DescriptionFormat => new StringFormat
 	{
@@ -121,7 +121,7 @@ public class DescriptionControl : UserControl
 		SetStyle(ControlStyles.Opaque, value: true);
 	}
 
-	public void SetOptionalMissingIndex(string caption, string queryText, string impact, string database)
+	internal void SetOptionalMissingIndex(string caption, string queryText, string impact, string database)
 	{
 		hasMissingIndex = true;
 		missingIndexCaption = caption;
@@ -131,7 +131,7 @@ public class DescriptionControl : UserControl
 		UpdateAccDescription();
 	}
 
-	public static string MakeTruncatedTooltip(string strSource)
+	internal static string MakeTruncatedTooltip(string strSource)
 	{
 		if (string.IsNullOrEmpty(strSource))
 		{

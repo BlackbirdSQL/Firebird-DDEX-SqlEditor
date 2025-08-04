@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Sys.Enums;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -22,7 +23,7 @@ namespace BlackbirdSql;
 /// Central class for package external class extension methods. 
 /// </summary>
 // =========================================================================================================
-public static partial class ExtensionMembers
+internal static partial class ExtensionMembers
 {
 
 	// ---------------------------------------------------------------------------------
@@ -33,7 +34,7 @@ public static partial class ExtensionMembers
 	/// initialized.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string SafeName(this IVsDataExplorerConnection @this)
+	internal static string SafeName(this IVsDataExplorerConnection @this)
 	{
 		string retval = Csb.GetServerExplorerName(@this.DecryptedConnectionString());
 
@@ -45,13 +46,25 @@ public static partial class ExtensionMembers
 
 
 
+	/// <summary>
+	/// Gets the engine edition.
+	/// </summary>
+	internal static EnDatabaseEngineEdition GetEngineEdition(this IDbConnection @this)
+	{
+		Csb csb = new Csb(@this.ConnectionString, false);
+
+		return csb.ServerType == EnServerType.Default ? EnDatabaseEngineEdition.SqlDatabase : EnDatabaseEngineEdition.Express;
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Finds the ExplorerConnection ConnectionKey of an IVsDataConnectionProperties Site
 	/// else null if not found.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FindConnectionKey(this IVsDataConnectionProperties @this)
+	internal static string FindConnectionKey(this IVsDataConnectionProperties @this)
 	{
 		return ApcManager.ExplorerConnectionManager.FindConnectionKey(@this.ToString(), false);
 	}
@@ -64,7 +77,7 @@ public static partial class ExtensionMembers
 	/// else null if not found.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FindConnectionKey(this IVsDataExplorerConnectionManager @this, string connectionString, bool encrypted)
+	internal static string FindConnectionKey(this IVsDataExplorerConnectionManager @this, string connectionString, bool encrypted)
 	{
 		(_, IVsDataExplorerConnection explorerConnection) = @this.SearchExplorerConnectionEntry(connectionString, encrypted);
 
@@ -82,12 +95,12 @@ public static partial class ExtensionMembers
 	/// else null if not found.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FindConnectionKey(this IDbConnection @this)
+	internal static string FindConnectionKey(this IDbConnection @this)
 	{
 		return ApcManager.ExplorerConnectionManager.FindConnectionKey(@this.ConnectionString, false);
 	}
 
-	public static IVsDataExplorerConnection ExplorerConnection(this IVsDataConnection @this, bool canBeWeakEquivalent = false)
+	internal static IVsDataExplorerConnection ExplorerConnection(this IVsDataConnection @this, bool canBeWeakEquivalent = false)
 	{
 		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
@@ -97,7 +110,7 @@ public static partial class ExtensionMembers
 	}
 
 
-	public static IVsDataExplorerConnection ExplorerConnection(this IVsDataConnectionProperties @this, bool canBeWeakEquivalent = false)
+	internal static IVsDataExplorerConnection ExplorerConnection(this IVsDataConnectionProperties @this, bool canBeWeakEquivalent = false)
 	{
 		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
@@ -115,7 +128,7 @@ public static partial class ExtensionMembers
 	/// else throws an exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetConnectionKey(this IVsDataConnectionProperties @this)
+	internal static string GetConnectionKey(this IVsDataConnectionProperties @this)
 	{
 		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
@@ -146,7 +159,7 @@ public static partial class ExtensionMembers
 	/// </param>
 	/// <exception cref="COMException" />
 	// ---------------------------------------------------------------------------------
-	public static string GetConnectionKey(this IVsDataExplorerConnection @this, bool deepSearch = true)
+	internal static string GetConnectionKey(this IVsDataExplorerConnection @this, bool deepSearch = true)
 	{
 		if (@this.ConnectionNode == null)
 		{
@@ -218,7 +231,7 @@ public static partial class ExtensionMembers
 	/// Gets the ConnectionKey of node else throws an exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetConnectionKey(this IVsDataExplorerNode @this)
+	internal static string GetConnectionKey(this IVsDataExplorerNode @this)
 	{
 		return @this.ExplorerConnection.GetConnectionKey();
 	}

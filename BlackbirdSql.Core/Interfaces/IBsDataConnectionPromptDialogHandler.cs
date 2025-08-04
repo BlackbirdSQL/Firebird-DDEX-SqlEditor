@@ -6,7 +6,7 @@ using System;
 namespace BlackbirdSql.Core.Interfaces;
 
 
-public interface IBsDataConnectionPromptDialogHandler : IDisposable
+internal interface IBsDataConnectionPromptDialogHandler : IDisposable
 {
 	string CompleteConnectionString { get; }
 	string PublicConnectionString { set; }

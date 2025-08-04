@@ -11,9 +11,9 @@ using System.Windows.Forms.VisualStyles;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public sealed class GridConstants
+internal sealed class GridConstants
 {
-	public const int C_StandardCheckBoxSize = 13;
+	internal const int C_StandardCheckBoxSize = 13;
 
 	[ThreadStatic]
 	private static Bitmap SCheckedBitmap;
@@ -27,11 +27,11 @@ public sealed class GridConstants
 	[ThreadStatic]
 	private static Bitmap SDisabledBitmap;
 
-	public static int ActualCheckBoxSize => Convert.ToInt32(ScaleFactor * 13f);
+	internal static int ActualCheckBoxSize => Convert.ToInt32(ScaleFactor * 13f);
 
-	public static float ScaleFactor { get; set; }
+	internal static float ScaleFactor { get; set; }
 
-	public static Bitmap CheckedCheckBoxBitmap
+	internal static Bitmap CheckedCheckBoxBitmap
 	{
 		get
 		{
@@ -45,7 +45,7 @@ public sealed class GridConstants
 		}
 	}
 
-	public static Bitmap UncheckedCheckBoxBitmap
+	internal static Bitmap UncheckedCheckBoxBitmap
 	{
 		get
 		{
@@ -59,7 +59,7 @@ public sealed class GridConstants
 		}
 	}
 
-	public static Bitmap IntermediateCheckBoxBitmap
+	internal static Bitmap IntermediateCheckBoxBitmap
 	{
 		get
 		{
@@ -73,7 +73,7 @@ public sealed class GridConstants
 		}
 	}
 
-	public static Bitmap DisabledCheckBoxBitmap
+	internal static Bitmap DisabledCheckBoxBitmap
 	{
 		get
 		{
@@ -87,14 +87,14 @@ public sealed class GridConstants
 		}
 	}
 
-	public static TextFormatFlags DefaultTextFormatFlags => TextFormatFlags.NoPrefix | TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter | TextFormatFlags.WordEllipsis | TextFormatFlags.PreserveGraphicsClipping;
+	internal static TextFormatFlags DefaultTextFormatFlags => TextFormatFlags.NoPrefix | TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter | TextFormatFlags.WordEllipsis | TextFormatFlags.PreserveGraphicsClipping;
 
 	static GridConstants()
 	{
 		ScaleFactor = 1f;
 	}
 
-	public static void RegenerateCheckBoxBitmaps()
+	internal static void RegenerateCheckBoxBitmaps()
 	{
 		_ = CheckedCheckBoxBitmap;
 		_ = UncheckedCheckBoxBitmap;
@@ -146,7 +146,7 @@ public sealed class GridConstants
 
 
 
-	public static void AdjustFormatFlagsForAlignment(ref TextFormatFlags inputFlags, HorizontalAlignment ha)
+	internal static void AdjustFormatFlagsForAlignment(ref TextFormatFlags inputFlags, HorizontalAlignment ha)
 	{
 		switch (ha)
 		{

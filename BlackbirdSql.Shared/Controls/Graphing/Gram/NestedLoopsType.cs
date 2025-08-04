@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class NestedLoopsType : RelOpBaseType
+internal class NestedLoopsType : RelOpBaseType
 {
 	private ScalarExpressionType predicateField;
 
@@ -41,7 +41,7 @@ public class NestedLoopsType : RelOpBaseType
 
 	private bool withUnorderedPrefetchFieldSpecified;
 
-	public ScalarExpressionType Predicate
+	internal ScalarExpressionType Predicate
 	{
 		get
 		{
@@ -53,7 +53,7 @@ public class NestedLoopsType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType PassThru
+	internal ScalarExpressionType PassThru
 	{
 		get
 		{
@@ -66,7 +66,7 @@ public class NestedLoopsType : RelOpBaseType
 	}
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] OuterReferences
+	internal ColumnReferenceType[] OuterReferences
 	{
 		get
 		{
@@ -78,7 +78,7 @@ public class NestedLoopsType : RelOpBaseType
 		}
 	}
 
-	public SingleColumnReferenceType PartitionId
+	internal SingleColumnReferenceType PartitionId
 	{
 		get
 		{
@@ -90,7 +90,7 @@ public class NestedLoopsType : RelOpBaseType
 		}
 	}
 
-	public SingleColumnReferenceType ProbeColumn
+	internal SingleColumnReferenceType ProbeColumn
 	{
 		get
 		{
@@ -102,7 +102,7 @@ public class NestedLoopsType : RelOpBaseType
 		}
 	}
 
-	public StarJoinInfoType StarJoinInfo
+	internal StarJoinInfoType StarJoinInfo
 	{
 		get
 		{
@@ -115,7 +115,7 @@ public class NestedLoopsType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -128,7 +128,7 @@ public class NestedLoopsType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool Optimized
+	internal bool Optimized
 	{
 		get
 		{
@@ -141,7 +141,7 @@ public class NestedLoopsType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool WithOrderedPrefetch
+	internal bool WithOrderedPrefetch
 	{
 		get
 		{
@@ -154,7 +154,7 @@ public class NestedLoopsType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool WithOrderedPrefetchSpecified
+	internal bool WithOrderedPrefetchSpecified
 	{
 		get
 		{
@@ -167,7 +167,7 @@ public class NestedLoopsType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool WithUnorderedPrefetch
+	internal bool WithUnorderedPrefetch
 	{
 		get
 		{
@@ -180,7 +180,7 @@ public class NestedLoopsType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool WithUnorderedPrefetchSpecified
+	internal bool WithUnorderedPrefetchSpecified
 	{
 		get
 		{

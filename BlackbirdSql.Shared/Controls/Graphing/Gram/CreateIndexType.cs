@@ -14,11 +14,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class CreateIndexType : RowsetType
+internal class CreateIndexType : RowsetType
 {
 	private RelOpType relOpField;
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{

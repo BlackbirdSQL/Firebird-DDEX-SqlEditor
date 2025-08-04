@@ -18,7 +18,7 @@ namespace BlackbirdSql.Shared.Model.Parsers;
 
 
 
-public class ManagedBatchParser : IDisposable
+internal class ManagedBatchParser : IDisposable
 {
 	public ManagedBatchParser(IBsQueryManager qryMgr, /* IBsQESQLBatchConsumer batchConsumer, */
 		EnSqlExecutionType executionType, /* EnSqlOutputMode outputMode, */ string script)
@@ -43,14 +43,14 @@ public class ManagedBatchParser : IDisposable
 	*/
 
 
-	public void ParserDispose()
+	internal void ParserDispose()
 	{
 		Cleanup();
 	}
 
 
 
-	public void Cleanup(IBsQueryManager qryMgr = null, /* IBsQESQLBatchConsumer batchConsumer = null, */
+	internal void Cleanup(IBsQueryManager qryMgr = null, /* IBsQESQLBatchConsumer batchConsumer = null, */
 		EnSqlExecutionType executionType = EnSqlExecutionType.QueryOnly,
 		/* EnSqlOutputMode outputMode = EnSqlOutputMode.ToGrid , */ string script = null)
 	{
@@ -87,37 +87,37 @@ public class ManagedBatchParser : IDisposable
 
 
 
-	public void SetParseMode(EnParseMode pm)
+	internal void SetParseMode(EnParseMode pm)
 	{
 		_ParseMode = pm;
 		_ = _ParseMode;
 	}
 
-	public void SetRecognizeOnlyVariables(bool bRecognizeOnlyVariables)
+	internal void SetRecognizeOnlyVariables(bool bRecognizeOnlyVariables)
 	{
 		_RecognizeOnlyVariables = bRecognizeOnlyVariables;
 		_ = _RecognizeOnlyVariables;
 	}
 
-	public void SetBatchDelimiter(string strBatchDelimiter)
+	internal void SetBatchDelimiter(string strBatchDelimiter)
 	{
 		_Delimiter = strBatchDelimiter;
 		_ = _Delimiter;
 	}
 
-	public void DisableVariableSubstitution()
+	internal void DisableVariableSubstitution()
 	{
 		_SubstitutionEnabled = false;
 		_ = _SubstitutionEnabled;
 	}
 
-	public void SetCommandExecuter(IBsCommandExecuter pICommandExecuter)
+	internal void SetCommandExecuter(IBsCommandExecuter pICommandExecuter)
 	{
 		_Executor = pICommandExecuter;
 	}
 
 
-	public async Task<bool> ParseAsync(CancellationToken cancelToken, CancellationToken syncToken)
+	internal async Task<bool> ParseAsync(CancellationToken cancelToken, CancellationToken syncToken)
 	{
 		// Evs.Trace(GetType(), nameof(ParseAsync));
 
@@ -190,7 +190,7 @@ public class ManagedBatchParser : IDisposable
 
 
 
-	public int GetLastCommandLineNumber()
+	internal int GetLastCommandLineNumber()
 	{
 		return _Current;
 	}

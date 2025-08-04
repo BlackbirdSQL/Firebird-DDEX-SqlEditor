@@ -6,7 +6,7 @@ using System.Data.Common;
 namespace BlackbirdSql.Sys.Model;
 
 
-public class NativeDatabaseInfoProxy
+internal class NativeDatabaseInfoProxy
 {
 
 	public NativeDatabaseInfoProxy(DbConnection connection)
@@ -18,5 +18,5 @@ public class NativeDatabaseInfoProxy
 
 	private readonly object _NativeObject = null;
 
-	public object NativeObject => _NativeObject;
+	internal object NativeObject => _NativeObject;
 }

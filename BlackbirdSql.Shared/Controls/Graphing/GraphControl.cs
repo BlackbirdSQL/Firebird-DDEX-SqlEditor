@@ -34,13 +34,13 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class GraphControl : GraphCtrl
+internal class GraphControl : GraphCtrl
 {
 	private struct PointD
 	{
-		public double X;
+		internal double X;
 
-		public double Y;
+		internal double Y;
 
 		public PointD(double x, double y)
 		{
@@ -53,7 +53,7 @@ public class GraphControl : GraphCtrl
 	{
 		private readonly List<Point> layoutPoints = new List<Point>();
 
-		public void CheckInvariant()
+		internal void CheckInvariant()
 		{
 			Point point = new Point(0, 0);
 			for (int i = 0; i < layoutPoints.Count; i++)
@@ -67,7 +67,7 @@ public class GraphControl : GraphCtrl
 			}
 		}
 
-		public void UpdateNodeLayout(int xPosition, int yPosition)
+		internal void UpdateNodeLayout(int xPosition, int yPosition)
 		{
 			CheckInvariant();
 			if (!layoutPoints.Any())
@@ -141,7 +141,7 @@ public class GraphControl : GraphCtrl
 			layoutPoints.RemoveRange(num + 1, layoutPoints.Count - num - 1);
 		}
 
-		public int GetYPositionForXPosition(int rowX)
+		internal int GetYPositionForXPosition(int rowX)
 		{
 			CheckInvariant();
 			int num = 0;
@@ -159,7 +159,7 @@ public class GraphControl : GraphCtrl
 
 	private sealed class Renderer : RendererBase
 	{
-		public static readonly Renderer Default = new Renderer();
+		internal static readonly Renderer Default = new Renderer();
 
 		protected override bool OnRender(object item, Graphics graphics)
 		{
@@ -182,7 +182,7 @@ public class GraphControl : GraphCtrl
 
 	private sealed class ToolTip : MultilineToolTip
 	{
-		public const string NoTitle = "|";
+		internal const string NoTitle = "|";
 
 		private PropertyDescriptor _Description;
 
@@ -550,13 +550,13 @@ public class GraphControl : GraphCtrl
 
 	internal virtual bool RequestFocusOnActivate => true;
 
-	public bool IsActive => isActive;
+	internal bool IsActive => isActive;
 
-	public BlackbirdSql.Shared.Controls.Graphing.NodeDisplay RootNode => NodesZOrder[0] as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
+	internal BlackbirdSql.Shared.Controls.Graphing.NodeDisplay RootNode => NodesZOrder[0] as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
 
-	public double Cost => RootNode.NodeOriginal.SubtreeCost;
+	internal double Cost => RootNode.NodeOriginal.SubtreeCost;
 
-	public string Statement
+	internal string Statement
 	{
 		get
 		{
@@ -571,9 +571,9 @@ public class GraphControl : GraphCtrl
 
 	internal Rectangle GraphBoundingRectangle => graphBoundingRectangle;
 
-	public event EventHandler IsActiveChangedEvent;
+	internal event EventHandler IsActiveChangedEvent;
 
-	public event GraphEventHandler SelectionChangedEvent;
+	internal event GraphEventHandler SelectionChangedEvent;
 
 	public GraphControl()
 	{
@@ -602,7 +602,7 @@ public class GraphControl : GraphCtrl
 		draggingActive = false;
 	}
 
-	public void SetGraph(IGraph graph)
+	internal void SetGraph(IGraph graph)
 	{
 		try
 		{
@@ -679,22 +679,22 @@ public class GraphControl : GraphCtrl
 		base.WndProc(ref m);
 	}
 
-	public void ReadNodes(byte[] dataSource)
+	internal void ReadNodes(byte[] dataSource)
 	{
 		ReadNodesInternal(dataSource, EnExecutionPlanType.Unknown);
 	}
 
-	public void ReadNodes(string dataSource)
+	internal void ReadNodes(string dataSource)
 	{
 		ReadNodesInternal(dataSource, EnExecutionPlanType.Unknown);
 	}
 
-	public void ReadNodes(string dataSource, EnExecutionPlanType executionPlanType)
+	internal void ReadNodes(string dataSource, EnExecutionPlanType executionPlanType)
 	{
 		ReadNodesInternal(dataSource, executionPlanType);
 	}
 
-	public void Activate()
+	internal void Activate()
 	{
 		if (!isActive)
 		{
@@ -709,7 +709,7 @@ public class GraphControl : GraphCtrl
 		}
 	}
 
-	public void Deactivate()
+	internal void Deactivate()
 	{
 		if (isActive)
 		{
@@ -719,7 +719,7 @@ public class GraphControl : GraphCtrl
 		}
 	}
 
-	public void ZoomIn()
+	internal void ZoomIn()
 	{
 		try
 		{
@@ -732,7 +732,7 @@ public class GraphControl : GraphCtrl
 		}
 	}
 
-	public void ZoomOut()
+	internal void ZoomOut()
 	{
 		try
 		{
@@ -745,12 +745,12 @@ public class GraphControl : GraphCtrl
 		}
 	}
 
-	public float GetZoom()
+	internal float GetZoom()
 	{
 		return ViewScale;
 	}
 
-	public void SetCustomZoom(float viewScale)
+	internal void SetCustomZoom(float viewScale)
 	{
 		try
 		{
@@ -763,7 +763,7 @@ public class GraphControl : GraphCtrl
 		}
 	}
 
-	public void ShowCustomZoomDialog()
+	internal void ShowCustomZoomDialog()
 	{
 		try
 		{
@@ -779,7 +779,7 @@ public class GraphControl : GraphCtrl
 		}
 	}
 
-	public System.Drawing.Printing.PrintDocument GetPrintDocument()
+	internal System.Drawing.Printing.PrintDocument GetPrintDocument()
 	{
 		return new PrintDocument(this);
 	}

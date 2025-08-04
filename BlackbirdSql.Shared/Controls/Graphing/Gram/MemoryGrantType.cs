@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class MemoryGrantType
+internal class MemoryGrantType
 {
 	private ulong serialRequiredMemoryField;
 
@@ -57,7 +57,7 @@ public class MemoryGrantType
 	private bool isMemoryGrantFeedbackAdjustedFieldSpecified;
 
 	[XmlAttribute]
-	public ulong SerialRequiredMemory
+	internal ulong SerialRequiredMemory
 	{
 		get
 		{
@@ -70,7 +70,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public ulong SerialDesiredMemory
+	internal ulong SerialDesiredMemory
 	{
 		get
 		{
@@ -83,7 +83,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public ulong RequiredMemory
+	internal ulong RequiredMemory
 	{
 		get
 		{
@@ -96,7 +96,7 @@ public class MemoryGrantType
 	}
 
 	[XmlIgnore]
-	public bool RequiredMemorySpecified
+	internal bool RequiredMemorySpecified
 	{
 		get
 		{
@@ -109,7 +109,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public ulong DesiredMemory
+	internal ulong DesiredMemory
 	{
 		get
 		{
@@ -122,7 +122,7 @@ public class MemoryGrantType
 	}
 
 	[XmlIgnore]
-	public bool DesiredMemorySpecified
+	internal bool DesiredMemorySpecified
 	{
 		get
 		{
@@ -135,7 +135,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public ulong RequestedMemory
+	internal ulong RequestedMemory
 	{
 		get
 		{
@@ -148,7 +148,7 @@ public class MemoryGrantType
 	}
 
 	[XmlIgnore]
-	public bool RequestedMemorySpecified
+	internal bool RequestedMemorySpecified
 	{
 		get
 		{
@@ -161,7 +161,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public ulong GrantWaitTime
+	internal ulong GrantWaitTime
 	{
 		get
 		{
@@ -174,7 +174,7 @@ public class MemoryGrantType
 	}
 
 	[XmlIgnore]
-	public bool GrantWaitTimeSpecified
+	internal bool GrantWaitTimeSpecified
 	{
 		get
 		{
@@ -187,7 +187,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public ulong GrantedMemory
+	internal ulong GrantedMemory
 	{
 		get
 		{
@@ -200,7 +200,7 @@ public class MemoryGrantType
 	}
 
 	[XmlIgnore]
-	public bool GrantedMemorySpecified
+	internal bool GrantedMemorySpecified
 	{
 		get
 		{
@@ -213,7 +213,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public ulong MaxUsedMemory
+	internal ulong MaxUsedMemory
 	{
 		get
 		{
@@ -226,7 +226,7 @@ public class MemoryGrantType
 	}
 
 	[XmlIgnore]
-	public bool MaxUsedMemorySpecified
+	internal bool MaxUsedMemorySpecified
 	{
 		get
 		{
@@ -239,7 +239,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public ulong MaxQueryMemory
+	internal ulong MaxQueryMemory
 	{
 		get
 		{
@@ -252,7 +252,7 @@ public class MemoryGrantType
 	}
 
 	[XmlIgnore]
-	public bool MaxQueryMemorySpecified
+	internal bool MaxQueryMemorySpecified
 	{
 		get
 		{
@@ -265,7 +265,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public ulong LastRequestedMemory
+	internal ulong LastRequestedMemory
 	{
 		get
 		{
@@ -278,7 +278,7 @@ public class MemoryGrantType
 	}
 
 	[XmlIgnore]
-	public bool LastRequestedMemorySpecified
+	internal bool LastRequestedMemorySpecified
 	{
 		get
 		{
@@ -291,7 +291,7 @@ public class MemoryGrantType
 	}
 
 	[XmlAttribute]
-	public EnMemoryGrantFeedbackInfoType IsMemoryGrantFeedbackAdjusted
+	internal EnMemoryGrantFeedbackInfoType IsMemoryGrantFeedbackAdjusted
 	{
 		get
 		{
@@ -304,7 +304,7 @@ public class MemoryGrantType
 	}
 
 	[XmlIgnore]
-	public bool IsMemoryGrantFeedbackAdjustedSpecified
+	internal bool IsMemoryGrantFeedbackAdjustedSpecified
 	{
 		get
 		{

@@ -92,7 +92,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	private int _BatchIndex;
 	private bool _ContainsErrors = false;
 	private int _ExecTimeout = SysConstants.C_DefaultCommandTimeout;
-	private EnBatchState _ExecutionState;
+	private EniBatchState _ExecutionState;
 	private bool _NoResultsExpected;
 	private readonly QueryManager _QryMgr;
 	private long _RowsAffected;
@@ -172,7 +172,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	{
 		lock (_LockLocal)
 		{
-			if (_ExecutionState == EnBatchState.Cancelling)
+			if (_ExecutionState == EniBatchState.Cancelling)
 				return true;
 
 			// Evs.Trace(GetType(), "QESQLBatch.Cancel", "Cancelled: {0}.", cancelToken.Cancelled());
@@ -180,7 +180,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			if (!cancelToken.Cancelled())
 				return false;
 
-			_ExecutionState = EnBatchState.Cancelling;
+			_ExecutionState = EniBatchState.Cancelling;
 
 			if (_ActiveResultSet != null)
 			{
@@ -219,7 +219,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		{
 			if (CheckCancelled(cancelToken))
 			{
-				_ExecutionState = EnBatchState.Initial;
+				_ExecutionState = EniBatchState.Initial;
 				return EnScriptExecutionResult.Cancel;
 			}
 		}
@@ -235,7 +235,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 
 		lock (_LockLocal)
-			_ExecutionState = EnBatchState.Executing;
+			_ExecutionState = EniBatchState.Executing;
 
 
 		try
@@ -295,7 +295,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 						else
 						{
 							result = EnScriptExecutionResult.Success;
-							_ExecutionState = EnBatchState.Executed;
+							_ExecutionState = EniBatchState.Executed;
 						}
 					}
 				}
@@ -335,7 +335,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 			if (CheckCancelled(cancelToken))
 			{
 				lock (_LockLocal)
-					_ExecutionState = EnBatchState.Initial;
+					_ExecutionState = EniBatchState.Initial;
 			}
 		}
 
@@ -570,7 +570,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 				if (CheckCancelled(cancelToken))
 					result = EnScriptExecutionResult.Cancel;
 				else
-					_ExecutionState = EnBatchState.ProcessingResults;
+					_ExecutionState = EniBatchState.ProcessingResults;
 			}
 
 			if (NewResultSetEventAsync != null && result != EnScriptExecutionResult.Cancel)
@@ -685,7 +685,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 					lock (_LockLocal)
 					{
 						if (canComplete)
-							_ExecutionState = EnBatchState.Executed;
+							_ExecutionState = EniBatchState.Executed;
 					}
 
 					if (!isSpecialAction)
@@ -819,7 +819,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 			// Moved because everything is now in a batch and this must only be executed at batch completion.
-			// if (_State != EnBatchState.Initial && _State != EnBatchState.Cancelling)
+			// if (_State != EniBatchState.Initial && _State != EniBatchState.Cancelling)
 			//	DataLoadedEvent?.Invoke(this, new(_SqlStatement, _RowsAffected, dataReader.RecordsAffected, DateTime.Now, false));
 
 			if (!CheckCancelled(cancelToken))
@@ -896,7 +896,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		// Evs.Trace(GetType(), "QESQLBatch.Reset", "", null);
 		lock (_LockLocal)
 		{
-			_ExecutionState = EnBatchState.Initial;
+			_ExecutionState = EniBatchState.Initial;
 			_SqlStatement = null;
 			_TextSpan = null;
 			_RowsAffected = 0L;
@@ -968,11 +968,11 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 	// =========================================================================================================
-	#region Sub-Classes - QESQLBatch
+	#region									Nested types - QESQLBatch
 	// =========================================================================================================
 
 
-	public enum EnBatchState
+	public enum EniBatchState
 	{
 		Initial,
 		Executing,
@@ -982,6 +982,6 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 	}
 
 
-	#endregion Sub-Classes
+	#endregion Nested types
 
 }

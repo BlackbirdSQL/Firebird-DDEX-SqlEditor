@@ -74,7 +74,7 @@ public class TransientSettings : PersistentSettings, IBsEditorTransientSettings,
 
 
 	private readonly BitArray _ExecOptions;
-	
+
 
 	#endregion Fields
 

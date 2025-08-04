@@ -10,7 +10,7 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Model.QueryExecution;
 
 
-public class GridBatchConsumer : AbstractBatchConsumer
+internal class GridBatchConsumer : AbstractBatchConsumer
 {
 	private ResultSetAndGridContainer _GridContainer;
 

@@ -14,17 +14,17 @@ using BlackbirdSql.Shared.Events;
 namespace BlackbirdSql.Shared.Controls.Widgets;
 
 
-public class QESplitter : Control, IMessageFilter
+internal class QESplitter : Control, IMessageFilter
 {
 	private class CaptureTracker
 	{
-		public Point LastCapturedMousePos = new Point(-1, -1);
+		internal Point LastCapturedMousePos = new Point(-1, -1);
 
-		public int DragOffset;
+		internal int DragOffset;
 
-		public bool Capturing;
+		internal bool Capturing;
 
-		public void Reset()
+		internal void Reset()
 		{
 			DragOffset = 0;
 			LastCapturedMousePos.X = -1;
@@ -53,7 +53,7 @@ public class QESplitter : Control, IMessageFilter
 
 	private readonly CaptureTracker captTracker = new CaptureTracker();
 
-	public bool HorizontalSplitter
+	internal bool HorizontalSplitter
 	{
 		get
 		{
@@ -82,7 +82,7 @@ public class QESplitter : Control, IMessageFilter
 	}
 
 	[DefaultValue(BorderStyle.None)]
-	public BorderStyle BorderStyle
+	internal BorderStyle BorderStyle
 	{
 		get
 		{
@@ -145,7 +145,7 @@ public class QESplitter : Control, IMessageFilter
 		}
 	}
 
-	public event SplitterMovedEventHandler SplitterMovedEvent
+	internal event SplitterMovedEventHandler SplitterMovedEvent
 	{
 		add
 		{
@@ -351,7 +351,7 @@ public class QESplitter : Control, IMessageFilter
 		}
 	}
 
-	public static IntPtr CreateHalftoneHBRUSH()
+	internal static IntPtr CreateHalftoneHBRUSH()
 	{
 		short[] array = new short[8];
 		for (int i = 0; i < 8; i++)
@@ -360,7 +360,7 @@ public class QESplitter : Control, IMessageFilter
 		}
 
 		IntPtr intPtr = Native.CreateBitmapManaged(8, 8, 1, 1, array);
-		IntPtr result = Native.CreateBrushIndirectManaged(new Native.LOGBRUSHEx
+		IntPtr result = Native.CreateBrushIndirectManaged(new Native.LOGBRUSHX
 		{
 			lbColor = ColorTranslator.ToWin32(Color.Black),
 			lbStyle = 3,

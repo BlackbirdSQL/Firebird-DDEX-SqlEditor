@@ -14,12 +14,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RollupLevelType
+internal class RollupLevelType
 {
 	private int levelField;
 
 	[XmlAttribute]
-	public int Level
+	internal int Level
 	{
 		get
 		{

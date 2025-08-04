@@ -21,7 +21,7 @@ namespace BlackbirdSql.Data;
 /// service so that BlackbirdSql can provide support for additional database engines.
 /// </summary>
 // =========================================================================================================
-public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
+internal class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 {
 	private DatabaseInfoService()
 	{
@@ -29,10 +29,10 @@ public class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInfo
 
 
 
-	public static IBsNativeDatabaseInfo EnsureInstance() => _Instance ??= new DatabaseInfoService();
+	internal static IBsNativeDatabaseInfo EnsureInstance() => _Instance ??= new DatabaseInfoService();
 
 
-	public static IBsNativeDatabaseInfo _Instance = null;
+	internal static IBsNativeDatabaseInfo _Instance = null;
 
 
 

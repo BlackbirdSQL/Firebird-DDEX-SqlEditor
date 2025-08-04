@@ -3,7 +3,7 @@
 
 namespace BlackbirdSql.Shared.Controls.Graphing.Enums;
 
-public enum EnExecutionPlanType
+internal enum EnExecutionPlanType
 {
 	Unknown,
 	Actual,

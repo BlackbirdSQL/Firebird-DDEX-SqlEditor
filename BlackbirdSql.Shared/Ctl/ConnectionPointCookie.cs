@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.Shared.Ctl;
 
 
-public sealed class ConnectionPointCookie : IDisposable
+internal sealed class ConnectionPointCookie : IDisposable
 {
 	private IConnectionPointContainer _Cpc;
 
@@ -34,7 +34,7 @@ public sealed class ConnectionPointCookie : IDisposable
 		GC.SuppressFinalize(this);
 	}
 
-	public void Dispose(bool disposing)
+	internal void Dispose(bool disposing)
 	{
 		if (!disposing)
 		{
@@ -116,13 +116,13 @@ public sealed class ConnectionPointCookie : IDisposable
 	}
 
 	[Obsolete("Use Dispose()", false)]
-	public void Disconnect()
+	internal void Disconnect()
 	{
 		Dispose(disposing: false);
 	}
 
 	[Obsolete("Use Dispose()", false)]
-	public void Disconnect(bool release)
+	internal void Disconnect(bool release)
 	{
 		Dispose(disposing: true);
 	}

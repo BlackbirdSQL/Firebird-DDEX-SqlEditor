@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class MemoryFractionsType
+internal class MemoryFractionsType
 {
 	private double inputField;
 
 	private double outputField;
 
 	[XmlAttribute]
-	public double Input
+	internal double Input
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class MemoryFractionsType
 	}
 
 	[XmlAttribute]
-	public double Output
+	internal double Output
 	{
 		get
 		{

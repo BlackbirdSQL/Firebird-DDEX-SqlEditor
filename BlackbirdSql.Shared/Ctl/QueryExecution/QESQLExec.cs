@@ -79,7 +79,7 @@ public class QESQLExec : AbstractQESQLExec
 	// =========================================================================================================
 
 
-	public GetCurrentWorkingDirectoryPath CurrentWorkingDirectoryPath { get; set; }
+	public GetCwdPathDelegateI CwdPath { get; set; }
 
 	public event QueryDataEventHandler BatchDataLoadedEvent;
 	public event BatchStatementCompletedEventHandler BatchStatementCompletedEvent;
@@ -476,13 +476,13 @@ public class QESQLExec : AbstractQESQLExec
 
 
 	// =========================================================================================================
-	#region Sub-Classes - QESQLExec
+	#region									Nested types - QESQLExec
 	// =========================================================================================================
 
 
-	public delegate string GetCurrentWorkingDirectoryPath();
+	public delegate string GetCwdPathDelegateI();
 
 
-	#endregion Sub-Classes
+	#endregion Nested types
 
 }

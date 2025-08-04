@@ -10,17 +10,17 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
 [TypeConverter(typeof(ExpandableObjectConverter))]
-public class RunTimeCounters : ICustomTypeDescriptor
+internal class RunTimeCounters : ICustomTypeDescriptor
 {
 	protected struct Counter
 	{
-		public int Thread;
+		internal int Thread;
 
-		public int BrickId;
+		internal int BrickId;
 
-		public bool BrickIdSpecified;
+		internal bool BrickIdSpecified;
 
-		public ulong Value;
+		internal ulong Value;
 
 		public Counter(int thread, ulong value)
 		{
@@ -45,13 +45,13 @@ public class RunTimeCounters : ICustomTypeDescriptor
 
 	protected List<Counter> counters = new List<Counter>();
 
-	public ulong TotalCounters => totalCounters;
+	internal ulong TotalCounters => totalCounters;
 
-	public ulong MaxCounter => maxCounter;
+	internal ulong MaxCounter => maxCounter;
 
-	public bool DisplayTotalCounters { get; set; }
+	internal bool DisplayTotalCounters { get; set; }
 
-	public int NumOfCounters => counters.Count;
+	internal int NumOfCounters => counters.Count;
 
 	public RunTimeCounters()
 	{
@@ -59,7 +59,7 @@ public class RunTimeCounters : ICustomTypeDescriptor
 		DisplayTotalCounters = true;
 	}
 
-	public void AddCounter(int thread, ulong counterValue)
+	internal void AddCounter(int thread, ulong counterValue)
 	{
 		counters.Add(new Counter(thread, counterValue));
 		totalCounters += counterValue;
@@ -69,7 +69,7 @@ public class RunTimeCounters : ICustomTypeDescriptor
 		}
 	}
 
-	public void AddCounter(int thread, int brickId, ulong counterValue)
+	internal void AddCounter(int thread, int brickId, ulong counterValue)
 	{
 		counters.Add(new Counter(thread, brickId, counterValue));
 		totalCounters += counterValue;
@@ -79,7 +79,7 @@ public class RunTimeCounters : ICustomTypeDescriptor
 		}
 	}
 
-	public override string ToString()
+	internal override string ToString()
 	{
 		if (DisplayTotalCounters)
 		{

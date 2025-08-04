@@ -22,10 +22,10 @@ namespace BlackbirdSql;
 /// No restricted access whatsoever should take place outside of this class.
 /// </summary>
 // =========================================================================================================
-public abstract class Reflect
+internal abstract class Reflect
 {
 
-	public static T CreateInstance<T>(params object[] args)
+	internal static T CreateInstance<T>(params object[] args)
 	{
 		// Evs.Trace(typeof(Reflect), "CreateInstance<T>()", "Instance Type: {0}.", typeof(T).FullName);
 
@@ -36,7 +36,7 @@ public abstract class Reflect
 		return (T)instance;
 	}
 
-	public static object CreateInstance(string containerClassName, params object[] args)
+	internal static object CreateInstance(string containerClassName, params object[] args)
 	{
 		Type typeContainerClass;
 
@@ -98,7 +98,7 @@ public abstract class Reflect
 	/// <see cref="RemoveEventHandler"/>.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static Delegate AddEventHandler(object handlerMethodContainerInstance, string handlerMethodName,
+	internal static Delegate AddEventHandler(object handlerMethodContainerInstance, string handlerMethodName,
 		object eventContainerClassInstance, string eventName, BindingFlags eventBindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(AddEventHandler), "Handler name: {0}, event name: {1}.", handlerMethodName, eventName);
@@ -157,7 +157,7 @@ public abstract class Reflect
 	/// accessor binding flags of the attribute field.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static object GetAttributeValue(PropertyDescriptor descriptor, Type attributeType,
+	internal static object GetAttributeValue(PropertyDescriptor descriptor, Type attributeType,
 		string attributeValueFieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(GetAttributeValue), "Attribute type: {0}, attribute field: {1}.", attributeType.FullName, attributeValueFieldName);
@@ -181,7 +181,7 @@ public abstract class Reflect
 	/// Gets a class Type given the fully qualified class name.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public Type GetClassType(string typeName)
+	internal Type GetClassType(string typeName)
 	{
 		return Type.GetType(typeName, true, true);
 	}
@@ -197,7 +197,7 @@ public abstract class Reflect
 	/// Returns the field object else logs a diagnostics exception and returns null on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object GetField(object containerClassInstance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
+	internal static object GetField(object containerClassInstance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(GetField), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 
@@ -235,7 +235,7 @@ public abstract class Reflect
 	/// returns null on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static FieldInfo GetFieldInfo(object containerClassInstance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
+	internal static FieldInfo GetFieldInfo(object containerClassInstance, string fieldName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), "GetFieldInfo(object)", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
 		if (bindingFlags == BindingFlags.Default)
@@ -383,7 +383,7 @@ public abstract class Reflect
 	/// on error.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object GetFieldInfoValue(object containerClassInstance, FieldInfo fieldInfo)
+	internal static object GetFieldInfoValue(object containerClassInstance, FieldInfo fieldInfo)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(GetFieldInfoValue), "Container class: {0}, fieldinfo name: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
 
@@ -432,7 +432,7 @@ public abstract class Reflect
 	/// on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object GetFieldValue(object containerClassInstance, string fieldName, 
+	internal static object GetFieldValue(object containerClassInstance, string fieldName, 
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(GetFieldValue), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
@@ -455,7 +455,7 @@ public abstract class Reflect
 	/// on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object GetFieldValue(Type typeContainerClass, string fieldName,
+	internal static object GetFieldValue(Type typeContainerClass, string fieldName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(GetFieldValue), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
@@ -524,7 +524,7 @@ public abstract class Reflect
 	/// on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object GetFieldValueBase(object containerClassInstance, string fieldName,
+	internal static object GetFieldValueBase(object containerClassInstance, string fieldName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(GetFieldValueBase), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
@@ -551,7 +551,7 @@ public abstract class Reflect
 	/// on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object GetFieldValueBase(object containerClassInstance, string fieldName,
+	internal static object GetFieldValueBase(object containerClassInstance, string fieldName,
 		int depth, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(GetFieldValueBase), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
@@ -599,7 +599,7 @@ public abstract class Reflect
 	/// returns null on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static PropertyInfo GetPropertyInfo(Type typeContainerClass,
+	internal static PropertyInfo GetPropertyInfo(Type typeContainerClass,
 		string propertyName, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		if (bindingFlags == BindingFlags.Default)
@@ -660,7 +660,7 @@ public abstract class Reflect
 	/// on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object GetPropertyValue(object containerClassInstance, string propertyName,
+	internal static object GetPropertyValue(object containerClassInstance, string propertyName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), "GetPropertyValue(object)", "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);
@@ -688,7 +688,7 @@ public abstract class Reflect
 	/// on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object GetPropertyValue(string containerClassName, string propertyName,
+	internal static object GetPropertyValue(string containerClassName, string propertyName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), "GetPropertyValue(Type)", "Container class: {0}, property: {1}.", containerClassName, propertyName);
@@ -717,7 +717,7 @@ public abstract class Reflect
 	/// on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object GetPropertyValue(Type typeContainerClass, string propertyName,
+	internal static object GetPropertyValue(Type typeContainerClass, string propertyName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), "GetPropertyValue(Type)", "Container class: {0}, property: {1}.", containerClassName, propertyName);
@@ -759,7 +759,7 @@ public abstract class Reflect
 	///  or void.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object InvokeAmbiguousMethod(object containerClassInstance, string method,
+	internal static object InvokeAmbiguousMethod(object containerClassInstance, string method,
 		BindingFlags bindingFlags, object[] args = null, Type[] argTypes = null,
 		ParameterModifier[] argModifiers = null)
 	{
@@ -828,7 +828,7 @@ public abstract class Reflect
 	///  or void.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object InvokeAmbiguousMethodBaseType(object containerClassInstance, string method,
+	internal static object InvokeAmbiguousMethodBaseType(object containerClassInstance, string method,
 		int depth, BindingFlags bindingFlags, object[] args = null, Type[] argTypes = null,
 		ParameterModifier[] argModifiers = null)
 	{
@@ -889,7 +889,7 @@ public abstract class Reflect
 	///  or void.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object InvokeGenericMethod<T>(object containerClassInstance, string method,
+	internal static object InvokeGenericMethod<T>(object containerClassInstance, string method,
 		BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
 	{
 		// Evs.Trace(typeof(Reflect), "InvokeGenericMethod<T>()", "Container class: {0}, method: {1}, return type: {2}.",
@@ -969,7 +969,7 @@ public abstract class Reflect
 	///  or void.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object InvokeMethod(object containerClassInstance, string method,
+	internal static object InvokeMethod(object containerClassInstance, string method,
 		BindingFlags bindingFlags = BindingFlags.Default, object[] args = null,
 		bool throwExeption = false)
 	{
@@ -1035,7 +1035,7 @@ public abstract class Reflect
 	/// returns false on error.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object InvokeMethod(Type typeContainerClass, string method,
+	internal static object InvokeMethod(Type typeContainerClass, string method,
 		BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
 	{
 		// Evs.Trace(typeof(Reflect), "InvokeMethod(Type)", "Container class: {0}, method: {1}.", typeContainerClass.FullName, method);
@@ -1082,7 +1082,7 @@ public abstract class Reflect
 	///  or void.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static object InvokeMethodBaseType(object containerClassInstance, string method,
+	internal static object InvokeMethodBaseType(object containerClassInstance, string method,
 		int depth, BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(InvokeMethodBaseType), "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
@@ -1130,7 +1130,7 @@ public abstract class Reflect
 	/// binding flags.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void RemoveEventHandler(object containerClassInstance, string eventName,
+	internal static void RemoveEventHandler(object containerClassInstance, string eventName,
 		Delegate eventHandler, BindingFlags eventBindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(RemoveEventHandler), "Container class: {0}, event: {1}.", containerClassInstance.GetType().FullName, eventName);
@@ -1173,7 +1173,7 @@ public abstract class Reflect
 	/// returns false.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool SetFieldInfoValue(object containerClassInstance, FieldInfo fieldInfo, object value)
+	internal static bool SetFieldInfoValue(object containerClassInstance, FieldInfo fieldInfo, object value)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(SetFieldInfoValue), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldInfo.Name);
 
@@ -1202,7 +1202,7 @@ public abstract class Reflect
 	/// returns false.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool SetFieldValue(object containerClassInstance, string fieldName,
+	internal static bool SetFieldValue(object containerClassInstance, string fieldName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), "SetFieldValue(object)", "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
@@ -1240,7 +1240,7 @@ public abstract class Reflect
 	/// returns false.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool SetFieldValue(Type typeContainerClass, string fieldName,
+	internal static bool SetFieldValue(Type typeContainerClass, string fieldName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), "SetFieldValue(Type)", "Container class: {0}, field: {1}.", typeContainerClass.FullName, fieldName);
@@ -1278,7 +1278,7 @@ public abstract class Reflect
 	/// returns false.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool SetFieldValueBase(object containerClassInstance, string fieldName,
+	internal static bool SetFieldValueBase(object containerClassInstance, string fieldName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(SetFieldValueBase), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
@@ -1314,7 +1314,7 @@ public abstract class Reflect
 	/// returns false.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool SetPropertyValue(object containerClassInstance, string propertyName,
+	internal static bool SetPropertyValue(object containerClassInstance, string propertyName,
 		object value, BindingFlags bindingFlags = BindingFlags.Default)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(SetPropertyValue), "Container class: {0}, property: {1}.", containerClassInstance.GetType().FullName, propertyName);

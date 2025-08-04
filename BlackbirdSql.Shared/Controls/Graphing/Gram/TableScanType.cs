@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class TableScanType : RowsetType
+internal class TableScanType : RowsetType
 {
 	private ScalarExpressionType predicateField;
 
@@ -40,7 +40,7 @@ public class TableScanType : RowsetType
 
 	private bool storageFieldSpecified;
 
-	public ScalarExpressionType Predicate
+	internal ScalarExpressionType Predicate
 	{
 		get
 		{
@@ -52,7 +52,7 @@ public class TableScanType : RowsetType
 		}
 	}
 
-	public SingleColumnReferenceType PartitionId
+	internal SingleColumnReferenceType PartitionId
 	{
 		get
 		{
@@ -65,7 +65,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlArrayItem("Object", IsNullable = false)]
-	public ObjectType[] IndexedViewInfo
+	internal ObjectType[] IndexedViewInfo
 	{
 		get
 		{
@@ -78,7 +78,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool Ordered
+	internal bool Ordered
 	{
 		get
 		{
@@ -91,7 +91,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool ForcedIndex
+	internal bool ForcedIndex
 	{
 		get
 		{
@@ -104,7 +104,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool ForcedIndexSpecified
+	internal bool ForcedIndexSpecified
 	{
 		get
 		{
@@ -117,7 +117,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool ForceScan
+	internal bool ForceScan
 	{
 		get
 		{
@@ -130,7 +130,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool ForceScanSpecified
+	internal bool ForceScanSpecified
 	{
 		get
 		{
@@ -143,7 +143,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool NoExpandHint
+	internal bool NoExpandHint
 	{
 		get
 		{
@@ -156,7 +156,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool NoExpandHintSpecified
+	internal bool NoExpandHintSpecified
 	{
 		get
 		{
@@ -169,7 +169,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlAttribute]
-	public EnStorageType Storage
+	internal EnStorageType Storage
 	{
 		get
 		{
@@ -182,7 +182,7 @@ public class TableScanType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool StorageSpecified
+	internal bool StorageSpecified
 	{
 		get
 		{

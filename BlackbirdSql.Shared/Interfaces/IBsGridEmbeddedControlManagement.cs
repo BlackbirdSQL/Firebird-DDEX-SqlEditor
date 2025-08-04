@@ -8,7 +8,7 @@ using System.Windows.Forms;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Shared.Interfaces
 {
-	public interface IBsGridEmbeddedControlManagement
+	internal interface IBsGridEmbeddedControlManagement
 	{
 		bool WantMouseClick { get; }
 

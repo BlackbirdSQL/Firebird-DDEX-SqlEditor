@@ -2,7 +2,7 @@
 namespace BlackbirdSql.Core.Enums;
 
 
-public enum EnRctKeyType
+internal enum EnRctKeyType
 {
 
 	DatasetKey,

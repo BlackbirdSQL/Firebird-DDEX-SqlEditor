@@ -47,7 +47,7 @@ namespace BlackbirdSql;
 /// specifically to perform a trace
 /// </remarks>
 // =========================================================================================================
-public static class Diag
+internal static class Diag
 {
 
 	// ---------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ public static class Diag
 	/// Returns the context the call was made from. Either 'IDE' or 'APP'
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string Context
+	internal static string Context
 	{
 		get { return _Context; }
 		set { _Context = value; }
@@ -118,10 +118,19 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Flag indicating whether or not <see cref="Diag.Debug"/> exceptions are output.
+	/// Debug exceptions are always output in debug builds.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+	private static bool EnableDebugExceptions => PersistentSettings.EnableDebugExceptions;
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Flag indicating whether or not <see cref="Diag.Expected"/> exceptions are output.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static bool EnableExpected => _InternalActive > 0 || PersistentSettings.EnableExpected;
+	private static bool EnableExpected => PersistentSettings.EnableExpected;
 
 
 	// ---------------------------------------------------------------------------------
@@ -147,7 +156,7 @@ public static class Diag
 	/// The log file path
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string LogFile => PersistentSettings.LogFile;
+	internal static string LogFile => PersistentSettings.LogFile;
 
 
 	#endregion Property accessors
@@ -164,19 +173,23 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Diagnostics method for outputting unexpected Exceptions that will display on
-	/// DEBUG builds but be swallowed in release builds.
+	/// DEBUG builds but be swallowed in release builds unless Debug exceptions are
+	/// enabled.
 	/// For example an object that is unavailable on shutdown but that could possibly
 	/// have been checked, or a ConnectionSource state that has not yet been
 	/// identified.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void Debug(Exception ex, string message = "",
+	internal static void Debug(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
 	{
 #if DEBUG
 		InternalLog(ex, message, line, memberName, sourcePath, EnEventLevel.Debug);
+#else
+		if (EnableDebugExceptions)
+			InternalLog(ex, message, line, memberName, sourcePath, EnEventLevel.Debug);
 #endif
 	}
 
@@ -187,7 +200,7 @@ public static class Diag
 	/// Diagnostics method for outputting DataExplorerNodeEventArgs info.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void DebugNode(Type classType, string method, DataExplorerNodeEventArgs e, EnConnectionSource connectionSource, bool onMainThread, bool initialized)
+	internal static void DebugNode(Type classType, string method, DataExplorerNodeEventArgs e, EnConnectionSource connectionSource, bool onMainThread, bool initialized)
 	{
 		if (e.Node != null && e.Node.ExplorerConnection != null
 			&& e.Node.ExplorerConnection.ConnectionNode != null
@@ -242,7 +255,7 @@ public static class Diag
 	/// Diagnostics method for Exceptions only
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void Ex(Exception ex, string message = "",
+	internal static void Ex(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -257,7 +270,7 @@ public static class Diag
 	/// Diagnostics method for TypeAccessException instance no initialized.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static TypeAccessException ExceptionInstance(Type type,
+	internal static TypeAccessException ExceptionInstance(Type type,
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -275,7 +288,7 @@ public static class Diag
 	/// Diagnostics method for TypeInitializationException duplicate instance.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static TypeInitializationException ExceptionInstanceExists(Type type,
+	internal static TypeInitializationException ExceptionInstanceExists(Type type,
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -294,7 +307,7 @@ public static class Diag
 	/// Diagnostics method for ServiceUnavailableException
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static ServiceUnavailableException ExceptionService(Type type,
+	internal static ServiceUnavailableException ExceptionService(Type type,
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -315,7 +328,7 @@ public static class Diag
 	/// connection or a temporarily inaccessible tab for text updates. 
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void Expected(Exception ex, string message = "",
+	internal static void Expected(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -736,7 +749,7 @@ public static class Diag
 	/// The logs a trace message.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void LogEvs(string message, int line, string memberName,
+	internal static void LogEvs(string message, int line, string memberName,
 		string sourcePath, 
 		EnEventLevel exceptionType = EnEventLevel.Error)
 	{
@@ -753,7 +766,7 @@ public static class Diag
 	/// The text value to write. May be an empty string, in which case a newline is written.
 	/// </param>
 	// ---------------------------------------------------------------------------------
-	public static async Task OutputPaneWriteLineAsync(string value, bool isException)
+	internal static async Task OutputPaneWriteLineAsync(string value, bool isException)
 	{
 		string outputMsg = value;
 
@@ -819,7 +832,7 @@ public static class Diag
 	/// </summary>
 	/// <param name="value">The text value to write.</param>
 	// ---------------------------------------------------------------------------------
-	public static void OutputPaneWriteLineAsyui(string value, bool isException)
+	internal static void OutputPaneWriteLineAsyui(string value, bool isException)
 	{
 		string outputMsg = value;
 		_ = Task.Run(() => OutputPaneWriteLineAsync(outputMsg, isException));
@@ -832,7 +845,7 @@ public static class Diag
 	/// Diagnostics method for full information stack trace
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void Stack(string message = "",
+	internal static void Stack(string message = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -867,7 +880,7 @@ public static class Diag
 	/// Diagnostics method for full exception stack trace
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void StackException(Exception ex, string message = "",
+	internal static void StackException(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -899,7 +912,7 @@ public static class Diag
 	/// Diagnostics method for full exception stack trace
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void StackException(string message = "",
+	internal static void StackException(string message = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -922,7 +935,7 @@ public static class Diag
 	/// bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool TaskHandlerProgress(IBsTaskHandlerClient client, string text, bool completed = false)
+	internal static bool TaskHandlerProgress(IBsTaskHandlerClient client, string text, bool completed = false)
 	{
 		// Fire and forget - Switch to threadpool.
 
@@ -940,7 +953,7 @@ public static class Diag
 	/// Diagnostics method for OnUiThread
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static object ThrowException(Exception ex,
+	internal static object ThrowException(Exception ex,
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -957,7 +970,7 @@ public static class Diag
 	/// Raises excepton for ServiceUnavailableException
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static async Task<TResult> ThrowExceptionServiceUnavailableAsync<TResult>(Type serviceType,
+	internal static async Task<TResult> ThrowExceptionServiceUnavailableAsync<TResult>(Type serviceType,
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -976,7 +989,7 @@ public static class Diag
 	/// Throws an exception for TypeAccessException instance exists.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void ThrowIfInstanceExists(object instance,
+	internal static void ThrowIfInstanceExists(object instance,
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -992,7 +1005,7 @@ public static class Diag
 	/// Throws an exception for TypeInitializationException duplicate instance.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void ThrowIfInstanceNull(object instance, Type type,
+	internal static void ThrowIfInstanceNull(object instance, Type type,
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -1009,7 +1022,7 @@ public static class Diag
 	/// thread trail by Intellisense.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void ThrowIfNotOnUIThread(
+	internal static void ThrowIfNotOnUIThread(
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -1032,7 +1045,7 @@ public static class Diag
 	/// Raises an exception if OnUiThread.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void ThrowIfOnUIThread(
+	internal static void ThrowIfOnUIThread(
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -1055,7 +1068,7 @@ public static class Diag
 	/// Raises excepton for ServiceUnavailableException
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void ThrowIfServiceUnavailable(object service, Type type,
+	internal static void ThrowIfServiceUnavailable(object service, Type type,
 		[System.Runtime.CompilerServices.CallerLineNumber] int line = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourcePath = "")
@@ -1072,7 +1085,7 @@ public static class Diag
 	/// switch to the UI thread and be clear to update the IDE status bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool UpdateStatusBar(string value, bool clear)
+	internal static bool UpdateStatusBar(string value, bool clear)
 	{
 		// Fire and discard remember.
 

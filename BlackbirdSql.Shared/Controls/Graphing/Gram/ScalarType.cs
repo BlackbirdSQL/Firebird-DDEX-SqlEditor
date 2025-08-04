@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ScalarType
+internal class ScalarType
 {
 	private object itemField;
 
@@ -39,7 +39,7 @@ public class ScalarType
 	[XmlElement("UDTMethod", typeof(UDTMethodType))]
 	[XmlElement("UserDefinedAggregate", typeof(UDAggregateType))]
 	[XmlElement("UserDefinedFunction", typeof(UDFType))]
-	public object Item
+	internal object Item
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class ScalarType
 		}
 	}
 
-	public InternalInfoType InternalInfo
+	internal InternalInfoType InternalInfo
 	{
 		get
 		{
@@ -64,7 +64,7 @@ public class ScalarType
 	}
 
 	[XmlAttribute]
-	public string ScalarString
+	internal string ScalarString
 	{
 		get
 		{

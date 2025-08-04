@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class OutputColumnsType
+internal class OutputColumnsType
 {
 	private DefinedValuesListTypeDefinedValue[] definedValuesField;
 
 	private ObjectType[] objectField;
 
 	[XmlArrayItem("DefinedValue", IsNullable = false)]
-	public DefinedValuesListTypeDefinedValue[] DefinedValues
+	internal DefinedValuesListTypeDefinedValue[] DefinedValues
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class OutputColumnsType
 	}
 
 	[XmlElement("Object")]
-	public ObjectType[] Object
+	internal ObjectType[] Object
 	{
 		get
 		{

@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class OptimizerHardwareDependentPropertiesType
+internal class OptimizerHardwareDependentPropertiesType
 {
 	private ulong estimatedAvailableMemoryGrantField;
 
@@ -29,7 +29,7 @@ public class OptimizerHardwareDependentPropertiesType
 	private bool maxCompileMemoryFieldSpecified;
 
 	[XmlAttribute]
-	public ulong EstimatedAvailableMemoryGrant
+	internal ulong EstimatedAvailableMemoryGrant
 	{
 		get
 		{
@@ -42,7 +42,7 @@ public class OptimizerHardwareDependentPropertiesType
 	}
 
 	[XmlAttribute]
-	public ulong EstimatedPagesCached
+	internal ulong EstimatedPagesCached
 	{
 		get
 		{
@@ -55,7 +55,7 @@ public class OptimizerHardwareDependentPropertiesType
 	}
 
 	[XmlAttribute]
-	public ulong EstimatedAvailableDegreeOfParallelism
+	internal ulong EstimatedAvailableDegreeOfParallelism
 	{
 		get
 		{
@@ -68,7 +68,7 @@ public class OptimizerHardwareDependentPropertiesType
 	}
 
 	[XmlIgnore]
-	public bool EstimatedAvailableDegreeOfParallelismSpecified
+	internal bool EstimatedAvailableDegreeOfParallelismSpecified
 	{
 		get
 		{
@@ -81,7 +81,7 @@ public class OptimizerHardwareDependentPropertiesType
 	}
 
 	[XmlAttribute]
-	public ulong MaxCompileMemory
+	internal ulong MaxCompileMemory
 	{
 		get
 		{
@@ -94,7 +94,7 @@ public class OptimizerHardwareDependentPropertiesType
 	}
 
 	[XmlIgnore]
-	public bool MaxCompileMemorySpecified
+	internal bool MaxCompileMemorySpecified
 	{
 		get
 		{

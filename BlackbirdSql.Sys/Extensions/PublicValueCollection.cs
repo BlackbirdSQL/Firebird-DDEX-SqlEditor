@@ -103,7 +103,7 @@ public sealed class PublicValueCollection<TKey, TValue> : ICollection<TValue>, I
 			}
 		}
 
-		internal Enumerator(PublicDictionary<TKey, TValue> _Dictionary)
+		public Enumerator(PublicDictionary<TKey, TValue> _Dictionary)
 		{
 			this._Dictionary = _Dictionary;
 			_Index = 0;

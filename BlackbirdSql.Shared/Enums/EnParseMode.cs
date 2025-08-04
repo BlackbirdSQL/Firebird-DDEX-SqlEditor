@@ -3,7 +3,7 @@
 
 namespace BlackbirdSql.Shared.Enums;
 
-public enum EnParseMode
+internal enum EnParseMode
 {
 	RecognizeAll,
 	RecognizeOnlyVariables,

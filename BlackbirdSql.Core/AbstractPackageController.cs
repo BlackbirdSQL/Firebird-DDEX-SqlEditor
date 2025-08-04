@@ -37,7 +37,7 @@ namespace BlackbirdSql.Core;
 /// Aslo performs cleanups of any sql editor documents that may be left dangling on solution close.
 /// </remarks>
 // =========================================================================================================
-public abstract class AbstractPackageController : AbstrusePackageController
+internal abstract class AbstractPackageController : AbstrusePackageController
 {
 
 
@@ -433,7 +433,7 @@ public abstract class AbstractPackageController : AbstrusePackageController
 	/// </summary>
 	/// <param name="disposing"></param>
 	// ---------------------------------------------------------------------------------
-	public override void UnadviseEvents(bool disposing)
+	internal override void UnadviseEvents(bool disposing)
 	{
 		// Diag.ThrowIfNotOnUIThread();
 

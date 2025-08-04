@@ -12,7 +12,7 @@ using System.Collections;
 namespace BlackbirdSql.Shared.Interfaces;
 
 
-public interface IBsGridMemDataStorage : IBsMemDataStorage, IBsDataStorage, IDisposable
+internal interface IBsGridMemDataStorage : IBsMemDataStorage, IBsDataStorage, IDisposable
 {
 	void InsertColumn(int nIndex, string name);
 

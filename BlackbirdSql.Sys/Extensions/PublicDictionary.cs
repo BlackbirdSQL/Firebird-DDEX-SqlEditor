@@ -196,7 +196,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 
 	protected int _Count;
 
-	internal int _Version;
+	public int _Version;
 
 	private int _FreeList;
 
@@ -1051,7 +1051,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 		return TryGetEntry(key, out value);
 	}
 
-	internal TValue GetValueOrDefault(TKey key)
+	public TValue GetValueOrDefault(TKey key)
 	{
 		int num = FindEntry(key);
 		if (num >= 0)

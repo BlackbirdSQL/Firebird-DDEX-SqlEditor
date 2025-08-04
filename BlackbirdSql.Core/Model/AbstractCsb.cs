@@ -261,7 +261,7 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 
 	/// <summary>
-	/// The internal Server Explorer connection id for Server Explorer connections.
+	/// The public Server Explorer connection id for Server Explorer connections.
 	/// </summary>
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
 	[GlobalizedDisplayName("PropertyDisplayConnectionKey")]

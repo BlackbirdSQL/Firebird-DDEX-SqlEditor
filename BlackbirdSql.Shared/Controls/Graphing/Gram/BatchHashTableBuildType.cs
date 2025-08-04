@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class BatchHashTableBuildType : RelOpBaseType
+internal class BatchHashTableBuildType : RelOpBaseType
 {
 	private RelOpType relOpField;
 
@@ -22,7 +22,7 @@ public class BatchHashTableBuildType : RelOpBaseType
 
 	private bool bitmapCreatorFieldSpecified;
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -35,7 +35,7 @@ public class BatchHashTableBuildType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool BitmapCreator
+	internal bool BitmapCreator
 	{
 		get
 		{
@@ -48,7 +48,7 @@ public class BatchHashTableBuildType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool BitmapCreatorSpecified
+	internal bool BitmapCreatorSpecified
 	{
 		get
 		{

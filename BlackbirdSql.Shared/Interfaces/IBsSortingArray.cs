@@ -8,7 +8,7 @@ using System.Collections;
 
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsSortingArray
+internal interface IBsSortingArray
 {
 	int InsertAt(int iGroup, object val);
 

@@ -6,15 +6,15 @@ using SysResources = BlackbirdSql.Sys.Properties.Resources;
 
 namespace System;
 
-public readonly struct Index : IEquatable<Index>
+internal readonly struct Index : IEquatable<Index>
 {
 	private readonly int _value;
 
-	public static Index Start => new Index(0);
+	internal static Index Start => new Index(0);
 
-	public static Index End => new Index(-1);
+	internal static Index End => new Index(-1);
 
-	public int Value
+	internal int Value
 	{
 		get
 		{
@@ -26,7 +26,7 @@ public readonly struct Index : IEquatable<Index>
 		}
 	}
 
-	public bool IsFromEnd => _value < 0;
+	internal bool IsFromEnd => _value < 0;
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public Index(int value, bool fromEnd = false)
@@ -51,7 +51,7 @@ public readonly struct Index : IEquatable<Index>
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static Index FromStart(int value)
+	internal static Index FromStart(int value)
 	{
 		if (value < 0)
 		{
@@ -61,7 +61,7 @@ public readonly struct Index : IEquatable<Index>
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static Index FromEnd(int value)
+	internal static Index FromEnd(int value)
 	{
 		if (value < 0)
 		{
@@ -71,7 +71,7 @@ public readonly struct Index : IEquatable<Index>
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public int GetOffset(int length)
+	internal int GetOffset(int length)
 	{
 		int offset = _value;
 		if (IsFromEnd)

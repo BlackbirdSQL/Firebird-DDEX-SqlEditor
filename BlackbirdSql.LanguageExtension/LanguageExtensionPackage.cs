@@ -31,7 +31,7 @@ namespace BlackbirdSql.LanguageExtension;
 //
 /// <summary>
 /// BlackbirdSql Language Extension <see cref="AsyncPackage"/> class implementation.
-/// This package is still under development. Autocomplete is TBC and Intellisense is partially complet.
+/// This package is still under development. Autocomplete is TBC and Intellisense is partially complete.
 /// </summary>
 // =============================================================================================================
 
@@ -506,5 +506,6 @@ public abstract class LanguageExtensionPackage : AbstractCorePackage, IBsLanguag
 
 
 }
+
 
 #endregion Class Declaration

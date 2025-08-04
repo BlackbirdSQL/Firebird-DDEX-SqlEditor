@@ -21,6 +21,6 @@ namespace BlackbirdSql.Sys.Interfaces;
 /// </summary>
 /// <remarks>
 // =========================================================================================================
-public interface SBsNativeProviderSchemaFactory
+internal interface SBsNativeProviderSchemaFactory
 {
 }

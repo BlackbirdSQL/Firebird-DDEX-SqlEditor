@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SpillToTempDbType
+internal class SpillToTempDbType
 {
 	private ulong spillLevelField;
 
@@ -25,7 +25,7 @@ public class SpillToTempDbType
 	private bool spilledThreadCountFieldSpecified;
 
 	[XmlAttribute]
-	public ulong SpillLevel
+	internal ulong SpillLevel
 	{
 		get
 		{
@@ -38,7 +38,7 @@ public class SpillToTempDbType
 	}
 
 	[XmlIgnore]
-	public bool SpillLevelSpecified
+	internal bool SpillLevelSpecified
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class SpillToTempDbType
 	}
 
 	[XmlAttribute]
-	public ulong SpilledThreadCount
+	internal ulong SpilledThreadCount
 	{
 		get
 		{
@@ -64,7 +64,7 @@ public class SpillToTempDbType
 	}
 
 	[XmlIgnore]
-	public bool SpilledThreadCountSpecified
+	internal bool SpilledThreadCountSpecified
 	{
 		get
 		{

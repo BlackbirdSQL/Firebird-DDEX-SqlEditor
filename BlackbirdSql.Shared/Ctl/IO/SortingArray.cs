@@ -11,7 +11,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Ctl.IO;
 
 
-public class SortingArray : IBsSortingArray
+internal class SortingArray : IBsSortingArray
 {
 	protected const int C_IncrementalBufferSize = 100;
 
@@ -36,7 +36,7 @@ public class SortingArray : IBsSortingArray
 		m_iRows = 0;
 	}
 
-	public void IncreaseBufferIfNeeded()
+	internal void IncreaseBufferIfNeeded()
 	{
 		if (m_iGroups == m_iGroupsBufferLength)
 		{
@@ -81,7 +81,7 @@ public class SortingArray : IBsSortingArray
 		throw ex;
 	}
 
-	public void FindElementPosition(int iRow, ref int iGroup, ref int iIndex)
+	internal void FindElementPosition(int iRow, ref int iGroup, ref int iIndex)
 	{
 		if (iRow >= m_iRows)
 		{

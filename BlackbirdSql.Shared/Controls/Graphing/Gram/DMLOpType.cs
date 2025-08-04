@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class DMLOpType : RelOpBaseType
+internal class DMLOpType : RelOpBaseType
 {
 	private AssignType[] assignmentMapField;
 
@@ -25,7 +25,7 @@ public class DMLOpType : RelOpBaseType
 	private RelOpType[] relOpField;
 
 	[XmlArrayItem("Assign", IsNullable = false)]
-	public AssignType[] AssignmentMap
+	internal AssignType[] AssignmentMap
 	{
 		get
 		{
@@ -38,7 +38,7 @@ public class DMLOpType : RelOpBaseType
 	}
 
 	[XmlArrayItem("Object", IsNullable = false)]
-	public ObjectType[] SourceTable
+	internal ObjectType[] SourceTable
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class DMLOpType : RelOpBaseType
 	}
 
 	[XmlArrayItem("Object", IsNullable = false)]
-	public ObjectType[] TargetTable
+	internal ObjectType[] TargetTable
 	{
 		get
 		{
@@ -64,7 +64,7 @@ public class DMLOpType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{

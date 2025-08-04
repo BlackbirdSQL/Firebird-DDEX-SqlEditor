@@ -11,7 +11,7 @@ internal sealed class MergeTypeParser : RelOpBaseTypeParser
 {
 	private static MergeTypeParser mergeTypeParser;
 
-	public new static MergeTypeParser Instance
+	internal new static MergeTypeParser Instance
 	{
 		get
 		{
@@ -24,7 +24,7 @@ internal sealed class MergeTypeParser : RelOpBaseTypeParser
 	{
 	}
 
-	public override void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
+	internal override void ParseProperties(object parsedItem, PropertyDescriptorCollection targetPropertyBag, NodeBuilderContext context)
 	{
 		base.ParseProperties(parsedItem, targetPropertyBag, context);
 		object value = ObjectWrapperTypeConverter.Convert(new MergeColumns(parsedItem as MergeType));

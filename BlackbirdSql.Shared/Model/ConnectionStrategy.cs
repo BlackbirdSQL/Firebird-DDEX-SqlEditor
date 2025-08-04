@@ -618,17 +618,4 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 
 	#endregion Event Handling
 
-
-
-
-
-	// =========================================================================================================
-	#region Sub-Classes - ConnectionStrategy
-	// =========================================================================================================
-
-
-
-
-	#endregion Sub-Classes
-
 }

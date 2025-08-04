@@ -10,9 +10,9 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Ctl.IO;
 
 
-public class FileStreamWriter : IBsFileStreamWriter, IDisposable
+internal class FileStreamWriter : IBsFileStreamWriter, IDisposable
 {
-	public const int DEFAULT_BUFFER_SIZE = 8192;
+	internal const int DEFAULT_BUFFER_SIZE = 8192;
 
 	private byte[] m_buf;
 
@@ -230,7 +230,7 @@ public class FileStreamWriter : IBsFileStreamWriter, IDisposable
 		return num + _FsWriter.WriteData(bytesVal, iLen);
 	}
 
-	internal int WriteLength(int iLen)
+	public int WriteLength(int iLen)
 	{
 		if (iLen < 255)
 		{

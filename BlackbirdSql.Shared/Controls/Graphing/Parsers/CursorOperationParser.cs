@@ -8,7 +8,7 @@ internal class CursorOperationParser : AbstractXmlPlanParser
 {
 	private static CursorOperationParser cursorOperationParser;
 
-	public static CursorOperationParser Instance
+	internal static CursorOperationParser Instance
 	{
 		get
 		{
@@ -17,7 +17,7 @@ internal class CursorOperationParser : AbstractXmlPlanParser
 		}
 	}
 
-	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
+	internal override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
 		return AbstractXmlPlanParser.NewNode(context);
 	}

@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class TraceFlagType
+internal class TraceFlagType
 {
 	private ulong valueField;
 
 	private EnTraceFlagScopeType scopeField;
 
 	[XmlAttribute]
-	public ulong Value
+	internal ulong Value
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class TraceFlagType
 	}
 
 	[XmlAttribute]
-	public EnTraceFlagScopeType Scope
+	internal EnTraceFlagScopeType Scope
 	{
 		get
 		{

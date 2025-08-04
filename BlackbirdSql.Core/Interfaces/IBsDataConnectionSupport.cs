@@ -4,7 +4,7 @@
 namespace BlackbirdSql.Core.Interfaces;
 
 
-public interface IBsDataConnectionSupport
+internal interface IBsDataConnectionSupport
 {
 	EnConnectionSource ConnectionSource { get; set; }
 }

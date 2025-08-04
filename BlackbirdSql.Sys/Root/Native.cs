@@ -128,7 +128,7 @@ public abstract class Native
 
 	// IntCreateBrushIndirect
 	[DllImport("gdi32", CharSet = CharSet.Auto, ExactSpelling = true)]
-	public static extern IntPtr CreateBrushIndirect(LOGBRUSHEx lb);
+	public static extern IntPtr CreateBrushIndirect(LOGBRUSHX lb);
 
 
 	// CreatePen
@@ -326,10 +326,10 @@ public abstract class Native
 
 
 	// =========================================================================================================
-	#region Internal Classes and Structs - Native
+	#region										Nested types - Native
 	// =========================================================================================================
 
-	public enum EnBrowseForFolderMessages
+	public enum EniBrowseForFolderMessages
 	{
 		EnableOk = 0x465,
 		Initialized = 1,
@@ -347,7 +347,7 @@ public abstract class Native
 
 
 	[Flags]
-	public enum EnBrowseInfos
+	public enum EniBrowseInfos
 	{
 		ReturnOnlyFSDirs = 0x1,
 		DontGoBelowDomain = 0x2,
@@ -366,7 +366,7 @@ public abstract class Native
 
 
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-	public class BROWSEINFOEx
+	public class BROWSEINFOX
 	{
 		public IntPtr hwndOwner;
 
@@ -436,7 +436,7 @@ public abstract class Native
 	}
 
 
-	public class LOGBRUSHEx
+	public class LOGBRUSHX
 	{
 		public int lbStyle;
 
@@ -511,7 +511,7 @@ public abstract class Native
 	}
 
 
-	public class Shell32
+	public class Shell32I
 	{
 		[DllImport("shell32.dll")]
 		public static extern int SHGetSpecialFolderLocation(IntPtr hwnd, int csidl, ref IntPtr ppidl);
@@ -521,18 +521,14 @@ public abstract class Native
 
 
 		[DllImport("shell32.dll", CharSet = CharSet.Auto)]
-		public static extern IntPtr SHBrowseForFolder([In] BROWSEINFOEx lpbi);
+		public static extern IntPtr SHBrowseForFolder([In] BROWSEINFOX lpbi);
 
 		[DllImport("shell32.dll")]
 		public static extern int SHGetMalloc([Out][MarshalAs(UnmanagedType.LPArray)] IMalloc[] ppMalloc);
 	}
 
 
-
-
-
-
-	#endregion #region Internal Classes and Structs
+	#endregion Nested types
 
 
 }

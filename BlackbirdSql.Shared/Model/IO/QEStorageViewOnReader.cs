@@ -9,7 +9,7 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public sealed class QEStorageViewOnReader : AbstractStorageView, IBsQEStorageView, IBsStorageView, IDisposable
+internal sealed class QEStorageViewOnReader : AbstractStorageView, IBsQEStorageView, IBsStorageView, IDisposable
 {
 	private readonly QEReaderDataStorage _QeReaderStorage;
 
@@ -117,7 +117,7 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBsQEStorageVie
 		return null;
 	}
 
-	public override void Dispose(bool disposing)
+	internal override void Dispose(bool disposing)
 	{
 		_StorageReader = null;
 		base.Dispose(disposing);

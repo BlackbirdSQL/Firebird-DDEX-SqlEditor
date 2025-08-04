@@ -9,7 +9,7 @@ internal sealed class ConditionParser : XmlPlanHierarchyParser
 {
 	private static ConditionParser conditionParser;
 
-	public new static ConditionParser Instance
+	internal new static ConditionParser Instance
 	{
 		get
 		{
@@ -18,7 +18,7 @@ internal sealed class ConditionParser : XmlPlanHierarchyParser
 		}
 	}
 
-	public override IEnumerable<FunctionTypeItem> ExtractFunctions(object parsedItem)
+	internal override IEnumerable<FunctionTypeItem> ExtractFunctions(object parsedItem)
 	{
 		if (parsedItem is StmtCondTypeCondition condition && condition.UDF != null)
 		{

@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class GbApplyType : RelOpBaseType
+internal class GbApplyType : RelOpBaseType
 {
 	private ScalarExpressionType[] predicateField;
 
@@ -27,7 +27,7 @@ public class GbApplyType : RelOpBaseType
 	private string aggTypeField;
 
 	[XmlElement("Predicate")]
-	public ScalarExpressionType[] Predicate
+	internal ScalarExpressionType[] Predicate
 	{
 		get
 		{
@@ -40,7 +40,7 @@ public class GbApplyType : RelOpBaseType
 	}
 
 	[XmlArrayItem("DefinedValue", IsNullable = false)]
-	public DefinedValuesListTypeDefinedValue[] AggFunctions
+	internal DefinedValuesListTypeDefinedValue[] AggFunctions
 	{
 		get
 		{
@@ -53,7 +53,7 @@ public class GbApplyType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -66,7 +66,7 @@ public class GbApplyType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string JoinType
+	internal string JoinType
 	{
 		get
 		{
@@ -79,7 +79,7 @@ public class GbApplyType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string AggType
+	internal string AggType
 	{
 		get
 		{

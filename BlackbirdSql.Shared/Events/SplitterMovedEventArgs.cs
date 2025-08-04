@@ -12,18 +12,18 @@ using System.Windows.Forms;
 namespace BlackbirdSql.Shared.Events;
 
 
-public delegate void SplitterMovedEventHandler(object sender, SplitterMovedEventArgs e);
+internal delegate void SplitterMovedEventHandler(object sender, SplitterMovedEventArgs e);
 
 
-public class SplitterMovedEventArgs : EventArgs
+internal class SplitterMovedEventArgs : EventArgs
 {
 	private readonly int _splitPos;
 
 	private readonly Control _boundControl;
 
-	public int SplitPosition => _splitPos;
+	internal int SplitPosition => _splitPos;
 
-	public Control BoundControl => _boundControl;
+	internal Control BoundControl => _boundControl;
 
 	public SplitterMovedEventArgs(int splitPos, Control boundControl)
 	{

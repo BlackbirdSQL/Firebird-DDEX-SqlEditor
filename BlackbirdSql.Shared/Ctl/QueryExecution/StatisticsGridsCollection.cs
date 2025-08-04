@@ -9,9 +9,9 @@ using BlackbirdSql.Shared.Controls.Results;
 namespace BlackbirdSql.Shared.Ctl.QueryExecution;
 
 
-public class StatisticsGridsCollection : CollectionBase
+internal class StatisticsGridsCollection : CollectionBase
 {
-	public StatisticsDlgGridControl this[int index]
+	internal StatisticsDlgGridControl this[int index]
 	{
 		get
 		{
@@ -37,12 +37,12 @@ public class StatisticsGridsCollection : CollectionBase
 		AddRange(value);
 	}
 
-	public int Add(StatisticsDlgGridControl node)
+	internal int Add(StatisticsDlgGridControl node)
 	{
 		return List.Add(node);
 	}
 
-	public void AddRange(StatisticsDlgGridControl[] nodes)
+	internal void AddRange(StatisticsDlgGridControl[] nodes)
 	{
 		for (int i = 0; i < nodes.Length; i++)
 		{
@@ -50,7 +50,7 @@ public class StatisticsGridsCollection : CollectionBase
 		}
 	}
 
-	public void AddRange(StatisticsGridsCollection value)
+	internal void AddRange(StatisticsGridsCollection value)
 	{
 		for (int i = 0; i < value.Count; i++)
 		{
@@ -58,27 +58,27 @@ public class StatisticsGridsCollection : CollectionBase
 		}
 	}
 
-	public bool Contains(ResultSetAndGridContainer node)
+	internal bool Contains(ResultSetAndGridContainer node)
 	{
 		return List.Contains(node);
 	}
 
-	public void CopyTo(StatisticsDlgGridControl[] array, int index)
+	internal void CopyTo(StatisticsDlgGridControl[] array, int index)
 	{
 		List.CopyTo(array, index);
 	}
 
-	public int IndexOf(StatisticsDlgGridControl node)
+	internal int IndexOf(StatisticsDlgGridControl node)
 	{
 		return List.IndexOf(node);
 	}
 
-	public void Insert(int index, StatisticsDlgGridControl node)
+	internal void Insert(int index, StatisticsDlgGridControl node)
 	{
 		List.Insert(index, node);
 	}
 
-	public void Remove(StatisticsDlgGridControl node)
+	internal void Remove(StatisticsDlgGridControl node)
 	{
 		List.Remove(node);
 	}

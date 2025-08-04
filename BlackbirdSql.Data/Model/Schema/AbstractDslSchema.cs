@@ -49,7 +49,7 @@ internal abstract class AbstractDslSchema
 
 	#region Methods
 
-	public DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
+	internal DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions)
 	{
 		// Evs.Trace(GetType(), "GetSchema", "collectionName: {0}", collectionName);
 
@@ -78,7 +78,7 @@ internal abstract class AbstractDslSchema
 
 
 
-	public async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken = default)
+	internal async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken = default)
 	{
 		// Evs.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
 

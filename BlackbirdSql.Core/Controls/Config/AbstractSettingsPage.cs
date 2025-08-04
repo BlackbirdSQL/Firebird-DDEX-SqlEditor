@@ -36,7 +36,6 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 
 	public AbstractSettingsPage() : base()
 	{
-		Evs.Trace(typeof(AbstractSettingsPage<T>), ".ctor");
 	}
 
 

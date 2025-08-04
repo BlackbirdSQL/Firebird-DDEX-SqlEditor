@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ParallelismTypeActivation
+internal class ParallelismTypeActivation
 {
 	private ObjectType objectField;
 
@@ -23,7 +23,7 @@ public class ParallelismTypeActivation
 
 	private string fragmentEliminationField;
 
-	public ObjectType Object
+	internal ObjectType Object
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class ParallelismTypeActivation
 	}
 
 	[XmlAttribute]
-	public EnParallelismTypeActivationType Type
+	internal EnParallelismTypeActivationType Type
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class ParallelismTypeActivation
 	}
 
 	[XmlAttribute]
-	public string FragmentElimination
+	internal string FragmentElimination
 	{
 		get
 		{

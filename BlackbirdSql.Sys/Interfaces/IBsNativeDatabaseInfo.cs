@@ -21,7 +21,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 /// Interface for native DatabaseInfo extension methods service.
 /// </summary>
 // =========================================================================================================
-public interface IBsNativeDatabaseInfo
+internal interface IBsNativeDatabaseInfo
 {
 	long GetActiveTransactionsCount(NativeDatabaseInfoProxy @this);
 	List<string> GetActiveUsers(NativeDatabaseInfoProxy @this);

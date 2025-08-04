@@ -14,13 +14,13 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ConstantScanType : RelOpBaseType
+internal class ConstantScanType : RelOpBaseType
 {
 	private ScalarType[][] valuesField;
 
 	[XmlArrayItem("Row", IsNullable = false)]
 	[XmlArrayItem("ScalarOperator", IsNullable = false, NestingLevel = 1)]
-	public ScalarType[][] Values
+	internal ScalarType[][] Values
 	{
 		get
 		{

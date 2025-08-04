@@ -52,8 +52,6 @@ public abstract class PersistentSettings : LanguageExtension.Ctl.Config.Persiste
 	// =========================================================================================================
 
 
-	private int _AssemblyId = -1;
-
 
 	#endregion Fields
 
@@ -95,26 +93,6 @@ public abstract class PersistentSettings : LanguageExtension.Ctl.Config.Persiste
 	// =========================================================================================================
 	#region Methods - PersistentSettings
 	// =========================================================================================================
-
-
-	public override int GetEvsAssemblyId(Type type)
-	{
-		int id = base.GetEvsAssemblyId(type);
-
-		if (id > 0)
-			return id;
-
-		--id;
-
-		if (type.Assembly.FullName == typeof(PersistentSettings).Assembly.FullName)
-		{
-			_AssemblyId = -id;
-			return _AssemblyId;
-		}
-
-		return id;
-	}
-
 
 
 	/// <summary>

@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.Shared.Interfaces;
 
 
-public interface IBsExtendedCommandHandler
+internal interface IBsExtendedCommandHandler
 {
 	int OnExec(AbstractTabbedEditorPane editor, ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 

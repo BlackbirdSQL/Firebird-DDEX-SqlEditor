@@ -30,7 +30,7 @@ namespace BlackbirdSql;
 /// the ui thread. It's the Caller's responsibility to ensure calls to UnsafeCmd are safe.
 /// </summary>
 // =========================================================================================================
-public abstract class UnsafeCmd
+internal abstract class UnsafeCmd
 {
 
 	// ---------------------------------------------------------------------------------
@@ -38,10 +38,10 @@ public abstract class UnsafeCmd
 	// ---------------------------------------------------------------------------------
 
 
-	public static Project MiscellaneousProject =>
+	internal static Project MiscellaneousProject =>
 		MiscellaneousProjectHierarchy.ToProject();
 
-	public static IVsProject3 MiscellaneousProjectHierarchy =>
+	internal static IVsProject3 MiscellaneousProjectHierarchy =>
 		GetMiscellaneousProjectHierarchy(null);
 
 
@@ -71,14 +71,14 @@ public abstract class UnsafeCmd
 
 
 
-	public static string GetFileNameUsingSaveDialog(string strFilterString, string strCaption, string initialDir, IVsSaveOptionsDlg optionsDlg)
+	internal static string GetFileNameUsingSaveDialog(string strFilterString, string strCaption, string initialDir, IVsSaveOptionsDlg optionsDlg)
 	{
 		return GetFileNameUsingSaveDialog(strFilterString, strCaption, initialDir, optionsDlg, out _);
 	}
 
 
 
-	public static string GetFileNameUsingSaveDialog(string strFilterString, string strCaption, string initialDir, IVsSaveOptionsDlg optionsDlg, out int filterIndex)
+	internal static string GetFileNameUsingSaveDialog(string strFilterString, string strCaption, string initialDir, IVsSaveOptionsDlg optionsDlg, out int filterIndex)
 	{
 		// Evs.Trace(typeof(CommonUtils), "CommonUtils.GetFileNameUsingSaveDialog", "strFilterString = {0}, strCaption = {1}", strFilterString, strCaption);
 
@@ -165,7 +165,7 @@ public abstract class UnsafeCmd
 
 
 
-	public static IVsProject3 GetMiscellaneousProjectHierarchy(IServiceProvider provider)
+	internal static IVsProject3 GetMiscellaneousProjectHierarchy(IServiceProvider provider)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
@@ -188,7 +188,7 @@ public abstract class UnsafeCmd
 	/// prefix else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IDictionary<ProjectItem, object> GetOpenMiscProjectItems(IVsHierarchy hierarchy, string[] extensions, string prefix = null)
+	internal static IDictionary<ProjectItem, object> GetOpenMiscProjectItems(IVsHierarchy hierarchy, string[] extensions, string prefix = null)
 	{
 		Dictionary<ProjectItem, object> projectItems = [];
 
@@ -246,7 +246,7 @@ public abstract class UnsafeCmd
 	/// and moniker in a project hierarchy given a list of extensions.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IDictionary<ProjectItem, (uint, string)> GetOpenProjectItems(IVsHierarchy hierarchy, string[] extensions)
+	internal static IDictionary<ProjectItem, (uint, string)> GetOpenProjectItems(IVsHierarchy hierarchy, string[] extensions)
 	{
 		Dictionary<ProjectItem, (uint, string)> projectItems = [];
 
@@ -325,7 +325,7 @@ public abstract class UnsafeCmd
 
 
 
-	public static string GetProjectKind(string name)
+	internal static string GetProjectKind(string name)
 	{
 		foreach (KeyValuePair<string, string> pair in ProjectGuids)
 		{
@@ -344,7 +344,7 @@ public abstract class UnsafeCmd
 	/// <param name="hierarchy"></param>
 	/// <returns>true if project is CPS</returns>
 	// ---------------------------------------------------------------------------------
-	public static bool IsCpsProject(IVsHierarchy hierarchy)
+	internal static bool IsCpsProject(IVsHierarchy hierarchy)
 	{
 		Requires.NotNull(hierarchy, "hierarchy");
 		return hierarchy.IsCapabilityMatch("CPS");
@@ -353,7 +353,7 @@ public abstract class UnsafeCmd
 
 
 	// IsInAutomationFunction
-	public static bool IsInAutomationFunction()
+	internal static bool IsInAutomationFunction()
 	{
 		Diag.ThrowIfNotOnUIThread();
 
@@ -374,7 +374,7 @@ public abstract class UnsafeCmd
 	/// Returns True if project is the misc project.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool IsMiscProjectKind(string kind)
+	internal static bool IsMiscProjectKind(string kind)
 	{
 		return kind.Trim(['{', '}']).Equals(VSConstants.CLSID.MiscellaneousFilesProject_string.Trim(['{', '}']),
 			StringComparison.OrdinalIgnoreCase);
@@ -387,7 +387,7 @@ public abstract class UnsafeCmd
 	/// Returns True if project is a folder project.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool IsProjectFolderKind(string kind)
+	internal static bool IsProjectFolderKind(string kind)
 	{
 		kind = kind.Trim(['{', '}']).ToLower();
 
@@ -404,7 +404,7 @@ public abstract class UnsafeCmd
 	/// Returns True if project is a folder project.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool IsProjectFolderKind(Guid clsid)
+	internal static bool IsProjectFolderKind(Guid clsid)
 	{
 		return IsProjectFolderKind(clsid.ToString("D"));
 	}
@@ -418,7 +418,7 @@ public abstract class UnsafeCmd
 	/// <param name="kind"></param>
 	/// <returns>The descriptive name from <see cref="ProjectGuids"/></returns>
 	// ---------------------------------------------------------------------------------
-	public static string Kind(string kind)
+	internal static string Kind(string kind)
 	{
 		if (!ProjectGuids.TryGetValue(kind, out string name))
 			name = kind;
@@ -435,7 +435,7 @@ public abstract class UnsafeCmd
 	/// If rootProject is supplied recursion begins at that project.
 	/// </summary>
 	/// <returns></returns>
-	public static List<Project> RecursiveGetDesignTimeProjects(Project rootProject = null)
+	internal static List<Project> RecursiveGetDesignTimeProjects(Project rootProject = null)
 	{
 		IEnumerable rootProjects;
 		List<Project> projects = [];
@@ -495,7 +495,7 @@ public abstract class UnsafeCmd
 
 
 
-	public static void ShowContextMenuEvent(Guid rclsidActive, int menuId, int xPos, int yPos, IOleCommandTarget commandTarget)
+	internal static void ShowContextMenuEvent(Guid rclsidActive, int menuId, int xPos, int yPos, IOleCommandTarget commandTarget)
 	{
 		Diag.ThrowIfNotOnUIThread();
 

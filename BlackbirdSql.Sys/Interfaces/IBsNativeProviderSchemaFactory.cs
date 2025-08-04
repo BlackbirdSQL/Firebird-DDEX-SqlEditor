@@ -17,7 +17,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 //										IBsProviderSchemaFactory Interface
 //
 // =========================================================================================================
-public interface IBsNativeProviderSchemaFactory
+internal interface IBsNativeProviderSchemaFactory
 {
 	// Schema factory to handle custom collections
 	DataTable GetSchema(IDbConnection connection, string collectionName, string[] restrictions);

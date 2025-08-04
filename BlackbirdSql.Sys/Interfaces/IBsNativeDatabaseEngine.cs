@@ -27,7 +27,7 @@ namespace BlackbirdSql.Sys.Interfaces;
 /// Interface for native DatabaseEngine service.
 /// </summary>
 // =========================================================================================================
-public interface IBsNativeDatabaseEngine
+internal interface IBsNativeDatabaseEngine
 {
 	string AssemblyQualifiedName_ { get; }
 	Assembly ClientFactoryAssembly_ { get; }

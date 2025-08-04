@@ -6,7 +6,7 @@ using BlackbirdSql.Shared.Controls.Graphing.Gram;
 
 namespace BlackbirdSql.Shared.Controls.Graphing.Interfaces;
 
-public interface IXmlBatchParser
+internal interface IXmlBatchParser
 {
 	string GetSingleStatementXml(object dataSource, int statementIndex);
 

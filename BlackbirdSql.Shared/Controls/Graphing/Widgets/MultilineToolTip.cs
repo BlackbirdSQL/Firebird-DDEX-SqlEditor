@@ -13,75 +13,75 @@ using System.Windows.Forms;
 
 namespace BlackbirdSql.Shared.Controls.Graphing.Widgets;
 
-public class MultilineToolTip : ToolTip
+internal class MultilineToolTip : ToolTip
 {
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
 	private class LOGFONT
 	{
-		public const int LF_FACESIZE = 32;
+		internal const int LF_FACESIZE = 32;
 
-		public int lfHeight;
+		internal int lfHeight;
 
-		public int lfWidth;
+		internal int lfWidth;
 
-		public int lfEscapement;
+		internal int lfEscapement;
 
-		public int lfOrientation;
+		internal int lfOrientation;
 
-		public int lfWeight;
+		internal int lfWeight;
 
-		public byte lfItalic;
+		internal byte lfItalic;
 
-		public byte lfUnderline;
+		internal byte lfUnderline;
 
-		public byte lfStrikeOut;
+		internal byte lfStrikeOut;
 
-		public byte lfCharSet;
+		internal byte lfCharSet;
 
-		public byte lfOutPrecision;
+		internal byte lfOutPrecision;
 
-		public byte lfClipPrecision;
+		internal byte lfClipPrecision;
 
-		public byte lfQuality;
+		internal byte lfQuality;
 
-		public byte lfPitchAndFamily;
+		internal byte lfPitchAndFamily;
 
 		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-		public string lfFaceName = "";
+		internal string lfFaceName = "";
 	}
 
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
 	private class NONCLIENTMETRICS
 	{
-		public uint cbSize = (uint)Marshal.SizeOf(typeof(NONCLIENTMETRICS));
+		internal uint cbSize = (uint)Marshal.SizeOf(typeof(NONCLIENTMETRICS));
 
-		public int iBorderWidth;
+		internal int iBorderWidth;
 
-		public int iScrollWidth;
+		internal int iScrollWidth;
 
-		public int iScrollHeight;
+		internal int iScrollHeight;
 
-		public int iCaptionWidth;
+		internal int iCaptionWidth;
 
-		public int iCaptionHeight;
+		internal int iCaptionHeight;
 
-		public LOGFONT lfCaptionFont = new LOGFONT();
+		internal LOGFONT lfCaptionFont = new LOGFONT();
 
-		public int iSmCaptionWidth;
+		internal int iSmCaptionWidth;
 
-		public int iSmCaptionHeight;
+		internal int iSmCaptionHeight;
 
-		public LOGFONT lfSmCaptionFont = new LOGFONT();
+		internal LOGFONT lfSmCaptionFont = new LOGFONT();
 
-		public int iMenuWidth;
+		internal int iMenuWidth;
 
-		public int iMenuHeight;
+		internal int iMenuHeight;
 
-		public LOGFONT lfMenuFont = new LOGFONT();
+		internal LOGFONT lfMenuFont = new LOGFONT();
 
-		public LOGFONT lfStatusFont = new LOGFONT();
+		internal LOGFONT lfStatusFont = new LOGFONT();
 
-		public LOGFONT lfMessageFont = new LOGFONT();
+		internal LOGFONT lfMessageFont = new LOGFONT();
 	}
 
 	internal class ControlData(Control control)
@@ -92,9 +92,9 @@ public class MultilineToolTip : ToolTip
 
 		private string text;
 
-		public Control Control => control;
+		internal Control Control => control;
 
-		public string Text
+		internal string Text
 		{
 			get
 			{
@@ -120,9 +120,9 @@ public class MultilineToolTip : ToolTip
 
 	private ControlData current;
 
-	public static readonly Size Margin = new Size(5, 5);
+	internal static readonly Size Margin = new Size(5, 5);
 
-	public Font Font
+	internal Font Font
 	{
 		get
 		{
@@ -154,7 +154,7 @@ public class MultilineToolTip : ToolTip
 		}
 	}
 
-	public Font BoldFont
+	internal Font BoldFont
 	{
 		get
 		{
@@ -163,7 +163,7 @@ public class MultilineToolTip : ToolTip
 		}
 	}
 
-	public Control CurrentControl
+	internal Control CurrentControl
 	{
 		get
 		{
@@ -175,7 +175,7 @@ public class MultilineToolTip : ToolTip
 		}
 	}
 
-	public string CurrentText
+	internal string CurrentText
 	{
 		get
 		{
@@ -187,7 +187,7 @@ public class MultilineToolTip : ToolTip
 		}
 	}
 
-	public object CurrentTag
+	internal object CurrentTag
 	{
 		get
 		{
@@ -233,7 +233,7 @@ public class MultilineToolTip : ToolTip
 		Draw += OnToolTipDraw;
 	}
 
-	public new void SetToolTip(Control control, string text)
+	internal new void SetToolTip(Control control, string text)
 	{
 		ControlData controlData = GetControlData(control);
 		controlData.Text = text;
@@ -248,12 +248,12 @@ public class MultilineToolTip : ToolTip
 		}
 	}
 
-	public new string GetToolTip(Control control)
+	internal new string GetToolTip(Control control)
 	{
 		return GetControlData(control).Text;
 	}
 
-	public new void RemoveAll()
+	internal new void RemoveAll()
 	{
 		Hide();
 		foreach (ControlData controlData in controlDataList)

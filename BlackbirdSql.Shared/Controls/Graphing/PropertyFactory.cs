@@ -13,12 +13,12 @@ using BlackbirdSql.Shared.Controls.Graphing.ComponentModel;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public static class PropertyFactory
+internal static class PropertyFactory
 {
 	private static readonly PropertyDescriptorCollection Properties = TypeDescriptor.GetProperties(typeof(PropertyFactory));
 
 
-	public static PropertyDescriptor CreateProperty(PropertyDescriptor property, object value)
+	internal static PropertyDescriptor CreateProperty(PropertyDescriptor property, object value)
 	{
 		Type type = null;
 		if (property.Name == "Items" || property.Name == "Item")
@@ -70,7 +70,7 @@ public static class PropertyFactory
 		return property.Attributes;
 	}
 
-	public static PropertyDescriptor CreateProperty(string propertyName, object value)
+	internal static PropertyDescriptor CreateProperty(string propertyName, object value)
 	{
 		PropertyDescriptor propertyDescriptor = Properties[propertyName];
 		if (propertyDescriptor != null)

@@ -3,7 +3,7 @@
 
 namespace BlackbirdSql.Sys.Enums;
 
-public enum EnModelObjectType
+internal enum EnModelObjectType
 {
 	Unknown = 0,
 	Column,
@@ -30,7 +30,7 @@ public enum EnModelObjectType
 
 
 
-public static class EnModelObjectTypeExtensions
+internal static class EnModelObjectTypeExtensions
 {
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -38,7 +38,7 @@ public static class EnModelObjectTypeExtensions
 	/// IDE editor window else false.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool CanAlter(this IVsDataExplorerNode @this)
+	internal static bool CanAlter(this IVsDataExplorerNode @this)
 	{
 		if (@this != null && @this.Object != null)
 		{
@@ -54,7 +54,7 @@ public static class EnModelObjectTypeExtensions
 
 
 
-	public static bool CanCopy(this IVsDataExplorerNode @this)
+	internal static bool CanCopy(this IVsDataExplorerNode @this)
 	{
 		if (@this != null)
 		{
@@ -72,7 +72,7 @@ public static class EnModelObjectTypeExtensions
 
 
 
-	public static bool CanExecute(this IVsDataExplorerNode @this)
+	internal static bool CanExecute(this IVsDataExplorerNode @this)
 	{
 		if (@this != null)
 		{
@@ -95,7 +95,7 @@ public static class EnModelObjectTypeExtensions
 	/// editor window else false.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool CanOpen(this IVsDataExplorerNode @this)
+	internal static bool CanOpen(this IVsDataExplorerNode @this)
 	{
 		if (@this != null && @this.Object != null)
 		{
@@ -128,7 +128,7 @@ public static class EnModelObjectTypeExtensions
 	/// Returns the designer node (type Table or View) this node belongs to else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IVsDataExplorerNode DesignerNode(this IVsDataExplorerNode @this)
+	internal static IVsDataExplorerNode DesignerNode(this IVsDataExplorerNode @this)
 	{
 		IVsDataExplorerNode result = null;
 		IVsDataExplorerNode node = @this;
@@ -154,7 +154,7 @@ public static class EnModelObjectTypeExtensions
 	/// editor window else false.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool HasScript(this IVsDataExplorerNode @this)
+	internal static bool HasScript(this IVsDataExplorerNode @this)
 	{
 		if (@this != null && @this.Object != null)
 		{
@@ -181,7 +181,7 @@ public static class EnModelObjectTypeExtensions
 	}
 
 
-	public static EnModelObjectType ModelObjectType(this IVsDataExplorerNode @this)
+	internal static EnModelObjectType ModelObjectType(this IVsDataExplorerNode @this)
 	{
 		if (@this == null || @this.Object == null)
 			return EnModelObjectType.Unknown;
@@ -225,7 +225,7 @@ public static class EnModelObjectTypeExtensions
 	/// Returns true if typeName exists in the values array else false.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ModelObjectTypeIn(this IVsDataExplorerNode @this, params EnModelObjectType[] types)
+	internal static bool ModelObjectTypeIn(this IVsDataExplorerNode @this, params EnModelObjectType[] types)
 	{
 		EnModelObjectType objecttype = @this.ModelObjectType();
 
@@ -244,7 +244,7 @@ public static class EnModelObjectTypeExtensions
 	/// Gets a node's type as reflected in the IVsObjectSupport xml given the node.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static EnModelObjectType NodeBaseType(this IVsDataExplorerNode @this)
+	internal static EnModelObjectType NodeBaseType(this IVsDataExplorerNode @this)
 	{
 		if (@this == null)
 			return EnModelObjectType.Unknown;
@@ -289,7 +289,7 @@ public static class EnModelObjectTypeExtensions
 	/// Returns the HasScript node this node belongs to else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IVsDataExplorerNode ScriptNode(this IVsDataExplorerNode @this)
+	internal static IVsDataExplorerNode ScriptNode(this IVsDataExplorerNode @this)
 	{
 		IVsDataExplorerNode result = null;
 		IVsDataExplorerNode node = @this;

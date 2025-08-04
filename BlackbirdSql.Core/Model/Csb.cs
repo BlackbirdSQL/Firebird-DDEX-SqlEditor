@@ -671,8 +671,9 @@ public class Csb : AbstractCsb, IBsCsb
 
 
 
+
 	// =========================================================================================================
-	#region Sub-Classes - Csb
+	#region										Nested types - Csb
 	// =========================================================================================================
 
 
@@ -682,8 +683,13 @@ public class Csb : AbstractCsb, IBsCsb
 	/// properties PropertyGrid.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public class CsbConverter : CollectionConverter
+	public class CollectionConverterI : CollectionConverter
 	{
+		public CollectionConverterI()
+		{
+		}
+
+
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			// Evs.Debug(GetType(), nameof(ConvertTo),
@@ -704,12 +710,9 @@ public class Csb : AbstractCsb, IBsCsb
 			return true;
 		}
 
-		public CsbConverter()
-		{
-		}
 	}
 
 
-	#endregion Sub-Classes
+	#endregion Nested types
 
 }

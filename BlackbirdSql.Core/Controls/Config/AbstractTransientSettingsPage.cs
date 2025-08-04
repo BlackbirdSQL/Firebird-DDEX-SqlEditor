@@ -24,8 +24,6 @@ public abstract class AbstractTransientSettingsPage<TPage, TModel> : AbstractSet
 {
 	public AbstractTransientSettingsPage(IBsSettingsProvider transientSettings) : base()
 	{
-		Evs.Trace(typeof(AbstractTransientSettingsPage<TPage, TModel>), ".ctor");
-
 		_Model = ThreadHelper.JoinableTaskFactory.Run(() => AbstractSettingsModel<TModel>.CreateInstanceAsync(transientSettings));
 
 		_Model.SettingsResetEvent += OnResetSettings;

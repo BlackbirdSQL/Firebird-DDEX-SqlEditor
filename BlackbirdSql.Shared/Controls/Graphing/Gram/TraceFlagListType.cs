@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class TraceFlagListType
+internal class TraceFlagListType
 {
 	private TraceFlagType[] traceFlagField;
 
 	private bool isCompileTimeField;
 
 	[XmlElement("TraceFlag")]
-	public TraceFlagType[] TraceFlag
+	internal TraceFlagType[] TraceFlag
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class TraceFlagListType
 	}
 
 	[XmlAttribute]
-	public bool IsCompileTime
+	internal bool IsCompileTime
 	{
 		get
 		{

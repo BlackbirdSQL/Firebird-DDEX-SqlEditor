@@ -1,6 +1,6 @@
 ﻿namespace BlackbirdSql.Sys.Enums;
 
-public enum EnModelTargetType
+internal enum EnModelTargetType
 {
 	Unknown = 0,
 	QueryScript,

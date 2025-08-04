@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SeekPredicateType
+internal class SeekPredicateType
 {
 	private ScanRangeType prefixField;
 
@@ -24,7 +24,7 @@ public class SeekPredicateType
 
 	private SingleColumnReferenceType isNotNullField;
 
-	public ScanRangeType Prefix
+	internal ScanRangeType Prefix
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class SeekPredicateType
 		}
 	}
 
-	public ScanRangeType StartRange
+	internal ScanRangeType StartRange
 	{
 		get
 		{
@@ -48,7 +48,7 @@ public class SeekPredicateType
 		}
 	}
 
-	public ScanRangeType EndRange
+	internal ScanRangeType EndRange
 	{
 		get
 		{
@@ -60,7 +60,7 @@ public class SeekPredicateType
 		}
 	}
 
-	public SingleColumnReferenceType IsNotNull
+	internal SingleColumnReferenceType IsNotNull
 	{
 		get
 		{

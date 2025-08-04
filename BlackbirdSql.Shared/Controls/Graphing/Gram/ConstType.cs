@@ -14,12 +14,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ConstType
+internal class ConstType
 {
 	private string constValueField;
 
 	[XmlAttribute]
-	public string ConstValue
+	internal string ConstValue
 	{
 		get
 		{

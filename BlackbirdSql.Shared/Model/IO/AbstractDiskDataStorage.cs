@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Threading;
 
 namespace BlackbirdSql.Shared.Model.IO;
 
-public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStorage, IDisposable
+internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStorage, IDisposable
 {
 	protected string _FileName;
 
@@ -84,7 +84,7 @@ public abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStora
 		}
 	}
 
-	public StorageDataEntity DiskDataEntity => _DiskDataEntity;
+	internal StorageDataEntity DiskDataEntity => _DiskDataEntity;
 
 	public event StorageNotifyDelegate StorageNotifyEventAsync;
 

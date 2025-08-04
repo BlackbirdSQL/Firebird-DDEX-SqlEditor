@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ComputeScalarType : RelOpBaseType
+internal class ComputeScalarType : RelOpBaseType
 {
 	private RelOpType relOpField;
 
@@ -22,7 +22,7 @@ public class ComputeScalarType : RelOpBaseType
 
 	private bool computeSequenceFieldSpecified;
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -35,7 +35,7 @@ public class ComputeScalarType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool ComputeSequence
+	internal bool ComputeSequence
 	{
 		get
 		{
@@ -48,7 +48,7 @@ public class ComputeScalarType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool ComputeSequenceSpecified
+	internal bool ComputeSequenceSpecified
 	{
 		get
 		{

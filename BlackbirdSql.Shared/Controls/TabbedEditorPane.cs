@@ -905,7 +905,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 			_ProperyWindowManager = new PropertiesWindowManager(this);
 
-			qryMgr.CurrentWorkingDirectoryPath = GetCurrentWorkingDirectory;
+			qryMgr.CwdPath = GetCwd;
 
 			EditorCodeTab editorCodeTab = EditorTabCode;
 
@@ -1095,7 +1095,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 
 
-	private string GetCurrentWorkingDirectory()
+	private string GetCwd()
 	{
 		string result;
 

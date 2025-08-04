@@ -8,7 +8,7 @@ using BlackbirdSql.Core.Interfaces;
 namespace BlackbirdSql.Core.Controls.Widgets;
 
 
-public class ExceptionSafeButton : Button
+internal class ExceptionSafeButton : Button
 {
 	protected override void OnClick(EventArgs e)
 	{

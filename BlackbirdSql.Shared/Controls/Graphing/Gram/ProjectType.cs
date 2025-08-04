@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ProjectType : RelOpBaseType
+internal class ProjectType : RelOpBaseType
 {
 	private RelOpType[] relOpField;
 
@@ -24,7 +24,7 @@ public class ProjectType : RelOpBaseType
 	private bool isNoOpFieldSpecified;
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -37,7 +37,7 @@ public class ProjectType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsNoOp
+	internal bool IsNoOp
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class ProjectType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsNoOpSpecified
+	internal bool IsNoOpSpecified
 	{
 		get
 		{

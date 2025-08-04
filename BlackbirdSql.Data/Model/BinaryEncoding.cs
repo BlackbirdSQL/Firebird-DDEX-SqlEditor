@@ -17,9 +17,9 @@ using System.Text;
 
 namespace BlackbirdSql.Data.Model;
 
-public class BinaryEncoding : Encoding
+internal class BinaryEncoding : Encoding
 {
-	public static string BytesToString(byte[] byteArray)
+	internal static string BytesToString(byte[] byteArray)
 	{
 		// This code isn't great because it requires a double copy,
 		// but it requires unsafe code to solve the problem efficiently.

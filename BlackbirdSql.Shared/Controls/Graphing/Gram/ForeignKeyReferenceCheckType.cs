@@ -14,11 +14,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ForeignKeyReferenceCheckType
+internal class ForeignKeyReferenceCheckType
 {
 	private IndexScanType indexScanField;
 
-	public IndexScanType IndexScan
+	internal IndexScanType IndexScan
 	{
 		get
 		{

@@ -12,13 +12,13 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.Shared.Controls.Results;
 
 
-public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
+internal class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 {
 	private ExecutionPlanControl _ExecutionPlanCtl;
 
 	private MenuCommandsService _MenuService = [];
 
-	public ExecutionPlanControl ExecutionPlanCtl => _ExecutionPlanCtl;
+	internal ExecutionPlanControl ExecutionPlanCtl => _ExecutionPlanCtl;
 
 	public ExecutionPlanPanel(string defaultResultsDirectory)
 		: base(defaultResultsDirectory)
@@ -26,7 +26,7 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 		AutoScroll = true;
 	}
 
-	public override void Initialize(object rawServiceProvider)
+	internal override void Initialize(object rawServiceProvider)
 	{
 		base.Initialize(rawServiceProvider);
 		_ExecutionPlanCtl = new()
@@ -38,12 +38,12 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 		Controls.Add(_ExecutionPlanCtl);
 	}
 
-	public override void Clear()
+	internal override void Clear()
 	{
 	}
 
 	/*
-	public void AddGraphs(IGraph[] graphs, object dataSource)
+	internal void AddGraphs(IGraph[] graphs, object dataSource)
 	{
 		try
 		{

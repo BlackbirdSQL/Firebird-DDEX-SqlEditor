@@ -30,7 +30,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslTables : AbstractDslSchema
 {
-	internal DslTables() : base()
+	public DslTables() : base()
 	{
 	}
 

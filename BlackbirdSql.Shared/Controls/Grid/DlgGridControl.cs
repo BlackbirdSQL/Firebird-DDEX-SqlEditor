@@ -15,13 +15,13 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class DlgGridControl : GridControl, IBsDlgGridControl, IBsGridControl
+internal class DlgGridControl : GridControl, IBsDlgGridControl, IBsGridControl
 {
 	private class PairOfObjects
 	{
-		public object object1;
+		internal object object1;
 
-		public object object2;
+		internal object object2;
 	}
 
 	private delegate int GetSelectedRowIntHandler();
@@ -65,7 +65,7 @@ public class DlgGridControl : GridControl, IBsDlgGridControl, IBsGridControl
 	// [CLSCompliant(false)]
 	protected IBsDlgStorage m_Storage;
 
-	public BitArrayCollection m_cellDirtyBits = [];
+	internal BitArrayCollection m_cellDirtyBits = [];
 
 	private const int C_BitArrayGrowthChunk = 100;
 
@@ -279,7 +279,7 @@ public class DlgGridControl : GridControl, IBsDlgGridControl, IBsGridControl
 		}
 	}
 
-	public void DeleteAllRows()
+	internal void DeleteAllRows()
 	{
 		if (InvokeRequired)
 		{

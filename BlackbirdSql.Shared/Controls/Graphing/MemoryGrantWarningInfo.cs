@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class MemoryGrantWarningInfo
+internal class MemoryGrantWarningInfo
 {
 	private EnMemoryGrantWarningType grantWarningKindField;
 
@@ -25,7 +25,7 @@ public class MemoryGrantWarningInfo
 	private ulong maxUsedMemoryField;
 
 	[XmlAttribute]
-	public EnMemoryGrantWarningType GrantWarningKind
+	internal EnMemoryGrantWarningType GrantWarningKind
 	{
 		get
 		{
@@ -38,7 +38,7 @@ public class MemoryGrantWarningInfo
 	}
 
 	[XmlAttribute]
-	public ulong RequestedMemory
+	internal ulong RequestedMemory
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class MemoryGrantWarningInfo
 	}
 
 	[XmlAttribute]
-	public ulong GrantedMemory
+	internal ulong GrantedMemory
 	{
 		get
 		{
@@ -64,7 +64,7 @@ public class MemoryGrantWarningInfo
 	}
 
 	[XmlAttribute]
-	public ulong MaxUsedMemory
+	internal ulong MaxUsedMemory
 	{
 		get
 		{

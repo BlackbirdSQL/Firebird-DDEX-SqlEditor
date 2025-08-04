@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class FilterType : RelOpBaseType
+internal class FilterType : RelOpBaseType
 {
 	private RelOpType relOpField;
 
@@ -22,7 +22,7 @@ public class FilterType : RelOpBaseType
 
 	private bool startupExpressionField;
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class FilterType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType Predicate
+	internal ScalarExpressionType Predicate
 	{
 		get
 		{
@@ -47,7 +47,7 @@ public class FilterType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool StartupExpression
+	internal bool StartupExpression
 	{
 		get
 		{

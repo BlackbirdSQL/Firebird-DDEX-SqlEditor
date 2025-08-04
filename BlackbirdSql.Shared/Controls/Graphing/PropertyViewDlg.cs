@@ -9,7 +9,7 @@ using BlackbirdSql.Shared.Properties;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class PropertyViewDlg : Form
+internal class PropertyViewDlg : Form
 {
 	private TextBox viewTextBox;
 
@@ -19,7 +19,7 @@ public class PropertyViewDlg : Form
 	private readonly Container components;
 #pragma warning restore CS0649 // Field 'PropertyViewForm.components' is never assigned to, and will always have its default value null
 
-	public string DisplayText
+	internal string DisplayText
 	{
 		get
 		{

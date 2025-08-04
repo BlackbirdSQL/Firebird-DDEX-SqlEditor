@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
+using BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider;
 using BlackbirdSql.LanguageExtension.Services;
 using BlackbirdSql.Shared.Ctl;
 using BlackbirdSql.Shared.Interfaces;
@@ -28,13 +29,26 @@ namespace BlackbirdSql.LanguageExtension.Model;
 // [SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "TBC`")]
 
 
+// =========================================================================================================
+//
+//										LsbMetadataProviderProvider Class
+//
 /// <summary>
-/// Placeholder. Under development.
+/// Language service IMetadataProviderProvider implementation.
 /// </summary>
-public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
+// =========================================================================================================
+internal class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - LsbMetadataProviderProvider
+	// ---------------------------------------------------------------------------------
+
+
 	protected LsbMetadataProviderProvider(IBsModelCsb ci, string cacheKey)
 	{
+		Evs.Trace(typeof(LsbMetadataProviderProvider), ".ctor");
+
 		IsInitialized = false;
 		_ = IsInitialized;
 		CacheKey = cacheKey;
@@ -42,103 +56,34 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		MdlCsb = ci.Copy();
 
 		base.BuildEvent.Reset();
-		new InitializeMetadataProviderDelegate(Initialize).BeginInvoke(null, null);
+		new InitializeMetadataProviderDelegateI(Initialize).BeginInvoke(null, null);
 	}
 
 
 
-
-
-	internal class Cache
+	protected override void Dispose(bool disposing)
 	{
-		private Cache()
-		{
-		}
-
-		internal static Cache Instance
-		{
-			get
-			{
-				LazyInitializer.EnsureInitialized(ref _Instance, () => new Cache());
-				return _Instance;
-			}
-		}
-
-
-
-
-		private readonly object _LockLocal = new();
-		private static Cache _Instance;
-
-		private Dictionary<string, LsbMetadataProviderProvider> _CacheTable = null;
-
-
-
-		private Dictionary<string, LsbMetadataProviderProvider> CacheTable => _CacheTable ??= [];
-
-
-
-		internal LsbMetadataProviderProvider Acquire(QueryManager qryMgr)
-		{
-			LsbMetadataProviderProvider value = null;
-
-			lock (_LockLocal)
-			{
-				string qryMgrKey = GetKeyForQueryManager(qryMgr);
-
-				if (qryMgrKey != null)
-				{
-					if (_CacheTable == null || !_CacheTable.TryGetValue(qryMgrKey, out value))
-					{
-						value = new LsbMetadataProviderProvider(qryMgr.Strategy.LiveMdlCsb, qryMgrKey);
-						CacheTable.Add(qryMgrKey, value);
-					}
-
-					value.ReferenceCount++;
-				}
-			}
-
-			return value;
-		}
-
-
-
-		internal void Release(LsbMetadataProviderProvider mpp)
+		if (disposing)
 		{
 			lock (_LockLocal)
 			{
-				mpp.ReferenceCount--;
-				string cacheKey = mpp.CacheKey;
-
-				if (_CacheTable != null && _CacheTable.ContainsKey(cacheKey) && mpp.ReferenceCount == 0)
-				{
-					_CacheTable.Remove(cacheKey);
-
-					Action action = mpp.Dispose;
-
-					action.BeginInvoke(null, null);
-				}
+				base.Dispose(disposing);
+				DisposeConnections();
 			}
-		}
-
-		internal static string GetKeyForQueryManager(QueryManager qryMgr)
-		{
-			if (!qryMgr.IsConnected)
-				return null;
-
-			string text = null;
-
-			if (qryMgr.Strategy is ConnectionStrategy { MdlCsb: IBsCsb csb })
-			{
-				text = csb.DatasetKey;
-			}
-
-			return text;
 		}
 	}
 
 
-	private delegate void InitializeMetadataProviderDelegate();
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - LsbMetadataProviderProvider
+	// =========================================================================================================
+
 
 	private readonly object _LockLocal = new();
 	private readonly SemaphoreSlim _LockSem = new(1);
@@ -147,10 +92,20 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	// private Type _DspType;
 
-	public static readonly bool CheckForDatabaseChangesAfterQueryExecution = true;
+	internal ImmutableHashSet<string> _DatabasesToCheckForDrift = null;
 
-	public ImmutableHashSet<string> _DatabasesToCheckForDrift = null;
+	internal static readonly bool S_CheckForDatabaseChangesAfterQueryExecution = true;
 
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - LsbMetadataProviderProvider
+	// =========================================================================================================
 
 
 	private IBsCsb MdlCsb { get; set; }
@@ -171,11 +126,23 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	public override string Moniker => MdlCsb?.Moniker;
 
-	public bool IsCloudConnection => DatabaseEngineType == EnServerType.Default;
+	internal bool IsCloudConnection => DatabaseEngineType == EnServerType.Default;
 
 	protected override bool AssertInDestructor => false;
 
-	public void AddDatabaseToDriftDetectionSet(string moniker)
+
+	#endregion Property accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - LsbMetadataProviderProvider
+	// =========================================================================================================
+
+
+	internal void AddDatabaseToDriftDetectionSet(string moniker)
 	{
 		_DatabasesToCheckForDrift ??= [];
 
@@ -263,6 +230,8 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 		}
 	}
 
+
+
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "TBC")]
 	private void InitializeDriftDetectionConnection()
 	{
@@ -341,7 +310,10 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				{
 					InitializeMetadataConnection();
 				}
-				// base.MetadataProvider = LsbMetadataProvider.CreateConnectedProvider(ServerConnection);
+
+				// TBC: MetadataProvider
+				base.MetadataProvider = LsbMetadataProvider.CreateConnectedProvider(ServerConnection);
+
 				base.Binder = BinderProvider.CreateBinder(base.MetadataProvider);
 				// Evs.Trace(GetType(), nameof(CreateMetadataProvider), "After metadata provider is created");
 			}
@@ -517,16 +489,109 @@ public class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 	*/
 
 
-	protected override void Dispose(bool disposing)
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region								Nested types - LsbMetadataProviderProvider
+	// =========================================================================================================
+
+
+	private delegate void InitializeMetadataProviderDelegateI();
+
+
+	internal class CacheI
 	{
-		if (disposing)
+		private CacheI()
+		{
+		}
+
+		internal static CacheI Instance
+		{
+			get
+			{
+				LazyInitializer.EnsureInitialized(ref _Instance, () => new CacheI());
+				return _Instance;
+			}
+		}
+
+
+
+
+		private readonly object _LockLocal = new();
+		private static CacheI _Instance;
+
+		private Dictionary<string, LsbMetadataProviderProvider> _CacheTable = null;
+
+
+
+		private Dictionary<string, LsbMetadataProviderProvider> CacheTable => _CacheTable ??= [];
+
+
+
+		internal LsbMetadataProviderProvider Acquire(QueryManager qryMgr)
+		{
+			LsbMetadataProviderProvider value = null;
+
+			lock (_LockLocal)
+			{
+				string qryMgrKey = GetKeyForQueryManager(qryMgr);
+
+				if (qryMgrKey != null)
+				{
+					if (_CacheTable == null || !_CacheTable.TryGetValue(qryMgrKey, out value))
+					{
+						value = new LsbMetadataProviderProvider(qryMgr.Strategy.LiveMdlCsb, qryMgrKey);
+						CacheTable.Add(qryMgrKey, value);
+					}
+
+					value.ReferenceCount++;
+				}
+			}
+
+			return value;
+		}
+
+
+
+		internal void Release(LsbMetadataProviderProvider mpp)
 		{
 			lock (_LockLocal)
 			{
-				base.Dispose(disposing);
-				DisposeConnections();
+				mpp.ReferenceCount--;
+				string cacheKey = mpp.CacheKey;
+
+				if (_CacheTable != null && _CacheTable.ContainsKey(cacheKey) && mpp.ReferenceCount == 0)
+				{
+					_CacheTable.Remove(cacheKey);
+
+					Action action = mpp.Dispose;
+
+					action.BeginInvoke(null, null);
+				}
 			}
 		}
+
+		internal static string GetKeyForQueryManager(QueryManager qryMgr)
+		{
+			if (!qryMgr.IsConnected)
+				return null;
+
+			string text = null;
+
+			if (qryMgr.Strategy is ConnectionStrategy { MdlCsb: IBsCsb csb })
+			{
+				text = csb.Moniker;
+			}
+
+			return text;
+		}
 	}
+
+
+	#endregion Nested types
 
 }

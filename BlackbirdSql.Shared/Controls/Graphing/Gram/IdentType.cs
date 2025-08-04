@@ -16,13 +16,13 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class IdentType
+internal class IdentType
 {
 	private ColumnReferenceType columnReferenceField;
 
 	private string tableField;
 
-	public ColumnReferenceType ColumnReference
+	internal ColumnReferenceType ColumnReference
 	{
 		get
 		{
@@ -35,7 +35,7 @@ public class IdentType
 	}
 
 	[XmlAttribute]
-	public string Table
+	internal string Table
 	{
 		get
 		{

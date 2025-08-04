@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ReceivePlanTypeOperation
+internal class ReceivePlanTypeOperation
 {
 	private QueryPlanType queryPlanField;
 
@@ -23,7 +23,7 @@ public class ReceivePlanTypeOperation
 
 	private bool operationTypeFieldSpecified;
 
-	public QueryPlanType QueryPlan
+	internal QueryPlanType QueryPlan
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class ReceivePlanTypeOperation
 	}
 
 	[XmlAttribute]
-	public EnReceivePlanTypeOperationOperationType OperationType
+	internal EnReceivePlanTypeOperationOperationType OperationType
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class ReceivePlanTypeOperation
 	}
 
 	[XmlIgnore]
-	public bool OperationTypeSpecified
+	internal bool OperationTypeSpecified
 	{
 		get
 		{

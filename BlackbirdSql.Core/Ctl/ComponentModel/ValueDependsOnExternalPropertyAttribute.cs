@@ -8,7 +8,7 @@ namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
-internal sealed class ValueDependsOnExternalPropertyAttribute : Attribute
+public sealed class ValueDependsOnExternalPropertyAttribute : Attribute
 {
 	private readonly string m_sourceName;
 

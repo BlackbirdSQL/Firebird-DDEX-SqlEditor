@@ -17,7 +17,7 @@ using Microsoft.Win32;
 namespace BlackbirdSql.Shared.Ctl;
 
 
-public static class VsColorUtilities
+internal static class VsColorUtilities
 {
 	private static System.Drawing.Pen _PanelBorderPen;
 
@@ -30,7 +30,7 @@ public static class VsColorUtilities
 	private static SolidColorBrush _SsoxActiveCaptionTextBrush;
 
 
-	public static System.Drawing.Pen PanelBorderPen
+	internal static System.Drawing.Pen PanelBorderPen
 	{
 		get
 		{
@@ -42,7 +42,7 @@ public static class VsColorUtilities
 		}
 	}
 
-	public static System.Drawing.Color PanelBorderColor
+	internal static System.Drawing.Color PanelBorderColor
 	{
 		get
 		{
@@ -87,34 +87,34 @@ public static class VsColorUtilities
 		_SsoxActiveCaptionTextBrush = null;
 	}
 
-	public static System.Drawing.Color GetWatermarkBackgroundColor()
+	internal static System.Drawing.Color GetWatermarkBackgroundColor()
 	{
 		return GetShellColor(__VSSYSCOLOREX.VSCOLOR_DESIGNER_TRAY);
 	}
 
-	public static System.Drawing.Color GetWatermarkForegroundColor()
+	internal static System.Drawing.Color GetWatermarkForegroundColor()
 	{
 		return GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOWTEXT);
 	}
 
-	public static System.Drawing.Color GetGridBackgroundHighlightColor()
+	internal static System.Drawing.Color GetGridBackgroundHighlightColor()
 	{
 		return GetShellColor(__VSSYSCOLOREX.VSCOLOR_HELP_SEARCH_FRAME_BACKGROUND);
 	}
 
-	public static System.Drawing.Color GetGhostedTextColor()
+	internal static System.Drawing.Color GetGhostedTextColor()
 	{
 		return GetShellColor(__VSSYSCOLOREX.VSCOLOR_CONTROL_EDIT_HINTTEXT);
 	}
 
-	public static void GetToolTipColors(out System.Drawing.Color background, out System.Drawing.Color border, out System.Drawing.Color text)
+	internal static void GetToolTipColors(out System.Drawing.Color background, out System.Drawing.Color border, out System.Drawing.Color text)
 	{
 		background = GetShellColor(__VSSYSCOLOREX.VSCOLOR_SCREENTIP_BACKGROUND);
 		border = GetShellColor(__VSSYSCOLOREX.VSCOLOR_SCREENTIP_BORDER);
 		text = GetShellColor(__VSSYSCOLOREX.VSCOLOR_SCREENTIP_TEXT);
 	}
 
-	public static SolidColorBrush GetSqlServerObjectExplorerFillSelectedBrush()
+	internal static SolidColorBrush GetSqlServerObjectExplorerFillSelectedBrush()
 	{
 		if (_SsoxFillSelectedBrush == null)
 		{
@@ -130,7 +130,7 @@ public static class VsColorUtilities
 		return _SsoxFillSelectedBrush;
 	}
 
-	public static SolidColorBrush GetSqlServerObjectExplorerActiveCaptionTextBrush()
+	internal static SolidColorBrush GetSqlServerObjectExplorerActiveCaptionTextBrush()
 	{
 		if (_SsoxActiveCaptionTextBrush == null)
 		{
@@ -146,7 +146,7 @@ public static class VsColorUtilities
 		return _SsoxActiveCaptionTextBrush;
 	}
 
-	public static System.Drawing.Color GetShellColor(COLORINDEX colorIndex)
+	internal static System.Drawing.Color GetShellColor(COLORINDEX colorIndex)
 	{
 		System.Drawing.Color empty = System.Drawing.Color.Empty;
 		IVsFontAndColorUtilities fontAndColorUtilities = FontAndColorUtilities;
@@ -161,16 +161,16 @@ public static class VsColorUtilities
 		return ColorTranslator.FromWin32((int)pcrResult);
 	}
 
-	public static System.Drawing.Color GetShellColor(__VSSYSCOLOREX color)
+	internal static System.Drawing.Color GetShellColor(__VSSYSCOLOREX color)
 	{
 		return GetShellColor((int)color);
 	}
 
-	public static System.Drawing.Color GetShellColor(__VSSYSCOLOREX2 color)
+	internal static System.Drawing.Color GetShellColor(__VSSYSCOLOREX2 color)
 	{
 		return GetShellColor((int)color);
 	}
-	public static System.Drawing.Color GetShellColor(__VSSYSCOLOREX3 color)
+	internal static System.Drawing.Color GetShellColor(__VSSYSCOLOREX3 color)
 	{
 		return GetShellColor((int)color);
 	}
@@ -190,7 +190,7 @@ public static class VsColorUtilities
 		return ColorTranslator.FromWin32((int)pdwRGBval);
 	}
 
-	public static void AssignStandardColors(LinkLabel linkLabel)
+	internal static void AssignStandardColors(LinkLabel linkLabel)
 	{
 		linkLabel.ActiveLinkColor = GetShellColor(__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT_HOVER);
 		linkLabel.LinkColor = GetShellColor(__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT);

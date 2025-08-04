@@ -1,6 +1,6 @@
 ﻿namespace BlackbirdSql.Sys.Enums;
 
-public enum EnNullEquality : int
+internal enum EnNullEquality : int
 {
 	UnEqual = -1,
 	Equal = 0,

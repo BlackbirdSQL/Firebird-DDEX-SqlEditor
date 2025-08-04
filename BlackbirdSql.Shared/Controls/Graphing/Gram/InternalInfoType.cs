@@ -15,14 +15,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class InternalInfoType
+internal class InternalInfoType
 {
 	private XmlElement[] anyField;
 
 	private XmlAttribute[] anyAttrField;
 
 	[XmlAnyElement]
-	public XmlElement[] Any
+	internal XmlElement[] Any
 	{
 		get
 		{
@@ -35,7 +35,7 @@ public class InternalInfoType
 	}
 
 	[XmlAnyAttribute]
-	public XmlAttribute[] AnyAttr
+	internal XmlAttribute[] AnyAttr
 	{
 		get
 		{

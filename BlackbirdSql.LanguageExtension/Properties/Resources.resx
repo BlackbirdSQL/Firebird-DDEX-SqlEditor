@@ -1780,4 +1780,10 @@
   <data name="PreviewModeCompletionDescription" xml:space="preserve">
     <value>Press {0} to toggle completion mode.</value>
   </data>
+  <data name="ExceptionCannotSetDefInitFlds" xml:space="preserve">
+    <value>The type {0} cannot have default init fields.</value>
+  </data>
+  <data name="ExceptionSetDefaultInitFields" xml:space="preserve">
+    <value>Set default init fields</value>
+  </data>
 </root>

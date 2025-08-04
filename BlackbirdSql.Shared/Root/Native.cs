@@ -21,7 +21,7 @@ namespace BlackbirdSql.Shared;
 /// Central location for accessing of native members. 
 /// </summary>
 // =========================================================================================================
-public abstract class Native : BlackbirdSql.Sys.Native
+internal abstract class Native : BlackbirdSql.Sys.Native
 {
 
 
@@ -29,13 +29,13 @@ public abstract class Native : BlackbirdSql.Sys.Native
 	#region Constants and Static Fields - Native
 	// ---------------------------------------------------------------------------------
 
-	public const uint COLORREF_WHITE = 0xFFFFFFu;
-	public const uint COLORREF_AUTO = 0x2000000u;
+	internal const uint COLORREF_WHITE = 0xFFFFFFu;
+	internal const uint COLORREF_AUTO = 0x2000000u;
 
 	/// <summary>
 	/// User interface element reference identifier defined in oleacc.h.
 	/// </summary>
-	public static readonly Guid IID_IAccessible = new("618736E0-3C3D-11CF-810C-00AA00389B71");
+	internal static readonly Guid IID_IAccessible = new("618736E0-3C3D-11CF-810C-00AA00389B71");
 
 
 	#endregion Constants and Static Fields
@@ -50,37 +50,37 @@ public abstract class Native : BlackbirdSql.Sys.Native
 
 
 	// ColorFromRGB
-	public static Color ColorFromRGB(uint colorRef)
+	internal static Color ColorFromRGB(uint colorRef)
 	{
 		return Color.FromArgb(RGB_GETRED(colorRef), RGB_GETGREEN(colorRef), RGB_GETBLUE(colorRef));
 	}
 
 
 	// CreateBitmap
-	public static IntPtr CreateBitmapManaged(int nWidth, int nHeight, int nPlanes, int nBitsPerPixel, short[] lpvBits)
+	internal static IntPtr CreateBitmapManaged(int nWidth, int nHeight, int nPlanes, int nBitsPerPixel, short[] lpvBits)
 	{
-		return HandleCollector.Add(CreateBitmap(nWidth, nHeight, nPlanes, nBitsPerPixel, lpvBits), CommonHandles.GDI);
+		return HandleCollectorI.Add(CreateBitmap(nWidth, nHeight, nPlanes, nBitsPerPixel, lpvBits), CommonHandlesI.GDI);
 	}
 
 
 
 	// CreateBrushIndirect
-	public static IntPtr CreateBrushIndirectManaged(LOGBRUSHEx lb)
+	internal static IntPtr CreateBrushIndirectManaged(LOGBRUSHX lb)
 	{
-		return HandleCollector.Add(CreateBrushIndirect(lb), CommonHandles.GDI);
+		return HandleCollectorI.Add(CreateBrushIndirect(lb), CommonHandlesI.GDI);
 	}
 
 
 	// DeleteObject
-	public static bool DeleteObjectManaged(IntPtr hObject)
+	internal static bool DeleteObjectManaged(IntPtr hObject)
 	{
-		HandleCollector.Remove(hObject, CommonHandles.GDI);
+		HandleCollectorI.Remove(hObject, CommonHandlesI.GDI);
 		return DeleteObject(hObject);
 	}
 
 
 	// GetClientRect
-	public static bool GetClientRect(IntPtr hwnd, out UIRECTX lpRect)
+	internal static bool GetClientRect(IntPtr hwnd, out UIRECTX lpRect)
 	{
 		bool result = GetClientRect(hwnd, out OLERECT lpOleRect);
 
@@ -92,14 +92,14 @@ public abstract class Native : BlackbirdSql.Sys.Native
 
 
 	// GetDCEx
-	public static IntPtr GetDCExManaged(IntPtr hWnd, IntPtr hrgnClip, int flags)
+	internal static IntPtr GetDCExManaged(IntPtr hWnd, IntPtr hrgnClip, int flags)
 	{
-		return HandleCollector.Add(GetDCEx(hWnd, hrgnClip, flags), CommonHandles.HDC);
+		return HandleCollectorI.Add(GetDCEx(hWnd, hrgnClip, flags), CommonHandlesI.HDC);
 	}
 
 
 	// GetWindowLongPtrPtr
-	public static IntPtr GetWindowLongPtrPtr(IntPtr hWnd, int nIndex)
+	internal static IntPtr GetWindowLongPtrPtr(IntPtr hWnd, int nIndex)
 	{
 		if (IntPtr.Size == 4)
 			return GetWindowLong(hWnd, nIndex);
@@ -110,7 +110,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 
 
 	// IntPtrToObjectArray
-	public static object[] IntPtrToObjectArray(IntPtr ptr)
+	internal static object[] IntPtrToObjectArray(IntPtr ptr)
 	{
 		object[] result = null;
 		if (ptr != IntPtr.Zero)
@@ -124,21 +124,21 @@ public abstract class Native : BlackbirdSql.Sys.Native
 
 
 	// RGB_GETBLUE
-	public static int RGB_GETBLUE(uint color)
+	internal static int RGB_GETBLUE(uint color)
 	{
 		return (int)((color >> 16) & 0xFF);
 	}
 
 
 	// RGB_GETGREEN
-	public static int RGB_GETGREEN(uint color)
+	internal static int RGB_GETGREEN(uint color)
 	{
 		return (int)((color >> 8) & 0xFF);
 	}
 
 
 	// RGB_GETRED
-	public static int RGB_GETRED(uint color)
+	internal static int RGB_GETRED(uint color)
 	{
 		return (int)(color & 0xFF);
 	}
@@ -151,40 +151,40 @@ public abstract class Native : BlackbirdSql.Sys.Native
 
 
 	// =========================================================================================================
-	#region Internal Classes and Structs - Native
+	#region									Nested types - Native
 	// =========================================================================================================
 
 
-	private sealed class CommonHandles
+	private sealed class CommonHandlesI
 	{
-		public static readonly int Accelerator = HandleCollector.RegisterType("Accelerator", 80, 50);
+		internal static readonly int Accelerator = HandleCollectorI.RegisterType("Accelerator", 80, 50);
 
-		public static readonly int Cursor = HandleCollector.RegisterType("Cursor", 20, 500);
+		internal static readonly int Cursor = HandleCollectorI.RegisterType("Cursor", 20, 500);
 
-		public static readonly int EMF = HandleCollector.RegisterType("EnhancedMetaFile", 20, 500);
+		internal static readonly int EMF = HandleCollectorI.RegisterType("EnhancedMetaFile", 20, 500);
 
-		public static readonly int Find = HandleCollector.RegisterType("Find", 0, 1000);
+		internal static readonly int Find = HandleCollectorI.RegisterType("Find", 0, 1000);
 
-		public static readonly int GDI = HandleCollector.RegisterType("GDI", 50, 500);
+		internal static readonly int GDI = HandleCollectorI.RegisterType("GDI", 50, 500);
 
-		public static readonly int HDC = HandleCollector.RegisterType("HDC", 100, 2);
+		internal static readonly int HDC = HandleCollectorI.RegisterType("HDC", 100, 2);
 
-		public static readonly int CompatibleHDC = HandleCollector.RegisterType("ComptibleHDC", 50, 50);
+		internal static readonly int CompatibleHDC = HandleCollectorI.RegisterType("ComptibleHDC", 50, 50);
 
-		public static readonly int Icon = HandleCollector.RegisterType("Icon", 20, 500);
+		internal static readonly int Icon = HandleCollectorI.RegisterType("Icon", 20, 500);
 
-		public static readonly int Kernel = HandleCollector.RegisterType("Kernel", 0, 1000);
+		internal static readonly int Kernel = HandleCollectorI.RegisterType("Kernel", 0, 1000);
 
-		public static readonly int Menu = HandleCollector.RegisterType("Menu", 30, 1000);
+		internal static readonly int Menu = HandleCollectorI.RegisterType("Menu", 30, 1000);
 
-		public static readonly int Window = HandleCollector.RegisterType("Window", 5, 1000);
+		internal static readonly int Window = HandleCollectorI.RegisterType("Window", 5, 1000);
 	}
 
-	private sealed class HandleCollector
+	private sealed class HandleCollectorI
 	{
 		private class HandleType(string name, int expense, int initialThreshHold)
 		{
-			public readonly string name = name;
+			internal readonly string name = name;
 
 			private readonly int deltaPercent = 100 - expense;
 
@@ -201,7 +201,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			private int handleCount;
 
 
-			public void Add(IntPtr handle)
+			internal void Add(IntPtr handle)
 			{
 				if (handle == IntPtr.Zero)
 				{
@@ -226,13 +226,13 @@ public abstract class Native : BlackbirdSql.Sys.Native
 				}
 			}
 
-			public int GetHandleCount()
+			internal int GetHandleCount()
 			{
 				lock (_LockLocal)
 					return handleCount;
 			}
 
-			public bool NeedCollection()
+			internal bool NeedCollection()
 			{
 				if (suspendCount > 0)
 				{
@@ -251,7 +251,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 				return false;
 			}
 
-			public IntPtr Remove(IntPtr handle)
+			internal IntPtr Remove(IntPtr handle)
 			{
 				if (handle == IntPtr.Zero)
 				{
@@ -284,17 +284,17 @@ public abstract class Native : BlackbirdSql.Sys.Native
 		// A static class lock
 		private static readonly object _LockGlobal = new object();
 
-		public static event HandleChangeEventHandler HandleAddedEvent;
+		internal static event HandleChangeEventHandler HandleAddedEvent;
 
-		public static event HandleChangeEventHandler HandleRemovedEvent;
+		internal static event HandleChangeEventHandler HandleRemovedEvent;
 
-		public static IntPtr Add(IntPtr handle, int type)
+		internal static IntPtr Add(IntPtr handle, int type)
 		{
 			handleTypes[type - 1].Add(handle);
 			return handle;
 		}
 
-		public static void SuspendCollect()
+		internal static void SuspendCollect()
 		{
 			lock (_LockGlobal)
 			{
@@ -302,7 +302,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			}
 		}
 
-		public static void ResumeCollect()
+		internal static void ResumeCollect()
 		{
 			bool flag = false;
 			lock (_LockGlobal)
@@ -331,7 +331,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			}
 		}
 
-		public static int RegisterType(string typeName, int expense, int initialThreshold)
+		internal static int RegisterType(string typeName, int expense, int initialThreshold)
 		{
 			lock (_LockGlobal)
 			{
@@ -349,7 +349,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			}
 		}
 
-		public static IntPtr Remove(IntPtr handle, int type)
+		internal static IntPtr Remove(IntPtr handle, int type)
 		{
 			return handleTypes[type - 1].Remove(handle);
 		}
@@ -357,27 +357,27 @@ public abstract class Native : BlackbirdSql.Sys.Native
 
 
 	[Serializable]
-	public struct UIRECTX
+	internal struct UIRECTX
 	{
 		// Microsoft.SqlServer.ConnectionDlg.UI.WPF.PlatformUI.RECT
 
 		[ComAliasName("Microsoft.VisualStudio.OLE.Interop.LONG")]
-		public int Left;
+		internal int Left;
 
 		[ComAliasName("Microsoft.VisualStudio.OLE.Interop.LONG")]
-		public int Top;
+		internal int Top;
 
 		[ComAliasName("Microsoft.VisualStudio.OLE.Interop.LONG")]
-		public int Right;
+		internal int Right;
 
 		[ComAliasName("Microsoft.VisualStudio.OLE.Interop.LONG")]
-		public int Bottom;
+		internal int Bottom;
 
-		public readonly Point Position => new Point(Left, Top);
+		internal readonly Point Position => new Point(Left, Top);
 
-		public System.Windows.Size Size => new Size(Width, Height);
+		internal System.Windows.Size Size => new Size(Width, Height);
 
-		public int Height
+		internal int Height
 		{
 			readonly get
 			{
@@ -389,7 +389,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			}
 		}
 
-		public int Width
+		internal int Width
 		{
 #pragma warning disable IDE0251 // Make member 'readonly'
 			get
@@ -427,7 +427,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			Bottom = rect.bottom;
 		}
 
-		public void Offset(int dx, int dy)
+		internal void Offset(int dx, int dy)
 		{
 			Left += dx;
 			Right += dx;
@@ -435,7 +435,7 @@ public abstract class Native : BlackbirdSql.Sys.Native
 			Bottom += dy;
 		}
 
-		public Int32Rect ToInt32Rect()
+		internal Int32Rect ToInt32Rect()
 		{
 			return new Int32Rect(Left, Top, Width, Height);
 		}
@@ -444,35 +444,35 @@ public abstract class Native : BlackbirdSql.Sys.Native
 
 
 
-	public class Util
+	internal class UtilI
 	{
-		public static int LOWORD(IntPtr n)
+		internal static int LOWORD(IntPtr n)
 		{
 			return (int)((long)n & 0xFFFF);
 		}
 
-		public static IntPtr MAKELPARAM(int low, int high)
+		internal static IntPtr MAKELPARAM(int low, int high)
 		{
 			return (IntPtr)((high << 16) | (low & 0xFFFF));
 		}
 
-		public static int RGB_GETRED(int color)
+		internal static int RGB_GETRED(int color)
 		{
 			return color & 0xFF;
 		}
 
-		public static int RGB_GETGREEN(int color)
+		internal static int RGB_GETGREEN(int color)
 		{
 			return (color >> 8) & 0xFF;
 		}
 
-		public static int RGB_GETBLUE(int color)
+		internal static int RGB_GETBLUE(int color)
 		{
 			return (color >> 16) & 0xFF;
 		}
 	}
 
 
-	#endregion #region Internal Classes and Structs
+	#endregion Nested types
 
 }

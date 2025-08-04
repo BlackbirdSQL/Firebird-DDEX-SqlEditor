@@ -15,11 +15,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StmtCursorType : AbstractStmtInfoType
+internal class StmtCursorType : AbstractStmtInfoType
 {
 	private CursorPlanType cursorPlanField;
 
-	public CursorPlanType CursorPlan
+	internal CursorPlanType CursorPlan
 	{
 		get
 		{

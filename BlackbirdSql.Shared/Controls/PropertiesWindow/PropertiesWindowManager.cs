@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.Shell;
 namespace BlackbirdSql.Shared.Controls.PropertiesWindow;
 
 
-public class PropertiesWindowManager : IDisposable
+internal class PropertiesWindowManager : IDisposable
 {
 	private bool _Disposed;
 
@@ -31,7 +31,7 @@ public class PropertiesWindowManager : IDisposable
 
 	private EditorUIControl TabbedEditorUiCtl { get; set; }
 
-	public QueryManager QryMgr { get; private set; }
+	internal QueryManager QryMgr { get; private set; }
 
 	public PropertiesWindowManager(TabbedEditorPane tabbedEditor)
 	{

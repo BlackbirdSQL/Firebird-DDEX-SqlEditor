@@ -23,7 +23,7 @@ namespace BlackbirdSql;
 /// Central location for implementation of utility static methods. 
 /// </summary>
 // =========================================================================================================
-public abstract class Cmd
+internal abstract class Cmd
 {
 
 	// ---------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ public abstract class Cmd
 	/// <summary>
 	/// Always true without warning message.
 	/// </summary>
-	public static bool ToBeCompleted => true;
+	internal static bool ToBeCompleted => true;
 
 
 	#endregion Property accessors
@@ -65,12 +65,12 @@ public abstract class Cmd
 	/// <summary>
 	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
-	public static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+	internal static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 
 	// CanonicalizeDirectoryName
-	public static string CanonicalizeDirectoryName(string fullPathDirName)
+	internal static string CanonicalizeDirectoryName(string fullPathDirName)
 	{
 		if (string.IsNullOrEmpty(fullPathDirName))
 		{
@@ -106,7 +106,7 @@ public abstract class Cmd
 	/// <summary>
 	/// Warning suppression. Returns true if on the main thread else false.
 	/// </summary>
-	public static async Task<bool> AwaitableAsync()
+	internal static async Task<bool> AwaitableAsync()
 	{
 		if (!ThreadHelper.CheckAccess())
 			return false;
@@ -119,7 +119,7 @@ public abstract class Cmd
 
 
 
-	public static async Task<bool> CheckAccessAsync()
+	internal static async Task<bool> CheckAccessAsync()
 	{
 		if (!ThreadHelper.CheckAccess())
 			return false;
@@ -131,7 +131,7 @@ public abstract class Cmd
 	}
 
 	// CheckForEmptyString
-	public static void CheckForEmptyString(string variable, string variableName)
+	internal static void CheckForEmptyString(string variable, string variableName)
 	{
 		CheckForNullReference(variable, variableName);
 		CheckForNullReference(variableName, "variableName");
@@ -146,7 +146,7 @@ public abstract class Cmd
 
 
 	// CheckForNull
-	public static void CheckForNull(object obj, string varName)
+	internal static void CheckForNull(object obj, string varName)
 	{
 		if (obj == null)
 		{
@@ -159,7 +159,7 @@ public abstract class Cmd
 
 
 	// CheckForNullReference
-	public static void CheckForNullReference(object variable, string variableName)
+	internal static void CheckForNullReference(object variable, string variableName)
 	{
 		if (variableName == null)
 		{
@@ -179,13 +179,13 @@ public abstract class Cmd
 
 
 	// CheckStringForNullOrEmpty
-	public static void CheckStringForNullOrEmpty(string stringVar, string stringVarName)
+	internal static void CheckStringForNullOrEmpty(string stringVar, string stringVarName)
 	{
 		CheckStringForNullOrEmpty(stringVar, stringVarName, trim: false);
 	}
 
 	// CheckStringForNullOrEmpty
-	public static void CheckStringForNullOrEmpty(string stringVar, string stringVarName, bool trim)
+	internal static void CheckStringForNullOrEmpty(string stringVar, string stringVarName, bool trim)
 	{
 		CheckForNull(stringVar, stringVarName);
 
@@ -201,7 +201,7 @@ public abstract class Cmd
 	}
 
 
-	public static string CleanPath(string path)
+	internal static string CleanPath(string path)
 	{
 		if (string.IsNullOrWhiteSpace(path))
 			return "";
@@ -212,38 +212,38 @@ public abstract class Cmd
 	}
 
 
-	public static string GetExtension(string path) =>
+	internal static string GetExtension(string path) =>
 		string.IsNullOrWhiteSpace(path) ? "" : Path.GetExtension(CleanPath(path));
 
 
-	public static string GetDirectoryName(string path) =>
+	internal static string GetDirectoryName(string path) =>
 		string.IsNullOrWhiteSpace(path) ? "" : Path.GetDirectoryName(CleanPath(path));
 
 
-	public static string GetFileName(string path) =>
+	internal static string GetFileName(string path) =>
 		string.IsNullOrWhiteSpace(path) ? "" : Path.GetFileName(CleanPath(path));
 
-	public static string GetFileNameWithoutExtension(string path) =>
+	internal static string GetFileNameWithoutExtension(string path) =>
 		string.IsNullOrWhiteSpace(path) ? "" : Path.GetFileNameWithoutExtension(CleanPath(path));
 
 
 
 
-	public static System.Windows.Media.Color CombineColors(System.Windows.Media.Color c1, int a1, System.Windows.Media.Color c2, int a2)
+	internal static System.Windows.Media.Color CombineColors(System.Windows.Media.Color c1, int a1, System.Windows.Media.Color c2, int a2)
 	{
 		return System.Windows.Media.Color.FromArgb((byte)((c1.A * a1 + c2.A * a2) / 100), (byte)((c1.R * a1 + c2.R * a2) / 100), (byte)((c1.G * a1 + c2.G * a2) / 100), (byte)((c1.B * a1 + c2.B * a2) / 100));
 	}
 
 
 
-	public static System.Drawing.Color ConvertColor(System.Windows.Media.Color wpfColor)
+	internal static System.Drawing.Color ConvertColor(System.Windows.Media.Color wpfColor)
 	{
 		return System.Drawing.Color.FromArgb(255, wpfColor.R, wpfColor.G, wpfColor.B);
 	}
 
 
 
-	public static string CreateVsFilterString(string s)
+	internal static string CreateVsFilterString(string s)
 	{
 		if (s == null)
 		{
@@ -267,7 +267,7 @@ public abstract class Cmd
 
 
 	// EnsureNoBackslash
-	public static string EnsureNoBackslash(string fullPath)
+	internal static string EnsureNoBackslash(string fullPath)
 	{
 		string result = fullPath;
 		if (!string.IsNullOrEmpty(fullPath) && fullPath.Length > 1 && (fullPath[^1] == '\\' || fullPath[^1] == '/'))
@@ -280,7 +280,7 @@ public abstract class Cmd
 
 
 
-	public static UIElement FindVisualParent(Type typeOfParent, UIElement element, Type stopOnType = null)
+	internal static UIElement FindVisualParent(Type typeOfParent, UIElement element, Type stopOnType = null)
 	{
 		for (UIElement uIElement = element; uIElement != null; uIElement = VisualTreeHelper.GetParent(uIElement) as UIElement)
 		{
@@ -296,7 +296,7 @@ public abstract class Cmd
 		return null;
 	}
 
-	public static T FindVisualParent<T>(UIElement element, Type stopOnType = null) where T : UIElement
+	internal static T FindVisualParent<T>(UIElement element, Type stopOnType = null) where T : UIElement
 	{
 		for (UIElement uIElement = element; uIElement != null; uIElement = VisualTreeHelper.GetParent(uIElement) as UIElement)
 		{
@@ -314,7 +314,7 @@ public abstract class Cmd
 
 
 
-	public static int GetExtraSizeForBorderStyle(BorderStyle border)
+	internal static int GetExtraSizeForBorderStyle(BorderStyle border)
 	{
 		return border switch
 		{
@@ -331,7 +331,7 @@ public abstract class Cmd
 	/// Shortens a moniker directory path to within maxLength and prefixes with '.'
 	/// if the path was shortened. maxLength may be less than or equal to zero.
 	/// </summary>
-	public static string GetShortenedMonikerPath(string path, int maxLength)
+	internal static string GetShortenedMonikerPath(string path, int maxLength)
 	{
 		string[] parts = path.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar]);
 
@@ -358,7 +358,7 @@ public abstract class Cmd
 	/// Gets the prefix of an identifier stripped of any unique suffix in the for '_999'.
 	/// We're going to brute force this instead of a regex.
 	/// </summary>
-	public static string GetUniqueIdentifierPrefix(string identifier)
+	internal static string GetUniqueIdentifierPrefix(string identifier)
 	{
 		if (identifier == null || identifier.Length < 3)
 			return identifier;
@@ -377,7 +377,7 @@ public abstract class Cmd
 
 
 	// IsCriticalException
-	public static bool IsCriticalException(Exception ex)
+	internal static bool IsCriticalException(Exception ex)
 	{
 
 		if (ex is NullReferenceException || ex is OutOfMemoryException || ex is System.Threading.ThreadAbortException)
@@ -396,17 +396,17 @@ public abstract class Cmd
 	/// <summary>
 	/// Checks for null and DBNull.
 	/// </summary>
-	public static bool IsNullValue(object value) => value == null || value == DBNull.Value;
+	internal static bool IsNullValue(object value) => value == null || value == DBNull.Value;
 
 	/// <summary>
 	/// Checks for null and DBNull and "".
 	/// </summary>
-	public static bool IsNullValueOrEmpty(object value) => value == null || value == DBNull.Value || value.ToString() == "";
+	internal static bool IsNullValueOrEmpty(object value) => value == null || value == DBNull.Value || value.ToString() == "";
 
 
 
 	// IsSamePath
-	public static bool IsSamePath(string file1, string file2)
+	internal static bool IsSamePath(string file1, string file2)
 	{
 		if (file1 == null || file1.Length == 0)
 		{
@@ -465,7 +465,7 @@ public abstract class Cmd
 	/// <summary>
 	/// Performs a null equality check on with DBNull treated as null.
 	/// </summary>
-	public static EnNullEquality NullEquality(object lhs, object rhs)
+	internal static EnNullEquality NullEquality(object lhs, object rhs)
 	{
 		if (Cmd.IsNullValue(lhs) && Cmd.IsNullValue(rhs)) return EnNullEquality.Equal;
 
@@ -479,7 +479,7 @@ public abstract class Cmd
 
 	/*
 	// UseRandomizedHashing
-	public static bool UseRandomizedHashing()
+	internal static bool UseRandomizedHashing()
 	{
 		return Native.InternalUseRandomizedHashing();
 	}

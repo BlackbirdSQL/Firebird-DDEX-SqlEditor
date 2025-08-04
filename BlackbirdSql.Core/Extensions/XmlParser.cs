@@ -17,7 +17,7 @@ namespace BlackbirdSql.Core.Extensions;
 /// Xml parser utility methods
 /// </summary>
 // =========================================================================================================
-public static class XmlParser
+internal static class XmlParser
 {
 	#region Fields
 
@@ -45,7 +45,7 @@ public static class XmlParser
 	/// </exception>
 	/// <returns>true if app,config was modified else false.</returns>
 	// ---------------------------------------------------------------------------------
-	public static bool ConfigureDbProvider(string xmlPath, Type factoryClass)
+	internal static bool ConfigureDbProvider(string xmlPath, Type factoryClass)
 	{
 		bool modified;
 
@@ -119,7 +119,7 @@ public static class XmlParser
 	/// </param>
 	/// <returns>true if app,config was modified else false.</returns>
 	// ---------------------------------------------------------------------------------
-	public static bool ConfigureEntityFramework(string xmlPath, bool configureDbProvider, Type factoryClass)
+	internal static bool ConfigureEntityFramework(string xmlPath, bool configureDbProvider, Type factoryClass)
 	{
 		bool modified = false;
 
@@ -431,7 +431,7 @@ public static class XmlParser
 	/// Establishes if an edmx is a valid extension database edmx.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool IsValidEdmx(string xmlPath)
+	internal static bool IsValidEdmx(string xmlPath)
 	{
 
 		try
@@ -494,7 +494,7 @@ public static class XmlParser
 	/// </exception>
 	/// <returns>true if edmx was modified else false.</returns>
 	// ---------------------------------------------------------------------------------
-	public static bool UpdateEdmx(string xmlPath)
+	internal static bool UpdateEdmx(string xmlPath)
 	{
 
 		try

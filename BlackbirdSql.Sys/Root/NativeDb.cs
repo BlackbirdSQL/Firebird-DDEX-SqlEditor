@@ -36,7 +36,7 @@ namespace BlackbirdSql;
 /// Central class for database specific class native services.
 /// </summary>
 // =========================================================================================================
-public static class NativeDb
+internal static class NativeDb
 {
 
 	// ----------------------
@@ -44,7 +44,7 @@ public static class NativeDb
 	// ----------------------
 
 
-	public static object _LockGlobal = new();
+	internal static object _LockGlobal = new();
 
 	private static IBsNativeDatabaseEngine _DatabaseEngineSvc = null;
 	private static IBsNativeProviderSchemaFactory _ProviderSchemaFactorySvc = null;
@@ -71,7 +71,7 @@ public static class NativeDb
 	// =========================================================================================================
 
 
-	public static Type CsbType
+	internal static Type CsbType
 	{
 		get { return _CsbType; }
 		set { _CsbType = value; }
@@ -90,74 +90,74 @@ public static class NativeDb
 	/// properties defined in the BlackbirdSQL Server Tools user options.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string[] EquivalencyKeys => PersistentSettings.EquivalencyKeys;
+	internal static string[] EquivalencyKeys => PersistentSettings.EquivalencyKeys;
 
 
-	public static bool OnDemandLinkage => PersistentSettings.OnDemandLinkage;
+	internal static bool OnDemandLinkage => PersistentSettings.OnDemandLinkage;
 
-	public static int LinkageTimeout => PersistentSettings.LinkageTimeout;
+	internal static int LinkageTimeout => PersistentSettings.LinkageTimeout;
 
 
-	public static IBsNativeDatabaseEngine DatabaseEngineSvc
+	internal static IBsNativeDatabaseEngine DatabaseEngineSvc
 	{
 		get { return _DatabaseEngineSvc; }
 		set { _DatabaseEngineSvc = value; }
 	}
 
-	public static IBsNativeProviderSchemaFactory ProviderSchemaFactorySvc
+	internal static IBsNativeProviderSchemaFactory ProviderSchemaFactorySvc
 	{
 		get { return _ProviderSchemaFactorySvc; }
 		set { _ProviderSchemaFactorySvc = value; }
 	}
 
-	public static IBsNativeDatabaseInfo DatabaseInfoSvc
+	internal static IBsNativeDatabaseInfo DatabaseInfoSvc
 	{
 		get { return _DatabaseInfoSvc; }
 		set { _DatabaseInfoSvc = value; }
 	}
 
-	public static IBsNativeDbException DbExceptionSvc
+	internal static IBsNativeDbException DbExceptionSvc
 	{
 		get { return _DbExceptionSvc; }
 		set { _DbExceptionSvc = value; }
 	}
 
-	public static IBsNativeDbServerExplorerService DbServerExplorerSvc
+	internal static IBsNativeDbServerExplorerService DbServerExplorerSvc
 	{
 		get { return _DbServerExplorerSvc; }
 		set { _DbServerExplorerSvc = value; }
 	}
 
 
-	public static string AssemblyQualifiedName => DatabaseEngineSvc.AssemblyQualifiedName_;
-	public static string ClientVersion => DatabaseEngineSvc.ClientVersion_;
-	public static Assembly ClientFactoryAssembly => DatabaseEngineSvc.ClientFactoryAssembly_;
-	public static Type ClientFactoryType => DatabaseEngineSvc.ClientFactoryType_;
-	public static Type ConnectionType => DatabaseEngineSvc.ConnectionType_;
-	public static DescriberDictionary Describers => DatabaseEngineSvc.Describers_;
-	public static Assembly EntityFrameworkAssembly => DatabaseEngineSvc.EntityFrameworkAssembly_;
-	public static string Invariant => DatabaseEngineSvc.Invariant_;
-	public static string ProviderFactoryName => DatabaseEngineSvc.ProviderFactoryName_;
-	public static string ProviderFactoryClassName => DatabaseEngineSvc.ProviderFactoryClassName_;
-	public static string ProviderFactoryDescription => DatabaseEngineSvc.ProviderFactoryDescription_;
+	internal static string AssemblyQualifiedName => DatabaseEngineSvc.AssemblyQualifiedName_;
+	internal static string ClientVersion => DatabaseEngineSvc.ClientVersion_;
+	internal static Assembly ClientFactoryAssembly => DatabaseEngineSvc.ClientFactoryAssembly_;
+	internal static Type ClientFactoryType => DatabaseEngineSvc.ClientFactoryType_;
+	internal static Type ConnectionType => DatabaseEngineSvc.ConnectionType_;
+	internal static DescriberDictionary Describers => DatabaseEngineSvc.Describers_;
+	internal static Assembly EntityFrameworkAssembly => DatabaseEngineSvc.EntityFrameworkAssembly_;
+	internal static string Invariant => DatabaseEngineSvc.Invariant_;
+	internal static string ProviderFactoryName => DatabaseEngineSvc.ProviderFactoryName_;
+	internal static string ProviderFactoryClassName => DatabaseEngineSvc.ProviderFactoryClassName_;
+	internal static string ProviderFactoryDescription => DatabaseEngineSvc.ProviderFactoryDescription_;
 
-	public static string EFProvider => DatabaseEngineSvc.EFProvider_;
-	public static string EFProviderServices => DatabaseEngineSvc.EFProviderServices_;
-	public static string EFConnectionFactory => DatabaseEngineSvc.EFConnectionFactory_;
-
-
-	public static string Extension => DatabaseEngineSvc.Extension_;
-	public static string Protocol => DatabaseEngineSvc.Protocol_;
-	public static string Scheme => DatabaseEngineSvc.Scheme_;
-	public static string DbEngineName => DatabaseEngineSvc.DbEngineName_;
-	public static string DataProviderName => DatabaseEngineSvc.DataProviderName_;
-	public static string ExternalUtilityConfigurationPath => DatabaseEngineSvc.ExternalUtilityConfigurationPath_;
-
-	public static string XmlActualPlanColumn => DatabaseEngineSvc.XmlActualPlanColumn_;
-	public static string XmlEstimatedPlanColumn => DatabaseEngineSvc.XmlEstimatedPlanColumn_;
+	internal static string EFProvider => DatabaseEngineSvc.EFProvider_;
+	internal static string EFProviderServices => DatabaseEngineSvc.EFProviderServices_;
+	internal static string EFConnectionFactory => DatabaseEngineSvc.EFConnectionFactory_;
 
 
-	public static string RootObjectTypeName => DatabaseEngineSvc.RootObjectTypeName_;
+	internal static string Extension => DatabaseEngineSvc.Extension_;
+	internal static string Protocol => DatabaseEngineSvc.Protocol_;
+	internal static string Scheme => DatabaseEngineSvc.Scheme_;
+	internal static string DbEngineName => DatabaseEngineSvc.DbEngineName_;
+	internal static string DataProviderName => DatabaseEngineSvc.DataProviderName_;
+	internal static string ExternalUtilityConfigurationPath => DatabaseEngineSvc.ExternalUtilityConfigurationPath_;
+
+	internal static string XmlActualPlanColumn => DatabaseEngineSvc.XmlActualPlanColumn_;
+	internal static string XmlEstimatedPlanColumn => DatabaseEngineSvc.XmlEstimatedPlanColumn_;
+
+
+	internal static string RootObjectTypeName => DatabaseEngineSvc.RootObjectTypeName_;
 
 
 	#endregion Property accessors
@@ -171,14 +171,14 @@ public static class NativeDb
 	// =========================================================================================================
 
 
-	public static DbConnection CastToNativeConnection(object connection)
+	internal static DbConnection CastToNativeConnection(object connection)
 	{
 		return DatabaseEngineSvc.CastToNativeConnection_(connection);
 	}
 
 
 
-	public static DbCommand CreateDbCommand(string cmdText = null)
+	internal static DbCommand CreateDbCommand(string cmdText = null)
 	{
 		return DatabaseEngineSvc.CreateDbCommand_(cmdText);
 	}
@@ -187,38 +187,38 @@ public static class NativeDb
 	/// <summary>
 	/// Creates a native database connection using a connection string.
 	/// </summary>
-	public static IDbConnection CreateDbConnection(string connectionString)
+	internal static IDbConnection CreateDbConnection(string connectionString)
 	{
 		return DatabaseEngineSvc.CreateDbConnection_(connectionString);
 	}
 
 
 
-	public static IBsNativeDbStatementWrapper CreateDbStatementWrapper(IBsNativeDbBatchParser owner, object statement, int statementIndex)
+	internal static IBsNativeDbStatementWrapper CreateDbStatementWrapper(IBsNativeDbBatchParser owner, object statement, int statementIndex)
 	{
 		return DatabaseEngineSvc.CreateDbStatementWrapper_(owner, statement, statementIndex);
 	}
 
-	public static IBsNativeDbBatchParser CreateDbBatchParser(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
+	internal static IBsNativeDbBatchParser CreateDbBatchParser(EnSqlExecutionType executionType, IBsQueryManager qryMgr, string script)
 	{
 		return DatabaseEngineSvc.CreateDbBatchParser_(executionType, qryMgr, script);
 	}
 
 
 
-	public static string GetDecoratedDdlSource(IVsDataExplorerNode node, EnModelTargetType targetType)
+	internal static string GetDecoratedDdlSource(IVsDataExplorerNode node, EnModelTargetType targetType)
 	{
 		return DbServerExplorerSvc.GetDecoratedDdlSource_(node, targetType);
 	}
 
 
 
-	public static bool MatchesEntityFrameworkAssembly(string assemblyName) =>
+	internal static bool MatchesEntityFrameworkAssembly(string assemblyName) =>
 		DatabaseEngineSvc.MatchesEntityFrameworkAssembly_(assemblyName);
 
 
 
-	public static bool MatchesInvariantAssembly(string assemblyName) =>
+	internal static bool MatchesInvariantAssembly(string assemblyName) =>
 		DatabaseEngineSvc.MatchesInvariantAssembly_(assemblyName);
 
 
@@ -356,7 +356,7 @@ public static class NativeDb
 	/// [Async on UI thread]: Reindex the EntityFramwork ProviderService type in the TypeResolutionService. 
 	/// </summary>
 	// -----------------------------------------------------------------------------------------------------
-	public static void ReindexEntityFrameworkAssembliesAsyui(Project project = null)
+	internal static void ReindexEntityFrameworkAssembliesAsyui(Project project = null)
 	{
 		// If it's a solution reindex (project == null), lock entry so that only
 		// other solution reindex requests can enter.
@@ -416,7 +416,7 @@ public static class NativeDb
 	/// </summary>
 	// -----------------------------------------------------------------------------------------------------
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller has checked.")]
-	public static bool ReindexVersioningFacade(Project project, Reference efReference = null)
+	internal static bool ReindexVersioningFacade(Project project, Reference efReference = null)
 	{
 		// TODO: Always exits because reindex still results in edmx "Create database" failure.
 		if (project != null)
@@ -542,15 +542,15 @@ public static class NativeDb
 	*/
 
 
-	public static byte GetErrorClass(object error) => DbExceptionSvc.GetErrorClass_(error);
-	public static int GetErrorLineNumber(object error) => DbExceptionSvc.GetErrorLineNumber_(error);
-	public static string GetErrorMessage(object error) => DbExceptionSvc.GetErrorMessage_(error);
-	public static int GetErrorNumber(object error) => DbExceptionSvc.GetErrorNumber_(error);
-	public static int GetObjectTypeIdentifierLength(string typeName) => DbServerExplorerSvc.GetObjectTypeIdentifierLength_(typeName);
-	public static Version ParseServerVersion(IDbConnection connection) => connection.ParseServerVersion();
-	public static ICollection<object> GetErrorEnumerator(IList<object> errors) => DbExceptionSvc.GetErrorEnumerator_(errors);
-	public static bool LockLoadedParser(string originalString, string updatedString) => DatabaseEngineSvc.LockLoadedParser_(originalString, updatedString);
-	public static void UnlockLoadedParser() => DatabaseEngineSvc.UnlockLoadedParser_();
+	internal static byte GetErrorClass(object error) => DbExceptionSvc.GetErrorClass_(error);
+	internal static int GetErrorLineNumber(object error) => DbExceptionSvc.GetErrorLineNumber_(error);
+	internal static string GetErrorMessage(object error) => DbExceptionSvc.GetErrorMessage_(error);
+	internal static int GetErrorNumber(object error) => DbExceptionSvc.GetErrorNumber_(error);
+	internal static int GetObjectTypeIdentifierLength(string typeName) => DbServerExplorerSvc.GetObjectTypeIdentifierLength_(typeName);
+	internal static Version ParseServerVersion(IDbConnection connection) => connection.ParseServerVersion();
+	internal static ICollection<object> GetErrorEnumerator(IList<object> errors) => DbExceptionSvc.GetErrorEnumerator_(errors);
+	internal static bool LockLoadedParser(string originalString, string updatedString) => DatabaseEngineSvc.LockLoadedParser_(originalString, updatedString);
+	internal static void UnlockLoadedParser() => DatabaseEngineSvc.UnlockLoadedParser_();
 
 
 	#endregion Methods

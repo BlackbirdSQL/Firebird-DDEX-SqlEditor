@@ -9,13 +9,13 @@ using Microsoft.AnalysisServices.Graphing;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class Edge : Microsoft.AnalysisServices.Graphing.Edge
+internal class Edge : Microsoft.AnalysisServices.Graphing.Edge
 {
 	private PropertyDescriptorCollection properties;
 
-	public PropertyDescriptorCollection Properties => properties;
+	internal PropertyDescriptorCollection Properties => properties;
 
-	public object this[string propertyName]
+	internal object this[string propertyName]
 	{
 		get
 		{
@@ -38,7 +38,7 @@ public class Edge : Microsoft.AnalysisServices.Graphing.Edge
 		}
 	}
 
-	public double RowSize
+	internal double RowSize
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class Edge : Microsoft.AnalysisServices.Graphing.Edge
 		}
 	}
 
-	public double RowCount
+	internal double RowCount
 	{
 		get
 		{
@@ -77,7 +77,7 @@ public class Edge : Microsoft.AnalysisServices.Graphing.Edge
 		}
 	}
 
-	public double EstimatedRowCount
+	internal double EstimatedRowCount
 	{
 		get
 		{
@@ -91,7 +91,7 @@ public class Edge : Microsoft.AnalysisServices.Graphing.Edge
 		}
 	}
 
-	public double EstimatedDataSize
+	internal double EstimatedDataSize
 	{
 		get
 		{

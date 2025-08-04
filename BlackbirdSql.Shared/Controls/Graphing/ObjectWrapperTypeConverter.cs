@@ -20,30 +20,30 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 
 internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 {
-	public static ObjectWrapperTypeConverter Default;
+	internal static ObjectWrapperTypeConverter Default;
 
 	private static readonly Dictionary<Type, MethodInfo> convertMethods;
 
-	public static ExpandableObjectWrapper ConvertToWrapperObject(object item)
+	internal static ExpandableObjectWrapper ConvertToWrapperObject(object item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
 		expandableObjectWrapper.DisplayName = MakeDisplayNameFromObjectNamesAndValues(expandableObjectWrapper);
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(ColumnReferenceType item)
+	internal static ExpandableObjectWrapper Convert(ColumnReferenceType item)
 	{
 		string displayName = MergeString(".", item.Database, item.Schema, item.Table, item.Column);
 		return new ExpandableObjectWrapper(item, "Column", displayName);
 	}
 
-	public static ExpandableObjectWrapper Convert(GroupingSetReferenceType item)
+	internal static ExpandableObjectWrapper Convert(GroupingSetReferenceType item)
 	{
 		string value = item.Value;
 		return new ExpandableObjectWrapper(item, "GroupingSet", value);
 	}
 
-	public static ExpandableObjectWrapper Convert(ObjectType item)
+	internal static ExpandableObjectWrapper Convert(ObjectType item)
 	{
 		string text = MergeString(".", item.Server, item.Database, item.Schema, item.Table, item.Index);
 		text = MergeString(" ", text, item.Alias);
@@ -55,12 +55,12 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return new ExpandableObjectWrapper(item, "Index", text);
 	}
 
-	public static ExpandableObjectWrapper Convert(SingleColumnReferenceType item)
+	internal static ExpandableObjectWrapper Convert(SingleColumnReferenceType item)
 	{
 		return Convert(item.ColumnReference);
 	}
 
-	public static ExpandableObjectWrapper Convert(DefinedValuesListTypeDefinedValue[] definedValues)
+	internal static ExpandableObjectWrapper Convert(DefinedValuesListTypeDefinedValue[] definedValues)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper();
 		StringBuilder stringBuilder = new StringBuilder();
@@ -101,17 +101,17 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(SetOptionsType item)
+	internal static ExpandableObjectWrapper Convert(SetOptionsType item)
 	{
 		return ConvertToWrapperObject(item);
 	}
 
-	public static ExpandableObjectWrapper Convert(RollupLevelType item)
+	internal static ExpandableObjectWrapper Convert(RollupLevelType item)
 	{
 		return new ExpandableObjectWrapper(item, ControlsResources.Graphing_Level, item.Level.ToString());
 	}
 
-	public static ExpandableObjectWrapper Convert(WarningsType item)
+	internal static ExpandableObjectWrapper Convert(WarningsType item)
 	{
 		string displayName = "";
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
@@ -297,12 +297,12 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return list;
 	}
 
-	public static ExpandableObjectWrapper Convert(MemoryFractionsType item)
+	internal static ExpandableObjectWrapper Convert(MemoryFractionsType item)
 	{
 		return ConvertToWrapperObject(item);
 	}
 
-	public static ExpandableObjectWrapper Convert(ScalarType[][] items)
+	internal static ExpandableObjectWrapper Convert(ScalarType[][] items)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableArrayWrapper(items);
 		string value = CultureInfo.CurrentCulture.TextInfo.ListSeparator + " ";
@@ -328,7 +328,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(ScalarType item)
+	internal static ExpandableObjectWrapper Convert(ScalarType item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
 		if (!string.IsNullOrEmpty(item.ScalarString))
@@ -342,7 +342,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static string Convert(ScalarExpressionType item)
+	internal static string Convert(ScalarExpressionType item)
 	{
 		if (item.ScalarOperator == null)
 		{
@@ -351,7 +351,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return item.ScalarOperator.ScalarString;
 	}
 
-	public static ExpandableObjectWrapper Convert(CompareType item)
+	internal static ExpandableObjectWrapper Convert(CompareType item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
 		object obj = expandableObjectWrapper["ScalarOperator"];
@@ -366,14 +366,14 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(OrderByTypeOrderByColumn item)
+	internal static ExpandableObjectWrapper Convert(OrderByTypeOrderByColumn item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
 		expandableObjectWrapper.DisplayName = "{0} {1}".Fmt(expandableObjectWrapper["ColumnReference"], item.Ascending ? ControlsResources.Graphing_Ascending : ControlsResources.Descending);
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(ScanRangeType item)
+	internal static ExpandableObjectWrapper Convert(ScanRangeType item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
 		object obj = expandableObjectWrapper["RangeColumns"];
@@ -414,14 +414,14 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(SeekPredicateType item)
+	internal static ExpandableObjectWrapper Convert(SeekPredicateType item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
 		expandableObjectWrapper.DisplayName = MakeDisplayNameFromObjectNamesAndValues(expandableObjectWrapper, "Prefix", "StartRange", "EndRange");
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(SeekPredicatesType item)
+	internal static ExpandableObjectWrapper Convert(SeekPredicatesType item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper;
 		if (item.Items.Length != 0 && item.Items[0] is SeekPredicateNewType)
@@ -450,7 +450,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(SeekPredicateNewType item)
+	internal static ExpandableObjectWrapper Convert(SeekPredicateNewType item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableArrayWrapper(item.SeekKeys);
 		string value = CultureInfo.CurrentCulture.TextInfo.ListSeparator + " ";
@@ -468,7 +468,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(SeekPredicatePartType item)
+	internal static ExpandableObjectWrapper Convert(SeekPredicatePartType item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableArrayWrapper(item.Items);
 		string value = CultureInfo.CurrentCulture.TextInfo.ListSeparator + " ";
@@ -489,7 +489,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static ExpandableObjectWrapper Convert(MergeColumns item)
+	internal static ExpandableObjectWrapper Convert(MergeColumns item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper(item);
 		object obj = expandableObjectWrapper["InnerSideJoinColumns"];
@@ -501,7 +501,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static string Convert(EnStmtInfoTypeStatementOptmEarlyAbortReason item)
+	internal static string Convert(EnStmtInfoTypeStatementOptmEarlyAbortReason item)
 	{
 		return item switch
 		{
@@ -512,7 +512,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		};
 	}
 
-	public static string Convert(EnCloneAccessScopeType item)
+	internal static string Convert(EnCloneAccessScopeType item)
 	{
 		return item switch
 		{
@@ -525,7 +525,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		};
 	}
 
-	public static object Convert(InternalInfoType item)
+	internal static object Convert(InternalInfoType item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper();
 		StringBuilder stringBuilder = new StringBuilder();
@@ -564,7 +564,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static object Convert(XmlElement item)
+	internal static object Convert(XmlElement item)
 	{
 		ExpandableObjectWrapper expandableObjectWrapper = new ExpandableObjectWrapper();
 		StringBuilder stringBuilder = new StringBuilder();
@@ -595,12 +595,12 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return expandableObjectWrapper;
 	}
 
-	public static object Convert(XmlAttribute item)
+	internal static object Convert(XmlAttribute item)
 	{
 		return item.Value;
 	}
 
-	public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+	internal override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 	{
 		if (Type.GetTypeCode(sourceType) != TypeCode.Object && !sourceType.IsArray)
 		{
@@ -609,7 +609,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return true;
 	}
 
-	public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+	internal override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 	{
 		if (convertMethods.TryGetValue(value.GetType(), out MethodInfo value2))
 		{
@@ -618,7 +618,7 @@ internal class ObjectWrapperTypeConverter : ExpandableObjectConverter
 		return ConvertToObjectWrapper(value);
 	}
 
-	public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destType)
+	internal override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destType)
 	{
 		if (convertMethods.TryGetValue(value.GetType(), out MethodInfo value2) && value2.ReturnType == destType)
 		{

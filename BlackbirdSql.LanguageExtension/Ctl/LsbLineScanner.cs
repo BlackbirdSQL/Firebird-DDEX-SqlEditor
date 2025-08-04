@@ -1,14 +1,31 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.LineScanner
+
 using Babel;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
 using Microsoft.VisualStudio.Package;
 
+
+
 namespace BlackbirdSql.LanguageExtension.Ctl;
 
 
+// =========================================================================================================
+//
+//										LsbLineScanner Class
+//
+/// <summary>
+/// Language service IScanner line scanner implementation.
+/// </summary>
+// =========================================================================================================
 internal class LsbLineScanner : IScanner
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - LsbLineScanner
+	// ---------------------------------------------------------------------------------
+
+
 	public LsbLineScanner()
 	{
 		_BabelScanner = new LineScanner
@@ -18,17 +35,49 @@ internal class LsbLineScanner : IScanner
 	}
 
 
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - LsbLineScanner
+	// =========================================================================================================
+
 
 	private readonly LineScanner _BabelScanner;
 
 
-	public string BatchSeparator
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - LsbLineScanner
+	// =========================================================================================================
+
+
+	internal string BatchSeparator
 	{
 		set
 		{
 			_BabelScanner.BatchSeparator = value;
 		}
 	}
+
+
+	#endregion Property accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - LsbLineScanner
+	// =========================================================================================================
 
 
 	public bool ScanTokenAndProvideInfoAboutIt(Microsoft.VisualStudio.Package.TokenInfo tokenInfo, ref int state)
@@ -81,4 +130,7 @@ internal class LsbLineScanner : IScanner
 	{
 		_BabelScanner.SetSource(source, offset);
 	}
+
+
+	#endregion Methods
 }

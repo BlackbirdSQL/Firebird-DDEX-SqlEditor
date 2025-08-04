@@ -380,7 +380,7 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 
 
-	protected internal virtual string SerializeValue(object value, Type type, string propertyName)
+	public virtual string SerializeValue(object value, Type type, string propertyName)
 	{
 		if (value == null)
 		{
@@ -395,7 +395,7 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 
 
-	protected internal virtual object DeserializeValue(string serializedData, Type type, string propertyName)
+	public virtual object DeserializeValue(string serializedData, Type type, string propertyName)
 	{
 		if (serializedData.Length == 0)
 		{

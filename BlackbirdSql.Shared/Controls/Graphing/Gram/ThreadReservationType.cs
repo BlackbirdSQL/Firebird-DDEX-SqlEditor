@@ -13,7 +13,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ThreadReservationType
+internal class ThreadReservationType
 {
 	private int nodeIdField;
 
@@ -22,7 +22,7 @@ public class ThreadReservationType
 	private int reservedThreadsField;
 
 	[XmlAttribute]
-	public int NodeId
+	internal int NodeId
 	{
 		get
 		{
@@ -35,7 +35,7 @@ public class ThreadReservationType
 	}
 
 	[XmlIgnore]
-	public bool NodeIdSpecified
+	internal bool NodeIdSpecified
 	{
 		get
 		{
@@ -48,7 +48,7 @@ public class ThreadReservationType
 	}
 
 	[XmlAttribute]
-	public int ReservedThreads
+	internal int ReservedThreads
 	{
 		get
 		{

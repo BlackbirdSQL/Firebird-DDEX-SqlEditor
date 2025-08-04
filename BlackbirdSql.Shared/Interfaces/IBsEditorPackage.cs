@@ -16,6 +16,6 @@ public interface IBsEditorPackage
 	AuxilliaryDocData GetAuxilliaryDocData(object docData);
 
 
-	public DialogResult ShowExecutionSettingsDialog(AuxilliaryDocData auxDocData,
+	internal DialogResult ShowExecutionSettingsDialog(AuxilliaryDocData auxDocData,
 		FormStartPosition startPosition);
 }

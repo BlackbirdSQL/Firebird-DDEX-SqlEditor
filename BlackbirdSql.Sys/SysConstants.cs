@@ -18,11 +18,11 @@ namespace BlackbirdSql;
 /// Built-in db constants class.
 /// </summary>
 // =========================================================================================================
-public static class SysConstants
+internal static class SysConstants
 {
 
-	public static string S_DatasetKeyFormat => Resources.DatasetKeyFormat;
-	public static string S_DatasetKeyAlternateFormat => Resources.DatasetKeyAlternateFormat;
+	internal static string S_DatasetKeyFormat => Resources.DatasetKeyFormat;
+	internal static string S_DatasetKeyAlternateFormat => Resources.DatasetKeyAlternateFormat;
 
 
 
@@ -31,18 +31,18 @@ public static class SysConstants
 	// ---------------------------------------------------------------------------------
 
 
-	public const int D_Connection = 0x1;
-	public const int D_Advanced = 0x2;
-	public const int D_Public = 0x4;
-	public const int D_Default = D_Advanced | D_Public;
-	public const int D_Mandatory = 0x8;
-	public const int D_Derived = 0x10;
-	public const int D_HasReadOnly = 0x20;
-	public const int D_DefaultReadOnly = D_Advanced | D_Public | D_HasReadOnly;
-	public const int D_ExtendedType = 0x40;
-	public const int D_Extended = D_Default | D_ExtendedType;
-	public const int D_InternalType = 0x80;
-	public const int D_Internal = D_Extended | D_InternalType;
+	internal const int D_Connection = 0x1;
+	internal const int D_Advanced = 0x2;
+	internal const int D_Public = 0x4;
+	internal const int D_Default = D_Advanced | D_Public;
+	internal const int D_Mandatory = 0x8;
+	internal const int D_Derived = 0x10;
+	internal const int D_HasReadOnly = 0x20;
+	internal const int D_DefaultReadOnly = D_Advanced | D_Public | D_HasReadOnly;
+	internal const int D_ExtendedType = 0x40;
+	internal const int D_Extended = D_Default | D_ExtendedType;
+	internal const int D_InternalType = 0x80;
+	internal const int D_Internal = D_Extended | D_InternalType;
 
 
 	#endregion Describer Flags
@@ -54,40 +54,40 @@ public static class SysConstants
 	// ---------------------------------------------------------------------------------
 
 	// Built-in property descriptor keys
-	public const string C_KeyDataSource = "DataSource";
-	public const string C_KeyPort = "Port";
-	public const string C_KeyServerType = "ServerType";
-	public const string C_KeyDatabase = "Database";
-	public const string C_KeyUserID = "UserID";
-	public const string C_KeyPassword = "Password";
-	public const string C_KeyRole = "Role";
-	public const string C_KeyDialect = "Dialect";
-	public const string C_KeyCharset = "Charset";
-	public const string C_KeyNoDatabaseTriggers = "NoDatabaseTriggers";
-	public const string C_KeyPacketSize = "PacketSize";
-	public const string C_KeyConnectionTimeout = "ConnectionTimeout";
-	public const string C_KeyPooling = "Pooling";
-	public const string C_KeyConnectionLifeTime = "ConnectionLifeTime";
-	public const string C_KeyMinPoolSize = "MinPoolSize";
-	public const string C_KeyMaxPoolSize = "MaxPoolSize";
-	public const string C_KeyFetchSize = "FetchSize";
-	public const string C_KeyIsolationLevel = "IsolationLevel";
-	public const string C_KeyReturnRecordsAffected = "ReturnRecordsAffected";
-	public const string C_KeyEnlist = "Enlist";
-	public const string C_KeyClientLibrary = "ClientLibrary";
-	public const string C_KeyDbCachePages = "DbCachePages";
-	public const string C_KeyNoGarbageCollect = "NoGarbageCollect";
-	public const string C_KeyCompression = "Compression";
-	public const string C_KeyCryptKey = "CryptKey";
-	public const string C_KeyWireCrypt = "WireCrypt";
-	public const string C_KeyApplicationName = "ApplicationName";
-	public const string C_KeyCommandTimeout = "CommandTimeout";
-	public const string C_KeyParallelWorkers = "ParallelWorkers";
+	internal const string C_KeyDataSource = "DataSource";
+	internal const string C_KeyPort = "Port";
+	internal const string C_KeyServerType = "ServerType";
+	internal const string C_KeyDatabase = "Database";
+	internal const string C_KeyUserID = "UserID";
+	internal const string C_KeyPassword = "Password";
+	internal const string C_KeyRole = "Role";
+	internal const string C_KeyDialect = "Dialect";
+	internal const string C_KeyCharset = "Charset";
+	internal const string C_KeyNoDatabaseTriggers = "NoDatabaseTriggers";
+	internal const string C_KeyPacketSize = "PacketSize";
+	internal const string C_KeyConnectionTimeout = "ConnectionTimeout";
+	internal const string C_KeyPooling = "Pooling";
+	internal const string C_KeyConnectionLifeTime = "ConnectionLifeTime";
+	internal const string C_KeyMinPoolSize = "MinPoolSize";
+	internal const string C_KeyMaxPoolSize = "MaxPoolSize";
+	internal const string C_KeyFetchSize = "FetchSize";
+	internal const string C_KeyIsolationLevel = "IsolationLevel";
+	internal const string C_KeyReturnRecordsAffected = "ReturnRecordsAffected";
+	internal const string C_KeyEnlist = "Enlist";
+	internal const string C_KeyClientLibrary = "ClientLibrary";
+	internal const string C_KeyDbCachePages = "DbCachePages";
+	internal const string C_KeyNoGarbageCollect = "NoGarbageCollect";
+	internal const string C_KeyCompression = "Compression";
+	internal const string C_KeyCryptKey = "CryptKey";
+	internal const string C_KeyWireCrypt = "WireCrypt";
+	internal const string C_KeyApplicationName = "ApplicationName";
+	internal const string C_KeyCommandTimeout = "CommandTimeout";
+	internal const string C_KeyParallelWorkers = "ParallelWorkers";
 
 
 	// Extended property descriptor keys
-	public const string C_KeyExDatasetName = "DatasetName";
-	public const string C_KeyExConnectionName = "ConnectionName";
+	internal const string C_KeyExDatasetName = "DatasetName";
+	internal const string C_KeyExConnectionName = "ConnectionName";
 
 
 	#endregion DbConnectionString Property Names
@@ -118,40 +118,40 @@ public static class SysConstants
 
 
 	// Built-in property defaults
-	public const string C_DefaultDataSource = "";
-	public const int C_DefaultPort = 3050;
-	public const EnServerType C_DefaultServerType = EnServerType.Default;
-	public const string C_DefaultDatabase = "";
-	public const string C_DefaultUserID = "";
-	public const string C_DefaultPassword = "";
-	public const string C_DefaultRole = "";
-	public const int C_DefaultDialect = 3;
-	public const string C_DefaultCharset = "UTF8";
-	public const bool C_DefaultNoDatabaseTriggers = false;
-	public const int C_DefaultPacketSize = 8192;
-	public const int C_DefaultConnectionTimeout = 15;
-	public const bool C_DefaultPooling = true;
-	public const int C_DefaultConnectionLifeTime = 0;
-	public const int C_DefaultMinPoolSize = 0;
-	public const int C_DefaultMaxPoolSize = 100;
-	public const int C_DefaultFetchSize = 200;
-	public const IsolationLevel C_DefaultIsolationLevel = IsolationLevel.ReadCommitted;
-	public const bool C_DefaultReturnRecordsAffected = true;
-	public const bool C_DefaultEnlist = true;
-	public const string C_DefaultClientLibrary = "fbembed";
-	public const int C_DefaultDbCachePages = 0;
-	public const bool C_DefaultNoGarbageCollect = false;
-	public const bool C_DefaultCompression = false;
-	public const byte[] C_DefaultCryptKey = null;
-	public const EnWireCrypt C_DefaultWireCrypt = EnWireCrypt.Enabled;
-	public const string C_DefaultApplicationName = "";
-	public const int C_DefaultCommandTimeout = 0;
-	public const int C_DefaultParallelWorkers = 0;
+	internal const string C_DefaultDataSource = "";
+	internal const int C_DefaultPort = 3050;
+	internal const EnServerType C_DefaultServerType = EnServerType.Default;
+	internal const string C_DefaultDatabase = "";
+	internal const string C_DefaultUserID = "";
+	internal const string C_DefaultPassword = "";
+	internal const string C_DefaultRole = "";
+	internal const int C_DefaultDialect = 3;
+	internal const string C_DefaultCharset = "UTF8";
+	internal const bool C_DefaultNoDatabaseTriggers = false;
+	internal const int C_DefaultPacketSize = 8192;
+	internal const int C_DefaultConnectionTimeout = 15;
+	internal const bool C_DefaultPooling = true;
+	internal const int C_DefaultConnectionLifeTime = 0;
+	internal const int C_DefaultMinPoolSize = 0;
+	internal const int C_DefaultMaxPoolSize = 100;
+	internal const int C_DefaultFetchSize = 200;
+	internal const IsolationLevel C_DefaultIsolationLevel = IsolationLevel.ReadCommitted;
+	internal const bool C_DefaultReturnRecordsAffected = true;
+	internal const bool C_DefaultEnlist = true;
+	internal const string C_DefaultClientLibrary = "fbembed";
+	internal const int C_DefaultDbCachePages = 0;
+	internal const bool C_DefaultNoGarbageCollect = false;
+	internal const bool C_DefaultCompression = false;
+	internal const byte[] C_DefaultCryptKey = null;
+	internal const EnWireCrypt C_DefaultWireCrypt = EnWireCrypt.Enabled;
+	internal const string C_DefaultApplicationName = "";
+	internal const int C_DefaultCommandTimeout = 0;
+	internal const int C_DefaultParallelWorkers = 0;
 
 
 	// Extended property defaults
-	public const string C_DefaultExDatasetName = "";
-	public const string C_DefaultExConnectionName = "";
+	internal const string C_DefaultExDatasetName = "";
+	internal const string C_DefaultExConnectionName = "";
 
 
 	#endregion DbConnectionString Property Default Values

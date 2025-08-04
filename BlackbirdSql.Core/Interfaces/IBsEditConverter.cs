@@ -6,7 +6,7 @@ using BlackbirdSql.Sys.Events;
 namespace BlackbirdSql.Core.Interfaces;
 
 
-public interface IBsEditConverter
+internal interface IBsEditConverter
 {
 	void OnEditControlGotFocus(object sender, EditControlFocusEventArgs e);
 	void OnEditControlLostFocus(object sender, EditControlFocusEventArgs e);

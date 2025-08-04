@@ -20,6 +20,6 @@ namespace BlackbirdSql.Sys.Interfaces;
 /// Service for native Db Server explorer services interface.
 /// </summary>
 // =========================================================================================================
-public interface SBsNativeDbServerExplorerService
+internal interface SBsNativeDbServerExplorerService
 {
 }

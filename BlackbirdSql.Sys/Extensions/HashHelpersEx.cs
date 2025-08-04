@@ -16,11 +16,11 @@ namespace BlackbirdSql.Sys.Extensions;
 // [FriendAccessAllowed]1
 internal static class HashHelpersEx
 {
-	public const int C_HashCollisionThreshold = 100;
+	internal const int C_HashCollisionThreshold = 100;
 
 	// public static bool SUseRandomizedStringHashing = Cmd.UseRandomizedHashing();
 
-	public static readonly int[] primes =
+	internal static readonly int[] primes =
 	[
 		3, 7, 11, 17, 23, 29, 37, 47, 59, 71,
 		89, 107, 131, 163, 197, 239, 293, 353, 431, 521,
@@ -34,7 +34,7 @@ internal static class HashHelpersEx
 
 	private static ConditionalWeakTable<object, SerializationInfo> S_SerializationInfoTable;
 
-	public const int C_MaxPrimeArrayLength = 2146435069;
+	internal const int C_MaxPrimeArrayLength = 2146435069;
 
 	private const int C_BufferSize = 1024;
 
@@ -61,7 +61,7 @@ internal static class HashHelpersEx
 	}
 
 	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-	public static bool IsPrime(int candidate)
+	internal static bool IsPrime(int candidate)
 	{
 		if (((uint)candidate & (true ? 1u : 0u)) != 0)
 		{
@@ -79,7 +79,7 @@ internal static class HashHelpersEx
 	}
 
 	[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-	public static int GetPrime(int min)
+	internal static int GetPrime(int min)
 	{
 		if (min < 0)
 		{
@@ -105,12 +105,12 @@ internal static class HashHelpersEx
 		return min;
 	}
 
-	public static int GetMinPrime()
+	internal static int GetMinPrime()
 	{
 		return primes[0];
 	}
 
-	public static int ExpandPrime(int oldSize)
+	internal static int ExpandPrime(int oldSize)
 	{
 		int num = 2 * oldSize;
 		if ((uint)num > C_MaxPrimeArrayLength && C_MaxPrimeArrayLength > oldSize)
@@ -121,7 +121,7 @@ internal static class HashHelpersEx
 	}
 
 	/*
-	public static bool IsWellKnownEqualityComparer(object comparer)
+	internal static bool IsWellKnownEqualityComparer(object comparer)
 	{
 		if (comparer != null && comparer != EqualityComparer<string>.Default)
 		{
@@ -131,7 +131,7 @@ internal static class HashHelpersEx
 	}
 	*/
 	/*
-	public static IEqualityComparer GetRandomizedEqualityComparer(object comparer)
+	internal static IEqualityComparer GetRandomizedEqualityComparer(object comparer)
 	{
 		if (comparer == null)
 		{
@@ -149,7 +149,7 @@ internal static class HashHelpersEx
 	}
 	*/
 
-	public static object GetEqualityComparerForSerialization(object comparer)
+	internal static object GetEqualityComparerForSerialization(object comparer)
 	{
 		if (comparer == null)
 		{

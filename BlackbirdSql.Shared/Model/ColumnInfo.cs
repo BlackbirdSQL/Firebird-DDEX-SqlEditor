@@ -14,7 +14,7 @@ using BlackbirdSql.Shared.Model.IO;
 namespace BlackbirdSql.Shared.Model;
 
 
-public class ColumnInfo : IBsColumnInfo
+internal class ColumnInfo : IBsColumnInfo
 {
 	protected string _ColumnName;
 
@@ -28,13 +28,13 @@ public class ColumnInfo : IBsColumnInfo
 
 	protected int _Precision;
 
-	public const int C_ColumnSizeIndex = 2;
+	internal const int C_ColumnSizeIndex = 2;
 
-	public const int C_PrecisionIndex = 4;
+	internal const int C_PrecisionIndex = 4;
 
 	private static readonly Dictionary<string, bool> _AllServerDataTypes;
 
-	public const int C_UdtAssemblyQualifiedNameIndex = 28;
+	internal const int C_UdtAssemblyQualifiedNameIndex = 28;
 
 	private static readonly StorageDataEntity _SColumnDataEntity;
 
@@ -69,7 +69,7 @@ public class ColumnInfo : IBsColumnInfo
 	public bool IsSqlVariant => _IsSqlVariant;
 
 
-	public int MaxLength => _MaxLength;
+	internal int MaxLength => _MaxLength;
 
 
 	public int Precision => _Precision;
@@ -150,7 +150,7 @@ public class ColumnInfo : IBsColumnInfo
 	}
 
 
-	public async Task<bool> InitializeAsync(StorageDataReader reader, int colIndex, CancellationToken cancelToken)
+	internal async Task<bool> InitializeAsync(StorageDataReader reader, int colIndex, CancellationToken cancelToken)
 	{
 		_ColumnName = reader.GetName(colIndex);
 		_DataTypeName = reader.GetDataTypeName(colIndex);
@@ -212,7 +212,7 @@ public class ColumnInfo : IBsColumnInfo
 
 
 
-	public void InitFieldTypes(string providerSpecificDataTypeName = null)
+	internal void InitFieldTypes(string providerSpecificDataTypeName = null)
 	{
 		string dataTypeName = DataTypeName.ToLowerInvariant();
 

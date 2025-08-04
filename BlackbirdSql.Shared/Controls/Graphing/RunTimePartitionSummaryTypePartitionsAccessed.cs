@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RunTimePartitionSummaryTypePartitionsAccessed
+internal class RunTimePartitionSummaryTypePartitionsAccessed
 {
 	private RunTimePartitionSummaryTypePartitionsAccessedPartitionRange[] partitionRangeField;
 
 	private ulong partitionCountField;
 
 	[XmlElement("PartitionRange")]
-	public RunTimePartitionSummaryTypePartitionsAccessedPartitionRange[] PartitionRange
+	internal RunTimePartitionSummaryTypePartitionsAccessedPartitionRange[] PartitionRange
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class RunTimePartitionSummaryTypePartitionsAccessed
 	}
 
 	[XmlAttribute]
-	public ulong PartitionCount
+	internal ulong PartitionCount
 	{
 		get
 		{

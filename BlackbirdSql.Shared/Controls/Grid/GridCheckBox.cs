@@ -15,7 +15,7 @@ using Microsoft.Win32;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public sealed class GridCheckBox
+internal sealed class GridCheckBox
 {
 	private Font m_textFont = Control.DefaultFont;
 
@@ -27,7 +27,7 @@ public sealed class GridCheckBox
 
 	private readonly StringFormat m_cacheGdiPlusFormat = new StringFormat(StringFormatFlags.NoWrap);
 
-	public static readonly int ExtraHorizSpace;
+	internal static readonly int ExtraHorizSpace;
 
 	[ThreadStatic]
 	private static SolidBrush _SDisabledButtonTextBrush;
@@ -48,9 +48,9 @@ public sealed class GridCheckBox
 		}
 	}
 
-	public static int ButtonAdditionalHeight => SystemInformation.Border3DSize.Width * 2 + 2;
+	internal static int ButtonAdditionalHeight => SystemInformation.Border3DSize.Width * 2 + 2;
 
-	public bool RTL
+	internal bool RTL
 	{
 		get
 		{
@@ -75,7 +75,7 @@ public sealed class GridCheckBox
 		}
 	}
 
-	public Font TextFont
+	internal Font TextFont
 	{
 		get
 		{
@@ -95,7 +95,7 @@ public sealed class GridCheckBox
 		}
 	}
 
-	public Brush TextBrush
+	internal Brush TextBrush
 	{
 		get
 		{
@@ -141,19 +141,19 @@ public sealed class GridCheckBox
 		m_cacheFormat &= ~TextFormatFlags.SingleLine;
 	}
 
-	public static Rectangle CalculateInitialContentsRect(Graphics g, Rectangle r, string text, Size size, HorizontalAlignment contentsAlignment, Font textFont, bool bRtl, ref StringFormat sFormat, out int nStringWidth)
+	internal static Rectangle CalculateInitialContentsRect(Graphics g, Rectangle r, string text, Size size, HorizontalAlignment contentsAlignment, Font textFont, bool bRtl, ref StringFormat sFormat, out int nStringWidth)
 	{
 		TextFormatFlags sFormat2 = ConvertStringFormatIntoTextFormat(sFormat, adjustStringAlign: false);
 		return CalculateInitialContentsRect(g, r, text, size, contentsAlignment, textFont, bRtl, ref sFormat2, ref sFormat, out nStringWidth);
 	}
 
-	public static Rectangle CalculateInitialContentsRect(Graphics g, Rectangle r, string text, Size size, HorizontalAlignment contentsAlignment, Font textFont, bool bRtl, ref TextFormatFlags sFormat, out int nStringWidth)
+	internal static Rectangle CalculateInitialContentsRect(Graphics g, Rectangle r, string text, Size size, HorizontalAlignment contentsAlignment, Font textFont, bool bRtl, ref TextFormatFlags sFormat, out int nStringWidth)
 	{
 		StringFormat gdiPlusFormat = null;
 		return CalculateInitialContentsRect(g, r, text, size, contentsAlignment, textFont, bRtl, ref sFormat, ref gdiPlusFormat, out nStringWidth);
 	}
 
-	public static void DrawCheckbox(Graphics g, Rectangle rect, HorizontalAlignment alignment, bool isRTL, EnGridCheckBoxState state, bool bEnabled)
+	internal static void DrawCheckbox(Graphics g, Rectangle rect, HorizontalAlignment alignment, bool isRTL, EnGridCheckBoxState state, bool bEnabled)
 	{
 		Point glyphLocation = AlignCheckBox(rect, g, alignment, isRTL);
 		if (bEnabled)
@@ -198,7 +198,7 @@ public sealed class GridCheckBox
 		}
 	}
 
-	public void Paint(Graphics g, Rectangle r, ButtonState state, string text, EnGridCheckBoxState checkState, HorizontalAlignment contentsAlignment, EnTextBitmapLayout tbLayout, bool bEnabled, bool useGdiPlus, bool isHeader)
+	internal void Paint(Graphics g, Rectangle r, ButtonState state, string text, EnGridCheckBoxState checkState, HorizontalAlignment contentsAlignment, EnTextBitmapLayout tbLayout, bool bEnabled, bool useGdiPlus, bool isHeader)
 	{
 		if (useGdiPlus)
 		{

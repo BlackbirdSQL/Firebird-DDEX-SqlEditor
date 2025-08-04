@@ -1,5 +1,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.BaseMetadataProviderProvider
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -15,24 +16,39 @@ namespace BlackbirdSql.LanguageExtension.Model;
 [SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "TBC")]
 
 
+// =========================================================================================================
+//
+//										AbstractMetadataProviderProvider Class
+//
 /// <summary>
-/// Placeholder. Under development.
+/// Language service IMetadataProviderProvider base implementation.
 /// </summary>
-public abstract class AbstractMetadataProviderProvider : IBsMetadataProviderProvider, IDisposable
+// =========================================================================================================
+internal abstract class AbstractMetadataProviderProvider : IBsMetadataProviderProvider, IDisposable
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - AbstractMetadataProviderProvider
+	// ---------------------------------------------------------------------------------
+
+
 	protected AbstractMetadataProviderProvider()
 	{
 		_SchemaModelMetadata = null;
 		_MetadataBuildingEvent = new ManualResetEvent(initialState: false);
 		IsDisposed = false;
-		BinderQueue = new BinderQueueImpl();
+		BinderQueue = new BinderQueueI();
 	}
+
+
 
 	public void Dispose()
 	{
 		Dispose(disposing: true);
 		GC.SuppressFinalize(this);
 	}
+
+
 
 	protected virtual void Dispose(bool disposing)
 	{
@@ -50,12 +66,86 @@ public abstract class AbstractMetadataProviderProvider : IBsMetadataProviderProv
 	}
 
 
+	#endregion Constructors / Destructors
 
 
 
-	private class BinderQueueImpl : IBsBinderQueue, IDisposable
+
+
+	// =========================================================================================================
+	#region Fields - AbstractMetadataProviderProvider
+	// =========================================================================================================
+
+
+	private IMetadataProvider _SchemaModelMetadata;
+
+	private ManualResetEvent _MetadataBuildingEvent;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - AbstractMetadataProviderProvider
+	// =========================================================================================================
+
+
+	public IBsBinderQueue BinderQueue { get; private set; }
+
+	protected bool IsDisposed { get; private set; }
+
+	public IMetadataProvider MetadataProvider
 	{
-		internal BinderQueueImpl()
+		get
+		{
+			return _SchemaModelMetadata;
+		}
+		protected set
+		{
+			_SchemaModelMetadata = value;
+		}
+	}
+
+	public IBinder Binder { get; protected set; }
+
+	public abstract string Moniker { get; }
+
+	public ManualResetEvent BuildEvent => _MetadataBuildingEvent;
+
+	protected virtual bool AssertInDestructor => true;
+
+
+	#endregion Property accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - AbstractMetadataProviderProvider
+	// =========================================================================================================
+
+
+	public abstract ParseOptions CreateParseOptions();
+
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region							Nested types - AbstractMetadataProviderProvider
+	// =========================================================================================================
+
+
+	private class BinderQueueI : IBsBinderQueue, IDisposable
+	{
+		public BinderQueueI()
 		{
 		}
 
@@ -123,7 +213,7 @@ public abstract class AbstractMetadataProviderProvider : IBsMetadataProviderProv
 				private set { _IsCompleted = value; }
 			}
 
-			public void Complete(bool isCompleted)
+			internal void Complete(bool isCompleted)
 			{
 				IsCompleted = isCompleted;
 				_AsyncWaitHandle.Set();
@@ -265,37 +355,6 @@ public abstract class AbstractMetadataProviderProvider : IBsMetadataProviderProv
 	}
 
 
+	#endregion Nested types
 
-
-
-	private IMetadataProvider _SchemaModelMetadata;
-
-	private ManualResetEvent _MetadataBuildingEvent;
-
-	public IBsBinderQueue BinderQueue { get; private set; }
-
-	protected bool IsDisposed { get; private set; }
-
-	public IMetadataProvider MetadataProvider
-	{
-		get
-		{
-			return _SchemaModelMetadata;
-		}
-		protected set
-		{
-			_SchemaModelMetadata = value;
-		}
-	}
-
-	public IBinder Binder { get; protected set; }
-
-	public abstract string Moniker { get; }
-
-	public ManualResetEvent BuildEvent => _MetadataBuildingEvent;
-
-	protected virtual bool AssertInDestructor => true;
-
-
-	public abstract ParseOptions CreateParseOptions();
 }

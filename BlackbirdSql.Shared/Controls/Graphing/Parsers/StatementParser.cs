@@ -11,7 +11,7 @@ internal class StatementParser : AbstractXmlPlanParser
 {
 	private static StatementParser statementParser;
 
-	public static StatementParser Instance
+	internal static StatementParser Instance
 	{
 		get
 		{
@@ -20,7 +20,7 @@ internal class StatementParser : AbstractXmlPlanParser
 		}
 	}
 
-	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
+	internal override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
 		return AbstractXmlPlanParser.NewNode(context);
 	}
@@ -54,7 +54,7 @@ internal class StatementParser : AbstractXmlPlanParser
 		return true;
 	}
 
-	public override IEnumerable<FunctionTypeItem> ExtractFunctions(object parsedItem)
+	internal override IEnumerable<FunctionTypeItem> ExtractFunctions(object parsedItem)
 	{
 		if (parsedItem is StmtSimpleType statement)
 		{

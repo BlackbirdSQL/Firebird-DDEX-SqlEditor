@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StarJoinInfoType
+internal class StarJoinInfoType
 {
 	private bool rootField;
 
@@ -24,7 +24,7 @@ public class StarJoinInfoType
 	private EnStarJoinInfoTypeOperationType operationTypeField;
 
 	[XmlAttribute]
-	public bool Root
+	internal bool Root
 	{
 		get
 		{
@@ -37,7 +37,7 @@ public class StarJoinInfoType
 	}
 
 	[XmlIgnore]
-	public bool RootSpecified
+	internal bool RootSpecified
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class StarJoinInfoType
 	}
 
 	[XmlAttribute]
-	public EnStarJoinInfoTypeOperationType OperationType
+	internal EnStarJoinInfoTypeOperationType OperationType
 	{
 		get
 		{

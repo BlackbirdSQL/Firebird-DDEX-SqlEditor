@@ -15,7 +15,7 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public abstract class AbstractMemDataStorage : IBsMemDataStorage, IBsDataStorage, IDisposable
+internal abstract class AbstractMemDataStorage : IBsMemDataStorage, IBsDataStorage, IDisposable
 {
 	protected ArrayList _ColumnInfoArray;
 

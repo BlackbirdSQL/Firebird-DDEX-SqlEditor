@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class AdaptiveJoinType : RelOpBaseType
+internal class AdaptiveJoinType : RelOpBaseType
 {
 	private ColumnReferenceType[] hashKeysBuildField;
 
@@ -51,7 +51,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	private bool withUnorderedPrefetchFieldSpecified;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] HashKeysBuild
+	internal ColumnReferenceType[] HashKeysBuild
 	{
 		get
 		{
@@ -64,7 +64,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] HashKeysProbe
+	internal ColumnReferenceType[] HashKeysProbe
 	{
 		get
 		{
@@ -76,7 +76,7 @@ public class AdaptiveJoinType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType BuildResidual
+	internal ScalarExpressionType BuildResidual
 	{
 		get
 		{
@@ -88,7 +88,7 @@ public class AdaptiveJoinType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType ProbeResidual
+	internal ScalarExpressionType ProbeResidual
 	{
 		get
 		{
@@ -100,7 +100,7 @@ public class AdaptiveJoinType : RelOpBaseType
 		}
 	}
 
-	public StarJoinInfoType StarJoinInfo
+	internal StarJoinInfoType StarJoinInfo
 	{
 		get
 		{
@@ -112,7 +112,7 @@ public class AdaptiveJoinType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType Predicate
+	internal ScalarExpressionType Predicate
 	{
 		get
 		{
@@ -124,7 +124,7 @@ public class AdaptiveJoinType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType PassThru
+	internal ScalarExpressionType PassThru
 	{
 		get
 		{
@@ -137,7 +137,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] OuterReferences
+	internal ColumnReferenceType[] OuterReferences
 	{
 		get
 		{
@@ -149,7 +149,7 @@ public class AdaptiveJoinType : RelOpBaseType
 		}
 	}
 
-	public SingleColumnReferenceType PartitionId
+	internal SingleColumnReferenceType PartitionId
 	{
 		get
 		{
@@ -162,7 +162,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{
@@ -175,7 +175,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool BitmapCreator
+	internal bool BitmapCreator
 	{
 		get
 		{
@@ -188,7 +188,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool BitmapCreatorSpecified
+	internal bool BitmapCreatorSpecified
 	{
 		get
 		{
@@ -201,7 +201,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool Optimized
+	internal bool Optimized
 	{
 		get
 		{
@@ -214,7 +214,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool WithOrderedPrefetch
+	internal bool WithOrderedPrefetch
 	{
 		get
 		{
@@ -227,7 +227,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool WithOrderedPrefetchSpecified
+	internal bool WithOrderedPrefetchSpecified
 	{
 		get
 		{
@@ -240,7 +240,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool WithUnorderedPrefetch
+	internal bool WithUnorderedPrefetch
 	{
 		get
 		{
@@ -253,7 +253,7 @@ public class AdaptiveJoinType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool WithUnorderedPrefetchSpecified
+	internal bool WithUnorderedPrefetchSpecified
 	{
 		get
 		{

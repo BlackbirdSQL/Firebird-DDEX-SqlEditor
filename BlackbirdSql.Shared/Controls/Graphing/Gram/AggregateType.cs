@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class AggregateType
+internal class AggregateType
 {
 	private ScalarType[] scalarOperatorField;
 
@@ -23,7 +23,7 @@ public class AggregateType
 	private bool distinctField;
 
 	[XmlElement("ScalarOperator")]
-	public ScalarType[] ScalarOperator
+	internal ScalarType[] ScalarOperator
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class AggregateType
 	}
 
 	[XmlAttribute]
-	public string AggType
+	internal string AggType
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class AggregateType
 	}
 
 	[XmlAttribute]
-	public bool Distinct
+	internal bool Distinct
 	{
 		get
 		{

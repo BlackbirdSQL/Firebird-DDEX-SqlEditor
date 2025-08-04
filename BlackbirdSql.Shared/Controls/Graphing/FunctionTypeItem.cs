@@ -24,7 +24,7 @@ internal sealed class FunctionTypeItem
 
 	internal EnItemType Type => type;
 
-	internal FunctionTypeItem(FunctionType function, EnItemType type)
+	public FunctionTypeItem(FunctionType function, EnItemType type)
 	{
 		this.function = function;
 		this.type = type;

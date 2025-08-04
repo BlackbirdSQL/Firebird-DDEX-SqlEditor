@@ -31,11 +31,11 @@ namespace BlackbirdSql;
 /// Provides application-wide static member access to the PackageController singleton instance.
 /// </summary>
 // =========================================================================================================
-public static class ApcManager
+internal static class ApcManager
 {
 
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
-	public static string ActiveDocumentExtension
+	internal static string ActiveDocumentExtension
 	{
 		get
 		{
@@ -77,7 +77,7 @@ public static class ApcManager
 
 
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
-	public static Project ActiveProject
+	internal static Project ActiveProject
 	{
 		get
 		{
@@ -119,18 +119,18 @@ public static class ApcManager
 			if (dte2.Solution.Projects.Count == 0)
 				return null;
 
-			Project	project = dte2.Solution.Projects.Item(1);
+			Project	result = dte2.Solution.Projects.Item(1);
 
-			if (project.IsFolder())
+			if (result.IsFolder())
 				return null;
 
-			return project;
+			return result;
 		}
 	}
 
 
 
-	public static EnvDTE.Window ActiveWindow
+	internal static EnvDTE.Window ActiveWindow
 	{
 		get
 		{
@@ -162,7 +162,7 @@ public static class ApcManager
 
 
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
-	public static IntPtr ActiveWindowHandle
+	internal static IntPtr ActiveWindowHandle
 	{
 		get
 		{
@@ -183,7 +183,7 @@ public static class ApcManager
 
 
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
-	public static string ActiveWindowObjectKind
+	internal static string ActiveWindowObjectKind
 	{
 		get
 		{
@@ -209,7 +209,7 @@ public static class ApcManager
 
 
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
-	public static string ActiveWindowObjectType
+	internal static string ActiveWindowObjectType
 	{
 		get
 		{
@@ -232,16 +232,16 @@ public static class ApcManager
 	}
 
 
-	public static string ActiveWindowType => ActiveWindow?.GetType().FullName ?? "";
+	internal static string ActiveWindowType => ActiveWindow?.GetType().FullName ?? "";
 
 
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
-	public static bool CanValidateSolution => SolutionProjects != null && SolutionProjects.Count > 0;
+	internal static bool CanValidateSolution => SolutionProjects != null && SolutionProjects.Count > 0;
 
 
-	public static DTE Dte => IdeShutdownState ? null : Instance.Dte;
+	internal static DTE Dte => IdeShutdownState ? null : Instance.Dte;
 
-	public static bool IdeShutdownState => AbstrusePackageController.IdeShutdownState;
+	internal static bool IdeShutdownState => AbstrusePackageController.IdeShutdownState;
 
 
 	// ---------------------------------------------------------------------------------
@@ -252,7 +252,7 @@ public static class ApcManager
 	private static IBsPackageController Instance => AbstrusePackageController.Instance;
 
 
-	public static bool IsToolboxInitialized => !IdeShutdownState && Instance.IsToolboxInitialized;
+	internal static bool IsToolboxInitialized => !IdeShutdownState && Instance.IsToolboxInitialized;
 
 
 	// ---------------------------------------------------------------------------------
@@ -260,53 +260,53 @@ public static class ApcManager
 	/// Gets the singleton PackageInstance instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IBsAsyncPackage PackageInstance => Instance?.PackageInstance;
+	internal static IBsAsyncPackage PackageInstance => Instance?.PackageInstance;
 
 
-	public static IServiceProvider ServiceProvider => (IServiceProvider)Instance?.PackageInstance;
+	internal static IServiceProvider ServiceProvider => (IServiceProvider)Instance?.PackageInstance;
 
-	public static Solution SolutionObject => IdeShutdownState ? null : Instance.SolutionObject;
+	internal static Solution SolutionObject => IdeShutdownState ? null : Instance.SolutionObject;
 
-	public static Projects SolutionProjects => SolutionObject != null ? Instance.SolutionProjects : null;
+	internal static Projects SolutionProjects => SolutionObject != null ? Instance.SolutionProjects : null;
 
-	public static IVsTaskStatusCenterService StatusCenterService => Instance?.StatusCenterService;
+	internal static IVsTaskStatusCenterService StatusCenterService => Instance?.StatusCenterService;
 
-	public static IVsDataExplorerConnectionManager ExplorerConnectionManager =>
+	internal static IVsDataExplorerConnectionManager ExplorerConnectionManager =>
 		(OleServiceProvider?.QueryService<IVsDataExplorerConnectionManager>()
 			as IVsDataExplorerConnectionManager)
 		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
 
-	public static IDisposable DisposableWaitCursor
+	internal static IDisposable DisposableWaitCursor
 	{
 		get { return PackageInstance.DisposableWaitCursor; }
 		set { PackageInstance.DisposableWaitCursor = value; }
 	}
 
-	public static IOleServiceProvider OleServiceProvider =>
+	internal static IOleServiceProvider OleServiceProvider =>
 		Instance?.PackageInstance?.OleServiceProvider;
 
-	public static string ProviderGuid => Instance?.ProviderGuid;
+	internal static string ProviderGuid => Instance?.ProviderGuid;
 
-	public static IVsMonitorSelection SelectionMonitor => Instance?.SelectionMonitor;
+	internal static IVsMonitorSelection SelectionMonitor => Instance?.SelectionMonitor;
 
 	/// <summary>
 	/// Only functions if on main thread. Always returns false IfNotOnUIThread.
 	/// </summary>
-	public static bool SolutionClosing => IdeShutdownState || Instance.SolutionClosing;
+	internal static bool SolutionClosing => IdeShutdownState || Instance.SolutionClosing;
 
-	public static bool SolutionValidating => Instance != null && Instance.SolutionValidating;
+	internal static bool SolutionValidating => Instance != null && Instance.SolutionValidating;
 
 
-	public static string CreateConnectionUrl(string connectionString)
+	internal static string CreateConnectionUrl(string connectionString)
 		=> Instance?.CreateConnectionUrl(connectionString);
 
-	public static string GetConnectionQualifiedName(string connectionString)
+	internal static string GetConnectionQualifiedName(string connectionString)
 		=> Instance?.GetConnectionQualifiedName(connectionString);
 
-	public static TInterface EnsureService<TService, TInterface>() where TInterface : class
+	internal static TInterface EnsureService<TService, TInterface>() where TInterface : class
 		=> Instance?.EnsureService<TService, TInterface>();
 
-	public static TInterface EnsureService<TInterface>() where TInterface : class
+	internal static TInterface EnsureService<TInterface>() where TInterface : class
 	{
 		TInterface @interface = Instance?.GetService<TInterface, TInterface>();
 		Diag.ThrowIfServiceUnavailable(@interface, typeof(TInterface));
@@ -315,35 +315,35 @@ public static class ApcManager
 	}
 
 
-	public static async Task<TInterface> EnsureServiceAsync<TService, TInterface>() where TInterface : class =>
+	internal static async Task<TInterface> EnsureServiceAsync<TService, TInterface>() where TInterface : class =>
 		await Instance?.GetServiceAsync<TService, TInterface>();
 
 
-	public static TInterface GetService<TService, TInterface>() where TInterface : class
+	internal static TInterface GetService<TService, TInterface>() where TInterface : class
 		=> Instance?.GetService<TService, TInterface>();
 
-	public static TInterface GetService<TInterface>() where TInterface : class
+	internal static TInterface GetService<TInterface>() where TInterface : class
 		=> Instance?.GetService<TInterface, TInterface>();
 
-	public static async Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class
+	internal static async Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class
 		=> await Instance?.GetServiceAsync<TService, TInterface>();
 
-	public static string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root)
+	internal static string GetRegisterConnectionDatasetKey(IVsDataExplorerConnection root)
 		=> Instance?.GetRegisterConnectionDatasetKey(root);
 
-	public static void InitializeSettings() => Instance.InitializeSettings();
+	internal static void InitializeSettings() => Instance.InitializeSettings();
 
-	public static void InvalidateRctManager() => Instance?.InvalidateRctManager();
+	internal static void InvalidateRctManager() => Instance?.InvalidateRctManager();
 
-	public static bool IsConnectionEquivalency(string connectionString1, string connectionString2)
+	internal static bool IsConnectionEquivalency(string connectionString1, string connectionString2)
 			=> Instance != null && Instance.IsConnectionEquivalency(connectionString1, connectionString2);
 
-	public static bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2)
+	internal static bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2)
 		=> Instance != null && Instance.IsWeakConnectionEquivalency(connectionString1, connectionString2);
 
 
 
-	public static void ShutdownDte()
+	internal static void ShutdownDte()
 	{
 		// Evs.Trace(typeof(AbstrusePackageController), nameof(ShutdownDte));
 
@@ -352,9 +352,9 @@ public static class ApcManager
 
 
 
-	public static void ValidateSolution() => Instance?.ValidateSolution();
+	internal static void ValidateSolution() => Instance?.ValidateSolution();
 
-	public static event ElementValueChangedDelegate OnElementValueChangedEvent
+	internal static event ElementValueChangedDelegate OnElementValueChangedEvent
 	{
 		add { if (Instance != null) Instance.OnElementValueChangedEvent += value; }
 		remove { if (Instance != null) Instance.OnElementValueChangedEvent -= value; }

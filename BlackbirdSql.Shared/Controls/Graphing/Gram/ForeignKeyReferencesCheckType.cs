@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ForeignKeyReferencesCheckType : RelOpBaseType
+internal class ForeignKeyReferencesCheckType : RelOpBaseType
 {
 	private RelOpType relOpField;
 
@@ -32,7 +32,7 @@ public class ForeignKeyReferencesCheckType : RelOpBaseType
 
 	private bool partialMatchingIndexCountFieldSpecified;
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -45,7 +45,7 @@ public class ForeignKeyReferencesCheckType : RelOpBaseType
 	}
 
 	[XmlElement("ForeignKeyReferenceCheck")]
-	public ForeignKeyReferenceCheckType[] ForeignKeyReferenceCheck
+	internal ForeignKeyReferenceCheckType[] ForeignKeyReferenceCheck
 	{
 		get
 		{
@@ -58,7 +58,7 @@ public class ForeignKeyReferencesCheckType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public int ForeignKeyReferencesCount
+	internal int ForeignKeyReferencesCount
 	{
 		get
 		{
@@ -71,7 +71,7 @@ public class ForeignKeyReferencesCheckType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool ForeignKeyReferencesCountSpecified
+	internal bool ForeignKeyReferencesCountSpecified
 	{
 		get
 		{
@@ -84,7 +84,7 @@ public class ForeignKeyReferencesCheckType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public int NoMatchingIndexCount
+	internal int NoMatchingIndexCount
 	{
 		get
 		{
@@ -97,7 +97,7 @@ public class ForeignKeyReferencesCheckType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool NoMatchingIndexCountSpecified
+	internal bool NoMatchingIndexCountSpecified
 	{
 		get
 		{
@@ -110,7 +110,7 @@ public class ForeignKeyReferencesCheckType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public int PartialMatchingIndexCount
+	internal int PartialMatchingIndexCount
 	{
 		get
 		{
@@ -123,7 +123,7 @@ public class ForeignKeyReferencesCheckType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool PartialMatchingIndexCountSpecified
+	internal bool PartialMatchingIndexCountSpecified
 	{
 		get
 		{

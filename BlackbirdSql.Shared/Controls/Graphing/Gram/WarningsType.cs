@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class WarningsType
+internal class WarningsType
 {
 	private object[] itemsField;
 
@@ -47,7 +47,7 @@ public class WarningsType
 	[XmlElement("SpillToTempDb", typeof(SpillToTempDbType))]
 	[XmlElement("Wait", typeof(WaitWarningType))]
 	[XmlChoiceIdentifier("ItemsElementName")]
-	public object[] Items
+	internal object[] Items
 	{
 		get
 		{
@@ -61,7 +61,7 @@ public class WarningsType
 
 	[XmlElement("ItemsElementName")]
 	[XmlIgnore]
-	public EnItemsChoiceType[] ItemsElementName
+	internal EnItemsChoiceType[] ItemsElementName
 	{
 		get
 		{
@@ -74,7 +74,7 @@ public class WarningsType
 	}
 
 	[XmlAttribute]
-	public bool NoJoinPredicate
+	internal bool NoJoinPredicate
 	{
 		get
 		{
@@ -87,7 +87,7 @@ public class WarningsType
 	}
 
 	[XmlIgnore]
-	public bool NoJoinPredicateSpecified
+	internal bool NoJoinPredicateSpecified
 	{
 		get
 		{
@@ -100,7 +100,7 @@ public class WarningsType
 	}
 
 	[XmlAttribute]
-	public bool SpatialGuess
+	internal bool SpatialGuess
 	{
 		get
 		{
@@ -113,7 +113,7 @@ public class WarningsType
 	}
 
 	[XmlIgnore]
-	public bool SpatialGuessSpecified
+	internal bool SpatialGuessSpecified
 	{
 		get
 		{
@@ -126,7 +126,7 @@ public class WarningsType
 	}
 
 	[XmlAttribute]
-	public bool UnmatchedIndexes
+	internal bool UnmatchedIndexes
 	{
 		get
 		{
@@ -139,7 +139,7 @@ public class WarningsType
 	}
 
 	[XmlIgnore]
-	public bool UnmatchedIndexesSpecified
+	internal bool UnmatchedIndexesSpecified
 	{
 		get
 		{
@@ -152,7 +152,7 @@ public class WarningsType
 	}
 
 	[XmlAttribute]
-	public bool FullUpdateForOnlineIndexBuild
+	internal bool FullUpdateForOnlineIndexBuild
 	{
 		get
 		{
@@ -165,7 +165,7 @@ public class WarningsType
 	}
 
 	[XmlIgnore]
-	public bool FullUpdateForOnlineIndexBuildSpecified
+	internal bool FullUpdateForOnlineIndexBuildSpecified
 	{
 		get
 		{

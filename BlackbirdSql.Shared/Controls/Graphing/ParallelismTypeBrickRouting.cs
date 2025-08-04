@@ -14,13 +14,13 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ParallelismTypeBrickRouting
+internal class ParallelismTypeBrickRouting
 {
 	private ObjectType objectField;
 
 	private SingleColumnReferenceType fragmentIdColumnField;
 
-	public ObjectType Object
+	internal ObjectType Object
 	{
 		get
 		{
@@ -32,7 +32,7 @@ public class ParallelismTypeBrickRouting
 		}
 	}
 
-	public SingleColumnReferenceType FragmentIdColumn
+	internal SingleColumnReferenceType FragmentIdColumn
 	{
 		get
 		{

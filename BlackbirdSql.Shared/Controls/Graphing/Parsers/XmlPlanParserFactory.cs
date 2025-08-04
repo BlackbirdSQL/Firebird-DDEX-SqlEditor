@@ -7,7 +7,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Parsers;
 
 internal static class XmlPlanParserFactory
 {
-	public static AbstractXmlPlanParser GetParser(Type type)
+	internal static AbstractXmlPlanParser GetParser(Type type)
 	{
 		while (true)
 		{

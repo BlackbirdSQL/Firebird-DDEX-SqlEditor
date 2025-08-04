@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Enums;
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
 
 
-public enum EnArithmeticOperationType
+internal enum EnArithmeticOperationType
 {
 	ADD,
 	BIT_ADD,

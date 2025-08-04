@@ -16,7 +16,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class EmbeddedComboBox : ComboBox, IBsGridEmbeddedControl, IBsGridEmbeddedControlManagement2, IBsGridEmbeddedControlManagement
+internal class EmbeddedComboBox : ComboBox, IBsGridEmbeddedControl, IBsGridEmbeddedControlManagement2, IBsGridEmbeddedControlManagement
 {
 	protected int m_MarginsWidth;
 
@@ -54,7 +54,7 @@ public class EmbeddedComboBox : ComboBox, IBsGridEmbeddedControl, IBsGridEmbedde
 		}
 	}
 
-	public new bool Enabled
+	internal new bool Enabled
 	{
 		get
 		{
@@ -343,7 +343,7 @@ public class EmbeddedComboBox : ComboBox, IBsGridEmbeddedControl, IBsGridEmbedde
 			IntPtr window = Native.GetWindow(Handle, 5);
 			if (window != (IntPtr)0)
 			{
-				Native.SendMessage(window, 211, (IntPtr)3, Native.Util.MAKELPARAM(m_MarginsWidth, m_MarginsWidth));
+				Native.SendMessage(window, 211, (IntPtr)3, Native.UtilI.MAKELPARAM(m_MarginsWidth, m_MarginsWidth));
 			}
 		}
 	}

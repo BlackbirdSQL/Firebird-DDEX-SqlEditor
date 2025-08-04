@@ -37,7 +37,7 @@ namespace BlackbirdSql.Controller;
 /// Also ensures we never do validations of a solution and project app.config and .edmx models twice.
 /// </remarks>
 // =========================================================================================================
-public sealed class ControllerEventsManager : AbstractEventsManager
+internal sealed class ControllerEventsManager : AbstractEventsManager
 {
 
 	// ---------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// We do not auto-create to avoid instantiation confusion.
 	/// Use CreateInstance() to instantiate.
 	/// </summary>
-	public static IBsEventsManager Instance => _Instance ??
+	internal static IBsEventsManager Instance => _Instance ??
 		throw Diag.ExceptionInstance(typeof(ControllerEventsManager));
 
 
@@ -78,7 +78,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// Instantiation must always occur here and not by the Instance accessor to avoid
 	/// confusion.
 	/// </summary>
-	public static ControllerEventsManager CreateInstance(IBsPackageController controller) =>
+	internal static ControllerEventsManager CreateInstance(IBsPackageController controller) =>
 		new(controller);
 
 
@@ -185,7 +185,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// =========================================================================================================
 
 
-	public static bool SolutionValidating => _EventValidationCardinal > 0;
+	internal static bool SolutionValidating => _EventValidationCardinal > 0;
 
 
 	#endregion Property accessors
@@ -574,7 +574,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// app.config invariant and Entity Framework settings.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public void ValidateSolutionAsyeu(Stream stream = null)
+	internal void ValidateSolutionAsyeu(Stream stream = null)
 	{
 		if (!EventValidationEnter())
 			return;

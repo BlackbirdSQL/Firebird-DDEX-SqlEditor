@@ -13,7 +13,7 @@ namespace BlackbirdSql.Core;
 /// System wide and the current data provider specific constants and statics.
 /// </summary>
 // =========================================================================================================
-public static class SystemData
+internal static class SystemData
 {
 
 	// ---------------------------------------------------------------------------------------------------------
@@ -24,33 +24,33 @@ public static class SystemData
 	/// This key is the globals persistent key for the solution stream and .user xml
 	/// UserProperties node attribute.
 	/// </summary>
-	public const string C_SolutionKey = "BlackbirdSolutionKey";
+	internal const string C_SolutionKey = "BlackbirdSolutionKey";
 
-	public const string C_UIContextName = "BlackbirdSql UIContext Autoload";
+	internal const string C_UIContextName = "BlackbirdSql UIContext Autoload";
 
 	// Glyphs for Rct connection sources.
-	public const char C_SessionTitleGlyph = '\u25cf'; // Small solid circle
-	public const char C_EdmTitleGlyph = '\u26ee'; // Gear with handles
-	public const char C_ProjectTitleGlyph = '\u26ed'; // Gear without hub
-	public const char C_UtilityTitleGlyph = '\u29c9'; // 2 joined squares
+	internal const char C_SessionTitleGlyph = '\u25cf'; // Small solid circle
+	internal const char C_EdmTitleGlyph = '\u26ee'; // Gear with handles
+	internal const char C_ProjectTitleGlyph = '\u26ed'; // Gear without hub
+	internal const char C_UtilityTitleGlyph = '\u29c9'; // 2 joined squares
 
-	public const char C_SessionDatasetGlyph = '\u2b24'; // Solid circle
-	public const char C_EdmDatasetGlyph = '\u26ee'; // Gear with handles
-	public const char C_ProjectDatasetGlyph = '\u26ed'; // Gear without hub
-	public const char C_UtilityDatasetGlyph = '\u29c9'; // 2 joined squares
+	internal const char C_SessionDatasetGlyph = '\u2b24'; // Solid circle
+	internal const char C_EdmDatasetGlyph = '\u26ee'; // Gear with handles
+	internal const char C_ProjectDatasetGlyph = '\u26ed'; // Gear without hub
+	internal const char C_UtilityDatasetGlyph = '\u29c9'; // 2 joined squares
 	// '\u2732'; // Open center asterisk
 	// '\u2733'; // 8 spoked asterisk
 	// '\u25cb'; // White circle
 
-	public const char C_UnixFieldSeparator = '/';
-	public const char C_WinFieldSeparator = '\\';
-	public const char C_CompositeSeparator = '.';
+	internal const char C_UnixFieldSeparator = '/';
+	internal const char C_WinFieldSeparator = '\\';
+	internal const char C_CompositeSeparator = '.';
 
 
-	public const string C_ServiceFolder = "ServerxExplorer";
-	public const string C_TempSqlFolder = "SqlTemporaryFiles";
+	internal const string C_ServiceFolder = "ServerxExplorer";
+	internal const string C_TempSqlFolder = "SqlTemporaryFiles";
 
-	public const GenericUriParserOptions C_UriParserOptions =
+	internal const GenericUriParserOptions C_UriParserOptions =
 		GenericUriParserOptions.AllowEmptyAuthority | GenericUriParserOptions.NoPort
 		| GenericUriParserOptions.NoQuery | GenericUriParserOptions.NoFragment
 		| GenericUriParserOptions.DontCompressPath
@@ -71,31 +71,31 @@ public static class SystemData
 	/// <summary>
 	/// The underlying package guid (Not used).
 	/// </summary>
-	public const string C_PackageGuid = "0EB9BA1B-3114-397D-822F-2D306DB02058";
+	internal const string C_PackageGuid = "0EB9BA1B-3114-397D-822F-2D306DB02058";
 
 	/// <summary>
 	/// The UIContext for autoload.
 	/// </summary>
-	public const string C_UIContextGuid = "8838E01E-D709-486D-A933-46D30A864D51";
+	internal const string C_UIContextGuid = "8838E01E-D709-486D-A933-46D30A864D51";
 
 	/// <summary>
 	/// The DataProvider registration guid.
 	/// </summary>
-	public const string C_ProviderGuid = "43015F6E-757F-408B-966E-C2BCE34686BA";
+	internal const string C_ProviderGuid = "43015F6E-757F-408B-966E-C2BCE34686BA";
 
 	/// <summary>
 	/// The factory service guid.
 	/// </summary>
-	public const string C_ProviderObjectFactoryServiceGuid = "B0640FC7-F798-4CC0-81F9-2587762D4957";
+	internal const string C_ProviderObjectFactoryServiceGuid = "B0640FC7-F798-4CC0-81F9-2587762D4957";
 
 	/// <summary>
 	/// FirebirdClient.
 	/// </summary>
-	public const string C_DataSourceGuid = "2979569E-416D-4DD8-B06B-EBCB70DE7A4E";
+	internal const string C_DataSourceGuid = "2979569E-416D-4DD8-B06B-EBCB70DE7A4E";
 
 
-	public const string C_DesignerExplorerServicesGuid = "4D30B519-9FB6-4FFD-A0CE-92863B1C37EA";
-	public const string C_DesignerOnlineServicesGuid = "27F3F968-74EB-46B7-A1FF-6CCA57C0D894";
+	internal const string C_DesignerExplorerServicesGuid = "4D30B519-9FB6-4FFD-A0CE-92863B1C37EA";
+	internal const string C_DesignerOnlineServicesGuid = "27F3F968-74EB-46B7-A1FF-6CCA57C0D894";
 
 
 	#endregion Package Guids
@@ -110,12 +110,12 @@ public static class SystemData
 
 
 	// BlackbirdSql Guids
-	public const string C_EditorFactoryGuid = "D5797F62-22B1-41BC-9B8C-E248EE895966";
-	public const string C_EditorEncodedFactoryGuid = "A548D241-D8B6-4219-9B07-C69733805F73";
+	internal const string C_EditorFactoryGuid = "D5797F62-22B1-41BC-9B8C-E248EE895966";
+	internal const string C_EditorEncodedFactoryGuid = "A548D241-D8B6-4219-9B07-C69733805F73";
 
 
 	// Mandated services for each service type that will be used by BlackbirdSql 
-	public const string C_MandatedSqlEditorFactoryGuid = C_EditorFactoryGuid;
+	internal const string C_MandatedSqlEditorFactoryGuid = C_EditorFactoryGuid;
 	// public const string C_MandatedSqlEditorFactoryGuid = VS.SqlEditorFactoryGuid;
 
 

@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class CLRFunctionType
+internal class CLRFunctionType
 {
 	private string assemblyField;
 
@@ -23,7 +23,7 @@ public class CLRFunctionType
 	private string methodField;
 
 	[XmlAttribute]
-	public string Assembly
+	internal string Assembly
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class CLRFunctionType
 	}
 
 	[XmlAttribute]
-	public string Class
+	internal string Class
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class CLRFunctionType
 	}
 
 	[XmlAttribute]
-	public string Method
+	internal string Method
 	{
 		get
 		{

@@ -10,14 +10,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 
 [PermissionSet(SecurityAction.InheritanceDemand, Name = "FullTrust")]
 [PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
-public class LongStringUITypeEditor : DiffImageUITypeEditor
+internal class LongStringUITypeEditor : DiffImageUITypeEditor
 {
-	public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+	internal override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
 	{
 		return UITypeEditorEditStyle.Modal;
 	}
 
-	public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+	internal override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 	{
 		using PropertyViewDlg propertyViewForm = new PropertyViewDlg();
 		propertyViewForm.Text = context.PropertyDescriptor.DisplayName;

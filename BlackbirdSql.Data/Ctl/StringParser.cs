@@ -10,7 +10,7 @@ using FirebirdSql.Data.Isql;
 namespace BlackbirdSql.Data.Ctl;
 
 
-public class StringParser
+internal class StringParser
 {
 	public StringParser(string targetString)
 	{
@@ -27,7 +27,7 @@ public class StringParser
 
 
 
-	public string[] Tokens
+	internal string[] Tokens
 	{
 		get
 		{
@@ -59,7 +59,7 @@ public class StringParser
 
 
 
-	public IEnumerable<FbStatement> Parse()
+	internal IEnumerable<FbStatement> Parse()
 	{
 		int num = 0;
 		int index2 = 0;

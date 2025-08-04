@@ -19,7 +19,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Shared.Controls.Results;
 
 
-public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite // , IOleCommandTarget
+internal class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite // , IOleCommandTarget
 {
 
 	public ExecutionPlanControl()
@@ -32,9 +32,9 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 
 	private class DataBinding(object dataSource, int dataIndex)
 	{
-		public readonly object DataSource = dataSource;
+		internal readonly object DataSource = dataSource;
 
-		public readonly int DataIndex = dataIndex;
+		internal readonly int DataIndex = dataIndex;
 	}
 
 	// private readonly Dictionary<GraphPanel, DataBinding> dataBindings;
@@ -59,11 +59,11 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 	private readonly string sqlplanFile;
 	*/
 
-	public int GraphPanelCount => multiControlPanel.HostedControlsCount;
+	internal int GraphPanelCount => multiControlPanel.HostedControlsCount;
 
 
 	/*
-	public GraphPanel GetGraphPanel(int index)
+	internal GraphPanel GetGraphPanel(int index)
 	{
 		if (index < 0 || index >= GraphPanelCount)
 		{
@@ -72,7 +72,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		return multiControlPanel.GetHostedControl(index) as GraphPanel;
 	}
 
-	public GraphControl GetGraphControl(int index)
+	internal GraphControl GetGraphControl(int index)
 	{
 		if (index < 0 || index >= GraphPanelCount)
 		{
@@ -81,7 +81,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		return (multiControlPanel.GetHostedControl(index) as GraphPanel).GraphControl;
 	}
 
-	public void LoadXml(string xmlFile)
+	internal void LoadXml(string xmlFile)
 	{
 		sqlplanFile = xmlFile;
 		try
@@ -109,7 +109,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 		}
 	}
 
-	public void SaveXml(string xmlFile)
+	internal void SaveXml(string xmlFile)
 	{
 		if (GraphPanelCount == 0)
 		{
@@ -124,7 +124,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBsObjectWithSite //
 	}
 
 
-	public void AddGraphs(IGraph[] graphs, object dataSource)
+	internal void AddGraphs(IGraph[] graphs, object dataSource)
 	{
 		multiControlPanel.SuspendLayout();
 		int num = 0;

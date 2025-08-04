@@ -4,7 +4,7 @@ using BlackbirdSql.Sys.Enums;
 
 namespace BlackbirdSql.Core.Interfaces;
 
-public interface IBsDataConnectionProperties
+internal interface IBsDataConnectionProperties
 {
 	EnConnectionSource ConnectionSource { get; set; }
 	Csb Csa { get; }

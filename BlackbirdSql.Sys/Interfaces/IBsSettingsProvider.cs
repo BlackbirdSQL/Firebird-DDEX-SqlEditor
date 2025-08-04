@@ -14,8 +14,6 @@ public interface IBsSettingsProvider
 	delegate void SettingsSavedDelegate(object sender);
 
 
-	int GetEvsAssemblyId(Type type);
-
 	/// <summary>
 	/// Only implemented by packages that have settings models. Whenever a package
 	/// settings model is saved it fires the extension's OnSettingsSaved event.

@@ -11,7 +11,7 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public class MemStorageView : AbstractStorageView
+internal class MemStorageView : AbstractStorageView
 {
 	protected IBsMemDataStorage _MemStorage;
 

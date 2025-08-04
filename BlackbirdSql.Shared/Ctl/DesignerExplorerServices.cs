@@ -38,7 +38,7 @@ namespace BlackbirdSql.Shared.Ctl;
 /// Service for handling open query commands.
 /// </summary>
 // =========================================================================================================
-public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExplorerServices
+internal class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExplorerServices
 {
 
 	// ----------------------------------------------------------
@@ -274,7 +274,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 
 
 
-	public static void OpenNewMiscellaneousSqlFile(string baseName, string initialContent)
+	internal static void OpenNewMiscellaneousSqlFile(string baseName, string initialContent)
 	{
 		// Evs.Trace(typeof(Cmd), nameof(OpenAsMiscellaneousFile));
 
@@ -451,7 +451,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerExp
 	// =====================================================================================================
 
 
-	public void OnSqlQueryLoaded(DbConnectionStringBuilder csb, bool alreadyLoaded)
+	internal void OnSqlQueryLoaded(DbConnectionStringBuilder csb, bool alreadyLoaded)
 	{
 		if (alreadyLoaded)
 			return;

@@ -11,7 +11,7 @@ using System;
 namespace BlackbirdSql.Shared.Interfaces;
 
 
-public interface IBsMemDataStorage : IBsDataStorage, IDisposable
+internal interface IBsMemDataStorage : IBsDataStorage, IDisposable
 {
 	void InitStorage();
 

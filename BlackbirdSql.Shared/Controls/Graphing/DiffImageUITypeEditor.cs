@@ -11,7 +11,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 
 [PermissionSet(SecurityAction.InheritanceDemand, Name = "FullTrust")]
 [PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
-public class DiffImageUITypeEditor : UITypeEditor, IDisposable
+internal class DiffImageUITypeEditor : UITypeEditor, IDisposable
 {
 	private Bitmap diffImage;
 
@@ -21,7 +21,7 @@ public class DiffImageUITypeEditor : UITypeEditor, IDisposable
 		diffImage.MakeTransparent();
 	}
 
-	public override bool GetPaintValueSupported(ITypeDescriptorContext context)
+	internal override bool GetPaintValueSupported(ITypeDescriptorContext context)
 	{
 		if (context.Instance is NodeDisplay nodeDisplay && nodeDisplay.DiffMap.ContainsKey(context.PropertyDescriptor))
 		{
@@ -30,7 +30,7 @@ public class DiffImageUITypeEditor : UITypeEditor, IDisposable
 		return false;
 	}
 
-	public override void PaintValue(PaintValueEventArgs e)
+	internal override void PaintValue(PaintValueEventArgs e)
 	{
 		if (diffImage != null)
 		{

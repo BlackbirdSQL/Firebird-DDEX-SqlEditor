@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
 [XmlRoot(Namespace = LibraryData.C_ShowPlanNamespace, IsNullable = false)]
-public class ExecutionPlanXML
+internal class ExecutionPlanXML
 {
 	private StmtBlockType[][] batchSequenceField;
 
@@ -29,7 +29,7 @@ public class ExecutionPlanXML
 
 	[XmlArrayItem("Batch", IsNullable = false)]
 	[XmlArrayItem("Statements", IsNullable = false, NestingLevel = 1)]
-	public StmtBlockType[][] BatchSequence
+	internal StmtBlockType[][] BatchSequence
 	{
 		get
 		{
@@ -42,7 +42,7 @@ public class ExecutionPlanXML
 	}
 
 	[XmlAttribute]
-	public string Version
+	internal string Version
 	{
 		get
 		{
@@ -55,7 +55,7 @@ public class ExecutionPlanXML
 	}
 
 	[XmlAttribute]
-	public string Build
+	internal string Build
 	{
 		get
 		{
@@ -68,7 +68,7 @@ public class ExecutionPlanXML
 	}
 
 	[XmlAttribute]
-	public bool ClusteredMode
+	internal bool ClusteredMode
 	{
 		get
 		{
@@ -81,7 +81,7 @@ public class ExecutionPlanXML
 	}
 
 	[XmlIgnore]
-	public bool ClusteredModeSpecified
+	internal bool ClusteredModeSpecified
 	{
 		get
 		{

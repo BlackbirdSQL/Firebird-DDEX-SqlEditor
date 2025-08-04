@@ -26,7 +26,7 @@ namespace BlackbirdSql.Shared.Model;
 /// Csb class for supporting the SqlEditor query model.
 /// </summary>
 // =========================================================================================================
-public class ModelCsb : ConnectionCsb, IBsModelCsb
+internal class ModelCsb : ConnectionCsb, IBsModelCsb
 {
 
 	// ------------------------------------------
@@ -206,17 +206,5 @@ public class ModelCsb : ConnectionCsb, IBsModelCsb
 
 
 	#endregion Event Handling
-
-
-
-
-
-	// =========================================================================================================
-	#region Sub-Classes - ModelCsb
-	// =========================================================================================================
-
-
-
-	#endregion Sub-Classes
 
 }

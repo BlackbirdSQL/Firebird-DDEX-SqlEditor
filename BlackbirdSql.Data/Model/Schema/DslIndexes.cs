@@ -29,7 +29,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslIndexes : AbstractDslSchema
 {
-	internal DslIndexes() : base()
+	public DslIndexes() : base()
 	{
 	}
 

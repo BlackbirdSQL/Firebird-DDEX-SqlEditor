@@ -10,9 +10,9 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Ctl.IO;
 
 
-public class FileStreamReader : IBsFileStreamReader, IDisposable
+internal class FileStreamReader : IBsFileStreamReader, IDisposable
 {
-	public const int DEFAULT_BUFFER_SIZE = 8192;
+	internal const int DEFAULT_BUFFER_SIZE = 8192;
 
 	private byte[] m_buf;
 
@@ -353,7 +353,7 @@ public class FileStreamReader : IBsFileStreamReader, IDisposable
 		return num;
 	}
 
-	internal int ReadLength(long i64Offset, out int iLen)
+	public int ReadLength(long i64Offset, out int iLen)
 	{
 		int num = _FsWriter.ReadData(m_buf, 1, i64Offset);
 		if (m_buf[0] != byte.MaxValue)

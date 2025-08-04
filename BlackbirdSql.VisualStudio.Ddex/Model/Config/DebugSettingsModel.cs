@@ -138,6 +138,13 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 	public bool EnableDiagnosticsLog { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableDebugExceptions")]
+	[GlobalizedDescription("OptionDescriptionDebugEnableDebugExceptions")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(false)]
+	public bool EnableDebugExceptions { get; set; } = false;
+
+	[GlobalizedCategory("OptionCategoryDebugging")]
 	[GlobalizedDisplayName("OptionDisplayDebugEnableExpected")]
 	[GlobalizedDescription("OptionDescriptionDebugEnableExpected")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
@@ -161,18 +168,61 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayDebugSourceLevel")]
-	[GlobalizedDescription("OptionDescriptionDebugSourceLevel")]
-	[DefaultValue(EnGlobalizedSourceLevels.Off)]
-	public EnGlobalizedSourceLevels SourceLevel { get; set; } = EnGlobalizedSourceLevels.Off;
-
-
-	[GlobalizedCategory("OptionCategoryDebugging")]
 	[GlobalizedDisplayName("OptionDisplayDebugLogFile")]
 	[GlobalizedDescription("OptionDescriptionDebugLogFile")]
 	[Editor(typeof(AdvancedFileNameEditor), typeof(UITypeEditor)), Parameters("OptionDialogLogFile", "OptionDialogFilterLogFile")]
 	[DefaultValue("/temp/vsdiag.log")]
 	public string LogFile { get; set; } = "/temp/vsdiag.log";
+
+
+
+	[GlobalizedCategory("OptionCategoryEvsLevel")]
+	[GlobalizedDisplayName("OptionDisplayEvsLevelDdex")]
+	[GlobalizedDescription("OptionDescriptionEvsLevelDdex")]
+	[DefaultValue(EnGlobalizedSourceLevels.Off)]
+	public EnGlobalizedSourceLevels EvsLevelDdex { get; set; } = EnGlobalizedSourceLevels.Off;
+
+	[GlobalizedCategory("OptionCategoryEvsLevel")]
+	[GlobalizedDisplayName("OptionDisplayEvsLevelController")]
+	[GlobalizedDescription("OptionDescriptionEvsLevelController")]
+	[DefaultValue(EnGlobalizedSourceLevels.Off)]
+	public EnGlobalizedSourceLevels EvsLevelController { get; set; } = EnGlobalizedSourceLevels.Off;
+
+	[GlobalizedCategory("OptionCategoryEvsLevel")]
+	[GlobalizedDisplayName("OptionDisplayEvsLevelLanguage")]
+	[GlobalizedDescription("OptionDescriptionEvsLevelLanguage")]
+	[DefaultValue(EnGlobalizedSourceLevels.Off)]
+	public EnGlobalizedSourceLevels EvsLevelLanguage { get; set; } = EnGlobalizedSourceLevels.Off;
+
+	[GlobalizedCategory("OptionCategoryEvsLevel")]
+	[GlobalizedDisplayName("OptionDisplayEvsLevelEditor")]
+	[GlobalizedDescription("OptionDescriptionEvsLevelEditor")]
+	[DefaultValue(EnGlobalizedSourceLevels.Off)]
+	public EnGlobalizedSourceLevels EvsLevelEditor { get; set; } = EnGlobalizedSourceLevels.Off;
+
+	[GlobalizedCategory("OptionCategoryEvsLevel")]
+	[GlobalizedDisplayName("OptionDisplayEvsLevelShared")]
+	[GlobalizedDescription("OptionDescriptionEvsLevelShared")]
+	[DefaultValue(EnGlobalizedSourceLevels.Off)]
+	public EnGlobalizedSourceLevels EvsLevelShared { get; set; } = EnGlobalizedSourceLevels.Off;
+
+	[GlobalizedCategory("OptionCategoryEvsLevel")]
+	[GlobalizedDisplayName("OptionDisplayEvsLevelCore")]
+	[GlobalizedDescription("OptionDescriptionEvsLevelCore")]
+	[DefaultValue(EnGlobalizedSourceLevels.Off)]
+	public EnGlobalizedSourceLevels EvsLevelCore { get; set; } = EnGlobalizedSourceLevels.Off;
+
+	[GlobalizedCategory("OptionCategoryEvsLevel")]
+	[GlobalizedDisplayName("OptionDisplayEvsLevelData")]
+	[GlobalizedDescription("OptionDescriptionEvsLevelData")]
+	[DefaultValue(EnGlobalizedSourceLevels.Off)]
+	public EnGlobalizedSourceLevels EvsLevelData { get; set; } = EnGlobalizedSourceLevels.Off;
+
+	[GlobalizedCategory("OptionCategoryEvsLevel")]
+	[GlobalizedDisplayName("OptionDisplayEvsLevelSys")]
+	[GlobalizedDescription("OptionDescriptionEvsLevelSys")]
+	[DefaultValue(EnGlobalizedSourceLevels.Off)]
+	public EnGlobalizedSourceLevels EvsLevelSys { get; set; } = EnGlobalizedSourceLevels.Off;
 
 
 	#endregion Property Accessors

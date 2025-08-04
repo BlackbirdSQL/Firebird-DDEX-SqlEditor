@@ -1,5 +1,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.LanguageService
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,10 @@ using CasingStyle = Microsoft.SqlServer.Management.SqlParser.MetadataProvider.Ca
 using MetadataDisplayInfoProvider = Microsoft.SqlServer.Management.SqlParser.MetadataProvider.MetadataDisplayInfoProvider;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
+using BlackbirdSql.LanguageExtension.Interfaces;
+using BlackbirdSql.Shared.Model;
+using BlackbirdSql.LanguageExtension.Model;
+using System.Data;
 
 
 
@@ -110,7 +115,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 	public override int GetColorableItem(int index, out IVsColorableItem item)
 	{
-		IList<IVsColorableItem> colorableItems = LsbConfiguration.ColorableItems;
+		IList<IVsColorableItem> colorableItems = LsbConfiguration.S_ColorableItems;
 
 		if (index > 0 && index <= colorableItems.Count)
 		{
@@ -118,14 +123,14 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 			return 0;
 		}
 
-		item = LsbConfiguration.TextColorableItem;
+		item = LsbConfiguration.S_TextColorableItem;
 
 		return 1;
 	}
 
 	public override int GetItemCount(out int count)
 	{
-		count = LsbConfiguration.ColorableItems.Count;
+		count = LsbConfiguration.S_ColorableItems.Count;
 
 		return 0;
 	}
@@ -156,44 +161,44 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 	public override int GetLanguageID(IVsTextBuffer buffer, int line, int col, out Guid langId)
 	{
-		// TraceUtils.Trace(GetType(), "LanguageService.GetLanguageID", "buffer: {0}, line: {1}, col: {2}", buffer, line, col);
+		Evs.Trace(GetType(), nameof(GetLanguageID), $"buffer: {buffer}, line: {line}, col: {col}");
 		langId = _ClsidExpressionEvaluator;
 		return 0;
 	}
 
 	public override int GetLocationOfName(string name, out string pbstrMkDoc, TextSpan[] spans)
 	{
-		// TraceUtils.Trace(GetType(), "LanguageService.GetLocationOfName", "name: {0}, spans: {1}", name, spans);
+		Evs.Trace(GetType(), nameof(GetLocationOfName), $"name: {name}, spans: {spans}");
 		return base.GetLocationOfName(name, out pbstrMkDoc, spans);
 	}
 
 	public override int GetNameOfLocation(IVsTextBuffer buffer, int line, int col, out string name, out int lineOffset)
 	{
-		// TraceUtils.Trace(GetType(), "LanguageService.GetNameOfLocation", "buffer: {0}, line: {1}, col: {2}", buffer, line, col);
+		Evs.Trace(GetType(), nameof(GetNameOfLocation), $"buffer: {buffer}, line: {line}, col: {col}");
 		return base.GetNameOfLocation(buffer, line, col, out name, out lineOffset);
 	}
 
 	public override int GetProximityExpressions(IVsTextBuffer buffer, int line, int col, int cLines, out IVsEnumBSTR ppEnum)
 	{
-		// TraceUtils.Trace(GetType(), "LanguageService.GetProximityExpressions", "buffer: {0}, line: {1}, col: {2}, cLines: {3}", buffer, line, col, cLines);
+		Evs.Trace(GetType(), nameof(GetProximityExpressions), $"buffer: {buffer}, line: {line}, col: {col}, cLines: {cLines}");
 		return base.GetProximityExpressions(buffer, line, col, cLines, out ppEnum);
 	}
 
 	public override int IsMappedLocation(IVsTextBuffer buffer, int line, int col)
 	{
-		// TraceUtils.Trace(GetType(), "LanguageService.IsMappedLocation", "buffer: {0}, line: {1}, col: {2}", buffer, line, col);
+		Evs.Trace(GetType(), nameof(IsMappedLocation), $"buffer: {buffer}, line: {line}, col: {col}");
 		return base.IsMappedLocation(buffer, line, col);
 	}
 
 	public override int ResolveName(string name, uint flags, out IVsEnumDebugName ppNames)
 	{
-		// TraceUtils.Trace(GetType(), "LanguageService.ResolveName", "name: {0}, flags: {1}", name, flags);
+		Evs.Trace(GetType(), nameof(ResolveName), $"name: {name}, flags: {flags}");
 		return base.ResolveName(name, flags, out ppNames);
 	}
 
 	public override int ValidateBreakpointLocation(IVsTextBuffer buffer, int line, int col, TextSpan[] pCodeSpan)
 	{
-		// TraceUtils.Trace(GetType(), "LanguageService.ValidateBreakpointLocation", "buffer: {0}, line: {1}, col: {2}, pCodeSpan: {3}", buffer, line, col, pCodeSpan);
+		Evs.Trace(GetType(), nameof(ValidateBreakpointLocation), $"buffer: {buffer}, line: {line}, col: {col}, pCodeSpan: {pCodeSpan}");
 		IVsTextLines obj = buffer as IVsTextLines;
 
 		___(obj.GetLastLineIndex(out int piLine, out int piIndex));
@@ -223,7 +228,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 	public override ViewFilter CreateViewFilter(CodeWindowManager mgr, IVsTextView newView)
 	{
-		return new CustomViewFilter(this, mgr, newView);
+		return new ViewFilterI(this, mgr, newView);
 	}
 
 	public void RefreshIntellisense(bool currentWindowOnly)
@@ -330,7 +335,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 		// TODO: No ProviderProvider
 		/*
-		else if (!EditorExtensionPackage.Instance.LanguageService.Preferences.EnableAzureIntellisense &&
+		else if (!((IBsEditorPackage)LanguageExtensionPackage.Instance).Instance.LanguageService.Preferences.EnableAzureIntellisense &&
 			(metadataProviderProvider = source.GetMetadataProviderProvider()) != null
 			&& metadataProviderProvider is SmoMetadataProviderProvider provider && provider.IsCloudConnection)
 		{
@@ -347,6 +352,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 			result = false;
 			req.Sink.AddError(req.FileName, Resources.ErrorFileTooBig, default, Severity.Hint);
 		}
+
 		return result;
 	}
 
@@ -646,22 +652,23 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 				if (!source.CompletedFirstParse)
 					source.LastParseTime = 0;
 
-				// TODO: No ProviderProvider
-				/*
+				// TBC: No ProviderProvider
 				IBsMetadataProviderProvider metadataProviderProvider = source.GetMetadataProviderProvider();
+
 				if (metadataProviderProvider != null)
 				{
-					AuxilliaryDocData auxDocData = EditorExtensionPackage.Instance.GetAuxilliaryDocData(source.GetTextLines());
-					if (auxDocData.QryMgr.IsConnected && metadataProviderProvider is SmoMetadataProviderProvider smoMetadataProviderProvider)
+					AuxilliaryDocData auxDocData = ((IBsEditorPackage)LanguageExtensionPackage.Instance).GetAuxilliaryDocData(source.GetTextLines());
+
+					if (auxDocData.QryMgr.IsConnected && metadataProviderProvider is LsbMetadataProviderProvider lsbMetadataProviderProvider)
 					{
 						IDbConnection connection = auxDocData.QryMgr.Strategy.Connection;
+
 						if (connection != null && !string.IsNullOrEmpty(connection.Database))
 						{
-							smoMetadataProviderProvider.AddDatabaseToDriftDetectionSet(connection.Database);
+							lsbMetadataProviderProvider.AddDatabaseToDriftDetectionSet(connection.Database);
 						}
 					}
 				}
-				*/
 			}
 		}
 		base.OnIdle(periodic);
@@ -674,24 +681,25 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 
 	// =========================================================================================================
-	#region Subclasses - AbstractLanguageService
+	#region								Nested types - AbstractLanguageService
 	// =========================================================================================================
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// CustomViewFilter Class
+	/// Original: CustomViewFilter Class
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public class CustomViewFilter : ViewFilter
+	public class ViewFilterI : ViewFilter
 	{
 		private static Guid _ClsidSqlLanguageServiceCommands = new(VS.SqlEditorCommandsGuid);
 
 		// private readonly AbstractLanguageService _SqlLanguageService;
 
-		public CustomViewFilter(AbstractLanguageService service, CodeWindowManager mgr, IVsTextView view)
+		public ViewFilterI(AbstractLanguageService service, CodeWindowManager mgr, IVsTextView view)
 			: base(mgr, view)
 		{
+			Evs.Trace(typeof(ViewFilterI), ".ctor");
 			// _SqlLanguageService = service;
 		}
 
@@ -749,6 +757,8 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 		private void InvokeSnippetBrowser(string prompt, string[] snippetTypes)
 		{
+			Evs.Trace(GetType(), nameof(InvokeSnippetBrowser));
+
 			ExpansionProvider expansionProvider = GetExpansionProvider();
 			if (expansionProvider != null && TextView != null)
 			{
@@ -758,6 +768,8 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 		private static string[] GetExpansionTypes(uint cmd)
 		{
+			Evs.Trace(typeof(AbstractLanguageService), nameof(GetExpansionTypes));
+
 			string text = cmd == 323 ? "Expansion" : "SurroundsWith";
 			return [text];
 		}
@@ -811,6 +823,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 		public override void HandleGoto(VSConstants.VSStd97CmdID cmd)
 		{
+			// TBC: HandleGoto
 			/*
 			ISqlEditorServices sqlEditorServices = ServiceProviderUtil.GetService<ISqlEditorServices>(base.TextView);
 			if (sqlEditorServices != null && cmd == VSConstants.VSStd97CmdID.GotoDefn)
@@ -822,7 +835,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 	}
 
 
-	#endregion Subclasses
+	#endregion Nested types
 
 
 }

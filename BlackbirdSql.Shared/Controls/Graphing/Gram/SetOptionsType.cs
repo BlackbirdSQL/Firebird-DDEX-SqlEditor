@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SetOptionsType
+internal class SetOptionsType
 {
 	private bool aNSI_NULLSField;
 
@@ -45,7 +45,7 @@ public class SetOptionsType
 	private bool qUOTED_IDENTIFIERFieldSpecified;
 
 	[XmlAttribute]
-	public bool ANSI_NULLS
+	internal bool ANSI_NULLS
 	{
 		get
 		{
@@ -58,7 +58,7 @@ public class SetOptionsType
 	}
 
 	[XmlIgnore]
-	public bool ANSI_NULLSSpecified
+	internal bool ANSI_NULLSSpecified
 	{
 		get
 		{
@@ -71,7 +71,7 @@ public class SetOptionsType
 	}
 
 	[XmlAttribute]
-	public bool ANSI_PADDING
+	internal bool ANSI_PADDING
 	{
 		get
 		{
@@ -84,7 +84,7 @@ public class SetOptionsType
 	}
 
 	[XmlIgnore]
-	public bool ANSI_PADDINGSpecified
+	internal bool ANSI_PADDINGSpecified
 	{
 		get
 		{
@@ -97,7 +97,7 @@ public class SetOptionsType
 	}
 
 	[XmlAttribute]
-	public bool ANSI_WARNINGS
+	internal bool ANSI_WARNINGS
 	{
 		get
 		{
@@ -110,7 +110,7 @@ public class SetOptionsType
 	}
 
 	[XmlIgnore]
-	public bool ANSI_WARNINGSSpecified
+	internal bool ANSI_WARNINGSSpecified
 	{
 		get
 		{
@@ -123,7 +123,7 @@ public class SetOptionsType
 	}
 
 	[XmlAttribute]
-	public bool ARITHABORT
+	internal bool ARITHABORT
 	{
 		get
 		{
@@ -136,7 +136,7 @@ public class SetOptionsType
 	}
 
 	[XmlIgnore]
-	public bool ARITHABORTSpecified
+	internal bool ARITHABORTSpecified
 	{
 		get
 		{
@@ -149,7 +149,7 @@ public class SetOptionsType
 	}
 
 	[XmlAttribute]
-	public bool CONCAT_NULL_YIELDS_NULL
+	internal bool CONCAT_NULL_YIELDS_NULL
 	{
 		get
 		{
@@ -162,7 +162,7 @@ public class SetOptionsType
 	}
 
 	[XmlIgnore]
-	public bool CONCAT_NULL_YIELDS_NULLSpecified
+	internal bool CONCAT_NULL_YIELDS_NULLSpecified
 	{
 		get
 		{
@@ -175,7 +175,7 @@ public class SetOptionsType
 	}
 
 	[XmlAttribute]
-	public bool NUMERIC_ROUNDABORT
+	internal bool NUMERIC_ROUNDABORT
 	{
 		get
 		{
@@ -188,7 +188,7 @@ public class SetOptionsType
 	}
 
 	[XmlIgnore]
-	public bool NUMERIC_ROUNDABORTSpecified
+	internal bool NUMERIC_ROUNDABORTSpecified
 	{
 		get
 		{
@@ -201,7 +201,7 @@ public class SetOptionsType
 	}
 
 	[XmlAttribute]
-	public bool QUOTED_IDENTIFIER
+	internal bool QUOTED_IDENTIFIER
 	{
 		get
 		{
@@ -214,7 +214,7 @@ public class SetOptionsType
 	}
 
 	[XmlIgnore]
-	public bool QUOTED_IDENTIFIERSpecified
+	internal bool QUOTED_IDENTIFIERSpecified
 	{
 		get
 		{

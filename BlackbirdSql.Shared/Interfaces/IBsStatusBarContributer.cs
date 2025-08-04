@@ -7,7 +7,7 @@
 
 namespace BlackbirdSql.Shared.Interfaces
 {
-	public interface IBsStatusBarContributer
+	internal interface IBsStatusBarContributer
 	{
 		void GetColumnAndRowNumber(out long rowNumber, out long columnNumber);
 	}

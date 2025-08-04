@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ExternalDistributedComputationType
+internal class ExternalDistributedComputationType
 {
 	private StmtSimpleType[] itemsField;
 
 	private string edcShowplanXmlField;
 
 	[XmlElement("StmtSimple")]
-	public StmtSimpleType[] Items
+	internal StmtSimpleType[] Items
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class ExternalDistributedComputationType
 	}
 
 	[XmlAttribute]
-	public string EdcShowplanXml
+	internal string EdcShowplanXml
 	{
 		get
 		{

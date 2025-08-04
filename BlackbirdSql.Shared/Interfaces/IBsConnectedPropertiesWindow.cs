@@ -8,7 +8,7 @@ using BlackbirdSql.Shared.Ctl;
 namespace BlackbirdSql.Shared.Interfaces;
 
 
-public interface IBsConnectedPropertiesWindow
+internal interface IBsConnectedPropertiesWindow
 {
 	bool IsInitialized();
 

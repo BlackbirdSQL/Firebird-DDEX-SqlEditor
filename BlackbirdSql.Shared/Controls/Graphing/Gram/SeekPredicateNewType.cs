@@ -14,12 +14,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SeekPredicateNewType
+internal class SeekPredicateNewType
 {
 	private SeekPredicateType[] seekKeysField;
 
 	[XmlElement("SeekKeys")]
-	public SeekPredicateType[] SeekKeys
+	internal SeekPredicateType[] SeekKeys
 	{
 		get
 		{

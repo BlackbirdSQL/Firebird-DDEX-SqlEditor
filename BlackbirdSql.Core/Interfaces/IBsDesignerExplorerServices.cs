@@ -10,7 +10,7 @@ namespace BlackbirdSql.Core.Interfaces;
 
 [ComImport]
 [Guid(SystemData.C_DesignerExplorerServicesGuid)]
-public interface IBsDesignerExplorerServices
+internal interface IBsDesignerExplorerServices
 {
 	void CloneQuery(string datasetKey, string baseName, string initialScript);
 	void NewQuery(string datasetKey, string baseName, string initialScript);

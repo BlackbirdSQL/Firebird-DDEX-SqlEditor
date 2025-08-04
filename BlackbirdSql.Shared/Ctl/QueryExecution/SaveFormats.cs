@@ -11,13 +11,13 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Ctl.QueryExecution;
 
 
-public class SaveFormats
+internal class SaveFormats
 {
 	private const string C_FilterStringSeperator = "|";
 
 	private readonly List<SaveFormatInfo> saveFormatList = [];
 
-	public string FilterString
+	internal string FilterString
 	{
 		get
 		{
@@ -31,7 +31,7 @@ public class SaveFormats
 		}
 	}
 
-	public EnGridSaveFormats this[int index]
+	internal EnGridSaveFormats this[int index]
 	{
 		get
 		{

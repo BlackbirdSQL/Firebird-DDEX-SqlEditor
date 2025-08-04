@@ -12,12 +12,12 @@ using Microsoft.AnalysisServices.Graphing;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class Node : Microsoft.AnalysisServices.Graphing.Node
+internal class Node : Microsoft.AnalysisServices.Graphing.Node
 {
 	[Serializable]
 	[GeneratedCode("xsd", "4.8.3928.0")]
 	[XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-	public enum EnCloneAccessScopeType
+	internal enum EnCloneAccessScopeType
 	{
 		Primary,
 		Secondary,
@@ -27,23 +27,23 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		Local
 	}
 
-	public enum EnSTATUS
+	internal enum EnSTATUS
 	{
 		PENDING,
 		RUNNING,
 		FINISH
 	}
 
-	public class ChildrenCollection : NodeCollection<BlackbirdSql.Shared.Controls.Graphing.Node>
+	internal class ChildrenCollection : NodeCollection<BlackbirdSql.Shared.Controls.Graphing.Node>
 	{
-		public override bool IsReadOnly => false;
+		internal override bool IsReadOnly => false;
 
 		public ChildrenCollection(BlackbirdSql.Shared.Controls.Graphing.Node node)
 			: base(node)
 		{
 		}
 
-		public override void Add(BlackbirdSql.Shared.Controls.Graphing.Node child)
+		internal override void Add(BlackbirdSql.Shared.Controls.Graphing.Node child)
 		{
 			BlackbirdSql.Shared.Controls.Graphing.Edge iedge = new BlackbirdSql.Shared.Controls.Graphing.Edge(base.Owner, child);
 			((INodeModify)base.Owner).StoreRelatedEdge((IEdge)iedge);
@@ -70,7 +70,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 
 	private readonly List<string> SeekOrScanPhysicalOpList = new List<string> { "IndexSeek", "TableScan", "IndexScan", "ColumnstoreIndexScan" };
 
-	public double Cost
+	internal double Cost
 	{
 		get
 		{
@@ -88,7 +88,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		}
 	}
 
-	public double RelativeCost
+	internal double RelativeCost
 	{
 		get
 		{
@@ -101,7 +101,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		}
 	}
 
-	public double SubtreeCost
+	internal double SubtreeCost
 	{
 		get
 		{
@@ -120,7 +120,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		}
 	}
 
-	public Operation Operation
+	internal Operation Operation
 	{
 		get
 		{
@@ -132,9 +132,9 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		}
 	}
 
-	public PropertyDescriptorCollection Properties => properties;
+	internal PropertyDescriptorCollection Properties => properties;
 
-	public object this[string propertyName]
+	internal object this[string propertyName]
 	{
 		get
 		{
@@ -157,9 +157,9 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		}
 	}
 
-	public new ChildrenCollection Children => children;
+	internal new ChildrenCollection Children => children;
 
-	public BlackbirdSql.Shared.Controls.Graphing.Node Parent
+	internal BlackbirdSql.Shared.Controls.Graphing.Node Parent
 	{
 		get
 		{
@@ -172,11 +172,11 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		}
 	}
 
-	public BlackbirdSql.Shared.Controls.Graphing.Node Root => Graph.Nodes[0] as BlackbirdSql.Shared.Controls.Graphing.Node;
+	internal BlackbirdSql.Shared.Controls.Graphing.Node Root => Graph.Nodes[0] as BlackbirdSql.Shared.Controls.Graphing.Node;
 
-	public string LogicalOpUnlocName { get; set; }
+	internal string LogicalOpUnlocName { get; set; }
 
-	public string PhysicalOpUnlocName { get; set; }
+	internal string PhysicalOpUnlocName { get; set; }
 
 	private IGraph Graph => _igraph;
 
@@ -190,7 +190,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		PhysicalOpUnlocName = null;
 	}
 
-	public bool IsComputeScalarType()
+	internal bool IsComputeScalarType()
 	{
 		if (this[NodeBuilderConstants.PhysicalOp] != null)
 		{
@@ -199,7 +199,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		return false;
 	}
 
-	public bool IsSeekOrScanType()
+	internal bool IsSeekOrScanType()
 	{
 		if (this[NodeBuilderConstants.PhysicalOp] != null)
 		{
@@ -208,7 +208,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		return false;
 	}
 
-	public bool IsFinished()
+	internal bool IsFinished()
 	{
 		EnSTATUS? sTATUS = this[NodeBuilderConstants.Status] as EnSTATUS?;
 		if (sTATUS.HasValue)
@@ -218,7 +218,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		return false;
 	}
 
-	public bool IsRunning()
+	internal bool IsRunning()
 	{
 		EnSTATUS? sTATUS = this[NodeBuilderConstants.Status] as EnSTATUS?;
 		if (sTATUS.HasValue)
@@ -228,7 +228,7 @@ public class Node : Microsoft.AnalysisServices.Graphing.Node
 		return false;
 	}
 
-	public bool IsLogicallyEquivalentTo(BlackbirdSql.Shared.Controls.Graphing.Node nodeToCompare, bool ignoreDatabaseName)
+	internal bool IsLogicallyEquivalentTo(BlackbirdSql.Shared.Controls.Graphing.Node nodeToCompare, bool ignoreDatabaseName)
 	{
 		if (this == nodeToCompare)
 		{

@@ -19,7 +19,7 @@ namespace BlackbirdSql.Data.Model;
 /// Handles Trigger / Generator linkage parsing specific tasks utilizing BlackbirdDsl.<see cref="Parser"/>.
 /// </summary>
 // =========================================================================================================
-public abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDisposable
+internal abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDisposable
 {
 
 
@@ -102,14 +102,14 @@ public abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDisposa
 	// =========================================================================================================
 
 
-	public long Id => _Id;
+	internal long Id => _Id;
 
 	public abstract string ConnectionString { get; }
 
 	/// <summary>
 	/// Getter to retrieve or create an instance of the BlackbirdDsl.<see cref="Parser"/>.
 	/// </summary>
-	public Parser DslParser => _DslParser ??= new Parser(EnParserOptions.TOKENIZE_ONLY);
+	internal Parser DslParser => _DslParser ??= new Parser(EnParserOptions.TOKENIZE_ONLY);
 
 	public abstract bool IsLockedLoaded { get; }
 

@@ -8,121 +8,121 @@ using System.Data.SqlTypes;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Shared.Model.IO;
 
-public class StorageDataEntity
+internal class StorageDataEntity
 {
-	public Type TypeDbNull;
+	internal Type TypeDbNull;
 
-	public string StringValue;
+	internal string StringValue;
 
-	public Type TypeString;
+	internal Type TypeString;
 
-	public SqlString SqlStringValue;
+	internal SqlString SqlStringValue;
 
-	public Type TypeSqlString;
+	internal Type TypeSqlString;
 
-	public short Int16Value;
+	internal short Int16Value;
 
-	public Type TypeInt16;
+	internal Type TypeInt16;
 
-	public SqlInt16 SqlInt16Value;
+	internal SqlInt16 SqlInt16Value;
 
-	public Type TypeSqlInt16;
+	internal Type TypeSqlInt16;
 
-	public int Int32Value;
+	internal int Int32Value;
 
-	public Type TypeInt32;
+	internal Type TypeInt32;
 
-	public SqlInt32 SqlInt32Value;
+	internal SqlInt32 SqlInt32Value;
 
-	public Type TypeSqlInt32;
+	internal Type TypeSqlInt32;
 
-	public long Int64Value;
+	internal long Int64Value;
 
-	public Type TypeInt64;
+	internal Type TypeInt64;
 
-	public SqlInt64 SqlInt64Value;
+	internal SqlInt64 SqlInt64Value;
 
-	public Type TypeSqlInt64;
+	internal Type TypeSqlInt64;
 
-	public byte ByteValue;
+	internal byte ByteValue;
 
-	public Type TypeByte;
+	internal Type TypeByte;
 
-	public SqlByte SqlByteValue;
+	internal SqlByte SqlByteValue;
 
-	public Type TypeSqlByte;
+	internal Type TypeSqlByte;
 
-	public char CharValue;
+	internal char CharValue;
 
-	public Type TypeChar;
+	internal Type TypeChar;
 
-	public bool BoolValue;
+	internal bool BoolValue;
 
-	public Type TypeBool;
+	internal Type TypeBool;
 
-	public SqlBoolean SqlBoolValue;
+	internal SqlBoolean SqlBoolValue;
 
-	public Type TypeSqlBool;
+	internal Type TypeSqlBool;
 
-	public double DoubleValue;
+	internal double DoubleValue;
 
-	public Type TypeDouble;
+	internal Type TypeDouble;
 
-	public SqlDouble SqlDoubleValue;
+	internal SqlDouble SqlDoubleValue;
 
-	public Type TypeSqlDouble;
+	internal Type TypeSqlDouble;
 
-	public decimal DecimalValue;
+	internal decimal DecimalValue;
 
-	public Type TypeDecimal;
+	internal Type TypeDecimal;
 
-	public SqlDecimal SqlDecimalValue;
+	internal SqlDecimal SqlDecimalValue;
 
-	public Type TypeSqlDecimal;
+	internal Type TypeSqlDecimal;
 
-	public DateTime DateTimeValue;
+	internal DateTime DateTimeValue;
 
-	public Type TypeDateTime;
+	internal Type TypeDateTime;
 
-	public SqlDateTime SqlDateTimeValue;
+	internal SqlDateTime SqlDateTimeValue;
 
-	public Type TypeSqlDateTime;
+	internal Type TypeSqlDateTime;
 
-	public byte[] BytesValue;
+	internal byte[] BytesValue;
 
-	public Type TypeBytes;
+	internal Type TypeBytes;
 
-	public SqlBytes SqlBytesValue;
+	internal SqlBytes SqlBytesValue;
 
-	public Type TypeSqlBytes;
+	internal Type TypeSqlBytes;
 
-	public SqlSingle SqlSingleValue;
+	internal SqlSingle SqlSingleValue;
 
-	public Type TypeSqlSingle;
+	internal Type TypeSqlSingle;
 
-	public SqlGuid SqlGuidValue;
+	internal SqlGuid SqlGuidValue;
 
-	public Type TypeSqlGuid;
+	internal Type TypeSqlGuid;
 
-	public Guid GuidValue;
+	internal Guid GuidValue;
 
-	public Type TypeGuid;
+	internal Type TypeGuid;
 
-	public SqlBinary SqlBinaryValue;
+	internal SqlBinary SqlBinaryValue;
 
-	public Type TypeSqlBinary;
+	internal Type TypeSqlBinary;
 
-	public SqlMoney SqlMoneyValue;
+	internal SqlMoney SqlMoneyValue;
 
-	public Type TypeSqlMoney;
+	internal Type TypeSqlMoney;
 
-	public DateTimeOffset DateTimeOffsetValue;
+	internal DateTimeOffset DateTimeOffsetValue;
 
-	public Type TypeDateTimeOffset;
+	internal Type TypeDateTimeOffset;
 
-	public TimeSpan TimeSpanValue;
+	internal TimeSpan TimeSpanValue;
 
-	public Type TypeTimeSpan;
+	internal Type TypeTimeSpan;
 
 	public StorageDataEntity()
 	{

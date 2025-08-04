@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ScanRangeType
+internal class ScanRangeType
 {
 	private ColumnReferenceType[] rangeColumnsField;
 
@@ -23,7 +23,7 @@ public class ScanRangeType
 	private EnCompareOpType scanTypeField;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] RangeColumns
+	internal ColumnReferenceType[] RangeColumns
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class ScanRangeType
 	}
 
 	[XmlArrayItem("ScalarOperator", IsNullable = false)]
-	public ScalarType[] RangeExpressions
+	internal ScalarType[] RangeExpressions
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class ScanRangeType
 	}
 
 	[XmlAttribute]
-	public EnCompareOpType ScanType
+	internal EnCompareOpType ScanType
 	{
 		get
 		{

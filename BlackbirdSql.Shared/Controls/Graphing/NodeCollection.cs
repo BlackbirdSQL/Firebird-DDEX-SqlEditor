@@ -8,13 +8,13 @@ using Microsoft.AnalysisServices.Graphing;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class NodeCollection<T> : ICollection<T>, IEnumerable<T>, IEnumerable where T : Microsoft.AnalysisServices.Graphing.Node
+internal class NodeCollection<T> : ICollection<T>, IEnumerable<T>, IEnumerable where T : Microsoft.AnalysisServices.Graphing.Node
 {
 	private readonly T node;
 
-	public T Owner => node;
+	internal T Owner => node;
 
-	public T this[int index]
+	internal T this[int index]
 	{
 		get
 		{
@@ -31,16 +31,16 @@ public class NodeCollection<T> : ICollection<T>, IEnumerable<T>, IEnumerable whe
 		}
 	}
 
-	public int Count => node.CnodeChildren();
+	internal int Count => node.CnodeChildren();
 
-	public virtual bool IsReadOnly => true;
+	internal virtual bool IsReadOnly => true;
 
 	public NodeCollection(T node)
 	{
 		this.node = node;
 	}
 
-	public T GetPrevious(T item)
+	internal T GetPrevious(T item)
 	{
 		INode node = null;
 		INodeEnumerator children = ((INode)this.node).Children;
@@ -55,7 +55,7 @@ public class NodeCollection<T> : ICollection<T>, IEnumerable<T>, IEnumerable whe
 		return null;
 	}
 
-	public T GetNext(T item)
+	internal T GetNext(T item)
 	{
 		INodeEnumerator children = ((INode)node).Children;
 		while (children.MoveNext())
@@ -68,7 +68,7 @@ public class NodeCollection<T> : ICollection<T>, IEnumerable<T>, IEnumerable whe
 		return null;
 	}
 
-	public IEnumerator<T> GetEnumerator()
+	internal IEnumerator<T> GetEnumerator()
 	{
 		INodeEnumerator enumerator = ((INode)node).Children;
 		while (enumerator.MoveNext())
@@ -86,12 +86,12 @@ public class NodeCollection<T> : ICollection<T>, IEnumerable<T>, IEnumerable whe
 		}
 	}
 
-	public virtual void Add(T child)
+	internal virtual void Add(T child)
 	{
 		throw new NotSupportedException();
 	}
 
-	public bool Contains(T item)
+	internal bool Contains(T item)
 	{
 		INodeEnumerator children = ((INode)node).Children;
 		while (children.MoveNext())
@@ -104,7 +104,7 @@ public class NodeCollection<T> : ICollection<T>, IEnumerable<T>, IEnumerable whe
 		return false;
 	}
 
-	public void CopyTo(T[] array, int arrayIndex)
+	internal void CopyTo(T[] array, int arrayIndex)
 	{
 		INodeEnumerator children = ((INode)node).Children;
 		while (children.MoveNext())
@@ -113,12 +113,12 @@ public class NodeCollection<T> : ICollection<T>, IEnumerable<T>, IEnumerable whe
 		}
 	}
 
-	public bool Remove(T item)
+	internal bool Remove(T item)
 	{
 		throw new NotSupportedException();
 	}
 
-	public void Clear()
+	internal void Clear()
 	{
 		throw new NotSupportedException();
 	}

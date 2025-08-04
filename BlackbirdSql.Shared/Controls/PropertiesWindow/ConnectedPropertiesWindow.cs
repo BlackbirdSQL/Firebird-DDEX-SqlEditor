@@ -18,7 +18,7 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Controls.PropertiesWindow;
 
 
-public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedPropertiesWindow
+internal class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedPropertiesWindow
 {
 
 	public ConnectedPropertiesWindow(ConnectionStrategy strategy) : base()
@@ -48,7 +48,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowConnectionDetails")]
 	[GlobalizedDescription("PropertyWindowNameDescription")]
 	[GlobalizedDisplayName("PropertyWindowNameDisplayName")]
-	public string Name
+	internal string Name
 	{
 		get
 		{
@@ -63,7 +63,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowConnectionDetails")]
 	[GlobalizedDescription("PropertyWindowServerNameDescription")]
 	[GlobalizedDisplayName("PropertyWindowServerNameDisplayName")]
-	public string DataSource
+	internal string DataSource
 	{
 		get
 		{
@@ -79,7 +79,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowConnectionDetails")]
 	[GlobalizedDescription("PropertyWindowServerVersionDescription")]
 	[GlobalizedDisplayName("PropertyWindowServerVersionDisplayName")]
-	public string ServerVersion
+	internal string ServerVersion
 	{
 		get
 		{
@@ -101,13 +101,13 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowConnectionDetails")]
 	[GlobalizedDescription("PropertyWindowClientVersionDescription")]
 	[GlobalizedDisplayName("PropertyWindowClientVersionDisplayName")]
-	public string ClientVersion => _ClientVersion ??= NativeDb.ClientVersion;
+	internal string ClientVersion => _ClientVersion ??= NativeDb.ClientVersion;
 
 
 	[GlobalizedCategory("PropertyWindowConnectionDetails")]
 	[GlobalizedDescription("PropertyWindowDatabaseDescription")]
 	[GlobalizedDisplayName("PropertyWindowDatabaseDisplayName")]
-	public string Database
+	internal string Database
 	{
 		get
 		{
@@ -121,7 +121,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowConnectionDetails")]
 	[GlobalizedDescription("PropertyWindowPortDescription")]
 	[GlobalizedDisplayName("PropertyWindowPortDisplayName")]
-	public int Port
+	internal int Port
 	{
 		get
 		{
@@ -136,7 +136,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowConnectionDetails")]
 	[GlobalizedDescription("PropertyWindowConnectionStringDescription")]
 	[GlobalizedDisplayName("PropertyWindowConnectionStringDisplayName")]
-	public string ConnectionString
+	internal string ConnectionString
 	{
 		get
 		{
@@ -150,7 +150,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowQueryExecutionDetailsCategory")]
 	[GlobalizedDescription("PropertyWindowStartTimeDescription")]
 	[GlobalizedDisplayName("PropertyWindowStartTimeDisplayName")]
-	public string StartTime
+	internal string StartTime
 	{
 		get
 		{
@@ -166,7 +166,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowQueryExecutionDetailsCategory")]
 	[GlobalizedDescription("PropertyWindowFinishTimeDescription")]
 	[GlobalizedDisplayName("PropertyWindowFinishTimeDisplayName")]
-	public string FinishTime
+	internal string FinishTime
 	{
 		get
 		{
@@ -182,7 +182,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowQueryExecutionDetailsCategory")]
 	[GlobalizedDescription("PropertyWindowElapsedTimeDescription")]
 	[GlobalizedDisplayName("PropertyWindowElapsedTimeDisplayName")]
-	public string ElapsedTime
+	internal string ElapsedTime
 	{
 		get
 		{
@@ -198,7 +198,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowQueryExecutionDetailsCategory")]
 	[GlobalizedDescription("PropertyWindowTotalRowsReturnedDescription")]
 	[GlobalizedDisplayName("PropertyWindowTotalRowsReturnedDisplayName")]
-	public string TotalRowsReturned
+	internal string TotalRowsReturned
 	{
 		get
 		{
@@ -214,7 +214,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowConnectionDetails")]
 	[GlobalizedDescription("PropertyWindowStateDescription")]
 	[GlobalizedDisplayName("PropertyWindowStateDisplayName")]
-	public string State
+	internal string State
 	{
 		get
 		{
@@ -231,7 +231,7 @@ public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBsConnectedP
 	[GlobalizedCategory("PropertyWindowConnectionDetails")]
 	[GlobalizedDescription("PropertyWindowLoginNameDescription")]
 	[GlobalizedDisplayName("PropertyWindowLoginNameDisplayName")]
-	public string LoginName
+	internal string LoginName
 	{
 		get
 		{

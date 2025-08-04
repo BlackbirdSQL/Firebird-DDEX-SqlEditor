@@ -11,7 +11,7 @@ using BlackbirdSql.Shared.Ctl.Config;
 namespace BlackbirdSql.Shared.Controls.Widgets;
 
 
-public sealed class StatusBarStatusLabel : ToolStripStatusLabel
+internal sealed class StatusBarStatusLabel : ToolStripStatusLabel
 {
 	private readonly int maxCharacters;
 

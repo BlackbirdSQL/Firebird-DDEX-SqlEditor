@@ -10,7 +10,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Enums;
 [Serializable]
 [GeneratedCode("xsd", "4.8.3928.0")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public enum EnStmtInfoTypeStatementOptmEarlyAbortReason
+internal enum EnStmtInfoTypeStatementOptmEarlyAbortReason
 {
 	TimeOut,
 	MemoryLimitExceeded,

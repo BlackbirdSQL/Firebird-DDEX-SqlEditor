@@ -1,9 +1,8 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.SqlCompletionSet
+
 using System;
-using System.Globalization;
 using System.Windows.Forms;
-using BlackbirdSql.Core;
 using BlackbirdSql.LanguageExtension.Properties;
 using EnvDTE;
 using EnvDTE80;
@@ -17,8 +16,21 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.LanguageExtension.Ctl;
 
 
+// =========================================================================================================
+//
+//										LsbCompletionSet Class
+//
+/// <summary>
+/// Language service CompletionSet implementation.
+/// </summary>
+// =========================================================================================================
 internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - LsbCompletionSet
+	// ---------------------------------------------------------------------------------
+
 
 	public LsbCompletionSet(ImageList imageList, Source source)
 		: base(imageList, source)
@@ -32,33 +44,72 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 	}
 
 
+	#endregion Constructors / Destructors
 
+
+
+
+
+	// =========================================================================================================
+	#region Constants - LsbCompletionSet
+	// =========================================================================================================
 
 
 	private const char C_OpenSquareBracket = '[';
 	private const char C_DoubleQuote = '"';
 
+
+	#endregion Constants
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - LsbCompletionSet
+	// =========================================================================================================
+
+
 	private bool _CompleteWord;
-
-	private readonly Source _Source;
-
-	private IVsTextView _TextView;
-
 	private LsbDeclarations _Declarations;
-	private TextSpan _TextmarkerSpan;
-
-	private int _LastBestMatch;
-
 	private bool _ForceSelectInGetBestMatch;
-
+	private int _LastBestMatch;
+	private readonly Source _Source;
+	private TextSpan _TextmarkerSpan;
+	private IVsTextView _TextView;
 	private bool _WasUnique;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - LsbCompletionSet
+	// =========================================================================================================
+
 
 	internal bool InPreviewMode { get; set; }
 
 	internal bool InPreviewModeOutline { get; set; }
 
 
+	#endregion Property accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - LsbCompletionSet
+	// =========================================================================================================
+
+
 	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
 
 	public override void Init(IVsTextView textView, Declarations declarations, bool completeWord)
 	{
@@ -88,6 +139,8 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 			Dismiss();
 		}
 	}
+
+
 
 	public override int GetBestMatch(string textSoFar, int length, out int index, out uint flags)
 	{
@@ -126,8 +179,11 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 			flags |= 2u;
 		}
 		_LastBestMatch = index;
-		return 0;
+
+		return VSConstants.S_OK;
 	}
+
+
 
 	internal void ResetTextMarker()
 	{
@@ -171,11 +227,13 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 		return InPreviewMode || flag;
 	}
 
-	public void ExplicitFilterDeclarationList()
+	internal void ExplicitFilterDeclarationList()
 	{
 		if (FilterDeclarationList((LsbDeclarations)Declarations))
 			UpdateCompletionStatus(forceSelect: false);
 	}
+
+
 
 	internal void UpdateCompletionStatus(bool forceSelect)
 	{
@@ -190,6 +248,8 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 			_ForceSelectInGetBestMatch = forceSelectInGetBestMatch;
 		}
 	}
+
+
 
 	public string GetTextTypedSoFar()
 	{
@@ -264,6 +324,8 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 		return result;
 	}
 
+
+
 	private bool StartsWithEscapeSequence(string str)
 	{
 		if (!str.StartsWith("[", StringComparison.OrdinalIgnoreCase) && !str.StartsWith("\"", StringComparison.OrdinalIgnoreCase))
@@ -272,6 +334,8 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 		}
 		return true;
 	}
+
+
 
 	public override int GetInitialExtent(out int line, out int startIdx, out int endIdx)
 	{
@@ -282,10 +346,12 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 			line = _TextmarkerSpan.iStartLine;
 			startIdx = _TextmarkerSpan.iStartIndex;
 			endIdx = _TextmarkerSpan.iEndIndex;
-			return 0;
+			return VSConstants.S_OK;
 		}
 		return base.GetInitialExtent(out line, out startIdx, out endIdx);
 	}
+
+
 
 	private static bool IsExplicitFilteringRequired(string textTypedSofar)
 	{
@@ -294,33 +360,21 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 		{
 			return false;
 		}
+
 		return true;
 	}
 
-	public override int OnCommitComplete()
-	{
-		// TODO: link to connection TTS.
 
-		LsbSource source = _Source as LsbSource;
-
-		if (source.CurrentCommitUndoTransaction != null)
-		{
-			source.CurrentCommitUndoTransaction.Complete();
-			source.CurrentCommitUndoTransaction = null;
-		}
-
-		return base.OnCommitComplete();
-	}
 
 	public override void Dismiss()
 	{
 		if (LsbLanguageServiceTestEvents.Instance.EnableTestEvents)
-		{
 			LsbLanguageServiceTestEvents.Instance.RaiseSqlCompletionSetDismissedEvent();
-		}
 
 		base.Dismiss();
 	}
+
+
 
 	public int GetBuilderCount(ref int piCount)
 	{
@@ -329,8 +383,11 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 		{
 			piCount = 1;
 		}
-		return 0;
+
+		return VSConstants.S_OK;
 	}
+
+
 
 	public int GetBuilderDescriptionText(int iIndex, out string pbstrDescription)
 	{
@@ -343,8 +400,10 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 				pbstrDescription = Resources.PreviewModeCompletionDescription.Fmt(firstBindingForCommand);
 		}
 
-		return 0;
+		return VSConstants.S_OK;
 	}
+
+
 
 	public int GetBuilderDisplayText(int iIndex, out string pbstrText, int[] piGlyph = null)
 	{
@@ -353,27 +412,27 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 		{
 			pbstrText = GetTextTypedSoFar();
 		}
-		return 0;
+		return VSConstants.S_OK;
 	}
+
+
 
 	public int GetBuilderImageList(out IntPtr phImages)
 	{
 		phImages = IntPtr.Zero;
-		return 0;
+		return VSConstants.S_OK;
 	}
+
+
 
 	public int GetBuilderItemColor(int iIndex, out uint dwFGColor, out uint dwBGColor)
 	{
 		dwFGColor = 0u;
 		dwBGColor = 0u;
-		return 0;
+		return VSConstants.S_OK;
 	}
 
-	public int OnBuilderCommit(int iIndex)
-	{
-		Dismiss();
-		return 0;
-	}
+
 
 	private string GetFirstBindingForCommand(string commandName)
 	{
@@ -406,4 +465,44 @@ internal class LsbCompletionSet : CompletionSet, IVsCompletionSetBuilder
 		}
 		return text;
 	}
+
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Event handling - LsbCompletionSet
+	// =========================================================================================================
+
+
+	public int OnBuilderCommit(int iIndex)
+	{
+		Dismiss();
+		return VSConstants.S_OK;
+	}
+
+
+
+	public override int OnCommitComplete()
+	{
+		// TBC: link to connection TTS.
+
+		LsbSource source = _Source as LsbSource;
+
+		if (source.CurrentCommitUndoTransaction != null)
+		{
+			source.CurrentCommitUndoTransaction.Complete();
+			source.CurrentCommitUndoTransaction = null;
+		}
+
+		return base.OnCommitComplete();
+	}
+
+
+	#endregion Event handling
+
+
 }

@@ -8,9 +8,9 @@ using System.Collections;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class GridCellCollection : CollectionBase
+internal class GridCellCollection : CollectionBase
 {
-	public GridCell this[int index]
+	internal GridCell this[int index]
 	{
 		get
 		{
@@ -36,12 +36,12 @@ public class GridCellCollection : CollectionBase
 		AddRange(value);
 	}
 
-	public int Add(GridCell cell)
+	internal int Add(GridCell cell)
 	{
 		return List.Add(cell);
 	}
 
-	public void AddRange(GridCell[] cells)
+	internal void AddRange(GridCell[] cells)
 	{
 		for (int i = 0; i < cells.Length; i++)
 		{
@@ -49,7 +49,7 @@ public class GridCellCollection : CollectionBase
 		}
 	}
 
-	public void AddRange(GridCellCollection value)
+	internal void AddRange(GridCellCollection value)
 	{
 		for (int i = 0; i < value.Count; i++)
 		{
@@ -57,27 +57,27 @@ public class GridCellCollection : CollectionBase
 		}
 	}
 
-	public bool Contains(GridCell node)
+	internal bool Contains(GridCell node)
 	{
 		return List.Contains(node);
 	}
 
-	public void CopyTo(GridCell[] array, int index)
+	internal void CopyTo(GridCell[] array, int index)
 	{
 		List.CopyTo(array, index);
 	}
 
-	public int IndexOf(GridCell cell)
+	internal int IndexOf(GridCell cell)
 	{
 		return List.IndexOf(cell);
 	}
 
-	public void Insert(int index, GridCell cell)
+	internal void Insert(int index, GridCell cell)
 	{
 		List.Insert(index, cell);
 	}
 
-	public void Remove(GridCell cell)
+	internal void Remove(GridCell cell)
 	{
 		List.Remove(cell);
 	}

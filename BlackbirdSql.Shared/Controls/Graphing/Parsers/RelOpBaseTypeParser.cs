@@ -10,7 +10,7 @@ internal class RelOpBaseTypeParser : AbstractXmlPlanParser
 {
 	private static RelOpBaseTypeParser relOpBaseTypeParser;
 
-	public static RelOpBaseTypeParser Instance
+	internal static RelOpBaseTypeParser Instance
 	{
 		get
 		{
@@ -19,12 +19,12 @@ internal class RelOpBaseTypeParser : AbstractXmlPlanParser
 		}
 	}
 
-	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
+	internal override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
 		return parentNode;
 	}
 
-	public override IEnumerable GetChildren(object parsedItem)
+	internal override IEnumerable GetChildren(object parsedItem)
 	{
 		PropertyDescriptor propertyDescriptor = TypeDescriptor.GetProperties(parsedItem)["RelOp"];
 		if (propertyDescriptor == null)

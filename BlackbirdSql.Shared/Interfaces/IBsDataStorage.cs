@@ -8,7 +8,7 @@ using System;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsDataStorage : IDisposable
+internal interface IBsDataStorage : IDisposable
 {
 	IBsStorageView GetStorageView();
 

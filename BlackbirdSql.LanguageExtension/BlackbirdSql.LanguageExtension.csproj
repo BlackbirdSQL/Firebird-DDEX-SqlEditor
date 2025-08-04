@@ -35,19 +35,63 @@
 	  <Compile Include="Ctl\Config\LsbLanguagePreferences.cs" />
 	  <Compile Include="Ctl\Config\PersistentSettings.cs" />
 	  <Compile Include="Ctl\Config\SettingsProvider.cs" />
+	  <Compile Include="Ctl\Config\SmoConfig.cs" />
 	  <Compile Include="Enums\EnCasingStyle.cs" />
 	  <Compile Include="Evs.cs" />
 	  <Compile Include="Ctl\LsbAuthoringScope.cs" />
 	  <Compile Include="Ctl\LsbColorableItem.cs" />
 	  <Compile Include="Ctl\LsbCompletionSet.cs" />
 	  <Compile Include="Ctl\LsbDeclarations.cs" />
+	  <Compile Include="Interfaces\IBsSmoDatabaseObject.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\AbstractDatabaseObject.cs" />
 	  <Compile Include="Model\AbstractMetadataProvider.cs" />
 	  <Compile Include="Model\AbstractMetadataProviderProvider.cs" />
 	  <Compile Include="Interfaces\IBsBinderQueue.cs" />
 	  <Compile Include="Interfaces\IBsMetadataProviderProvider.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\AbstractTableView.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\AbstractUniqueConstraint.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbApplicationRole.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbAsymmetricKey.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbCertificate.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbCheckConstraint.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbColumn.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbConstraintCollection.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbDatabaseDdlTrigger.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbDatabaseObject.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbDatabase.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbDatabaseOwnedObject.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbDatabasePermission.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbDatabasePrincipal.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbDatabaseRole.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbDefaultConstraint.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbDmlTrigger.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbExtendedStoredProcedure.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbForeignKeyConstraint.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbIndex.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbMetadataServer.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbPrimaryKeyConstraint.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbRelationalIndex.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbScalarValuedFunction.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbSchema.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbSchemaOwnedModule.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbSchemaOwnedObject.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbServerOwnedObject.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbSmoSystemDataTypeLookup.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbSpatialIndex.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbStatistics.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbStoredProcedure.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbSynonym.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbTable.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbTableValuedFunction.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbUniqueConstraint.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbUser.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbUserDefinedFunction.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbXmlIndex.cs" />
+	  <Compile Include="Model\Smo\LsbSmoServer.cs" />
+	  <Compile Include="Root\Cmd.cs" />
 	  <Compile Include="Services\LsbLanguageService.cs" />
-	  <Compile Include="Model\LsbMetadataFactory.cs" />
-	  <Compile Include="Model\LsbMetadataProvider.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbMetadataFactory.cs" />
+	  <Compile Include="Model\SmoMetadataProvider\LsbMetadataProvider.cs" />
 	  <Compile Include="Properties\AttributeResources.Designer.cs">
 	    <DependentUpon>AttributeResources.resx</DependentUpon>
 	    <DesignTime>True</DesignTime>
@@ -78,6 +122,7 @@
 	    <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
 	    <Generator>ResXFileCodeGenerator</Generator>
 	  </EmbeddedResource>
+	  <EmbeddedResource Include="Properties\Microsoft.SqlServer.Management.Smo.ExceptionTemplatesImpl.resx" />
 	  <EmbeddedResource Include="Properties\Resources.resx">
 	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
 	    <Generator>PublicResXFileCodeGenerator</Generator>
@@ -86,6 +131,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.SqlServer.Management.SqlParser" Version="172.0.1" />
+	  <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="172.52.0" />
 	</ItemGroup>
 
 	<ItemGroup>

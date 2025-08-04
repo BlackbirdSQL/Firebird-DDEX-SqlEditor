@@ -22,13 +22,13 @@ public enum EnNodeSystemType
 };
 
 
-public static class EnNodeSystemTypeExtensions
+internal static class EnNodeSystemTypeExtensions
 {
 
 	/// <summary>
 	/// Determines the IsSystemObject type of a node.
 	/// </summary>
-	public static EnNodeSystemType NodeSystemType(this IVsDataExplorerNode @this)
+	internal static EnNodeSystemType NodeSystemType(this IVsDataExplorerNode @this)
 	{
 		if (@this == null)
 			return EnNodeSystemType.Undefined;

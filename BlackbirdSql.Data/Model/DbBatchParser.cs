@@ -15,7 +15,7 @@ using FirebirdSql.Data.Isql;
 namespace BlackbirdSql.Data.Model;
 
 
-public class DbBatchParser : IBsNativeDbBatchParser
+internal class DbBatchParser : IBsNativeDbBatchParser
 {
 	private DbBatchParser()
 	{
@@ -114,7 +114,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 
 
 
-	
+
 	public int Current => _Current;
 
 	private static readonly EnSqlStatementAction[][] _ActionArray = [
@@ -208,7 +208,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	}
 
 
-	public void BeginTransaction()
+	internal void BeginTransaction()
 	{
 		if (_LocalConnection == null)
 		{
@@ -237,7 +237,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 	}
 
 	/*
-	public void Cancel()
+	internal void Cancel()
 	{
 		AsyncTokenSource.Cancel();
 		_Cancelled = true;
@@ -289,7 +289,7 @@ public class DbBatchParser : IBsNativeDbBatchParser
 		return result;
 	}
 
-	public bool HasTransactions(IDbTransaction @this)
+	internal bool HasTransactions(IDbTransaction @this)
 	{
 		if (@this == null)
 			return false;

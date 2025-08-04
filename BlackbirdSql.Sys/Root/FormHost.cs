@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Sys;
 
 
-public static class FormHost
+internal static class FormHost
 {
 
 	private class WindowWithFocusRestorer : IDisposable
@@ -61,12 +61,12 @@ public static class FormHost
 	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
-	public static DialogResult ShowDialog(Form form)
+	internal static DialogResult ShowDialog(Form form)
 	{
 		return ShowDialogOrForm(form, null);
 	}
 
-	public static DialogResult ShowDialog(CommonDialog dialog)
+	internal static DialogResult ShowDialog(CommonDialog dialog)
 	{
 		return ShowDialogOrForm(null, dialog);
 	}
@@ -113,7 +113,7 @@ public static class FormHost
 		}
 	}
 
-	public static DialogResult ShowDialog(Form form, IWin32Window owner)
+	internal static DialogResult ShowDialog(Form form, IWin32Window owner)
 	{
 		if (form == null)
 		{
@@ -126,7 +126,7 @@ public static class FormHost
 		}
 	}
 
-	public static DialogResult ShowDialog(CommonDialog commonDialog, IWin32Window owner)
+	internal static DialogResult ShowDialog(CommonDialog commonDialog, IWin32Window owner)
 	{
 		if (commonDialog == null)
 		{
@@ -138,12 +138,12 @@ public static class FormHost
 		}
 	}
 
-	public static IDisposable GetFocusWindowRestorer()
+	internal static IDisposable GetFocusWindowRestorer()
 	{
 		return new WindowWithFocusRestorer();
 	}
 
-	public static Font GetDialogFont()
+	internal static Font GetDialogFont()
 	{
 		Font result = Control.DefaultFont;
 		if (Package.GetGlobalService(typeof(IUIService)) is IUIService iUIService)
@@ -153,7 +153,7 @@ public static class FormHost
 		return result;
 	}
 
-	public static Control GetFocusControl()
+	internal static Control GetFocusControl()
 	{
 		Control result = null;
 		IntPtr focus = Native.GetFocus();
@@ -164,7 +164,7 @@ public static class FormHost
 		return result;
 	}
 
-	public static void SetDataGridHeaderHeight(DataGridView dataGrid)
+	internal static void SetDataGridHeaderHeight(DataGridView dataGrid)
 	{
 		float num = 0f;
 		using (Graphics graphics = dataGrid.CreateGraphics())
@@ -181,7 +181,7 @@ public static class FormHost
 		dataGrid.ColumnHeadersHeight = (int)num + 10;
 	}
 
-	public static void GetAllChildren(Control parent, List<Control> allChildren)
+	internal static void GetAllChildren(Control parent, List<Control> allChildren)
 	{
 		GetAllChildren(parent, parent, allChildren);
 	}

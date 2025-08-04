@@ -9,7 +9,7 @@ using Microsoft.AnalysisServices.Graphing;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class GraphPanel : ContainerControl
+internal class GraphPanel : ContainerControl
 {
 	private class EditQueryTextBtnContainer : ContainerControl
 	{
@@ -93,7 +93,7 @@ public class GraphPanel : ContainerControl
 
 	private ContainerControl queryContainer;
 
-	public string Title
+	internal string Title
 	{
 		get
 		{
@@ -105,13 +105,13 @@ public class GraphPanel : ContainerControl
 		}
 	}
 
-	public DescriptionControl DescriptionCtl => _DescriptionCtl;
+	internal DescriptionControl DescriptionCtl => _DescriptionCtl;
 
-	public GraphControl GraphControl => graphControl;
+	internal GraphControl GraphControl => graphControl;
 
-	public bool IsActive => GraphControl.IsActive;
+	internal bool IsActive => GraphControl.IsActive;
 
-	public event GraphEventHandler SelectionChangedEvent
+	internal event GraphEventHandler SelectionChangedEvent
 	{
 		add
 		{
@@ -123,9 +123,9 @@ public class GraphPanel : ContainerControl
 		}
 	}
 
-	public event EventHandler IsActiveChangedEvent;
+	internal event EventHandler IsActiveChangedEvent;
 
-	public event EventHandler ShowContextMenuEvent;
+	internal event EventHandler ShowContextMenuEvent;
 
 	public GraphPanel()
 	{
@@ -137,23 +137,23 @@ public class GraphPanel : ContainerControl
 		Initialize(editQueryTextHandler);
 	}
 
-	public void Activate()
+	internal void Activate()
 	{
 		GraphControl.Activate();
 	}
 
-	public void Deactivate()
+	internal void Deactivate()
 	{
 		GraphControl.Deactivate();
 	}
 
-	public void SetGraph(IGraph graph)
+	internal void SetGraph(IGraph graph)
 	{
 		GraphControl.SetGraph(graph);
 		DescriptionCtl.QueryText = GraphControl.Statement;
 	}
 
-	public override Size GetPreferredSize(Size proposedSize)
+	internal override Size GetPreferredSize(Size proposedSize)
 	{
 		Size size = GraphControl.WorldToView(GraphControl.GraphBoundingRectangle.Size);
 		return new Size(proposedSize.Width, size.Height + DescriptionCtl.Height + SystemInformation.HorizontalScrollBarHeight + 2);

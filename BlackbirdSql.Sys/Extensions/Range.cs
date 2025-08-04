@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 namespace System;
 
 
-public readonly struct Range : IEquatable<Range>
+internal readonly struct Range : IEquatable<Range>
 {
 
 	public Range(Index start, Index end)
@@ -20,11 +20,11 @@ public readonly struct Range : IEquatable<Range>
 
 
 
-	public Index Start { get; }
+	internal Index Start { get; }
 
-	public Index End { get; }
+	internal Index End { get; }
 
-	public static Range All => Index.Start..Index.End;
+	internal static Range All => Index.Start..Index.End;
 
 
 
@@ -58,19 +58,19 @@ public readonly struct Range : IEquatable<Range>
 		return Start.ToString() + ".." + End;
 	}
 
-	public static Range StartAt(Index start)
+	internal static Range StartAt(Index start)
 	{
 		return start..Index.End;
 	}
 
-	public static Range EndAt(Index end)
+	internal static Range EndAt(Index end)
 	{
 		return Index.Start..end;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	// [CLSCompliant(false)]
-	public (int Offset, int Length) GetOffsetAndLength(int length)
+	internal (int Offset, int Length) GetOffsetAndLength(int length)
 	{
 		int start = Start.GetOffset(length);
 		int end = End.GetOffset(length);

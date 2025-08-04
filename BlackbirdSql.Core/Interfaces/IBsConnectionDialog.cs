@@ -4,7 +4,7 @@ using System.Windows.Forms.Design;
 
 namespace BlackbirdSql.Core.Interfaces;
 
-public interface IBsConnectionDialog
+internal interface IBsConnectionDialog
 {
 	bool UpdateServerExplorer { get; }
 

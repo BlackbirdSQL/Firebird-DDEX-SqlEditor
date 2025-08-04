@@ -14,13 +14,13 @@ namespace BlackbirdSql;
 /// Central class for package external class extension methods. 
 /// </summary>
 // =========================================================================================================
-public static partial class ExtensionMembers
+internal static partial class ExtensionMembers
 {
 	/// <summary>
 	/// Adds a parameter suffixed with an index to DbCommand.Parameters.
 	/// </summary>
 	/// <returns>The index of the parameter in DbCommand.Parameters else -1.</returns>
-	public static int AddParameter(this FbCommand @this, string name, int index, object value)
+	internal static int AddParameter(this FbCommand @this, string name, int index, object value)
 	{
 		// Catalog, Schema and TableType are no real restrictions
 		// if (!name.EndsWith("Catalog") && !name.EndsWith("Schema") && name != "TableType")
@@ -40,7 +40,7 @@ public static partial class ExtensionMembers
 	/// <summary>
 	/// Parses and converts a server version string to it's Version format.
 	/// </summary>
-	public static Version GetVersion(this FbConnection @this)
+	internal static Version GetVersion(this FbConnection @this)
 	{
 		string stringVersion = @this.ServerVersion;
 

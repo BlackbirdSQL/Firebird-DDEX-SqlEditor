@@ -9,7 +9,7 @@ using BlackbirdSql.Shared.Enums;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class GridCell
+internal class GridCell
 {
 	private SolidBrush m_textBrush;
 
@@ -21,7 +21,7 @@ public class GridCell
 
 	private object m_tag;
 
-	public SolidBrush TextBrush
+	internal SolidBrush TextBrush
 	{
 		get
 		{
@@ -33,7 +33,7 @@ public class GridCell
 		}
 	}
 
-	public SolidBrush BkBrush
+	internal SolidBrush BkBrush
 	{
 		get
 		{
@@ -45,7 +45,7 @@ public class GridCell
 		}
 	}
 
-	public int TextCellType
+	internal int TextCellType
 	{
 		get
 		{
@@ -57,7 +57,7 @@ public class GridCell
 		}
 	}
 
-	public object CellData
+	internal object CellData
 	{
 		get
 		{
@@ -69,7 +69,7 @@ public class GridCell
 		}
 	}
 
-	public object Tag
+	internal object Tag
 	{
 		get
 		{
@@ -108,7 +108,7 @@ public class GridCell
 		m_cellData = state;
 	}
 
-	public void Assign(GridCell cell)
+	internal void Assign(GridCell cell)
 	{
 		if (cell != this && cell != null)
 		{

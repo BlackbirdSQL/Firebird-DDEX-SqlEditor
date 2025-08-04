@@ -10,15 +10,15 @@ namespace BlackbirdSql.Shared.Controls.Graphing.ComponentModel;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 
 
-public class DisplayNameDescriptionAttribute : Attribute
+internal class DisplayNameDescriptionAttribute : Attribute
 {
 	private readonly string _DisplayName;
 
 	private readonly string _Description;
 
-	public string DisplayName => _DisplayName;
+	internal string DisplayName => _DisplayName;
 
-	public string Description => _Description;
+	internal string Description => _Description;
 
 	public DisplayNameDescriptionAttribute(string _DisplayName)
 	{

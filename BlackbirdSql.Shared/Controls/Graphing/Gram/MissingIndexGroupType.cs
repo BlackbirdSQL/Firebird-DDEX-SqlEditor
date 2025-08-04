@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class MissingIndexGroupType
+internal class MissingIndexGroupType
 {
 	private MissingIndexType[] missingIndexField;
 
 	private double impactField;
 
 	[XmlElement("MissingIndex")]
-	public MissingIndexType[] MissingIndex
+	internal MissingIndexType[] MissingIndex
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class MissingIndexGroupType
 	}
 
 	[XmlAttribute]
-	public double Impact
+	internal double Impact
 	{
 		get
 		{

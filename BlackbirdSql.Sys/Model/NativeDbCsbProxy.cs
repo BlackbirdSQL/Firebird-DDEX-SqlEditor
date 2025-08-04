@@ -741,7 +741,7 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 
 	// =====================================================================================================
-	#region Sub-types - NativeDbCsbProxy
+	#region Event handling - NativeDbCsbProxy
 	// =====================================================================================================
 
 
@@ -751,6 +751,6 @@ public class NativeDbCsbProxy : DbConnectionStringBuilder
 
 
 
-	#endregion Sub-types
+	#endregion Event handling
 
 }

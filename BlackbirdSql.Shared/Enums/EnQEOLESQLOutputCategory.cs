@@ -4,7 +4,7 @@
 
 namespace BlackbirdSql.Shared.Enums;
 
-public enum EnQEOLESQLOutputCategory
+internal enum EnQEOLESQLOutputCategory
 {
 	Results,
 	Errors,

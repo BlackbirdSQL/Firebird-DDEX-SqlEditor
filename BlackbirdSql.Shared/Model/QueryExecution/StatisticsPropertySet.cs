@@ -11,9 +11,9 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Model.QueryExecution;
 
 
-public class StatisticsPropertySet
+internal class StatisticsPropertySet
 {
-	public enum EnStatisticSpecialAction
+	internal enum EnStatisticSpecialAction
 	{
 		NoAction,
 		ClientProcessingTimeAction,
@@ -25,29 +25,29 @@ public class StatisticsPropertySet
 
 
 
-	public struct StatisticEntity(string name, EnStatisticSpecialAction specialAction, bool calculateAverage = true)
+	internal struct StatisticEntity(string name, EnStatisticSpecialAction specialAction, bool calculateAverage = true)
 	{
-		public string Name = name;
-		public EnStatisticSpecialAction SpecialAction = specialAction;
-		public bool CalculateAverage = calculateAverage;
+		internal string Name = name;
+		internal EnStatisticSpecialAction SpecialAction = specialAction;
+		internal bool CalculateAverage = calculateAverage;
 
 
-		public static ResourceManager ResMgr => AttributeResources.ResourceManager;
+		internal static ResourceManager ResMgr => AttributeResources.ResourceManager;
 
-		public readonly string DisplayName => ResMgr.GetString("StatisticsPanelStat" + Name);
+		internal readonly string DisplayName => ResMgr.GetString("StatisticsPanelStat" + Name);
 
 	}
 
 
 
-	public delegate string GetCategoryValueDelegate(StatisticsSnapshot snapshot);
+	internal delegate string GetCategoryValueDelegate(StatisticsSnapshot snapshot);
 
 
 
 	/// <summary>
 	/// Array of statistics categories
 	/// </summary>
-	public static readonly string[] SCategoryNames =
+	internal static readonly string[] SCategoryNames =
 	[
 		/* AttributeResources.StatisticsPanelCategorySnapshotTimestamp, */
 		AttributeResources.StatisticsPanelCategoryTimeStats,
@@ -60,7 +60,7 @@ public class StatisticsPropertySet
 	/// <summary>
 	/// Delegates for generating Statistic category values.
 	/// </summary>
-	public static readonly GetCategoryValueDelegate[] SCategoryValueDelegates =
+	internal static readonly GetCategoryValueDelegate[] SCategoryValueDelegates =
 	[
 		new GetCategoryValueDelegate(GetTimeOfExecution),
 		/* null, */
@@ -79,7 +79,7 @@ public class StatisticsPropertySet
 	/// 3. Including it in the ConnectionSnapshotCollection.Load() method, and
 	/// 4. Including it in StatisticsSnapshotCollection.RetrieveStatisticsIfNeeded()
 	/// </summary>
-	public static readonly StatisticEntity[][] SStatisticEntities =
+	internal static readonly StatisticEntity[][] SStatisticEntities =
 	[
 		// ClientExecutionTime
 		/* new StatisticEntity[0], */
@@ -136,7 +136,7 @@ public class StatisticsPropertySet
 
 
 
-	public static string GetTimeOfExecution(StatisticsSnapshot snapshot)
+	internal static string GetTimeOfExecution(StatisticsSnapshot snapshot)
 	{
 		return snapshot.TimeOfExecution.ToString("T", CultureInfo.InvariantCulture);
 	}

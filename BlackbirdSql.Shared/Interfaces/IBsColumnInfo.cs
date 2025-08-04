@@ -8,7 +8,7 @@ using System;
 
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsColumnInfo
+internal interface IBsColumnInfo
 {
 	string ColumnName { get; }
 

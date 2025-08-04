@@ -1,5 +1,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlLanguageServices.SqlLanguagePreferences
+
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -7,18 +8,45 @@ using Microsoft.VisualStudio.Package;
 using Microsoft.Win32;
 
 
+
 namespace BlackbirdSql.LanguageExtension.Ctl.Config;
 
 [ComVisible(true)]
 [Guid(PackageData.C_LanguagePreferencesGuid)]
+
+
+// =========================================================================================================
+//
+//										LsbLanguagePreferences Class
+//
+/// <summary>
+/// Language service LanguagePreferences implementation.
+/// </summary>
+// =========================================================================================================
 public class LsbLanguagePreferences : LanguagePreferences
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - LsbLanguagePreferences 
+	// ---------------------------------------------------------------------------------
+
 
 	public LsbLanguagePreferences(IServiceProvider site, Guid langsvc, string name)
 		: base(site, langsvc, name)
 	{
 		SetDefaults();
 	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Constants - LsbLanguagePreferences
+	// =========================================================================================================
 
 
 	public const int C_ValueUpperCase = 0;
@@ -35,11 +63,32 @@ public class LsbLanguagePreferences : LanguagePreferences
 	private const bool C_DefaultWordWrapGlyphs = true;
 
 
+	#endregion Constants
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - LsbLanguagePreferences
+	// =========================================================================================================
+
 
 	private bool _UnderlineErrors;
 	private int _MaxScriptSize;
 	private bool _EnableIntellisense;
 	private int _TextCasing;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - LsbLanguagePreferences
+	// =========================================================================================================
 
 
 	[Browsable(false)]
@@ -81,6 +130,15 @@ public class LsbLanguagePreferences : LanguagePreferences
 	public bool EnableAzureIntellisense { get; set; }
 
 
+	#endregion Property accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - LsbLanguagePreferences
+	// =========================================================================================================
 
 
 	public override void Apply()
@@ -111,7 +169,7 @@ public class LsbLanguagePreferences : LanguagePreferences
 		AutoOutlining = C_AutoOutlining;
 		_UnderlineErrors = C_UnderlineErrors;
 		_MaxScriptSize = C_DefaultMaxScriptSize;
-		EnableIntellisense = C_EnableIntellisense;
+		_EnableIntellisense = C_EnableIntellisense;
 		_TextCasing = C_TextCasing;
 		EnableAzureIntellisense = C_DefaultEnableAzureIntellisense;
 
@@ -132,5 +190,8 @@ public class LsbLanguagePreferences : LanguagePreferences
 		MaxScriptSize = PersistentSettings.LanguageServiceMaxScriptSize;
 		TextCasing = (int)PersistentSettings.LanguageServiceTextCasing;
 	}
+
+
+	#endregion Methods
 
 }

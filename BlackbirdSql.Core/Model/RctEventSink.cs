@@ -131,7 +131,7 @@ internal class RctEventSink : IDisposable
 	/// Attaches to a Server Explorer <see cref="IVsDataExplorerConnection"/>'s events.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void NotifyInitializedServerExplorerModel(object sender, DataExplorerNodeEventArgs e)
+	internal static void NotifyInitializedServerExplorerModel(object sender, DataExplorerNodeEventArgs e)
 	{
 		if (ApcManager.SolutionClosing)
 			return;
@@ -161,7 +161,7 @@ internal class RctEventSink : IDisposable
 	/// Attaches to a Server Explorer <see cref="IVsDataExplorerConnection"/>'s events.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void InitializeServerExplorerModel(IVsDataExplorerConnection root)
+	internal static void InitializeServerExplorerModel(IVsDataExplorerConnection root)
 	{
 		if (ApcManager.IdeShutdownState)
 			return;
@@ -304,7 +304,7 @@ internal class RctEventSink : IDisposable
 	/// Returns false if an event has already been entered else true if it is safe to enter.
 	/// </returns>
 	// -------------------------------------------------------------------------------------------
-	public static bool EventEnter(bool test = false, bool force = false)
+	internal static bool EventEnter(bool test = false, bool force = false)
 	{
 		lock (_LockGlobal)
 		{
@@ -326,7 +326,7 @@ internal class RctEventSink : IDisposable
 	/// incremented by <see cref="EventEnter"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------------
-	public static void EventExit()
+	internal static void EventExit()
 	{
 		lock (_LockGlobal)
 		{

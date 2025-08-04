@@ -2,7 +2,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QESQLBatchConsumerBase
 
 using System;
-using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using BlackbirdSql.Shared.Events;
@@ -13,7 +12,7 @@ using BlackbirdSql.Shared.Interfaces;
 namespace BlackbirdSql.Shared.Model.QueryExecution;
 
 
-public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
+internal abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 {
 
 	protected AbstractBatchConsumer(IBsQueryExecutionHandler resultsControl)
@@ -94,7 +93,7 @@ public abstract class AbstractBatchConsumer : IBsQESQLBatchConsumer, IDisposable
 	}
 
 
-	public static string GetTempXMLFileName()
+	internal static string GetTempXMLFileName()
 	{
 		string tempFileName = Path.GetTempFileName();
 		try

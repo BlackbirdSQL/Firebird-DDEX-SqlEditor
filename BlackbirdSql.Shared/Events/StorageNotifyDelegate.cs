@@ -10,5 +10,5 @@ using System.Threading.Tasks;
 
 namespace BlackbirdSql.Shared.Events
 {
-	public delegate Task<bool> StorageNotifyDelegate(long storageRowCount, bool storedAllData, CancellationToken cancelToken);
+	internal delegate Task<bool> StorageNotifyDelegate(long storageRowCount, bool storedAllData, CancellationToken cancelToken);
 }

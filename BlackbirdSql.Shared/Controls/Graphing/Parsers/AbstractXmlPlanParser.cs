@@ -10,7 +10,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Parsers;
 
 internal abstract class AbstractXmlPlanParser : AbstractObjectParser
 {
-	public static void Parse(object item, object parentItem, Node parentNode, NodeBuilderContext context)
+	internal static void Parse(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
 		AbstractXmlPlanParser parser = XmlPlanParserFactory.GetParser(item.GetType());
 		if (parser != null)
@@ -46,14 +46,14 @@ internal abstract class AbstractXmlPlanParser : AbstractObjectParser
 		throw new InvalidOperationException(ControlsResources.ExUnexpectedRunType);
 	}
 
-	public abstract Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context);
+	internal abstract Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context);
 
-	public virtual IEnumerable GetChildren(object parsedItem)
+	internal virtual IEnumerable GetChildren(object parsedItem)
 	{
 		return EnumerateChildren(parsedItem);
 	}
 
-	public virtual IEnumerable<FunctionTypeItem> ExtractFunctions(object parsedItem)
+	internal virtual IEnumerable<FunctionTypeItem> ExtractFunctions(object parsedItem)
 	{
 		yield break;
 	}
@@ -102,7 +102,7 @@ internal abstract class AbstractXmlPlanParser : AbstractObjectParser
 		throw new InvalidOperationException();
 	}
 
-	public static IEnumerable EnumerateChildren(object parsedItem)
+	internal static IEnumerable EnumerateChildren(object parsedItem)
 	{
 		foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(parsedItem))
 		{
@@ -132,7 +132,7 @@ internal abstract class AbstractXmlPlanParser : AbstractObjectParser
 		}
 	}
 
-	public static Node NewNode(NodeBuilderContext context)
+	internal static Node NewNode(NodeBuilderContext context)
 	{
 		return new Node((context.Context as XmlPlanNodeBuilder).GetCurrentNodeId(), context);
 	}

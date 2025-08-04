@@ -13,7 +13,7 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 
 // [CLSCompliant(false)]
-public interface IBsDlgGridControl : IBsGridControl
+internal interface IBsDlgGridControl : IBsGridControl
 {
 	int SelectedRow { get; set; }
 

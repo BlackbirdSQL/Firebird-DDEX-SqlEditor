@@ -7,14 +7,14 @@ using BlackbirdSql.Sys.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Controller;
 
-[EventSource(Name = C_Name)]
+[EventSource(Name = $"BlackbirdSql.{C_Name}.Etw")]
 
 
 public class Evs : AbstractEvs<Evs>
 {
-	public Evs() : base()
+	public Evs() : base(C_Name)
 	{
 	}
 
-	private const string C_Name = "BlackbirdSql.Controller.Etw";
+	private const string C_Name = "Controller";
 }

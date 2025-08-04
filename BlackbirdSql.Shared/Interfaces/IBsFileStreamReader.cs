@@ -6,7 +6,7 @@ using System.Data.SqlTypes;
 
 namespace BlackbirdSql.Shared.Interfaces;
 
-public interface IBsFileStreamReader : IDisposable
+internal interface IBsFileStreamReader : IDisposable
 {
 	void Init(string sFileName);
 

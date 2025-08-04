@@ -15,11 +15,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ScalarExpressionType
+internal class ScalarExpressionType
 {
 	private ScalarType scalarOperatorField;
 
-	public ScalarType ScalarOperator
+	internal ScalarType ScalarOperator
 	{
 		get
 		{

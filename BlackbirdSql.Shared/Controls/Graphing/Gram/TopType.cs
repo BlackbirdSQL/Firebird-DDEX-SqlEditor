@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class TopType : RelOpBaseType
+internal class TopType : RelOpBaseType
 {
 	private ColumnReferenceType[] tieColumnsField;
 
@@ -43,7 +43,7 @@ public class TopType : RelOpBaseType
 	private string topLocationField;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] TieColumns
+	internal ColumnReferenceType[] TieColumns
 	{
 		get
 		{
@@ -55,7 +55,7 @@ public class TopType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType OffsetExpression
+	internal ScalarExpressionType OffsetExpression
 	{
 		get
 		{
@@ -67,7 +67,7 @@ public class TopType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType TopExpression
+	internal ScalarExpressionType TopExpression
 	{
 		get
 		{
@@ -79,7 +79,7 @@ public class TopType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -92,7 +92,7 @@ public class TopType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool RowCount
+	internal bool RowCount
 	{
 		get
 		{
@@ -105,7 +105,7 @@ public class TopType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool RowCountSpecified
+	internal bool RowCountSpecified
 	{
 		get
 		{
@@ -118,7 +118,7 @@ public class TopType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public int Rows
+	internal int Rows
 	{
 		get
 		{
@@ -131,7 +131,7 @@ public class TopType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool RowsSpecified
+	internal bool RowsSpecified
 	{
 		get
 		{
@@ -144,7 +144,7 @@ public class TopType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool IsPercent
+	internal bool IsPercent
 	{
 		get
 		{
@@ -157,7 +157,7 @@ public class TopType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool IsPercentSpecified
+	internal bool IsPercentSpecified
 	{
 		get
 		{
@@ -170,7 +170,7 @@ public class TopType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool WithTies
+	internal bool WithTies
 	{
 		get
 		{
@@ -183,7 +183,7 @@ public class TopType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool WithTiesSpecified
+	internal bool WithTiesSpecified
 	{
 		get
 		{
@@ -196,7 +196,7 @@ public class TopType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string TopLocation
+	internal string TopLocation
 	{
 		get
 		{

@@ -15,12 +15,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StmtUseDbType : AbstractStmtInfoType
+internal class StmtUseDbType : AbstractStmtInfoType
 {
 	private string databaseField;
 
 	[XmlAttribute]
-	public string Database
+	internal string Database
 	{
 		get
 		{

@@ -16,14 +16,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SetPredicateElementType : ScalarExpressionType
+internal class SetPredicateElementType : ScalarExpressionType
 {
 	private EnSetPredicateType setPredicateTypeField;
 
 	private bool setPredicateTypeFieldSpecified;
 
 	[XmlAttribute]
-	public EnSetPredicateType SetPredicateType
+	internal EnSetPredicateType SetPredicateType
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class SetPredicateElementType : ScalarExpressionType
 	}
 
 	[XmlIgnore]
-	public bool SetPredicateTypeSpecified
+	internal bool SetPredicateTypeSpecified
 	{
 		get
 		{

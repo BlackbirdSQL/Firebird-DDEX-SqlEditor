@@ -12,34 +12,34 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Shared.Model;
 
-public sealed class FontAndColorProviderGridResults : AbstractFontAndColorProvider
+internal sealed class FontAndColorProviderGridResults : AbstractFontAndColorProvider
 {
 	private static FontAndColorProviderGridResults instance = null;
 
-	public static readonly string GridCell = "Grid Cell";
+	internal static readonly string GridCell = "Grid Cell";
 
-	public static readonly string SelectedCell = "Selected Cell";
+	internal static readonly string SelectedCell = "Selected Cell";
 
-	public static readonly string SelectedCellInactive = "Inactive Selected Cell";
+	internal static readonly string SelectedCellInactive = "Inactive Selected Cell";
 
-	public static readonly string NullValueCell = "Null Value Cell";
+	internal static readonly string NullValueCell = "Null Value Cell";
 
-	public static readonly string HeaderRow = "Header Row";
+	internal static readonly string HeaderRow = "Header Row";
 
 
-	public static readonly COLORINDEX VsSysColorIndexWindowBkColor = COLORINDEX.CI_SYSPLAINTEXT_BK;
+	internal static readonly COLORINDEX VsSysColorIndexWindowBkColor = COLORINDEX.CI_SYSPLAINTEXT_BK;
 
-	public static readonly COLORINDEX VsSysColorIndexWindowTextColor = COLORINDEX.CI_SYSPLAINTEXT_FG;
+	internal static readonly COLORINDEX VsSysColorIndexWindowTextColor = COLORINDEX.CI_SYSPLAINTEXT_FG;
 
-	public static readonly __VSSYSCOLOREX3 VsSysColorIndexSelected = __VSSYSCOLOREX3.VSCOLOR_HIGHLIGHT;
+	internal static readonly __VSSYSCOLOREX3 VsSysColorIndexSelected = __VSSYSCOLOREX3.VSCOLOR_HIGHLIGHT;
 
-	public static readonly __VSSYSCOLOREX3 VsSysColorIndexSelectedInactive = __VSSYSCOLOREX3.VSCOLOR_INACTIVECAPTION;
+	internal static readonly __VSSYSCOLOREX3 VsSysColorIndexSelectedInactive = __VSSYSCOLOREX3.VSCOLOR_INACTIVECAPTION;
 
-	public static readonly __VSSYSCOLOREX3 VsSysColorIndexNullCell = __VSSYSCOLOREX3.VSCOLOR_INFOBACKGROUND;
+	internal static readonly __VSSYSCOLOREX3 VsSysColorIndexNullCell = __VSSYSCOLOREX3.VSCOLOR_INFOBACKGROUND;
 
-	public static readonly __VSSYSCOLOREX3 VsSysColorIndexHeaderRow = __VSSYSCOLOREX3.VSCOLOR_INACTIVECAPTION;
+	internal static readonly __VSSYSCOLOREX3 VsSysColorIndexHeaderRow = __VSSYSCOLOREX3.VSCOLOR_INACTIVECAPTION;
 
-	public static AbstractFontAndColorProvider Instance
+	internal static AbstractFontAndColorProvider Instance
 	{
 		get
 		{

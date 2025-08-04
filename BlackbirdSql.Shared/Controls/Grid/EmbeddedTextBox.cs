@@ -13,7 +13,7 @@ using Microsoft.VisualStudio;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class EmbeddedTextBox : TextBox, IBsGridEmbeddedControl, IBsGridEmbeddedControlManagement2, IBsGridEmbeddedControlManagement
+internal class EmbeddedTextBox : TextBox, IBsGridEmbeddedControl, IBsGridEmbeddedControlManagement2, IBsGridEmbeddedControlManagement
 {
 	protected int m_MarginsWidth;
 
@@ -23,7 +23,7 @@ public class EmbeddedTextBox : TextBox, IBsGridEmbeddedControl, IBsGridEmbeddedC
 
 	protected bool m_alwaysShowContextMenu = true;
 
-	public bool AlwaysShowContextMenu
+	internal bool AlwaysShowContextMenu
 	{
 		get
 		{
@@ -61,7 +61,7 @@ public class EmbeddedTextBox : TextBox, IBsGridEmbeddedControl, IBsGridEmbeddedC
 		}
 	}
 
-	public new bool Enabled
+	internal new bool Enabled
 	{
 		get
 		{
@@ -229,7 +229,7 @@ public class EmbeddedTextBox : TextBox, IBsGridEmbeddedControl, IBsGridEmbeddedC
 	private void WmSetFont(ref Message m)
 	{
 		base.WndProc(ref m);
-		Native.SendMessage(Handle, 211, (IntPtr)3, Native.Util.MAKELPARAM(m_MarginsWidth, m_MarginsWidth));
+		Native.SendMessage(Handle, 211, (IntPtr)3, Native.UtilI.MAKELPARAM(m_MarginsWidth, m_MarginsWidth));
 	}
 
 	private void SetDataInternal(string myText)

@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ColumnType
+internal class ColumnType
 {
 	private string nameField;
 
 	private int columnIdField;
 
 	[XmlAttribute]
-	public string Name
+	internal string Name
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class ColumnType
 	}
 
 	[XmlAttribute]
-	public int ColumnId
+	internal int ColumnId
 	{
 		get
 		{

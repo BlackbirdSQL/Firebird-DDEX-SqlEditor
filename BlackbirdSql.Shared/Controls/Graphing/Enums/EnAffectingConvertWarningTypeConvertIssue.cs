@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Enums;
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
 
 
-public enum EnAffectingConvertWarningTypeConvertIssue
+internal enum EnAffectingConvertWarningTypeConvertIssue
 {
 	[XmlEnum("Cardinality Estimate")]
 	CardinalityEstimate,

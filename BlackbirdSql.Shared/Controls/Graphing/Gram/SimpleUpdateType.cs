@@ -13,7 +13,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SimpleUpdateType : RowsetType
+internal class SimpleUpdateType : RowsetType
 {
 	private object itemField;
 
@@ -25,7 +25,7 @@ public class SimpleUpdateType : RowsetType
 
 	[XmlElement("SeekPredicate", typeof(SeekPredicateType))]
 	[XmlElement("SeekPredicateNew", typeof(SeekPredicateNewType))]
-	public object Item
+	internal object Item
 	{
 		get
 		{
@@ -37,7 +37,7 @@ public class SimpleUpdateType : RowsetType
 		}
 	}
 
-	public ScalarExpressionType SetPredicate
+	internal ScalarExpressionType SetPredicate
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class SimpleUpdateType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool DMLRequestSort
+	internal bool DMLRequestSort
 	{
 		get
 		{
@@ -63,7 +63,7 @@ public class SimpleUpdateType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool DMLRequestSortSpecified
+	internal bool DMLRequestSortSpecified
 	{
 		get
 		{

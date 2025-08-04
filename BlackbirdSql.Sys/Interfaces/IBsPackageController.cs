@@ -160,7 +160,7 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 
 	bool SolutionValidating { get; }
 
-	public bool IsToolboxInitialized { get; }
+	internal bool IsToolboxInitialized { get; }
 
 
 	bool IsCmdLineBuild { get; }

@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class AffectingConvertWarningType
+internal class AffectingConvertWarningType
 {
 	private EnAffectingConvertWarningTypeConvertIssue convertIssueField;
 
 	private string expressionField;
 
 	[XmlAttribute]
-	public EnAffectingConvertWarningTypeConvertIssue ConvertIssue
+	internal EnAffectingConvertWarningTypeConvertIssue ConvertIssue
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class AffectingConvertWarningType
 	}
 
 	[XmlAttribute]
-	public string Expression
+	internal string Expression
 	{
 		get
 		{

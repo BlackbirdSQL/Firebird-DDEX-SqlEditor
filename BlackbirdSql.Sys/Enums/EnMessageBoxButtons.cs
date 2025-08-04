@@ -7,7 +7,7 @@
 
 namespace BlackbirdSql.Sys.Enums;
 
-public enum EnMessageBoxButtons
+internal enum EnMessageBoxButtons
 {
 	OK,
 	OKCancel,

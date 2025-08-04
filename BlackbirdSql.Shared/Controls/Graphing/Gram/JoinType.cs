@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class JoinType : RelOpBaseType
+internal class JoinType : RelOpBaseType
 {
 	private ScalarExpressionType[] predicateField;
 
@@ -24,7 +24,7 @@ public class JoinType : RelOpBaseType
 	private RelOpType[] relOpField;
 
 	[XmlElement("Predicate")]
-	public ScalarExpressionType[] Predicate
+	internal ScalarExpressionType[] Predicate
 	{
 		get
 		{
@@ -37,7 +37,7 @@ public class JoinType : RelOpBaseType
 	}
 
 	[XmlElement("Probe")]
-	public SingleColumnReferenceType[] Probe
+	internal SingleColumnReferenceType[] Probe
 	{
 		get
 		{
@@ -50,7 +50,7 @@ public class JoinType : RelOpBaseType
 	}
 
 	[XmlElement("RelOp")]
-	public RelOpType[] RelOp
+	internal RelOpType[] RelOp
 	{
 		get
 		{

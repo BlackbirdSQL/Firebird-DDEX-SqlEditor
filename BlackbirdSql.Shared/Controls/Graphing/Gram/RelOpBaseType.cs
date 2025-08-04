@@ -65,14 +65,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RelOpBaseType
+internal class RelOpBaseType
 {
 	private DefinedValuesListTypeDefinedValue[] definedValuesField;
 
 	private InternalInfoType internalInfoField;
 
 	[XmlArrayItem("DefinedValue", IsNullable = false)]
-	public DefinedValuesListTypeDefinedValue[] DefinedValues
+	internal DefinedValuesListTypeDefinedValue[] DefinedValues
 	{
 		get
 		{
@@ -84,7 +84,7 @@ public class RelOpBaseType
 		}
 	}
 
-	public InternalInfoType InternalInfo
+	internal InternalInfoType InternalInfo
 	{
 		get
 		{

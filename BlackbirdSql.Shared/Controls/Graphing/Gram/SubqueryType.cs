@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class SubqueryType
+internal class SubqueryType
 {
 	private ScalarType scalarOperatorField;
 
@@ -22,7 +22,7 @@ public class SubqueryType
 
 	private EnSubqueryOperationType operationField;
 
-	public ScalarType ScalarOperator
+	internal ScalarType ScalarOperator
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class SubqueryType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -47,7 +47,7 @@ public class SubqueryType
 	}
 
 	[XmlAttribute]
-	public EnSubqueryOperationType Operation
+	internal EnSubqueryOperationType Operation
 	{
 		get
 		{

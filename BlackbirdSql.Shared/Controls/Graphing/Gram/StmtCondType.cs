@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StmtCondType : AbstractStmtInfoType
+internal class StmtCondType : AbstractStmtInfoType
 {
 	private StmtCondTypeCondition conditionField;
 
@@ -23,7 +23,7 @@ public class StmtCondType : AbstractStmtInfoType
 
 	private StmtCondTypeElse elseField;
 
-	public StmtCondTypeCondition Condition
+	internal StmtCondTypeCondition Condition
 	{
 		get
 		{
@@ -35,7 +35,7 @@ public class StmtCondType : AbstractStmtInfoType
 		}
 	}
 
-	public StmtCondTypeThen Then
+	internal StmtCondTypeThen Then
 	{
 		get
 		{
@@ -47,7 +47,7 @@ public class StmtCondType : AbstractStmtInfoType
 		}
 	}
 
-	public StmtCondTypeElse Else
+	internal StmtCondTypeElse Else
 	{
 		get
 		{

@@ -23,7 +23,7 @@ namespace BlackbirdSql.Core.Ctl;
 /// <summary>
 /// Core Host services are defined in this class,
 /// </summary>
-public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceProvider) : IDisposable
+internal abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceProvider) : IDisposable
 {
 
 	private readonly IServiceProvider _ServiceProvider = dataViewHierarchyServiceProvider;
@@ -71,7 +71,7 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 	private delegate DialogResult ShowQuestionDelegate(string question, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, string helpId);
 
 
-	public IVsDataHostService HostService
+	internal IVsDataHostService HostService
 	{
 		get
 		{
@@ -84,10 +84,10 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 		}
 	}
 
-	public bool IsUIThread => Thread.CurrentThread == HostService.UIThread;
+	internal bool IsUIThread => Thread.CurrentThread == HostService.UIThread;
 
 
-	public IVsUIShell ShellService
+	internal IVsUIShell ShellService
 	{
 		get
 		{
@@ -111,12 +111,12 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 	/// <summary>
 	/// <see cref="ErrorHandler.ThrowOnFailure"/> token.
 	/// </summary>
-	public static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+	internal static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 
 
-	public bool ActivateDocumentIfOpen(string documentMoniker)
+	internal bool ActivateDocumentIfOpen(string documentMoniker)
 	{
 		Evs.Trace(GetType(), nameof(ActivateDocumentIfOpen), "documentMoniker: {documentMoniker}.");
 
@@ -127,7 +127,7 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 
 
 
-	public IVsWindowFrame ActivateDocumentIfOpen(string mkDocument, bool doNotShowWindowFrame)
+	internal IVsWindowFrame ActivateDocumentIfOpen(string mkDocument, bool doNotShowWindowFrame)
 	{
 		Evs.Trace(GetType(), "ActivateDocumentIfOpen(string, bool)",
 			$"mkDocument: {mkDocument}, doNotShowWindowFrame: {doNotShowWindowFrame}.");
@@ -160,7 +160,7 @@ public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceP
 
 
 
-	public void PostExecuteCommand(CommandID command, int delay = 0)
+	internal void PostExecuteCommand(CommandID command, int delay = 0)
 	{
 		Evs.Trace(GetType(), nameof(PostExecuteCommand), "command: {command}.");
 

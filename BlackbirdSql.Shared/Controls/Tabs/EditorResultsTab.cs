@@ -11,7 +11,7 @@ using Microsoft.VisualStudio;
 namespace BlackbirdSql.Shared.Controls.Tabs;
 
 
-public class EditorResultsTab: AbstractEditorTab
+internal class EditorResultsTab: AbstractEditorTab
 {
 
 	public EditorResultsTab(IBsTabbedEditorPane tabbedEditor, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)

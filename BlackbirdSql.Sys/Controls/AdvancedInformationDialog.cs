@@ -23,7 +23,7 @@ namespace BlackbirdSql.Sys.Controls;
 /// Advanced info dialog for the Universal MessageBox <see cref="AdvancedMessageBox"/>.
 /// </summary>
 // =========================================================================================================
-public partial class AdvancedInformationDialog : Form
+internal partial class AdvancedInformationDialog : Form
 {
 
 	// -----------------------------------------------------------
@@ -53,7 +53,7 @@ public partial class AdvancedInformationDialog : Form
 	// =========================================================================================================
 
 
-	public AdvancedMessageBox MessageBoxForm { get; set; }
+	internal AdvancedMessageBox MessageBoxForm { get; set; }
 
 
 	#endregion Property Accessors

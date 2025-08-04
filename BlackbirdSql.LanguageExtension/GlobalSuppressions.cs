@@ -14,3 +14,4 @@ using System.Diagnostics.CodeAnalysis;
 // [assembly: SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs", Justification = "<Pending>")]
 // [assembly: SuppressMessage("Performance", "VSSDK003:Support async tool windows", Justification = "<Pending>")]
 [assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
+[assembly: SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Preferred")]

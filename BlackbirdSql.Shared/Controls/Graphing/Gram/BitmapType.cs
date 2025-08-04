@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class BitmapType : RelOpBaseType
+internal class BitmapType : RelOpBaseType
 {
 	private ColumnReferenceType[] hashKeysField;
 
 	private RelOpType relOpField;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] HashKeys
+	internal ColumnReferenceType[] HashKeys
 	{
 		get
 		{
@@ -33,7 +33,7 @@ public class BitmapType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{

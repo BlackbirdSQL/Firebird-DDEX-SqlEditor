@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class QueryPlanType
+internal class QueryPlanType
 {
 	private InternalInfoType internalInfoField;
 
@@ -98,7 +98,7 @@ public class QueryPlanType
 
 	private bool exclusiveProfileTimeActiveFieldSpecified;
 
-	public InternalInfoType InternalInfo
+	internal InternalInfoType InternalInfo
 	{
 		get
 		{
@@ -110,7 +110,7 @@ public class QueryPlanType
 		}
 	}
 
-	public OptimizationReplayType OptimizationReplay
+	internal OptimizationReplayType OptimizationReplay
 	{
 		get
 		{
@@ -122,7 +122,7 @@ public class QueryPlanType
 		}
 	}
 
-	public ThreadStatType ThreadStat
+	internal ThreadStatType ThreadStat
 	{
 		get
 		{
@@ -135,7 +135,7 @@ public class QueryPlanType
 	}
 
 	[XmlArrayItem("MissingIndexGroup", IsNullable = false)]
-	public MissingIndexGroupType[] MissingIndexes
+	internal MissingIndexGroupType[] MissingIndexes
 	{
 		get
 		{
@@ -147,7 +147,7 @@ public class QueryPlanType
 		}
 	}
 
-	public GuessedSelectivityType GuessedSelectivity
+	internal GuessedSelectivityType GuessedSelectivity
 	{
 		get
 		{
@@ -159,7 +159,7 @@ public class QueryPlanType
 		}
 	}
 
-	public UnmatchedIndexesType UnmatchedIndexes
+	internal UnmatchedIndexesType UnmatchedIndexes
 	{
 		get
 		{
@@ -171,7 +171,7 @@ public class QueryPlanType
 		}
 	}
 
-	public WarningsType Warnings
+	internal WarningsType Warnings
 	{
 		get
 		{
@@ -183,7 +183,7 @@ public class QueryPlanType
 		}
 	}
 
-	public MemoryGrantType MemoryGrantInfo
+	internal MemoryGrantType MemoryGrantInfo
 	{
 		get
 		{
@@ -195,7 +195,7 @@ public class QueryPlanType
 		}
 	}
 
-	public OptimizerHardwareDependentPropertiesType OptimizerHardwareDependentProperties
+	internal OptimizerHardwareDependentPropertiesType OptimizerHardwareDependentProperties
 	{
 		get
 		{
@@ -208,7 +208,7 @@ public class QueryPlanType
 	}
 
 	[XmlArrayItem("StatisticsInfo", IsNullable = false)]
-	public StatsInfoType[] OptimizerStatsUsage
+	internal StatsInfoType[] OptimizerStatsUsage
 	{
 		get
 		{
@@ -221,7 +221,7 @@ public class QueryPlanType
 	}
 
 	[XmlElement("TraceFlags")]
-	public TraceFlagListType[] TraceFlags
+	internal TraceFlagListType[] TraceFlags
 	{
 		get
 		{
@@ -234,7 +234,7 @@ public class QueryPlanType
 	}
 
 	[XmlArrayItem("Wait", IsNullable = false)]
-	public WaitStatType[] WaitStats
+	internal WaitStatType[] WaitStats
 	{
 		get
 		{
@@ -246,7 +246,7 @@ public class QueryPlanType
 		}
 	}
 
-	public QueryExecTimeType QueryTimeStats
+	internal QueryExecTimeType QueryTimeStats
 	{
 		get
 		{
@@ -258,7 +258,7 @@ public class QueryPlanType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -271,7 +271,7 @@ public class QueryPlanType
 	}
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] ParameterList
+	internal ColumnReferenceType[] ParameterList
 	{
 		get
 		{
@@ -284,7 +284,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public int DegreeOfParallelism
+	internal int DegreeOfParallelism
 	{
 		get
 		{
@@ -297,7 +297,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool DegreeOfParallelismSpecified
+	internal bool DegreeOfParallelismSpecified
 	{
 		get
 		{
@@ -310,7 +310,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public int EffectiveDegreeOfParallelism
+	internal int EffectiveDegreeOfParallelism
 	{
 		get
 		{
@@ -323,7 +323,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool EffectiveDegreeOfParallelismSpecified
+	internal bool EffectiveDegreeOfParallelismSpecified
 	{
 		get
 		{
@@ -336,7 +336,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public string NonParallelPlanReason
+	internal string NonParallelPlanReason
 	{
 		get
 		{
@@ -349,7 +349,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public ulong MemoryGrant
+	internal ulong MemoryGrant
 	{
 		get
 		{
@@ -362,7 +362,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool MemoryGrantSpecified
+	internal bool MemoryGrantSpecified
 	{
 		get
 		{
@@ -375,7 +375,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public ulong CachedPlanSize
+	internal ulong CachedPlanSize
 	{
 		get
 		{
@@ -388,7 +388,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool CachedPlanSizeSpecified
+	internal bool CachedPlanSizeSpecified
 	{
 		get
 		{
@@ -401,7 +401,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public ulong CompileTime
+	internal ulong CompileTime
 	{
 		get
 		{
@@ -414,7 +414,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool CompileTimeSpecified
+	internal bool CompileTimeSpecified
 	{
 		get
 		{
@@ -427,7 +427,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public ulong CompileCPU
+	internal ulong CompileCPU
 	{
 		get
 		{
@@ -440,7 +440,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool CompileCPUSpecified
+	internal bool CompileCPUSpecified
 	{
 		get
 		{
@@ -453,7 +453,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public ulong CompileMemory
+	internal ulong CompileMemory
 	{
 		get
 		{
@@ -466,7 +466,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool CompileMemorySpecified
+	internal bool CompileMemorySpecified
 	{
 		get
 		{
@@ -479,7 +479,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public bool UsePlan
+	internal bool UsePlan
 	{
 		get
 		{
@@ -492,7 +492,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool UsePlanSpecified
+	internal bool UsePlanSpecified
 	{
 		get
 		{
@@ -505,7 +505,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public bool ContainsInterleavedExecutionCandidates
+	internal bool ContainsInterleavedExecutionCandidates
 	{
 		get
 		{
@@ -518,7 +518,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool ContainsInterleavedExecutionCandidatesSpecified
+	internal bool ContainsInterleavedExecutionCandidatesSpecified
 	{
 		get
 		{
@@ -531,7 +531,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public bool ContainsInlineScalarTsqlUdfs
+	internal bool ContainsInlineScalarTsqlUdfs
 	{
 		get
 		{
@@ -544,7 +544,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool ContainsInlineScalarTsqlUdfsSpecified
+	internal bool ContainsInlineScalarTsqlUdfsSpecified
 	{
 		get
 		{
@@ -557,7 +557,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public int QueryVariantID
+	internal int QueryVariantID
 	{
 		get
 		{
@@ -570,7 +570,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool QueryVariantIDSpecified
+	internal bool QueryVariantIDSpecified
 	{
 		get
 		{
@@ -583,7 +583,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public string DispatcherPlanHandle
+	internal string DispatcherPlanHandle
 	{
 		get
 		{
@@ -596,7 +596,7 @@ public class QueryPlanType
 	}
 
 	[XmlAttribute]
-	public bool ExclusiveProfileTimeActive
+	internal bool ExclusiveProfileTimeActive
 	{
 		get
 		{
@@ -609,7 +609,7 @@ public class QueryPlanType
 	}
 
 	[XmlIgnore]
-	public bool ExclusiveProfileTimeActiveSpecified
+	internal bool ExclusiveProfileTimeActiveSpecified
 	{
 		get
 		{

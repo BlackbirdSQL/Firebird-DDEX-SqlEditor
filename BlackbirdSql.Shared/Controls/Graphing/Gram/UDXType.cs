@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class UDXType : RelOpBaseType
+internal class UDXType : RelOpBaseType
 {
 	private ColumnReferenceType[] usedUDXColumnsField;
 
@@ -24,7 +24,7 @@ public class UDXType : RelOpBaseType
 	private string uDXNameField;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] UsedUDXColumns
+	internal ColumnReferenceType[] UsedUDXColumns
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class UDXType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class UDXType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public string UDXName
+	internal string UDXName
 	{
 		get
 		{

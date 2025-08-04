@@ -6,7 +6,7 @@
 
 namespace BlackbirdSql.Sys.Enums;
 
-public enum EnAdvancedInfoType
+internal enum EnAdvancedInfoType
 {
 	Message,
 	HelpLink,

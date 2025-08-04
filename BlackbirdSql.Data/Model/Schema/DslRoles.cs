@@ -24,7 +24,7 @@ namespace BlackbirdSql.Data.Model.Schema;
 
 internal class DslRoles : AbstractDslSchema
 {
-	internal DslRoles() : base()
+	public DslRoles() : base()
 	{
 	}
 

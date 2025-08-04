@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Shared.Controls.Dialogs;
 
 
-public partial class FileEncodingDialog : Form, IVsSaveOptionsDlg
+internal partial class FileEncodingDialog : Form, IVsSaveOptionsDlg
 {
 
 	public FileEncodingDialog()
@@ -27,7 +27,7 @@ public partial class FileEncodingDialog : Form, IVsSaveOptionsDlg
 
 
 
-	public Encoding Encoding => m_encodingIndex switch
+	internal Encoding Encoding => m_encodingIndex switch
 	{
 		0 => Encoding.UTF8,
 		1 => Encoding.Unicode,

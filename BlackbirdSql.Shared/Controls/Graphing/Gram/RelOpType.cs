@@ -16,7 +16,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RelOpType
+internal class RelOpType
 {
 	private ColumnReferenceType[] outputListField;
 
@@ -111,7 +111,7 @@ public class RelOpType
 	private bool pDWAccumulativeCostFieldSpecified;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] OutputList
+	internal ColumnReferenceType[] OutputList
 	{
 		get
 		{
@@ -123,7 +123,7 @@ public class RelOpType
 		}
 	}
 
-	public WarningsType Warnings
+	internal WarningsType Warnings
 	{
 		get
 		{
@@ -135,7 +135,7 @@ public class RelOpType
 		}
 	}
 
-	public MemoryFractionsType MemoryFractions
+	internal MemoryFractionsType MemoryFractions
 	{
 		get
 		{
@@ -148,7 +148,7 @@ public class RelOpType
 	}
 
 	[XmlArrayItem("RunTimeCountersPerThread", IsNullable = false)]
-	public RunTimeInformationTypeRunTimeCountersPerThread[] RunTimeInformation
+	internal RunTimeInformationTypeRunTimeCountersPerThread[] RunTimeInformation
 	{
 		get
 		{
@@ -160,7 +160,7 @@ public class RelOpType
 		}
 	}
 
-	public RunTimePartitionSummaryType RunTimePartitionSummary
+	internal RunTimePartitionSummaryType RunTimePartitionSummary
 	{
 		get
 		{
@@ -172,7 +172,7 @@ public class RelOpType
 		}
 	}
 
-	public InternalInfoType InternalInfo
+	internal InternalInfoType InternalInfo
 	{
 		get
 		{
@@ -250,7 +250,7 @@ public class RelOpType
 	[XmlElement("WindowSpool", typeof(WindowType))]
 	[XmlElement("XcsScan", typeof(XcsScanType))]
 	[XmlChoiceIdentifier("ItemElementName")]
-	public RelOpBaseType Item
+	internal RelOpBaseType Item
 	{
 		get
 		{
@@ -263,7 +263,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public EnItemChoiceType ItemElementName
+	internal EnItemChoiceType ItemElementName
 	{
 		get
 		{
@@ -276,7 +276,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double AvgRowSize
+	internal double AvgRowSize
 	{
 		get
 		{
@@ -289,7 +289,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double EstimateCPU
+	internal double EstimateCPU
 	{
 		get
 		{
@@ -302,7 +302,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double EstimateIO
+	internal double EstimateIO
 	{
 		get
 		{
@@ -315,7 +315,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double EstimateRebinds
+	internal double EstimateRebinds
 	{
 		get
 		{
@@ -328,7 +328,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double EstimateRewinds
+	internal double EstimateRewinds
 	{
 		get
 		{
@@ -341,7 +341,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public EnExecutionModeType EstimatedExecutionMode
+	internal EnExecutionModeType EstimatedExecutionMode
 	{
 		get
 		{
@@ -354,7 +354,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool EstimatedExecutionModeSpecified
+	internal bool EstimatedExecutionModeSpecified
 	{
 		get
 		{
@@ -367,7 +367,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public bool GroupExecuted
+	internal bool GroupExecuted
 	{
 		get
 		{
@@ -380,7 +380,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool GroupExecutedSpecified
+	internal bool GroupExecutedSpecified
 	{
 		get
 		{
@@ -393,7 +393,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double EstimateRows
+	internal double EstimateRows
 	{
 		get
 		{
@@ -406,7 +406,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double EstimateRowsWithoutRowGoal
+	internal double EstimateRowsWithoutRowGoal
 	{
 		get
 		{
@@ -419,7 +419,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool EstimateRowsWithoutRowGoalSpecified
+	internal bool EstimateRowsWithoutRowGoalSpecified
 	{
 		get
 		{
@@ -432,7 +432,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double EstimatedRowsRead
+	internal double EstimatedRowsRead
 	{
 		get
 		{
@@ -445,7 +445,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool EstimatedRowsReadSpecified
+	internal bool EstimatedRowsReadSpecified
 	{
 		get
 		{
@@ -458,7 +458,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public EnLogicalOpType LogicalOp
+	internal EnLogicalOpType LogicalOp
 	{
 		get
 		{
@@ -471,7 +471,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public int NodeId
+	internal int NodeId
 	{
 		get
 		{
@@ -484,7 +484,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool NodeIdSpecified
+	internal bool NodeIdSpecified
 	{
 		get
 		{
@@ -497,7 +497,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public bool Parallel
+	internal bool Parallel
 	{
 		get
 		{
@@ -510,7 +510,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public bool RemoteDataAccess
+	internal bool RemoteDataAccess
 	{
 		get
 		{
@@ -523,7 +523,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool RemoteDataAccessSpecified
+	internal bool RemoteDataAccessSpecified
 	{
 		get
 		{
@@ -536,7 +536,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public bool Partitioned
+	internal bool Partitioned
 	{
 		get
 		{
@@ -549,7 +549,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool PartitionedSpecified
+	internal bool PartitionedSpecified
 	{
 		get
 		{
@@ -562,7 +562,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public EnPhysicalOpType PhysicalOp
+	internal EnPhysicalOpType PhysicalOp
 	{
 		get
 		{
@@ -575,7 +575,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public bool IsAdaptive
+	internal bool IsAdaptive
 	{
 		get
 		{
@@ -588,7 +588,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool IsAdaptiveSpecified
+	internal bool IsAdaptiveSpecified
 	{
 		get
 		{
@@ -601,7 +601,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double AdaptiveThresholdRows
+	internal double AdaptiveThresholdRows
 	{
 		get
 		{
@@ -614,7 +614,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool AdaptiveThresholdRowsSpecified
+	internal bool AdaptiveThresholdRowsSpecified
 	{
 		get
 		{
@@ -627,7 +627,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double EstimatedTotalSubtreeCost
+	internal double EstimatedTotalSubtreeCost
 	{
 		get
 		{
@@ -640,7 +640,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double TableCardinality
+	internal double TableCardinality
 	{
 		get
 		{
@@ -653,7 +653,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool TableCardinalitySpecified
+	internal bool TableCardinalitySpecified
 	{
 		get
 		{
@@ -666,7 +666,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public ulong StatsCollectionId
+	internal ulong StatsCollectionId
 	{
 		get
 		{
@@ -679,7 +679,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool StatsCollectionIdSpecified
+	internal bool StatsCollectionIdSpecified
 	{
 		get
 		{
@@ -692,7 +692,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public EnPhysicalOpType EstimatedJoinType
+	internal EnPhysicalOpType EstimatedJoinType
 	{
 		get
 		{
@@ -705,7 +705,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool EstimatedJoinTypeSpecified
+	internal bool EstimatedJoinTypeSpecified
 	{
 		get
 		{
@@ -718,7 +718,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public string HyperScaleOptimizedQueryProcessing
+	internal string HyperScaleOptimizedQueryProcessing
 	{
 		get
 		{
@@ -731,7 +731,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public string HyperScaleOptimizedQueryProcessingUnusedReason
+	internal string HyperScaleOptimizedQueryProcessingUnusedReason
 	{
 		get
 		{
@@ -744,7 +744,7 @@ public class RelOpType
 	}
 
 	[XmlAttribute]
-	public double PDWAccumulativeCost
+	internal double PDWAccumulativeCost
 	{
 		get
 		{
@@ -757,7 +757,7 @@ public class RelOpType
 	}
 
 	[XmlIgnore]
-	public bool PDWAccumulativeCostSpecified
+	internal bool PDWAccumulativeCostSpecified
 	{
 		get
 		{

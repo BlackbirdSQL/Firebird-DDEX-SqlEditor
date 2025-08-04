@@ -19,7 +19,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class AbstractStmtInfoType
+internal class AbstractStmtInfoType
 {
 	private SetOptionsType statementSetOptionsField;
 
@@ -109,7 +109,7 @@ public class AbstractStmtInfoType
 
 	private bool containsLedgerTablesFieldSpecified;
 
-	public SetOptionsType StatementSetOptions
+	internal SetOptionsType StatementSetOptions
 	{
 		get
 		{
@@ -122,7 +122,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public int StatementCompId
+	internal int StatementCompId
 	{
 		get
 		{
@@ -135,7 +135,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool StatementCompIdSpecified
+	internal bool StatementCompIdSpecified
 	{
 		get
 		{
@@ -148,7 +148,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public double StatementEstRows
+	internal double StatementEstRows
 	{
 		get
 		{
@@ -161,7 +161,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool StatementEstRowsSpecified
+	internal bool StatementEstRowsSpecified
 	{
 		get
 		{
@@ -174,7 +174,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public int StatementId
+	internal int StatementId
 	{
 		get
 		{
@@ -187,7 +187,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool StatementIdSpecified
+	internal bool StatementIdSpecified
 	{
 		get
 		{
@@ -200,7 +200,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public int QueryCompilationReplay
+	internal int QueryCompilationReplay
 	{
 		get
 		{
@@ -213,7 +213,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool QueryCompilationReplaySpecified
+	internal bool QueryCompilationReplaySpecified
 	{
 		get
 		{
@@ -226,7 +226,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string StatementOptmLevel
+	internal string StatementOptmLevel
 	{
 		get
 		{
@@ -239,7 +239,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public EnStmtInfoTypeStatementOptmEarlyAbortReason StatementOptmEarlyAbortReason
+	internal EnStmtInfoTypeStatementOptmEarlyAbortReason StatementOptmEarlyAbortReason
 	{
 		get
 		{
@@ -252,7 +252,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool StatementOptmEarlyAbortReasonSpecified
+	internal bool StatementOptmEarlyAbortReasonSpecified
 	{
 		get
 		{
@@ -265,7 +265,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string CardinalityEstimationModelVersion
+	internal string CardinalityEstimationModelVersion
 	{
 		get
 		{
@@ -278,7 +278,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public double StatementSubTreeCost
+	internal double StatementSubTreeCost
 	{
 		get
 		{
@@ -291,7 +291,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool StatementSubTreeCostSpecified
+	internal bool StatementSubTreeCostSpecified
 	{
 		get
 		{
@@ -304,7 +304,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string StatementText
+	internal string StatementText
 	{
 		get
 		{
@@ -317,7 +317,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string StatementType
+	internal string StatementType
 	{
 		get
 		{
@@ -330,7 +330,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string TemplatePlanGuideDB
+	internal string TemplatePlanGuideDB
 	{
 		get
 		{
@@ -343,7 +343,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string TemplatePlanGuideName
+	internal string TemplatePlanGuideName
 	{
 		get
 		{
@@ -356,7 +356,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string PlanGuideDB
+	internal string PlanGuideDB
 	{
 		get
 		{
@@ -369,7 +369,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string PlanGuideName
+	internal string PlanGuideName
 	{
 		get
 		{
@@ -382,7 +382,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string ParameterizedText
+	internal string ParameterizedText
 	{
 		get
 		{
@@ -395,7 +395,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string ParameterizedPlanHandle
+	internal string ParameterizedPlanHandle
 	{
 		get
 		{
@@ -408,7 +408,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string QueryHash
+	internal string QueryHash
 	{
 		get
 		{
@@ -421,7 +421,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string QueryPlanHash
+	internal string QueryPlanHash
 	{
 		get
 		{
@@ -434,7 +434,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string RetrievedFromCache
+	internal string RetrievedFromCache
 	{
 		get
 		{
@@ -447,7 +447,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string StatementSqlHandle
+	internal string StatementSqlHandle
 	{
 		get
 		{
@@ -460,7 +460,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public ulong DatabaseContextSettingsId
+	internal ulong DatabaseContextSettingsId
 	{
 		get
 		{
@@ -473,7 +473,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool DatabaseContextSettingsIdSpecified
+	internal bool DatabaseContextSettingsIdSpecified
 	{
 		get
 		{
@@ -486,7 +486,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public ulong ParentObjectId
+	internal ulong ParentObjectId
 	{
 		get
 		{
@@ -499,7 +499,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool ParentObjectIdSpecified
+	internal bool ParentObjectIdSpecified
 	{
 		get
 		{
@@ -512,7 +512,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string BatchSqlHandle
+	internal string BatchSqlHandle
 	{
 		get
 		{
@@ -525,7 +525,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public int StatementParameterizationType
+	internal int StatementParameterizationType
 	{
 		get
 		{
@@ -538,7 +538,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool StatementParameterizationTypeSpecified
+	internal bool StatementParameterizationTypeSpecified
 	{
 		get
 		{
@@ -551,7 +551,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public bool SecurityPolicyApplied
+	internal bool SecurityPolicyApplied
 	{
 		get
 		{
@@ -564,7 +564,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool SecurityPolicyAppliedSpecified
+	internal bool SecurityPolicyAppliedSpecified
 	{
 		get
 		{
@@ -577,7 +577,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public bool BatchModeOnRowStoreUsed
+	internal bool BatchModeOnRowStoreUsed
 	{
 		get
 		{
@@ -590,7 +590,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool BatchModeOnRowStoreUsedSpecified
+	internal bool BatchModeOnRowStoreUsedSpecified
 	{
 		get
 		{
@@ -603,7 +603,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public ulong QueryStoreStatementHintId
+	internal ulong QueryStoreStatementHintId
 	{
 		get
 		{
@@ -616,7 +616,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool QueryStoreStatementHintIdSpecified
+	internal bool QueryStoreStatementHintIdSpecified
 	{
 		get
 		{
@@ -629,7 +629,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string QueryStoreStatementHintText
+	internal string QueryStoreStatementHintText
 	{
 		get
 		{
@@ -642,7 +642,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public string QueryStoreStatementHintSource
+	internal string QueryStoreStatementHintSource
 	{
 		get
 		{
@@ -655,7 +655,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlAttribute]
-	public bool ContainsLedgerTables
+	internal bool ContainsLedgerTables
 	{
 		get
 		{
@@ -668,7 +668,7 @@ public class AbstractStmtInfoType
 	}
 
 	[XmlIgnore]
-	public bool ContainsLedgerTablesSpecified
+	internal bool ContainsLedgerTablesSpecified
 	{
 		get
 		{

@@ -14,14 +14,14 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class CompareType
+internal class CompareType
 {
 	private ScalarType[] scalarOperatorField;
 
 	private EnCompareOpType compareOpField;
 
 	[XmlElement("ScalarOperator")]
-	public ScalarType[] ScalarOperator
+	internal ScalarType[] ScalarOperator
 	{
 		get
 		{
@@ -34,7 +34,7 @@ public class CompareType
 	}
 
 	[XmlAttribute]
-	public EnCompareOpType CompareOp
+	internal EnCompareOpType CompareOp
 	{
 		get
 		{

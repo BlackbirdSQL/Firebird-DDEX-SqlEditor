@@ -204,7 +204,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 		Evs.Trace(GetType(), nameof(CreateService), $"Service requested: {serviceType.Name}");
 
 		if (serviceType == typeof(IVsDataCommand))
-			return new TCommand(Site);
+			return new VxiCommand(Site);
 
 
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
@@ -329,27 +329,27 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 
 
 	// =========================================================================================================
-	#region Internal Classes - VxbConnectionSupport
+	#region								Nested types - VxbConnectionSupport
 	// =========================================================================================================
 
 
 	/// <summary>
 	/// Trace replacement for AdoDotNetCommand but doesn't seem to do anything.
 	/// </summary>
-	public class TCommand : DataCommand
+	public class VxiCommand : DataCommand
 	{
 		private VxbConnectionSupport ConnectionSupport => base.Site.GetService(typeof(IVsDataConnectionSupport)) as VxbConnectionSupport;
 
 
-		public TCommand() : base()
+		public VxiCommand() : base()
 		{
-			// Evs.Trace(GetType(), "TCommand.TCommand");
+			// Evs.Trace(GetType(), "VxiCommand.VxiCommand");
 		}
 
-		public TCommand(IVsDataConnection connection)
+		public VxiCommand(IVsDataConnection connection)
 			: base(connection)
 		{
-			// Evs.Trace(GetType(), "TCommand.TCommand(IVsDataConnection)");
+			// Evs.Trace(GetType(), "VxiCommand.VxiCommand(IVsDataConnection)");
 		}
 
 		public override IVsDataParameter CreateParameter()
@@ -393,7 +393,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 	}
 
 
-	#endregion Internal Classes
+	#endregion Nested types
 
 
 }

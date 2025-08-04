@@ -4,7 +4,7 @@ using System;
 
 namespace BlackbirdSql.Core.Ctl;
 
-public class SqlStyleUriParser(GenericUriParserOptions options) : GenericUriParser(options)
+internal class SqlStyleUriParser(GenericUriParserOptions options) : GenericUriParser(options)
 {
 
 	protected override string GetComponents(Uri uri, UriComponents components, UriFormat format)

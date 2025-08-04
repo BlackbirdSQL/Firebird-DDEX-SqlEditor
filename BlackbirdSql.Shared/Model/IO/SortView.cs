@@ -15,7 +15,7 @@ using BlackbirdSql.Shared.Events;
 
 namespace BlackbirdSql.Shared.Model.IO;
 
-public class SortView : IBsSortView, IDisposable
+internal class SortView : IBsSortView, IDisposable
 {
 	protected IBsStorageView m_StorageView;
 
@@ -104,7 +104,7 @@ public class SortView : IBsSortView, IDisposable
 		}
 	}
 
-	public virtual void SortData()
+	internal virtual void SortData()
 	{
 		while (m_bKeepSortingData)
 		{
@@ -143,7 +143,7 @@ public class SortView : IBsSortView, IDisposable
 		return result;
 	}
 
-	public void InsertNextRow()
+	internal void InsertNextRow()
 	{
 		int num2 = 0;
 		int num4 = 0;
@@ -210,7 +210,7 @@ public class SortView : IBsSortView, IDisposable
 		}
 	}
 
-	public int CompareWithGroupAt(int iGroup)
+	internal int CompareWithGroupAt(int iGroup)
 	{
 		int num = 0;
 		int num2 = (int)m_SortingArray.GetGroupAt(iGroup)[0];

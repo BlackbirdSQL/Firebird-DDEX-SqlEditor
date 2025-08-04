@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class WaitWarningType
+internal class WaitWarningType
 {
 	private EnWaitWarningTypeWaitType waitTypeField;
 
@@ -23,7 +23,7 @@ public class WaitWarningType
 	private bool waitTimeFieldSpecified;
 
 	[XmlAttribute]
-	public EnWaitWarningTypeWaitType WaitType
+	internal EnWaitWarningTypeWaitType WaitType
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class WaitWarningType
 	}
 
 	[XmlAttribute]
-	public ulong WaitTime
+	internal ulong WaitTime
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class WaitWarningType
 	}
 
 	[XmlIgnore]
-	public bool WaitTimeSpecified
+	internal bool WaitTimeSpecified
 	{
 		get
 		{

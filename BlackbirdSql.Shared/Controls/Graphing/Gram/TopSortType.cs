@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class TopSortType : SortType
+internal class TopSortType : SortType
 {
 	private int rowsField;
 
@@ -23,7 +23,7 @@ public class TopSortType : SortType
 	private bool withTiesFieldSpecified;
 
 	[XmlAttribute]
-	public int Rows
+	internal int Rows
 	{
 		get
 		{
@@ -36,7 +36,7 @@ public class TopSortType : SortType
 	}
 
 	[XmlAttribute]
-	public bool WithTies
+	internal bool WithTies
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public class TopSortType : SortType
 	}
 
 	[XmlIgnore]
-	public bool WithTiesSpecified
+	internal bool WithTiesSpecified
 	{
 		get
 		{

@@ -6,7 +6,7 @@
 
 namespace BlackbirdSql.Sys.Enums;
 
-public enum EnMessageBoxSymbol
+internal enum EnMessageBoxSymbol
 {
 	None = 0,
 	Warning = 1,

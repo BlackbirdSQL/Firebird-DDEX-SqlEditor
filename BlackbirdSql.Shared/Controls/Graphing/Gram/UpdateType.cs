@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class UpdateType : RowsetType
+internal class UpdateType : RowsetType
 {
 	private SetPredicateElementType[] setPredicateField;
 
@@ -45,7 +45,7 @@ public class UpdateType : RowsetType
 	private bool dMLRequestSortFieldSpecified;
 
 	[XmlElement("SetPredicate")]
-	public SetPredicateElementType[] SetPredicate
+	internal SetPredicateElementType[] SetPredicate
 	{
 		get
 		{
@@ -57,7 +57,7 @@ public class UpdateType : RowsetType
 		}
 	}
 
-	public SingleColumnReferenceType ProbeColumn
+	internal SingleColumnReferenceType ProbeColumn
 	{
 		get
 		{
@@ -69,7 +69,7 @@ public class UpdateType : RowsetType
 		}
 	}
 
-	public SingleColumnReferenceType ActionColumn
+	internal SingleColumnReferenceType ActionColumn
 	{
 		get
 		{
@@ -81,7 +81,7 @@ public class UpdateType : RowsetType
 		}
 	}
 
-	public SingleColumnReferenceType OriginalActionColumn
+	internal SingleColumnReferenceType OriginalActionColumn
 	{
 		get
 		{
@@ -94,7 +94,7 @@ public class UpdateType : RowsetType
 	}
 
 	[XmlArrayItem("Assign", IsNullable = false)]
-	public AssignType[] AssignmentMap
+	internal AssignType[] AssignmentMap
 	{
 		get
 		{
@@ -107,7 +107,7 @@ public class UpdateType : RowsetType
 	}
 
 	[XmlArrayItem("Object", IsNullable = false)]
-	public ObjectType[] SourceTable
+	internal ObjectType[] SourceTable
 	{
 		get
 		{
@@ -120,7 +120,7 @@ public class UpdateType : RowsetType
 	}
 
 	[XmlArrayItem("Object", IsNullable = false)]
-	public ObjectType[] TargetTable
+	internal ObjectType[] TargetTable
 	{
 		get
 		{
@@ -132,7 +132,7 @@ public class UpdateType : RowsetType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -145,7 +145,7 @@ public class UpdateType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool WithOrderedPrefetch
+	internal bool WithOrderedPrefetch
 	{
 		get
 		{
@@ -158,7 +158,7 @@ public class UpdateType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool WithOrderedPrefetchSpecified
+	internal bool WithOrderedPrefetchSpecified
 	{
 		get
 		{
@@ -171,7 +171,7 @@ public class UpdateType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool WithUnorderedPrefetch
+	internal bool WithUnorderedPrefetch
 	{
 		get
 		{
@@ -184,7 +184,7 @@ public class UpdateType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool WithUnorderedPrefetchSpecified
+	internal bool WithUnorderedPrefetchSpecified
 	{
 		get
 		{
@@ -197,7 +197,7 @@ public class UpdateType : RowsetType
 	}
 
 	[XmlAttribute]
-	public bool DMLRequestSort
+	internal bool DMLRequestSort
 	{
 		get
 		{
@@ -210,7 +210,7 @@ public class UpdateType : RowsetType
 	}
 
 	[XmlIgnore]
-	public bool DMLRequestSortSpecified
+	internal bool DMLRequestSortSpecified
 	{
 		get
 		{

@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class PutType : RemoteQueryType
+internal class PutType : RemoteQueryType
 {
 	private RelOpType relOpField;
 
@@ -27,7 +27,7 @@ public class PutType : RemoteQueryType
 
 	private string shuffleColumnField;
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -40,7 +40,7 @@ public class PutType : RemoteQueryType
 	}
 
 	[XmlAttribute]
-	public bool IsExternallyComputed
+	internal bool IsExternallyComputed
 	{
 		get
 		{
@@ -53,7 +53,7 @@ public class PutType : RemoteQueryType
 	}
 
 	[XmlIgnore]
-	public bool IsExternallyComputedSpecified
+	internal bool IsExternallyComputedSpecified
 	{
 		get
 		{
@@ -66,7 +66,7 @@ public class PutType : RemoteQueryType
 	}
 
 	[XmlAttribute]
-	public string ShuffleType
+	internal string ShuffleType
 	{
 		get
 		{
@@ -79,7 +79,7 @@ public class PutType : RemoteQueryType
 	}
 
 	[XmlAttribute]
-	public string ShuffleColumn
+	internal string ShuffleColumn
 	{
 		get
 		{

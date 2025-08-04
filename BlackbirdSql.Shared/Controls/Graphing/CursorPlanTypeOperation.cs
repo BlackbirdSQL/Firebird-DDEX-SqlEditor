@@ -15,7 +15,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(AnonymousType = true, Namespace = LibraryData.C_ShowPlanNamespace)]
-public class CursorPlanTypeOperation
+internal class CursorPlanTypeOperation
 {
 	private ParameterSensitivePredicateType[] dispatcherField;
 
@@ -26,7 +26,7 @@ public class CursorPlanTypeOperation
 	private EnCursorPlanTypeOperationOperationType operationTypeField;
 
 	[XmlArrayItem("ParameterSensitivePredicate", IsNullable = false)]
-	public ParameterSensitivePredicateType[] Dispatcher
+	internal ParameterSensitivePredicateType[] Dispatcher
 	{
 		get
 		{
@@ -38,7 +38,7 @@ public class CursorPlanTypeOperation
 		}
 	}
 
-	public QueryPlanType QueryPlan
+	internal QueryPlanType QueryPlan
 	{
 		get
 		{
@@ -51,7 +51,7 @@ public class CursorPlanTypeOperation
 	}
 
 	[XmlElement("UDF")]
-	public FunctionType[] UDF
+	internal FunctionType[] UDF
 	{
 		get
 		{
@@ -64,7 +64,7 @@ public class CursorPlanTypeOperation
 	}
 
 	[XmlAttribute]
-	public EnCursorPlanTypeOperationOperationType OperationType
+	internal EnCursorPlanTypeOperationOperationType OperationType
 	{
 		get
 		{

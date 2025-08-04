@@ -28,7 +28,7 @@ namespace BlackbirdSql.Data;
 /// service so that BlackbirdSql can provide support for additional database engines.
 /// </summary>
 // =========================================================================================================
-public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseEngine
+internal class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseEngine
 {
 	private DatabaseEngineService()
 	{
@@ -37,7 +37,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 
 	private static IBsNativeDatabaseEngine _Instance = null;
-	public static IBsNativeDatabaseEngine EnsureInstance() => _Instance ??= new DatabaseEngineService();
+	internal static IBsNativeDatabaseEngine EnsureInstance() => _Instance ??= new DatabaseEngineService();
 
 	public string AssemblyQualifiedName_ => typeof(FirebirdClientFactory).AssemblyQualifiedName;
 	public Assembly ClientFactoryAssembly_ => typeof(FirebirdClientFactory).Assembly;
@@ -197,6 +197,7 @@ public class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabaseE
 
 		return "Firebird " + FbServerProperties.ParseServerVersion(connection.ServerVersion);
 	}
+
 
 
 

@@ -7,23 +7,23 @@ using Microsoft.AnalysisServices.Graphing;
 
 namespace BlackbirdSql.Shared.Controls.Graphing;
 
-public class ExecutionPlanGraph : Graph
+internal class ExecutionPlanGraph : Graph
 {
 	private readonly Dictionary<BlackbirdSql.Shared.Controls.Graphing.Node, object> nodeStmtMap = new Dictionary<BlackbirdSql.Shared.Controls.Graphing.Node, object>();
 
-	public Dictionary<BlackbirdSql.Shared.Controls.Graphing.Node, object> NodeStmtMap => nodeStmtMap;
+	internal Dictionary<BlackbirdSql.Shared.Controls.Graphing.Node, object> NodeStmtMap => nodeStmtMap;
 
-	public string Statement => (RootNode["StatementText"] as string) ?? (RootNode["ProcName"] as string) ?? "";
+	internal string Statement => (RootNode["StatementText"] as string) ?? (RootNode["ProcName"] as string) ?? "";
 
-	public int StatementId => PullIntFromRoot("StatementId");
+	internal int StatementId => PullIntFromRoot("StatementId");
 
-	public int StatementCompId => PullIntFromRoot("StatementCompId");
+	internal int StatementCompId => PullIntFromRoot("StatementCompId");
 
-	public string QueryPlanHash => RootNode["QueryPlanHash"] as string;
+	internal string QueryPlanHash => RootNode["QueryPlanHash"] as string;
 
-	public BlackbirdSql.Shared.Controls.Graphing.Node RootNode => base.NodeCollection[0] as BlackbirdSql.Shared.Controls.Graphing.Node;
+	internal BlackbirdSql.Shared.Controls.Graphing.Node RootNode => base.NodeCollection[0] as BlackbirdSql.Shared.Controls.Graphing.Node;
 
-	public static ExecutionPlanGraph[] ParseShowPlanXML(object showPlan, EnExecutionPlanType type = EnExecutionPlanType.Unknown)
+	internal static ExecutionPlanGraph[] ParseShowPlanXML(object showPlan, EnExecutionPlanType type = EnExecutionPlanType.Unknown)
 	{
 		return NodeBuilderFactory.Create(showPlan, type).Execute(showPlan);
 	}

@@ -9,7 +9,7 @@ using BlackbirdSql.Shared.Enums;
 namespace BlackbirdSql.Shared.Controls.Grid;
 
 
-public class ButtonInfo
+internal class ButtonInfo
 {
 	private Bitmap m_bmp;
 
@@ -17,7 +17,7 @@ public class ButtonInfo
 
 	private EnButtonCellState m_state = EnButtonCellState.Normal;
 
-	public Bitmap Bmp
+	internal Bitmap Bmp
 	{
 		get
 		{
@@ -29,7 +29,7 @@ public class ButtonInfo
 		}
 	}
 
-	public string Label
+	internal string Label
 	{
 		get
 		{
@@ -41,7 +41,7 @@ public class ButtonInfo
 		}
 	}
 
-	public EnButtonCellState State
+	internal EnButtonCellState State
 	{
 		get
 		{

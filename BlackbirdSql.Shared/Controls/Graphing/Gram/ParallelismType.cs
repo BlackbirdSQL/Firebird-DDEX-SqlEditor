@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ParallelismType : RelOpBaseType
+internal class ParallelismType : RelOpBaseType
 {
 	private ColumnReferenceType[] partitionColumnsField;
 
@@ -49,7 +49,7 @@ public class ParallelismType : RelOpBaseType
 	private bool inRowFieldSpecified;
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] PartitionColumns
+	internal ColumnReferenceType[] PartitionColumns
 	{
 		get
 		{
@@ -62,7 +62,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlArrayItem("OrderByColumn", IsNullable = false)]
-	public OrderByTypeOrderByColumn[] OrderBy
+	internal OrderByTypeOrderByColumn[] OrderBy
 	{
 		get
 		{
@@ -75,7 +75,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlArrayItem("ColumnReference", IsNullable = false)]
-	public ColumnReferenceType[] HashKeys
+	internal ColumnReferenceType[] HashKeys
 	{
 		get
 		{
@@ -87,7 +87,7 @@ public class ParallelismType : RelOpBaseType
 		}
 	}
 
-	public SingleColumnReferenceType ProbeColumn
+	internal SingleColumnReferenceType ProbeColumn
 	{
 		get
 		{
@@ -99,7 +99,7 @@ public class ParallelismType : RelOpBaseType
 		}
 	}
 
-	public ScalarExpressionType Predicate
+	internal ScalarExpressionType Predicate
 	{
 		get
 		{
@@ -111,7 +111,7 @@ public class ParallelismType : RelOpBaseType
 		}
 	}
 
-	public ParallelismTypeActivation Activation
+	internal ParallelismTypeActivation Activation
 	{
 		get
 		{
@@ -123,7 +123,7 @@ public class ParallelismType : RelOpBaseType
 		}
 	}
 
-	public ParallelismTypeBrickRouting BrickRouting
+	internal ParallelismTypeBrickRouting BrickRouting
 	{
 		get
 		{
@@ -135,7 +135,7 @@ public class ParallelismType : RelOpBaseType
 		}
 	}
 
-	public RelOpType RelOp
+	internal RelOpType RelOp
 	{
 		get
 		{
@@ -148,7 +148,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public EnPartitionType PartitioningType
+	internal EnPartitionType PartitioningType
 	{
 		get
 		{
@@ -161,7 +161,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool PartitioningTypeSpecified
+	internal bool PartitioningTypeSpecified
 	{
 		get
 		{
@@ -174,7 +174,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool Remoting
+	internal bool Remoting
 	{
 		get
 		{
@@ -187,7 +187,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool RemotingSpecified
+	internal bool RemotingSpecified
 	{
 		get
 		{
@@ -200,7 +200,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool LocalParallelism
+	internal bool LocalParallelism
 	{
 		get
 		{
@@ -213,7 +213,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool LocalParallelismSpecified
+	internal bool LocalParallelismSpecified
 	{
 		get
 		{
@@ -226,7 +226,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlAttribute]
-	public bool InRow
+	internal bool InRow
 	{
 		get
 		{
@@ -239,7 +239,7 @@ public class ParallelismType : RelOpBaseType
 	}
 
 	[XmlIgnore]
-	public bool InRowSpecified
+	internal bool InRowSpecified
 	{
 		get
 		{

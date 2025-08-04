@@ -18,18 +18,18 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Shared.Model;
 
-public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvider
+internal sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvider
 {
 	private static FontAndColorProviderTextResults instance = null;
 
 
-	public static readonly string PlainText = "Plain Text";
+	internal static readonly string PlainText = "Plain Text";
 
 	private IEditorFormatMap _editorFormatMap;
 
 	private IClassificationFormatMap _classificationFormatMap;
 
-	public IEditorFormatMap EditorFormatMap
+	internal IEditorFormatMap EditorFormatMap
 	{
 		get
 		{
@@ -49,7 +49,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 		}
 	}
 
-	public IClassificationFormatMap ClassificationFormatMap
+	internal IClassificationFormatMap ClassificationFormatMap
 	{
 		get
 		{
@@ -69,7 +69,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 		}
 	}
 
-	public static AbstractFontAndColorProvider Instance
+	internal static AbstractFontAndColorProvider Instance
 	{
 		get
 		{
@@ -120,7 +120,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 		FontColorDefaults.Add(allColorableItemInfo);
 	}
 
-	public override void OnFontChanged(ref Guid guid, FontInfo[] pInfo, LOGFONTW[] logFont, IntPtr hFont)
+	internal override void OnFontChanged(ref Guid guid, FontInfo[] pInfo, LOGFONTW[] logFont, IntPtr hFont)
 	{
 		if (ClassificationFormatMap != null)
 		{
@@ -146,7 +146,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 		}
 	}
 
-	public static Typeface GetTypefaceFromFont(string typefaceName)
+	internal static Typeface GetTypefaceFromFont(string typefaceName)
 	{
 		System.Windows.Media.FontFamily fontFamily = new System.Windows.Media.FontFamily(typefaceName);
 		System.Windows.FontStyle normal = FontStyles.Normal;
@@ -155,12 +155,12 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 		return new Typeface(fontFamily, normal, normal3, normal2, GetFallbackFontFamily());
 	}
 
-	public static System.Windows.Media.FontFamily GetFallbackFontFamily()
+	internal static System.Windows.Media.FontFamily GetFallbackFontFamily()
 	{
 		return new System.Windows.Media.FontFamily("Global Monospace, Global User Interface");
 	}
 
-	public override void OnItemChanged(ref Guid guid, string itemName, int itemID, ColorableItemInfo[] itemInfo, uint literalForeground, uint literalBackground)
+	internal override void OnItemChanged(ref Guid guid, string itemName, int itemID, ColorableItemInfo[] itemInfo, uint literalForeground, uint literalBackground)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
@@ -221,7 +221,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 		}
 	}
 
-	public override void OnApply()
+	internal override void OnApply()
 	{
 		if (EditorFormatMap != null && EditorFormatMap.IsInBatchUpdate)
 		{

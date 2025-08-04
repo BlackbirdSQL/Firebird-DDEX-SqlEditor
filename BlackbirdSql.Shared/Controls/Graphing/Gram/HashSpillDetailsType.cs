@@ -14,7 +14,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class HashSpillDetailsType
+internal class HashSpillDetailsType
 {
 	private ulong grantedMemoryKbField;
 
@@ -33,7 +33,7 @@ public class HashSpillDetailsType
 	private bool readsFromTempDbFieldSpecified;
 
 	[XmlAttribute]
-	public ulong GrantedMemoryKb
+	internal ulong GrantedMemoryKb
 	{
 		get
 		{
@@ -46,7 +46,7 @@ public class HashSpillDetailsType
 	}
 
 	[XmlIgnore]
-	public bool GrantedMemoryKbSpecified
+	internal bool GrantedMemoryKbSpecified
 	{
 		get
 		{
@@ -59,7 +59,7 @@ public class HashSpillDetailsType
 	}
 
 	[XmlAttribute]
-	public ulong UsedMemoryKb
+	internal ulong UsedMemoryKb
 	{
 		get
 		{
@@ -72,7 +72,7 @@ public class HashSpillDetailsType
 	}
 
 	[XmlIgnore]
-	public bool UsedMemoryKbSpecified
+	internal bool UsedMemoryKbSpecified
 	{
 		get
 		{
@@ -85,7 +85,7 @@ public class HashSpillDetailsType
 	}
 
 	[XmlAttribute]
-	public ulong WritesToTempDb
+	internal ulong WritesToTempDb
 	{
 		get
 		{
@@ -98,7 +98,7 @@ public class HashSpillDetailsType
 	}
 
 	[XmlIgnore]
-	public bool WritesToTempDbSpecified
+	internal bool WritesToTempDbSpecified
 	{
 		get
 		{
@@ -111,7 +111,7 @@ public class HashSpillDetailsType
 	}
 
 	[XmlAttribute]
-	public ulong ReadsFromTempDb
+	internal ulong ReadsFromTempDb
 	{
 		get
 		{
@@ -124,7 +124,7 @@ public class HashSpillDetailsType
 	}
 
 	[XmlIgnore]
-	public bool ReadsFromTempDbSpecified
+	internal bool ReadsFromTempDbSpecified
 	{
 		get
 		{

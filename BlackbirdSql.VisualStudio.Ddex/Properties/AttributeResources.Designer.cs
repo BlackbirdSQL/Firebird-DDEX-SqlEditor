@@ -29,7 +29,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AttributeResources() {
+        public AttributeResources() {
         }
         
         /// <summary>
@@ -565,6 +565,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to EventSource trace levels.
+        /// </summary>
+        public static string OptionCategoryEvsLevel {
+            get {
+                return ResourceManager.GetString("OptionCategoryEvsLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to  General.
         /// </summary>
         public static string OptionCategoryGeneral {
@@ -597,6 +606,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionDebugEnableActivityTracing {
             get {
                 return ResourceManager.GetString("OptionDescriptionDebugEnableActivityTracing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables output of exceptions thrown for debugging . Only applicable to release builds. Debug exceptions are always output in debug builds..
+        /// </summary>
+        public static string OptionDescriptionDebugEnableDebugExceptions {
+            get {
+                return ResourceManager.GetString("OptionDescriptionDebugEnableDebugExceptions", resourceCulture);
             }
         }
         
@@ -651,15 +669,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionDebugSaveExtrapolatedXml {
             get {
                 return ResourceManager.GetString("OptionDescriptionDebugSaveExtrapolatedXml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
-        /// </summary>
-        public static string OptionDescriptionDebugSourceLevel {
-            get {
-                return ResourceManager.GetString("OptionDescriptionDebugSourceLevel", resourceCulture);
             }
         }
         
@@ -916,6 +925,78 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Controller assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
+        /// </summary>
+        public static string OptionDescriptionEvsLevelController {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEvsLevelController", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Core assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
+        /// </summary>
+        public static string OptionDescriptionEvsLevelCore {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEvsLevelCore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database service EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
+        /// </summary>
+        public static string OptionDescriptionEvsLevelData {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEvsLevelData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Ddex assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
+        /// </summary>
+        public static string OptionDescriptionEvsLevelDdex {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEvsLevelDdex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Editor extension EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
+        /// </summary>
+        public static string OptionDescriptionEvsLevelEditor {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEvsLevelEditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language service EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
+        /// </summary>
+        public static string OptionDescriptionEvsLevelLanguage {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEvsLevelLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shared services assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
+        /// </summary>
+        public static string OptionDescriptionEvsLevelShared {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEvsLevelShared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sys assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug..
+        /// </summary>
+        public static string OptionDescriptionEvsLevelSys {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEvsLevelSys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If enabled, closes edmx data models that are not on screen when a solution closes. Enable this option to avoid potential Visual Studio model load errors..
         /// </summary>
         public static string OptionDescriptionGeneralAutoCloseOffScreenEdmx {
@@ -1087,6 +1168,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Debug exceptions.
+        /// </summary>
+        public static string OptionDisplayDebugEnableDebugExceptions {
+            get {
+                return ResourceManager.GetString("OptionDisplayDebugEnableDebugExceptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Diagnostics logging.
         /// </summary>
         public static string OptionDisplayDebugEnableDiagnosticsLog {
@@ -1137,15 +1227,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayDebugLogFile {
             get {
                 return ResourceManager.GetString("OptionDisplayDebugLogFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event trace level.
-        /// </summary>
-        public static string OptionDisplayDebugSourceLevel {
-            get {
-                return ResourceManager.GetString("OptionDisplayDebugSourceLevel", resourceCulture);
             }
         }
         
@@ -1398,6 +1479,78 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayEquivalencyWireCrypt {
             get {
                 return ResourceManager.GetString("OptionDisplayEquivalencyWireCrypt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Controller assembly.
+        /// </summary>
+        public static string OptionDisplayEvsLevelController {
+            get {
+                return ResourceManager.GetString("OptionDisplayEvsLevelController", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Core assembly.
+        /// </summary>
+        public static string OptionDisplayEvsLevelCore {
+            get {
+                return ResourceManager.GetString("OptionDisplayEvsLevelCore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data access service.
+        /// </summary>
+        public static string OptionDisplayEvsLevelData {
+            get {
+                return ResourceManager.GetString("OptionDisplayEvsLevelData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ddex extension.
+        /// </summary>
+        public static string OptionDisplayEvsLevelDdex {
+            get {
+                return ResourceManager.GetString("OptionDisplayEvsLevelDdex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Editor extension.
+        /// </summary>
+        public static string OptionDisplayEvsLevelEditor {
+            get {
+                return ResourceManager.GetString("OptionDisplayEvsLevelEditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language service.
+        /// </summary>
+        public static string OptionDisplayEvsLevelLanguage {
+            get {
+                return ResourceManager.GetString("OptionDisplayEvsLevelLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shared services.
+        /// </summary>
+        public static string OptionDisplayEvsLevelShared {
+            get {
+                return ResourceManager.GetString("OptionDisplayEvsLevelShared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sys assembly.
+        /// </summary>
+        public static string OptionDisplayEvsLevelSys {
+            get {
+                return ResourceManager.GetString("OptionDisplayEvsLevelSys", resourceCulture);
             }
         }
         

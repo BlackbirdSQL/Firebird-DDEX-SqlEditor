@@ -9,13 +9,13 @@ using BlackbirdSql.Shared.Properties;
 namespace BlackbirdSql.Shared.Controls.PropertiesWindow;
 
 
-public class DisconnectedPropertiesWindow : AbstractPropertiesWindow
+internal class DisconnectedPropertiesWindow : AbstractPropertiesWindow
 {
 	private static readonly string _NoConnection = ControlsResources.PropertiesWindow_Disconnected;
 
 	private static DisconnectedPropertiesWindow _Instance = null;
 
-	public static DisconnectedPropertiesWindow Instance
+	internal static DisconnectedPropertiesWindow Instance
 	{
 		get
 		{
@@ -26,7 +26,7 @@ public class DisconnectedPropertiesWindow : AbstractPropertiesWindow
 	[GlobalizedCategory("PropertyWindowCurrentConnectionParameters")]
 	[GlobalizedDescription("PropertyWindowStatusDescription")]
 	[GlobalizedDisplayName("PropertyWindowStatusDisplayName")]
-	public string Status => _NoConnection;
+	internal string Status => _NoConnection;
 
 	private DisconnectedPropertiesWindow()
 	{

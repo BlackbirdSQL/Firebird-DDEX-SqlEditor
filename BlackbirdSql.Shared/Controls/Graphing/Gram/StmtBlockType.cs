@@ -13,7 +13,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class StmtBlockType
+internal class StmtBlockType
 {
 	private object[] itemsField;
 
@@ -23,7 +23,7 @@ public class StmtBlockType
 	[XmlElement("StmtReceive", typeof(StmtReceiveType))]
 	[XmlElement("StmtSimple", typeof(StmtSimpleType))]
 	[XmlElement("StmtUseDb", typeof(StmtUseDbType))]
-	public object[] Items
+	internal object[] Items
 	{
 		get
 		{

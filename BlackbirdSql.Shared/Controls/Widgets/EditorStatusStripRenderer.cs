@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace BlackbirdSql.Shared.Controls.Widgets;
 
 
-public class EditorStatusStripRenderer : ToolStripProfessionalRenderer
+internal class EditorStatusStripRenderer : ToolStripProfessionalRenderer
 {
 	public EditorStatusStripRenderer(StatusStrip statusStrip)
 	{

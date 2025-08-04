@@ -25,26 +25,26 @@ namespace BlackbirdSql;
 /// out with any other database engine client.
 /// </summary>
 // =========================================================================================================
-public static class NativeDbExtensionMembers
+internal static class NativeDbExtensionMembers
 {
 
 	/// <summary>
 	/// Adds a parameter suffixed with an index to DbCommand.Parameters.
 	/// </summary>
 	/// <returns>The index of the parameter in DbCommand.Parameters else -1.</returns>
-	public static int AddParameter(this DbCommand @this, string name, int index, object value)
+	internal static int AddParameter(this DbCommand @this, string name, int index, object value)
 	{
 		return NativeDb.DatabaseEngineSvc.AddCommandParameter_(@this, name, index, value);
 	}
 
-	public static bool Completed(this IDbTransaction @this)
+	internal static bool Completed(this IDbTransaction @this)
 	{
 		return NativeDb.DatabaseEngineSvc.TransactionCompleted_(@this);
 	}
 
 
 
-	public static string GetDecoratedDdlSource(this IVsDataExplorerNode @this, EnModelTargetType targetType)
+	internal static string GetDecoratedDdlSource(this IVsDataExplorerNode @this, EnModelTargetType targetType)
 	{
 		return NativeDb.GetDecoratedDdlSource(@this, targetType);
 	}
@@ -54,13 +54,13 @@ public static class NativeDbExtensionMembers
 	/// Gets the error number from a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static int GetErrorCode(this Exception @this)
+	internal static int GetErrorCode(this Exception @this)
 	{
 		return NativeDb.DbExceptionSvc.GetExceptionErrorCode_(@this);
 	}
 
 
-	public static IList<object> GetErrors(this Exception @this)
+	internal static IList<object> GetErrors(this Exception @this)
 	{
 		return NativeDb.DbExceptionSvc.GetExceptionErrors_(@this);
 	}
@@ -70,7 +70,7 @@ public static class NativeDbExtensionMembers
 	/// Gets the class byte value from a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static byte GetClass(this Exception @this)
+	internal static byte GetClass(this Exception @this)
 	{
 		return NativeDb.DbExceptionSvc.GetExceptionClass_(@this);
 	}
@@ -80,7 +80,7 @@ public static class NativeDbExtensionMembers
 	/// <summary>
 	/// Gets the connection datasource.
 	/// </summary>
-	public static string GetDataSource(this IDbConnection @this)
+	internal static string GetDataSource(this IDbConnection @this)
 	{
 		return NativeDb.DatabaseEngineSvc.GetConnectionDataSource_(@this);
 	}
@@ -90,10 +90,11 @@ public static class NativeDbExtensionMembers
 	/// <summary>
 	/// Parses and converts a server version string to it's Version format.
 	/// </summary>
-	public static string GetDataSourceVersion(this IDbConnection @this)
+	internal static string GetDataSourceVersion(this IDbConnection @this)
 	{
 		return NativeDb.DatabaseEngineSvc.GetConnectionDataSourceVersion_(@this);
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -110,41 +111,41 @@ public static class NativeDbExtensionMembers
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
 	// -------------------------------------------------------------------------
-	public static bool DisposeLinkageParser(this IVsDataExplorerConnection @this, bool disposing)
+	internal static bool DisposeLinkageParser(this IVsDataExplorerConnection @this, bool disposing)
 	{
 		return NativeDb.DatabaseEngineSvc.DisposeLinkageParserInstance_(@this, disposing);
 	}
 
-	public static void EnsureLinkageLoadingAsyin(this IVsDataExplorerConnection @this, int delay = 0, int multiplier = 1)
+	internal static void EnsureLinkageLoadingAsyin(this IVsDataExplorerConnection @this, int delay = 0, int multiplier = 1)
 	{
 		NativeDb.DatabaseEngineSvc.EnsureLinkageLoadingAsyin_(@this, delay, multiplier);
 	}
 
 
-	public static IBsNativeDbLinkageParser GetLinkageParser(this IVsDataExplorerConnection @this) => NativeDb.DatabaseEngineSvc.GetLinkageParserInstance_(@this);
+	internal static IBsNativeDbLinkageParser GetLinkageParser(this IVsDataExplorerConnection @this) => NativeDb.DatabaseEngineSvc.GetLinkageParserInstance_(@this);
 
-	public static long GetActiveTransactionsCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetActiveTransactionsCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetActiveTransactionsCount(@this);
 	}
 
 
 
-	public static List<string> GetActiveUsers(this NativeDatabaseInfoProxy @this)
+	internal static List<string> GetActiveUsers(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetActiveUsers(@this);
 	}
 
 
 
-	public static long GetAllocationPages(this NativeDatabaseInfoProxy @this)
+	internal static long GetAllocationPages(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetAllocationPages(@this);
 	}
 
 
 
-	public static long GetCurrentMemory(this NativeDatabaseInfoProxy @this)
+	internal static long GetCurrentMemory(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetCurrentMemory(@this);
 	}
@@ -156,107 +157,107 @@ public static class NativeDbExtensionMembers
 	/// Gets the connection name or datasetName from a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetDatabase(this Exception @this)
+	internal static string GetDatabase(this Exception @this)
 	{
 		return NativeDb.DbExceptionSvc.GetExceptionDatabase_(@this);
 	}
 
 
 
-	public static long GetDatabaseSizeInPages(this NativeDatabaseInfoProxy @this)
+	internal static long GetDatabaseSizeInPages(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetDatabaseSizeInPages(@this);
 	}
 
 
 
-	public static long GetDeleteCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetDeleteCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetDeleteCount(@this);
 	}
 
 
-	public static List<(long, long)> GetTablesDatabaseInfo(this NativeDatabaseInfoProxy @this)
+	internal static List<(long, long)> GetTablesDatabaseInfo(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetTablesDatabaseInfo(@this);
 	}
 
 
 
-	public static long GetExpungeCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetExpungeCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetExpungeCount(@this);
 	}
 
 
 
-	public static long GetServerCacheReadsCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetServerCacheReadsCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetServerCacheReadsCount(@this);
 	}
 
 
 
-	public static long GetInsertCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetInsertCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetInsertCount(@this);
 	}
 
 
-	public static DataTable GetSchemaEx(this IDbConnection @this, string collectionName, string[] restrictions)
+	internal static DataTable GetSchemaEx(this IDbConnection @this, string collectionName, string[] restrictions)
 	{
 		return NativeDb.ProviderSchemaFactorySvc.GetSchema(@this, collectionName, restrictions);
 	}
 
-	public static long GetServerCacheWritesCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetServerCacheWritesCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetServerCacheWritesCount(@this);
 	}
 
 
 
-	public static long GetMaxMemory(this NativeDatabaseInfoProxy @this)
+	internal static long GetMaxMemory(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetMaxMemory(@this);
 	}
 
 
 
-	public static long GetPageSize(this NativeDatabaseInfoProxy @this)
+	internal static long GetPageSize(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetPageSize(@this);
 	}
 
 
-	public static long GetNumBuffers(this NativeDatabaseInfoProxy @this)
+	internal static long GetNumBuffers(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetNumBuffers(@this);
 	}
 
 
 
-	public static long GetPurgeCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetPurgeCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetPurgeCount(@this);
 	}
 
 
 
-	public static long GetReadIdxCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetReadIdxCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetReadIdxCount(@this);
 	}
 
 
 
-	public static long GetReads(this NativeDatabaseInfoProxy @this)
+	internal static long GetReads(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetReads(@this);
 	}
 
 
 
-	public static long GetReadSeqCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetReadSeqCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetReadSeqCount(@this);
 	}
@@ -264,14 +265,14 @@ public static class NativeDbExtensionMembers
 
 
 
-	public static long GetUpdateCount(this NativeDatabaseInfoProxy @this)
+	internal static long GetUpdateCount(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetUpdateCount(@this);
 	}
 
 
 
-	public static long GetWrites(this NativeDatabaseInfoProxy @this)
+	internal static long GetWrites(this NativeDatabaseInfoProxy @this)
 	{
 		return NativeDb.DatabaseInfoSvc.GetWrites(@this);
 	}
@@ -283,13 +284,13 @@ public static class NativeDbExtensionMembers
 	/// Gets the source line number of a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static int GetLineNumber(this Exception @this)
+	internal static int GetLineNumber(this Exception @this)
 	{
 		return NativeDb.DbExceptionSvc.GetExceptionLineNumber_(@this);
 	}
 
 
-	public static int GetPacketSize(this DbConnection @this)
+	internal static int GetPacketSize(this DbConnection @this)
 	{
 		return NativeDb.DatabaseEngineSvc.GetConnectionPacketSize_(@this);
 	}
@@ -301,7 +302,7 @@ public static class NativeDbExtensionMembers
 	/// Gets the method name of a native database excerption.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetProcedure(this Exception @this)
+	internal static string GetProcedure(this Exception @this)
 	{
 		return NativeDb.DbExceptionSvc.GetExceptionProcedure_(@this);
 	}
@@ -313,7 +314,7 @@ public static class NativeDbExtensionMembers
 	/// Gets the server name from a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetServer(this Exception @this)
+	internal static string GetServer(this Exception @this)
 	{
 		return NativeDb.DbExceptionSvc.GetExceptionServer_(@this);
 	}
@@ -325,7 +326,7 @@ public static class NativeDbExtensionMembers
 	/// Returns the sql exception state of a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetState(this Exception @this)
+	internal static string GetState(this Exception @this)
 	{
 		return NativeDb.DbExceptionSvc.GetExceptionState_(@this);
 	}
@@ -360,7 +361,7 @@ public static class NativeDbExtensionMembers
 	/// <summary>
 	/// Parses and converts a server version string to it's Version format.
 	/// </summary>
-	public static Version ParseServerVersion(this IDbConnection @this)
+	internal static Version ParseServerVersion(this IDbConnection @this)
 	{
 		return NativeDb.DatabaseEngineSvc.ParseConnectionServerVersion_(@this);
 	}
@@ -375,7 +376,7 @@ public static class NativeDbExtensionMembers
 	/// </summary>
 	/// <returns>Boolean tuple with Item1: IsOpen and Item2: HasTransactions.</returns>
 	// ---------------------------------------------------------------------------------
-	public static (bool, bool) OpenOrVerify(this IDbConnection @this)
+	internal static (bool, bool) OpenOrVerify(this IDbConnection @this)
 	{
 		return NativeDb.DatabaseEngineSvc.OpenOrVerifyConnection_(@this);
 	}
@@ -396,7 +397,7 @@ public static class NativeDbExtensionMembers
 	/// Item2: HasTransactions.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static async Task<(bool, bool)> OpenOrVerifyAsync(this IDbConnection @this,
+	internal static async Task<(bool, bool)> OpenOrVerifyAsync(this IDbConnection @this,
 		IDbTransaction transaction, CancellationToken cancelToken)
 	{
 		return await NativeDb.DatabaseEngineSvc.OpenOrVerifyConnectionAsync_(@this,
@@ -427,7 +428,7 @@ public static class NativeDbExtensionMembers
 	/// Sets the database name in a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void SetDatabase(this Exception @this, string value)
+	internal static void SetDatabase(this Exception @this, string value)
 	{
 		NativeDb.DbExceptionSvc.SetExceptionDatabase_(@this, value);
 	}
@@ -439,28 +440,28 @@ public static class NativeDbExtensionMembers
 	/// Sets the server name in a native database exception.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static void SetServer(this Exception @this, string value)
+	internal static void SetServer(this Exception @this, string value)
 	{
 		NativeDb.DbExceptionSvc.SetExceptionServer_(@this, value);
 	}
 
 
-	public static async Task<DataTable> GetSchemaTableAsync(this IDataReader @this, CancellationToken cancelToken)
+	internal static async Task<DataTable> GetSchemaTableAsync(this IDataReader @this, CancellationToken cancelToken)
 	{
 		return await NativeDb.DatabaseEngineSvc.ReaderGetSchemaTableAsync_(@this, cancelToken);
 	}
 
-	public static async Task<bool> CloseAsync(this IDataReader @this, CancellationToken cancelToken)
+	internal static async Task<bool> CloseAsync(this IDataReader @this, CancellationToken cancelToken)
 	{
 		return await NativeDb.DatabaseEngineSvc.ReaderCloseAsync_(@this, cancelToken);
 	}
 
-	public static async Task<bool> NextResultAsync(this IDataReader @this, CancellationToken cancelToken)
+	internal static async Task<bool> NextResultAsync(this IDataReader @this, CancellationToken cancelToken)
 	{
 		return await NativeDb.DatabaseEngineSvc.ReaderNextResultAsync_(@this, cancelToken);
 	}
 
-	public static async Task<bool> ReadAsync(this IDataReader @this, CancellationToken cancelToken)
+	internal static async Task<bool> ReadAsync(this IDataReader @this, CancellationToken cancelToken)
 	{
 		return await NativeDb.DatabaseEngineSvc.ReaderReadAsync_(@this, cancelToken);
 	}

@@ -14,12 +14,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class GroupingSetReferenceType
+internal class GroupingSetReferenceType
 {
 	private string valueField;
 
 	[XmlAttribute]
-	public string Value
+	internal string Value
 	{
 		get
 		{

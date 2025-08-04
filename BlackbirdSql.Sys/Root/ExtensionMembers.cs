@@ -28,7 +28,7 @@ namespace BlackbirdSql;
 /// Central class for package external class extension methods. 
 /// </summary>
 // =========================================================================================================
-public static partial class ExtensionMembers
+internal static partial class ExtensionMembers
 {
 
 	private static readonly string[] _S_ByteSizeSuffixes = [Resources.ByteSizeBytes, Resources.ByteSizeKB,
@@ -49,7 +49,7 @@ public static partial class ExtensionMembers
 	/// Returns the int boolean value.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool AsBool(this int @this)
+	internal static bool AsBool(this int @this)
 	{
 		return @this != 0;
 	}
@@ -61,24 +61,24 @@ public static partial class ExtensionMembers
 	/// Returns the uint boolean value.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool AsBool(this uint @this)
+	internal static bool AsBool(this uint @this)
 	{
 		return @this != 0;
 	}
 
 
-	public static int AsInt(this bool @this)
+	internal static int AsInt(this bool @this)
 	{
 		return @this ? 1 : 0;
 	}
-	public static TResult AwaiterResult<TResult>(this Task<TResult> @this)
+	internal static TResult AwaiterResult<TResult>(this Task<TResult> @this)
 	{
 		return @this.GetAwaiter().GetResult();
 	}
 
 
 
-	public static bool Cancelled(this CancellationToken @this) => @this.IsCancellationRequested;
+	internal static bool Cancelled(this CancellationToken @this) => @this.IsCancellationRequested;
 
 
 	// ---------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ public static partial class ExtensionMembers
 	/// Returns the decrypted ConnectionString of an <see cref="IVsDataConnection"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string DecryptedConnectionString(this IVsDataConnection @this)
+	internal static string DecryptedConnectionString(this IVsDataConnection @this)
 	{
 		return DataProtection.DecryptString(@this.EncryptedConnectionString);
 	}
@@ -99,14 +99,14 @@ public static partial class ExtensionMembers
 	/// <see cref="IVsDataExplorerConnection"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string DecryptedConnectionString(this IVsDataExplorerConnection @this)
+	internal static string DecryptedConnectionString(this IVsDataExplorerConnection @this)
 	{
 		return DataProtection.DecryptString(@this.EncryptedConnectionString);
 	}
 
 
 
-	public static IVsDataExplorerConnection ExplorerConnection(this IDbConnection @this, bool canBeWeakEquivalent = false)
+	internal static IVsDataExplorerConnection ExplorerConnection(this IDbConnection @this, bool canBeWeakEquivalent = false)
 	{
 		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
@@ -122,7 +122,7 @@ public static partial class ExtensionMembers
 	/// Formats a resource string format string given arguments using CurrentCulture.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string Fmt(this string @this, params object[] args)
+	internal static string Fmt(this string @this, params object[] args)
 	{
 		try
 		{
@@ -155,7 +155,7 @@ public static partial class ExtensionMembers
 	/// Formats a resource string format string given arguments using InvariantCulture.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string Fmti(this string @this, params object[] args)
+	internal static string Fmti(this string @this, params object[] args)
 	{
 		try
 		{
@@ -191,7 +191,7 @@ public static partial class ExtensionMembers
 	/// 00:.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string Fmt(this TimeSpan @this, bool trim = false)
+	internal static string Fmt(this TimeSpan @this, bool trim = false)
 	{
 		string result = @this.ToString();
 
@@ -228,7 +228,7 @@ public static partial class ExtensionMembers
 	/// Format a long byte size down to it's byte unit by decimal places.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static (string, float) FmtByteSize(this long @this, int decimals = 3)
+	internal static (string, float) FmtByteSize(this long @this, int decimals = 3)
 	{
 		string str;
 		float newValue;
@@ -267,7 +267,7 @@ public static partial class ExtensionMembers
 	/// Format a float byte size down to it's byte unit by decimal places.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static (string, float) FmtByteSize(this float @this, int decimals = 3)
+	internal static (string, float) FmtByteSize(this float @this, int decimals = 3)
 	{
 		string str;
 		float newValue;
@@ -306,7 +306,7 @@ public static partial class ExtensionMembers
 	/// Formats a long into superscipt exponential notation by decimal places
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static (string, float) FmtExpSize(this long @this, int maxDigits = 4, int decimals = 3)
+	internal static (string, float) FmtExpSize(this long @this, int maxDigits = 4, int decimals = 3)
 	{
 		string str;
 		float newValue;
@@ -347,7 +347,7 @@ public static partial class ExtensionMembers
 	/// Formats a float into superscipt exponential notation by decimal places
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static (string, float) FmtExpSize(this float @this, int maxDigits = 4, int decimals = 3)
+	internal static (string, float) FmtExpSize(this float @this, int maxDigits = 4, int decimals = 3)
 	{
 		string str;
 		float newValue;
@@ -388,7 +388,7 @@ public static partial class ExtensionMembers
 	/// Formats time span for display in a window statusbar rounded to seconds.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FmtRound(this TimeSpan @this)
+	internal static string FmtRound(this TimeSpan @this)
 	{
 		return new TimeSpan(@this.Days, @this.Hours, @this.Minutes, @this.Seconds, 0).ToString();
 	}
@@ -441,7 +441,7 @@ public static partial class ExtensionMembers
 	/// The tuple (label, explorerConnection)
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static (string, IVsDataExplorerConnection) SearchExplorerConnectionEntry(
+	internal static (string, IVsDataExplorerConnection) SearchExplorerConnectionEntry(
 		this IVsDataExplorerConnectionManager @this, string connectionString, bool encrypted, bool canBeWeakEquivalent = false)
 	{
 		string unencryptedConnectionString = encrypted ? DataProtection.DecryptString(connectionString) : connectionString;
@@ -492,7 +492,7 @@ public static partial class ExtensionMembers
 	/// <param name="index"></param>
 	/// <returns>The new value of <see cref="ComboBox.SelectedIndex"/> else -1.</returns>
 	// ---------------------------------------------------------------------------------
-	public static int SetSelectedIndexX(this ComboBox @this, int index)
+	internal static int SetSelectedIndexX(this ComboBox @this, int index)
 	{
 		@this.SelectedIndex = index;
 
@@ -512,7 +512,7 @@ public static partial class ExtensionMembers
 	/// The method returns the assigned object if found so that inline assignments in series can also cast the object.
 	/// eg.string str = (string)combo.SetSelectedValueX(obj);</remarks>
 	// ---------------------------------------------------------------------------------
-	public static object SetSelectedValueX(this ComboBox @this, object value)
+	internal static object SetSelectedValueX(this ComboBox @this, object value)
 	{
 		if (value == null)
 		{
@@ -539,7 +539,7 @@ public static partial class ExtensionMembers
 	/// Converts a long timestamp to a UTC DateTime.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static DateTime ToUtcDateTime(this long @this)
+	internal static DateTime ToUtcDateTime(this long @this)
 	{
 		DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(@this);
 		return offset.UtcDateTime;
@@ -552,7 +552,7 @@ public static partial class ExtensionMembers
 	/// Converts a DateTime to it's long unix milliseconds timestamp.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static long UnixMilliseconds(this DateTime @this)
+	internal static long UnixMilliseconds(this DateTime @this)
 	{
 		return ((DateTimeOffset)@this).ToUnixTimeMilliseconds();
 	}
@@ -564,7 +564,7 @@ public static partial class ExtensionMembers
 	/// Converts a DateTime to it's long unix seconds timestamp.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static long UnixSeconds(this DateTime @this)
+	internal static long UnixSeconds(this DateTime @this)
 	{
 		return ((DateTimeOffset)@this).ToUnixTimeSeconds();
 	}

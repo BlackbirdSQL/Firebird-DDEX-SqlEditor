@@ -12,7 +12,7 @@ namespace BlackbirdSql.Core.Enums;
 /// When specific, suffix is the parent/owner.
 /// </summary>
 [Guid(CommandProperties.CommandSetGuid)]
-public enum EnCommandSet
+internal enum EnCommandSet
 {
 	MenuIdToplevel = 0xC201, // 49665
 	ToolbarIdEditorWindow = 0x5000, // 20480

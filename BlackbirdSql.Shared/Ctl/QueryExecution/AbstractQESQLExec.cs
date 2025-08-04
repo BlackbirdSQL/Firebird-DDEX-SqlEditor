@@ -547,24 +547,4 @@ public abstract class AbstractQESQLExec : IBsCommandExecuter, IDisposable
 
 	#endregion Event Handling
 
-
-
-
-
-	// =========================================================================================================
-	#region Sub-Classes - AbstractQESQLExec
-	// =========================================================================================================
-
-
-	protected enum EnExecState
-	{
-		Initial,
-		Executing,
-		ExecutingBatch,
-		Cancelling,
-		Discarded
-	}
-
-
-	#endregion Sub-Classes
 }

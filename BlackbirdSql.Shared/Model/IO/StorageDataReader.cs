@@ -18,9 +18,9 @@ using EnvDTE;
 namespace BlackbirdSql.Shared.Model.IO;
 
 
-public class StorageDataReader
+internal class StorageDataReader
 {
-	public delegate bool QueryKeepStoringData();
+	internal delegate bool QueryKeepStoringData();
 
 	private class StringWriterWithMaxCapacity(IFormatProvider formatProvider)
 		: StringWriter(formatProvider)
@@ -42,7 +42,7 @@ public class StorageDataReader
 
 		private int CurrentLength => base.GetStringBuilder().Length;
 
-		public int MaximumCapacity => _MaxCapacity;
+		internal int MaximumCapacity => _MaxCapacity;
 
 
 
@@ -123,7 +123,7 @@ public class StorageDataReader
 
 	[Serializable]
 	[ComVisible(false)]
-	public class StorageAbortedException : Exception
+	internal class StorageAbortedException : Exception
 	{
 		public StorageAbortedException()
 		{
@@ -156,7 +156,7 @@ public class StorageDataReader
 
 
 
-	public int FieldCount
+	internal int FieldCount
 	{
 		get
 		{
@@ -197,22 +197,22 @@ public class StorageDataReader
 
 	}
 
-	public string GetName(int i)
+	internal string GetName(int i)
 	{
 		return _DataReader.GetName(i);
 	}
 
-	public string GetDataTypeName(int i)
+	internal string GetDataTypeName(int i)
 	{
 		return _DataReader.GetDataTypeName(i);
 	}
 
-	public string GetProviderSpecificDataTypeName(int i)
+	internal string GetProviderSpecificDataTypeName(int i)
 	{
 		return GetFieldType(i).ToString();
 	}
 
-	public Type GetFieldType(int i)
+	internal Type GetFieldType(int i)
 	{
 		if (_TableReader != null)
 			return _TableReader.GetFieldType(i);
@@ -224,7 +224,7 @@ public class StorageDataReader
 	}
 
 
-	public async Task<bool> ReadAsync(CancellationToken cancelToken)
+	internal async Task<bool> ReadAsync(CancellationToken cancelToken)
 	{
 		// Evs.Trace(GetType(), nameof(ReadAsync), "ASYNC ReadAsync()");
 		if (cancelToken.Cancelled())
@@ -253,7 +253,7 @@ public class StorageDataReader
 		return _DataReader.Read();
 	}
 
-	public void GetValues(object[] values)
+	internal void GetValues(object[] values)
 	{
 		if (_TableReader != null)
 			_TableReader.GetValues(values);
@@ -263,7 +263,7 @@ public class StorageDataReader
 			_DataReader.GetValues(values);
 	}
 
-	public object GetValue(int i)
+	internal object GetValue(int i)
 	{
 		if (_TableReader != null)
 			return _TableReader.GetValue(i);
@@ -275,7 +275,7 @@ public class StorageDataReader
 	}
 
 	
-	public bool IsDBNull(int i)
+	internal bool IsDBNull(int i)
 	{
 		if (_TableReader != null)
 			return _TableReader.IsDBNull(i);
@@ -287,7 +287,7 @@ public class StorageDataReader
 	}
 
 
-	public async Task<DataTable> GetSchemaTableAsync(CancellationToken cancelToken)
+	internal async Task<DataTable> GetSchemaTableAsync(CancellationToken cancelToken)
 	{
 		if (_TableReader != null)
 			return _TableReader.GetSchemaTable();
@@ -311,7 +311,7 @@ public class StorageDataReader
 		return _DataReader.GetSchemaTable();
 	}
 
-	public byte[] GetBytesWithMaxCapacity(int iCol, int maxNumBytesToReturn)
+	internal byte[] GetBytesWithMaxCapacity(int iCol, int maxNumBytesToReturn)
 	{
 		if (maxNumBytesToReturn <= 0)
 		{
@@ -342,7 +342,7 @@ public class StorageDataReader
 	}
 
 
-	public async Task<byte[]> GetBytesWithMaxCapacityAsync(int iCol, int maxNumBytesToReturn, CancellationToken cancelToken)
+	internal async Task<byte[]> GetBytesWithMaxCapacityAsync(int iCol, int maxNumBytesToReturn, CancellationToken cancelToken)
 	{
 		if (maxNumBytesToReturn <= 0)
 		{
@@ -368,7 +368,7 @@ public class StorageDataReader
 
 
 
-	public string GetCharsWithMaxCapacity(int iCol, int maxCharsToReturn)
+	internal string GetCharsWithMaxCapacity(int iCol, int maxCharsToReturn)
 	{
 		if (maxCharsToReturn <= 0)
 		{
@@ -406,7 +406,7 @@ public class StorageDataReader
 		return result;
 	}
 
-	public async Task<string> GetCharsWithMaxCapacityAsync(int iCol, int maxCharsToReturn, CancellationToken cancelToken)
+	internal async Task<string> GetCharsWithMaxCapacityAsync(int iCol, int maxCharsToReturn, CancellationToken cancelToken)
 	{
 		if (maxCharsToReturn <= 0)
 		{
@@ -426,12 +426,12 @@ public class StorageDataReader
 		return result;
 	}
 
-	public string GetXmlWithMaxCapacity(int iCol, int maxCharsToReturn)
+	internal string GetXmlWithMaxCapacity(int iCol, int maxCharsToReturn)
 	{
 		return GetXmlWithMaxCapacity(iCol, maxCharsToReturn, null);
 	}
 
-	public string GetXmlWithMaxCapacity(int iCol, int maxCharsToReturn, QueryKeepStoringData _KeepStoringDataDelegate)
+	internal string GetXmlWithMaxCapacity(int iCol, int maxCharsToReturn, QueryKeepStoringData _KeepStoringDataDelegate)
 	{
 		NotImplementedException ex = new("GetXmlWithMaxCapacity()");
 		Diag.Ex(ex);
@@ -499,7 +499,7 @@ public class StorageDataReader
 
 
 
-	public async Task<T> GetValueAsync<T>(int i, CancellationToken cancelToken)
+	internal async Task<T> GetValueAsync<T>(int i, CancellationToken cancelToken)
 	{
 		try
 		{
@@ -528,7 +528,7 @@ public class StorageDataReader
 
 
 	/*
-	public object GetSerializedWithMaxCapacity(int i, int maxReturnBytes)
+	internal object GetSerializedWithMaxCapacity(int i, int maxReturnBytes)
 	{
 		if (_DataStorage == null)
 			return GetBytesWithMaxCapacity(i, maxReturnBytes);

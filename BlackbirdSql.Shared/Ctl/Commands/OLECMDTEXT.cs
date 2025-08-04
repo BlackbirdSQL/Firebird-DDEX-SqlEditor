@@ -13,9 +13,9 @@ namespace BlackbirdSql.Shared.Ctl.Commands;
 [ComVisible(false)]
 
 
-public sealed class OLECMDTEXT
+internal sealed class OLECMDTEXT
 {
-	public static string GetText(IntPtr pCmdTextInt)
+	internal static string GetText(IntPtr pCmdTextInt)
 	{
 		Microsoft.VisualStudio.OLE.Interop.OLECMDTEXT oLECMDTEXT = (Microsoft.VisualStudio.OLE.Interop.OLECMDTEXT)Marshal.PtrToStructure(pCmdTextInt, typeof(Microsoft.VisualStudio.OLE.Interop.OLECMDTEXT));
 		IntPtr intPtr = Marshal.OffsetOf(typeof(Microsoft.VisualStudio.OLE.Interop.OLECMDTEXT), "rgwz");
@@ -31,7 +31,7 @@ public sealed class OLECMDTEXT
 		return stringBuilder.ToString();
 	}
 
-	public static void SetText(IntPtr pCmdTextInt, string text)
+	internal static void SetText(IntPtr pCmdTextInt, string text)
 	{
 		Microsoft.VisualStudio.OLE.Interop.OLECMDTEXT obj = (Microsoft.VisualStudio.OLE.Interop.OLECMDTEXT)Marshal.PtrToStructure(pCmdTextInt, typeof(Microsoft.VisualStudio.OLE.Interop.OLECMDTEXT));
 		char[] array = text.ToCharArray();

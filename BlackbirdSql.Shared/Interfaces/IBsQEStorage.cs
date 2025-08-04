@@ -18,7 +18,7 @@ using BlackbirdSql.Shared.Events;
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution
 namespace BlackbirdSql.Shared.Interfaces
 {
-	public interface IBsQEStorage : IBsDataStorage, IDisposable
+	internal interface IBsQEStorage : IBsDataStorage, IDisposable
 	{
 		int MaxCharsToStore { get; set; }
 

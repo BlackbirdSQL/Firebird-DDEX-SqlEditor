@@ -14,11 +14,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class RunTimePartitionSummaryType
+internal class RunTimePartitionSummaryType
 {
 	private RunTimePartitionSummaryTypePartitionsAccessed partitionsAccessedField;
 
-	public RunTimePartitionSummaryTypePartitionsAccessed PartitionsAccessed
+	internal RunTimePartitionSummaryTypePartitionsAccessed PartitionsAccessed
 	{
 		get
 		{

@@ -8,9 +8,9 @@ using System.Collections;
 namespace BlackbirdSql.Shared.Ctl;
 
 
-public class BitArrayCollection : CollectionBase
+internal class BitArrayCollection : CollectionBase
 {
-	public BitArray this[int index]
+	internal BitArray this[int index]
 	{
 		get
 		{
@@ -36,12 +36,12 @@ public class BitArrayCollection : CollectionBase
 		AddRange(value);
 	}
 
-	public int Add(BitArray cell)
+	internal int Add(BitArray cell)
 	{
 		return List.Add(cell);
 	}
 
-	public void AddRange(BitArray[] cells)
+	internal void AddRange(BitArray[] cells)
 	{
 		for (int i = 0; i < cells.Length; i++)
 		{
@@ -49,7 +49,7 @@ public class BitArrayCollection : CollectionBase
 		}
 	}
 
-	public void AddRange(BitArrayCollection value)
+	internal void AddRange(BitArrayCollection value)
 	{
 		for (int i = 0; i < value.Count; i++)
 		{
@@ -57,27 +57,27 @@ public class BitArrayCollection : CollectionBase
 		}
 	}
 
-	public bool Contains(BitArray array)
+	internal bool Contains(BitArray array)
 	{
 		return List.Contains(array);
 	}
 
-	public void CopyTo(BitArray[] array, int index)
+	internal void CopyTo(BitArray[] array, int index)
 	{
 		List.CopyTo(array, index);
 	}
 
-	public int IndexOf(BitArray array)
+	internal int IndexOf(BitArray array)
 	{
 		return List.IndexOf(array);
 	}
 
-	public void Insert(int index, BitArray array)
+	internal void Insert(int index, BitArray array)
 	{
 		List.Insert(index, array);
 	}
 
-	public void Remove(BitArray array)
+	internal void Remove(BitArray array)
 	{
 		List.Remove(array);
 	}

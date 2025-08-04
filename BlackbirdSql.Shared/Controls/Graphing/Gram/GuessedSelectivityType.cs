@@ -14,11 +14,11 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class GuessedSelectivityType
+internal class GuessedSelectivityType
 {
 	private ObjectType spatialField;
 
-	public ObjectType Spatial
+	internal ObjectType Spatial
 	{
 		get
 		{

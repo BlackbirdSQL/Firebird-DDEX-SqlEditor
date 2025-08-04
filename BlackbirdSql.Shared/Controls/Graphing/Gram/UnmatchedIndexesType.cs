@@ -13,12 +13,12 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class UnmatchedIndexesType
+internal class UnmatchedIndexesType
 {
 	private ObjectType[] parameterizationField;
 
 	[XmlArrayItem("Object", IsNullable = false)]
-	public ObjectType[] Parameterization
+	internal ObjectType[] Parameterization
 	{
 		get
 		{

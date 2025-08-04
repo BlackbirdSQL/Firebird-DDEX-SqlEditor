@@ -16,7 +16,7 @@ namespace BlackbirdSql.Shared.Controls.Graphing.Gram;
 [DebuggerStepThrough]
 [DesignerCategory("code")]
 [XmlType(Namespace = LibraryData.C_ShowPlanNamespace)]
-public class ColumnReferenceType
+internal class ColumnReferenceType
 {
 	private ScalarType scalarOperatorField;
 
@@ -44,7 +44,7 @@ public class ColumnReferenceType
 
 	private string parameterRuntimeValueField;
 
-	public ScalarType ScalarOperator
+	internal ScalarType ScalarOperator
 	{
 		get
 		{
@@ -56,7 +56,7 @@ public class ColumnReferenceType
 		}
 	}
 
-	public InternalInfoType InternalInfo
+	internal InternalInfoType InternalInfo
 	{
 		get
 		{
@@ -69,7 +69,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public string Server
+	internal string Server
 	{
 		get
 		{
@@ -82,7 +82,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public string Database
+	internal string Database
 	{
 		get
 		{
@@ -95,7 +95,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public string Schema
+	internal string Schema
 	{
 		get
 		{
@@ -108,7 +108,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public string Table
+	internal string Table
 	{
 		get
 		{
@@ -121,7 +121,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public string Alias
+	internal string Alias
 	{
 		get
 		{
@@ -134,7 +134,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public string Column
+	internal string Column
 	{
 		get
 		{
@@ -147,7 +147,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public bool ComputedColumn
+	internal bool ComputedColumn
 	{
 		get
 		{
@@ -160,7 +160,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlIgnore]
-	public bool ComputedColumnSpecified
+	internal bool ComputedColumnSpecified
 	{
 		get
 		{
@@ -173,7 +173,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public string ParameterDataType
+	internal string ParameterDataType
 	{
 		get
 		{
@@ -186,7 +186,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public string ParameterCompiledValue
+	internal string ParameterCompiledValue
 	{
 		get
 		{
@@ -199,7 +199,7 @@ public class ColumnReferenceType
 	}
 
 	[XmlAttribute]
-	public string ParameterRuntimeValue
+	internal string ParameterRuntimeValue
 	{
 		get
 		{
