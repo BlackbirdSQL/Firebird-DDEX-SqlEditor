@@ -11,7 +11,7 @@ The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"*
 
 
 ### Features
-* Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.3.1.0. 
+* Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.3.3.0. 
 * Microsoft SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions, SQL scripts and `.fbsql` files.
 </br>__Note:__ The Firebird Language Service is a phased implementation of Microsoft's Transaction-SQL SSDT language service. Intellisense may report Firebird specific grammar as errors or warnings but still successfully execute.
 </br>__New:__ Full support for multi-statement SQL scripts and iSql.
