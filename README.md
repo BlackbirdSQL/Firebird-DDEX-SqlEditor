@@ -66,7 +66,7 @@ For a clearer understanding of BlackbirdSql's RunningConnectionTable management 
 
 ## Documentation
 
-* [ADO.NET provider](ado-net.md)
+* [ADO.NET provider](Docs/ado-net.md)
 * [Using ADO.NET edmx with .NET](edmx-NET.md)
 </br>
 
