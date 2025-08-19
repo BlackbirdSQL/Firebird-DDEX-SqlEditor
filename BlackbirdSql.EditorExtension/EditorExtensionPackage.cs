@@ -271,7 +271,6 @@ public abstract class EditorExtensionPackage : LanguageExtensionPackage, IBsEdit
 		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState)
 			return;
 
-
 		ProgressAsync(progress, "Finalizing Editor...").Forget();
 
 

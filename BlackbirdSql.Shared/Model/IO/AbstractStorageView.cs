@@ -38,6 +38,8 @@ internal abstract class AbstractStorageView : IBsStorageView, IDisposable
 
 
 
+	public abstract bool IsStorageClosed { get; }
+
 	internal StorageDataEntity StorageViewDataEntity => _StorageViewDataEntity;
 
 	public abstract long EnsureRowsInBuf(long startRow, long totalRowCount);
@@ -192,7 +194,7 @@ internal abstract class AbstractStorageView : IBsStorageView, IDisposable
 				else if (num3 > numericPrecision3)
 				{
 					int num4 = numericPrecision3 == 0 ? 1 : 0;
-					result = result.Remove(num2 + numericPrecision3 + 1 + num4);
+					result = result[..(num2 + numericPrecision3 + 1 + num4)];
 				}
 			}
 		}
@@ -228,7 +230,6 @@ internal abstract class AbstractStorageView : IBsStorageView, IDisposable
 
 	public abstract int ColumnCount { get; }
 
-	public abstract bool IsStorageClosed();
 
 	public abstract void DeleteRow(long iRow);
 

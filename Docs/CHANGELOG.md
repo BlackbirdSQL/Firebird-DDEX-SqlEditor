@@ -3,7 +3,24 @@
 ## Change log
 
 
-### v14.5.4.001 Interim push.
+### v14.6.0.0 Added built-in support for Firebird 2, 3, 4 and 5 embedded databases and minor bug fixes.
+
+#### New / Enhancements
+- Added built-in support for Firebird 2, 3, 4 and 5 embedded databases.
+- Added __User Option__ `BlackbirdSQL Server Tools > Ddex Provider > General > Always activate output pane`. Enabling this option causes the BlackbirdSql output pane to be activated whenever there is output.
+#### Fixes
+- Ensured event hooks are attached to Server Explorer before any event handling that may be required.
+- Fixed intermittent deadlock when user options are loaded.
+- Fixed a bug in the Options pages where the single-click functionality of an option was not initially activated if the value was not the default and the font had been changed to bold in the DialogPage.
+
+
+#### Tips
+- Support for Firebird versions 3 and 4/5 is exclusive. By default Firebird 3 is installed. To activate support for versions 4 and 5, shutdown Visual Studio and run Setup.bat in the FbSetup45 folder in the Blackbird extension folder from within Windows Explorer. To then reactivate support for version 3, shutdown Visual Studio and run Setup.bat in the FbSetup3 folder.
+- When setting up an embedded connection for Firebird 2 set the ServerType to 'Embedded' and use ClientLibrary 'fbembed'. For Firebird 3, 4 and 5 use the ClientLibrary 'fbclient'.
+
+
+
+### v14.5.4.1001 Interim push.
 
 #### New / Enhancements
 - None.

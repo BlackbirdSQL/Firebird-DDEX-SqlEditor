@@ -34,9 +34,7 @@
 		</Compile>
 		<Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
 		<Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
-		<Compile Include="Controls\Widgets\ExceptionSafeButton.cs">
-		  <SubType>Component</SubType>
-		</Compile>
+		<Compile Include="Controls\Widgets\ExceptionSafeButton.cs" />
 		<Compile Include="Evs.cs" />
 		<Compile Include="Enums\EnRctKeyType.cs" />
 		<Compile Include="Events\ConnectionChangedEventArgs.cs" />

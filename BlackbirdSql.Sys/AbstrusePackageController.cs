@@ -57,7 +57,8 @@ internal abstract class AbstrusePackageController : IBsPackageController
 
 		_Instance = this;
 
-
+		// Temp: Exclude early threading calls
+		// /*
 		if (!ThreadHelper.CheckAccess())
 		{
 			// Fire and forget
@@ -72,7 +73,8 @@ internal abstract class AbstrusePackageController : IBsPackageController
 		}
 		else
 		{
-			Initialize();
+		// */
+		Initialize();
 		}
 
 
@@ -667,7 +669,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 	/// updated if it references EntityFramework.Firebird.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
+	// [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	protected void AddProjectEventHandlers(Project project)
 	{
 		if (ApcManager.SolutionClosing || ApcManager.SolutionObject == null)
@@ -728,7 +730,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 	/// handling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract bool AdviseUnsafeEventsAsyeu();
+	public abstract bool AdviseUnsafeEventsEui();
 
 
 
@@ -737,7 +739,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 	/// Asynchronously enables solution and running document table event handling
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract Task<bool> AdviseUnsafeEventsAsync();
+	public abstract Task<bool> AdviseUnsafeEventsEuiAsync();
 
 
 
@@ -913,14 +915,13 @@ internal abstract class AbstrusePackageController : IBsPackageController
 	protected abstract void InternalShutdownDte();
 
 
-	public abstract void RegisterProjectEventHandlersAsyeu();
+	public abstract void RegisterProjectEventHandlersEui();
 
 
-	public abstract Task<bool> RegisterProjectEventHandlersAsync();
+	public abstract Task<bool> RegisterProjectEventHandlersEuiAsync();
 
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	private void RemoveProjectEventHandlers(IVsHierarchy pRealHierarchy)
 	{
 		if (_ProjectReferencesEvents == null || _ProjectReferencesEvents.Count == 0)
@@ -1031,7 +1032,6 @@ internal abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	protected void OnProjectItemAdded(ProjectItem projectItem)
 	{
 		if (_OnProjectItemAddedEvent == null || projectItem.ContainingProject == null
@@ -1045,7 +1045,6 @@ internal abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	protected void OnProjectItemRemoved(ProjectItem projectItem)
 	{
 		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnProjectItemRemoved), projectItem.ContainingProject.Name);
@@ -1062,7 +1061,6 @@ internal abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	protected void OnProjectItemRenamed(ProjectItem projectItem, string oldName)
 	{
 		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnProjectItemRenamed), projectItem.ContainingProject.Name);
@@ -1166,7 +1164,6 @@ internal abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
 	{
 		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnAfterLoadProject));
@@ -1178,7 +1175,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 
 		if (project.Properties == null)
 		{
-			_ = Task.Factory.StartNew(async () => await OnAfterLoadProjectAsync(project),
+			_ = Task.Factory.StartNew(async () => await OnAfterLoadProjectEuiAsync(project),
 				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 
 			return VSConstants.S_OK;
@@ -1236,7 +1233,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 	/// <param name="project"></param>
 	/// <returns></returns>
 	// ---------------------------------------------------------------------------------
-	private async Task OnAfterLoadProjectAsync(Project project)
+	private async Task OnAfterLoadProjectEuiAsync(Project project)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -1248,7 +1245,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 				await Task.Delay(50);
 
 				// Fire and forget.
-				Task.Factory.StartNew(() => OnAfterLoadProjectAsync(project),
+				Task.Factory.StartNew(() => OnAfterLoadProjectEuiAsync(project),
 					default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
 					TaskScheduler.Default).Forget();
 
@@ -1293,7 +1290,6 @@ internal abstract class AbstrusePackageController : IBsPackageController
 	/// Implements <see cref="IVsSolutionEvents.OnAfterOpenProject"/>,
 	/// <see cref="IVsSolutionEvents2.OnAfterOpenProject"/> and <see cref="IVsSolutionEvents3.OnAfterOpenProject"/>
 	/// </summary>
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
 	{
 		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnAfterOpenProject));
@@ -1305,7 +1301,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 
 		if (project.Properties == null)
 		{
-			_ = Task.Factory.StartNew(async () => await OnAfterOpenProjectAsync(project, fAdded),
+			_ = Task.Factory.StartNew(async () => await OnAfterOpenProjectEuiAsync(project, fAdded),
 				default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 
 			return VSConstants.S_OK;
@@ -1363,7 +1359,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 	/// <param name="project"></param>
 	/// <returns></returns>
 	// ---------------------------------------------------------------------------------
-	private async Task OnAfterOpenProjectAsync(Project project, int fAdded)
+	private async Task OnAfterOpenProjectEuiAsync(Project project, int fAdded)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -1375,7 +1371,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 				await Task.Delay(50);
 
 				// Fire and forget.
-				Task.Factory.StartNew(() => OnAfterOpenProjectAsync(project, fAdded),
+				Task.Factory.StartNew(() => OnAfterOpenProjectEuiAsync(project, fAdded),
 					default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
 					TaskScheduler.Default).Forget();
 
@@ -1428,7 +1424,6 @@ internal abstract class AbstrusePackageController : IBsPackageController
 	/// and <see cref="IVsSolutionEvents3.OnBeforeCloseProject"/>
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
 	{
 		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnBeforeCloseProject), $"Guid: {pHierarchy.Kind()}.");
@@ -1459,7 +1454,6 @@ internal abstract class AbstrusePackageController : IBsPackageController
 
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
 	{
 		// Evs.Trace(typeof(AbstrusePackageController), nameof(OnBeforeUnloadProject));
@@ -1475,7 +1469,7 @@ internal abstract class AbstrusePackageController : IBsPackageController
 	{
 		// Diag.DebugTrace("OnLoadSolutionOptions()");
 
-		RegisterProjectEventHandlersAsyeu();
+		RegisterProjectEventHandlersEui();
 
 
 		if (_SolutionLoaded)

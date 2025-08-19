@@ -366,6 +366,22 @@ internal static class NativeDbExtensionMembers
 		return NativeDb.DatabaseEngineSvc.ParseConnectionServerVersion_(@this);
 	}
 
+
+
+	internal static bool OpenDb(this IDbConnection @this)
+	{
+		return NativeDb.DatabaseEngineSvc.OpenDb_(@this);
+	}
+
+
+
+	internal static async Task<bool> OpenDbAsync(this IDbConnection @this, CancellationToken cancelToken)
+	{
+		return await NativeDb.DatabaseEngineSvc.OpenDbAsync_(@this, cancelToken);
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Opens or verifies a connection. The Connection must exists.

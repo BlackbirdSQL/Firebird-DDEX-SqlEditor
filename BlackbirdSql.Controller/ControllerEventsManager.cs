@@ -123,7 +123,7 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	public override void Initialize()
 	{
-		Evs.Trace(GetType(), nameof(Initialize));
+		// Evs.Trace(GetType(), nameof(Initialize));
 
 		_TaskHandlerTaskName = "Validation";
 
@@ -390,7 +390,7 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 		TaskScheduler scheduler = TaskScheduler.Default;
 
 		Task<bool> payloadAsync() =>
-			ValidateSolutionPayloadAsync(asyncCancellationToken, userCancellationToken);
+			ValidateSolutionPayloadEuiAsync(asyncCancellationToken, userCancellationToken);
 
 		// Projects may have already been opened. They may be irrelevant eg. unloaded
 		// project items or other non-project files, but we have to check anyway.
@@ -574,7 +574,7 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 	/// app.config invariant and Entity Framework settings.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	internal void ValidateSolutionAsyeu(Stream stream = null)
+	internal void ValidateSolutionEui(Stream stream = null)
 	{
 		if (!EventValidationEnter())
 			return;
@@ -651,7 +651,7 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 	/// The _AsyncPayloadLauncher payload.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private async Task<bool> ValidateSolutionPayloadAsync(CancellationToken asyncCancellationToken,
+	private async Task<bool> ValidateSolutionPayloadEuiAsync(CancellationToken asyncCancellationToken,
 		CancellationToken userCancellationToken)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -1051,14 +1051,14 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 
 	private void OnLoadSolutionOptions(Stream stream)
 	{
-		Evs.Trace(GetType(), nameof(OnLoadSolutionOptions));
+		// Evs.Trace(GetType(), nameof(OnLoadSolutionOptions));
 
 		// Register configured connections.
 		// Check for loading here otherwise an exception will be thrown.
 		if (!RctManager.Loading)
 		{
 			RctManager.ClearVolatileConnections();
-			RctManager.LoadConfiguredConnections();
+			RctManager.EnsureLoaded(true);
 		}
 
 		NativeDb.ReindexEntityFrameworkAssembliesAsyui();
@@ -1074,7 +1074,7 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private int OnAfterCloseSolution(object pUnkReserved)
 	{
-		Evs.Trace(GetType(), nameof(OnAfterCloseSolution));
+		// Evs.Trace(GetType(), nameof(OnAfterCloseSolution));
 
 		// Reset configured connections registration and the unique database connection
 		// DatasetKeys for rebuild on next soluton load.
@@ -1095,11 +1095,11 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 		if (project.EditableObject() == null)
 			return VSConstants.S_OK;
 
-		Evs.Trace(GetType(), nameof(OnAfterOpenProject), Resources.LabelProjectName.Fmt(project?.Name));
+		// Evs.Trace(GetType(), nameof(OnAfterOpenProject), Resources.LabelProjectName.Fmt(project?.Name));
 
 		NativeDb.ReindexEntityFrameworkAssembliesAsyui(project);
 
-		RctManager.LoadApplicationConnectionsAsyui(project);
+		RctManager.LoadApplicationConnectionsAsyup(project);
 
 		return VSConstants.S_OK;
 	}
@@ -1125,7 +1125,7 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 
 	private int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
 	{
-		Evs.Trace(GetType(), nameof(OnBeforeDocumentWindowShow));
+		// Evs.Trace(GetType(), nameof(OnBeforeDocumentWindowShow));
 
 		Diag.ThrowIfNotOnUIThread();
 
@@ -1171,7 +1171,7 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 
 	private void OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
 	{
-		Evs.Trace(GetType(), nameof(OnBuildDone));
+		// Evs.Trace(GetType(), nameof(OnBuildDone));
 
 		NativeDb.ReindexEntityFrameworkAssembliesAsyui();
 	}
@@ -1179,7 +1179,7 @@ internal sealed class ControllerEventsManager : AbstractEventsManager
 
 	private int OnQueryCloseProject(IVsHierarchy hierarchy, int removing, ref int cancel)
 	{
-		Evs.Trace(GetType(), nameof(OnQueryCloseProject));
+		// Evs.Trace(GetType(), nameof(OnQueryCloseProject));
 
 		if (removing.AsBool())
 			return VSConstants.S_OK;

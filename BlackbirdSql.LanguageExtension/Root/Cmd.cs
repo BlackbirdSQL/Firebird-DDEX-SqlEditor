@@ -112,7 +112,7 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 					return database.Schemas[schema].UserDefinedClrTypes[name];
 				}
 			default:
-				return BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbSmoSystemDataTypeLookup.Instance.Find(metadataType);
+				return BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaSmoSystemDataTypeLookup.Instance.Find(metadataType);
 		}
 	}
 
@@ -373,22 +373,22 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 
 
 
-	public abstract class OrderedCollectionHelperI<T, S> : BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractDatabaseObject.OrderedCollectionHelperBaseI<T, S> where T : class, IMetadataObject where S : NamedSmoObject
+	public abstract class OrderedCollectionHelperI<T, S> : BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractSmoMetaDatabaseObjectBase.OrderedCollectionHelperBaseI<T, S> where T : class, IMetadataObject where S : NamedSmoObject
 	{
-		public OrderedCollectionHelperI(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbDatabase database)
+		public OrderedCollectionHelperI(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaDatabase database)
 		{
-			m_database = database;
+			_Database = database;
 		}
 
 
-		protected readonly BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbDatabase m_database;
+		protected readonly BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaDatabase _Database;
 
-		protected override BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbMetadataServer Server => m_database.Server;
+		protected override BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaServer Server => _Database.Server;
 
 
 		protected override Microsoft.SqlServer.Management.SqlParser.Metadata.CollationInfo GetCollationInfo()
 		{
-			return m_database.CollationInfo;
+			return _Database.CollationInfo;
 		}
 	}
 
@@ -396,7 +396,7 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 
 	public class StatisticsCollectionHelperI : OrderedCollectionHelperI<IStatistics, Statistic>
 	{
-		public StatisticsCollectionHelperI(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbDatabase database, IDatabaseTable dbTable, StatisticCollection smoCollection)
+		public StatisticsCollectionHelperI(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaDatabase database, IDatabaseTable dbTable, StatisticCollection smoCollection)
 			: base(database)
 		{
 			this.dbTable = dbTable;
@@ -409,48 +409,48 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 		private readonly IDatabaseTable dbTable;
 
 
-		protected override BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractDatabaseObject.IMetadataListI<Statistic> RetrieveSmoMetadataList()
+		protected override BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractSmoMetaDatabaseObjectBase.IMetadataListI<Statistic> RetrieveSmoMetadataList()
 		{
-			return new BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractDatabaseObject.SmoCollectionMetadataListI<Statistic>(m_database.Server, smoCollection);
+			return new BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractSmoMetaDatabaseObjectBase.SmoCollectionMetadataListI<Statistic>(_Database.Server, smoCollection);
 		}
 
 		protected override IStatistics CreateMetadataObject(Statistic smoObject)
 		{
-			return new BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbStatistics(m_database, dbTable, smoObject);
+			return new BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaStatistics(_Database, dbTable, smoObject);
 		}
 	}
 
 
 
-	public class StatisticsColumnCollectionHelperI : BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractDatabaseObject.CollectionHelperBaseI<IColumn, IMetadataOrderedCollection<IColumn>>
+	public class StatisticsColumnCollectionHelperI : BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractSmoMetaDatabaseObjectBase.CollectionHelperBaseI<IColumn, IMetadataOrderedCollection<IColumn>>
 	{
-		public StatisticsColumnCollectionHelperI(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbDatabase database, IDatabaseTable dbTable, StatisticColumnCollection smoCollection)
+		public StatisticsColumnCollectionHelperI(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaDatabase database, IDatabaseTable dbTable, StatisticColumnCollection smoCollection)
 		{
-			this.database = database;
-			this.dbTable = dbTable;
-			this.smoCollection = smoCollection;
+			this._Database = database;
+			this._DbTable = dbTable;
+			this._SmoCollection = smoCollection;
 		}
 
 
-		private readonly BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbDatabase database;
+		private readonly BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaDatabase _Database;
 
-		private readonly StatisticColumnCollection smoCollection;
+		private readonly StatisticColumnCollection _SmoCollection;
 
-		private readonly IDatabaseTable dbTable;
+		private readonly IDatabaseTable _DbTable;
 
-		protected override BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbMetadataServer Server => database.Server;
+		protected override BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaServer Server => _Database.Server;
 
 
 		protected override IMetadataOrderedCollection<IColumn> CreateMetadataCollection()
 		{
-			Microsoft.SqlServer.Management.SqlParser.Metadata.CollationInfo collationInfo = dbTable.CollationInfo;
-			BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractDatabaseObject.SmoCollectionMetadataListI<StatisticColumn> smoCollectionMetadataList = new BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractDatabaseObject.SmoCollectionMetadataListI<StatisticColumn>(Server, smoCollection);
-			IColumn[] array = new IColumn[((BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractDatabaseObject.IMetadataListI<StatisticColumn>)smoCollectionMetadataList).Count];
+			Microsoft.SqlServer.Management.SqlParser.Metadata.CollationInfo collationInfo = _DbTable.CollationInfo;
+			BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractSmoMetaDatabaseObjectBase.SmoCollectionMetadataListI<StatisticColumn> smoCollectionMetadataList = new BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractSmoMetaDatabaseObjectBase.SmoCollectionMetadataListI<StatisticColumn>(Server, _SmoCollection);
+			IColumn[] array = new IColumn[((BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractSmoMetaDatabaseObjectBase.IMetadataListI<StatisticColumn>)smoCollectionMetadataList).Count];
 			Collection<IColumn>.CreateOrderedCollection(collationInfo);
 			int num = 0;
 			foreach (StatisticColumn item in (IEnumerable<StatisticColumn>)smoCollectionMetadataList)
 			{
-				array[num++] = dbTable.Columns[item.Name];
+				array[num++] = _DbTable.Columns[item.Name];
 			}
 			return Collection<IColumn>.CreateOrderedCollection(collationInfo, array);
 		}
@@ -478,7 +478,7 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 
 		public IExecutionContext GetExecutionContext()
 		{
-			IExecutionContextFactory executionContext = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbMetadataFactory.Instance.ExecutionContext;
+			IExecutionContextFactory executionContext = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaSmoMetadataFactory.Instance.ExecutionContext;
 			switch (ContextType)
 			{
 				case ExecutionContextType.Caller:
@@ -700,10 +700,10 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 
 	public static class StoredProcedureI
 	{
-		public static IMetadataOrderedCollection<IParameter> CreateParameterCollection(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbDatabase database, StoredProcedureParameterCollection metadataCollection)
+		public static IMetadataOrderedCollection<IParameter> CreateParameterCollection(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaDatabase database, StoredProcedureParameterCollection metadataCollection)
 		{
 			_ = database.Parent;
-			IParameterFactory parameter = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbMetadataFactory.Instance.Parameter;
+			IParameterFactory parameter = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaSmoMetadataFactory.Instance.Parameter;
 			database.Parent.TryRefreshSmoCollection(metadataCollection, SmoConfig.SmoInitFields.GetInitFields(typeof(StoredProcedureParameter)));
 			ParameterCollection parameterCollection = new ParameterCollection(metadataCollection.Count, database.CollationInfo);
 			foreach (StoredProcedureParameter item in metadataCollection)
@@ -732,7 +732,7 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 					}
 					catch (SmoException)
 					{
-						IScalarDataType unknownScalar = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbMetadataFactory.Instance.DataType.UnknownScalar;
+						IScalarDataType unknownScalar = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaSmoMetadataFactory.Instance.DataType.UnknownScalar;
 						parameter2 = parameter.CreateScalarParameter(item.Name, unknownScalar, item.IsOutputParameter, item.DefaultValue);
 					}
 				}
@@ -741,14 +741,14 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 			return parameterCollection;
 		}
 
-		public static IMetadataOrderedCollection<IParameter> CreateParameterCollection(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbDatabase database, Microsoft.SqlServer.Management.Smo.StoredProcedure metadataStoredProc)
+		public static IMetadataOrderedCollection<IParameter> CreateParameterCollection(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaDatabase database, Microsoft.SqlServer.Management.Smo.StoredProcedure metadataStoredProc)
 		{
 			IMetadataOrderedCollection<IParameter> metadataOrderedCollection = null;
 			try
 			{
 				if (metadataStoredProc.IsSystemObject && !metadataStoredProc.IsEncrypted)
 				{
-					metadataOrderedCollection = MetadataProviderUtils.GetStoredProcParameters(metadataStoredProc.TextHeader, parseOptions: metadataStoredProc.QuotedIdentifierStatus ? ParseOptionsQuotedIdentifierSet : ParseOptionsQuotedIdentifierNotSet, metadataFactory: BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbMetadataFactory.Instance, dataTypeLookup: BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbSmoSystemDataTypeLookup.Instance, collationInfo: database.CollationInfo);
+					metadataOrderedCollection = MetadataProviderUtils.GetStoredProcParameters(metadataStoredProc.TextHeader, parseOptions: metadataStoredProc.QuotedIdentifierStatus ? ParseOptionsQuotedIdentifierSet : ParseOptionsQuotedIdentifierNotSet, metadataFactory: BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaSmoMetadataFactory.Instance, dataTypeLookup: BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaSmoSystemDataTypeLookup.Instance, collationInfo: database.CollationInfo);
 				}
 			}
 			catch (PropertyCannotBeRetrievedException)
@@ -767,22 +767,22 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 
 
 
-	public abstract class UnorderedCollectionHelperI<T, S> : BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractDatabaseObject.UnorderedCollectionHelperBaseI<T, S> where T : class, IMetadataObject where S : NamedSmoObject
+	public abstract class UnorderedCollectionHelperI<T, S> : BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.AbstractSmoMetaDatabaseObjectBase.UnorderedCollectionHelperBaseI<T, S> where T : class, IMetadataObject where S : NamedSmoObject
 	{
-		public UnorderedCollectionHelperI(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbDatabase database)
+		public UnorderedCollectionHelperI(BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaDatabase database)
 		{
-			m_database = database;
+			_Database = database;
 		}
 
 
-		protected readonly BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbDatabase m_database;
+		protected readonly BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaDatabase _Database;
 
-		protected override BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbMetadataServer Server => m_database.Server;
+		protected override BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaServer Server => _Database.Server;
 
 
 		protected override Microsoft.SqlServer.Management.SqlParser.Metadata.CollationInfo GetCollationInfo()
 		{
-			return m_database.CollationInfo;
+			return _Database.CollationInfo;
 		}
 	}
 
@@ -790,10 +790,10 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 
 	public static class UserDefinedFunctionI
 	{
-		public static ParameterCollection CreateParameterCollection(Model.SmoMetadataProvider.LsbDatabase database, ParameterCollectionBase metadataCollection, IDictionary<string, object> moduleInfo)
+		public static ParameterCollection CreateParameterCollection(Model.SmoMetadataProvider.SmoMetaDatabase database, ParameterCollectionBase metadataCollection, IDictionary<string, object> moduleInfo)
 		{
 			_ = database.Parent;
-			IParameterFactory parameter = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbMetadataFactory.Instance.Parameter;
+			IParameterFactory parameter = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaSmoMetadataFactory.Instance.Parameter;
 			database.Parent.TryRefreshSmoCollection(metadataCollection, SmoConfig.SmoInitFields.GetInitFields(typeof(UserDefinedFunctionParameter)));
 			ParameterCollection parameterCollection = new ParameterCollection(metadataCollection.Count, database.CollationInfo);
 			IList<IDictionary<string, object>> parametersInfo = ((moduleInfo != null) ? ((IList<IDictionary<string, object>>)moduleInfo[PropertyKeys.Parameters]) : null);
@@ -807,7 +807,7 @@ internal abstract class Cmd : BlackbirdSql.Cmd
 				}
 				catch (SmoException)
 				{
-					dataType = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.LsbMetadataFactory.Instance.DataType.UnknownScalar;
+					dataType = BlackbirdSql.LanguageExtension.Model.SmoMetadataProvider.SmoMetaSmoMetadataFactory.Instance.DataType.UnknownScalar;
 				}
 				if (dataType is IScalarDataType dataType2)
 				{

@@ -29,7 +29,7 @@ namespace BlackbirdSql.Core.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public ControlsResources() {
+        internal ControlsResources() {
         }
         
         /// <summary>
@@ -295,7 +295,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new Session connection. Continue?.
+        ///   Looks up a localized string similar to The settings provided will create a new connection and convert the previous connection to a Session connection. Continue?.
         /// </summary>
         internal static string RctManager_TextNewSessionConnection {
             get {
@@ -304,7 +304,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new Session connection.
+        ///   Looks up a localized string similar to The settings provided will convert the previous connection to Session connection.
         ///The Proposed Database Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
         ///
         ///Continue?.
@@ -316,7 +316,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new Session connection.
+        ///   Looks up a localized string similar to The settings provided will convert the previous connection to Session connection.
         ///The Proposed Connection Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
         ///
         ///Continue?.

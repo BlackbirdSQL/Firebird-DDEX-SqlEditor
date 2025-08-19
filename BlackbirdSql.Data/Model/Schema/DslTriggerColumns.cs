@@ -5,6 +5,7 @@
 
 using System.Data;
 using BlackbirdSql.Sys.Interfaces;
+using FirebirdSql.Data.FirebirdClient;
 
 
 
@@ -16,21 +17,25 @@ internal class DslTriggerColumns : DslColumns
 {
 	public DslTriggerColumns() : base()
 	{
-		// Evs.Trace(GetType(), "DslTriggerColumns.DslTriggerColumns");
+	}
+
+
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		base.InitializeParameters(connection);
 
 		_ParentType = "Trigger";
 		_ObjectType = "TriggerColumn";
-		_ParentColumn = "dep.rdb$dependent_name";
-		_OrderingField = "dep.rdb$dependent_name";
-		_FromClause = @"rdb$dependencies dep
-                INNER JOIN rdb$triggers trg
-                    ON trg.rdb$trigger_name = dep.rdb$dependent_name AND trg.rdb$relation_name = dep.rdb$depended_on_name
-				INNER JOIN rdb$relation_fields r
-					ON r.rdb$relation_name = dep.rdb$depended_on_name AND r.rdb$field_name = dep.rdb$field_name";
-		_ConditionClause = "dep.rdb$field_name IS NOT NULL";
+		_ParentColName = "dep.RDB$DEPENDENT_NAME";
+		_OrderingColumn = "dep.RDB$DEPENDENT_NAME";
+		_FromClause = @"RDB$DEPENDENCIES dep
+                INNER JOIN RDB$TRIGGERS trg
+                    ON trg.RDB$TRIGGER_NAME = dep.RDB$DEPENDENT_NAME AND trg.RDB$RELATION_NAME = dep.RDB$DEPENDED_ON_NAME
+				INNER JOIN RDB$RELATION_FIELDS r
+					ON r.RDB$RELATION_NAME = dep.RDB$DEPENDED_ON_NAME AND r.RDB$FIELD_NAME = dep.RDB$FIELD_NAME";
+		_ConditionClause = "dep.RDB$FIELD_NAME IS NOT NULL";
 
-		_RequiredColumns["TRIGGER_NAME"] = "dep.rdb$dependent_name";
-
+		_RequiredColumns["TRIGGER_NAME"] = "dep.RDB$DEPENDENT_NAME";
 	}
 
 

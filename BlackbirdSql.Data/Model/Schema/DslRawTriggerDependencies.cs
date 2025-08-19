@@ -19,7 +19,10 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System.Collections.Generic;
+using System.Data;
 using System.Text;
+using FirebirdSql.Data.FirebirdClient;
 
 
 
@@ -33,7 +36,16 @@ internal class DslRawTriggerDependencies : AbstractDslSchema
 		// Evs.Trace(GetType(), "DslRawTriggerDependencies.DslRawTriggerDependencies");
 	}
 
-	
+
+
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		InitializeColumnsList(connection, "RDB$GENERATORS");
+	}
+
+
+
+
 
 	#region Protected Methods
 
@@ -41,52 +53,50 @@ internal class DslRawTriggerDependencies : AbstractDslSchema
 	{
 		// Evs.Trace(GetType(), "DslRawTriggerDependencies.GetCommandText");
 
+
 		StringBuilder sql = new ();
 
-		string identityType = "0";
-		string generatorSelector = "IS NULL";
+		string identityTypeColName = MajorVersionNumber >= 3 ? "fd_rfr.RDB$IDENTITY_TYPE" : "0";
+		string generatorColName = MajorVersionNumber >= 3 ? "= fd_rfr.RDB$GENERATOR_NAME" : "IS NULL";
 
 		string transientRestrictions = restrictions != null && !string.IsNullOrEmpty(restrictions[2])
-			? $"WHERE trg.rdb$relation_name = '{restrictions[2]}'" : "";
+			? $"WHERE trg.RDB$RELATION_NAME = '{restrictions[2]}'" : "";
 
-		if (MajorVersionNumber >= 3)
-		{
-			identityType = "fd_rfr.rdb$identity_type";
-			generatorSelector = "= fd_rfr.rdb$generator_name";
-		}
+		string initialValue = HasColumn("RDB$INITIAL_VALUE") ? "MAX(fd_gen.RDB$INITIAL_VALUE)" : "0";
+		string increment = HasColumn("RDB$GENERATOR_INCREMENT") ? "MAX(fd_gen.RDB$GENERATOR_INCREMENT)" : "1";
 
 
-		sql.AppendFormat(@"SELECT
+		sql.Append($@"SELECT
 	-- :TRIGGER_NAME
-	trg.rdb$trigger_name AS TRIGGER_NAME,
-	fd_gen.rdb$generator_name AS SEQUENCE_GENERATOR,
-	LIST(TRIM(fd.rdb$field_name), ', ') AS DEPENDENCY_FIELDS,
-	MAX(fd_gen.rdb$initial_value) AS IDENTITY_SEED, 
-	MAX(fd_gen.rdb$generator_increment) AS IDENTITY_INCREMENT,
-	MAX({0}) AS IDENTITY_TYPE
+	trg.RDB$TRIGGER_NAME AS TRIGGER_NAME,
+	fd_gen.RDB$GENERATOR_NAME AS SEQUENCE_GENERATOR,
+	LIST(TRIM(fd.RDB$FIELD_NAME), ', ') AS DEPENDENCY_FIELDS,
+	{initialValue} AS IDENTITY_SEED, 
+	{increment} AS IDENTITY_INCREMENT,
+	MAX({identityTypeColName}) AS IDENTITY_TYPE
 
-FROM rdb$triggers trg
+FROM RDB$TRIGGERS trg
 
-INNER JOIN rdb$dependencies fd
-	ON fd.rdb$dependent_name = trg.rdb$trigger_name AND fd.rdb$depended_on_name = trg.rdb$relation_name
+INNER JOIN RDB$DEPENDENCIES fd
+	ON fd.RDB$DEPENDENT_NAME = trg.RDB$TRIGGER_NAME AND fd.RDB$DEPENDED_ON_NAME = trg.RDB$RELATION_NAME
 
-INNER JOIN rdb$relation_constraints fd_con
-	ON fd_con.rdb$relation_name = fd.rdb$depended_on_name AND fd_con.rdb$constraint_type = 'PRIMARY KEY'
+INNER JOIN RDB$RELATION_CONSTRAINTS fd_con
+	ON fd_con.RDB$RELATION_NAME = fd.RDB$DEPENDED_ON_NAME AND fd_con.RDB$CONSTRAINT_TYPE = 'PRIMARY KEY'
 
-LEFT OUTER JOIN rdb$index_segments fd_seg
-	ON fd_con.rdb$index_name IS NOT NULL AND fd_seg.rdb$index_name = fd_con.rdb$index_name AND fd_seg.rdb$field_name = fd.rdb$field_name
+LEFT OUTER JOIN RDB$INDEX_SEGMENTS fd_seg
+	ON fd_con.RDB$INDEX_NAME IS NOT NULL AND fd_seg.RDB$INDEX_NAME = fd_con.RDB$INDEX_NAME AND fd_seg.RDB$FIELD_NAME = fd.RDB$FIELD_NAME
 
-LEFT OUTER JOIN rdb$relation_fields fd_rfr
-	ON fd_seg.rdb$index_name IS NOT NULL AND fd_rfr.rdb$relation_name = fd_con.rdb$relation_name AND fd_rfr.rdb$field_name = fd_seg.rdb$field_name
+LEFT OUTER JOIN RDB$RELATION_FIELDS fd_rfr
+	ON fd_seg.RDB$INDEX_NAME IS NOT NULL AND fd_rfr.RDB$RELATION_NAME = fd_con.RDB$RELATION_NAME AND fd_rfr.RDB$FIELD_NAME = fd_seg.RDB$FIELD_NAME
 
-LEFT OUTER JOIN rdb$generators fd_gen
-	--[= fd_rfr.rdb$generator_name | IS NULL]~1~
-    ON fd_gen.rdb$generator_name {1}
-{2}
+LEFT OUTER JOIN RDB$GENERATORS fd_gen
+	--[= fd_rfr.RDB$GENERATOR_NAME | IS NULL]~1~
+    ON fd_gen.RDB$GENERATOR_NAME {generatorColName}
+{transientRestrictions}
 GROUP BY TRIGGER_NAME, SEQUENCE_GENERATOR
-ORDER BY trg.rdb$trigger_name", identityType, generatorSelector, transientRestrictions);
+ORDER BY trg.RDB$TRIGGER_NAME");
 
-		// Evs.Trace(sql.ToString());
+		// Evs.Trace(GetType(), nameof(GetCommandText), $"Sql: {sql}");
 
 		return sql;
 	}

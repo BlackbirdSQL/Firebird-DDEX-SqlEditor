@@ -253,7 +253,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 	{
 		try
 		{
-			Evs.Trace(GetType(), nameof(Parse));
+			// Evs.Trace(GetType(), nameof(Parse));
 
 			lock (_LockObject)
 			{
@@ -500,7 +500,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 
 	public override string ToString()
 	{
-		Evs.Trace(GetType(), nameof(ToString));
+		// Evs.Trace(GetType(), nameof(ToString));
 
 		return ConnectionStringBuilder.ToString();
 	}
@@ -607,7 +607,7 @@ public abstract class AbstractConnectionProperties : DataSiteableObject<IVsDataP
 
 	protected override void OnSiteChanged(EventArgs e)
 	{
-		Evs.Trace(GetType(), nameof(OnSiteChanged));
+		// Evs.Trace(GetType(), nameof(OnSiteChanged));
 
 		if (Site != null)
 		{

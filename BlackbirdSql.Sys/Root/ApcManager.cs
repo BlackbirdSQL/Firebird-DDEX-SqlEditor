@@ -34,7 +34,6 @@ namespace BlackbirdSql;
 internal static class ApcManager
 {
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
 	internal static string ActiveDocumentExtension
 	{
 		get
@@ -76,7 +75,6 @@ internal static class ApcManager
 
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
 	internal static Project ActiveProject
 	{
 		get
@@ -161,7 +159,6 @@ internal static class ApcManager
 	}
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
 	internal static IntPtr ActiveWindowHandle
 	{
 		get
@@ -182,7 +179,6 @@ internal static class ApcManager
 	}
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
 	internal static string ActiveWindowObjectKind
 	{
 		get
@@ -208,7 +204,6 @@ internal static class ApcManager
 
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
 	internal static string ActiveWindowObjectType
 	{
 		get
@@ -235,7 +230,6 @@ internal static class ApcManager
 	internal static string ActiveWindowType => ActiveWindow?.GetType().FullName ?? "";
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "We're only peeking.")]
 	internal static bool CanValidateSolution => SolutionProjects != null && SolutionProjects.Count > 0;
 
 

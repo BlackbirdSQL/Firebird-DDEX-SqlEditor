@@ -21,7 +21,7 @@ namespace BlackbirdSql.Core.Controls.Config;
 //										AbstruseSettingsPage Class
 //
 /// <summary>
-/// VS Options DialogPage base class.
+/// VS Options DialogPage root base class.
 /// Disclosure: This class exposes some PropertyGridView members with hidden access modifiers using
 /// the Visual Studio's Reflection library, so that we can implement a few standard or comparable windows
 /// functionality features like single-click check boxes, radio buttons and cardinal synonyms into the
@@ -44,7 +44,6 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 
 
-
 	protected override void Dispose(bool disposing)
 	{
 		if (disposing)
@@ -52,6 +51,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 			if (_Window != null)
 			{
 				_Window.SelectedGridItemChanged -= OnSelectedItemChanged;
+				_Window.SelectedObjectsChanged -= (sender, args) => OnTraceEvent(sender, args, "SelectedObjectsChanged");
 				_Window.GotFocus -= OnGotFocus;
 				_Window.VisibleChanged -= (sender, args) => OnTraceEvent(sender, args, $"VisibleChanged[Visible: {_Window.Visible}]");
 				_Window.Invalidated -= (sender, args) => OnTraceEvent(sender, args, "Invalidated");
@@ -82,17 +82,19 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	// =========================================================================================================
 
 
-	// A protected 'this' object lock
+	// Global lock
+	protected static object _LockGlobal = new object();
+	// Object lock
 	protected readonly object _LockObject = new object();
 
+	private bool _CellValidated = false;
 	private bool _Exposed = false;
 	private bool _Initialized = false;
 	private int _EventCardinal = 0;
-
-	protected static object _LockGlobal = new object();
-	private PropertyGrid _Window = null;
 	private bool _ValidFocusCell = false;
 	private bool _ValidMouseEventCell = false;
+
+	private PropertyGrid _Window = null;
 
 
 	#endregion Fields
@@ -209,6 +211,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	}
 
 
+
+
 	#endregion Exposing Property Accessors
 
 
@@ -219,15 +223,15 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	// =========================================================================================================
 
 
-	[Browsable(false)]
-	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public PropertyGrid Grid => _Window ?? (PropertyGrid)Window;
-
-
 	[Browsable(false)] // For brevity.
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	private bool SortedByCategories => _Window != null && (_Window.PropertySort & PropertySort.Categorized) != 0;
 
+
+
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public PropertyGrid Grid => _Window ?? (PropertyGrid)Window;
 
 
 	/// <summary>
@@ -253,6 +257,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 				};
 
 				_Window.SelectedGridItemChanged += OnSelectedItemChanged;
+				_Window.SelectedObjectsChanged += (sender, args) => OnTraceEvent(sender, args, "SelectedObjectsChanged");
 				_Window.GotFocus += OnGotFocus;
 				_Window.VisibleChanged += (sender, args) => OnTraceEvent(sender, args, $"VisibleChanged[Visible: {_Window.Visible}]");
 				_Window.Invalidated += (sender, args) => OnTraceEvent(sender, args, "Invalidated");
@@ -271,9 +276,9 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	}
 
 
+	public event IBsSettingsPage.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
 	public event IBsSettingsPage.EditControlFocusEventHandler EditControlGotFocusEvent;
 	public event IBsSettingsPage.EditControlFocusEventHandler EditControlLostFocusEvent;
-	public event IBsSettingsPage.AutomatorPropertyValueChangedEventHandler AutomatorPropertyValueChangedEvent;
 
 
 	#endregion Property Accessors
@@ -290,7 +295,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Increments the <see cref="_EventCardinal"/> counter when execution
-	/// enters aN event handler to prevent recursion.
+	/// enters an event handler to prevent recursion.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private bool EventEnter(bool test = false, bool force = false)
@@ -345,7 +350,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 			if (_Exposed)
 				return;
 
-			// Evs.Debug(GetType(), "ExposeEventDelegates()", "Events NOT exposed. Exposing...");
+			// Evs.Debug(GetType(), "ExposeEventDelegates", "Events NOT exposed. Exposing...");
 
 			TextBox editCtl = EditField;
 
@@ -364,7 +369,50 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Loads the settings from live storage. TBC!!!
+	/// Determines if a cell supports an <see cref="IBsEditConverter"/> TypeConverters.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool IsValidFocusCell(GridItem gridItem)
+	{
+		// Sanity check
+		if (_Window == null)
+			return false;
+
+		if (_CellValidated)
+			return _ValidFocusCell;
+
+		ValidateCell(gridItem);
+
+		return _ValidFocusCell;
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Determines if a cell supports an <see cref="IBsAutomatorConverter"/>
+	/// TypeConverters. This provides support for single click check boxes and radio
+	/// button enums.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool IsValidMouseEventCell(GridItem gridItem)
+	{
+		// Sanity check
+		if (_Window == null)
+			return false;
+
+		if (_CellValidated)
+			return _ValidMouseEventCell;
+
+		ValidateCell(gridItem);
+
+		return _ValidMouseEventCell;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Loads the settings from live storage.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public abstract void LoadSettings();
@@ -373,12 +421,17 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Saves settings to live storage. TBC!!!
+	/// Saves settings to live storage.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public abstract void SaveSettings();
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Used by transient settings dialog pages to fire the OnActivate event.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public void ActivatePage()
 	{
 		if (_Window != null)
@@ -403,6 +456,37 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Once off validatation of a cell to determine if it Determines supports an
+	/// <see cref="IBsAutomatorConverter"/> or <see cref="IBsEditConverter"/>
+	/// TypeConverter.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private void ValidateCell(GridItem gridItem)
+	{
+		if (_CellValidated)
+			return;
+
+		_CellValidated = true;
+		_ValidFocusCell = false;
+		_ValidMouseEventCell = false;
+
+		if (gridItem != null && gridItem.PropertyDescriptor != null
+			&& gridItem.PropertyDescriptor.Converter != null)
+		{
+			if (gridItem.PropertyDescriptor.Converter is IBsEditConverter)
+			{
+				_ValidFocusCell = true;
+			}
+			else if (gridItem.PropertyDescriptor.Converter is IBsAutomatorConverter)
+			{
+				_ValidMouseEventCell = true;
+			}
+		}
+	}
+
 	#endregion Methods
 
 
@@ -424,6 +508,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	// ---------------------------------------------------------------------------------
 	protected override void OnActivate(CancelEventArgs e)
 	{
+		// Evs.Debug(GetType(), "OnSelectedItemChanged", $"SelectedRow: {SelectedRow}, _Window: {_Window}, _Initialized: {_Initialized}, EventEnter: {EventEnter(true)}.");
+
 		base.OnActivate(e);
 
 		// Sanity check
@@ -490,18 +576,23 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	// ---------------------------------------------------------------------------------
 	private void OnEditControlGotFocus(object sender, EventArgs e)
 	{
+		// Evs.Debug(GetType(), "OnEditControlMouseDown", $"Sender type: {sender.GetType()}, SelectedRow: {SelectedRow}, _Window: {_Window}, _ValidFocusCell: {_ValidFocusCell}, EventEnter(): {EventEnter(true)}.");
+
 		// Sanity check
 		if (_Window == null)
 			return;
 
-		if (!EventEnter(true) || !_ValidFocusCell)
+		if (!EventEnter(true))
+			return;
+
+		GridItem gridEntry = _Window.SelectedGridItem;
+
+		if (!IsValidFocusCell(gridEntry))
 			return;
 
 
 		lock (_LockObject)
 		{
-			GridItem gridEntry = _Window.SelectedGridItem;
-
 			if (gridEntry == null || gridEntry.PropertyDescriptor == null
 				|| string.IsNullOrWhiteSpace(gridEntry.PropertyDescriptor.Name))
 			{
@@ -558,15 +649,18 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 		if (_Window == null)
 			return;
 
-		if (!_ValidFocusCell || !EventEnter())
+		GridItem gridEntry = _Window.SelectedGridItem;
+
+		if (!IsValidFocusCell(gridEntry))
+			return;
+
+		if (!EventEnter())
 			return;
 
 		try
 		{
 			lock (_LockObject)
 			{
-				GridItem gridEntry = _Window.SelectedGridItem;
-
 				if (gridEntry == null || gridEntry.PropertyDescriptor == null
 					|| string.IsNullOrWhiteSpace(gridEntry.PropertyDescriptor.Name))
 				{
@@ -606,13 +700,15 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	// ---------------------------------------------------------------------------------
 	private void OnEditControlMouseDown(object sender, MouseEventArgs e)
 	{
-		// Evs.Debug(GetType(), "OnEditControlMouseDown()", "Sender type: {sender.GetType().FullName}.");
+		// Evs.Debug(GetType(), "OnEditControlMouseDown", $"Sender type: {sender.GetType()}, SelectedRow: {SelectedRow}, _Window: {_Window}, _ValidMouseEventCell: {_ValidMouseEventCell}, EventEnter(): {EventEnter(true)}, e.Button: {e.Button}, e.Clicks: {e.Clicks}.");
 
 		// Sanity check
 		if (_Window == null)
 			return;
 
-		if (!_ValidMouseEventCell)
+		GridItem gridEntry = _Window.SelectedGridItem;
+
+		if (!IsValidMouseEventCell(gridEntry))
 			return;
 
 		if (e.Clicks % 2 == 0 || e.Button != MouseButtons.Left)
@@ -623,8 +719,6 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 		try
 		{
-			GridItem gridEntry = _Window.SelectedGridItem;
-
 			Control gridView = GridView;
 			if (gridView == null)
 				return;
@@ -632,6 +726,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 			if (gridEntry.PropertyDescriptor.Converter is BooleanConverter)
 			{
 				int row = SelectedRow;
+
+				// Evs.Debug(GetType(), "OnEditControlMouseDown", "BooleanConverter calling DoubleClickRow");
 
 				Reflect.InvokeMethod(gridView, "DoubleClickRow",
 					BindingFlags.Public | BindingFlags.Instance, [row, false, 2]);
@@ -664,7 +760,9 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 		if (_Window == null)
 			return;
 
-		if (!_ValidMouseEventCell)
+		GridItem gridEntry = e.ChangedItem;
+
+		if (!IsValidMouseEventCell(gridEntry))
 			return;
 
 
@@ -675,7 +773,6 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 
 		try
 		{
-			GridItem gridEntry = e.ChangedItem;
 			evt = new(e.ChangedItem, e.OldValue);
 
 			AutomatorPropertyValueChangedEvent?.Invoke(sender, evt);
@@ -702,25 +799,15 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	// ---------------------------------------------------------------------------------
 	private void OnSelectedItemChanged(object sender, SelectedGridItemChangedEventArgs e)
 	{
+		// Evs.Debug(GetType(), "OnSelectedItemChanged", $"Sender type: {sender.GetType()}, SelectedRow: {SelectedRow}, _Window: {_Window}.");
+
 		// Sanity check
 		if (_Window == null)
 			return;
 
-		_ValidFocusCell = false;
-		_ValidMouseEventCell = false;
+		_CellValidated = false;
 
-		if (e.NewSelection != null && e.NewSelection.PropertyDescriptor != null
-			&& e.NewSelection.PropertyDescriptor.Converter != null)
-		{
-			if (e.NewSelection.PropertyDescriptor.Converter is IBsEditConverter)
-			{
-				_ValidFocusCell = true;
-			}
-			else if (e.NewSelection.PropertyDescriptor.Converter is IBsAutomatorConverter)
-			{
-				_ValidMouseEventCell = true;
-			}
-		}
+		ValidateCell(e.NewSelection);
 
 		ExposeEventDelegates();
 	}
@@ -734,6 +821,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBsSettingsPage
 	// ---------------------------------------------------------------------------------
 	private void OnTraceEvent(object sender, EventArgs e, string evt)
 	{
+		// Evs.Debug(GetType(), "OnTraceEvent", $"Sender type: {sender.GetType()}, SelectedRow: {SelectedRow}, Event: {evt}, EventArgs: {e}, _Window: {_Window}.");
+
 		lock (_LockObject)
 		{
 			// Sanity check

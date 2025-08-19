@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
@@ -79,8 +80,8 @@ public class VxbObjectSelector : VxbObjectSelectorTable
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions,
 		string[] properties, object[] parameters)
 	{
-		Evs.Trace(GetType(), nameof(SelectObjects), $"typeName: {typeName}.");
-		
+		// Evs.Trace(GetType(), nameof(SelectObjects), $"typeName: {typeName}.");
+
 
 		try
 		{
@@ -140,11 +141,14 @@ public class VxbObjectSelector : VxbObjectSelectorTable
 				connectionCreated = true;
 				connection = (DbConnection)NativeDb.CreateDbConnection(Site.DecryptedConnectionString());
 
-				connection.Open();
+				// Evs.Debug(GetType(), "SelectObjects", $"DbConnection.OpenDb:\nConnectionString: {connection.ConnectionString}");
+				connection.OpenDb();
 			}
 			else
 			{
+				// Evs.Debug(GetType(), "SelectObjects", $"Before IVsDataConnection.EnsureConnection:\nConnectionString: {connection.ConnectionString}");
 				Site.EnsureConnected();
+				// Evs.Debug(GetType(), "SelectObjects", $"After IVsDataConnection.EnsureConnection");
 			}
 
 			schema = GetSchema(connection, typeName, ref restrictions, parameters);
@@ -157,7 +161,7 @@ public class VxbObjectSelector : VxbObjectSelectorTable
 		{
 			// It's most likely the connection has timed out. Do a hard reset on all linkages.
 
-			Evs.Warning(GetType(), "SelectObjects", $"{NativeDb.DbEngineName} error: {exf.Message}.");
+			Evs.Warning(GetType(), nameof(SelectObjects), $"Schema collection: {typeName}{Environment.NewLine}{NativeDb.DbEngineName} error: {exf.Message}.");
 
 			Site.Close();
 

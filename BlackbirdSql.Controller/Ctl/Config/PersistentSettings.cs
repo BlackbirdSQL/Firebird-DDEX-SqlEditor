@@ -83,23 +83,23 @@ public abstract class PersistentSettings : EditorExtension.Ctl.Config.Persistent
 
 
 	/*
-		/// <summary>
-		/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
-		/// Only implemented by packages that have settings models, ie. are options providers.
-		/// </summary>
-		public override void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
+	/// <summary>
+	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
+	/// Only implemented by packages that have settings models, ie. are options providers.
+	/// </summary>
+	public override void RegisterSettingsEventHandlers(IBsSettingsProvider.SettingsSavedDelegate onSettingsSavedDelegate)
 
 
-		/// <summary>
-		/// Only implemented by packages that have settings models. Whenever a package
-		/// settings model is saved it fires the extension's OnSettingsSaved event.
-		/// That event handler then requests each package to populate SettingsEventArgs
-		/// if it has settings relevant to the model.
-		/// PopulateSettingsEventArgs is also called on loading by the extension without
-		/// a specific model specified for a universal request for settings.
-		/// </summary>
-		public override bool PopulateSettingsEventArgs(ref SettingsEventArgs args);
-		*/
+	/// <summary>
+	/// Only implemented by packages that have settings models. Whenever a package
+	/// settings model is saved it fires the extension's OnSettingsSaved event.
+	/// That event handler then requests each package to populate SettingsEventArgs
+	/// if it has settings relevant to the model.
+	/// PopulateSettingsEventArgs is also called on loading by the extension without
+	/// a specific model specified for a universal request for settings.
+	/// </summary>
+	public override bool PopulateSettingsEventArgs(ref PropagateSettingsEventArgs e)
+	*/
 
 
 	#endregion Methods

@@ -6,11 +6,9 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Properties;
@@ -157,7 +155,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 	private bool _HasLocal = false;
 	private static int _Seed = -1;
 	protected bool _InternalLoaded = false;
-	protected static IBsRunningConnectionTable _Instance;
+	protected static IBsRunningConnectionTable _InternalInstance;
 	protected int _LoadDataCardinal = 0;
 	protected static readonly object _LockGlobal = new();
 	protected readonly object _LockObject = new();
@@ -276,7 +274,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 	{
 		// Evs.Debug(GetType(), "AppendSingleConnectionRow()", $"Adding row DatasetKey: {row["DatasetKey"]}.");
 
-		if (_Instance == null)
+		if (_InternalInstance == null)
 			return false;
 
 		/*
@@ -610,6 +608,119 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Loads ServerExplorer and FlameRobin configured connections (and possibly
+	/// Application connections) and performs registration synchronously.
+	/// This is the first phase of loading. We don't care which thread we're on but
+	/// it's initiated either on UICONTEXT.ShellInitialized and launched asynchronously
+	/// or else on UICONTEXT.SolutionExists.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool InternalLoad(CancellationToken cancelToken)
+	{
+		// Evs.Debug(GetType(), "InternalLoadConnectionsSync()");
+
+		lock (_LockObject)
+		{
+
+			_InternalDatabases = null;
+			_InternalServers = null;
+			_InternalConnectionsTable ??= CreateDataTable();
+		}
+
+
+		BeginLoadData(true);
+
+		try
+		{
+			if (RctEventSink.EventEnter(true))
+				InternalLoadServerExplorerConnections();
+
+			if (_InternalInstance == null)
+				return false;
+
+			InternalLoadUtilityConnections();
+
+			if (_InternalInstance == null)
+				return false;
+
+			if (PersistentSettings.IncludeAppConnections && ThreadHelper.CheckAccess())
+			{
+				// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", "Loading Unsafe Solution Connections on Safe");
+
+				InternalLoadApplicationConnections(_SyncPayloadLauncherToken, true, null);
+
+				if (_InternalInstance == null)
+					return false;
+			}
+
+			// Add a ghost row to the datasources list
+			// This will be the default datasource row so that anything else
+			// selected will generate a CurrentChanged event.
+			DataRow row = CreateDataRow();
+
+			row["DataSourceLc"] = "";
+			row["Port"] = 0;
+			row["DatabaseLc"] = "";
+			row["Orderer"] = 0;
+
+			// string str = "AddGhostRow: ";
+			// foreach (DataColumn col in _InternalConnectionsTable.Columns)
+			// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+			// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", str);
+
+
+			AppendSingleConnectionRow(row);
+
+
+			// Add a Clear/Reset dummy row for the datasources list
+			// If selected will invoke a form reset the move the cursor back to the ghost row.
+			row = CreateDataRow();
+
+			row["Orderer"] = 1;
+			row["DataSource"] = Resources.ErmBindingSource_Reset;
+			row["DataSourceLc"] = Resources.ErmBindingSource_Reset.ToLowerInvariant();
+			row["Port"] = 0;
+			row["DatabaseLc"] = "";
+
+			// str = "AddResetRow: ";
+			// foreach (DataColumn col in _InternalConnectionsTable.Columns)
+			// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+			// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", str);
+
+			AppendSingleConnectionRow(row);
+
+
+			// Add at least one row, that will be the ghost row, for localhost. 
+			if (!_HasLocal)
+			{
+				row = CreateDataRow();
+
+				row["Orderer"] = 2;
+				row["DataSource"] = "localhost";
+				row["DataSourceLc"] = "localhost";
+				row["DatabaseLc"] = "";
+
+				// str = "AddLocalHostGhostRow: ";
+				// foreach (DataColumn col in _InternalConnectionsTable.Columns)
+				// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+				// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", str);
+
+				AppendSingleConnectionRow(row);
+			}
+
+			return true;
+		}
+		finally
+		{
+			EndLoadData();
+		}
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Recursively loads unique connections configured in the App.configs of a
 	/// Solution's projects.
 	/// </summary>
@@ -688,9 +799,9 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 	/// asynchronously.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private async Task<bool> InternalLoadApplicationConnectionsAsync(CancellationToken cancelToken, object probject)
+	private async Task<bool> InternalLoadApplicationConnectionsEuiAsync(CancellationToken cancelToken, object probject)
 	{
-		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsync()");
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsEuiAsync()");
 
 		bool result = true;
 
@@ -737,7 +848,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 				// thread to register connections for each project.
 
 
-				// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsync()",
+				// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsEuiAsync()",
 				//	"Calling InternalLoadApplicationConnections(), " +
 				//	$"_AsyncPayloadLauncherToken.Cancelled(): {_AsyncPayloadLauncherToken.Cancelled()}.");
 
@@ -748,7 +859,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 				{
 					InternalLoadApplicationConnections(_AsyncPayloadLauncherToken, false, probject);
 
-					if (_Instance == null || _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown)
+					if (_InternalInstance == null || _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown)
 						result = false;
 
 					// finally{} just will not work here. This must have something to do with how
@@ -790,21 +901,15 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Searches for application configured connections and performs registration
-	/// synchronously.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// [Async on UI thread]: Launches an async task to perform unsafe loading of
+	/// [Launch async payload on UI thread]: Launches an async task to perform unsafe loading of
 	/// solution connections which require the DTE on the UI thread. To keep things
 	/// tight this method will throw an exception if it's already on the UI thread and
 	/// should not have been called.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected bool InternalLoadApplicationConnectionsAsyui(object probject)
+	protected bool InternalLoadApplicationConnectionsAsyup(object probject)
 	{
-		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyui()",
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyup()",
 		//	$"Probject? {(probject == null ? "probject == null" : "probject != null")}, " +
 		//	$"_LoadingAsyncCardinal: {_LoadingAsyncCardinal}.");
 
@@ -822,7 +927,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 
 			if (_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.Cancelled() && probject != null)
 			{
-				// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyui()", "Abort - is probject.");
+				// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyup()", "Abort - is probject.");
 
 				Probjects.Add(probject);
 
@@ -857,15 +962,15 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 		// Run on new thread in thread pool.
 		// Fire and remember.
 
-		async Task<bool> payloadAsync() => await InternalLoadApplicationConnectionsAsync(cancelToken, probject);
+		async Task<bool> payloadAsync() => await InternalLoadApplicationConnectionsEuiAsync(cancelToken, probject);
 
 
-		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyui()", "Queueing InternalLoadApplicationConnectionsAsync.");
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyup()", "Queueing InternalLoadApplicationConnectionsEuiAsync.");
 
 		_AsyncPayloadLauncher = Task.Factory.StartNew(payloadAsync, default, creationOptions, TaskScheduler.Default).Unwrap();
 
 
-		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyui()", "Queued InternalLoadApplicationConnectionsAsync.");
+		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsAsyup()", "Queued InternalLoadApplicationConnectionsEuiAsync.");
 
 
 		return true;
@@ -873,7 +978,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 
 
 
-	protected bool InternalLoadApplicationConnectionsSync()
+	private bool InternalLoadApplicationConnectionsSync()
 	{
 		// Evs.Debug(GetType(), "InternalLoadApplicationConnectionsSync()");
 
@@ -902,7 +1007,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 			{
 				InternalLoadApplicationConnections(default, true, null);
 
-				if (_Instance == null)
+				if (_InternalInstance == null)
 					result = false;
 
 				// finally{} just will not work here. This must have something to do with how
@@ -925,195 +1030,6 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 
 
 		return result;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Loads ServerExplorer, FlameRobin and Application connection configurations from
-	/// OnSolutionLoad, package initialization, ServerExplorer or any other applicable
-	/// activation event.
-	/// </summary>
-	/// <remarks>
-	/// This is the entry point for loading configured connections and is a deadlock
-	/// Bermuda Triangle :), because there are 3 basic events that can activate it.
-	/// 1. ServerExplorer before the extension has fully completed async initialization.
-	/// 2. UICONTEXT.SolutionExists also before async initialization.
-	/// 3. Extension async initialization.
-	/// 4. Any of 1, 2 or 3 after LoadConfiguredConnections() is already activated.
-	/// The only way to control this is to create a managed awaitable.
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	protected bool InternalLoadConnections()
-	{
-		// Evs.Debug(GetType(), "InternalLoadConnections()");
-
-		if (InternalLoading)
-			return false;
-
-		// if (_InternalDatabases != null)
-		//	return true;
-
-
-		bool result = false;
-
-		lock (_LockObject)
-			_LoadingSyncCardinal++;
-
-		try
-		{
-
-			// There are a possible 2 tasks that will be launched.
-			// 1. The synchronous task for loading ServerExplorer and FlameRobin connections
-			//		and which does not care which thread we are on.
-			// 2. A possible async task to load Application connections and which uses the
-			//		dte, so will be created IF (1) is not on the UI thread.
-			// For (1) we create a dummy awaitable which will be cancelled once (1) is complete.
-			// If (2) is required we launch an async task which we fire and forget.
-
-			CancellationToken cancelToken = SyncEnter();
-
-
-			// Load the SE and FlameRobin connections and possibly application connections.
-			result = InternalLoadConnectionsSync(cancelToken);
-
-			// Load the Application connections asynchronously if we're not on the main thread
-			// with a fire and forget async task.
-
-			if (PersistentSettings.IncludeAppConnections && !ThreadHelper.CheckAccess())
-				InternalLoadApplicationConnectionsAsyui(null);
-		}
-		finally
-		{
-			if (!SyncExit())
-				result = false;
-
-			lock (_LockObject)
-			{
-				_LoadingSyncCardinal--;
-
-				if (ThreadHelper.CheckAccess() || _LoadingAsyncCardinal == 0)
-				{
-					_InternalLoaded = true;
-				}
-			}
-		}
-
-		return result;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Loads ServerExplorer and FlameRobin configured connections (and possibly
-	/// Application connections) and performs registration synchronously.
-	/// This is the first phase of loading. We don't care which thread we're on but
-	/// it's initiated either on UICONTEXT.ShellInitialized and launched asynchronously
-	/// or else on UICONTEXT.SolutionExists.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private bool InternalLoadConnectionsSync(CancellationToken cancelToken)
-	{
-		// Evs.Debug(GetType(), "InternalLoadConnectionsSync()");
-
-		lock (_LockObject)
-		{
-
-			_InternalDatabases = null;
-			_InternalServers = null;
-			_InternalConnectionsTable ??= CreateDataTable();
-		}
-
-
-		BeginLoadData(true);
-
-		try
-		{
-			if (RctEventSink.EventEnter(true))
-				InternalLoadServerExplorerConnections();
-
-			if (_Instance == null)
-				return false;
-
-			InternalLoadUtilityConnections();
-
-			if (_Instance == null)
-				return false;
-
-			if (PersistentSettings.IncludeAppConnections && ThreadHelper.CheckAccess())
-			{
-				// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", "Loading Unsafe Solution Connections on Safe");
-
-				InternalLoadApplicationConnections(_SyncPayloadLauncherToken, true, null);
-
-				if (_Instance == null)
-					return false;
-			}
-
-			// Add a ghost row to the datasources list
-			// This will be the default datasource row so that anything else
-			// selected will generate a CurrentChanged event.
-			DataRow row = CreateDataRow();
-
-			row["DataSourceLc"] = "";
-			row["Port"] = 0;
-			row["DatabaseLc"] = "";
-			row["Orderer"] = 0;
-
-			// string str = "AddGhostRow: ";
-			// foreach (DataColumn col in _InternalConnectionsTable.Columns)
-			// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-			// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", str);
-
-
-			AppendSingleConnectionRow(row);
-
-
-			// Add a Clear/Reset dummy row for the datasources list
-			// If selected will invoke a form reset the move the cursor back to the ghost row.
-			row = CreateDataRow();
-
-			row["Orderer"] = 1;
-			row["DataSource"] = Resources.ErmBindingSource_Reset;
-			row["DataSourceLc"] = Resources.ErmBindingSource_Reset.ToLowerInvariant();
-			row["Port"] = 0;
-			row["DatabaseLc"] = "";
-
-			// str = "AddResetRow: ";
-			// foreach (DataColumn col in _InternalConnectionsTable.Columns)
-			// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-			// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", str);
-
-			AppendSingleConnectionRow(row);
-
-
-			// Add at least one row, that will be the ghost row, for localhost. 
-			if (!_HasLocal)
-			{
-				row = CreateDataRow();
-
-				row["Orderer"] = 2;
-				row["DataSource"] = "localhost";
-				row["DataSourceLc"] = "localhost";
-				row["DatabaseLc"] = "";
-
-				// str = "AddLocalHostGhostRow: ";
-				// foreach (DataColumn col in _InternalConnectionsTable.Columns)
-				// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-				// Evs.Debug(GetType(), "InternalLoadConnectionsSync()", str);
-
-				AppendSingleConnectionRow(row);
-			}
-
-			return true;
-		}
-		finally
-		{
-			EndLoadData();
-		}
-
 	}
 
 
@@ -1228,7 +1144,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 			// Evs.Debug(GetType(), "InternalLoadServerExplorerConnection()", str);
 			*/
 
-			if (_Instance == null)
+			if (_InternalInstance == null)
 				return;
 
 			// Evs.Debug(GetType(), "InternalLoadServerExplorerConnection()", $"Adding row: {row["DatasetKey"]}.");
@@ -1251,7 +1167,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 	// ---------------------------------------------------------------------------------
 	private void InternalLoadUtilityConnections()
 	{
-		Evs.Trace(GetType(), nameof(InternalLoadUtilityConnections));
+		// Evs.Trace(GetType(), nameof(InternalLoadUtilityConnections));
 
 		DataRow row;
 
@@ -1365,7 +1281,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 						continue;
 
 
-					if (_Instance == null)
+					if (_InternalInstance == null)
 						return;
 
 					AppendSingleConnectionRow(row);
@@ -1405,13 +1321,13 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 			const string monikerKey = C_KeyExConnectionUrl;
 			const string sourceKey = C_KeyExConnectionSource;
 
-			DataRow[] rows = _InternalConnectionsTable.Select().Where
+			DataRow[] rows = [.. _InternalConnectionsTable.Select().Where
 				(x =>
 					((orderer = Convert.ToInt32(x[orderKey])) == 2 || orderer == 3)
 					&& (source = Convert.ToInt32(x[sourceKey])) != seSource
 					&& source != sessionSource
 					&& !Cmd.IsNullValueOrEmpty(x[monikerKey])
-				).ToArray();
+				)];
 
 
 			if (rows.Length == 0)
@@ -1450,10 +1366,23 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 
 
 
-
-
-
-	protected bool InternalResolveDeadlocksAndEnsureLoaded(bool asynchronous)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Loads ServerExplorer, FlameRobin and Application connection configurations from
+	/// OnSolutionLoad, package initialization, ServerExplorer or any other applicable
+	/// activation event.
+	/// </summary>
+	/// <remarks>
+	/// This is the entry point for loading configured connections and is a deadlock
+	/// Bermuda Triangle :), because there are 3 basic events that can activate it.
+	/// 1. ServerExplorer before the extension has fully completed async initialization.
+	/// 2. UICONTEXT.SolutionExists also before async initialization.
+	/// 3. Extension async initialization.
+	/// 4. Any of 1, 2 or 3 after LoadConfiguredConnections() is already activated.
+	/// The only way to control this is to create a managed awaitable.
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
+	protected bool InternalEnsureLoaded(bool asynchronous)
 	{
 		// Evs.Trace(typeof(RctManager), nameof(InternalResolveDeadlocksAndEnsureLoaded));
 
@@ -1462,7 +1391,56 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 		{
 			// Rct has not been initialized.
 
-			InternalLoadConnections();
+			// InternalLoadConnections();
+
+
+
+
+			lock (_LockObject)
+				_LoadingSyncCardinal++;
+
+			try
+			{
+
+				// There are a possible 2 tasks that will be launched.
+				// 1. The synchronous task for loading ServerExplorer and FlameRobin connections
+				//		and which does not care which thread we are on.
+				// 2. A possible async task to load Application connections and which uses the
+				//		dte, so will be created IF (1) is not on the UI thread.
+				// For (1) we create a dummy awaitable which will be cancelled once (1) is complete.
+				// If (2) is required we launch an async task which we fire and forget.
+
+				CancellationToken cancelToken = SyncEnter();
+
+
+				// Load the SE and FlameRobin connections and possibly application connections.
+				InternalLoad(cancelToken);
+
+				// Load the Application connections asynchronously if we're not on the main thread
+				// with a fire and forget async task.
+
+				if (PersistentSettings.IncludeAppConnections && !ThreadHelper.CheckAccess())
+					InternalLoadApplicationConnectionsAsyup(null);
+			}
+			finally
+			{
+				SyncExit();
+
+				lock (_LockObject)
+				{
+					_LoadingSyncCardinal--;
+
+					if (ThreadHelper.CheckAccess() || _LoadingAsyncCardinal == 0)
+					{
+						_InternalLoaded = true;
+					}
+				}
+			}
+
+
+
+
+
 
 			if (asynchronous || !PersistentSettings.IncludeAppConnections || ThreadHelper.CheckAccess())
 				return true;
@@ -1540,7 +1518,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 		{
 			lock (_LockObject)
 			{
-				DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[C_KeyExConnectionUrl])).ToArray();
+				DataRow[] rows = [.. _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[C_KeyExConnectionUrl]))];
 
 				value = rows.Length > 0 ? rows[0] : null;
 			}
@@ -1552,7 +1530,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 		{
 			lock (_LockObject)
 			{
-				DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[C_KeyExAdornedQualifiedName])).ToArray();
+				DataRow[] rows = [.. _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[C_KeyExAdornedQualifiedName]))];
 
 				value = rows.Length > 0 ? rows[0] : null;
 			}
@@ -1564,7 +1542,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 		{
 			lock (_LockObject)
 			{
-				DataRow[] rows = _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[C_KeyExAdornedQualifiedTitle])).ToArray();
+				DataRow[] rows = [.. _InternalConnectionsTable.Select().Where(x => hybridKey.Equals(x[C_KeyExAdornedQualifiedTitle]))];
 
 				value = rows.Length > 0 ? rows[0] : null;
 			}
@@ -1701,7 +1679,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 	// ---------------------------------------------------------------------------------
 	private void RegisterAppConnectionStrings(string projectName, string xmlPath)
 	{
-		Evs.Trace(GetType(), nameof(RegisterAppConnectionStrings), $"Project: {projectName}.");
+		// Evs.Trace(GetType(), nameof(RegisterAppConnectionStrings), $"Project: {projectName}.");
 
 		XmlDocument xmlDoc = new XmlDocument();
 
@@ -1884,7 +1862,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 				*/
 				// Evs.Debug(GetType(), "RegisterAppConnectionStrings()", str);
 
-				if (_Instance == null)
+				if (_InternalInstance == null)
 					return;
 
 				// Evs.Debug(GetType(), "RegisterAppConnectionStrings()", $"Adding row DatasetKey: {row["DatasetKey"]}.");
@@ -1922,18 +1900,18 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 		{
 			if (port == -1)
 			{
-				rows = _InternalConnectionsTable.Select()
+				rows = [.. _InternalConnectionsTable.Select()
 					.Where(x => search.Equals(x["DataSourceLc"])
 						&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])
-						&& !Cmd.IsNullValue(x[C_KeyPort])).ToArray();
+						&& !Cmd.IsNullValue(x[C_KeyPort]))];
 			}
 			else
 			{
-				rows = _InternalConnectionsTable.Select()
+				rows = [.. _InternalConnectionsTable.Select()
 					.Where(x => search.Equals(x["DataSourceLc"])
 						&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])
 						&& !Cmd.IsNullValue(x[C_KeyPort])
-						&& port == Convert.ToInt32(x[C_KeyPort])).ToArray();
+						&& port == Convert.ToInt32(x[C_KeyPort]))];
 			}
 		}
 
@@ -1954,7 +1932,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 	/// connections for that server.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected string InternalRegisterServer(string serverName, int port)
+	private string InternalRegisterServer(string serverName, int port)
 	{
 
 		if (serverName.ToLowerInvariant() == "localhost")
@@ -1968,11 +1946,11 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 
 		lock (_LockObject)
 		{
-			rows = _InternalConnectionsTable.Select()
+			rows = [.. _InternalConnectionsTable.Select()
 				.Where(x => search.Equals(x["DataSourceLc"])
 					&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])
 					&& !Cmd.IsNullValue(x[C_KeyPort])
-					&& port == Convert.ToInt32(x[C_KeyPort])).ToArray();
+					&& port == Convert.ToInt32(x[C_KeyPort]))];
 		}
 
 		if (rows.Length > 0)
@@ -1980,10 +1958,10 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 
 		lock (_LockObject)
 		{
-			DataRow[] rows2 = _InternalConnectionsTable.Select()
+			DataRow[] rows2 = [.. _InternalConnectionsTable.Select()
 				.Where(x => search.Equals(x["DataSourceLc"])
 					&& string.IsNullOrWhiteSpace((string)x["DatabaseLc"])
-					&& !Cmd.IsNullValue(x[C_KeyPort])).ToArray();
+					&& !Cmd.IsNullValue(x[C_KeyPort]))];
 
 			if (rows2.Length > 0)
 				serverName = (string)rows2[0]["DataSource"];
@@ -2043,7 +2021,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 		string proposedDatasetName, EnConnectionSource source, ref Csb csa)
 	{
 
-		if (_Instance == null)
+		if (_InternalInstance == null)
 			return false;
 
 		if (source <= EnConnectionSource.Unknown)
@@ -2417,14 +2395,14 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// The awaiter for unsafe loading of solution connections that use the DTE and were
-	/// launched by <see cref="InternalLoadApplicationConnectionsAsyui"/> .
+	/// launched by <see cref="InternalLoadApplicationConnectionsAsyup"/> .
 	/// </summary>
 	/// <remarks>
 	/// This may take some time if the ide is starting up, followed in quick succession
 	/// with opening a solution and expanding an SE node.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	protected void WaitForAsyncLoad()
+	private void WaitForAsyncLoad()
 	{
 		// Evs.Debug(GetType(), nameof(WaitForAsyncLoad));
 
@@ -2434,7 +2412,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 		{
 			if (waitTime >= 15000)
 			{
-				TimeoutException ex = new($"Timed out waiting for InternalLoadApplicationConnectionsAsyui() to complete. Timeout (ms): {waitTime}.");
+				TimeoutException ex = new($"Timed out waiting for InternalLoadApplicationConnectionsAsyup() to complete. Timeout (ms): {waitTime}.");
 				Diag.Ex(ex);
 				throw ex;
 			}
@@ -2464,7 +2442,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 	/// This may take some time if the ide is starting up, followed in quick succession
 	/// with opening a solution and expanding an SE node.
 	// ---------------------------------------------------------------------------------
-	protected bool WaitForSyncLoad()
+	private bool WaitForSyncLoad()
 	{
 		// Evs.Debug(GetType(), nameof(WaitForSyncLoad));
 
@@ -2522,7 +2500,7 @@ internal abstract class AbstruseRunningConnectionTable : PublicDictionary<string
 	// Currently only used for debugging
 
 
-#endregion Event Handling
+	#endregion Event Handling
 
 
 }

@@ -2,6 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 
@@ -51,7 +52,7 @@ public class VxbUIConnector : DataConnectionUIConnector
 	/// </param>
 	public override void Connect(IVsDataConnection connection)
 	{
-		Evs.Trace(GetType(), nameof(Connect));
+		// Evs.Trace(GetType(), nameof(Connect));
 
 		if (connection == null)
 		{
@@ -65,6 +66,7 @@ public class VxbUIConnector : DataConnectionUIConnector
 		{
 			try
 			{
+				// Evs.Debug(GetType(), "Connect", $"IVsDataConnection.Open: Type: {connection.GetType()}\nConnectionString: {connection}");
 				connection.Open();
 			}
 			catch (Exception ex)

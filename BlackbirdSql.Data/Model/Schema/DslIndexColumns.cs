@@ -19,8 +19,11 @@
 
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System;
 using System.Data;
+using System.Globalization;
 using BlackbirdSql.Sys.Interfaces;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.Data.Model.Schema;
 
@@ -30,22 +33,54 @@ internal class DslIndexColumns : DslColumns
 	public DslIndexColumns() : base()
 	{
 		// Evs.Trace(GetType(), "DslIndexColumns.DslIndexColumns");
+	}
+
+
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		base.InitializeParameters(connection);
 
 		_ParentType = "Index";
 		_ObjectType = "TableIndexColumn";
-		_ParentColumn = "idx.rdb$index_name";
-		_OrderingField = "idx.rdb$index_name";
-		_FromClause = @"rdb$index_segments idxseg
-				INNER JOIN rdb$indices idx
-					ON idxseg.rdb$index_name = idx.rdb$index_name
-                INNER JOIN rdb$relation_fields r
-                    ON r.rdb$relation_name = idx.rdb$relation_name AND r.rdb$field_name = idxseg.rdb$field_name";
+		_ParentColName = "idx.RDB$INDEX_NAME";
+		_OrderingColumn = "idx.RDB$INDEX_NAME";
+		_FromClause = @"RDB$INDEX_SEGMENTS idxseg
+				INNER JOIN RDB$INDICES idx
+					ON idxseg.RDB$INDEX_NAME = idx.RDB$INDEX_NAME
+                INNER JOIN RDB$RELATION_FIELDS r
+                    ON r.RDB$RELATION_NAME = idx.RDB$RELATION_NAME AND r.RDB$FIELD_NAME = idxseg.RDB$FIELD_NAME";
 
-		_RequiredColumns["ORDINAL_POSITION"] = "idxseg.rdb$field_position";
+		_RequiredColumns["ORDINAL_POSITION"] = "idxseg.RDB$FIELD_POSITION";
 
-		_AdditionalColumns.Add("INDEX_NAME", new("idx.rdb$index_name", "varchar(50)"));
-		_AdditionalColumns.Add("IS_DESCENDING", new("(CASE WHEN idx.rdb$index_type <> 1 THEN false ELSE true END)", "boolean"));
-		_AdditionalColumns.Add("IS_INCLUDED", new("true", "boolean"));
+		_AdditionalColumns.Add("INDEX_NAME", new("idx.RDB$INDEX_NAME", "varchar(50)"));
+		_AdditionalColumns.Add("IS_DESCENDING_FLAG", new("(CASE WHEN idx.RDB$INDEX_TYPE <> 1 THEN 0 ELSE 1 END)", "int"));
+		_AdditionalColumns.Add("IS_INCLUDED_FLAG", new("1", "int"));
+	}
+
+	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
+	{
+		// Evs.Trace(GetType(), "DslForeignKeys.ProcessResult");
+
+		schema.Columns.Add("IS_DESCENDING", typeof(bool));
+		schema.Columns.Add("IS_INCLUDED", typeof(bool));
+
+		schema.AcceptChanges();
+		schema.BeginLoadData();
+
+		foreach (DataRow row in schema.Rows)
+		{
+			row["IS_DESCENDING"] = Convert.ToBoolean(row["IS_DESCENDING_FLAG"]);
+			row["IS_INCLUDED"] = Convert.ToBoolean(row["IS_INCLUDED_FLAG"]);
+		}
+
+		schema.EndLoadData();
+
+		schema.Columns.Remove("IS_DESCENDING_FLAG");
+		schema.Columns.Remove("IS_INCLUDED_FLAG");
+
+		schema.AcceptChanges();
+
+		base.ProcessResult(schema, connectionString, restrictions);
 	}
 
 }

@@ -14,14 +14,17 @@ using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
 using BlackbirdSql.LanguageExtension.Properties;
 using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Sdk.Sfc.Metadata;
 using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Smo.Agent;
 using Microsoft.SqlServer.Management.SqlParser.Metadata;
 using Microsoft.SqlServer.Management.SqlParser.MetadataProvider;
 using Microsoft.Win32;
 
+using CredentialCollection = Microsoft.SqlServer.Management.Smo.CredentialCollection;
 using DatabaseCollection = Microsoft.SqlServer.Management.Smo.DatabaseCollection;
-
+using LoginCollection = Microsoft.SqlServer.Management.Smo.LoginCollection;
+using ServerDdlTriggerCollection = Microsoft.SqlServer.Management.Smo.ServerDdlTriggerCollection;
 
 
 namespace BlackbirdSql.LanguageExtension.Model.Smo;
@@ -72,8 +75,8 @@ public class LsbSmoServer
 		/*
 		if (serverConnection == null)
 		{
-			Microsoft.SqlServer.Management.Diagnostics.TraceHelper.Assert(m_ExecutionManager != null, "m_ExecutionManager == null");
-			serverConnection = m_ExecutionManager.ConnectionContext;
+			Microsoft.SqlServer.Management.Diagnostics.TraceHelper.Assert(_ExecutionManager != null, "_ExecutionManager == null");
+			serverConnection = _ExecutionManager.ConnectionContext;
 		}
 		*/
 
@@ -92,7 +95,7 @@ public class LsbSmoServer
 
 
 	// =========================================================================================================
-	#region Constants - LsbServer
+	#region Constants - LsbSmoServer
 	// =========================================================================================================
 
 
@@ -103,14 +106,18 @@ public class LsbSmoServer
 
 
 	// =========================================================================================================
-	#region Fields - LsbServer
+	#region Fields - LsbSmoServer
 	// =========================================================================================================
 
 
 	private SortedList _CollationCache;
 	private readonly IDbConnection _Connection;
+	private CredentialCollection _Credentials;
 	private DatabaseCollection _Databases;
+	private ServerDdlTriggerCollection _ServerDdlTriggerCollection;
+
 	private string _Key;
+	private LoginCollection _Logins;
 	internal bool _ObjectInSpace;
 	private SqlSmoState _State;
 	//
@@ -127,11 +134,12 @@ public class LsbSmoServer
 
 
 	// =========================================================================================================
-	#region Property accessors - LsbServer
+	#region Property accessors - LsbSmoServer
 	// =========================================================================================================
 
 
 	public IDbConnection Connection => _Connection;
+	public CredentialCollection Credentials => _Credentials ??= Reflect.CreateInstance<CredentialCollection>(this);
 	public DatabaseCollection Databases => _Databases ??= Reflect.CreateInstance<DatabaseCollection>(this);
 
 	public DatabaseEngineEdition EngineEdition
@@ -151,9 +159,14 @@ public class LsbSmoServer
 	internal string Key => _Key;
 	internal string Name => _Key;
 
+	public LoginCollection Logins => _Logins ??= Reflect.CreateInstance<LoginCollection>(this);
+
 	protected bool ObjectInSpace => _ObjectInSpace;
 
 	public DatabaseEngineType ServerType => DatabaseEngineType.Standalone;
+
+	[SfcObject(SfcContainerRelationship.ObjectContainer, SfcContainerCardinality.ZeroToAny, typeof(ServerDdlTrigger))]
+	public ServerDdlTriggerCollection Triggers => _ServerDdlTriggerCollection ??= Reflect.CreateInstance<ServerDdlTriggerCollection>(this);
 
 	private IDictionary<Type, IList<string>> TypeInitFields => _TypeInitFields ??= new Dictionary<Type, IList<string>>();
 
@@ -165,7 +178,7 @@ public class LsbSmoServer
 
 
 	// =========================================================================================================
-	#region Methods - LsbServer
+	#region Methods - LsbSmoServer
 	// =========================================================================================================
 
 
@@ -291,6 +304,7 @@ public class LsbSmoServer
 
 	public void Refresh()
 	{
+		// TBC: Refresh smo server
 		/*
 		base.Refresh();
 		Settings.Refresh();
@@ -369,7 +383,7 @@ public class LsbSmoServer
 			throw new FailedOperationException(Resources.ExceptionCannotSetDefInitFlds.Fmt(typeObject.Name)); //.SetHelpContext("CannotSetDefInitFlds");
 		}
 
-		List<string> initFields = CreateInitFieldsColl(typeObject).ToList();
+		List<string> initFields = [.. CreateInitFieldsColl(typeObject)];
 		initFields.AddRange(from string f in fields
 							where !initFields.Contains(f)
 							select f);

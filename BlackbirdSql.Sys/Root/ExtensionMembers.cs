@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql;
 
-[SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "For StartNew")]
 
 
 // =========================================================================================================

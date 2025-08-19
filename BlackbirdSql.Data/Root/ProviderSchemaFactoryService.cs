@@ -509,6 +509,8 @@ internal sealed class ProviderSchemaFactoryService : SBsNativeProviderSchemaFact
 		AbstractDslSchema dslSchema;
 		NotSupportedException ex;
 
+		// Evs.Trace(typeof(ProviderSchemaFactoryService), nameof(PrepareCollectionAsync), $"collectionName: {collectionName}, schemaCollection: {schemaCollection}, serverType: {serverType}, ConnectionString: {connection.ConnectionString}");
+
 
 		switch (collectionName.ToUpperInvariant())
 		{

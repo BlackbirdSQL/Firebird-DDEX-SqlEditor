@@ -17,12 +17,7 @@ namespace BlackbirdSql.Core.Controls.Config;
 //										AbstractSettingsPage Class
 //
 /// <summary>
-/// VS Options DialogPage base class.
-/// Disclosure: This class exposes some PropertyGridView members with hidden access modifiers using
-/// the Visual Studio's Reflection library, so that we can implement a few standard or comparable windows
-/// functionality features like single-click check boxes, radio buttons and cardinal synonyms into the
-/// DialogPage property grid.
-/// Common cardinal synonyms include current culture min[imum], max[imum], unlimited, default etc.
+/// VS Options DialogPage base class for both persistent and transient settings.
 /// </summary>
 // =============================================================================================================
 [ComVisible(true)]
@@ -107,6 +102,8 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 	// ---------------------------------------------------------------------------------
 	public override void LoadSettings()
 	{
+		// Evs.Debug(GetType(), "LoadSettings");
+
 		lock (_LockObject)
 			_Model.Load();
 	}
@@ -120,6 +117,8 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 	// ---------------------------------------------------------------------------------
 	public override void LoadSettingsFromStorage()
 	{
+		// Evs.Debug(GetType(), "LoadSettingsFromStorage");
+
 		lock (_LockObject)
 		{
 			_Model.Load();
@@ -129,6 +128,8 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 
 	public override void LoadSettingsFromXml(IVsSettingsReader reader)
 	{
+		// Evs.Debug(GetType(), "LoadSettingsFromXml");
+
 		base.LoadSettingsFromXml(reader);
 	}
 
@@ -140,6 +141,8 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 	// ---------------------------------------------------------------------------------
 	public override void ResetSettings()
 	{
+		// Evs.Debug(GetType(), "ResetSettings");
+
 		lock (_LockObject)
 			_Model.LoadDefaults();
 
@@ -156,6 +159,8 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 	// ---------------------------------------------------------------------------------
 	public override void SaveSettings()
 	{
+		// Evs.Debug(GetType(), "SaveSettings");
+
 		lock (_LockObject)
 			_Model.Save();
 	}
@@ -169,6 +174,8 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 	// ---------------------------------------------------------------------------------
 	public override void SaveSettingsToStorage()
 	{
+		// Evs.Debug(GetType(), "SaveSettingsToStorage");
+
 		lock (_LockObject)
 			_Model.Save();
 	}
@@ -192,6 +199,8 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 	// ---------------------------------------------------------------------------------
 	protected void OnResetSettings(object sender, EventArgs e)
 	{
+		/// Evs.Debug(GetType(), "OnResetSettings");
+
 		ResetSettings();
 	}
 

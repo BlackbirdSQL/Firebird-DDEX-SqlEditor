@@ -1,8 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
-
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QEReaderDataStorage
 
 using System;
 using System.Collections;
@@ -24,7 +21,7 @@ internal sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDispo
 
 	private readonly ArrayList _ColumnInfoArray;
 
-	private bool _DataStorageEnabled = true;
+	private bool _IsWriting = true;
 
 	private StorageDataReader _StorageReader;
 
@@ -79,7 +76,7 @@ internal sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDispo
 		_RowCount = 0L;
 		_ColumnInfoArray = [];
 		_IsClosed = true;
-		_DataStorageEnabled = true;
+		_IsWriting = true;
 	}
 
 	internal async Task<bool> StartConsumingDataWithoutStoringAsync(CancellationToken canceltoken)
@@ -131,10 +128,7 @@ internal sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDispo
 		return (IBsColumnInfo)_ColumnInfoArray[iCol];
 	}
 
-	public bool IsClosed()
-	{
-		return _IsClosed;
-	}
+	public bool IsClosed => _IsClosed;
 
 	public async Task<bool> InitStorageAsync(IDataReader reader, CancellationToken cancelToken)
 	{
@@ -181,7 +175,7 @@ internal sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDispo
 
 		if (!_IsClosed)
 		{
-			InvalidOperationException ex = new(Resources.ExceptionStorageAlreadyStoring);
+			InvalidOperationException ex = new(Resources.ExceptionStartAlreadyStoring.Fmt(nameof(QEReaderDataStorage)));
 			Diag.Ex(ex);
 			throw ex;
 		}
@@ -195,7 +189,7 @@ internal sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDispo
 
 	public void InitiateStopStoringData()
 	{
-		_DataStorageEnabled = false;
+		_IsWriting = false;
 	}
 
 	private async Task<bool> ConsumeDataWithoutStoringAsync(CancellationToken cancelToken)
@@ -203,10 +197,10 @@ internal sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDispo
 		// Evs.Trace(GetType(), "QEReaderDataStorage.ConsumeDataWithoutStoring", "", null);
 		_IsClosed = false;
 
-		while (_DataStorageEnabled && !cancelToken.Cancelled()
+		while (_IsWriting && !cancelToken.Cancelled()
 			&& await _StorageReader.ReadAsync(cancelToken));
 
-		_DataStorageEnabled = false;
+		_IsWriting = false;
 		await OnStorageNotifyAsync(-1L, true, cancelToken);
 		_IsClosed = true;
 
@@ -215,15 +209,15 @@ internal sealed class QEReaderDataStorage : IBsQEStorage, IBsDataStorage, IDispo
 
 	private async Task<bool> GetDataFromReaderAsync(CancellationToken cancelToken)
 	{
-		// Evs.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
-		while (_DataStorageEnabled && !cancelToken.Cancelled()
+		// Evs.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_IsWriting = {0}", _IsWriting);
+		while (_IsWriting && !cancelToken.Cancelled()
 			&& await _StorageReader.ReadAsync(cancelToken))
 		{
 			Interlocked.Increment(ref _RowCount);
 			await OnStorageNotifyAsync(_RowCount, false, cancelToken);
 		}
 
-		_DataStorageEnabled = false;
+		_IsWriting = false;
 		await OnStorageNotifyAsync(_RowCount, true, cancelToken);
 		_IsClosed = true;
 

@@ -147,6 +147,31 @@
   <data name="ExceptionCollectionNotSupported" xml:space="preserve">
     <value>The metadata collection {0} is not supported.</value>
   </data>
+  <data name="ExceptionDbCharacterSet" xml:space="preserve">
+    <value>Character set is not defined.
+
+If you are sure the character set exists and you are connecting to embedded databases then note that you CAN connect to a Firebird 2 embedded database after connecting to a Firebird 3, 4 or 5 embedded database.
+The inverse may NOT always hold true.
+If the problem persists, connect to a Firebiird 3, 4 or 5 database first.
+
+The database engine returned the following message:
+{0}</value>
+  </data>
+  <data name="ExceptionDbCharacterSetCaption" xml:space="preserve">
+    <value>Character Set not Defined</value>
+  </data>
+  <data name="ExceptionDbVersionMismatch" xml:space="preserve">
+    <value>Incorrect database client active for this database. 
+
+If you are connecting to an embedded database, then for Firebird version 3 or 4 and 5 run the applicable Setup.bat batch file from Windows Explorer copy the correct 'fbclient.dll' from the FbSetup3 or FbSetup45 folders in the BlackbirdSql extension folder and ensure you have the 'Client Library' in the advanced connection settings set to 'fbclient'. The Firebird 3 client is initially installed by default.
+For Firebird version 2 ensure the 'Client Library' is set to 'fbembed'.
+
+The database engine returned the following message:
+{0}</value>
+  </data>
+  <data name="ExceptionDbVersionMismatchCaption" xml:space="preserve">
+    <value>Database Version Mismatch</value>
+  </data>
   <data name="ExceptionDuplicatingSiteInformation" xml:space="preserve">
     <value>Source information for site already exists</value>
   </data>
@@ -173,6 +198,20 @@
   </data>
   <data name="ExceptionInvalidRawMetadataCall" xml:space="preserve">
     <value>The raw metadata collection {0} may not be called from here.</value>
+  </data>
+  <data name="ExceptionLoadingPlugin" xml:space="preserve">
+    <value>Error loading Firebird client plugin.
+
+If you are connecting to multiple versions of embedded databases then note that you CAN connect to a Firebird 2 embedded database after connecting to a Firebird 3, 4 or 5 embedded database.
+The inverse does NOT hold true.
+
+The database engine returned the following message:
+{0}
+
+</value>
+  </data>
+  <data name="ExceptionLoadingPluginCaption" xml:space="preserve">
+    <value>Error Loading Firebird Client Plugin</value>
   </data>
   <data name="ExceptionResourceNotFound" xml:space="preserve">
     <value>Resource not found: {0}</value>

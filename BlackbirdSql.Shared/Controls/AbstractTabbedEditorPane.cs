@@ -380,7 +380,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 
 
-	public async Task CloseCloneAsync()
+	public async Task CloseCloneEuiAsync()
 	{
 		lock (_LockObject)
 		{
@@ -1340,7 +1340,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 	}
 
 
-	protected virtual async Task<bool> UpdateTabsButtonTextAsync(ExecutionCompletedEventArgs args)
+	protected virtual async Task<bool> UpdateTabsButtonTextEuiAsync(ExecutionCompletedEventArgs args)
 	{
 		return await Task.FromResult(!args.SyncToken.Cancelled() && _TabbedEditorUICtl != null
 			&& _TabbedEditorUICtl.Tabs.Count > 0 && !_IsClosing && !ApcManager.SolutionClosing);
@@ -1426,7 +1426,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 		List<uint> saveCookieList = [];
 
 		enumerable ??= EnumerateOpenedDocuments(this, EnDocumentsFlag.DirtyExceptPrimary);
-		List<uint> cookieList = new List<uint>(enumerable) { primaryCookie };
+		List<uint> cookieList = [.. enumerable, primaryCookie];
 
 		foreach (uint cookie in cookieList)
 		{
@@ -1579,7 +1579,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IBsEditorPaneServic
 
 		try
 		{
-			await UpdateTabsButtonTextAsync(args);
+			await UpdateTabsButtonTextEuiAsync(args);
 		}
 		catch (Exception ex)
 		{

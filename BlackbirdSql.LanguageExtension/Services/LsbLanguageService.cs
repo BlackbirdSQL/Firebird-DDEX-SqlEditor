@@ -27,7 +27,7 @@ public class LsbLanguageService : AbstractLanguageService
 
 	public LsbLanguageService(object site) : base(site)
 	{
-		Evs.Trace(typeof(LsbLanguageService), ".ctor");
+		// Evs.Trace(typeof(LsbLanguageService), ".ctor");
 	}
 
 

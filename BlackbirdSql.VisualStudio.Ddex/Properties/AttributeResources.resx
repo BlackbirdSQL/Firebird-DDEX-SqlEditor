@@ -429,6 +429,9 @@
   <data name="OptionDescriptionEvsLevelSys" xml:space="preserve">
     <value>Sys assembly EventSource tracing level in the inclusive order of Off &gt; Critical &gt; Error &gt; Warning &gt; Information &gt; Verbose. Verbose includes Trace but excludes Debug.</value>
   </data>
+  <data name="OptionDescriptionGeneralActivateOutputPane" xml:space="preserve">
+    <value>Always activates the BlackbirdSql output window pane on output.</value>
+  </data>
   <data name="OptionDescriptionGeneralAutoCloseOffScreenEdmx" xml:space="preserve">
     <value>If enabled, closes edmx data models that are not on screen when a solution closes. Enable this option to avoid potential Visual Studio model load errors.</value>
   </data>
@@ -614,6 +617,9 @@
   </data>
   <data name="OptionDisplayEvsLevelSys" xml:space="preserve">
     <value>Sys assembly</value>
+  </data>
+  <data name="OptionDisplayGeneralActivateOutputPane" xml:space="preserve">
+    <value>Always activate output pane</value>
   </data>
   <data name="OptionDisplayGeneralAutoCloseOffScreenEdmx" xml:space="preserve">
     <value>Auto-close edmx models</value>

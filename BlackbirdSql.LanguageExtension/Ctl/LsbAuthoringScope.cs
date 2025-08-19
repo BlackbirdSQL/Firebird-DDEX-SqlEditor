@@ -36,7 +36,7 @@ public class LsbAuthoringScope : AuthoringScope
 
 	public LsbAuthoringScope(ParseResult parseResult, MetadataDisplayInfoProvider displayInfoProvider, LsbSource source)
 	{
-		Evs.Trace(typeof(LsbAuthoringScope), ".ctor");
+		// Evs.Trace(typeof(LsbAuthoringScope), ".ctor");
 
 		_ParseResult = parseResult;
 		_DisplayInfoProvider = displayInfoProvider;
@@ -116,8 +116,10 @@ public class LsbAuthoringScope : AuthoringScope
 			case ParseReason.MethodTip:
 				LsbSource source = LanguageExtensionPackage.Instance.LsbLanguageSvc.GetSource(view) as LsbSource;
 
-				Evs.Trace(GetType(), nameof(GetDeclarations), "GetDeclarations() started...");
+				// Evs.Trace(GetType(), nameof(GetDeclarations), "GetDeclarations() started...");
+
 				LsbDeclarations declarations;
+
 				if (source.CompletionSet.IsDisplayed)
 				{
 					declarations = source.CompletionSet.Declarations as LsbDeclarations;
@@ -141,12 +143,12 @@ public class LsbAuthoringScope : AuthoringScope
 				}
 				if (LsbLanguageServiceTestEvents.Instance.EnableTestEvents)
 				{
-					Evs.Trace(GetType(), nameof(GetDeclarations), "raising DeclarationsRequestedEvent");
+					// Evs.Trace(GetType(), nameof(GetDeclarations), "raising DeclarationsRequestedEvent");
 					LsbLanguageServiceTestEvents.Instance.RaiseDeclarationsRequestedEvent(declarations, view, line, col, info, reason);
-					Evs.Trace(GetType(), nameof(GetDeclarations), "raised DeclarationsRequestedEvent");
+					// Evs.Trace(GetType(), nameof(GetDeclarations), "raised DeclarationsRequestedEvent");
 				}
 
-				Evs.Trace(GetType(), nameof(GetDeclarations), "GetDeclarations() ending");
+				// Evs.Trace(GetType(), nameof(GetDeclarations), "GetDeclarations() ending");
 
 				return declarations;
 			default:

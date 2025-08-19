@@ -28,7 +28,7 @@ public interface IBsEditorPaneServiceProvider : IOleCommandTarget, System.IServi
 
 
 	void Activate(Guid logicalView, EnTabViewMode mode);
-	Task CloseCloneAsync();
+	Task CloseCloneEuiAsync();
 	IEnumerable<uint> GetEditableDocuments();
 	bool IsTabVisible(Guid logicalView);
 	int OnExec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);

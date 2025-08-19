@@ -3,12 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using BlackbirdSql.Sys.Properties;
-using BlackbirdSql.Sys.Events;
-using BlackbirdSql.Sys.Extensions;
-using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.Sys.Events;
+using BlackbirdSql.Sys.Properties;
 
 namespace BlackbirdSql.Sys.Ctl.Config;
 
@@ -27,7 +24,7 @@ namespace BlackbirdSql.Sys.Ctl.Config;
 /// VisualStudio.Ddex > Controller > EditorExtension > LanguageExtension > Shared > Core > Sys.
 /// </summary>
 // =========================================================================================================
-public abstract class PersistentSettings : IBsSettingsProvider
+public abstract class PersistentSettings : AbstractPersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
@@ -40,11 +37,8 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	/// Protected singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected PersistentSettings()
+	protected PersistentSettings() : base()
 	{
-		Diag.ThrowIfInstanceExists(_Instance);
-
-		_Instance = this;
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -52,42 +46,16 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	/// Private live .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected PersistentSettings(bool transient)
-	{
-		_TransientStore = new(SettingsStore);
-	}
-
-
-	protected PersistentSettings(IDictionary<string, object> transientStore)
-	{
-		_TransientStore = new(transientStore);
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the singleton PersistentSettings instance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static IBsSettingsProvider Instance
-	{
-		get
-		{
-			if (_Instance == null)
-			{
-				NullReferenceException ex = new(Resources.ExceptionCreateAbstractClass.Fmt(nameof(PersistentSettings)));
-				Diag.Ex(ex);
-				throw ex;
-			}
-
-			return _Instance;
-		}
-	}
-
-
-	protected virtual void Initialize()
+	protected PersistentSettings(bool transient) : base(transient)
 	{
 	}
+
+
+	protected PersistentSettings(IDictionary<string, object> transientStore) : base(transientStore)
+	{
+	}
+
+
 
 
 	#endregion Constructors / Destructors
@@ -100,13 +68,6 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	#region Fields - PersistentSettings
 	// =========================================================================================================
 
-	protected static readonly object _LockGlobal = new object();
-	protected readonly object _LockObject = new object();
-
-	private static string[] _EquivalencyKeys = null;
-	protected static IBsSettingsProvider _Instance = null;
-	protected static Dictionary<string, object> _SettingsStore = null;
-	protected Dictionary<string, object> _TransientStore = null;
 
 	#endregion Fields
 
@@ -118,39 +79,6 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	#region Property Accessors - PersistentSettings
 	// =========================================================================================================
 
-	public virtual object this[string name]
-	{
-		get
-		{
-			object value = null;
-			Dictionary<string, object> store = _TransientStore ?? _SettingsStore;
-
-			store?.TryGetValue(name, out value);
-
-			return value;
-		}
-
-		set
-		{
-			Dictionary<string, object> store = _TransientStore ?? _SettingsStore;
-			store[name] = value;
-		}
-	}
-
-
-	public static Dictionary<string, object> SettingsStore
-	{
-		get
-		{
-			lock (_LockGlobal)
-			{
-				if (_SettingsStore == null)
-					((PersistentSettings)Instance).Initialize();
-
-				return _SettingsStore;
-			}
-		}
-	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -171,6 +99,15 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static bool EnableTaskLog => (bool)GetPersistentSetting("DdexGeneralEnableTaskLog", true);
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a boolean indicating whether or not the BlackbirdSql output pane is
+	/// activated on output.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool ActivateOutputPane => (bool)GetPersistentSetting("DdexGeneralActivateOutputPane", false);
 
 
 	// ---------------------------------------------------------------------------------
@@ -294,24 +231,6 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	// =========================================================================================================
 
 
-	protected static object GetPersistentSetting(string name, object defaultValue)
-	{
-		try
-		{
-			if (!SettingsStore.TryGetValue(name, out object value))
-				value = defaultValue;
-
-			return value;
-		}
-		catch (Exception ex)
-		{
-			Diag.Ex(ex);
-			throw ex;
-		}
-	}
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Specifies the level of trace messages filtered by the source switch and event
@@ -324,20 +243,12 @@ public abstract class PersistentSettings : IBsSettingsProvider
 
 
 
-	protected static bool HasSetting(string name)
-	{
-		return _SettingsStore != null && _SettingsStore.ContainsKey(name);
-	}
-
-
 
 	/// <summary>
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models, ie. are options providers.
 	/// </summary>
-	public virtual void RegisterSettingsEventHandlers(IBsSettingsProvider.SettingsSavedDelegate onSettingsSavedDelegate)
-	{
-	}
+	// public virtual void RegisterSettingsEventHandlers(IBsSettingsProvider.SettingsSavedDelegate onSettingsSavedDelegate)
 
 
 	/// <summary>
@@ -348,22 +259,9 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	/// PopulateSettingsEventArgs is also called on loading by the extension without
 	/// a specific model specified for a universal request for settings.
 	/// </summary>
-	public virtual bool PopulateSettingsEventArgs(ref PropagateSettingsEventArgs args)
+	public override bool PopulateSettingsEventArgs(ref PropagateSettingsEventArgs args)
 	{
 		return false;
-	}
-
-
-
-	public bool PropertyExists(string name)
-	{
-		lock (_LockObject)
-		{
-			if (_TransientStore != null)
-				return _TransientStore.ContainsKey(name);
-
-			return _SettingsStore.ContainsKey(name);
-		}
 	}
 
 
@@ -384,10 +282,9 @@ public abstract class PersistentSettings : IBsSettingsProvider
 	/// IOW these are push notifications of any settings loaded or saved throughout the
 	/// extension and an opportunity to update any live settings.
 	/// </summary>
-	public virtual void PropagateSettings(PropagateSettingsEventArgs e)
+	public override void PropagateSettings(PropagateSettingsEventArgs e)
 	{
-		foreach (MutablePair<string, object> pair in e.Arguments)
-			this[pair.Key] = pair.Value;
+		base.PropagateSettings(e);
 	}
 
 

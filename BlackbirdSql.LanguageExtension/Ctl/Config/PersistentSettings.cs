@@ -3,6 +3,7 @@
 
 using System;
 using BlackbirdSql.LanguageExtension.Enums;
+using BlackbirdSql.LanguageExtension.Model.Config;
 using BlackbirdSql.LanguageExtension.Properties;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;

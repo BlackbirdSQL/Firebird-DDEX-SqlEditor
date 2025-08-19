@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.Data.Services;
 namespace BlackbirdSql.Sys.Interfaces;
 
 [Guid(LibraryData.C_NativeDatabaseEngineServiceGuid)]
-[SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "<Pending>")]
 
 
 // =========================================================================================================
@@ -84,6 +83,8 @@ internal interface IBsNativeDatabaseEngine
 	bool LockLoadedParser_(string originalString, string updatedString);
 	bool MatchesEntityFrameworkAssembly_(string assemblyName);
 	bool MatchesInvariantAssembly_(string assemblyName);
+	bool OpenDb_(IDbConnection @this);
+	Task<bool> OpenDbAsync_(IDbConnection @this, CancellationToken canvelToken);
 	(bool, bool) OpenOrVerifyConnection_(IDbConnection @this);
 	Task<(bool, bool)> OpenOrVerifyConnectionAsync_(IDbConnection @this,
 		IDbTransaction transaction, CancellationToken cancelToken);

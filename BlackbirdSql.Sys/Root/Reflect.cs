@@ -1083,7 +1083,7 @@ internal abstract class Reflect
 	/// </returns>
 	// ---------------------------------------------------------------------------------
 	internal static object InvokeMethodBaseType(object containerClassInstance, string method,
-		int depth, BindingFlags bindingFlags = BindingFlags.Default, object[] args = null)
+		int depth, BindingFlags bindingFlags = BindingFlags.Default, object[] args = null, bool displayException = true)
 	{
 		// Evs.Trace(typeof(Reflect), nameof(InvokeMethodBaseType), "Container class: {0}, method: {1}.", containerClassInstance.GetType().FullName, method);
 
@@ -1115,10 +1115,10 @@ internal abstract class Reflect
 		}
 		catch (Exception ex)
 		{
-			Diag.Ex(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
+			if (displayException)
+				Diag.Ex(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
+			throw;
 		}
-
-		return null;
 	}
 
 

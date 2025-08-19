@@ -38,6 +38,8 @@ internal class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabas
 
 	private static IBsNativeDatabaseEngine _Instance = null;
 	internal static IBsNativeDatabaseEngine EnsureInstance() => _Instance ??= new DatabaseEngineService();
+	private static bool _VersionServerLoaded = false;
+	private static bool _VersionEmbeddedLoaded = false;
 
 	public string AssemblyQualifiedName_ => typeof(FirebirdClientFactory).AssemblyQualifiedName;
 	public Assembly ClientFactoryAssembly_ => typeof(FirebirdClientFactory).Assembly;
@@ -172,6 +174,275 @@ internal class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabas
 
 
 	/// <summary>
+	/// Hack to address Fb Client bug and ensure embedded versions are connected/opened in the correct order.
+	/// Initial Databases must be opened in the order 1. FbServerType.Default then (2) Firebird Embedded 3
+	/// then (3) Firebird Embedded 2.
+	/// This method ensures this order is maintained by opening prerequisite dummies. This only happens
+	/// initially and as and when required. This resolves the issue even if the dummies fail to open.
+	/// </summary>
+	private bool EnsureVersionConnectOrder(string connectionString)
+	{
+		// Out. Firebird hangs.
+		// _VersionServerLoaded = true;
+		// _VersionEmbeddedLoaded = true;
+
+		if (_VersionServerLoaded && _VersionEmbeddedLoaded)
+			return false;
+
+		FbConnectionStringBuilder csb = new(connectionString);
+
+		if (csb.ServerType == FbServerType.Default)
+		{
+			_VersionServerLoaded = true;
+			return false;
+		}
+
+
+		// Give Firebird time to breath.
+		/*
+		Thread.Sleep(600);
+		Thread.Yield();
+
+		if (_VersionServerLoaded)
+			return false;
+		*/
+
+		FbConnection conn;
+		FbConnectionStringBuilder loadCsb;
+
+		if (!_VersionServerLoaded)
+		{
+
+			_VersionServerLoaded = true;
+
+
+			loadCsb = new()
+			{
+				DataSource = "localhost",
+				Database = "FBEMBEDDUMMY3.fdb",
+				ServerType = FbServerType.Default,
+				ClientLibrary = "fbclient",
+				UserID = "SYSDBA",
+				Password = "masterkey",
+				Pooling = false,
+				Enlist = false
+			};
+
+
+			conn = new(loadCsb.ConnectionString);
+
+
+			try
+			{
+				// Evs.Debug(GetType(), "EnsureVersionConnectOrder", $"Server FbConnection.Open:\nConnectionString: {conn.ConnectionString}");
+				conn.Open();
+				conn.Close();
+			}
+			catch (Exception ex)
+			{
+				Diag.Expected(ex);
+			}
+
+			try
+			{
+				conn.Dispose();
+			}
+			catch
+			{
+			}
+		}
+
+		string prerequisiteEmbedLibrary = LibraryData.C_PreRequisiteLoadVersion == 2 ? "fbembed" : "fbclient";
+
+
+		if (csb.ClientLibrary == prerequisiteEmbedLibrary)
+		{
+			_VersionEmbeddedLoaded = true;
+			return false;
+		}
+
+		_VersionEmbeddedLoaded = true;
+
+
+		loadCsb = new()
+		{
+			DataSource = "localhost",
+			Database = $"FBEMBEDDUMMY{LibraryData.C_PreRequisiteLoadVersion}.fdb",
+			ServerType = FbServerType.Embedded,
+			ClientLibrary = prerequisiteEmbedLibrary,
+			UserID = "SYSDBA",
+			Password = "masterkey",
+			Pooling = false,
+			Enlist = false
+		};
+
+
+		conn = new(loadCsb.ConnectionString);
+
+
+		try
+		{
+			// Evs.Debug(GetType(), "EnsureVersionConnectOrder", $"{prerequisiteEmbedLibrary} FbConnection.Open:\nConnectionString: {conn.ConnectionString}");
+			conn.Open();
+			conn.Close();
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+		}
+
+		try
+		{
+			conn.Dispose();
+		}
+		catch
+		{
+		}
+
+
+
+		return true;
+	}
+
+
+
+	/// <summary>
+	/// Hack to address Fb Client bug and ensure embedded versions are connected/opened in the correct order.
+	/// Initial Databases must be opened in the order 1. FbServerType.Default then (2) Firebird Embedded 3
+	/// then (3) Firebird Embedded 2.
+	/// This method ensures this order is maintained by opening prerequisite dummies. This only happens
+	/// initially and as and when required. This resolves the issue even if the dummies fail to open.
+	/// </summary>
+	// System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "<Pending>")]
+	private async Task<bool> EnsureVersionConnectOrderAsync(string connectionString, CancellationToken cancelToken)
+	{
+		// Out. Firebird hangs.
+		// _VersionServerLoaded = true;
+		// _VersionEmbeddedLoaded = true;
+
+		if (cancelToken.IsCancellationRequested)
+			return false;
+
+		if (_VersionServerLoaded && _VersionEmbeddedLoaded)
+			return false;
+
+		FbConnectionStringBuilder csb = new(connectionString);
+
+		if (csb.ServerType == FbServerType.Default)
+		{
+			_VersionServerLoaded = true;
+			return false;
+		}
+
+		// Give Firebird time to breath.
+		/*
+		Thread.Sleep(600);
+		Thread.Yield();
+
+		if (_VersionServerLoaded)
+			return false;
+		*/
+
+		FbConnection conn;
+		FbConnectionStringBuilder loadCsb;
+
+		if (!_VersionServerLoaded)
+		{
+
+			_VersionServerLoaded = true;
+
+
+			loadCsb = new()
+			{
+				DataSource = "localhost",
+				Database = "FBEMBEDDUMMY3.fdb",
+				ServerType = FbServerType.Default,
+				ClientLibrary = "fbclient",
+				UserID = "SYSDBA",
+				Password = "masterkey",
+				Pooling = false,
+				Enlist = false
+			};
+
+
+			conn = new(loadCsb.ConnectionString);
+
+
+			try
+			{
+				// Evs.Debug(GetType(), "EnsureVersionConnectOrderAsync", $"Server FbConnection.Open:\nConnectionString: {conn.ConnectionString}");
+				await conn.OpenAsync();
+				await conn.CloseAsync();
+			}
+			catch (Exception ex)
+			{
+				Diag.Expected(ex);
+			}
+
+			try
+			{
+				conn.Dispose();
+			}
+			catch
+			{
+			}
+		}
+
+		string prerequisiteEmbedLibrary = LibraryData.C_PreRequisiteLoadVersion == 2 ? "fbembed" : "fbclient";
+
+
+		if (csb.ClientLibrary == prerequisiteEmbedLibrary)
+		{
+			_VersionEmbeddedLoaded = true;
+			return false;
+		}
+
+		_VersionEmbeddedLoaded = true;
+
+
+		loadCsb = new()
+		{
+			DataSource = "localhost",
+			Database = $"FBEMBEDDUMMY{LibraryData.C_PreRequisiteLoadVersion}.fdb",
+			ServerType = FbServerType.Embedded,
+			ClientLibrary = prerequisiteEmbedLibrary,
+			UserID = "SYSDBA",
+			Password = "masterkey",
+			Pooling = false,
+			Enlist = false
+		};
+
+
+		conn = new(loadCsb.ConnectionString);
+
+
+		try
+		{
+			// Evs.Debug(GetType(), "EnsureVersionConnectOrderAsync", $"{prerequisiteEmbedLibrary} FbConnection.Open:\nConnectionString: {conn.ConnectionString}");
+			await conn.OpenAsync();
+			await conn.CloseAsync();
+		}
+		catch (Exception ex)
+		{
+			Diag.Expected(ex);
+		}
+
+		try
+		{
+			conn.Dispose();
+		}
+		catch
+		{
+		}
+
+
+
+		return true;
+	}
+
+
+
+	/// <summary>
 	/// Gets the connection datasource.
 	/// </summary>
 	public string GetConnectionDataSource_(IDbConnection @this)
@@ -278,6 +549,32 @@ internal class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabas
 
 
 
+	public bool OpenDb_(IDbConnection @this)
+	{
+		if (@this is not FbConnection connection)
+			return false;
+
+		EnsureVersionConnectOrder(@this.ConnectionString);
+		connection.Open();
+
+		return true;
+	}
+
+
+
+	public async Task<bool> OpenDbAsync_(IDbConnection @this, CancellationToken cancelToken)
+	{
+		if (@this is not FbConnection connection)
+			return false;
+
+		await EnsureVersionConnectOrderAsync(@this.ConnectionString, cancelToken);
+		await connection.OpenAsync(cancelToken);
+
+		return true;
+	}
+
+
+
 	public (bool, bool) OpenOrVerifyConnection_(IDbConnection @this)
 	{
 		if (@this is not FbConnection connection)
@@ -285,7 +582,8 @@ internal class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabas
 
 		if (connection.State != ConnectionState.Open)
 		{
-			connection.Open();
+			// Evs.Debug(GetType(), "OpenOrVerifyConnection_", $"FbConnection.Open:\nConnectionString: {connection.ConnectionString}");
+			connection.OpenDb();
 			return (true, false);
 		}
 
@@ -323,7 +621,8 @@ internal class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabas
 
 		if (connection.State != ConnectionState.Open)
 		{
-			await connection.OpenAsync(cancelToken);
+			// Evs.Debug(GetType(), "OpenOrVerifyConnectionAsync_", $"FbConnection.OpenDbAsync:\nConnectionString: {connection.ConnectionString}");
+			await connection.OpenDbAsync(cancelToken);
 			return (true, false);
 		}
 
@@ -396,10 +695,10 @@ internal class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabas
 		}
 		catch (Exception ex)
 		{
+			Diag.Expected(ex);
+
 			if (cancelToken.Cancelled())
 			{
-				Diag.Expected(ex);
-
 				try
 				{
 					await ((FbDataReader)@this).CloseAsync(default);
@@ -422,10 +721,10 @@ internal class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabas
 		}
 		catch (Exception ex)
 		{
+			Diag.Expected(ex);
+
 			if (cancelToken.Cancelled())
 			{
-				Diag.Expected(ex);
-
 				try
 				{
 					await ((FbDataReader)@this).CloseAsync(default);
@@ -451,5 +750,6 @@ internal class DatabaseEngineService : SBsNativeDatabaseEngine, IBsNativeDatabas
 
 
 	public void UnlockLoadedParser_() => LinkageParser.UnlockLoadedParser();
+
 
 }

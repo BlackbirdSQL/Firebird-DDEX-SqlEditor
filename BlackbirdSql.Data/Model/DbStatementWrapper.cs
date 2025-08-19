@@ -9,6 +9,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Data.Ctl;
+using BlackbirdSql.Data.Properties;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Events;
 using BlackbirdSql.Sys.Interfaces;
@@ -261,6 +262,8 @@ internal class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 					ProvideCommand().CommandText = statement.Text;
 
+					// Evs.Trace(GetType(), nameof(ExecuteAsync), $"Command text: {_Command.CommandText}");
+
 					try
 					{
 						_QueryDataReader = await _Command.ExecuteReaderAsync(CommandBehavior.Default, cancelToken);
@@ -451,8 +454,9 @@ internal class DbStatementWrapper : IBsNativeDbStatementWrapper
 		}
 
 
-		if (string.IsNullOrWhiteSpace(str))
-			return false;
+		// Might be spurious characters for embedded or Fb version - idk.
+		if (string.IsNullOrWhiteSpace(str) || str.Length < 7)
+			str = Resources.ExecutionPlanUnavailable;
 
 		DataTable table = _Owner.PlanTable;
 
@@ -767,7 +771,8 @@ internal class DbStatementWrapper : IBsNativeDbStatementWrapper
 		{
 			try
 			{
-				_Owner.Connection.Open();
+				// Evs.Debug(GetType(), "ProvideConnection", $"IDbConnection.Open:\nConnectionString: {_Owner.Connection.ConnectionString}");
+				_Owner.Connection.OpenDb();
 			}
 			catch (Exception ex)
 			{

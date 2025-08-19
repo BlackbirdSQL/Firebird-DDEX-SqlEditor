@@ -54,7 +54,7 @@
 
 
 	<Define name="TplTypeTrigger" parameters="triggerType" >
-		<Type name="$(triggerType)" preferredOrdering="TRIGGER_NAME">
+		<Type name="$(triggerType)" preferredOrdering="IS_INCREMENT DESC, TRIGGER_NAME">
 			<Identifier>
 				<Part name="TABLE_CATALOG" type="System.String" />
 				<Part name="TABLE_SCHEMA" type="System.String" />
@@ -69,8 +69,10 @@
 				<Property name="IS_INACTIVE" type="System.Boolean" />
 				<Property name="PRIORITY" type="System.Int16" />
 				<Property name="EXPRESSION" type="System.String" />
+				<Property name="BLR" type="System.String" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="IS_IDENTITY" type="System.Boolean" />
+				<Property name="IS_INCREMENT" type="System.Boolean" />
 				<Property name="SEQUENCE_GENERATOR" type="System.String" />
 				<Property name="IDENTITY_SEED" type="System.Int64" />
 				<Property name="IDENTITY_INCREMENT" type="System.Int32" />

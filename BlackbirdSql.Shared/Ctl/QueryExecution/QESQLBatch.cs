@@ -361,7 +361,7 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 		QryMgr.SetState(EnQueryState.Cancelling, true);
 		QryMgr.SetState(EnQueryState.Faulted, true);
 		QryMgr.SetState(EnQueryState.Prompting, true);
-		RdtManager.ShowWindowFrameAsyeu(QryMgr.DocCookie);
+		RdtManager.ShowWindowFrameEui(QryMgr.DocCookie);
 
 		string server = ex.GetServer();
 		string database = ex.GetDatabase();
@@ -542,7 +542,6 @@ public class QESQLBatch : IBsDataReaderHandler, IDisposable
 
 
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
 	public async Task<EnScriptExecutionResult> ProcessReaderAsync(IDbConnection conn, IDataReader dataReader,
 		bool isSpecialAction, int statementIndex, int statementCount, long rowsSelected, long totalRowsSelected,
 		bool canComplete, CancellationToken cancelToken)

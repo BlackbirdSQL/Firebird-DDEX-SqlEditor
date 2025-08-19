@@ -281,6 +281,7 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.IS_COMPUTED} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Computed$(parentType)Column.ico" when="{Column.IS_COMPUTED}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.IdentityColumn.ico" when="{Column.IS_IDENTITY} AND {Column.IS_UNIQUE} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.IdentitySystemColumn.ico" when="{Column.IS_IDENTITY} AND NOT ({Column.IS_SYSTEM_FLAG} = 0) AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey.ico" when="{Column.IS_UNIQUE} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey$(parentType).ico" when="{Column.IS_UNIQUE}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey.ico" when="{Column.IN_PRIMARYKEY} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
@@ -388,6 +389,11 @@
 				<Category resource="Category_Identifier" />
 				<Description resource="Property_Desc_Description" />
 			</Property>
+			<Property name="IS_INCREMENT">
+				<DisplayName resource="Property_Name_Trigger_IsIncrement" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Property_Desc_Trigger_IsIncrement" />
+			</Property>
 			<Property name="IS_IDENTITY">
 				<DisplayName resource="Property_Name_Trigger_IsIdentity" />
 				<Category resource="Category_Identifier" />
@@ -397,6 +403,11 @@
 				<DisplayName resource="Property_Name_Dsl" />
 				<Category resource="Category_Initialization" />
 				<Description resource="Property_Desc_Dsl" />
+			</Property>
+			<Property name="BLR">
+				<DisplayName resource="Property_Name_Blr" />
+				<Category resource="Category_Initialization" />
+				<Description resource="Property_Desc_Blr" />
 			</Property>
 			<Property name="DEPENDENCY_COUNT">
 				<DisplayName resource="Property_Name_Trigger_DependencyCount" />
@@ -440,6 +451,7 @@
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_IDENTITY}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_INCREMENT}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
 				<Commands>
@@ -460,6 +472,7 @@
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_IDENTITY}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_INCREMENT}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
 				<Commands>

@@ -479,7 +479,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 					mainThreadSwitchTime.Fmt(true), totalTime.Fmt(true));
 
 				if (_LoadStatisticsOutputFailed)
-					Diag.OutputPaneWriteLineAsync(outputMsg, true).Forget();
+					Diag.OutputPaneWriteLineEuiAsync(outputMsg, true).Forget();
 				else
 					_LoadStatisticsMsg = outputMsg;
 			}
@@ -495,7 +495,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBsAsyncPackage
 			return;
 		}
 
-		Diag.OutputPaneWriteLineAsyui(_LoadStatisticsMsg, true);
+		Diag.OutputPaneWriteLineAsyup(_LoadStatisticsMsg, true);
 
 		_LoadStatisticsMsg = null;
 	}

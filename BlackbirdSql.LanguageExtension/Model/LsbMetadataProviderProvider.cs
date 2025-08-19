@@ -20,6 +20,7 @@ using BlackbirdSql.Sys.Enums;
 using Microsoft.SqlServer.Management.SqlParser.Binder;
 using Microsoft.SqlServer.Management.SqlParser.Common;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
+using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Threading;
 
 
@@ -47,7 +48,7 @@ internal class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 	protected LsbMetadataProviderProvider(IBsModelCsb ci, string cacheKey)
 	{
-		Evs.Trace(typeof(LsbMetadataProviderProvider), ".ctor");
+		// Evs.Trace(typeof(LsbMetadataProviderProvider), ".ctor");
 
 		IsInitialized = false;
 		_ = IsInitialized;
@@ -172,7 +173,7 @@ internal class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				csb.Pooling = false;
 				connection = NativeDb.CreateDbConnection(csb.ToString());
 
-				await connection.OpenAsync().ConfigureAwait(continueOnCapturedContext: false);
+				await connection.OpenDbAsync().ConfigureAwait(continueOnCapturedContext: false);
 
 				// SetLockAndCommandTimeout(connection);
 
@@ -215,7 +216,8 @@ internal class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 			try
 			{
-				ServerConnection.Open();
+				// Evs.Debug(GetType(), "InitializeMetadataConnection", $"IDbConnection.Open:\nConnectionString: {ServerConnection.ConnectionString}");
+				ServerConnection.OpenDb();
 			}
 			catch (Exception ex)
 			{
@@ -243,7 +245,8 @@ internal class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 
 			try
 			{
-				DriftDetectionConnection.Open();
+				// Evs.Debug(GetType(), "InitializeDriftDetectionConnection", $"DbConnection.Open:\nConnectionString: {DriftDetectionConnection.ConnectionString}");
+				DriftDetectionConnection.OpenDb();
 			}
 			catch (Exception ex)
 			{
@@ -312,7 +315,7 @@ internal class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				}
 
 				// TBC: MetadataProvider
-				base.MetadataProvider = LsbMetadataProvider.CreateConnectedProvider(ServerConnection);
+				base.MetadataProvider = AbstractSmoMetaMetadataProvider.CreateConnectedProvider(ServerConnection);
 
 				base.Binder = BinderProvider.CreateBinder(base.MetadataProvider);
 				// Evs.Trace(GetType(), nameof(CreateMetadataProvider), "After metadata provider is created");
@@ -363,7 +366,7 @@ internal class LsbMetadataProviderProvider : AbstractMetadataProviderProvider
 				{
 					if (DriftDetectionConnection != null && DriftDetectionConnection.State == ConnectionState.Closed)
 					{
-						DriftDetectionConnection.Open();
+						DriftDetectionConnection.OpenDb();
 					}
 					if (DriftDetectionConnection == null || DriftDetectionConnection.State != ConnectionState.Open)
 					{

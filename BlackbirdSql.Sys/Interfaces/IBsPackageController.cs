@@ -177,8 +177,8 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 	uint ToolboxCmdUICookie { get; }
 
 
-	abstract bool AdviseUnsafeEventsAsyeu();
-	Task<bool> AdviseUnsafeEventsAsync();
+	abstract bool AdviseUnsafeEventsEui();
+	Task<bool> AdviseUnsafeEventsEuiAsync();
 	bool EventRdtEnter(bool test = false, bool force = false);
 	void EventRdtExit();
 	string CreateConnectionUrl(string connectionString);
@@ -191,8 +191,8 @@ public interface IBsPackageController : IVsSolutionEvents3, IVsSelectionEvents, 
 	void InvalidateRctManager();
 	bool IsConnectionEquivalency(string connectionString1, string connectionString2);
 	bool IsWeakConnectionEquivalency(string connectionString1, string connectionString2);
-	Task<bool> RegisterProjectEventHandlersAsync();
-	void RegisterProjectEventHandlersAsyeu();
+	Task<bool> RegisterProjectEventHandlersEuiAsync();
+	void RegisterProjectEventHandlersEui();
 	void ValidateSolution();
 
 

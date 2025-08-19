@@ -232,6 +232,12 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				break;
 			case EnStatisticSpecialAction.SIFormat:
 				result = longres = (long)snapshotData[sn.Name];
+				if (result == -99L)
+				{
+					stringValue = Resources.NotSupported;
+					cellValue = result;
+					break;
+				}
 				(stringValue, cellValue) = longres.FmtExpSize();
 				break;
 			default:
@@ -340,7 +346,12 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			}
 
 			if (sn.CalculateAverage)
-				strAvg = FormatValue(sn, rowTotal / numberOfTries);
+			{
+				if (rowTotal / numberOfTries == -99.0)
+					strAvg = Resources.NotSupported;
+				else
+					strAvg = FormatValue(sn, rowTotal / numberOfTries);
+			}
 			gridCellCollection.Add(new(strAvg));
 			gridControl.AddRow(gridCellCollection);
 

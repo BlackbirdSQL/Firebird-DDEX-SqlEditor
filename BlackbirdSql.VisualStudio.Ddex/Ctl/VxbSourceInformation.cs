@@ -85,7 +85,6 @@ public class VxbSourceInformation : AdoDotNetSourceInformation
 		AddProperty(SchemaSupportedInDml, false);
 		AddProperty(ServerSeparator, ".");
 		AddProperty(SupportsAnsi92Sql, true);
-		AddProperty(SupportsQuotedIdentifierParts, true);
 		AddProperty(SupportsCommandTimeout, false);
 		AddProperty(SupportsQuotedIdentifierParts, true);
 		AddProperty("DesktopDataSource", true);

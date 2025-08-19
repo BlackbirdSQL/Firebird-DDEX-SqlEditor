@@ -10,19 +10,19 @@ namespace BlackbirdSql.Core.Ctl.ComponentModel;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
 public sealed class ValueDependsOnExternalPropertyAttribute : Attribute
 {
-	private readonly string m_sourceName;
+	private readonly string _SourceName;
 
-	private readonly string m_propertyName;
+	private readonly string _PropertyName;
 
-	public string SourceName => m_sourceName;
+	public string SourceName => _SourceName;
 
-	public string PropertyName => m_propertyName;
+	public string PropertyName => _PropertyName;
 
 	public override object TypeId => this;
 
 	public ValueDependsOnExternalPropertyAttribute(string sourceName, string propertyName = null)
 	{
-		m_sourceName = sourceName;
-		m_propertyName = propertyName ?? "";
+		_SourceName = sourceName;
+		_PropertyName = propertyName ?? "";
 	}
 }

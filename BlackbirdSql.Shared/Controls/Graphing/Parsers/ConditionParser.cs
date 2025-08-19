@@ -9,7 +9,7 @@ internal sealed class ConditionParser : XmlPlanHierarchyParser
 {
 	private static ConditionParser conditionParser;
 
-	internal new static ConditionParser Instance
+	public new static ConditionParser Instance
 	{
 		get
 		{

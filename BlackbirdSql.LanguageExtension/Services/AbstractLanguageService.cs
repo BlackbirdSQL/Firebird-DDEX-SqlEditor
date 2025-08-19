@@ -3,30 +3,30 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Babel;
-using BlackbirdSql.Shared.Interfaces;
 using BlackbirdSql.LanguageExtension.Ctl;
 using BlackbirdSql.LanguageExtension.Ctl.Config;
+using BlackbirdSql.LanguageExtension.Interfaces;
+using BlackbirdSql.LanguageExtension.Model;
 using BlackbirdSql.LanguageExtension.Properties;
+using BlackbirdSql.Shared.Interfaces;
+using BlackbirdSql.Shared.Model;
 using Microsoft.SqlServer.Management.SqlParser.Intellisense;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Package;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using CasingStyle = Microsoft.SqlServer.Management.SqlParser.MetadataProvider.CasingStyle;
 using MetadataDisplayInfoProvider = Microsoft.SqlServer.Management.SqlParser.MetadataProvider.MetadataDisplayInfoProvider;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.Shell;
-using BlackbirdSql.LanguageExtension.Interfaces;
-using BlackbirdSql.Shared.Model;
-using BlackbirdSql.LanguageExtension.Model;
-using System.Data;
 
 
 
@@ -161,44 +161,52 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 	public override int GetLanguageID(IVsTextBuffer buffer, int line, int col, out Guid langId)
 	{
-		Evs.Trace(GetType(), nameof(GetLanguageID), $"buffer: {buffer}, line: {line}, col: {col}");
+		// Evs.Trace(GetType(), nameof(GetLanguageID), $"buffer: {buffer}, line: {line}, col: {col}");
+
 		langId = _ClsidExpressionEvaluator;
+
 		return 0;
 	}
 
 	public override int GetLocationOfName(string name, out string pbstrMkDoc, TextSpan[] spans)
 	{
-		Evs.Trace(GetType(), nameof(GetLocationOfName), $"name: {name}, spans: {spans}");
+		// Evs.Trace(GetType(), nameof(GetLocationOfName), $"name: {name}, spans: {spans}");
+
 		return base.GetLocationOfName(name, out pbstrMkDoc, spans);
 	}
 
 	public override int GetNameOfLocation(IVsTextBuffer buffer, int line, int col, out string name, out int lineOffset)
 	{
-		Evs.Trace(GetType(), nameof(GetNameOfLocation), $"buffer: {buffer}, line: {line}, col: {col}");
+		// Evs.Trace(GetType(), nameof(GetNameOfLocation), $"buffer: {buffer}, line: {line}, col: {col}");
+
 		return base.GetNameOfLocation(buffer, line, col, out name, out lineOffset);
 	}
 
 	public override int GetProximityExpressions(IVsTextBuffer buffer, int line, int col, int cLines, out IVsEnumBSTR ppEnum)
 	{
-		Evs.Trace(GetType(), nameof(GetProximityExpressions), $"buffer: {buffer}, line: {line}, col: {col}, cLines: {cLines}");
+		// Evs.Trace(GetType(), nameof(GetProximityExpressions), $"buffer: {buffer}, line: {line}, col: {col}, cLines: {cLines}");
+
 		return base.GetProximityExpressions(buffer, line, col, cLines, out ppEnum);
 	}
 
 	public override int IsMappedLocation(IVsTextBuffer buffer, int line, int col)
 	{
-		Evs.Trace(GetType(), nameof(IsMappedLocation), $"buffer: {buffer}, line: {line}, col: {col}");
+		// Evs.Trace(GetType(), nameof(IsMappedLocation), $"buffer: {buffer}, line: {line}, col: {col}");
+
 		return base.IsMappedLocation(buffer, line, col);
 	}
 
 	public override int ResolveName(string name, uint flags, out IVsEnumDebugName ppNames)
 	{
-		Evs.Trace(GetType(), nameof(ResolveName), $"name: {name}, flags: {flags}");
+		// Evs.Trace(GetType(), nameof(ResolveName), $"name: {name}, flags: {flags}");
+
 		return base.ResolveName(name, flags, out ppNames);
 	}
 
 	public override int ValidateBreakpointLocation(IVsTextBuffer buffer, int line, int col, TextSpan[] pCodeSpan)
 	{
-		Evs.Trace(GetType(), nameof(ValidateBreakpointLocation), $"buffer: {buffer}, line: {line}, col: {col}, pCodeSpan: {pCodeSpan}");
+		// Evs.Trace(GetType(), nameof(ValidateBreakpointLocation), $"buffer: {buffer}, line: {line}, col: {col}, pCodeSpan: {pCodeSpan}");
+
 		IVsTextLines obj = buffer as IVsTextLines;
 
 		___(obj.GetLastLineIndex(out int piLine, out int piIndex));
@@ -250,7 +258,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 
 
-	public async Task RefreshIntellisenseAsync(bool currentWindowOnly)
+	public async Task RefreshIntellisenseEuiAsync(bool currentWindowOnly)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -699,7 +707,8 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 		public ViewFilterI(AbstractLanguageService service, CodeWindowManager mgr, IVsTextView view)
 			: base(mgr, view)
 		{
-			Evs.Trace(typeof(ViewFilterI), ".ctor");
+			// Evs.Trace(typeof(ViewFilterI), ".ctor");
+
 			// _SqlLanguageService = service;
 		}
 
@@ -757,7 +766,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 		private void InvokeSnippetBrowser(string prompt, string[] snippetTypes)
 		{
-			Evs.Trace(GetType(), nameof(InvokeSnippetBrowser));
+			// Evs.Trace(GetType(), nameof(InvokeSnippetBrowser));
 
 			ExpansionProvider expansionProvider = GetExpansionProvider();
 			if (expansionProvider != null && TextView != null)
@@ -768,7 +777,7 @@ public abstract class AbstractLanguageService : LanguageService, IBsLanguageServ
 
 		private static string[] GetExpansionTypes(uint cmd)
 		{
-			Evs.Trace(typeof(AbstractLanguageService), nameof(GetExpansionTypes));
+			// Evs.Trace(typeof(AbstractLanguageService), nameof(GetExpansionTypes));
 
 			string text = cmd == 323 ? "Expansion" : "SurroundsWith";
 			return [text];

@@ -60,7 +60,7 @@ public class VxbEquivalencyComparer : DataConnectionEquivalencyComparer
 	// ---------------------------------------------------------------------------------
 	protected override bool AreEquivalent(IVsDataConnectionProperties connectionProperties1, IVsDataConnectionProperties connectionProperties2)
 	{
-		Evs.Trace(GetType(), nameof(AreEquivalent));
+		// Evs.Trace(GetType(), nameof(AreEquivalent));
 
 		// The only interception we can make when a new query lists tables or views is when the
 		// Microsoft.VisualStudio.Data.Package.DataConnectionManager checks if the connection it requires

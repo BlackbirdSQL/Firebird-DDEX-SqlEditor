@@ -17,6 +17,7 @@
 
 using System.Data;
 using BlackbirdSql.Sys.Interfaces;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.Data.Model.Schema;
 
@@ -26,40 +27,45 @@ internal class DslForeignKeyColumns : DslColumns
 	public DslForeignKeyColumns() : base()
 	{
 		// Evs.Trace(GetType(), "DslForeignKeyColumns.DslForeignKeyColumns");
+	}
+
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		base.InitializeParameters(connection);
 
 		_ParentType = "ForeignKey";
 		_ObjectType = "TableForeignKeyColumn";
-		_ParentColumn = "co.rdb$constraint_name";
-		_OrderingField = "co.rdb$constraint_name";
-		_FromClause = @"rdb$relation_constraints co
-				INNER JOIN rdb$ref_constraints ref 
-                    ON co.rdb$constraint_type = 'FOREIGN KEY' AND co.rdb$constraint_name = ref.rdb$constraint_name
-				INNER JOIN rdb$indices tempidx 
-                    ON co.rdb$index_name = tempidx.rdb$index_name
-				INNER JOIN rdb$index_segments coidxseg 
-                    ON co.rdb$index_name = coidxseg.rdb$index_name
-				INNER JOIN rdb$indices refidx 
-                    ON refidx.rdb$index_name = tempidx.rdb$foreign_key
-				INNER JOIN rdb$index_segments refidxseg 
-                    ON refidxseg.rdb$index_name = refidx.rdb$index_name AND refidxseg.rdb$field_position = coidxseg.rdb$field_position
-				INNER JOIN rdb$relation_fields r
-                    ON r.rdb$relation_name = co.rdb$relation_name AND r.rdb$field_name = coidxseg.rdb$field_name";
+		_ParentColName = "co.RDB$CONSTRAINT_NAME";
+		_OrderingColumn = "co.RDB$CONSTRAINT_NAME";
+		_FromClause = @"RDB$RELATION_CONSTRAINTS co
+				INNER JOIN RDB$REF_CONSTRAINTS ref 
+                    ON co.RDB$CONSTRAINT_TYPE = 'FOREIGN KEY' AND co.RDB$CONSTRAINT_NAME = ref.RDB$CONSTRAINT_NAME
+				INNER JOIN RDB$INDICES tempidx 
+                    ON co.RDB$INDEX_NAME = tempidx.RDB$INDEX_NAME
+				INNER JOIN RDB$INDEX_SEGMENTS coidxseg 
+                    ON co.RDB$INDEX_NAME = coidxseg.RDB$INDEX_NAME
+				INNER JOIN RDB$INDICES refidx 
+                    ON refidx.RDB$INDEX_NAME = tempidx.RDB$FOREIGN_KEY
+				INNER JOIN RDB$INDEX_SEGMENTS refidxseg 
+                    ON refidxseg.RDB$INDEX_NAME = refidx.RDB$INDEX_NAME AND refidxseg.RDB$FIELD_POSITION = coidxseg.RDB$FIELD_POSITION
+				INNER JOIN RDB$RELATION_FIELDS r
+                    ON r.RDB$RELATION_NAME = co.RDB$RELATION_NAME AND r.RDB$FIELD_NAME = coidxseg.RDB$FIELD_NAME";
 
-		_RequiredColumns["ORDINAL_POSITION"] = "coidxseg.rdb$field_position";
+		_RequiredColumns["ORDINAL_POSITION"] = "coidxseg.RDB$FIELD_POSITION";
 
 		_AdditionalColumns.Add("CONSTRAINT_CATALOG", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("CONSTRAINT_SCHEMA", new(null, "varchar(10)"));
-		_AdditionalColumns.Add("CONSTRAINT_NAME", new("co.rdb$constraint_name", "varchar(50)"));
-		_AdditionalColumns.Add("INDEX_NAME", new("co.rdb$index_name", "varchar(50)"));
+		_AdditionalColumns.Add("CONSTRAINT_NAME", new("co.RDB$CONSTRAINT_NAME", "varchar(50)"));
+		_AdditionalColumns.Add("INDEX_NAME", new("co.RDB$INDEX_NAME", "varchar(50)"));
 		_AdditionalColumns.Add("REFERENCED_TABLE_CATALOG", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("REFERENCED_TABLE_SCHEMA", new(null, "varchar(10)"));
-		_AdditionalColumns.Add("REFERENCED_TABLE_NAME", new("refidx.rdb$relation_name", "varchar(50)"));
-		_AdditionalColumns.Add("REFERENCED_INDEX_NAME", new("refidx.rdb$index_name", "varchar(50)"));
-		_AdditionalColumns.Add("REFERENCED_COLUMN_NAME", new("refidxseg.rdb$field_name", "varchar(50)"));
+		_AdditionalColumns.Add("REFERENCED_TABLE_NAME", new("refidx.RDB$RELATION_NAME", "varchar(50)"));
+		_AdditionalColumns.Add("REFERENCED_INDEX_NAME", new("refidx.RDB$INDEX_NAME", "varchar(50)"));
+		_AdditionalColumns.Add("REFERENCED_COLUMN_NAME", new("refidxseg.RDB$FIELD_NAME", "varchar(50)"));
 		_AdditionalColumns.Add("UPDATE_ACTION",
-			new("CASE(ref.rdb$update_rule) WHEN 'CASCADE' THEN 1 WHEN 'SET NULL' THEN 2 WHEN 'SET_DEFAULT' THEN 3 ELSE 0 END", "int"));
+			new("CASE(ref.RDB$UPDATE_RULE) WHEN 'CASCADE' THEN 1 WHEN 'SET NULL' THEN 2 WHEN 'SET_DEFAULT' THEN 3 ELSE 0 END", "int"));
 		_AdditionalColumns.Add("DELETE_ACTION",
-			new("CASE(ref.rdb$delete_rule) WHEN 'CASCADE' THEN 1 WHEN 'SET NULL' THEN 2 WHEN 'SET_DEFAULT' THEN 3 ELSE 0 END", "int"));
+			new("CASE(ref.RDB$DELETE_RULE) WHEN 'CASCADE' THEN 1 WHEN 'SET NULL' THEN 2 WHEN 'SET_DEFAULT' THEN 3 ELSE 0 END", "int"));
 
 	}
 

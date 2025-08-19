@@ -21,6 +21,10 @@ internal abstract class AbstractMemDataStorage : IBsMemDataStorage, IBsDataStora
 
 	protected ArrayList _RowsArray;
 
+
+	public bool IsClosed => true;
+	
+
 	public virtual IBsStorageView GetStorageView()
 	{
 		return new MemStorageView(this);
@@ -82,8 +86,4 @@ internal abstract class AbstractMemDataStorage : IBsMemDataStorage, IBsDataStora
 		return (IBsColumnInfo)_ColumnInfoArray[iCol];
 	}
 
-	public bool IsClosed()
-	{
-		return true;
-	}
 }

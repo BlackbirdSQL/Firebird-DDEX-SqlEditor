@@ -19,7 +19,12 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
 using System.Text;
+using FirebirdSql.Data.FirebirdClient;
 
 
 
@@ -44,11 +49,11 @@ internal class DslRawTriggers : AbstractDslSchema
 		StringBuilder sql = new ();
 
 		string transientRestrictions = restrictions != null && !string.IsNullOrEmpty(restrictions[2])
-			? $"WHERE trg.rdb$relation_name = '{restrictions[2]}'" : "";
+			? $"WHERE trg.RDB$RELATION_NAME = '{restrictions[2]}'" : "";
 
 		/*
 		 * 
- 		 * rdb$flags info
+ 		 * RDB$FLAGS info
 		 *	TRG_sql  0x1:			Show trigger in db structure
 		 *	TRG_ignore_perm 0x2:	Ignore trigger permissions when executing
 
@@ -57,14 +62,14 @@ internal class DslRawTriggers : AbstractDslSchema
 		 * 
 		 * (Bypasses the -901 bug in FirebirdSql for parameterized EXECUTE BLOCKs by inserting any parameters here.)
 		 * 
-		 * rdb$flags info
+		 * RDB$FLAGS info
 		 *	TRG_sql  0x1:			Show trigger in db structure
 		 *	TRG_ignore_perm 0x2:	Ignore trigger permissions when executing
 		 * 
 		 * Selects triggers
 		 * then
 		 * For each trigger
-		 *		Flags it as an is-identity if rdb$trigger_type == 1
+		 *		Flags it as an is-identity if RDB$TRIGGER_TYPE == 1
 		 *		Selects it's dependencies 
 		 *			(and also each dependencies index segment if it is on a 'PRIMARY KEY' index)
 		 *		then
@@ -72,52 +77,81 @@ internal class DslRawTriggers : AbstractDslSchema
 		 *				adds dependency to the trigger dependency count
 		 *				concatenates the field name to the trigger dependency fields string
 		 *		then
-		 *			if index rdb$constraint_type is null or dependency count is != 1
+		 *			if index RDB$CONSTRAINT_TYPE is null or dependency count is != 1
 		 *				sets the is-identity flag to false
 		 *	
 		 *	To summate
-		 *		If a trigger has rdb$trigger_type == 1 it is tentavely set as is-identity.
+		 *		If a trigger has RDB$TRIGGER_TYPE == 1 it is tentavely set as is-identity.
 		 *		Then if it has only one (singular) dependency and that dependency is on a singular segment of a 
 		 *		'PRIMARY KEY' index then it remains as is-identity if it was else it's is-identity is set
 		 *		to false.
 		*/
 
 
-		sql.AppendFormat(@"SELECT
+		sql.Append($@"SELECT
 	-- :TRIGGER_NAME, :TABLE_NAME
-	trg.rdb$trigger_name AS TRIGGER_NAME, trg.rdb$relation_name AS TABLE_NAME,
-	trg.rdb$description AS DESCRIPTION,
+	trg.RDB$TRIGGER_NAME AS TRIGGER_NAME, trg.RDB$RELATION_NAME AS TABLE_NAME,
+	trg.RDB$DESCRIPTION AS DESCRIPTION,
 	-- :IS_SYSTEM_FLAG
-	(CASE WHEN trg.rdb$system_flag <> 1 THEN 0 ELSE 1 END) AS IS_SYSTEM_FLAG,
+	(CASE WHEN trg.RDB$SYSTEM_FLAG <> 1 THEN 0 ELSE 1 END) AS IS_SYSTEM_FLAG,
 	-- :TRIGGER_TYPE
-	trg.rdb$trigger_type AS TRIGGER_TYPE,
+	trg.RDB$TRIGGER_TYPE AS TRIGGER_TYPE,
 	-- :IS_INACTIVE
-	(CASE WHEN trg.rdb$trigger_inactive <> 1 THEN false ELSE true END) AS IS_INACTIVE,
+	(CASE WHEN trg.RDB$TRIGGER_INACTIVE <> 1 THEN 0 ELSE 1 END) AS IS_INACTIVE,
 	-- :PRIORITY
-	trg.rdb$trigger_sequence AS PRIORITY,
+	trg.RDB$TRIGGER_SEQUENCE AS PRIORITY,
 	-- :EXPRESSION for parser
-	(CASE WHEN trg.rdb$trigger_source IS NULL AND trg.rdb$trigger_blr IS NOT NULL THEN
-
-		REPLACE(REPLACE(REPLACE(REPLACE(
-			REPLACE(REPLACE(REPLACE(
-				REPLACE(REPLACE(TRIM(cast(trg.rdb$trigger_blr as blob sub_type 1)), ', ', ','), ',  ', ','),
-			',   ', ','), ',    ', ','), ',     ', ','),
-		',      ', ','), ',       ', ','), ',        ', ','), ',        ', ',')
-
+	trg.RDB$TRIGGER_SOURCE AS EXPRESSION,
+	-- BLR
+	(CASE WHEN trg.RDB$TRIGGER_BLR IS NOT NULL THEN
+		cast(trg.RDB$TRIGGER_BLR as blob sub_type 1)
 	ELSE
-
-		TRIM(trg.rdb$trigger_source)
-
-	END) AS EXPRESSION,
+		trg.RDB$TRIGGER_BLR
+	END) AS BLR,
 	--Initial value of :IS_IDENTITY for parser
-	(CASE WHEN trg.rdb$trigger_sequence = 1 AND trg.rdb$trigger_type = 1 THEN true ELSE false END) AS IS_IDENTITY
-FROM rdb$triggers trg
-{0}
-ORDER BY trg.rdb$trigger_name", transientRestrictions);
+	(CASE WHEN trg.RDB$TRIGGER_SEQUENCE = 1 AND trg.RDB$TRIGGER_TYPE = 1 THEN 1 ELSE 0 END) AS IS_IDENTITY
+FROM RDB$TRIGGERS trg
+{transientRestrictions}
+ORDER BY trg.RDB$TRIGGER_NAME");
 
-		// Evs.Trace(sql.ToString());
+		// Evs.Trace(GetType(), nameof(GetCommandText), $"Sql: {sql}");
 
 		return sql;
+	}
+
+
+
+	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
+	{
+		// Evs.Trace(GetType(), nameof(ProcessResult));
+
+		schema.BeginLoadData();
+
+		foreach (DataRow row in schema.Rows)
+		{
+			if (!(row["BLR"] == DBNull.Value))
+			{
+				string blr = row["BLR"].ToString().Trim();
+
+				while (blr.IndexOf(", ") != -1)
+					blr = blr.Replace(", ", ",");
+
+				blr = blr.Replace("','", "");
+
+				row["BLR"] = blr;
+
+				if (row["EXPRESSION"] == DBNull.Value)
+					row["EXPRESSION"] = row["BLR"];
+				else
+					row["EXPRESSION"] = row["EXPRESSION"].ToString().Trim();
+			}
+			else if (!(row["EXPRESSION"] == DBNull.Value))
+			{
+				row["EXPRESSION"] = row["EXPRESSION"].ToString().Trim();
+			}
+		}
+
+		schema.EndLoadData();
 	}
 
 

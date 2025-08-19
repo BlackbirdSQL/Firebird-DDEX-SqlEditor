@@ -241,7 +241,7 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 	private static AsyncLazy<ShellSettingsManager> SettingsManager =>
 		_SettingsManager ??=
-				new AsyncLazy<ShellSettingsManager>(new Func<Task<ShellSettingsManager>>(GetSettingsManagerAsync),
+				new AsyncLazy<ShellSettingsManager>(new Func<Task<ShellSettingsManager>>(GetSettingsManagerEuiAsync),
 				ThreadHelper.JoinableTaskFactory);
 
 
@@ -299,6 +299,8 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 	public void Load()
 	{
+		// Evs.Debug(GetType(), "Load");
+
 		ThreadHelper.JoinableTaskFactory.Run(new Func<Task>(LoadAsync));
 	}
 
@@ -306,6 +308,8 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 	private async Task LoadAsync()
 	{
+		// Evs.Debug(GetType(), "LoadAsync");
+
 		BeforeLoadEvent?.Invoke(this, EventArgs.Empty);
 
 		SettingsStore readOnlySettingsStore = null;
@@ -331,6 +335,8 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 	public void LoadDefaults()
 	{
+		// Evs.Debug(GetType(), "LoadDefaults");
+
 		BeforeLoadEvent?.Invoke(this, EventArgs.Empty);
 
 		lock (_LockGlobal)
@@ -346,6 +352,8 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 	public void Save()
 	{
+		// Evs.Debug(GetType(), "Save");
+
 		ThreadHelper.JoinableTaskFactory.Run(new Func<Task>(SaveAsync));
 	}
 
@@ -353,6 +361,8 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 	private async Task SaveAsync()
 	{
+		// Evs.Debug(GetType(), "SaveAsync");
+
 		WritableSettingsStore writableSettingsStore = null;
 
 		if (_TransientSettings == null)
@@ -412,7 +422,7 @@ public abstract class AbstractSettingsModel<TModel> : IBsSettingsModel where TMo
 
 
 	
-	private static async Task<ShellSettingsManager> GetSettingsManagerAsync()
+	private static async Task<ShellSettingsManager> GetSettingsManagerEuiAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 

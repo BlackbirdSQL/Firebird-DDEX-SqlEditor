@@ -11,7 +11,7 @@ internal sealed class MergeTypeParser : RelOpBaseTypeParser
 {
 	private static MergeTypeParser mergeTypeParser;
 
-	internal new static MergeTypeParser Instance
+	public new static MergeTypeParser Instance
 	{
 		get
 		{

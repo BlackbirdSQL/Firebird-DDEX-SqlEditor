@@ -112,12 +112,11 @@ internal sealed class EditorEventsManager : AbstractEventsManager
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 		Controller.OnSelectionChangedEvent += OnSelectionChanged;
 
-
 		if (!ThreadHelper.CheckAccess())
 		{
 			// Fire and forget.
 
-			Task.Run(InitializeUnsafeAsync).Forget();
+			Task.Run(InitializeUnsafeEuiAsync).Forget();
 
 			return;
 		}
@@ -127,7 +126,7 @@ internal sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-	private async Task<bool> InitializeUnsafeAsync()
+	private async Task<bool> InitializeUnsafeEuiAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -509,11 +508,11 @@ internal sealed class EditorEventsManager : AbstractEventsManager
 
 
 
-	private async Task<bool> ResetDocumentStatusAsync(AuxilliaryDocData auxDocData, bool resetIntellisense)
+	private async Task<bool> ResetDocumentStatusEuiAsync(AuxilliaryDocData auxDocData, bool resetIntellisense)
 	{
 		try
 		{
-			// Evs.Trace(GetType(), nameof(ResetDocumentStatusAsync), "ENTER!!!");
+			// Evs.Trace(GetType(), nameof(ResetDocumentStatusEuiAsync), "ENTER!!!");
 
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -521,7 +520,7 @@ internal sealed class EditorEventsManager : AbstractEventsManager
 			if (resetIntellisense)
 				auxDocData.IntellisenseEnabled = true;
 
-			// Evs.Trace(GetType(), nameof(ResetDocumentStatusAsync), "Hack for title update");
+			// Evs.Trace(GetType(), nameof(ResetDocumentStatusEuiAsync), "Hack for title update");
 			// HACK: to kickstart dirty state title update.
 			uint saveOpts = (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_ForceSave;
 			RdtManager.SaveDocuments(saveOpts, null, uint.MaxValue, auxDocData.DocCookie);
@@ -537,7 +536,7 @@ internal sealed class EditorEventsManager : AbstractEventsManager
 		{
 			Controller.EventRdtExit();
 
-			// Evs.Trace(GetType(), nameof(ResetDocumentStatusAsync), "FINALLY: Intellisense and RdtEvents enabled.");
+			// Evs.Trace(GetType(), nameof(ResetDocumentStatusEuiAsync), "FINALLY: Intellisense and RdtEvents enabled.");
 		}
 
 		return true;
@@ -639,7 +638,7 @@ internal sealed class EditorEventsManager : AbstractEventsManager
 
 		// Fire and forget.
 		Task<bool> payloadAsync() =>
-			ResetDocumentStatusAsync(auxDocData, resetIntellisense);
+			ResetDocumentStatusEuiAsync(auxDocData, resetIntellisense);
 
 		_ = Task.Factory.StartNew(payloadAsync, default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 

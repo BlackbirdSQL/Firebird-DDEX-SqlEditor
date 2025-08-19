@@ -288,7 +288,7 @@ SysStr^ AbstractParser::GetVariableType(SysStr^ expression)
 		return Expressions::USER_VARIABLE;
 	}
 
-	SysStr^ type = expression->Substring(2, expression->IndexOf('.', 2));
+	SysStr^ type = expression->Substring(2, expression->IndexOf(L'.', 2));
 
 	if (type == "GLOBAL")
 		type = Expressions::GLOBAL_VARIABLE;

@@ -187,7 +187,7 @@ internal class LsbParseManager
 
 	private IEnumerable<Region> FilterHiddenRegions(IEnumerable<Region> inputRegions)
 	{
-		List<Region> list = new List<Region>(inputRegions);
+		List<Region> list = [.. inputRegions];
 		SortRegionsByStartLine(list);
 		int num = 0;
 		int i = 1;
@@ -241,7 +241,7 @@ internal class LsbParseManager
 
 	private static void SortRegionsByStartLine(List<Region> regions)
 	{
-		regions.Sort((Region x, Region y) => ((Comparison<int>)delegate(int a, int b)
+		regions.Sort((x, y) => ((Comparison<int>)delegate(int a, int b)
 		{
 			if (a < b)
 			{

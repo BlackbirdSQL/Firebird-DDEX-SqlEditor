@@ -2,7 +2,7 @@
 
 The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"* of Microsoft's SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.5.4.001)](https://raw.githubusercontent.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/master/BlackbirdSql.VisualStudio.Ddex/bin/Release/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
+[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.6.0.0](https://raw.githubusercontent.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/master/BlackbirdSql.VisualStudio.Ddex/bin/Release/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/e22c80d4-56d9-4982-ac17-15a7a73eef76)
@@ -30,6 +30,7 @@ The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"*
 * Local database connection drift detection across all connections in use within an IDE session. This applies to `local` drift and does not detect remote database drift.
 * Automated DbProviderFactories and EDM validation and update of a Solution's App.Config, and upgrade of EDMX models to DDEX 2.0. This procedure can be launched from the context menu of any Firebird node in Server Explorer.
 * Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
+* Built-in support for Firebird 2.5 and Firebird 3 embedded databases. Additional versions can be supported by copying the relevant files to the extension folder.
 * BlackbirdSql background and UI thread tasks compliant with the IDE TaskHandler and implements the user cancel feature for background tasks from the TaskHandler window.
 * All exception, task progress and task status reporting logged to the output window accessible under *BlackbirdSql* in the dropdown (Enabled by default under Options).
 * The connection node `Refresh` command option in the SE will successfully recover from a connection timeout shutdown exception, to the node's previous state.
@@ -52,7 +53,6 @@ For a clearer understanding of BlackbirdSql's RunningConnectionTable management 
 ## Known issues and limitations
 * Operations within the EDMX UI can take some time. For even a single table the wizard executes over 100 SELECT statements with the primary SELECT statement having 20+ JOINS and 5+ UNIONS. Even a Cancel request can lock up the IDE for some time. Be patient.
 * Intellisense and Firebird grammar: Development of the Firebird Language Service is ongoing and support for Firebird grammar will be progressively extended over time. The Firebird Language Service uses the Visual Studio built-in T-SQL SSDT Language service as it's basis. This means that Intellisense may mark incompatible DML and DDL as errors. The scripts will still successfully execute.
-* Support for embedded databases: BlackbirdSql uses the FirebirdSql.Data.FirebirdClient client, so embedded databases 'should' work, however no testing has been performed on embedded databases as of this writing.
 * The SqlEditor port does not currently support script parameter loading.
 * The BlackbirdSql Editor settings in Visual Studio Options have been ported as is from the Microsoft SqlServer SqlEditor settings. This means that several options are not currently being used or are not applicable.
 * If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. This has nothing to do with the parser but is simply down to network and database server performance. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established.

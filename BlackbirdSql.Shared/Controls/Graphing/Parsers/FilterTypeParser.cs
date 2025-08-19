@@ -11,7 +11,7 @@ internal sealed class FilterTypeParser : RelOpBaseTypeParser
 {
 	private static FilterTypeParser filterTypeParser;
 
-	internal new static FilterTypeParser Instance
+	public new static FilterTypeParser Instance
 	{
 		get
 		{

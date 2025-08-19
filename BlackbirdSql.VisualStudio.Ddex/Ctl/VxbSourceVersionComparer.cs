@@ -56,7 +56,7 @@ public class VxbSourceVersionComparer : DataSourceVersionComparer, IComparer<str
 	/// <returns>-1: x < y; 0 x == y and 1: x > y</returns>
 	public int Compare(string x, string y)
 	{
-		Evs.Trace(GetType(), nameof(Compare));
+		// Evs.Trace(GetType(), nameof(Compare));
 
 		try
 		{

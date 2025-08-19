@@ -21,6 +21,9 @@
 
 
 
+using System.Data;
+using FirebirdSql.Data.FirebirdClient;
+
 namespace BlackbirdSql.Data.Model.Schema;
 
 
@@ -29,14 +32,18 @@ internal class DslViewColumns : DslColumns
 
 	public DslViewColumns() : base()
 	{
-		// Evs.Trace(GetType(), "DslViewColumns.DslViewColumns");
+	}
+
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		base.InitializeParameters(connection);
 
 		_ParentType = "View";
 		_ObjectType = "ViewColumn";
 
 		_AdditionalColumns.Add("VIEW_CATALOG", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("VIEW_SCHEMA", new(null, "varchar(10)"));
-		_AdditionalColumns.Add("VIEW_NAME", new("r.rdb$relation_name", "varchar(50)"));
+		_AdditionalColumns.Add("VIEW_NAME", new("r.RDB$RELATION_NAME", "varchar(50)"));
 	}
 
 }

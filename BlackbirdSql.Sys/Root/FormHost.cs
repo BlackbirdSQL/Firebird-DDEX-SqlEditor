@@ -71,7 +71,8 @@ internal static class FormHost
 		return ShowDialogOrForm(null, dialog);
 	}
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread().")]
+
+
 	private static DialogResult ShowDialogOrForm(Form form, CommonDialog dialog)
 	{
 		Diag.ThrowIfNotOnUIThread();

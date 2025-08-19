@@ -29,7 +29,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public AttributeResources() {
+        internal AttributeResources() {
         }
         
         /// <summary>
@@ -997,6 +997,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Always activates the BlackbirdSql output window pane on output..
+        /// </summary>
+        public static string OptionDescriptionGeneralActivateOutputPane {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralActivateOutputPane", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If enabled, closes edmx data models that are not on screen when a solution closes. Enable this option to avoid potential Visual Studio model load errors..
         /// </summary>
         public static string OptionDescriptionGeneralAutoCloseOffScreenEdmx {
@@ -1551,6 +1560,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayEvsLevelSys {
             get {
                 return ResourceManager.GetString("OptionDisplayEvsLevelSys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Always activate output pane.
+        /// </summary>
+        public static string OptionDisplayGeneralActivateOutputPane {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralActivateOutputPane", resourceCulture);
             }
         }
         

@@ -32,12 +32,12 @@ internal partial class PrivacyConfirmationDialog : Form
 		InitializeComponent();
 		Text = title;
 		m_url = url;
-		m_table.Locale = CultureInfo.CurrentCulture;
+		_Table.Locale = CultureInfo.CurrentCulture;
 	}
 
 
 
-	private readonly DataTable m_table = new DataTable("table");
+	private readonly DataTable _Table = new DataTable("table");
 
 	private readonly string m_url;
 
@@ -115,7 +115,7 @@ internal partial class PrivacyConfirmationDialog : Form
 			}
 
 			array[1] = Uri.UnescapeDataString(stringToUnescape2);
-			m_table.Rows.Add(array);
+			_Table.Rows.Add(array);
 		}
 	}
 
@@ -123,9 +123,9 @@ internal partial class PrivacyConfirmationDialog : Form
 
 	private void PrivacyConfirmationDialog_Load(object sender, EventArgs e)
 	{
-		m_table.Columns.Add(new DataColumn(ControlsResources.PrivacyConfirmationDialog_PrivacyItemName, typeof(string)));
-		m_table.Columns.Add(new DataColumn(ControlsResources.PrivacyConfirmationDialog_PrivacyItemValue, typeof(string)));
-		dataGridView1.DataSource = m_table;
+		_Table.Columns.Add(new DataColumn(ControlsResources.PrivacyConfirmationDialog_PrivacyItemName, typeof(string)));
+		_Table.Columns.Add(new DataColumn(ControlsResources.PrivacyConfirmationDialog_PrivacyItemValue, typeof(string)));
+		dataGridView1.DataSource = _Table;
 		dataGridView1.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 		dataGridView1.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 		dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;

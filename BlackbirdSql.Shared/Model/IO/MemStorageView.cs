@@ -29,6 +29,10 @@ internal class MemStorageView : AbstractStorageView
 		return RowCount;
 	}
 
+	public override bool IsStorageClosed => _MemStorage.IsClosed;
+	
+
+
 	public override long RowCount => _MemStorage.RowCount;
 
 
@@ -57,8 +61,4 @@ internal class MemStorageView : AbstractStorageView
 		_MemStorage.DeleteRow(Convert.ToInt32(iRow));
 	}
 
-	public override bool IsStorageClosed()
-	{
-		return _MemStorage.IsClosed();
-	}
 }

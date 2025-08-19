@@ -60,48 +60,50 @@ internal class DslColumns : AbstractDslSchema
 	/// The column to be used in the where clause parent restriction.
 	/// </summary>
 	/// <remarks>
-	/// If the parent column does not match r.rdb$relation_name then...
+	/// If the parent column does not match r.RDB$RELATION_NAME then...
 	///		1. If the number of restrictions for this column type is the same as for
-	///			TableColumn it will replace the r.rdb$relation_name restriction.
+	///			TableColumn it will replace the r.RDB$RELATION_NAME restriction.
 	///		2. If the number of restrictions for this column type is the equal to
 	///			the TableColumn restrictions + 1 it will be added as an additional parent
 	///			restriction.
 	/// </remarks>
-	protected string _ParentColumn = "r.rdb$relation_name";
-	protected string _ChildColumn = "r.rdb$field_name";
+	protected string _ParentColName = "r.RDB$RELATION_NAME";
+	protected string _ChildColName = "r.RDB$FIELD_NAME";
+	protected string _FieldNameColName = "r.RDB$FIELD_NAME";
+	protected string _SystemFlagColName = "r.RDB$SYSTEM_FLAG";
 
 	/// <summary>
 	/// The identity type column for >= v3 Firebird.
-	/// If the rdb$relations alias is not 'r' then replace r with the correct alias
+	/// If the RDB$RELATIONS alias is not 'r' then replace r with the correct alias
 	/// else null if it cannot be derived.
 	/// </summary>
 	/// <remarks>
-	/// If <see cref="_GeneratorSelector"/> is set to null, then _IdentityType will
+	/// If <see cref="_GeneratorColName"/> is set to null, then _IdentityTypeColName will
 	/// be assumed to be null;
 	/// </remarks>
-	protected string _IdentityType = "r.rdb$identity_type";
+	protected string _IdentityTypeColName = "r.RDB$IDENTITY_TYPE";
 
 	/// <summary>
 	/// The identity generator selector for >= v3 Firebird.
-	/// If the rdb$relations alias is not 'r' then replace r with the correct alias
+	/// If the RDB$RELATIONS alias is not 'r' then replace r with the correct alias
 	/// </summary>
 	/// <remarks>
 	/// If the sequence generator name cannot be derived, as for example on procedures
 	/// and functions, set the selector variable null.
 	/// </remarks>
-	protected string _GeneratorSelector = "r.rdb$generator_name";
+	protected string _GeneratorColName = "r.RDB$GENERATOR_NAME";
 
 
 	/// <summary>
 	/// The column alias to be used for the owner or parent order
 	/// </summary>
-	protected string _OrderingField = "r.rdb$relation_name";
+	protected string _OrderingColumn = "r.RDB$RELATION_NAME";
 
 	/// <summary>
 	/// The FROM expression clause that returns the row set using the alias 'r'.
-	/// r will be used to interrogate the rbd$fields table.
+	/// r will be used to interrogate the RBD$FIELDS table.
 	/// </summary>
-	protected string _FromClause = "rdb$relation_fields r";
+	protected string _FromClause = "RDB$RELATION_FIELDS r";
 
 	/// <summary>
 	/// The list of required columns where the source may change.
@@ -111,14 +113,14 @@ internal class DslColumns : AbstractDslSchema
 	/// <remarks>
 	/// Examples
 	///  _RequiredColumns["COLUMN_NAME"] = "null";
-	///  _RequiredColumns["TRIGGER_NAME"] = "dep.rdb$dependent_name";
+	///  _RequiredColumns["TRIGGER_NAME"] = "dep.RDB$DEPENDENT_NAME";
 	/// </remarks>
 	protected readonly IDictionary<string, object> _RequiredColumns = new Dictionary<string, object>()
 	{
-		{ "ORDINAL_POSITION", "r.rdb$field_position" },
+		{ "ORDINAL_POSITION", "r.RDB$FIELD_POSITION" },
 		// Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL
 		{ "DIRECTION_FLAG", "1" },
-		{ "TRIGGER_NAME", "r_dep.rdb$dependent_name" }
+		{ "TRIGGER_NAME", "r_dep.RDB$DEPENDENT_NAME" }
 	};
 
 	/// <summary>
@@ -135,46 +137,71 @@ internal class DslColumns : AbstractDslSchema
 
 	#region Protected Methods
 
+
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		InitializeColumnsList(connection, "RDB$RELATION_FIELDS");
+	}
+
+
+
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		// return base.GetCommandText(restrictions, columns);
+
+
+
 		// Evs.Trace(GetType(), "GetCommandText");
 
 		StringBuilder sql = new();
 		StringBuilder where = new();
 
-		if (MajorVersionNumber < 3 || _GeneratorSelector == null)
-		{
-			_GeneratorSelector = "null";
-			_IdentityType = "null";
-		}
-
-		_IdentityType ??= "null";
+		// string bigInt = _Dialect != 1 ? "bigint" : "int";
+		// string booleanType = MajorVersionNumber >= 3 ? "boolean" : "int";
+		// string booleanTrue = MajorVersionNumber >= 3 ? "true" : "1";
+		// string booleanFalse = MajorVersionNumber >= 3 ? "false" : "0";
 
 		string returnClause = "";
 
 		foreach (KeyValuePair<string, ColumnType> clause in _AdditionalColumns)
 		{
-			returnClause += @",
-		" + clause.Key + " " + clause.Value.Type;
+			returnClause += $@",
+		{clause.Key} {clause.Value.Type}";
 		}
 
+
+		if (MajorVersionNumber < 3 || _GeneratorColName == null)
+		{
+			_GeneratorColName = "null";
+			_IdentityTypeColName = "null";
+		}
+
+		_IdentityTypeColName ??= "null";
+
+		string clauseValue;
 		string columnsClause = "";
 		string intoClause = "";
 
 		foreach (KeyValuePair<string, object> clause in _RequiredColumns)
 		{
-			columnsClause += @",
-			" + (clause.Value == null ? "null" : clause.Value.ToString());
-			intoClause += @",
-		:" + clause.Key;
+			clauseValue = clause.Value == null ? "null" : clause.Value.ToString();
+
+			columnsClause += $@",
+			{clauseValue}";
+
+			intoClause += $@",
+		:{clause.Key}";
 		}
 
-		foreach(KeyValuePair<string, ColumnType> clause in _AdditionalColumns)
+		foreach (KeyValuePair<string, ColumnType> clause in _AdditionalColumns)
 		{
-			columnsClause += @",
-			" + (clause.Value.Column == null ? "null" : clause.Value.Column.ToString());
+			clauseValue = (clause.Value.Column == null ? "null" : clause.Value.Column.ToString());
+
+			columnsClause += $@",
+			{clauseValue}";
+
 			intoClause += @",
-			:" + clause.Key;
+		:" + clause.Key;
 		}
 
 
@@ -200,11 +227,11 @@ internal class DslColumns : AbstractDslSchema
 			{
 				// Cannot pass params to execute block
 				if (derivedRestrictionsLen > defaultRestrictionsLen)
-					// where.AppendFormat("r.rdb$relation_name = @p{0}", index++);
-					where.AppendFormat("r.rdb$relation_name = '{0}'", restrictions[2].ToString());
+					// where.AppendFormat("r.RDB$RELATION_NAME = @p{0}", index++);
+					where.Append($"r.RDB$RELATION_NAME = '{restrictions[2]}'");
 				else
 					// where.AppendFormat("{0} = @p{1}", _ParentRestriction, index++);
-					where.AppendFormat("{0} = '{1}'", _ParentColumn, restrictions[2].ToString());
+					where.Append($"{_ParentColName} = '{restrictions[2]}'");
 			}
 
 			/* PARENT */
@@ -217,7 +244,7 @@ internal class DslColumns : AbstractDslSchema
 
 					// Cannot pass params to execute block
 					// where.AppendFormat("{0} = @p{1}", _ParentRestriction, index++);
-					where.AppendFormat("{0} = '{1}'", _ParentColumn, restrictions[3].ToString());
+					where.Append($"{_ParentColName} = '{restrictions[3]}'");
 				}
 			}
 
@@ -229,8 +256,8 @@ internal class DslColumns : AbstractDslSchema
 					where.Append(" AND ");
 
 				// Cannot pass params to execute block
-				// where.AppendFormat("r.rdb$field_name = @p{0}", index++);
-				where.AppendFormat("{0} = '{1}'", _ChildColumn, restrictions[derivedRestrictionsLen - 1].ToString());
+				// where.AppendFormat("r.RDB$FIELD_NAME = @p{0}", index++);
+				where.Append($"{_ChildColName} = '{restrictions[derivedRestrictionsLen - 1]}'");
 			}
 		}
 
@@ -248,6 +275,60 @@ internal class DslColumns : AbstractDslSchema
 		WHERE " + where.ToString());
 		}
 
+
+		string dependencyCountClause = HasColumn("RDB$RELATION_NAME")
+
+			? $@"SELECT COUNT(*)
+	-- [RDB$RELATION_FIELDS r]~1~
+	FROM {_FromClause}
+		INNER JOIN RDB$RELATION_CONSTRAINTS r_con
+		ON r_con.RDB$RELATION_NAME = r.RDB$RELATION_NAME AND r_con.RDB$CONSTRAINT_TYPE = 'PRIMARY KEY'
+	INNER JOIN RDB$INDEX_SEGMENTS r_seg
+		ON r_seg.RDB$INDEX_NAME = r_con.RDB$INDEX_NAME AND r_seg.RDB$FIELD_NAME = r.RDB$FIELD_NAME
+
+	-- Seems we don't need a trigger to determine the dependency count
+	-- INNER JOIN RDB$TRIGGERS r_trg
+		-- ON r_seg.RDB$FIELD_NAME IS NOT NULL AND r_trg.RDB$RELATION_NAME = r_con.RDB$RELATION_NAME
+			-- AND r_trg.RDB$TRIGGER_SEQUENCE = 1 AND r_trg.RDB$TRIGGER_TYPE = 1
+	-- INNER JOIN RDB$DEPENDENCIES r_dep
+		-- ON r_dep.RDB$DEPENDENT_NAME = r_trg.RDB$TRIGGER_NAME
+			-- AND r_dep.RDB$DEPENDED_ON_NAME = r_trg.RDB$RELATION_NAME AND r_dep.RDB$FIELD_NAME = r.RDB$FIELD_NAME{where}
+
+		-- [crlfWHERE r.RDB$RELATION_NAME = '...']~2~directly after ' = r.RDB$FIELD_NAME'
+	INTO: PRIMARY_DEPENDENCYCOUNT;"
+
+			: "PRIMARY_DEPENDENCYCOUNT = 0;";
+
+		string relationNameColumn = HasColumn("RDB$RELATION_NAME")
+			? "r.RDB$RELATION_NAME" : "null";
+		string fieldSourceColumn = HasColumn("RDB$FIELD_SOURCE")
+			? "r.RDB$FIELD_SOURCE" : "null";
+
+		// Evs.Trace(GetType(), nameof(GetCommandText), $"fieldSourceColumn: {fieldSourceColumn}");
+
+
+		string isNullableColumn = HasColumn("RDB$NULL_FLAG")
+			? "(CASE WHEN coalesce(r_fld.RDB$NULL_FLAG, r.RDB$NULL_FLAG) IS NULL THEN 1 ELSE 0 END)"
+			: "(CASE WHEN r_fld.RDB$NULL_FLAG IS NULL THEN 1 ELSE 0 END)";
+		string collationIdColumn = HasColumn("RDB$FIELD_COLLATION_ID")
+			? "r.RDB$FIELD_COLLATION_ID" : "null";
+		string descriptionColumn = HasColumn("RDB$DESCRIPTION")
+			? "r.RDB$DESCRIPTION" : "null";
+		string characterSetColumn = HasColumn("RDB$CHARACTER_SET_ID")
+			? "r.RDB$CHARACTER_SET_ID" : "null";
+		string fieldSubTypeColumn = HasColumn("RDB$FIELD_SUB_TYPE")
+			? "r.RDB$FIELD_SUB_TYPE" : "null";
+		string fieldLengthColumn = HasColumn("RDB$FIELD_LENGTH")
+			? "CAST(r.RDB$FIELD_LENGTH AS integer)" : "0";
+		string fieldPrecisionColumn = HasColumn("RDB$FIELD_PRECISION")
+			? "CAST(r.RDB$FIELD_PRECISION AS integer)" : "0";
+		string fieldScaleColumn = HasColumn("RDB$FIELD_SCALE")
+			? "CAST(r.RDB$FIELD_SCALE AS integer)" : "0";
+		string characterLengthColumn = HasColumn("RDB$CHARACTER_LENGTH")
+			? "CAST(r.RDB$CHARACTER_LENGTH AS integer)" : "0";
+		string fieldTypeColumn = HasColumn("RDB$FIELD_TYPE")
+			? "r.RDB$FIELD_TYPE" : "0";
+
 		// BlackbirdSql added IN_PRIMARYKEY
 		// BlackbirdSql added TRIGGER_NAME
 		// BlackbirdSql added SEQUENCE_NAME
@@ -255,7 +336,7 @@ internal class DslColumns : AbstractDslSchema
 		/*
 		 * What this does in addition to FbColumns()
 		 * 
-		 * Firstly gets the FROM clause result set for rdb$relation_fields using alias 'r'.
+		 * Firstly gets the FROM clause result set for RDB$RELATION_FIELDS using alias 'r'.
 		 * Joins in this section of the from clause should all be INNER JOINs.
 		 * 
 		 * Then gets the following (all on a LEFT OUTER JOIN)...
@@ -285,155 +366,140 @@ internal class DslColumns : AbstractDslSchema
 		 * Legend:
 		 * 
 		 * {0} returnClause
-		 * {1} _FromClause - default: 'rdb$relation_fields r' (ensure r aliases for r dependents are  r_..)
+		 * {1} _FromClause - default: 'RDB$RELATION_FIELDS r' (ensure r aliases for r dependents are  r_..)
 		 * {2} WHERE clause prefixed with "cflfWHERE " and preceded by _ConditionClause.
 		 * {3} generatorColumn
 		 * {4} _ParentType
 		 * {5} columnsClause - _RequiredColumns and _AdditionalColumns
-		 * {6} _OrderingField
-		 * {7} _RequiredColumns["ORDINAL_POSITION"]: - default: 'r.rdb$field_position'
+		 * {6} _OrderingColumn
+		 * {7} _RequiredColumns["ORDINAL_POSITION"]: - default: 'r.RDB$FIELD_POSITION'
 		 * {8} intoClause
 		*/
 
-		sql.AppendFormat(
-					@"EXECUTE BLOCK
+		sql.Append($@"EXECUTE BLOCK
 	RETURNS (
         TABLE_CATALOG varchar(10), TABLE_SCHEMA varchar(10), TABLE_NAME varchar(50), COLUMN_NAME varchar(50),
 		IS_SYSTEM_FLAG int, FIELD_SUB_TYPE smallint,
         FIELD_SIZE int, NUMERIC_PRECISION int, NUMERIC_SCALE int, CHARACTER_MAX_LENGTH int, CHARACTER_OCTET_LENGTH int,
         DOMAIN_CATALOG varchar(10), DOMAIN_SCHEMA varchar(1), DOMAIN_NAME varchar(50), FIELD_DEFAULT blob sub_type 1,
-        EXPRESSION blob sub_type 1, IS_COMPUTED boolean, IS_ARRAY boolean, IS_NULLABLE boolean, READONLY_FLAG smallint, FIELD_TYPE smallint,
+        EXPRESSION blob sub_type 1, IS_COMPUTED_FLAG int, IS_ARRAY_FLAG int, IS_NULLABLE_FLAG int, READONLY_FLAG smallint, FIELD_TYPE smallint,
         CHARACTER_SET_CATALOG varchar(10), CHARACTER_SET_SCHEMA varchar(10), CHARACTER_SET_NAME varchar(50), 
-        COLLATION_CATALOG varchar(10), COLLATION_SCHEMA varchar(10), COLLATION_NAME varchar(50),
-        DESCRIPTION varchar(50), IN_PRIMARYKEY boolean, IS_UNIQUE boolean, IS_IDENTITY boolean, SEQUENCE_GENERATOR varchar(50),
+        COLLATION_CATALOG varchar(10), COLLATION_SCHEMA varchar(10), COLLATION_NAME varchar(50), DESCRIPTION varchar(50), IN_PRIMARYKEY_FLAG int,
+			IS_UNIQUE_FLAG int, IS_IDENTITY_FLAG int, SEQUENCE_GENERATOR varchar(50),
         -- [returnClause]~0~ directly after TRIGGER_NAME varchar(50)
-		PARENT_TYPE varchar(15), ORDINAL_POSITION smallint, DIRECTION_FLAG int, TRIGGER_NAME varchar(50){0})
+		PARENT_TYPE varchar(15), ORDINAL_POSITION smallint, DIRECTION_FLAG int, TRIGGER_NAME varchar(50){returnClause})
 AS
 DECLARE PRIMARY_DEPENDENCYCOUNT int;
 DECLARE SEGMENT_FIELD varchar(50);
 BEGIN
-	SELECT COUNT(*)
-	-- [rdb$relation_fields r]~1~
-	FROM {1}
-	INNER JOIN rdb$relation_constraints r_con
-		ON r_con.rdb$relation_name = r.rdb$relation_name AND r_con.rdb$constraint_type = 'PRIMARY KEY'
-	INNER JOIN rdb$index_segments r_seg 
-		ON r_seg.rdb$index_name = r_con.rdb$index_name AND r_seg.rdb$field_name = r.rdb$field_name
-	INNER JOIN rdb$triggers r_trg
-		ON r_seg.rdb$field_name IS NOT NULL AND r_trg.rdb$relation_name = r_con.rdb$relation_name
-			AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$trigger_type = 1
-	INNER JOIN rdb$dependencies r_dep
-		ON r_dep.rdb$dependent_name = r_trg.rdb$trigger_name
-			AND r_dep.rdb$depended_on_name = r_trg.rdb$relation_name AND r_dep.rdb$field_name = r.rdb$field_name{2}
-	-- [crlfWHERE r.rdb$relation_name = '...']~2~ directly after ' = r.rdb$field_name'
-
-	INTO :PRIMARY_DEPENDENCYCOUNT;
+	{dependencyCountClause}
 
 	IF (:PRIMARY_DEPENDENCYCOUNT IS NULL) THEN
-		:PRIMARY_DEPENDENCYCOUNT = 0;
+		PRIMARY_DEPENDENCYCOUNT = 0;
 
 	FOR
 		SELECT
 			-- :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME
-			null, null, r.rdb$relation_name, r.rdb$field_name,
+			null, null, {relationNameColumn}, {_FieldNameColName},
 			-- :IS_SYSTEM_FLAG,
-			(CASE WHEN r.rdb$system_flag <> 1 THEN 0 ELSE 1 END),
+			(CASE WHEN {_SystemFlagColName} <> 1 THEN 0 ELSE 1 END),
 			-- :FIELD_SUB_TYPE
-			r_fld.rdb$field_sub_type,
+			(CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {fieldSubTypeColumn} ELSE r_fld.RDB$FIELD_SUB_TYPE END),
 			-- :FIELD_SIZE
-			CAST(r_fld.rdb$field_length AS integer),
+			(CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {fieldLengthColumn} ELSE CAST(r_fld.RDB$FIELD_LENGTH AS integer) END),
 			-- :NUMERIC_PRECISION
-			CAST(r_fld.rdb$field_precision AS integer),
+			(CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {fieldPrecisionColumn} ELSE CAST(r_fld.RDB$FIELD_PRECISION AS integer) END),
 			-- :NUMERIC_SCALE
-			CAST(r_fld.rdb$field_scale AS integer),
+			(CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {fieldScaleColumn} ELSE CAST(r_fld.RDB$FIELD_SCALE AS integer) END),
 			-- CHARACTER_MAX_LENGTH
-			CAST(r_fld.rdb$character_length AS integer),
+			(CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {characterLengthColumn} ELSE CAST(r_fld.RDB$CHARACTER_LENGTH AS integer) END),
 			-- :CHARACTER_OCTET_LENGTH
-			CAST(r_fld.rdb$field_length AS integer),
+			(CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {fieldLengthColumn} ELSE CAST(r_fld.RDB$FIELD_LENGTH AS integer) END),
 			-- :DOMAIN_CATALOG, :DOMAIN_SCHEMA, :DOMAIN_NAME
-			null, null, r_fld.rdb$field_name,
+			null, null, r_fld.RDB$FIELD_NAME,
 			-- :FIELD_DEFAULT
-			r.rdb$default_source,
+			(CASE WHEN r_fld.RDB$FIELD_NAME is null THEN null ELSE r_fld.RDB$DEFAULT_SOURCE END),
 			-- :EXPRESSION
-			(CASE WHEN r_fld.rdb$computed_source IS NULL AND r_fld.rdb$computed_blr IS NOT NULL THEN
-					cast(r_fld.rdb$computed_blr as blob sub_type 1)
+			(CASE WHEN r_fld.RDB$COMPUTED_SOURCE IS NULL AND r_fld.RDB$COMPUTED_BLR IS NOT NULL THEN
+					cast(r_fld.RDB$COMPUTED_BLR as blob sub_type 1)
 			ELSE
-					r_fld.rdb$computed_source
+					r_fld.RDB$COMPUTED_SOURCE
 			END),
-			-- :IS_COMPUTED
-			(CASE WHEN r_fld.rdb$computed_source IS NULL AND r_fld.rdb$computed_blr IS NULL THEN
-					false
+			-- :IS_COMPUTED_FLAG
+			(CASE WHEN r_fld.RDB$COMPUTED_SOURCE IS NULL AND r_fld.RDB$COMPUTED_BLR IS NULL THEN
+					0
 			ELSE
-					true
+					1
 			END),
-			-- :IS_ARRAY
-			(CASE WHEN r_fld.rdb$dimensions IS NULL THEN false ELSE true END),
+			-- :IS_ARRAY_FLAG
+			(CASE WHEN r_fld.RDB$DIMENSIONS IS NULL THEN 0 ELSE 1 END),
 			-- :IS_NULLABLE
-			(CASE WHEN coalesce(r_fld.rdb$null_flag, r.rdb$null_flag) IS NULL THEN true ELSE false END),
+			{isNullableColumn},
 			-- :READONLY_FLAG
 			0,
 			-- :FIELD_TYPE
-			r_fld.rdb$field_type,
+			(CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {fieldTypeColumn} ELSE r_fld.RDB$FIELD_TYPE END),
 			-- :CHARACTER_SET_CATALOG, :CHARACTER_SET_SCHEMA, :CHARACTER_SET_NAME
-			null, null, r_cs.rdb$character_set_name,
+			null, null, r_cs.RDB$CHARACTER_SET_NAME,
 			-- :COLLATION_CATALOG, :COLLATION_SCHEMA, :COLLATION_NAME
-			null, null, r_coll.rdb$collation_name,
+			null, null, r_coll.RDB$COLLATION_NAME,
 			-- :DESCRIPTION
-			r.rdb$description,
-			-- :IN_PRIMARYKEY
-			(CASE WHEN r_seg.rdb$field_name IS NULL THEN false ELSE true END),
-			-- :IS_IDENTITY
-			(CASE WHEN r_dep.rdb$dependent_name IS NOT NULL AND r_trg.rdb$trigger_name IS NOT NULL AND r_trg.rdb$trigger_sequence = 1 and r_trg.rdb$trigger_type = 1 THEN
-				true
+			{descriptionColumn},
+			-- :IN_PRIMARYKEY_FLAG
+			(CASE WHEN r_seg.RDB$FIELD_NAME IS NULL THEN 0 ELSE 1 END),
+			-- :IS_IDENTITY_FLAG
+			(CASE WHEN r_dep.RDB$DEPENDENT_NAME IS NOT NULL AND r_trg.RDB$TRIGGER_NAME IS NOT NULL AND r_trg.RDB$TRIGGER_SEQUENCE = 1 and r_trg.RDB$TRIGGER_TYPE = 1 THEN
+				1
 			ELSE
-				false
+				0
 			END),
 			-- :SEGMENT_FIELD
-			r_seg.rdb$field_name,
+			r_seg.RDB$FIELD_NAME,
 			-- :SEQUENCE_GENERATOR,
-			{3},
+			{_GeneratorColName},
 			-- :PARENT_TYPE - [Table|'ParentType']~4~
-			-- [, r_dep.rdb$dependent_name]~5~ (for additional columns)
-			'{4}'{5}
-		-- [rdb$relation_fields r]~1~
-		FROM {1}
-		INNER JOIN rdb$fields r_fld
-			ON r_fld.rdb$field_name = r.rdb$field_source
-		LEFT OUTER JOIN rdb$character_sets r_cs
-			ON r_cs.rdb$character_set_id = r_fld.rdb$character_set_id
-		LEFT OUTER JOIN rdb$collations r_coll
-			ON (r_coll.rdb$collation_id = r_fld.rdb$collation_id AND r_coll.rdb$character_set_id = r_fld.rdb$character_set_id)
-        LEFT OUTER JOIN rdb$relation_constraints r_con
-			ON r_con.rdb$relation_name = r.rdb$relation_name AND r_con.rdb$constraint_type = 'PRIMARY KEY'
-        LEFT OUTER JOIN rdb$index_segments r_seg 
-            ON r_seg.rdb$index_name = r_con.rdb$index_name AND r_seg.rdb$field_name = r.rdb$field_name
-        LEFT OUTER JOIN rdb$triggers r_trg
-            ON r_trg.rdb$relation_name = r_con.rdb$relation_name AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$trigger_type = 1
-        LEFT OUTER JOIN rdb$dependencies r_dep
-            ON r_dep.rdb$depended_on_name = r_trg.rdb$relation_name AND r_dep.rdb$field_name = r_seg.rdb$field_name
-		-- [crlfWHERE r.rdb$relation_name = '...']~2~
-                AND r_dep.rdb$dependent_name = r_trg.rdb$trigger_name{2}
-		-- [r.rdb$relation_name]~6~ [r.rdb$field_position]~8~
-		ORDER BY {6}, {7}
+			-- [, r_dep.RDB$DEPENDENT_NAME]~5~ (for additional columns)
+			'{_ParentType}'{columnsClause}
+		-- [RDB$RELATION_FIELDS r]~1~
+		FROM {_FromClause}
+		LEFT OUTER JOIN RDB$FIELDS r_fld
+			ON r_fld.RDB$FIELD_NAME = {fieldSourceColumn}
+		LEFT OUTER JOIN RDB$CHARACTER_SETS r_cs
+			ON r_cs.RDB$CHARACTER_SET_ID = (CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {characterSetColumn} ELSE r_fld.RDB$CHARACTER_SET_ID END)
+		LEFT OUTER JOIN RDB$COLLATIONS r_coll
+			ON r_coll.RDB$COLLATION_ID = (CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {collationIdColumn} ELSE r_fld.RDB$COLLATION_ID END)
+				AND r_coll.RDB$CHARACTER_SET_ID = (CASE WHEN r_fld.RDB$FIELD_NAME is null THEN {characterSetColumn} ELSE r_fld.RDB$CHARACTER_SET_ID END)
+        LEFT OUTER JOIN RDB$RELATION_CONSTRAINTS r_con
+			ON r_con.RDB$RELATION_NAME = {relationNameColumn} AND r_con.RDB$CONSTRAINT_TYPE = 'PRIMARY KEY'
+        LEFT OUTER JOIN RDB$INDEX_SEGMENTS r_seg 
+            ON r_seg.RDB$INDEX_NAME = r_con.RDB$INDEX_NAME AND r_seg.RDB$FIELD_NAME = {_FieldNameColName}
+        LEFT OUTER JOIN RDB$TRIGGERS r_trg
+            ON r_trg.RDB$RELATION_NAME = r_con.RDB$RELATION_NAME AND r_trg.RDB$TRIGGER_SEQUENCE = 1 AND r_trg.RDB$TRIGGER_TYPE = 1
+        LEFT OUTER JOIN RDB$DEPENDENCIES r_dep
+            ON r_dep.RDB$DEPENDED_ON_NAME = r_trg.RDB$RELATION_NAME AND r_dep.RDB$FIELD_NAME = r_seg.RDB$FIELD_NAME
+		-- [crlfWHERE r.RDB$RELATION_NAME = '...']~2~
+                AND r_dep.RDB$DEPENDENT_NAME = r_trg.RDB$TRIGGER_NAME{where}
+		-- [r.RDB$RELATION_NAME]~6~ [r.RDB$FIELD_POSITION]~8~
+		ORDER BY {_OrderingColumn}, {_RequiredColumns["ORDINAL_POSITION"]}
 
         INTO :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME, :IS_SYSTEM_FLAG,
 		:FIELD_SUB_TYPE, :FIELD_SIZE, :NUMERIC_PRECISION, :NUMERIC_SCALE,
 		:CHARACTER_MAX_LENGTH, :CHARACTER_OCTET_LENGTH,
         :DOMAIN_CATALOG, :DOMAIN_SCHEMA, :DOMAIN_NAME, :FIELD_DEFAULT,
-        :EXPRESSION, :IS_COMPUTED, :IS_ARRAY, :IS_NULLABLE, :READONLY_FLAG, :FIELD_TYPE,
+        :EXPRESSION, :IS_COMPUTED_FLAG, :IS_ARRAY_FLAG, :IS_NULLABLE_FLAG, :READONLY_FLAG, :FIELD_TYPE,
         :CHARACTER_SET_CATALOG, :CHARACTER_SET_SCHEMA, :CHARACTER_SET_NAME, :COLLATION_CATALOG, :COLLATION_SCHEMA,
         :COLLATION_NAME, :DESCRIPTION,
-		:IN_PRIMARYKEY, :IS_IDENTITY, :SEGMENT_FIELD,
+		:IN_PRIMARYKEY_FLAG, :IS_IDENTITY_FLAG, :SEGMENT_FIELD,
 		-- [,crlfTRIGGER_NAME]~8~ directly after :PARENT_TYPE
-		:SEQUENCE_GENERATOR, :PARENT_TYPE{8}
+		:SEQUENCE_GENERATOR, :PARENT_TYPE{intoClause}
 	DO BEGIN
 		IF (:SEGMENT_FIELD IS NULL OR :PRIMARY_DEPENDENCYCOUNT <> 1) THEN
-			:IS_IDENTITY = false;
+			IS_IDENTITY_FLAG = 0;
 
-		IF (:IN_PRIMARYKEY AND :PRIMARY_DEPENDENCYCOUNT = 1) THEN
-			:IS_UNIQUE = true;
+		IF (:IN_PRIMARYKEY_FLAG = 1 AND :PRIMARY_DEPENDENCYCOUNT = 1) THEN
+			IS_UNIQUE_FLAG = 1;
 		ELSE
-			:IS_UNIQUE = false;
+			IS_UNIQUE_FLAG = 0;
 		
 
 -- End section 2 
@@ -447,19 +513,15 @@ BEGIN
 -- Finalize
 
 	END
-END",
-					returnClause, _FromClause, where.ToString(),
-					_GeneratorSelector, _ParentType, columnsClause,
-					_OrderingField,
-					_RequiredColumns["ORDINAL_POSITION"].ToString(),
-					intoClause);
+END");
 
 
-		// Evs.Debug(GetType(), nameof(GetCommandText), $"Sql: {sql}");
+		// Evs.Trace(GetType(), nameof(GetCommandText), $"Sql: {sql}");
 
 		return sql;
-	}
 
+	}
+		
 
 
 	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
@@ -479,6 +541,13 @@ END",
 		schema.Columns.Add("IDENTITY_INCREMENT", typeof(int));
 		schema.Columns.Add("IDENTITY_CURRENT", typeof(long));
 
+		schema.Columns.Add("IS_COMPUTED", typeof(bool));
+		schema.Columns.Add("IS_ARRAY", typeof(bool));
+		schema.Columns.Add("IS_NULLABLE", typeof(bool));
+		schema.Columns.Add("IN_PRIMARYKEY", typeof(bool));
+		schema.Columns.Add("IS_UNIQUE", typeof(bool));
+		schema.Columns.Add("IS_IDENTITY", typeof(bool));
+
 		schema.AcceptChanges();
 		schema.BeginLoadData();
 
@@ -486,6 +555,14 @@ END",
 
 		foreach (DataRow row in schema.Rows)
 		{
+			row["IS_COMPUTED"] = Convert.ToBoolean(row["IS_COMPUTED_FLAG"]);
+			row["IS_ARRAY"] = Convert.ToBoolean(row["IS_ARRAY_FLAG"]);
+			row["IS_NULLABLE"] = Convert.ToBoolean(row["IS_NULLABLE_FLAG"]);
+			row["IN_PRIMARYKEY"] = Convert.ToBoolean(row["IN_PRIMARYKEY_FLAG"]);
+			row["IS_UNIQUE"] = Convert.ToBoolean(row["IS_UNIQUE_FLAG"]);
+			row["IS_IDENTITY"] = Convert.ToBoolean(row["IS_IDENTITY_FLAG"]);
+
+
 			int blrType = Convert.ToInt32(row["FIELD_TYPE"], CultureInfo.InvariantCulture);
 
 			int subType = 0;
@@ -577,6 +654,13 @@ END",
 		// Remove not more needed columns
 		schema.Columns.Remove("FIELD_TYPE");
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
+
+		schema.Columns.Remove("IS_COMPUTED_FLAG");
+		schema.Columns.Remove("IS_ARRAY_FLAG");
+		schema.Columns.Remove("IS_NULLABLE_FLAG");
+		schema.Columns.Remove("IN_PRIMARYKEY_FLAG");
+		schema.Columns.Remove("IS_UNIQUE_FLAG");
+		schema.Columns.Remove("IS_IDENTITY_FLAG");
 
 		schema.AcceptChanges();
 

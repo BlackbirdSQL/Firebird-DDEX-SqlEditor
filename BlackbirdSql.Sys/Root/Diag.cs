@@ -117,13 +117,15 @@ internal static class Diag
 
 
 	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Flag indicating whether or not <see cref="Diag.Debug"/> exceptions are output.
-	/// Debug exceptions are always output in debug builds.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+/// <summary>
+/// Flag indicating whether or not <see cref="Diag.Debug"/> exceptions are output.
+/// Debug exceptions are always output in debug builds.
+/// </summary>
+// ---------------------------------------------------------------------------------
+// [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+#if !DEBUG
 	private static bool EnableDebugExceptions => PersistentSettings.EnableDebugExceptions;
+#endif
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -142,6 +144,15 @@ internal static class Diag
 	private static bool EnableTaskLog => _TaskLogActive == 0
 		&& (_InternalActive > 0 || PersistentSettings.EnableTaskLog);
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a boolean indicating whether or not the BlackbirdSql output pane is
+	/// activated on output.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static bool ActivateOutputPane => PersistentSettings.ActivateOutputPane;
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -159,7 +170,7 @@ internal static class Diag
 	internal static string LogFile => PersistentSettings.LogFile;
 
 
-	#endregion Property accessors
+#endregion Property accessors
 
 
 
@@ -344,7 +355,7 @@ internal static class Diag
 	/// Creates the BlackbirdSql output pane.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static async Task InternalEnsureOutputPaneAsync()
+	private static async Task InternalEnsureOutputPaneEuiAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -354,7 +365,7 @@ internal static class Diag
 
 			try
 			{
-				outputWindow = await ServiceProvider.GetGlobalServiceAsync<SVsOutputWindow, IVsOutputWindow>(swallowExceptions: false);
+				outputWindow = await ServiceProvider.GetGlobalServiceAsync<SVsOutputWindow, IVsOutputWindow>(false);
 
 				if (outputWindow == null)
 					throw new ServiceUnavailableException(typeof(IVsOutputWindow));
@@ -504,7 +515,7 @@ internal static class Diag
 		try
 		{
 			if (enableTaskLog)
-				OutputPaneWriteLineAsyui(str, isException);
+				OutputPaneWriteLineAsyup(str, isException);
 		}
 		catch (Exception) { }
 
@@ -653,7 +664,7 @@ internal static class Diag
 						text += "\n" + sb + "\n";
 					}
 
-					_ = OutputPaneWriteLineAsync(text, false);
+					_ = OutputPaneWriteLineEuiAsync(text, false);
 
 				}
 
@@ -696,14 +707,14 @@ internal static class Diag
 	/// Moves back onto the UI thread and updates the IDE status bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static async Task<bool> InternalUpdateStatusBarAsync(string value, bool clear)
+	private static async Task<bool> InternalUpdateStatusBarEuiAsync(string value, bool clear)
 	{
 		// Switch to main thread
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		try
 		{
-			IVsStatusbar statusBar = await ServiceProvider.GetGlobalServiceAsync<SVsStatusbar, IVsStatusbar>(swallowExceptions: false);
+			IVsStatusbar statusBar = await ServiceProvider.GetGlobalServiceAsync<SVsStatusbar, IVsStatusbar>(false);
 
 			// statusBar.FreezeOutput(0);
 
@@ -722,7 +733,7 @@ internal static class Diag
 					_ = Task.Run(async delegate
 					{
 						await Task.Delay(4000);
-						_ = InternalUpdateStatusBarAsync(null, true);
+						_ = InternalUpdateStatusBarEuiAsync(null, true);
 					});
 				}
 			}
@@ -766,14 +777,14 @@ internal static class Diag
 	/// The text value to write. May be an empty string, in which case a newline is written.
 	/// </param>
 	// ---------------------------------------------------------------------------------
-	internal static async Task OutputPaneWriteLineAsync(string value, bool isException)
+	internal static async Task OutputPaneWriteLineEuiAsync(string value, bool isException)
 	{
 		string outputMsg = value;
 
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		if (_OutputPane == null)
-			await InternalEnsureOutputPaneAsync();
+			await InternalEnsureOutputPaneEuiAsync();
 
 		if (_OutputPane == null)
 		{
@@ -818,7 +829,7 @@ internal static class Diag
 			throw ex;
 		}
 
-		if (isException && _OutputPane != null)
+		if ((isException || ActivateOutputPane) && _OutputPane != null)
 			_OutputPane.Activate();
 
 	}
@@ -827,15 +838,15 @@ internal static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// [Async on UI thread]: Writes the given text followed by a new line to the Output
+	/// [Launch async on UI thread]: Writes the given text followed by a new line to the Output
 	/// window pane.
 	/// </summary>
 	/// <param name="value">The text value to write.</param>
 	// ---------------------------------------------------------------------------------
-	internal static void OutputPaneWriteLineAsyui(string value, bool isException)
+	internal static void OutputPaneWriteLineAsyup(string value, bool isException)
 	{
 		string outputMsg = value;
-		_ = Task.Run(() => OutputPaneWriteLineAsync(outputMsg, isException));
+		_ = Task.Run(() => OutputPaneWriteLineEuiAsync(outputMsg, isException));
 	}
 
 
@@ -1089,7 +1100,7 @@ internal static class Diag
 	{
 		// Fire and discard remember.
 
-		_ = Task.Factory.StartNew(() => InternalUpdateStatusBarAsync(value, clear), default,
+		_ = Task.Factory.StartNew(() => InternalUpdateStatusBarEuiAsync(value, clear), default,
 			TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
 			TaskScheduler.Default);
 

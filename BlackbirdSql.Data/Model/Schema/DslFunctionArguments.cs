@@ -15,7 +15,15 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Text;
+using System.Windows.Forms;
 using BlackbirdSql.Sys.Interfaces;
+using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.Shell.Interop;
+using static System.ComponentModel.Design.ObjectSelectorEditor;
 
 namespace BlackbirdSql.Data.Model.Schema;
 
@@ -24,48 +32,72 @@ internal class DslFunctionArguments : DslColumns
 {
 	public DslFunctionArguments() : base()
 	{
-		// Evs.Trace(GetType(), "DslFunctionArguments.DslFunctionArguments");
+	}
+
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		InitializeColumnsList(connection, "RDB$FUNCTION_ARGUMENTS");
 
 		string packageName;
 
-		if (MajorVersionNumber >= 3)
+		if (!HasColumn("r.RDB$SYSTEM_FLAG"))
+			_SystemFlagColName = "r_func.RDB$SYSTEM_FLAG";
+
+		if (HasColumn("RDB$PACKAGE_NAME"))
 		{
-			packageName = @"(CASE WHEN r.rdb$package_name IS NULL THEN
-				(CASE WHEN r.rdb$system_flag <> 1 THEN 'USER' ELSE 'SYSTEM' END)
+			packageName = $@"(CASE WHEN r.RDB$PACKAGE_NAME IS NULL THEN
+				(CASE WHEN {_SystemFlagColName} <> 1 THEN 'USER' ELSE 'SYSTEM' END)
 			ELSE
-				r.rdb$package_name
+				r.RDB$PACKAGE_NAME
 			END)
 		END)";
 		}
 		else
 		{
-			packageName = "(CASE WHEN r.rdb$system_flag <> 1 THEN 'USER' ELSE 'SYSTEM' END)";
+			packageName = $"(CASE WHEN {_SystemFlagColName} <> 1 THEN 'USER' ELSE 'SYSTEM' END)";
 		}
 
 		_ParentType = "Function";
 		_ObjectType = "FunctionParameter";
-		_ParentColumn = "r.rdb$function_name";
-		_ChildColumn = "r.rdb$argument_name";
-		_GeneratorSelector = null;
-		_OrderingField = "r.rdb$function_name";
-		_FromClause = "rdb$function_arguments r";
+		_ParentColName = "r.RDB$FUNCTION_NAME";
+
+		_ChildColName = HasColumn("r.RDB$ARGUMENT_NAME") ? "r.RDB$ARGUMENT_NAME" : "CAST(r.RDB$ARGUMENT_POSITION AS varchar(50))";
+		_FieldNameColName = HasColumn("r.RDB$FIELD_NAME") ? "r.RDB$FIELD_NAME" : "null";
+
+		_OrderingColumn = "r.RDB$FUNCTION_NAME";
+		_FromClause = @"RDB$FUNCTION_ARGUMENTS r
+		INNER JOIN RDB$FUNCTIONS r_func
+			ON r_func.RDB$FUNCTION_NAME = r.RDB$FUNCTION_NAME";
 
 
-		_RequiredColumns["ORDINAL_POSITION"] = "r.rdb$argument_position";
+		_RequiredColumns["ORDINAL_POSITION"] = "r.RDB$ARGUMENT_POSITION";
 		// Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL
-		_RequiredColumns["DIRECTION_FLAG"] = "(CASE WHEN r.rdb$argument_position = 0 THEN 6 ELSE 0 END)";
+		_RequiredColumns["DIRECTION_FLAG"] = "(CASE WHEN r.RDB$ARGUMENT_POSITION = 0 THEN 6 ELSE 0 END)";
 
 		_AdditionalColumns.Add("FUNCTION_CATALOG", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("FUNCTION_SCHEMA", new(null, "varchar(10)"));
-		_AdditionalColumns.Add("FUNCTION_NAME", new("r.rdb$function_name", "varchar(50)"));
+		_AdditionalColumns.Add("FUNCTION_NAME", new("r.RDB$FUNCTION_NAME", "varchar(50)"));
+
+		string argumentClause = HasColumn("r.RDB$ARGUMENT_NAME")
+			? "r.RDB$ARGUMENT_NAME IS NULL" : "r.RDB$ARGUMENT_POSITION = 0";
+
+
 		_AdditionalColumns.Add("ARGUMENT_NAME",
-			new("(CASE WHEN r.rdb$argument_name IS NULL THEN '' ELSE r.rdb$argument_name END)", "varchar(50)"));
+			new($"(CASE WHEN {argumentClause} THEN '' ELSE {_ChildColName} END)", "varchar(50)"));
 
 		_AdditionalColumns.Add("PSEUDO_NAME",
-			new("(CASE WHEN r.rdb$argument_name IS NULL THEN '@RETURN_VALUE' ELSE r.rdb$argument_name END)", "varchar(50)"));
+			new($"(CASE WHEN {argumentClause} THEN '@RETURN_VALUE' ELSE {_ChildColName} END)", "varchar(50)"));
 		_AdditionalColumns.Add("PACKAGE_NAME", new(packageName, "varchar(10)"));
 
 	}
 
 
+
+
+
+	#region Protected Methods
+
+
+
+	#endregion Protected Methods
 }

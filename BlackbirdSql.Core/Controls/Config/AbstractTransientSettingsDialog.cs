@@ -1,5 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ToolsOptions.CurrentWndOptions
+
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -15,9 +16,15 @@ namespace BlackbirdSql.Core.Controls.Config;
 //									AbstractTransientSettingsDialog Class
 //
 /// <summary>
-/// Abstract dialog class for creating a user options dialog using TransientSettings. You can view an
-/// implementation of this class in the Editor extension's LiveSettingsDialog class.
+/// Abstract dialog class for creating a user options dialog using TransientSettings.
 /// </summary>
+/// <remarks>
+/// You can view an implementation of this class in the Editor extension's LiveSettingsDialog class that
+/// implements several settings pages.
+/// See the Editor TransientExecutionSettingsPage used in conjuction with the ExecutionSettingsModel.
+/// This allows an SqlEditor window tab to access a copy of user options and modify them independent of
+/// the persistent options.
+/// </remarks>
 // =========================================================================================================
 public partial class AbstractTransientSettingsDialog : Form
 {

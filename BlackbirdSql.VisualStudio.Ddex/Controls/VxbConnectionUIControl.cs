@@ -5,6 +5,7 @@
 using System;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,6 +19,7 @@ using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
 
@@ -55,7 +57,7 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 
 		try
 		{
-			if (RctManager.ShutdownState || !RctManager.EnsureLoaded())
+			if (RctManager.ShutdownState || !RctManager.EnsureLoaded(false))
 			{
 				ApplicationException ex;
 
@@ -1095,8 +1097,8 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 						&& PersistentSettings.ValidateSessionConnectionOnFormAccept)
 					{
 						connection = NativeDb.CreateDbConnection(site.ToString());
-
-						connection.Open();
+						// Evs.Debug(GetType(), "OnAccept", $"IDbConnection.Open:\nConnectionString: {connection.ConnectionString}");
+						connection.OpenDb();
 					}
 
 					if (ConnectionSource == EnConnectionSource.ServerExplorer)
@@ -1160,7 +1162,8 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 					|| PersistentSettings.ValidateSessionConnectionOnFormAccept)
 				{
 					connection = NativeDb.CreateDbConnection(site.ToString());
-					connection.Open();
+					// Evs.Debug(GetType(), "OnAccept", $"IDbConnection.Open:\nConnectionString: {connection.ConnectionString}");
+					connection.OpenDb();
 				}
 
 				// If a new unique SE connection is going to be created in a Session set the connection source.

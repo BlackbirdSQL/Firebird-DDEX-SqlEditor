@@ -10,6 +10,8 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 internal interface IBsStorageView : IDisposable
 {
+	bool IsStorageClosed { get; }
+
 	long EnsureRowsInBuf(long startRow, long totalRowCount);
 
 	object GetCellData(long i64Row, int iCol);
@@ -24,5 +26,4 @@ internal interface IBsStorageView : IDisposable
 
 	int ColumnCount { get; }
 
-	bool IsStorageClosed();
 }

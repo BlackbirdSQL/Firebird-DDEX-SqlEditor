@@ -1,7 +1,9 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using FirebirdSql.Data.FirebirdClient;
 
 
 
@@ -23,14 +25,14 @@ internal class DslUsers : AbstractDslSchema
 		StringBuilder sql = new();
 		StringBuilder where = new($"TRIM(SEC$PLUGIN) = '{Authentication}'");
 
-		sql.AppendFormat(
+		sql.Append(
 @"SELECT
 	(CASE WHEN TRIM(SEC$PLUGIN) = 'Srp' THEN 'Srp' ELSE 'Legacy' END) AS PROTOCOL,
 	SEC$USER_NAME AS USER_LOGIN,
 	(CASE WHEN SEC$FIRST_NAME IS NULL THEN SEC$USER_NAME ELSE SEC$FIRST_NAME END) AS FIRST_NAME,
 	SEC$MIDDLE_NAME AS MIDDLE_NAME,
 	SEC$LAST_NAME AS LAST_NAME,
-	(CASE WHEN SEC$ACTIVE IS NULL THEN true ELSE SEC$ACTIVE END) AS IS_ACTIVE,
+	(CASE WHEN SEC$ACTIVE IS NULL THEN 1 ELSE SEC$ACTIVE END) AS IS_ACTIVE_FLAG,
 	SEC$ADMIN AS IS_ADMIN,
 	SEC$DESCRIPTION AS DESCRIPTION
 FROM SEC$USERS");
@@ -43,14 +45,14 @@ FROM SEC$USERS");
 			if (restrictions.Length >= 1 && restrictions[0] != null)
 			{
 				where.Append(" AND ");
-				where.AppendFormat("SEC$USER_NAME = @p{0}", index++);
+				where.Append($"SEC$USER_NAME = @p{index++}");
 			}
 
 		}
 
 		if (where.Length > 0)
 		{
-			sql.AppendFormat(" WHERE {0} ", where.ToString());
+			sql.Append($" WHERE {where} ");
 		}
 
 		sql.Append(" ORDER BY PROTOCOL DESC, USER_NAME");
@@ -66,11 +68,15 @@ FROM SEC$USERS");
 
 		schema.Columns.Add("USER_NAME", typeof(string));
 
+		schema.Columns.Add("IS_ACTIVE", typeof(bool));
+
 		schema.AcceptChanges();
 		schema.BeginLoadData();
 
 		foreach (DataRow row in schema.Rows)
 		{
+			row["IS_ACTIVE"] = Convert.ToBoolean(row["IS_ACTIVE_FLAG"]);
+
 			string name = row["FIRST_NAME"].ToString();
 
 			if (row["MIDDLE_NAME"] != DBNull.Value)
@@ -88,6 +94,8 @@ FROM SEC$USERS");
 		schema.Columns.Remove("FIRST_NAME");
 		schema.Columns.Remove("MIDDLE_NAME");
 		schema.Columns.Remove("LAST_NAME");
+
+		schema.Columns.Remove("IS_ACTIVE_FLAG");
 
 		schema.AcceptChanges();
 

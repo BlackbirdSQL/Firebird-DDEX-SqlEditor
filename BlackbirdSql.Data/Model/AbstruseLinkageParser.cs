@@ -2,7 +2,9 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using BlackbirdDsl;
 using BlackbirdSql.Sys.Interfaces;
 using C5;
@@ -199,7 +201,7 @@ internal abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDispo
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Parses a trigger DSL statement givern a trigger, table name and column name.
+	/// Parses a trigger DSL statement given a trigger, table name and column name.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected (string, int, int) ParseTriggerDSL(string sql, string trigger, string table, string column)
@@ -208,6 +210,64 @@ internal abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDispo
 		int seed = -1;
 		string generator = null;
 
+		// First attempt a quick and dirty.
+
+		int offset;
+		int funcOffset = -1;
+		string str;
+
+		if (sql.StartsWith("blr_", StringComparison.OrdinalIgnoreCase))
+		{
+			if ((offset = sql.IndexOf("blr_gen_id", StringComparison.OrdinalIgnoreCase)) == -1)
+				return (generator, increment, seed);
+
+			funcOffset = 11;
+		}
+		else
+		{
+			offset = sql.IndexOf("gen_id", StringComparison.OrdinalIgnoreCase);
+
+			if (offset == -1)
+			{
+				offset = sql.IndexOf("NEXT VALUE FOR ", StringComparison.OrdinalIgnoreCase);
+
+				if (offset != -1)
+					funcOffset = 15;
+			}
+			else
+			{
+				funcOffset = 7;
+			}
+		}
+
+
+		if (offset != -1)
+		{
+
+			str = sql[(offset + funcOffset)..];
+
+			if (funcOffset == 11 || funcOffset == 15 || (offset = str.IndexOf(')')) != -1)
+			{
+				// Evs.Trace(GetType(), nameof(ParseTriggerDSL), $"trigger: {trigger}, offset: {offset}");
+
+				if (funcOffset == 7)
+					str = str[..offset];
+
+				List<string> genTokens = [.. str.Split(',')];
+
+				if (genTokens.Count >= (funcOffset == 11 ? 9 : 2))
+				{
+					generator = genTokens[funcOffset == 11 ? 1 : 0].Trim(['\'', '"', ' ']);
+					seed = 0;
+					increment = funcOffset == 15 ? 1 : Convert.ToInt32(genTokens[funcOffset == 11 ? 5 : 1].Trim());
+
+					return (generator, increment, seed);
+				}
+			}
+		}
+
+
+		// Perform an sql token search
 
 		int sequence = -1;
 		int stage = 0;
@@ -257,14 +317,14 @@ internal abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDispo
 					if (_Completed[i])
 						continue;
 
-					if (token == _Sequences[i][stage])
+					if (token.ToUpper() == _Sequences[i][stage])
 					{
 						sequence = i;
 						stage++;
 						break;
 					}
 					// Special case
-					if (i < 2 && token == _Sequences[i][5])
+					if (i < 2 && token.ToUpper() == _Sequences[i][5])
 					{
 						sequence = i;
 						stage = 6;
@@ -280,7 +340,7 @@ internal abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDispo
 			{
 				case "GEN_ID":
 					// Single special case. We're not going to do nested sequences just for one.
-					if (token != sequenceToken)
+					if (token.ToUpper() != sequenceToken)
 					{
 						sequence++;
 						sequenceToken = _Sequences[sequence][stage];
@@ -301,7 +361,7 @@ internal abstract class AbstruseLinkageParser : IBsNativeDbLinkageParser, IDispo
 				case "_COLUMN_":
 					if (column != null)
 						sequenceToken = "NEW." + column;
-					else if (token.StartsWith("NEW."))
+					else if (token.StartsWith("NEW.", StringComparison.InvariantCultureIgnoreCase))
 						sequenceToken = token;
 					break;
 				case "_GENPARAM_":

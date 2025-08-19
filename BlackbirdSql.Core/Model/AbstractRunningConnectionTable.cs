@@ -4,6 +4,7 @@ using System.Data;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Enums;
+
 using static BlackbirdSql.CoreConstants;
 using static BlackbirdSql.SysConstants;
 
@@ -86,7 +87,7 @@ internal abstract class AbstractRunningConnectionTable : AbstruseRunningConnecti
 	{
 		get
 		{
-			return _Instance == null
+			return _InternalInstance == null
 				|| _SyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown
 				|| _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown;
 		}

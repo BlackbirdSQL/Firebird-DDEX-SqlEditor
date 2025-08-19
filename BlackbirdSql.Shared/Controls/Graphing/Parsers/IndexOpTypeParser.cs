@@ -9,7 +9,7 @@ internal sealed class IndexOpTypeParser : RelOpBaseTypeParser
 {
 	private static IndexOpTypeParser indexOpTypeParser;
 
-	internal new static IndexOpTypeParser Instance
+	public new static IndexOpTypeParser Instance
 	{
 		get
 		{

@@ -61,7 +61,7 @@ internal class EmbeddedTextBox : TextBox, IBsGridEmbeddedControl, IBsGridEmbedde
 		}
 	}
 
-	internal new bool Enabled
+	public new bool Enabled
 	{
 		get
 		{

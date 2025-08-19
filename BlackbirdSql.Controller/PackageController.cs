@@ -128,7 +128,7 @@ internal sealed class PackageController : AbstractPackageController
 	/// Only calls unsafe if on ui thread. Does not attempt switch.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override async Task<bool> AdviseUnsafeEventsAsync()
+	public override async Task<bool> AdviseUnsafeEventsEuiAsync()
 	{
 		lock (_LockObject)
 		{
@@ -162,7 +162,7 @@ internal sealed class PackageController : AbstractPackageController
 	/// OnSaveOptions event handling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override bool AdviseUnsafeEventsAsyeu()
+	public override bool AdviseUnsafeEventsEui()
 	{
 		lock (_LockObject)
 		{
@@ -177,7 +177,7 @@ internal sealed class PackageController : AbstractPackageController
 		{
 			// Fire and forget async
 
-			Task.Run(AdviseUnsafeEventsAsync).Forget();
+			Task.Run(AdviseUnsafeEventsEuiAsync).Forget();
 
 			return true;
 		}
@@ -247,7 +247,7 @@ internal sealed class PackageController : AbstractPackageController
 
 
 
-	public override async Task<bool> RegisterProjectEventHandlersAsync()
+	public override async Task<bool> RegisterProjectEventHandlersEuiAsync()
 	{
 		if (!EventProjectRegistrationEnter(true))
 			return false;
@@ -276,7 +276,7 @@ internal sealed class PackageController : AbstractPackageController
 		{
 			List<Project> projects = UnsafeCmd.RecursiveGetDesignTimeProjects();
 
-			Evs.Trace(GetType(), nameof(RegisterProjectEventHandlersImpl), Resources.EvsAddingEventHandlers.Fmt(projects.Count));
+			// Evs.Trace(GetType(), nameof(RegisterProjectEventHandlersImpl), Resources.EvsAddingEventHandlers.Fmt(projects.Count));
 
 			foreach (Project project in projects)
 				AddProjectEventHandlers(project);
@@ -296,7 +296,7 @@ internal sealed class PackageController : AbstractPackageController
 	/// [Launch ensure UI thread]: Registers project event handlers.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override void RegisterProjectEventHandlersAsyeu()
+	public override void RegisterProjectEventHandlersEui()
 	{
 		if (!EventProjectRegistrationEnter(true))
 			return;
@@ -304,7 +304,7 @@ internal sealed class PackageController : AbstractPackageController
 		if (!ThreadHelper.CheckAccess())
 		{
 			// Fire and forget async
-			Task.Run(RegisterProjectEventHandlersAsync).Forget();
+			Task.Run(RegisterProjectEventHandlersEuiAsync).Forget();
 			return;
 		}
 
@@ -318,7 +318,7 @@ internal sealed class PackageController : AbstractPackageController
 
 	public override void ValidateSolution()
 	{
-		((ControllerEventsManager)ControllerPackage.EventsManager).ValidateSolutionAsyeu();
+		((ControllerEventsManager)ControllerPackage.EventsManager).ValidateSolutionEui();
 	}
 
 	#endregion Methods

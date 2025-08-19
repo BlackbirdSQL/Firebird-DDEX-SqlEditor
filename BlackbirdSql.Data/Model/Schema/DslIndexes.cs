@@ -20,9 +20,11 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Text;
+using FirebirdSql.Data.FirebirdClient;
 
 
 namespace BlackbirdSql.Data.Model.Schema;
@@ -48,33 +50,33 @@ internal class DslIndexes : AbstractDslSchema
 			@"SELECT
 					null AS TABLE_CATALOG,
 					null AS TABLE_SCHEMA,
-					idx.rdb$relation_name AS TABLE_NAME,
-					idx.rdb$index_name AS INDEX_NAME,
-					idx.rdb$foreign_key AS FOREIGN_KEY,
-					(CASE WHEN idx.rdb$index_inactive <> 1 THEN false ELSE true END) AS IS_INACTIVE,
-					idx.rdb$unique_flag AS UNIQUE_FLAG,
-				    (SELECT COUNT(*) FROM rdb$relation_constraints rel
-				    WHERE rel.rdb$constraint_type = 'PRIMARY KEY' AND rel.rdb$index_name = idx.rdb$index_name AND rel.rdb$relation_name = idx.rdb$relation_name) as PRIMARY_KEY,
-					(SELECT COUNT(*) FROM rdb$relation_constraints rel
-					WHERE rel.rdb$constraint_type = 'UNIQUE' AND rel.rdb$index_name = idx.rdb$index_name AND rel.rdb$relation_name = idx.rdb$relation_name) as UNIQUE_KEY,
-					(CASE WHEN idx.rdb$system_flag <> 1 THEN
+					idx.RDB$RELATION_NAME AS TABLE_NAME,
+					idx.RDB$INDEX_NAME AS INDEX_NAME,
+					idx.RDB$FOREIGN_KEY AS FOREIGN_KEY,
+					(CASE WHEN idx.RDB$INDEX_INACTIVE <> 1 THEN 0 ELSE 1 END) AS IS_INACTIVE,
+					idx.RDB$UNIQUE_FLAG AS UNIQUE_FLAG,
+				    (SELECT COUNT(*) FROM RDB$RELATION_CONSTRAINTS rel
+				    WHERE rel.RDB$CONSTRAINT_TYPE = 'PRIMARY KEY' AND rel.RDB$INDEX_NAME = idx.RDB$INDEX_NAME AND rel.RDB$RELATION_NAME = idx.RDB$RELATION_NAME) as PRIMARY_KEY,
+					(SELECT COUNT(*) FROM RDB$RELATION_CONSTRAINTS rel
+					WHERE rel.RDB$CONSTRAINT_TYPE = 'UNIQUE' AND rel.RDB$INDEX_NAME = idx.RDB$INDEX_NAME AND rel.RDB$RELATION_NAME = idx.RDB$RELATION_NAME) as UNIQUE_KEY,
+					(CASE WHEN idx.RDB$SYSTEM_FLAG <> 1 THEN
 						 0
 					ELSE
 						 1
 					END) AS IS_SYSTEM_FLAG,
-					(CASE WHEN idx.rdb$index_type <> 1 THEN false ELSE true END) AS IS_DESCENDING,
-					idx.rdb$description AS DESCRIPTION,
-					(CASE WHEN idx.rdb$expression_source IS NULL AND idx.rdb$expression_blr IS NOT NULL THEN
-						cast(idx.rdb$expression_blr as blob sub_type 1)
+					(CASE WHEN idx.RDB$INDEX_TYPE <> 1 THEN 0 ELSE 1 END) AS IS_DESCENDING_FLAG,
+					idx.RDB$DESCRIPTION AS DESCRIPTION,
+					(CASE WHEN idx.RDB$EXPRESSION_SOURCE IS NULL AND idx.RDB$EXPRESSION_BLR IS NOT NULL THEN
+						cast(idx.RDB$EXPRESSION_BLR as blob sub_type 1)
 					ELSE
-						idx.rdb$expression_source
+						idx.RDB$EXPRESSION_SOURCE
 					END) AS EXPRESSION,
-					(CASE WHEN idx.rdb$expression_source IS NULL AND idx.rdb$expression_blr IS NULL THEN
-						false
+					(CASE WHEN idx.RDB$EXPRESSION_SOURCE IS NULL AND idx.RDB$EXPRESSION_BLR IS NULL THEN
+						0
 					ELSE
-						true
-					END) AS IS_COMPUTED
-				FROM rdb$indices idx");
+						1
+					END) AS IS_COMPUTED_FLAG
+				FROM RDB$INDICES idx");
 
 		if (restrictions != null)
 		{
@@ -93,7 +95,7 @@ internal class DslIndexes : AbstractDslSchema
 			/* TABLE_NAME */
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
-				where.AppendFormat("idx.rdb$relation_name = @p{0}", index++);
+				where.Append($"idx.RDB$RELATION_NAME = @p{index++}");
 			}
 
 			/* INDEX_NAME */
@@ -104,13 +106,13 @@ internal class DslIndexes : AbstractDslSchema
 					where.Append(" AND ");
 				}
 
-				where.AppendFormat("idx.rdb$index_name = @p{0}", index++);
+				where.Append($"idx.RDB$INDEX_NAME = @p{index++}");
 			}
 		}
 
 		if (where.Length > 0)
 		{
-			sql.AppendFormat(" WHERE {0} ", where.ToString());
+			sql.Append($" WHERE {where} ");
 		}
 
 		sql.Append(" ORDER BY TABLE_NAME, INDEX_NAME");
@@ -124,13 +126,21 @@ internal class DslIndexes : AbstractDslSchema
 	{
 		// Evs.Trace(GetType(), "DslIndexes.ProcessResult");
 
-		schema.BeginLoadData();
 		schema.Columns.Add("IS_PRIMARY", typeof(bool));
 		schema.Columns.Add("IS_UNIQUE", typeof(bool));
 		schema.Columns.Add("IS_FOREIGNKEY", typeof(bool));
 
+		schema.Columns.Add("IS_COMPUTED", typeof(bool));
+		schema.Columns.Add("IS_DESCENDING", typeof(bool));
+
+		schema.AcceptChanges();
+		schema.BeginLoadData();
+
 		foreach (DataRow row in schema.Rows)
 		{
+			row["IS_COMPUTED"] = Convert.ToBoolean(row["IS_COMPUTED_FLAG"]);
+			row["IS_DESCENDING"] = Convert.ToBoolean(row["IS_DESCENDING_FLAG"]);
+
 			row["IS_UNIQUE"] = !(row["UNIQUE_FLAG"] == DBNull.Value || Convert.ToInt32(row["UNIQUE_FLAG"], CultureInfo.InvariantCulture) == 0);
 
 			row["IS_PRIMARY"] = !(row["PRIMARY_KEY"] == DBNull.Value || Convert.ToInt32(row["PRIMARY_KEY"], CultureInfo.InvariantCulture) == 0);
@@ -139,11 +149,15 @@ internal class DslIndexes : AbstractDslSchema
 		}
 
 		schema.EndLoadData();
-		schema.AcceptChanges();
 
 		schema.Columns.Remove("PRIMARY_KEY");
 		schema.Columns.Remove("FOREIGN_KEY");
 		schema.Columns.Remove("UNIQUE_FLAG");
+
+		schema.Columns.Remove("IS_COMPUTED_FLAG");
+		schema.Columns.Remove("IS_DESCENDING_FLAG");
+
+		schema.AcceptChanges();
 	}
 
 	#endregion

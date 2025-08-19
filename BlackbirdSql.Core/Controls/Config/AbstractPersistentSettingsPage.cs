@@ -14,12 +14,7 @@ namespace BlackbirdSql.Core.Controls.Config;
 //										AbstractPersistentSettingsPage Class
 //
 /// <summary>
-/// VS Options DialogPage base class.
-/// Disclosure: This class exposes some PropertyGridView members with hidden access modifiers using
-/// the Visual Studio's Reflection library, so that we can implement a few standard or comparable windows
-/// functionality features like single-click check boxes, radio buttons and cardinal synonyms into the
-/// DialogPage property grid.
-/// Common cardinal synonyms include current culture min[imum], max[imum], unlimited, default etc.
+/// VS Options DialogPage base class for peristent settings.
 /// </summary>
 // =========================================================================================================
 [ComVisible(true)]

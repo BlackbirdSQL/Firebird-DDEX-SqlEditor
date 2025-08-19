@@ -2,7 +2,9 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.SqlServer.Management.SqlParser.MetadataProvider;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -82,7 +84,7 @@ public class VxbObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 			identifierPartString = openQuote + identifierPartString + closeQuote;
 		}
 
-		// Evs.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Converted identifier: " + identifierPartString);
+		// Evs.Trace(GetType(), nameof(FormatPart), $"typeName: {typeName},  DataObjectIdentifierFormat: {format}, Converted identifier: {identifierPartString}");
 
 		return identifierPartString;
 	}
@@ -147,6 +149,9 @@ public class VxbObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     A Boolean value indicating whether the identifier part requires quotation marks.
 	protected override bool RequiresQuoting(string identifierPart)
 	{
+		// IVsDataSourceInformation sourceInformation = (IVsDataSourceInformation)Site.GetService(typeof(IVsDataSourceInformation));
+		// return (bool)sourceInformation[VxbSourceInformation.SupportsQuotedIdentifierParts];
+
 		return true;
 	}
 
@@ -173,9 +178,12 @@ public class VxbObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     The concatenated string containing all identifiers in the given order.
 	protected override string BuildString(string typeName, string[] identifierParts, DataObjectIdentifierFormat format)
 	{
+
 		string str = base.BuildString(typeName, identifierParts, format);
 
-		// Evs.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Result: " + str);
+
+		// Evs.Trace(GetType(), nameof(BuildString), $"typeName: {typeName}, format: {format}, Result: {str}");
+
 		return str;
 	}
 
@@ -189,7 +197,7 @@ public class VxbObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     An System.EventArgs object containing the event data.
 	protected override void OnSiteChanged(EventArgs e)
 	{
-		Evs.Trace(GetType(), nameof(OnSiteChanged));
+		// Evs.Trace(GetType(), nameof(OnSiteChanged));
 
 		base.OnSiteChanged(e);
 	}

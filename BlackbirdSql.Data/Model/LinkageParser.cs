@@ -3,6 +3,7 @@
 
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -14,6 +15,7 @@ using BlackbirdSql.Sys.Controls;
 using BlackbirdSql.Sys.Enums;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -165,7 +167,7 @@ internal class LinkageParser : AbstractLinkageParser
 	{
 		// Evs.Trace(typeof(LinkageParser), nameof(EnsureLoaded));
 
-		
+
 		LinkageParser parser;
 
 		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
@@ -295,7 +297,6 @@ internal class LinkageParser : AbstractLinkageParser
 	/// </summary>
 	/// <returns>True if successfully loaded or already loaded else false</returns>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 	public override bool EnsureLoadedRestricted()
 	{
 		// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
@@ -533,7 +534,6 @@ internal class LinkageParser : AbstractLinkageParser
 	/// multiplier.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
 	private async Task<bool> DelayAsync(int delay, int multiplier, CancellationToken userToken)
 	{
 		// Evs.Trace(GetType(), nameof(DelayAsync), "Entering - delay: {0}, multiplier: {1}, UIThread? {2}.", delay, multiplier, ThreadHelper.CheckAccess());
@@ -586,7 +586,7 @@ internal class LinkageParser : AbstractLinkageParser
 			return false;
 		}
 
-		_Disabling = true; 
+		_Disabling = true;
 
 		SyncAsyncWait(true);
 
@@ -830,12 +830,13 @@ internal class LinkageParser : AbstractLinkageParser
 			return false;
 		}
 
+
 		FbConnection connection = null;
 
 		try
 		{
+			// Evs.Trace(GetType(), nameof(PopulateLinkageTablesAsync), $"ParserId:[{Id}] {idType}[{id}] ENTER - _LinkStage: {_LinkStage}");
 
-			// Evs.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "ENTER - _LinkStage: {0}", _LinkStage);
 			if (!IsTransient)
 			{
 				_TaskHandler.Progress(Percent(_LinkStage), _LinkStage == EnLinkStage.Start ? 0 : C_Elapsed_Resuming, _TotalElapsed, _Enabled, AsyncActive);
@@ -845,6 +846,8 @@ internal class LinkageParser : AbstractLinkageParser
 
 			if (_LinkStage < EnLinkStage.GeneratorsLoaded)
 			{
+				// Evs.Trace(GetType(), nameof(PopulateLinkageTablesAsync), $"");
+
 				if (!IsTransient)
 				{
 					_TaskHandler.Progress(ControlsResources.LinkageParser_StageGeneratorsBegin,
@@ -854,9 +857,29 @@ internal class LinkageParser : AbstractLinkageParser
 				if (connection == null)
 				{
 					connection = new(ConnectionString);
-					await connection.OpenAsync(cancelToken);
+
+					try
+					{
+						await connection.OpenDbAsync(cancelToken);
+					}
+					catch (Exception ex)
+					{
+						if (ex is DbException exd && exd.HasSqlException() && exd.GetErrorCode() == 335545004
+							&& exd.Message.IndexOf("Error loading plugin", StringComparison.OrdinalIgnoreCase) != -1)
+						{
+							string msg = Resources.ExceptionLoadingPlugin.Fmt(exd.Message);
+							MessageCtl.ShowX(msg, Resources.ExceptionLoadingPluginCaption, MessageBoxButtons.OK);
+						}
+						else
+						{
+							Diag.Ex(ex);
+						}
+						throw ex;
+					}
 				}
+
 				await GetRawGeneratorSchemaAsync(connection, cancelToken);
+
 
 				if (cancelToken.Cancelled())
 					_Enabled = false;
@@ -887,8 +910,10 @@ internal class LinkageParser : AbstractLinkageParser
 				if (connection == null)
 				{
 					connection = new(ConnectionString);
-					await connection.OpenAsync(cancelToken);
+					// Evs.Debug(GetType(), "PopulateLinkageTablesAsync", $"FbConnection.OpenDbAsync:\nConnectionString: {connection.ConnectionString}");
+					await connection.OpenDbAsync(cancelToken);
 				}
+
 				await GetRawTriggerDependenciesSchemaAsync(connection, cancelToken);
 
 				if (AsyncActive && cancelToken.Cancelled())
@@ -921,8 +946,10 @@ internal class LinkageParser : AbstractLinkageParser
 				if (connection == null)
 				{
 					connection = new(ConnectionString);
-					await connection.OpenAsync(cancelToken);
+					// Evs.Debug(GetType(), "PopulateLinkageTablesAsync", $"FbConnection.OpenDbAsync:\nConnectionString: {connection.ConnectionString}");
+					await connection.OpenDbAsync(cancelToken);
 				}
+
 				await GetRawTriggerSchemaAsync(connection, cancelToken);
 
 				if (cancelToken.Cancelled())
@@ -973,6 +1000,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 				BuildSequenceTable();
 
+
 				if (cancelToken.Cancelled())
 					_Enabled = false;
 
@@ -1009,6 +1037,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 				BuildTriggerTable();
 
+
 				if (!IsTransient)
 				{
 					_TaskHandler.Progress(ControlsResources.LinkageParser_StageLinkingEnd, Percent(_LinkStage),
@@ -1025,67 +1054,59 @@ internal class LinkageParser : AbstractLinkageParser
 		}
 
 
-		try
+		if (!IsTransient)
 		{
-			if (!IsTransient)
+			_TaskHandler.Progress(ControlsResources.LinkageParser_StageCompleted.Fmt(_Triggers.Rows.Count),
+				Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+		}
+
+		_Stopwatch = null;
+
+		if (!IsTransient)
+			_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
+
+		lock (_LockGlobal)
+		{
+			if (!IsTransient && _TransientInstance != null
+				&& ApcManager.IsWeakConnectionEquivalency(_ConnectionString, _TransientInstance.ConnectionString))
 			{
-				_TaskHandler.Progress(ControlsResources.LinkageParser_StageCompleted.Fmt(_Triggers.Rows.Count),
-					Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
+				_TransientInstance = null;
 			}
 
-			_Stopwatch = null;
-
-			if (!IsTransient)
-				_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
-
-			lock (_LockGlobal)
+			if (IsTransient)
 			{
-				if (!IsTransient && _TransientInstance != null
-					&& ApcManager.IsWeakConnectionEquivalency(_ConnectionString, _TransientInstance.ConnectionString))
+				_Sequences = null;
+
+				/*
+				 * Uncomment this routine if we ever want to have sequences by table.
+				 * 
+				object @object;
+				string tableName = _TransientRestrictions[2];
+
+				List<DataRow> rows = new(_Sequences.Rows.Count);
+
+
+				foreach (DataRow seqRow in _Sequences.Rows)
 				{
-					_TransientInstance = null;
+					@object = seqRow["DEPENDENCY_TABLE"];
+
+					if (!Cmd.IsNullValueOrEmpty(@object) && tableName.Equals(@object.ToString(), StringComparison.InvariantCultureIgnoreCase))
+						continue;
+
+					rows.Add(seqRow);
 				}
 
-				if (IsTransient)
-				{
-					_Sequences = null;
+				_Sequences.BeginLoadData();
 
-					/*
-					 * Uncomment this routine if we ever want to have sequences by table.
-					 * 
-					object @object;
-					string tableName = _TransientRestrictions[2];
+				foreach(DataRow row in rows)
+					row.Delete();
 
-					List<DataRow> rows = new(_Sequences.Rows.Count);
-
-
-					foreach (DataRow seqRow in _Sequences.Rows)
-					{
-						@object = seqRow["DEPENDENCY_TABLE"];
-
-						if (!Cmd.IsNullValueOrEmpty(@object) && tableName.Equals(@object.ToString(), StringComparison.InvariantCultureIgnoreCase))
-							continue;
-
-						rows.Add(seqRow);
-					}
-
-					_Sequences.BeginLoadData();
-
-					foreach(DataRow row in rows)
-						row.Delete();
-
-					_Sequences.EndLoadData();
-					_Sequences.AcceptChanges();
-					*/
-				}
+				_Sequences.EndLoadData();
+				_Sequences.AcceptChanges();
+				*/
 			}
+		}
 
-		}
-		catch (Exception ex)
-		{
-			Diag.Ex(ex);
-			throw ex;
-		}
 
 		return true;
 	}
@@ -1257,11 +1278,11 @@ internal class LinkageParser : AbstractLinkageParser
 
 	internal void ThreadSafeCloseMessageBox()
 	{
-			lock (_LockObject)
-			{
-				if (_MessageBoxDlg == null)
-					return;
-			}
+		lock (_LockObject)
+		{
+			if (_MessageBoxDlg == null)
+				return;
+		}
 
 		// Evs.Trace(GetType(), nameof(OnMessageBoxShown), "Sender type: {0}", sender);
 

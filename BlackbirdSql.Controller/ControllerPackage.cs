@@ -157,8 +157,8 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		ProgressAsync(progress, "Finalizing ApcManager. Advising Events...").Forget();
 
 		// Second try.
-		await _ApcInstance.AdviseUnsafeEventsAsync();
-		await _ApcInstance.RegisterProjectEventHandlersAsync();
+		await _ApcInstance.AdviseUnsafeEventsEuiAsync();
+		await _ApcInstance.RegisterProjectEventHandlersEuiAsync();
 
 		ProgressAsync(progress, "Finalizing ApcManager. Advising Events... Done.").Forget();
 
@@ -171,7 +171,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		{
 			ProgressAsync(progress, "Finalizing ApcManager. Loading Running Connection Table...").Forget();
 
-			RctManager.LoadConfiguredConnections();
+			RctManager.EnsureLoaded(true);
 
 			ProgressAsync(progress, "Finalizing ApcManager. Loading Running Connection Table... Done.").Forget();
 		}
@@ -226,8 +226,8 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		ProgressAsync(progress, "ApcManager requesting Event propogatation...").Forget();
 
 		// First try.
-		Task.Run(ApcInstance.AdviseUnsafeEventsAsync).Forget();
-		Task.Run(ApcInstance.RegisterProjectEventHandlersAsync).Forget();
+		Task.Run(ApcInstance.AdviseUnsafeEventsEuiAsync).Forget();
+		Task.Run(ApcInstance.RegisterProjectEventHandlersEuiAsync).Forget();
 
 		ProgressAsync(progress, "ApcManager requesting Event propogation... Done.").Forget();
 
@@ -319,8 +319,8 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		// and environment events synchronously.
 		// PropagateSettings();
 
-		ApcInstance.AdviseUnsafeEventsAsyeu();
-		ApcInstance.RegisterProjectEventHandlersAsyeu();
+		ApcInstance.AdviseUnsafeEventsEui();
+		ApcInstance.RegisterProjectEventHandlersEui();
 
 		// Diag.DebugTrace($"OnLoadOptions():  Invoking.");
 

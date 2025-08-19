@@ -15,7 +15,9 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System.Collections.Generic;
 using System.Text;
+using FirebirdSql.Data.FirebirdClient;
 
 
 
@@ -37,9 +39,9 @@ internal class DslRoles : AbstractDslSchema
 
 		sql.Append(
 			@"SELECT
-					rdb$role_name AS ROLE_NAME,
-					rdb$owner_name AS OWNER_NAME
-				FROM rdb$roles");
+					RDB$ROLE_NAME AS ROLE_NAME,
+					RDB$OWNER_NAME AS OWNER_NAME
+				FROM RDB$ROLES");
 
 		if (restrictions != null)
 		{
@@ -47,13 +49,13 @@ internal class DslRoles : AbstractDslSchema
 
 			if (restrictions.Length >= 1 && restrictions[0] != null)
 			{
-				where.AppendFormat("rdb$role_name = @p{0}", index++);
+				where.Append($"RDB$ROLE_NAME = @p{index++}");
 			}
 		}
 
 		if (where.Length > 0)
 		{
-			sql.AppendFormat(" WHERE {0} ", where.ToString());
+			sql.Append($" WHERE {where} ");
 		}
 
 		sql.Append(" ORDER BY ROLE_NAME");

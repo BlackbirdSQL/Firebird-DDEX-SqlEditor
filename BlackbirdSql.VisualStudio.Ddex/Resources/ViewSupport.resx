@@ -513,10 +513,16 @@
   <data name="Node_Name_ProcedureParameters" xml:space="preserve">
     <value>Procedure Parameters</value>
   </data>
-  <data name="Property_Desc_Dsl" xml:space="preserve">
-    <value>The Dsl source code of the procedure or function</value>
+	<data name="Property_Desc_Blr" xml:space="preserve">
+    <value>The Binary source code</value>
   </data>
-  <data name="Property_Name_Dsl" xml:space="preserve">
+	<data name="Property_Desc_Dsl" xml:space="preserve">
+    <value>The Dsl source code</value>
+  </data>
+	<data name="Property_Name_Blr" xml:space="preserve">
+    <value>Binary</value>
+  </data>
+	<data name="Property_Name_Dsl" xml:space="preserve">
     <value>Dsl</value>
   </data>
   <data name="Property_Value_Direction_In" xml:space="preserve">
@@ -559,7 +565,7 @@
     <value>In Primary Key</value>
   </data>
   <data name="Property_Name_Column_IsUnique" xml:space="preserve">
-    <value>Unique Key</value>
+    <value>Is Unique Key</value>
   </data>
   <data name="Property_Value_IndexType_User" xml:space="preserve">
     <value>User Index</value>
@@ -643,15 +649,21 @@
     <value>AutoIncrement Trigger</value>
   </data>
   <data name="Property_Name_Column_IsIdentity" xml:space="preserve">
-    <value>Identity Field</value>
+    <value>Is Identity</value>
   </data>
   <data name="Property_Desc_Trigger_IsIdentity" xml:space="preserve">
-    <value>Is the trigger an auto-increment generator?</value>
+    <value>Is the trigger an auto-increment generator for an identity column?</value>
   </data>
   <data name="Property_Name_Trigger_IsIdentity" xml:space="preserve">
+    <value>Is Identity</value>
+  </data>
+	<data name="Property_Desc_Trigger_IsIncrement" xml:space="preserve">
+    <value>Is the trigger an auto-increment generator?</value>
+  </data>
+	<data name="Property_Name_Trigger_IsIncrement" xml:space="preserve">
     <value>Is Auto-increment</value>
   </data>
-  <data name="Property_Desc_Trigger_Dependencies" xml:space="preserve">
+	<data name="Property_Desc_Trigger_Dependencies" xml:space="preserve">
     <value>Columns driving this trigger</value>
   </data>
   <data name="Property_Name_Trigger_Dependencies" xml:space="preserve">

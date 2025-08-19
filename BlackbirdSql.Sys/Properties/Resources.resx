@@ -151,7 +151,8 @@
     <value>{0} ({1})</value>
   </data>
   <data name="Diag_FormatExceptionError" xml:space="preserve">
-    <value>[{0}] {1} {2}</value>
+    <value>[{0}] {1}
+{2}</value>
   </data>
   <data name="Diag_FormatExceptionNoError" xml:space="preserve">
     <value>[{0} {1}] {2} {3}</value>

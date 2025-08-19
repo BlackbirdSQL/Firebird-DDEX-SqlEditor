@@ -80,7 +80,7 @@ public sealed class AuxilliaryDocData : IDisposable
 				{
 					_QryMgr.StatusChangedEvent -= OnQueryManagerStatusChanged;
 					_QryMgr.ExecutionStartedEventAsync -= OnQueryExecutionStartedAsync;
-					_QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
+					_QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedEuiAsync;
 					_QryMgr.NotifyConnectionStateEvent -= OnNotifyConnectionState;
 
 					_QryMgr.Dispose();
@@ -495,7 +495,7 @@ public sealed class AuxilliaryDocData : IDisposable
 			_QryMgr = new QueryManager(strategy, docCookie);
 			_QryMgr.StatusChangedEvent += OnQueryManagerStatusChanged;
 			_QryMgr.ExecutionStartedEventAsync += OnQueryExecutionStartedAsync;
-			_QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
+			_QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedEuiAsync;
 			_QryMgr.NotifyConnectionStateEvent += OnNotifyConnectionState;
 
 			strategy.Initialize(csb, OnNotifyConnectionState);
@@ -564,7 +564,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		{
 			if (!inAutomation)
 			{
-				RdtManager.ShowWindowFrameAsyeu(_DocCookie);
+				RdtManager.ShowWindowFrameEui(_DocCookie);
 				msgResource ??= Resources.MsgAbortExecutionAndClose;
 				dialogResult = MessageCtl.ShowX(msgResource,
 					Resources.MsgQueryAbort_IsExecutingCaption,
@@ -593,7 +593,7 @@ public sealed class AuxilliaryDocData : IDisposable
 
 			if (!inAutomation)
 			{
-				RdtManager.ShowWindowFrameAsyeu(_DocCookie);
+				RdtManager.ShowWindowFrameEui(_DocCookie);
 
 				msgResource ??= Resources.MsgQueryAbort_UncommittedTransactionsClose;
 
@@ -892,7 +892,7 @@ public sealed class AuxilliaryDocData : IDisposable
 		}
 
 
-		Diag.OutputPaneWriteLineAsyui(msg, true);
+		Diag.OutputPaneWriteLineAsyup(msg, true);
 
 		return isUnlocked;
 	}
@@ -935,7 +935,7 @@ public sealed class AuxilliaryDocData : IDisposable
 
 
 
-	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
+	private async Task<bool> OnQueryExecutionCompletedEuiAsync(object sender, ExecutionCompletedEventArgs args)
 	{
 		// if (args.CancelToken.Cancelled())
 		//	return;

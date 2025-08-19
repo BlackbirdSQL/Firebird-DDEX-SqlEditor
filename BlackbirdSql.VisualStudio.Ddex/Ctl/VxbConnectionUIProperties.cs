@@ -132,7 +132,7 @@ public class VxbConnectionUIProperties : VxbConnectionProperties
 	{
 		try
 		{
-			Evs.Trace(GetType(), nameof(Parse));
+			// Evs.Trace(GetType(), nameof(Parse));
 
 			lock (_LockObject)
 			{

@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Threading.Tasks;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Sys.Ctl;
 using BlackbirdSql.Sys.Enums;
@@ -15,6 +16,7 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.LanguageServer.Client;
 
 
 
@@ -96,7 +98,7 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 	// ---------------------------------------------------------------------------------
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions, string[] properties, object[] parameters)
 	{
-		Evs.Trace(GetType(), nameof(SelectObjects), $"typeName: {typeName}.");
+		// Evs.Trace(GetType(), nameof(SelectObjects), $"typeName: {typeName}.");
 
 
 		try
@@ -143,7 +145,9 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 			{
 				connectionCreated = true;
 				connection = (DbConnection)NativeDb.CreateDbConnection(Site.DecryptedConnectionString());
-				connection.Open();
+				// Evs.Debug(GetType(), "SelectObjects", $"DbConnection.Open:\nConnectionString: {connection.ConnectionString}");
+				connection.OpenDb();
+
 			}
 
 			// Evs.Trace(GetType(), nameof(SelectObjects), "Site type: {0}", Site.GetType().FullName);
@@ -330,7 +334,8 @@ public class VxbObjectSelectorRoot : DataObjectSelector
 			try
 			{
 				connection.Close();
-				connection.Open();
+				// Evs.Debug(GetType(), "RetrieveValue", $"DbConnection.Open:\nConnectionString: {connection.ConnectionString}");
+				connection.OpenDb();
 			}
 			catch (Exception ex)
 			{

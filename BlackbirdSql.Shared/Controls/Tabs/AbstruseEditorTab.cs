@@ -53,6 +53,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	private bool _Showing;
 	private bool _Visible;
 	private bool _IsActive;
+	private bool _IsClosed;
 	private Rectangle _Bounds;
 	private Panel _ParentPanel;
 	private ITrackSelection _TrackSelection;
@@ -211,7 +212,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	public bool IsVisible => _Visible;
 
-	public bool IsClosed { get; private set; }
+	public bool IsClosed => _IsClosed;
 
 	public bool TabButtonVisible
 	{
@@ -657,7 +658,7 @@ public abstract class AbstruseEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		// Evs.Trace(GetType(), nameof(OnClose));
 
-		IsClosed = true;
+		_IsClosed = true;
 		if (_CurrentFrame != null)
 		{
 			Diag.ThrowIfNotOnUIThread();

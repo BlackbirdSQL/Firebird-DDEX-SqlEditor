@@ -717,7 +717,8 @@ public class ConnectionCsb : Csb, IBsConnectionCsb
 
 		try
 		{
-			conn.Open();
+			// Evs.Debug(GetType(), "Test", $"IDbConnection.OpenDb:\nConnectionString: {conn.ConnectionString}");
+			conn.OpenDb();
 			conn.Close();
 		}
 		catch (Exception ex)

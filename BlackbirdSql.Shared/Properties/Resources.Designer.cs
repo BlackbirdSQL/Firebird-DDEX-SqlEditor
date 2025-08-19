@@ -29,7 +29,7 @@ namespace BlackbirdSql.Shared.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public Resources() {
+        internal Resources() {
         }
         
         /// <summary>
@@ -467,11 +467,11 @@ namespace BlackbirdSql.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: already storing data..
+        ///   Looks up a localized string similar to Invalid start sequence: Already storing data in {0}..
         /// </summary>
-        internal static string ExceptionStorageAlreadyStoring {
+        internal static string ExceptionStartAlreadyStoring {
             get {
-                return ResourceManager.GetString("ExceptionStorageAlreadyStoring", resourceCulture);
+                return ResourceManager.GetString("ExceptionStartAlreadyStoring", resourceCulture);
             }
         }
         
@@ -669,6 +669,15 @@ namespace BlackbirdSql.Shared.Properties {
         internal static string NewQueryBaseName {
             get {
                 return ResourceManager.GetString("NewQueryBaseName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not supported.
+        /// </summary>
+        internal static string NotSupported {
+            get {
+                return ResourceManager.GetString("NotSupported", resourceCulture);
             }
         }
         

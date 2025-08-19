@@ -259,8 +259,8 @@ Statement #{0} ({1} row(s) selected, {2} in total)
   <data name="ExceptionSqlExecutionModeChangeFailed" xml:space="preserve">
     <value>Execution mode cannot be changed when query is executing</value>
   </data>
-  <data name="ExceptionStorageAlreadyStoring" xml:space="preserve">
-    <value>Invalid calling sequence: already storing data.</value>
+  <data name="ExceptionStartAlreadyStoring" xml:space="preserve">
+    <value>Invalid start sequence: Already storing data in {0}.</value>
   </data>
   <data name="ExceptionStorageNoReader" xml:space="preserve">
     <value>Object is not initialized with the reader.</value>
@@ -332,6 +332,9 @@ Statement #{0} ({1} row(s) selected, {2} in total)
   </data>
   <data name="NewQueryBaseName" xml:space="preserve">
     <value>NewQuery</value>
+  </data>
+  <data name="NotSupported" xml:space="preserve">
+    <value>Not supported</value>
   </data>
   <data name="QueryBatchExecCompleted" xml:space="preserve">
     <value>Batch execution completed {0} times.</value>

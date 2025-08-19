@@ -117,7 +117,7 @@ internal class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerE
 
 
 		if (identifierList != null)
-			identifierArray = new List<string>(identifierList);
+			identifierArray = [.. identifierList];
 
 
 		string mkDocument = Moniker.BuildDocumentMoniker(node, ref identifierArray, targetType);
@@ -325,7 +325,7 @@ internal class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerE
 		Csb csb = datasetKey != null ? RctManager.CloneRegistered(datasetKey, EnRctKeyType.DatasetKey) : null;
 
 		IList<string> identifierList = [baseName];
-		IList<string> identifierArray = new List<string>(identifierList); 
+		IList<string> identifierArray = [.. identifierList]; 
 
 		// Evs.Trace(typeof(DesignerExplorerServices), nameof(OpenNewQueryEditor), "csa.DataSource: {0}, csa.Database: {1}", csa.DataSource, csa.Database);
 
@@ -464,15 +464,15 @@ internal class DesignerExplorerServices : AbstractDesignerServices, IBsDesignerE
 		{
 			CommandExecuteQuery command = new (currentTabbedEditor);
 
-			_ = Task.Run(() => OnSqlQueryLoadedAsync(command, 50));
+			_ = Task.Run(() => OnSqlQueryLoadedEuiAsync(command, 50));
 		}
 	}
 
 
 
-	private async Task<bool> OnSqlQueryLoadedAsync(IBsCommand command, int delay)
+	private async Task<bool> OnSqlQueryLoadedEuiAsync(IBsCommand command, int delay)
 	{
-		// Evs.Trace(GetType(), nameof(OnSqlQueryLoadedAsync));
+		// Evs.Trace(GetType(), nameof(OnSqlQueryLoadedEuiAsync));
 
 		// Give editor time to breath.
 		if (delay > 0)

@@ -30,7 +30,7 @@ internal class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridE
 
 	public bool WantMouseClick => true;
 
-	internal new decimal Increment
+	public new decimal Increment
 	{
 		get
 		{
@@ -42,7 +42,7 @@ internal class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridE
 		}
 	}
 
-	internal new decimal Minimum
+	public new decimal Minimum
 	{
 		get
 		{
@@ -54,7 +54,7 @@ internal class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridE
 		}
 	}
 
-	internal new decimal Maximum
+	public new decimal Maximum
 	{
 		get
 		{
@@ -90,7 +90,7 @@ internal class EmbeddedSpinBox : NumericUpDown, IBsGridEmbeddedControl, IBsGridE
 		}
 	}
 
-	internal new bool Enabled
+	public new bool Enabled
 	{
 		get
 		{

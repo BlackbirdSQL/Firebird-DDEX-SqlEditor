@@ -157,7 +157,7 @@ internal class Node : Microsoft.AnalysisServices.Graphing.Node
 		}
 	}
 
-	internal new ChildrenCollection Children => children;
+	public new ChildrenCollection Children => children;
 
 	internal BlackbirdSql.Shared.Controls.Graphing.Node Parent
 	{

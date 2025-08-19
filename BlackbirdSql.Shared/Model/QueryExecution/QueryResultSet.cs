@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QEResultSet
 
 using System;
 using System.Collections.Specialized;
@@ -387,7 +385,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 			Diag.ThrowException(ex);
 		}
 
-		if (!_QeStorage.IsClosed())
+		if (!_QeStorage.IsClosed)
 		{
 			Exception ex2 = new InvalidOperationException(Resources.ExceptionResultSetAlreadyStoring);
 			Diag.ThrowException(ex2);
@@ -414,7 +412,7 @@ public sealed class QueryResultSet : IDisposable, IBsGridStorage
 			Diag.ThrowException(ex);
 		}
 
-		if (!_QeStorage.IsClosed())
+		if (!_QeStorage.IsClosed)
 		{
 			Exception ex2 = new InvalidOperationException(Resources.ExceptionResultSetAlreadyStoring);
 			Diag.ThrowException(ex2);

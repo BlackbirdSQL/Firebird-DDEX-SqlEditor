@@ -33,6 +33,7 @@
 		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
 		<Compile Include="Ctl\Config\PersistentSettings.cs" />
 		<Compile Include="Ctl\Diagnostics\AbstractEvs.cs" />
+		<Compile Include="Ctl\Config\AbstractPersistentSettings.cs" />
 		<Compile Include="Enums\EnEventLevel.cs" />
 		<Compile Include="Enums\EnSourceLevels.cs" />
 		<Compile Include="Enums\EnDatabaseEngineEdition.cs" />
@@ -41,9 +42,9 @@
 		<Compile Include="Interfaces\SBsNativeDbException.cs" />
 		<Compile Include="Interfaces\SBsNativeDbServerExplorerService.cs" />
 		<Compile Include="Properties\AttributeResources.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>AttributeResources.resx</DependentUpon>
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>AttributeResources.resx</DependentUpon>
 		</Compile>
 		<Compile Include="Enums\EnEvsId.cs" />
 		<Compile Include="Ctl\Diagnostics\EvsProvider.cs" />
@@ -166,8 +167,8 @@
 			<DependentUpon>PrivacyConfirmationDialog.cs</DependentUpon>
 		</EmbeddedResource>
 		<EmbeddedResource Include="Properties\AttributeResources.resx">
-		  <Generator>ResXFileCodeGenerator</Generator>
-		  <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 		<EmbeddedResource Include="Properties\ControlsResources.resx">
 			<SubType>Designer</SubType>
@@ -181,21 +182,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Resources\" />
+		<Folder Include="Resources\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.10.40170" />
-	  <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="17.11.40252" />
-	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.10.40171" />
-	  <PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers" Version="17.7.41">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.10.40170" />
+		<PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="17.14.40254" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers" Version="17.7.79">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="System.Diagnostics.Tracing" />
+		<Reference Include="System.Diagnostics.Tracing" />
 	</ItemGroup>
 
 </Project>

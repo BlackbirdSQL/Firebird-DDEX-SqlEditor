@@ -266,7 +266,7 @@
 
 
 		<!-- Sequence -->
-		<Type name="Sequence" preferredOrdering="SEQUENCE_GENERATOR">
+		<Type name="Sequence" preferredOrdering="IS_SYSTEM_FLAG DESC, SEQUENCE_GENERATOR">
 			<Identifier>
 				<Part name="GENERATOR_CATALOG" type="System.String" />
 				<Part name="GENERATOR_SCHEMA" type="System.String" />
@@ -334,7 +334,7 @@
 
 
 		<!-- StoredProcedure -->
-		<Type name="StoredProcedure" preferredOrdering="PROCEDURE_NAME">
+		<Type name="StoredProcedure" preferredOrdering="IS_SYSTEM_FLAG DESC, PROCEDURE_NAME">
 			<Identifier>
 				<Part name="PROCEDURE_CATALOG" type="System.String" />
 				<Part name="PROCEDURE_SCHEMA" type="System.String" />
@@ -365,7 +365,7 @@
 
 
 		<!-- Function -->
-		<Type name="Function" preferredOrdering="FUNCTION_NAME">
+		<Type name="Function" preferredOrdering="IS_SYSTEM_FLAG DESC, FUNCTION_NAME">
 			<Identifier>
 				<Part name="FUNCTION_CATALOG" type="System.String" />
 				<Part name="FUNCTION_SCHEMA" type="System.String" />

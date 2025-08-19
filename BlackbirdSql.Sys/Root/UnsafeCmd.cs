@@ -19,8 +19,6 @@ using IOleCommandTarget = Microsoft.VisualStudio.OLE.Interop.IOleCommandTarget ;
 
 namespace BlackbirdSql;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must ensure calls to UnsafeCmd are safe.")]
-
 
 // =========================================================================================================
 //												UnsafeCmd Class

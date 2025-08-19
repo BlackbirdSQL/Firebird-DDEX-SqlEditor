@@ -59,7 +59,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			else
 				_IntelliSenseEnabled = auxDocData.IntellisenseActive;
 
-			auxDocData.QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
+			auxDocData.QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedEuiAsync;
 			auxDocData.QryMgr.BatchExecutionCompletedEventAsync += OnBatchExecutionCompletedAsync;
 		}
 
@@ -85,7 +85,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			if (auxDocData != null)
 			{
 				auxDocData.QryMgr.BatchExecutionCompletedEventAsync -= OnBatchExecutionCompletedAsync;
-				auxDocData.QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
+				auxDocData.QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedEuiAsync;
 			}
 		}
 	}
@@ -258,12 +258,14 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 			try
 			{
 				ManualResetEvent buildEvent = metadataProviderProvider.BuildEvent;
-				Evs.Trace(GetType(), nameof(ExecuteParseRequest), "waiting for metadata provider...");
+
+				// Evs.Trace(GetType(), nameof(ExecuteParseRequest), "waiting for metadata provider...");
 
 				if (buildEvent.WaitOne(2000))
 				{
 					binder = metadataProviderProvider.Binder;
-					Evs.Trace(GetType(), nameof(ExecuteParseRequest), "...done waiting for metadata");
+
+					// Evs.Trace(GetType(), nameof(ExecuteParseRequest), "...done waiting for metadata");
 				}
 				else
 				{
@@ -508,7 +510,7 @@ public sealed class LsbSource : Microsoft.VisualStudio.Package.Source, IVsUserDa
 
 
 
-	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
+	private async Task<bool> OnQueryExecutionCompletedEuiAsync(object sender, ExecutionCompletedEventArgs args)
 	{
 		bool result = true;
 

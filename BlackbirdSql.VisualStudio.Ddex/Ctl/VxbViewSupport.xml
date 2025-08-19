@@ -122,6 +122,7 @@
 							<Selection type="StoredProcedure" restrictions="null,null">
 								<SelectionNode nodeId="Procedure">
 									<DisplayName>{Procedure.PROCEDURE_NAME}</DisplayName>
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.SystemProcedure.ico" when="NOT ({Procedure.IS_SYSTEM_FLAG} = 0)" assembly="" />
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Procedure.ico" when="NOT ({Procedure.IS_SYSTEM_FLAG} = 99)" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_StoredProcedure" />
@@ -222,6 +223,7 @@
 							<Selection type="Function" restrictions="null,null">
 								<SelectionNode nodeId="Function">
 									<DisplayName>{Function.FUNCTION_NAME}</DisplayName>
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.SystemFunction.ico" when="NOT ({Function.IS_SYSTEM_FLAG} = 0)" assembly="" />
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Function.ico" when="NOT ({Function.IS_SYSTEM_FLAG} = 99)" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Function" />
@@ -285,6 +287,7 @@
 							<Selection type="Sequence" restrictions="null,null">
 								<SelectionNode nodeId="Sequence">
 									<DisplayName>{Sequence.SEQUENCE_GENERATOR}</DisplayName>
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.IdentitySystemColumn.ico" when="NOT ({Sequence.IS_SYSTEM_FLAG} = 0)" assembly="" />
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.IdentityColumn.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Sequence" />

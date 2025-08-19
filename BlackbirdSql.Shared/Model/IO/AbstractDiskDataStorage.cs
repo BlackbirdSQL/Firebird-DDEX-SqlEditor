@@ -19,6 +19,34 @@ namespace BlackbirdSql.Shared.Model.IO;
 
 internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataStorage, IDisposable
 {
+	public AbstractDiskDataStorage()
+	{
+		_RowCount = 0L;
+		_CurrentOffset = 0L;
+		_IsWriting = false;
+
+		_AsyncWorkerCancelTokenSource?.Dispose();
+		_AsyncWorkerCancelTokenSource = null;
+		_AsyncWorkerTask = null;
+
+		_OffsetsArray = new ArrayList64();
+		_ColumnInfoArray = [];
+		_DiskDataEntity = new StorageDataEntity();
+	}
+
+	public virtual void Dispose()
+	{
+		StopStoringData();
+		if (_FsWriter != null)
+		{
+			_FsWriter.Dispose();
+			_FsWriter = null;
+			File.Delete(_FileName);
+		}
+	}
+
+
+
 	protected string _FileName;
 
 	protected long _RowCount;
@@ -33,7 +61,7 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 
 	protected IBsFileStreamWriter _FsWriter;
 
-	protected bool _DataStorageEnabled;
+	protected bool _IsWriting;
 
 	protected EnLauncherPayloadLaunchState _AsyncWorkerState = EnLauncherPayloadLaunchState.Inactive;
 
@@ -49,6 +77,9 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 	protected bool _HasBlobs;
 
 	private readonly StorageDataEntity _DiskDataEntity;
+
+	public bool IsClosed => !_IsWriting;
+
 
 	public int MaxCharsToStore
 	{
@@ -98,31 +129,6 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 		return new SortView(GetStorageView());
 	}
 
-	public AbstractDiskDataStorage()
-	{
-		_RowCount = 0L;
-		_CurrentOffset = 0L;
-		_DataStorageEnabled = false;
-
-		_AsyncWorkerCancelTokenSource?.Dispose();
-		_AsyncWorkerCancelTokenSource = null;
-		_AsyncWorkerTask = null;
-
-		_OffsetsArray = new ArrayList64();
-		_ColumnInfoArray = [];
-		_DiskDataEntity = new StorageDataEntity();
-	}
-
-	public virtual void Dispose()
-	{
-		StopStoringData();
-		if (_FsWriter != null)
-		{
-			_FsWriter.Dispose();
-			_FsWriter = null;
-			File.Delete(_FileName);
-		}
-	}
 
 	public virtual async Task<bool> InitStorageAsync(IDataReader storageReader, CancellationToken cancelToken)
 	{
@@ -184,7 +190,7 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 				throw new ArgumentException(Resources.ExceptionColumnsDoNotMatch);
 			}
 		}
-		if (_DataStorageEnabled)
+		if (_IsWriting)
 		{
 			throw new Exception(Resources.ExceptionCannotAddReaderWhenStoringData);
 		}
@@ -195,10 +201,10 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 
 	public async Task<bool> StartStoringDataAsync(CancellationToken cancelToken)
 	{
-		if (_DataStorageEnabled)
-			throw new Exception(Resources.ExceptionAlreadyStoringData);
+		if (_IsWriting)
+			throw new Exception(Resources.ExceptionStartAlreadyStoring.Fmt(nameof(AbstractDiskDataStorage)));
 
-		_DataStorageEnabled = true;
+		_IsWriting = true;
 
 
 		_AsyncWorkerCancelToken = default;
@@ -223,7 +229,7 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 
 	public virtual void StopStoringData()
 	{
-		_DataStorageEnabled = false;
+		_IsWriting = false;
 
 		if (_AsyncWorkerTask == null || _AsyncWorkerTask.IsCompleted
 			|| _AsyncWorkerCancelTokenSource == null
@@ -239,17 +245,13 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 
 	public async Task<bool> StoreDataAsync(CancellationToken cancelToken)
 	{
-		if (_DataStorageEnabled)
-		{
+		if (_IsWriting)
 			throw new InvalidOperationException(Resources.ExceptionAlreadyStoringData);
-		}
 
 		if (_StorageReader == null)
-		{
 			throw new InvalidOperationException(Resources.ExceptionStorageNotInitialized);
-		}
 
-		_DataStorageEnabled = true;
+		_IsWriting = true;
 
 		await SerializeDataAsync(cancelToken);
 
@@ -264,7 +266,7 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 
 		object[] array = new object[_ColumnInfoArray.Count];
 
-		while (_DataStorageEnabled && !cancelToken.Cancelled() && await _StorageReader.ReadAsync(cancelToken))
+		while (_IsWriting && !cancelToken.Cancelled() && await _StorageReader.ReadAsync(cancelToken))
 		{ 
 			_OffsetsArray.Add(_CurrentOffset);
 			if (!_HasBlobs)
@@ -299,7 +301,7 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 						}
 						else if (columnInfo.IsXml)
 						{
-							array[i] = _StorageReader.GetXmlWithMaxCapacity(i, MaxXmlCharsToStore, () => _DataStorageEnabled);
+							array[i] = _StorageReader.GetXmlWithMaxCapacity(i, MaxXmlCharsToStore, () => _IsWriting);
 						}
 						else
 						{
@@ -580,7 +582,8 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 
 			await OnStorageNotifyAsync(_RowCount, false, cancelToken);
 		}
-		_DataStorageEnabled = false;
+
+		_IsWriting = false;
 
 		if (cancelToken.Cancelled())
 			return false;
@@ -617,10 +620,6 @@ internal abstract class AbstractDiskDataStorage : IBsDiskDataStorage, IBsDataSto
 		return (IBsColumnInfo)_ColumnInfoArray[index];
 	}
 
-	public bool IsClosed()
-	{
-		return !_DataStorageEnabled;
-	}
 
 	protected virtual async Task<bool> OnStorageNotifyAsync(long rowCount, bool storedAllData, CancellationToken cancelToken)
 	{

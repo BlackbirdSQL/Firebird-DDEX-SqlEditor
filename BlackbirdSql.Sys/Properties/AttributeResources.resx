@@ -142,7 +142,7 @@
     <value>The database character set encoding.</value>
   </data>
   <data name="PropertyDescriptionClientLibrary" xml:space="preserve">
-    <value>The client library for embedded databases.</value>
+    <value>The client library for embedded databases. Built in engines include fbembed for version 3.0 and fbembed25 for version 2.5.</value>
   </data>
   <data name="PropertyDescriptionCommandTimeout" xml:space="preserve">
     <value>The timeout (in seconds) to wait for a command to complete execution or zero for no limit.</value>

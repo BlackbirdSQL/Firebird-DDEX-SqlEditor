@@ -181,11 +181,9 @@ internal abstract class AbstractPackageController : AbstrusePackageController
 	}
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public override DTE2 Dte2 => (DTE2)Dte;
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public override bool IsCmdLineBuild
 	{
 		get
@@ -211,7 +209,6 @@ internal abstract class AbstractPackageController : AbstrusePackageController
 	}
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public override bool IsToolboxInitialized
 	{
 		get
@@ -251,7 +248,6 @@ internal abstract class AbstractPackageController : AbstrusePackageController
 	public override IAsyncServiceContainer Services => (IAsyncServiceContainer)_PackageInstance;
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
 	public override bool SolutionClosing
 	{
 		get
@@ -277,7 +273,6 @@ internal abstract class AbstractPackageController : AbstrusePackageController
 	}
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public override Solution SolutionObject => !IdeShutdownState ? Dte.Solution : null;
 
 
@@ -322,7 +317,6 @@ internal abstract class AbstractPackageController : AbstrusePackageController
 		??= GetService<SVsTaskStatusCenterService, IVsTaskStatusCenterService>();
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	public override uint ToolboxCmdUICookie
 	{
 		get
@@ -360,7 +354,6 @@ internal abstract class AbstractPackageController : AbstrusePackageController
 
 
 
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must check")]
 	private void EnsureMonitorSelection()
 	{
 		if (_MonitorSelection != null)

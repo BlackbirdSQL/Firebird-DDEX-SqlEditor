@@ -234,12 +234,12 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 			CreateHandle();
 		}
 
-		_ = Task.Run(ScrollTextViewToMaxScrollUnitAsync);
+		_ = Task.Run(ScrollTextViewToMaxScrollUnitEuiAsync);
 	}
 
 
 
-	protected async Task<bool> ScrollTextViewToMaxScrollUnitAsync()
+	protected async Task<bool> ScrollTextViewToMaxScrollUnitEuiAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -261,12 +261,12 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 			CreateHandle();
 		}
 
-		_ = Task.Run(() => ScrollTextViewToTopAsync());
+		_ = Task.Run(() => ScrollTextViewToTopEuiAsync());
 	}
 
 
 
-	protected async Task<bool> ScrollTextViewToTopAsync()
+	protected async Task<bool> ScrollTextViewToTopEuiAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 

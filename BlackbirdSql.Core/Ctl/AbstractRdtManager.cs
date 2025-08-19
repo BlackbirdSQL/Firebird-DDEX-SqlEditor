@@ -452,7 +452,6 @@ internal abstract class AbstractRdtManager : IDisposable
 
 
 
-	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 	protected List<string> GetDirtyFiles(Predicate<string> shouldHandle)
 	{
 		Cmd.CheckForNullReference((object)shouldHandle, "shouldHandle");

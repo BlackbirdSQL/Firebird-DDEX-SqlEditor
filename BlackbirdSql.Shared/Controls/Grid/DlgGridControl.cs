@@ -514,7 +514,7 @@ internal class DlgGridControl : GridControl, IBsDlgGridControl, IBsGridControl
 
 	private GridCellCollection GetRowInfoInt(int rowNum)
 	{
-		return new GridCellCollection(GetStorageRowAsGridCells(rowNum));
+		return [.. GetStorageRowAsGridCells(rowNum)];
 	}
 
 	private void SetRowInfoInt(int rowNum, GridCellCollection row)

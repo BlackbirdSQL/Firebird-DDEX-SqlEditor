@@ -20,14 +20,18 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
+using Microsoft.VisualStudio.LanguageServer.Client;
+using static System.ComponentModel.Design.ObjectSelectorEditor;
 
 
 
@@ -38,14 +42,52 @@ internal abstract class AbstractDslSchema
 {
 	public AbstractDslSchema()
 	{
-		// Evs.Trace(GetType(), "AbstractDslSchema");
 	}
+
+
+
+	#region Fields
+
+
+	private string _Authentication = null;
+	private List<string> _Columns = null;
+	private int _Dialect = 3;
+	private int _MajorVersionNumber = 3;
+
+
+	#endregion
+
+
+
+
+
+	#region Properties
+
+	protected string Authentication => _Authentication;
+	protected int Dialect => _Dialect;
+
+
+	/// <summary>
+	/// The major version of the connected Firebird server
+	/// </summary>
+	protected int MajorVersionNumber => _MajorVersionNumber;
+
+
+	#endregion
+
+
+
 
 	#region Abstract Methods
 
+	protected virtual void InitializeParameters(IDbConnection connection) { }
 	protected abstract StringBuilder GetCommandText(string[] restrictions);
 
 	#endregion
+
+
+
+
 
 	#region Methods
 
@@ -88,6 +130,8 @@ internal abstract class AbstractDslSchema
 		if (cancelToken.Cancelled())
 			return dataTable;
 
+		// Evs.Trace(GetType(), nameof(GetSchemaAsync), $"Command: {command.CommandText}");
+
 		try
 		{
 			using (FbDataAdapter adapter = new (command))
@@ -100,7 +144,7 @@ internal abstract class AbstractDslSchema
 				{
 					if (cancelToken.Cancelled())
 						return dataTable;
-					Diag.Ex(ex, collectionName);
+					Diag.Ex(ex, $"Collection: {GetType()}::{collectionName}");
 					throw;
 				}
 			}
@@ -133,9 +177,11 @@ internal abstract class AbstractDslSchema
 	{
 		// Evs.Trace(GetType(), "BuildCommand", "collectionName: {0}", collectionName);
 
-		FbConnection dbConnection = connection as FbConnection;
 
-		GetServerProperties(dbConnection);
+		IntializeServerProperties(connection);
+		InitializeParameters(connection);
+
+		FbConnection dbConnection = connection as FbConnection;
 
 		string schemaCollection;
 
@@ -184,13 +230,15 @@ internal abstract class AbstractDslSchema
 		return command;
 	}
 
+
 	protected async Task<FbCommand> BuildCommandAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken)
 	{
 		// Evs.Trace(GetType(), "BuildCommandAsync", "collectionName: {0}", collectionName);
 
-		FbConnection dbConnection = connection as FbConnection;
+		IntializeServerProperties(connection);
+		InitializeParameters(connection);
 
-		GetServerProperties(dbConnection);
+		FbConnection dbConnection = connection as FbConnection;
 
 		string schemaCollection;
 
@@ -241,6 +289,67 @@ internal abstract class AbstractDslSchema
 
 
 
+	protected bool HasColumn(string column)
+	{
+		return _Columns == null || _Columns.Contains(column);
+	}
+
+
+
+	protected List<string> InitializeColumnsList(IDbConnection connection, string tableName, bool assignGlobal = true)
+	{
+		FbConnection dbConnection = connection as FbConnection;
+		DataTable dataTable = new(tableName);
+		FbCommand command = new($"SELECT RDB$FIELD_NAME AS COLUMN_NAME FROM RDB$RELATION_FIELDS WHERE RDB$RELATION_NAME = '{tableName}'", dbConnection);
+
+		List<string> columns = [];
+
+		if (assignGlobal)
+		{
+			if (_Columns != null)
+				return _Columns;
+			_Columns = [];
+		}
+
+		try
+		{
+			using (FbDataAdapter adapter = new(command))
+			{
+				try
+				{
+					adapter.Fill(dataTable);
+				}
+				catch (Exception ex)
+				{
+					Diag.Ex(ex, $"Table: {GetType()}::{tableName}");
+					throw;
+				}
+			}
+		}
+		finally
+		{
+			command.Dispose();
+		}
+
+		string str = $"Columns for {tableName}:\n";
+		foreach (DataRow row in dataTable.Rows)
+		{
+			columns.Add(row["COLUMN_NAME"].ToString().Trim());
+			str += row["COLUMN_NAME"].ToString().Trim() + "; ";
+		}
+
+		// Evs.Trace(GetType(), nameof(GetCommandText), str);
+
+		if (assignGlobal)
+			_Columns = columns;
+
+		return columns;
+	}
+
+
+
+
+
 	protected virtual void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
 	{ }
 
@@ -263,20 +372,24 @@ internal abstract class AbstractDslSchema
 	/// Determines the major version number from the Serverversion on the inner connection.
 	/// </summary>
 	/// <param name="connection">an open connection, which is used to determine the version number of the connected database server</param>
-	private void GetServerProperties(FbConnection connection)
+	private void IntializeServerProperties(IDbConnection connection)
 	{
-		Version serverVersion = FbServerProperties.ParseServerVersion(connection.ServerVersion);
-		MajorVersionNumber = serverVersion.Major;
+		FbConnection dbConnection = connection as FbConnection;
+		Version serverVersion = FbServerProperties.ParseServerVersion(dbConnection.ServerVersion);
+		_MajorVersionNumber = serverVersion.Major;
 
 		try
 		{
+			FbConnectionStringBuilder csb = new(connection.ConnectionString);
+			_Dialect = csb.Dialect;
+
 			FbServerProperties serverProps = new(connection.ConnectionString);
 
 			// int isccode = IscCodes.isc_spb_auth_plugin_name;
 
 			List<object> list = null; // (List<object>)Reflect.InvokeAmbiguousMethod(serverProps, "GetInfo", BindingFlags.Default, [isccode]);
 
-			Authentication = list == null ? "Legacy_UserManager" : (string)list[0];
+			_Authentication = list == null ? "Legacy_UserManager" : (string)list[0];
 		}
 		catch (Exception ex)
 		{
@@ -284,7 +397,7 @@ internal abstract class AbstractDslSchema
 			throw;
 		}
 
-		// Evs.Debug(GetType(), nameof(GetServerProperties), $"Authentication: {Authentication}.");
+		// Evs.Debug(GetType(), nameof(IntializeServerProperties), $"Authentication: {Authentication}.");
 	}
 
 
@@ -338,20 +451,6 @@ internal abstract class AbstractDslSchema
 		schema.EndLoadData();
 		schema.AcceptChanges();
 	}
-
-	#endregion
-
-	#region Properties
-
-
-	protected string Authentication { get; private set; }
-
-
-	/// <summary>
-	/// The major version of the connected Firebird server
-	/// </summary>
-	protected int MajorVersionNumber { get; private set; }
-
 
 	#endregion
 

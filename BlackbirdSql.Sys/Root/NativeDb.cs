@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Sys;
 using BlackbirdSql.Sys.Ctl;
@@ -230,7 +231,6 @@ internal static class NativeDb
 	/// If the project argument is supplied, only that project is targeted.
 	/// </summary>
 	// -----------------------------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller has checked.")]
 	private static List<Project> ReindexEntityFrameworkAssemblies(Project project = null)
 	{
 		string projectName = project != null
@@ -249,7 +249,7 @@ internal static class NativeDb
 			if (projects.Count == 0)
 				return projects;
 
-			Evs.Trace(typeof(NativeDb), nameof(ReindexEntityFrameworkAssemblies), $"Project count: {projects.Count}.");
+			// Evs.Trace(typeof(NativeDb), nameof(ReindexEntityFrameworkAssemblies), $"Project count: {projects.Count}.");
 
 			ServiceProvider serviceProvider = null;
 			DynamicTypeService dynamicTypeService = null;
@@ -353,7 +353,7 @@ internal static class NativeDb
 
 	// -----------------------------------------------------------------------------------------------------
 	/// <summary>
-	/// [Async on UI thread]: Reindex the EntityFramwork ProviderService type in the TypeResolutionService. 
+	/// [Launch async on UI thread]: Reindex the EntityFramwork ProviderService type in the TypeResolutionService. 
 	/// </summary>
 	// -----------------------------------------------------------------------------------------------------
 	internal static void ReindexEntityFrameworkAssembliesAsyui(Project project = null)
@@ -415,7 +415,6 @@ internal static class NativeDb
 	/// Currently diabled. Reindexes the Entity Framework VersioningFacade.DependencyResolver.
 	/// </summary>
 	// -----------------------------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller has checked.")]
 	internal static bool ReindexVersioningFacade(Project project, Reference efReference = null)
 	{
 		// TODO: Always exits because reindex still results in edmx "Create database" failure.

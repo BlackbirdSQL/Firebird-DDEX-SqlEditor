@@ -15,7 +15,10 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System.Collections.Generic;
+using System.Data;
 using System.Text;
+using FirebirdSql.Data.FirebirdClient;
 
 
 
@@ -28,6 +31,12 @@ internal class DslFunctions : AbstractDslSchema
 	{
 	}
 
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		InitializeColumnsList(connection, "RDB$FUNCTIONS");
+	}
+
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
@@ -37,26 +46,31 @@ internal class DslFunctions : AbstractDslSchema
 		StringBuilder sql = new();
 		StringBuilder where = new();
 
-		sql.AppendFormat(
-			@"SELECT
+
+		string functionSource = HasColumn("RDB$FUNCTION_SOURCE") && HasColumn("RDB$FUNCTION_BLR")
+			? @"					(CASE WHEN RDB$FUNCTION_SOURCE IS NULL AND RDB$FUNCTION_BLR IS NOT NULL THEN
+						 cast(RDB$FUNCTION_BLR as blob sub_type 1)
+					ELSE
+						 RDB$FUNCTION_SOURCE
+					END)"
+			: "''";
+		string orderBy = HasColumn("RDB$PACKAGE_NAME") ? "PACKAGE_NAME, FUNCTION_NAME" : "FUNCTION_NAME";
+		string packageName = HasColumn("RDB$PACKAGE_NAME") ? "RDB$PACKAGE_NAME" : "(CASE WHEN RDB$SYSTEM_FLAG <> 1 THEN 'USER' ELSE 'SYSTEM' END)";
+
+		sql.Append($@"SELECT
 					null AS FUNCTION_CATALOG,
 					null AS FUNCTION_SCHEMA,
-					rdb$function_name AS FUNCTION_NAME,
-					(CASE WHEN rdb$system_flag <> 1 THEN 0 ELSE 1 END) AS IS_SYSTEM_FLAG,
-					rdb$function_type AS FUNCTION_TYPE,
-					rdb$query_name AS QUERY_NAME,
-					rdb$module_name AS FUNCTION_MODULE_NAME,
-					rdb$entrypoint AS FUNCTION_ENTRY_POINT,
-					rdb$return_argument AS RETURN_ARGUMENT,
-					rdb$description AS DESCRIPTION,
-					(CASE WHEN rdb$function_source IS NULL AND rdb$function_blr IS NOT NULL THEN
-						 cast(rdb$function_blr as blob sub_type 1)
-					ELSE
-						 rdb$function_source
-					END) AS SOURCE,
-					{0} AS PACKAGE_NAME
-				FROM rdb$functions",
-			MajorVersionNumber >= 3 ? "rdb$package_name" : "(CASE WHEN rdb$system_flag <> 1 THEN 'USER' ELSE 'SYSTEM' END)");
+					RDB$FUNCTION_NAME AS FUNCTION_NAME,
+					(CASE WHEN RDB$SYSTEM_FLAG <> 1 THEN 0 ELSE 1 END) AS IS_SYSTEM_FLAG,
+					RDB$FUNCTION_TYPE AS FUNCTION_TYPE,
+					RDB$QUERY_NAME AS QUERY_NAME,
+					RDB$MODULE_NAME AS FUNCTION_MODULE_NAME,
+					RDB$ENTRYPOINT AS FUNCTION_ENTRY_POINT,
+					RDB$RETURN_ARGUMENT AS RETURN_ARGUMENT,
+					RDB$DESCRIPTION AS DESCRIPTION,
+					{functionSource} AS SOURCE,
+					{packageName} AS PACKAGE_NAME
+				FROM RDB$FUNCTIONS");
 
 		if (restrictions != null)
 		{
@@ -75,7 +89,7 @@ internal class DslFunctions : AbstractDslSchema
 			/* FUNCTION_NAME */
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
-				where.AppendFormat("rdb$function_name = @p{0}", index++);
+				where.Append($"RDB$FUNCTION_NAME = @p{index++}");
 			}
 
 			/* IS_SYSTEM_FLAG */
@@ -86,16 +100,18 @@ internal class DslFunctions : AbstractDslSchema
 					where.Append(" AND ");
 				}
 
-				where.AppendFormat("rdb$system_flag = @p{0}", index++);
+				where.Append($"RDB$SYSTEM_FLAG = @p{index++}");
 			}
 		}
 
 		if (where.Length > 0)
 		{
-			sql.AppendFormat(" WHERE {0} ", where.ToString());
+			sql.Append($" WHERE {where} ");
 		}
 
-		sql.Append(" ORDER BY PACKAGE_NAME, FUNCTION_NAME");
+		sql.Append($" ORDER BY {orderBy}");
+
+		// Evs.Trace(GetType(), nameof(GetCommandText), $"Sql: {sql}");
 
 		return sql;
 	}

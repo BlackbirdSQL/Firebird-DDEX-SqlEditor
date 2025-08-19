@@ -15,7 +15,9 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System.Data;
 using BlackbirdSql.Sys.Interfaces;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.Data.Model.Schema;
 
@@ -25,39 +27,47 @@ internal class DslProcedureParameters : DslColumns
 	public DslProcedureParameters() : base()
 	{
 		// Evs.Trace(GetType(), "DslProcedureParameters.DslProcedureParameters");
+	}
+
+
+
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		InitializeColumnsList(connection, "RDB$PROCEDURE_PARAMETERS");
+
 
 		string packageName;
 
 		if (MajorVersionNumber >= 3)
 		{
-			packageName = @"(CASE WHEN r.rdb$package_name IS NULL THEN
-				(CASE WHEN r.rdb$system_flag <> 1 THEN 'USER' ELSE 'SYSTEM' END)
+			packageName = @"(CASE WHEN r.RDB$PACKAGE_NAME IS NULL THEN
+				(CASE WHEN r.RDB$SYSTEM_FLAG <> 1 THEN 'USER' ELSE 'SYSTEM' END)
 			ELSE
-				r.rdb$package_name
+				r.RDB$PACKAGE_NAME
 			END)
 		END)";
 		}
 		else
 		{
-			packageName = "(CASE WHEN r.rdb$system_flag <> 1 THEN 'USER' ELSE 'SYSTEM' END)";
+			packageName = "(CASE WHEN r.RDB$SYSTEM_FLAG <> 1 THEN 'USER' ELSE 'SYSTEM' END)";
 		}
 
 		_ParentType = "StoredProcedure";
 		_ObjectType = "StoredProcedureParameter";
-		_ParentColumn = "r.rdb$procedure_name";
-		_ChildColumn = "r.rdb$parameter_name";
-		_GeneratorSelector = null;
-		_OrderingField = "r.rdb$parameter_type";
-		_FromClause = "rdb$procedure_parameters r";
+		_ParentColName = "r.RDB$PROCEDURE_NAME";
+		_ChildColName = "r.RDB$PARAMETER_NAME";
+		_GeneratorColName = null;
+		_OrderingColumn = "r.RDB$PARAMETER_TYPE";
+		_FromClause = "RDB$PROCEDURE_PARAMETERS r";
 
-		_RequiredColumns["ORDINAL_POSITION"] = "r.rdb$parameter_number";
+		_RequiredColumns["ORDINAL_POSITION"] = "r.RDB$PARAMETER_NUMBER";
 		// Direction 0: IN, 1: OUT, 3: IN/OUT, 6: RETVAL
-		_RequiredColumns["DIRECTION_FLAG"] = "CAST(r.rdb$parameter_type AS integer)";
+		_RequiredColumns["DIRECTION_FLAG"] = "CAST(r.RDB$PARAMETER_TYPE AS integer)";
 
 		_AdditionalColumns.Add("PROCEDURE_CATALOG", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("PROCEDURE_SCHEMA", new(null, "varchar(10)"));
-		_AdditionalColumns.Add("PROCEDURE_NAME", new("r.rdb$procedure_name", "varchar(50)"));
-		_AdditionalColumns.Add("PARAMETER_NAME", new("r.rdb$parameter_name", "varchar(50)"));
+		_AdditionalColumns.Add("PROCEDURE_NAME", new("r.RDB$PROCEDURE_NAME", "varchar(50)"));
+		_AdditionalColumns.Add("PARAMETER_NAME", new("r.RDB$PARAMETER_NAME", "varchar(50)"));
 		_AdditionalColumns.Add("PACKAGE_NAME", new(packageName, "varchar(10)"));
 
 	}

@@ -193,8 +193,7 @@ internal sealed class RdtManager : AbstractRdtManager
 	/// [Launch ensure UI thread]: Invalidates the document window's toolbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
-	internal static void InvalidateToolbarAsyeu(uint dwCookie)
+	internal static void InvalidateToolbarEui(uint dwCookie)
 	{
 		if (dwCookie == 0)
 			return;
@@ -207,7 +206,7 @@ internal sealed class RdtManager : AbstractRdtManager
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-				InvalidateToolbarImplAsyeu(dwCookie);
+				InvalidateToolbarImplEui(dwCookie);
 
 				return true;
 			});
@@ -216,7 +215,7 @@ internal sealed class RdtManager : AbstractRdtManager
 		}
 
 
-		InvalidateToolbarImplAsyeu(dwCookie);
+		InvalidateToolbarImplEui(dwCookie);
 	}
 
 
@@ -226,7 +225,7 @@ internal sealed class RdtManager : AbstractRdtManager
 	/// [Launch ensure UI thread]: Invalidates the document window's toolbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static void InvalidateToolbarImplAsyeu(uint dwCookie)
+	private static void InvalidateToolbarImplEui(uint dwCookie)
 	{
 		IVsWindowFrame frame = GetWindowFrame(dwCookie);
 
@@ -332,14 +331,14 @@ internal sealed class RdtManager : AbstractRdtManager
 	/// Invalidates the document window's toolbar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	internal static async Task InvalidateToolbarAsync(uint dwCookie)
+	internal static async Task InvalidateToolbarEuiAsync(uint dwCookie)
 	{
 		if (dwCookie == 0)
 			return;
 
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		InvalidateToolbarImplAsyeu(dwCookie);
+		InvalidateToolbarImplEui(dwCookie);
 	}
 
 
@@ -429,7 +428,7 @@ internal sealed class RdtManager : AbstractRdtManager
 	/// Switches to the document's window.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	internal static async Task ShowWindowFrameAsync(uint cookie)
+	internal static async Task ShowWindowFrameEuiAsync(uint cookie)
 	{
 		if (cookie == 0)
 			return;
@@ -446,8 +445,7 @@ internal sealed class RdtManager : AbstractRdtManager
 	/// [Launch ensure UI thread]: Switches to the document's window.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
-	internal static void ShowWindowFrameAsyeu(uint cookie)
+	internal static void ShowWindowFrameEui(uint cookie)
 	{
 		if (cookie == 0)
 			return;
@@ -556,7 +554,7 @@ internal sealed class RdtManager : AbstractRdtManager
 
 
 
-	internal static async Task<IVsWindowFrame> GetWindowFrameAsync(uint cookie)
+	internal static async Task<IVsWindowFrame> GetWindowFrameEuiAsync(uint cookie)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 

@@ -832,7 +832,7 @@ public class VxbConnectionDialogHandler : IBsConnectionDialogHandler
 				DataPackage.ProviderManager.Providers[SelectedProvider].TryCreateObject<IVsDataConnectionUIConnector>(source)?.Connect(_Connection);
 				if (_Connection.State != DataConnectionState.Open)
 				{
-					_Connection.Open();
+					_Connection.OpenDb();
 				}
 			}
 			catch (DataConnectionOpenCanceledException ex)

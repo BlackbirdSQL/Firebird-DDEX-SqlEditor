@@ -90,6 +90,7 @@ internal class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInf
 		}
 
 		object database = Reflect.GetPropertyValue(innerConnection, "Database", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
 		if (database == null)
 		{
 			ArgumentNullException ex = new("DatabaseInfo InnerConnection.Database is null.");
@@ -122,8 +123,15 @@ internal class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInf
 			byte[] requestBuffer = [brequest, Convert.ToByte(IscCodes.isc_info_end)];
 			byte[] responseBuffer = new byte[IscCodes.DEFAULT_MAX_BUFFER_SIZE];
 
-			Reflect.InvokeMethodBaseType(database, "DatabaseInfo", 4,
-				BindingFlags.Default, [requestBuffer, responseBuffer, responseBuffer.Length]);
+			try
+			{
+				Reflect.InvokeMethodBaseType(database, "DatabaseInfo", 4,
+					BindingFlags.Default, [requestBuffer, responseBuffer, responseBuffer.Length], false);
+			}
+			catch
+			{
+				return null;
+			}
 
 			dataLen = BitConverter.ToUInt16(responseBuffer, 1);
 			pairCount = 0;

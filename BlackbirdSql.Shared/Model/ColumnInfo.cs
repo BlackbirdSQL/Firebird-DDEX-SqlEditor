@@ -104,6 +104,7 @@ internal class ColumnInfo : IBsColumnInfo
 		_AllServerDataTypes.Add("image", value: false);
 		_AllServerDataTypes.Add("integer", value: false);
 		_AllServerDataTypes.Add("double", value: false);
+		_AllServerDataTypes.Add("double precision", value: false);
 		_AllServerDataTypes.Add("dec16", value: false);
 		_AllServerDataTypes.Add("dec34", value: false);
 		_AllServerDataTypes.Add("null", value: false);

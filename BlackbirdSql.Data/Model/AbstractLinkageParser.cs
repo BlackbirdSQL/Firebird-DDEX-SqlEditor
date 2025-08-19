@@ -10,7 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Data.Ctl;
 using BlackbirdSql.Data.Properties;
+using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -48,6 +50,8 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 		_ConnectionString = connectionString;
+		FbConnectionStringBuilder csb = new(connectionString);
+		_ServerType = csb.ServerType;
 		_ConnectionUrl = ApcManager.CreateConnectionUrl(_ConnectionString);
 		_TransientRestrictions = (string[])restrictions.Clone();
 
@@ -71,6 +75,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		_IsIntransient = rhs._IsIntransient;
 		_ConnectionString = rhs._ConnectionString;
+		_ServerType = rhs._ServerType;
 		_ConnectionUrl = rhs._ConnectionUrl;
 		_Sequences = rhs._Sequences.Copy();
 		_Triggers = rhs._Triggers.Copy();
@@ -107,6 +112,8 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		if (!rhsValid)
 		{
 			_ConnectionString = root.DecryptedConnectionString();
+			FbConnectionStringBuilder csb = new(_ConnectionString);
+			_ServerType = csb.ServerType;
 			_ConnectionUrl = ApcManager.CreateConnectionUrl(_ConnectionString);
 
 			CreateLinkTables();
@@ -115,6 +122,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		{
 			_IsIntransient = rhs._IsIntransient;
 			_ConnectionString = rhs._ConnectionString;
+			_ServerType = rhs._ServerType;
 			_ConnectionUrl = rhs._ConnectionUrl;
 			_Sequences = rhs._Sequences.Copy();
 			_Triggers = rhs._Triggers.Copy();
@@ -307,7 +315,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	protected string _ConnectionString = null;
 
-
+	protected FbServerType _ServerType = FbServerType.Default;
 	private readonly string _ConnectionUrl = null;
 	protected bool _Disabling = false;
 	private bool _Disposed = false;
@@ -550,6 +558,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		{
 			seq = _Sequences.NewRow();
 
+			// Columns in _RawGenerators must match first columns in _Sequences
 			seq.ItemArray = row.ItemArray;
 			seq["DEPENDENCY_TRIGGER"] = DBNull.Value;
 			seq["DEPENDENCY_TABLE"] = DBNull.Value;
@@ -608,11 +617,11 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		object[] key;
 
 
-		System.Collections.IEnumerator enumerator = _RawTriggerDependencies.Rows.GetEnumerator();
+		System.Collections.IEnumerator enumeratorRawTriggerDependencies = _RawTriggerDependencies.Rows.GetEnumerator();
 
-		if (enumerator.MoveNext())
+		if (enumeratorRawTriggerDependencies.MoveNext())
 		{
-			trigGenRow = enumerator.Current as DataRow;
+			trigGenRow = enumeratorRawTriggerDependencies.Current as DataRow;
 			trigGenKey = trigGenRow["TRIGGER_NAME"].ToString();
 		}
 
@@ -623,9 +632,9 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			// We do a staggered enumeration of the two raw trigger tables to avoid doing a find on each trigger.
 			while (trigGenRow != null && (result = string.Compare(trigKey, trigGenKey, StringComparison.OrdinalIgnoreCase)) > 0)
 			{
-				if (enumerator.MoveNext())
+				if (enumeratorRawTriggerDependencies.MoveNext())
 				{
-					trigGenRow = enumerator.Current as DataRow;
+					trigGenRow = enumeratorRawTriggerDependencies.Current as DataRow;
 					trigGenKey = trigGenRow["TRIGGER_NAME"].ToString();
 				}
 				else
@@ -640,6 +649,8 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			//	continue;
 
 			trig = _Triggers.NewRow();
+
+			// Load _Triggers first columns from _RawTriggers (currently 9 columns)
 
 			for (i = -2; i < _RawTriggers.Columns.Count; i++)
 			{
@@ -656,7 +667,10 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 				}
 			}
 
-			for (j = 1, i += 2; j < _RawTriggerDependencies.Columns.Count; j++, i++)
+			// Load remaining _Triggers columns (starting at 13) from _RawTriggerDependencies (starting  at 1)
+			// This will be SEQUENCE_GENERATOR
+
+			for (j = 1, i += 3; j < _RawTriggerDependencies.Columns.Count; j++, i++)
 			{
 				if (result != 0)
 				{
@@ -688,45 +702,42 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 			genId = null;
 
-			if (isIdentity)
+			(genId, increment, seed) = ParseTriggerDSL(trig["EXPRESSION"].ToString(), trig["TRIGGER_NAME"].ToString(),
+				trig["TABLE_NAME"].ToString(), trig["DEPENDENCY_FIELDS"].ToString());
+
+			if (genId != null)
 			{
-				(genId, increment, seed) = ParseTriggerDSL(trig["EXPRESSION"].ToString(), trig["TRIGGER_NAME"].ToString(),
-					trig["TABLE_NAME"].ToString(), trig["DEPENDENCY_FIELDS"].ToString());
+				key = [genId];
+				seq = _Sequences.Rows.Find(key);
 
-				if (genId != null)
+				if (seq != null)
 				{
-					key = [genId];
-					seq = _Sequences.Rows.Find(key);
-
-					if (seq != null)
+					if (trig["SEQUENCE_GENERATOR"] == DBNull.Value)
 					{
-						if (trig["SEQUENCE_GENERATOR"] == DBNull.Value)
-						{
-							trig["SEQUENCE_GENERATOR"] = genId;
-							trig["IDENTITY_INCREMENT"] = increment;
-						}
-						else if (isIdentity)
-						{
-							// There is a generator so: IDENTITY_TYPE determines if is -identity still holds true
-							if (trig["IDENTITY_TYPE"] == DBNull.Value || Convert.ToInt16(trig["IDENTITY_TYPE"]) == 0)
-							{
-								isIdentity = false;
-							}
-						}
-						trig["IDENTITY_CURRENT"] = seq["IDENTITY_CURRENT"];
-						trig["IDENTITY_SEED"] = seq["IDENTITY_SEED"];
-
-						if (seq["DEPENDENCY_TRIGGER"] == DBNull.Value || seq["DEPENDENCY_TRIGGER"].ToString() == "")
-							seq["DEPENDENCY_TRIGGER"] = trig["TRIGGER_NAME"];
-						else
-							seq["DEPENDENCY_TRIGGER"] = seq["DEPENDENCY_TRIGGER"].ToString() + ", " + trig["TRIGGER_NAME"].ToString();
-
-						seq["DEPENDENCY_TABLE"] = trig["TABLE_NAME"];
-						seq["DEPENDENCY_FIELD"] = trig["DEPENDENCY_FIELD"];
+						trig["SEQUENCE_GENERATOR"] = genId;
+						trig["IDENTITY_INCREMENT"] = increment;
 					}
-				}
+					else if (isIdentity)
+					{
+						// There is a generator so: IDENTITY_TYPE determines if is -identity still holds true
+						if (trig["IDENTITY_TYPE"] == DBNull.Value || Convert.ToInt16(trig["IDENTITY_TYPE"]) == 0)
+						{
+							isIdentity = false;
+						}
+					}
+					trig["IDENTITY_CURRENT"] = seq["IDENTITY_CURRENT"];
+					trig["IDENTITY_SEED"] = seq["IDENTITY_SEED"];
 
+					if (seq["DEPENDENCY_TRIGGER"] == DBNull.Value || seq["DEPENDENCY_TRIGGER"].ToString() == "")
+						seq["DEPENDENCY_TRIGGER"] = trig["TRIGGER_NAME"];
+					else
+						seq["DEPENDENCY_TRIGGER"] = seq["DEPENDENCY_TRIGGER"].ToString() + ", " + trig["TRIGGER_NAME"].ToString();
+
+					seq["DEPENDENCY_TABLE"] = trig["TABLE_NAME"];
+					seq["DEPENDENCY_FIELD"] = trig["DEPENDENCY_FIELD"];
+				}
 			}
+
 
 			UpdateTriggerData(trig, genId, isIdentity, dependencyCount);
 
@@ -792,7 +803,9 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Triggers.Columns.Add("IS_INACTIVE", typeof(bool));
 		_Triggers.Columns.Add("PRIORITY", typeof(short));
 		_Triggers.Columns.Add("EXPRESSION", typeof(string));
+		_Triggers.Columns.Add("BLR", typeof(string));
 		_Triggers.Columns.Add("IS_IDENTITY", typeof(bool));
+		_Triggers.Columns.Add("IS_INCREMENT", typeof(bool));
 		_Triggers.Columns.Add("SEQUENCE_GENERATOR", typeof(string));
 		_Triggers.Columns.Add("DEPENDENCY_FIELDS", typeof(string));
 		_Triggers.Columns.Add("IDENTITY_SEED", typeof(long));
@@ -941,7 +954,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		if (isIdentity && genId == null)
 			isIdentity = false;
 
-		if (!isIdentity)
+		if (!isIdentity && genId == null)
 		{
 			trig["IDENTITY_SEED"] = 0;
 			trig["IDENTITY_INCREMENT"] = 0;
@@ -949,6 +962,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		}
 
 		trig["IS_IDENTITY"] = isIdentity;
+		trig["IS_INCREMENT"] = genId != null;
 	}
 
 
@@ -1096,7 +1110,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
 				// Cannot pass params to execute block
-				// where.AppendFormat("rdb$generator_name = @p{0}", index++);
+				// where.AppendFormat("RDB$GENERATOR_NAME = @p{0}", index++);
 				where.AppendFormat("SEQUENCE_GENERATOR = '{0}'", restrictions[2].ToString());
 			}
 
@@ -1109,7 +1123,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 				}
 
 				// Cannot pass params to execute block
-				// where.AppendFormat("rdb$system_flag = @p{0}", index++);
+				// where.AppendFormat("RDB$SYSTEM_FLAG = @p{0}", index++);
 				where.AppendFormat("IS_SYSTEM_FLAG = '{0}'", restrictions[3].ToString());
 			}
 		}
@@ -1154,13 +1168,13 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		{
 			if (where.Length > 0)
 				where.Append(" AND ");
-			where.Append("IS_IDENTITY = FALSE");
+			where.Append("IS_INCREMENT = FALSE");
 		}
 		else if (identityFlag == 1)
 		{
 			if (where.Length > 0)
 				where.Append(" AND ");
-			where.Append("IS_IDENTITY = TRUE");
+			where.Append("IS_INCREMENT = TRUE");
 		}
 
 
@@ -1186,7 +1200,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 				// Cannot pass params to execute block
 				where.AppendFormat("TABLE_NAME = '{0}'", restrictions[2]);
-				// where.AppendFormat("trg.rdb$relation_name = @p{0}", index++);
+				// where.AppendFormat("trg.RDB$RELATION_NAME = @p{0}", index++);
 			}
 
 			/* TRIGGER_NAME */
@@ -1197,7 +1211,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 				// Cannot pass params to execute block
 				where.AppendFormat("TRIGGER_NAME = '{0}'", restrictions[3]);
-				// where.AppendFormat("trg.rdb$trigger_name = @p{0}", index++);
+				// where.AppendFormat("trg.RDB$TRIGGER_NAME = @p{0}", index++);
 			}
 		}
 

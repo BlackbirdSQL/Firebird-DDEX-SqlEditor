@@ -117,7 +117,7 @@ public class VxbConnectionProperties : AbstractConnectionProperties
 
 	protected override void OnSiteChanged(EventArgs e)
 	{
-		Evs.Trace(GetType(), nameof(OnSiteChanged));
+		// Evs.Trace(GetType(), nameof(OnSiteChanged));
 
 		base.OnSiteChanged(e);
 

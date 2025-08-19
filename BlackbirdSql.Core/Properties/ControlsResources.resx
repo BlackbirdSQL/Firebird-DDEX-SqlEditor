@@ -214,16 +214,16 @@ The Proposed Connection Name '{0}' is already allocated and '{1}' will be used i
 Continue?</value>
   </data>
   <data name="RctManager_TextNewSessionConnection" xml:space="preserve">
-    <value>The settings provided will create a new Session connection. Continue?</value>
+    <value>The settings provided will create a new connection and convert the previous connection to a Session connection. Continue?</value>
   </data>
   <data name="RctManager_TextNewSessionConnectionDatabaseNameConflict" xml:space="preserve">
-    <value>The settings provided will create a new Session connection.
+    <value>The settings provided will convert the previous connection to Session connection.
 The Proposed Database Name '{0}' is already allocated and '{1}' will be used instead.
 
 Continue?</value>
   </data>
   <data name="RctManager_TextNewSessionConnectionNameConflict" xml:space="preserve">
-    <value>The settings provided will create a new Session connection.
+    <value>The settings provided will convert the previous connection to Session connection.
 The Proposed Connection Name '{0}' is already allocated and '{1}' will be used instead.
 
 Continue?</value>

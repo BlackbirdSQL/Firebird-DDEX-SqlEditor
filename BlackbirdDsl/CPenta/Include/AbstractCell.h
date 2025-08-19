@@ -1188,7 +1188,7 @@ public:
 		int i;
 		SysStr^ str;
 		System::Text::StringBuilder^ sb = gcnew System::Text::StringBuilder("\n", level+20);
-		sb->Append(' ', level*3);
+		sb->Append(L' ', level*3);
 
 		if (IsNullPtr(value) || !value->IsCollection)
 		{

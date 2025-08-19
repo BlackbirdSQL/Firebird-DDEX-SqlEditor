@@ -356,7 +356,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 					protected int m_colIndex = nColIndex;
 
-					protected CellAccessibleObject m_parent = parent;
+					protected CellAccessibleObject _Parent = parent;
 
 					public override string Name
 					{
@@ -371,7 +371,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 						}
 					}
 
-					public override AccessibleObject Parent => m_parent;
+					public override AccessibleObject Parent => _Parent;
 
 					public override string DefaultAction
 					{
@@ -388,20 +388,20 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 					public override void DoDefaultAction()
 					{
-						if (m_parent.IsCellBeingEdited)
+						if (_Parent.IsCellBeingEdited)
 						{
-							m_parent.Grid.StopCellEdit(m_commit);
+							_Parent.Grid.StopCellEdit(m_commit);
 						}
 					}
 				}
 
-				private readonly ColumnAccessibleObject m_parent = parent;
+				private readonly ColumnAccessibleObject _Parent = parent;
 
 				protected int m_colIndex = nColIndex;
 
 				protected long m_rowIndex = nRowIndex;
 
-				protected GridControl Grid => m_parent.Grid;
+				protected GridControl Grid => _Parent.Grid;
 
 				protected int GridColumnsNumber => Grid.m_Columns.Count;
 
@@ -471,7 +471,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 					}
 				}
 
-				public override AccessibleObject Parent => m_parent;
+				public override AccessibleObject Parent => _Parent;
 
 				public override Rectangle Bounds => Grid.RectangleToScreen(Grid._ScrollMgr.GetCellRectangle(m_rowIndex, m_colIndex));
 
@@ -714,13 +714,13 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			protected class HeaderAccessibleObject(ColumnAccessibleObject parent, int nColIndex)
 				: AccessibleObject
 			{
-				private readonly ColumnAccessibleObject m_parent = parent;
+				private readonly ColumnAccessibleObject _Parent = parent;
 
 				private readonly int m_colIndex = nColIndex;
 
-				protected GridControl Grid => m_parent.Grid;
+				protected GridControl Grid => _Parent.Grid;
 
-				public override AccessibleObject Parent => m_parent;
+				public override AccessibleObject Parent => _Parent;
 
 				public override string Name
 				{
@@ -804,9 +804,9 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			protected int m_colIndex = -1;
 
-			private readonly GridControlAccessibleObject m_parent;
+			private readonly GridControlAccessibleObject _Parent;
 
-			protected GridControl Grid => m_parent.Grid;
+			protected GridControl Grid => _Parent.Grid;
 
 			public override AccessibleRole Role => AccessibleRole.Column;
 
@@ -821,7 +821,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				}
 			}
 
-			public override AccessibleObject Parent => m_parent;
+			public override AccessibleObject Parent => _Parent;
 
 			public override AccessibleStates State
 			{
@@ -865,7 +865,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 			public ColumnAccessibleObject(GridControlAccessibleObject parent, int nColIndex)
 			{
 				m_colIndex = nColIndex;
-				m_parent = parent;
+				_Parent = parent;
 			}
 
 			public override int GetChildCount()
@@ -942,7 +942,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 
 			private readonly IAccessible m_acc = acc;
 
-			private readonly AccessibleObject m_parent = parent;
+			private readonly AccessibleObject _Parent = parent;
 
 			private readonly int m_childID = nChildId;
 
@@ -1111,7 +1111,7 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 				}
 			}
 
-			public override AccessibleObject Parent => m_parent;
+			public override AccessibleObject Parent => _Parent;
 
 			public override AccessibleRole Role
 			{
@@ -2993,10 +2993,10 @@ public class GridControl : Control, ISupportInitialize, IBsGridControl
 		}
 		else if (SelectedCells == null || SelectedCells.Count == 0)
 		{
-			_ = SelectedCells = new BlockOfCellsCollection(new BlockOfCells[1]
+			_ = SelectedCells = [.. new BlockOfCells[1]
 			{
 				new BlockOfCells(0L, 0)
-			});
+			}];
 		}
 	}
 

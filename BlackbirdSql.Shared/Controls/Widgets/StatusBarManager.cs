@@ -680,7 +680,7 @@ internal sealed class StatusBarManager : IDisposable
 
 	private async Task<bool> OnExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs a)
 	{
-		// Evs.Trace(GetType(), nameof(OnQueryExecutionCompletedAsync), "a.ExecResult: {0}.", a.ExecutionResult);
+		// Evs.Trace(GetType(), nameof(OnQueryExecutionCompletedEuiAsync), "a.ExecResult: {0}.", a.ExecutionResult);
 
 		if (a.SyncToken.Cancelled())
 			return true;

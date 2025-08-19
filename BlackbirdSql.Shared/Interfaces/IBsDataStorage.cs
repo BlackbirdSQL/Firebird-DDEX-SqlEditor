@@ -10,6 +10,8 @@ namespace BlackbirdSql.Shared.Interfaces;
 
 internal interface IBsDataStorage : IDisposable
 {
+	bool IsClosed { get; }
+	
 	IBsStorageView GetStorageView();
 
 	IBsSortView GetSortView();
@@ -20,5 +22,4 @@ internal interface IBsDataStorage : IDisposable
 
 	IBsColumnInfo GetColumnInfo(int iCol);
 
-	bool IsClosed();
 }

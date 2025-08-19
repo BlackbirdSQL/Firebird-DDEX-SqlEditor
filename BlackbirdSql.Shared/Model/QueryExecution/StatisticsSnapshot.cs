@@ -6,8 +6,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Threading.Tasks;
 using BlackbirdSql.Shared.Events;
 using BlackbirdSql.Sys.Model;
+using Microsoft.VisualStudio.LanguageServer.Client;
 
 
 
@@ -47,20 +49,20 @@ public class StatisticsSnapshot
 	// QueryProfileStatistics
 	private long _SelectRowCount = 0L;
 	private long _StatementCount = 0L;
-	private long _InsRowEntities = 0L;
-	private long _InsRowCount = 0L;
-	private long _UpdRowEntities = 0L;
-	private long _UpdRowCount = 0L;
-	private long _DelRowEntities = 0L;
-	private long _DelRowCount = 0L;
-	private long _ReadIdxEntities = 0L;
-	private long _ReadIdxCount = 0L;
-	private long _ReadSeqEntities = 0L;
-	private long _ReadSeqCount = 0L;
-	private long _ExpungeEntities = 0L;
-	private long _ExpungeCount = 0L;
-	private long _PurgeEntities = 0L;
-	private long _PurgeCount = 0L;
+	private long _InsRowEntities = -99L;
+	private long _InsRowCount = -99L;
+	private long _UpdRowEntities = -99L;
+	private long _UpdRowCount = -99L;
+	private long _DelRowEntities = -99L;
+	private long _DelRowCount = -99L;
+	private long _ReadIdxEntities = -99L;
+	private long _ReadIdxCount = -99L;
+	private long _ReadSeqEntities = -99L;
+	private long _ReadSeqCount = -99L;
+	private long _ExpungeEntities = -99L;
+	private long _ExpungeCount = -99L;
+	private long _PurgeEntities = -99L;
+	private long _PurgeCount = -99L;
 
 	private long _Transactions = 0L;
 
@@ -91,7 +93,7 @@ public class StatisticsSnapshot
 
 
 	// QueryProfileStatistics
-	public long IduRowCount => _InsRowCount + _UpdRowCount + _DelRowCount;
+	public long IduRowCount => (_InsRowCount + _UpdRowCount + _DelRowCount) < 0 ? -99 : (_InsRowCount + _UpdRowCount + _DelRowCount);
 
 	public long SelectRowCount => _SelectRowCount;
 	public long StatementCount => _StatementCount;
@@ -152,7 +154,8 @@ public class StatisticsSnapshot
 			{
 				try
 				{
-					_InternalConnection.Open();
+					// Evs.Debug(GetType(), "Load", $"DbConnection.Open:\nConnectionString: {_InternalConnection.ConnectionString}");
+					_InternalConnection.OpenDb();
 				}
 				catch (Exception ex)
 				{
@@ -169,6 +172,7 @@ public class StatisticsSnapshot
 
 			if (infoList != null)
 			{
+
 				_InsRowEntities = infoList[i].Item1 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._InsRowEntities : 0);
 				_InsRowCount = infoList[i++].Item2 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._InsRowCount : 0);
 
@@ -189,35 +193,31 @@ public class StatisticsSnapshot
 
 				_PurgeEntities = infoList[i].Item1 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._PurgeEntities : 0);
 				_PurgeCount = infoList[i++].Item2 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._PurgeCount : 0);
-
-
-				_Transactions = info.GetActiveTransactionsCount(); // - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._Transactions : 0);
-
-
-				// NetworkStatistics
-				_ServerCacheReadCount = info.GetServerCacheReadsCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ServerCacheReadCount : 0);
-				_ServerCacheWriteCount = info.GetServerCacheWritesCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ServerCacheWriteCount : 0);
-				_BufferCount = info.GetNumBuffers();
-				_ReadCount = info.GetReads() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadCount : 0);
-				_WriteCount = info.GetWrites() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._WriteCount : 0);
-
-				_PacketSize = _InternalConnection.GetPacketSize();
-
-				// TimeStatistics
-				_ExecutionStartTime = args.ExecutionStartTime ?? DateTime.Now;
-				_ExecutionEndTime = (DateTime)args.ExecutionEndTime;
-
-				// ServerStatistics
-				_AllocationPages = info.GetAllocationPages();
-				_CurrentMemory = info.GetCurrentMemory();
-				_MaxMemory = info.GetMaxMemory();
-				_DatabaseSizeInPages = info.GetDatabaseSizeInPages();
-				_PageSize = info.GetPageSize();
-				_ActiveUsers = info.GetActiveUsers();
-
 			}
 
+			_Transactions = info.GetActiveTransactionsCount(); // - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._Transactions : 0);
 
+
+			// NetworkStatistics
+			_ServerCacheReadCount = info.GetServerCacheReadsCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ServerCacheReadCount : 0);
+			_ServerCacheWriteCount = info.GetServerCacheWritesCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ServerCacheWriteCount : 0);
+			_BufferCount = info.GetNumBuffers();
+			_ReadCount = info.GetReads() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadCount : 0);
+			_WriteCount = info.GetWrites() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._WriteCount : 0);
+
+			_PacketSize = _InternalConnection.GetPacketSize();
+
+			// TimeStatistics
+			_ExecutionStartTime = args.ExecutionStartTime ?? DateTime.Now;
+			_ExecutionEndTime = (DateTime)args.ExecutionEndTime;
+
+			// ServerStatistics
+			_AllocationPages = info.GetAllocationPages();
+			_CurrentMemory = info.GetCurrentMemory();
+			_MaxMemory = info.GetMaxMemory();
+			_DatabaseSizeInPages = info.GetDatabaseSizeInPages();
+			_PageSize = info.GetPageSize();
+			_ActiveUsers = info.GetActiveUsers();
 		}
 		catch (Exception ex)
 		{

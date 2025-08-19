@@ -29,7 +29,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public Resources() {
+        internal Resources() {
         }
         
         /// <summary>
@@ -151,6 +151,52 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Character set is not defined.
+        ///
+        ///If you are sure the character set exists and you are connecting to embedded databases then note that you CAN connect to a Firebird 2 embedded database after connecting to a Firebird 3, 4 or 5 embedded database.
+        ///The inverse may NOT always hold true.
+        ///If the problem persists, connect to a Firebiird 3, 4 or 5 database first.
+        ///
+        ///The database engine returned the following message:
+        ///{0}.
+        /// </summary>
+        public static string ExceptionDbCharacterSet {
+            get {
+                return ResourceManager.GetString("ExceptionDbCharacterSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character Set not Defined.
+        /// </summary>
+        public static string ExceptionDbCharacterSetCaption {
+            get {
+                return ResourceManager.GetString("ExceptionDbCharacterSetCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect database client active for this database. 
+        ///
+        ///If you are connecting to an embedded database, then for Firebird version 3 or 4 and 5 run the applicable Setup.bat batch file from Windows Explorer copy the correct &apos;fbclient.dll&apos; from the FbSetup3 or FbSetup45 folders in the BlackbirdSql extension folder and ensure you have the &apos;Client Library&apos; in the advanced connection settings set to &apos;fbclient&apos;. The Firebird 3 client is initially installed by default.
+        ///For Firebird version 2 ensure the &apos;Client Libr [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string ExceptionDbVersionMismatch {
+            get {
+                return ResourceManager.GetString("ExceptionDbVersionMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database Version Mismatch.
+        /// </summary>
+        public static string ExceptionDbVersionMismatchCaption {
+            get {
+                return ResourceManager.GetString("ExceptionDbVersionMismatchCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Source information for site already exists.
         /// </summary>
         public static string ExceptionDuplicatingSiteInformation {
@@ -228,6 +274,32 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string ExceptionInvalidRawMetadataCall {
             get {
                 return ResourceManager.GetString("ExceptionInvalidRawMetadataCall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading Firebird client plugin.
+        ///
+        ///If you are connecting to multiple versions of embedded databases then note that you CAN connect to a Firebird 2 embedded database after connecting to a Firebird 3, 4 or 5 embedded database.
+        ///The inverse does NOT hold true.
+        ///
+        ///The database engine returned the following message:
+        ///{0}
+        ///
+        ///.
+        /// </summary>
+        public static string ExceptionLoadingPlugin {
+            get {
+                return ResourceManager.GetString("ExceptionLoadingPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Loading Firebird Client Plugin.
+        /// </summary>
+        public static string ExceptionLoadingPluginCaption {
+            get {
+                return ResourceManager.GetString("ExceptionLoadingPluginCaption", resourceCulture);
             }
         }
         

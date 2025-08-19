@@ -44,11 +44,11 @@ internal class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 
 	public LsbDeclarations(IList<Declaration> declarations, LsbSource source)
 	{
-		Evs.Trace(typeof(LsbDeclarations), ".ctor");
+		// Evs.Trace(typeof(LsbDeclarations), ".ctor");
 
 		_Source = source;
 
-		List<Declaration> list = new List<Declaration>(declarations);
+		List<Declaration> list = [.. declarations];
 
 		static int comparison(Declaration x, Declaration y)
 		{
@@ -65,9 +65,9 @@ internal class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 
 		list.Sort(comparison);
 		_UnderlyingDeclarations = list;
-		_FilteredDeclarations = new List<Declaration>(list);
+		_FilteredDeclarations = [.. list];
 
-		Evs.Trace(typeof(LsbDeclarations), ".ctor", "...ending");
+		// Evs.Trace(typeof(LsbDeclarations), ".ctor", "...ending");
 	}
 
 
@@ -283,10 +283,10 @@ internal class LsbDeclarations : Microsoft.VisualStudio.Package.Declarations
 		{
 			Tuple<int, bool, Func<string, string, bool>>[] array =
 			[
-				new Tuple<int, bool, Func<string, string, bool>>(-1, item2: false, (string a, string b) => a.Equals(b, StringComparison.Ordinal)),
-				new Tuple<int, bool, Func<string, string, bool>>(-1, item2: false, (string a, string b) => a.Equals(b, StringComparison.OrdinalIgnoreCase)),
-				new Tuple<int, bool, Func<string, string, bool>>(-1, item2: false, (string a, string b) => string.Compare(a, 0, b, 0, a.Length, StringComparison.Ordinal) == 0),
-				new Tuple<int, bool, Func<string, string, bool>>(-1, item2: false, (string a, string b) => string.Compare(a, 0, b, 0, a.Length, StringComparison.OrdinalIgnoreCase) == 0)
+				new Tuple<int, bool, Func<string, string, bool>>(-1, item2: false, (a, b) => a.Equals(b, StringComparison.Ordinal)),
+				new Tuple<int, bool, Func<string, string, bool>>(-1, item2: false, (a, b) => a.Equals(b, StringComparison.OrdinalIgnoreCase)),
+				new Tuple<int, bool, Func<string, string, bool>>(-1, item2: false, (a, b) => string.Compare(a, 0, b, 0, a.Length, StringComparison.Ordinal) == 0),
+				new Tuple<int, bool, Func<string, string, bool>>(-1, item2: false, (a, b) => string.Compare(a, 0, b, 0, a.Length, StringComparison.OrdinalIgnoreCase) == 0)
 			];
 
 			int count = GetCount();

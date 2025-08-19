@@ -136,7 +136,7 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(Type serviceType)
 	{
-		Evs.Trace(GetType(), nameof(CreateService), $"serviceType: {serviceType.Name}");
+		// Evs.Trace(GetType(), nameof(CreateService), $"serviceType: {serviceType.Name}");
 
 		/*
 		if (serviceType == typeof(IVsDataViewCommandProvider))
@@ -203,7 +203,7 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 
 	public override void Initialize()
 	{
-		Evs.Trace(GetType(), nameof(Initialize));
+		// Evs.Trace(GetType(), nameof(Initialize));
 
 		base.Initialize();
 
@@ -387,7 +387,7 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 
 			if (expanded && node.Name == "ColumnFolder")
 			{
-				_ = Task.Run(() => ExpandNodeAsync(itemId));
+				_ = Task.Run(() => ExpandNodeEuiAsync(itemId));
 			}
 
 
@@ -420,7 +420,7 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 
 				if (expanded && node.Name == "ColumnFolder")
 				{
-					_ = Task.Run(() => ExpandNodeAsync(itemId));
+					_ = Task.Run(() => ExpandNodeEuiAsync(itemId));
 				}
 
 
@@ -447,7 +447,7 @@ public class VxbViewSupport : DataViewSupport, IBsDataViewSupport
 	/// Expands an SE node asynchronously
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected async Task<bool> ExpandNodeAsync(int itemId)
+	protected async Task<bool> ExpandNodeEuiAsync(int itemId)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 

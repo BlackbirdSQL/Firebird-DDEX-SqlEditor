@@ -25,6 +25,10 @@ internal sealed class QEStorageViewOnReader : AbstractStorageView, IBsQEStorageV
 
 	private readonly bool[] _XmlFlags;
 
+	public override bool IsStorageClosed => _QeReaderStorage.IsClosed;
+	
+
+
 	public int MaxNumBytesToDisplay
 	{
 		get
@@ -85,10 +89,6 @@ internal sealed class QEStorageViewOnReader : AbstractStorageView, IBsQEStorageV
 		return _QeReaderStorage.GetColumnInfo(iCol);
 	}
 
-	public override bool IsStorageClosed()
-	{
-		return _QeReaderStorage.IsClosed();
-	}
 
 	public override object GetCellData(long i64Row, int iCol)
 	{

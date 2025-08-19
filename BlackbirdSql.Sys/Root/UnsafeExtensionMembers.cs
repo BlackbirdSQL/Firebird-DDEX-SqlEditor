@@ -14,8 +14,6 @@ using VSLangProj;
 
 namespace BlackbirdSql;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Caller must ensure calls to UnsafeExtensionMethods are safe.")]
-
 
 // =========================================================================================================
 //											UnsafeExtensionMembers Class

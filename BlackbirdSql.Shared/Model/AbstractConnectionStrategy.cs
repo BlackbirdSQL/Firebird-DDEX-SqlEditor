@@ -113,17 +113,23 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	// =========================================================================================================
 
 
-	public virtual string AdornedDisplayName =>
-		MdlCsb?.AdornedDisplayName ?? "";
+	/// <summary>
+	/// The DisplayName adorned with the ConnectionSource glyph
+	/// </summary>
+	public virtual string AdornedDisplayName => MdlCsb?.AdornedDisplayName ?? "";
 
-	public string AdornedQualifiedName =>
-		MdlCsb?.AdornedQualifiedName ?? "";
+	/// The QualifiedName adorned with glyphs. See also <see cref="AdornedQualifiedTitle"/>.
+	public string AdornedQualifiedName => MdlCsb?.AdornedQualifiedName ?? "";
 
-	public string AdornedQualifiedTitle =>
-		MdlCsb?.AdornedQualifiedTitle ?? "";
+	/// <summary>
+	/// The QualifiedName adorned with glyphs for title and dropdown displays where
+	/// the glyph is not rendered correctly using <see cref="AdornedQualifiedName"/>.
+	/// AdornedQualified title is preferred over AdornedQualifiedName as the access key
+	/// to datasets in SqlEditor.
+	/// </summary>
+	public string AdornedQualifiedTitle => MdlCsb?.AdornedQualifiedTitle ?? "";
 
-	public string AdornedTitle =>
-		MdlCsb?.AdornedTitle ?? "";
+	public string AdornedTitle => MdlCsb?.AdornedTitle ?? "";
 
 	public uint DocCookie
 	{
@@ -366,7 +372,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	/// </summary>
 	/// <returns>Returns a valid ModelCsb else null if the user cancelled.</returns>
 	// ---------------------------------------------------------------------------------
-	private async Task<IBsModelCsb> AcquireValidConnectionInfoAsync(CancellationToken cancelToken)
+	private async Task<IBsModelCsb> AcquireValidConnectionInfoEuiAsync(CancellationToken cancelToken)
 	{
 		bool isComplete = MdlCsb != null && MdlCsb.IsComplete;
 
@@ -453,7 +459,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		_HasTransactions = false;
 
-		IBsModelCsb mdlCsb = await AcquireValidConnectionInfoAsync(cancelToken);
+		IBsModelCsb mdlCsb = await AcquireValidConnectionInfoEuiAsync(cancelToken);
 
 
 		if (mdlCsb == null)
@@ -483,7 +489,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		_HasTransactions = hasTransactions;
 
-		RdtManager.InvalidateToolbarAsync(DocCookie).Forget();
+		RdtManager.InvalidateToolbarEuiAsync(DocCookie).Forget();
 
 		return Connection;
 	}
@@ -594,7 +600,8 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 			SetDatabaseCsb(mdlCsb, true);
 
-			_MdlCsb.OpenOrVerifyConnection();
+			bool result = Task.Run(async delegate { await _MdlCsb.OpenOrVerifyConnectionAsync(new()); return true; }).AwaiterResult();
+			// _MdlCsb.OpenOrVerifyConnection();
 
 			return true;
 		}

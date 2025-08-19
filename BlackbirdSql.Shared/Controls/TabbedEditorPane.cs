@@ -578,7 +578,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 	/// <summary>
 	/// [Launch async]: Auto-execute query.
 	/// </summary>
-	private void AutoExecuteQueryAsyin()
+	private void AutoExecuteQueryEui()
 	{
 		// Evs.Trace(GetType(), nameof(AsyncAutoExecuteQuery), "ExecutionType: {0}.", executionType);
 
@@ -1449,9 +1449,9 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 	/// Updates the tabs' text.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected override async Task<bool> UpdateTabsButtonTextAsync(ExecutionCompletedEventArgs args)
+	protected override async Task<bool> UpdateTabsButtonTextEuiAsync(ExecutionCompletedEventArgs args)
 	{
-		if (!await base.UpdateTabsButtonTextAsync(args))
+		if (!await base.UpdateTabsButtonTextEuiAsync(args))
 			return true;
 
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -1760,13 +1760,13 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 	public void OnUpdateTooltipAndWindowCaption(object sender, QueryStateChangedEventArgs args)
 	{
-		_ = Task.Run(() => OnUpdateTooltipAndWindowCaptionAsync(sender, args));
+		_ = Task.Run(() => OnUpdateTooltipAndWindowCaptionEuiAsync(sender, args));
 
 	}
 
 
 
-	public async Task OnUpdateTooltipAndWindowCaptionAsync(object sender, QueryStateChangedEventArgs args)
+	public async Task OnUpdateTooltipAndWindowCaptionEuiAsync(object sender, QueryStateChangedEventArgs args)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -1790,11 +1790,11 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 			if (IsClone)
 			{
 				_IsFirstTimeToShow = false;
-				Task.Run(CloseCloneAsync).Forget();
+				Task.Run(CloseCloneEuiAsync).Forget();
 				return;
 			}
 
-			RctManager.EnsureLoaded();
+			RctManager.EnsureLoaded(false);
 
 			SetupUI();
 			_IsFirstTimeToShow = false;
@@ -1833,7 +1833,7 @@ public class TabbedEditorPane : AbstractTabbedEditorPane, IBsTabbedEditorPane
 
 			if (_AutoExecute)
 			{
-				AutoExecuteQueryAsyin();
+				AutoExecuteQueryEui();
 			}
 			else
 			{

@@ -29,7 +29,7 @@ namespace BlackbirdSql.Data.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public ControlsResources() {
+        internal ControlsResources() {
         }
         
         /// <summary>
@@ -299,7 +299,7 @@ namespace BlackbirdSql.Data.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Updating sequence linkage..
+        ///   Looks up a localized string similar to Building trigger sequence linkage..
         /// </summary>
         internal static string LinkageParser_Updating {
             get {
@@ -308,7 +308,7 @@ namespace BlackbirdSql.Data.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Updating {0} sequence linkage..
+        ///   Looks up a localized string similar to Building {0} trigger sequence linkage..
         /// </summary>
         internal static string LinkageParser_UpdatingCatalog {
             get {

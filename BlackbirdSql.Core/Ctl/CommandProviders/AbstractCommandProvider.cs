@@ -533,7 +533,7 @@ internal abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected void OnNewQuery(string baseName)
 	{
-		Evs.Trace(GetType(), nameof(OnNewQuery));
+		// Evs.Trace(GetType(), nameof(OnNewQuery));
 
 		if (SystemData.C_MandatedSqlEditorFactoryGuid.Equals(SystemData.C_EditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
@@ -559,7 +559,7 @@ internal abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected void OnOpenScript(int itemId, EnModelTargetType targetType)
 	{
-		Evs.Trace(GetType(), nameof(OnOpenScript), $"itemId: {itemId}.");
+		// Evs.Trace(GetType(), nameof(OnOpenScript), $"itemId: {itemId}.");
 
 		if (RctManager.ShutdownState)
 			return;

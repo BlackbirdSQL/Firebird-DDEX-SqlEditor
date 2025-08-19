@@ -45,7 +45,7 @@ internal class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IR
 
 	internal Dictionary<PropertyDescriptor, bool> DiffMap => diffMap;
 
-	internal new NodeCollection<NodeDisplay> Children => _Children;
+	public new NodeCollection<NodeDisplay> Children => _Children;
 
 	internal NodeDisplay Parent
 	{
@@ -199,7 +199,7 @@ internal class NodeDisplay : Microsoft.AnalysisServices.Graphing.NodeDisplay, IR
 
 	internal string HelpKeyword => NodeOriginal.Operation.HelpKeyword;
 
-	internal new BlackbirdSql.Shared.Controls.Graphing.Node NodeOriginal => (BlackbirdSql.Shared.Controls.Graphing.Node)base.NodeOriginal;
+	public new BlackbirdSql.Shared.Controls.Graphing.Node NodeOriginal => (BlackbirdSql.Shared.Controls.Graphing.Node)base.NodeOriginal;
 
 	private NodeDisplayProperties DisplayProperties => _nodedisplayproperties;
 

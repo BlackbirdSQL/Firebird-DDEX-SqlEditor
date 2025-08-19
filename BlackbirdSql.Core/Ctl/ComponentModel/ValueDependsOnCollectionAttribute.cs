@@ -10,14 +10,14 @@ namespace BlackbirdSql.Core.Ctl.ComponentModel;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
 public sealed class ValueDependsOnCollectionAttribute : Attribute
 {
-	private readonly string m_sourceName;
+	private readonly string _SourceName;
 
-	public string SourceName => m_sourceName;
+	public string SourceName => _SourceName;
 
 	public override object TypeId => this;
 
 	public ValueDependsOnCollectionAttribute(string sourceName)
 	{
-		m_sourceName = sourceName;
+		_SourceName = sourceName;
 	}
 }

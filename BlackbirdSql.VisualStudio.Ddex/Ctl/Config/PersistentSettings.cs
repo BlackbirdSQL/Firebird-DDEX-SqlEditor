@@ -61,16 +61,19 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	// ---------------------------------------------------------------------------------
 	protected override void Initialize()
 	{
-		if (_SettingsStore != null)
-			return;
+		lock (_LockGlobal)
+		{
+			if (_SettingsStore != null)
+				return;
 
-		_SettingsStore = [];
+			_SettingsStore = [];
 
-		PropagateSettingsEventArgs e = new();
+			PropagateSettingsEventArgs e = new();
 
-		PopulateSettingsEventArgs(ref e);
-		PropagateSettings(e);
-		RegisterSettingsEventHandlers(OnSettingsSaved);
+			PopulateSettingsEventArgs(ref e);
+			PropagateSettings(e);
+			RegisterSettingsEventHandlers(OnSettingsSaved);
+		}
 	}
 
 

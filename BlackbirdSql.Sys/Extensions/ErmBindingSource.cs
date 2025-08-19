@@ -82,7 +82,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	///  Gets or sets the <see cref="BindingSource.DataSource"/> for the master <see cref="BindingSource"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	internal new object DataSource
+	public new object DataSource
 	{
 		get
 		{

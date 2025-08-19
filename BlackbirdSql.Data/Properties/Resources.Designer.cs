@@ -29,7 +29,7 @@ namespace BlackbirdSql.Data.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public Resources() {
+        internal Resources() {
         }
         
         /// <summary>
@@ -106,6 +106,31 @@ namespace BlackbirdSql.Data.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error loading Firebird client plugin.
+        ///
+        ///If you are connecting to multiple versions of embedded databases then note that you CAN connect to a Firebird 2 embedded database after connecting to a Firebird 3, 4 or 5 embedded database.
+        ///The inverse may NOT always hold true.
+        ///If the problem persists, connect to a Firebiird 3, 4 or 5 database first.
+        ///
+        ///The database engine returned the following message:
+        ///{0}.
+        /// </summary>
+        internal static string ExceptionLoadingPlugin {
+            get {
+                return ResourceManager.GetString("ExceptionLoadingPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Loading Firebird Client Plugin.
+        /// </summary>
+        internal static string ExceptionLoadingPluginCaption {
+            get {
+                return ResourceManager.GetString("ExceptionLoadingPluginCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Resource not found: {0}.
         /// </summary>
         internal static string ExceptionResourceNotFound {
@@ -147,6 +172,16 @@ namespace BlackbirdSql.Data.Properties {
         internal static string ExceptionUnsupportedPopulationMechanism {
             get {
                 return ResourceManager.GetString("ExceptionUnsupportedPopulationMechanism", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not extract execution plan.
+        ///This may be due to the server version and/or server type and/or database version..
+        /// </summary>
+        internal static string ExecutionPlanUnavailable {
+            get {
+                return ResourceManager.GetString("ExecutionPlanUnavailable", resourceCulture);
             }
         }
         

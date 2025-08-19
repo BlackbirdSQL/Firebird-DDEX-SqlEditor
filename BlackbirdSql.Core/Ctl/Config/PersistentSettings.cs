@@ -1,13 +1,10 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using BlackbirdSql.Core.Properties;
 using BlackbirdSql.Sys.Events;
-using BlackbirdSql.Sys.Extensions;
-using BlackbirdSql.Sys.Interfaces;
+
+
 
 namespace BlackbirdSql.Core.Ctl.Config;
 
@@ -130,7 +127,7 @@ public abstract class PersistentSettings : Sys.Ctl.Config.PersistentSettings
 		/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 		/// Only implemented by packages that have settings models, ie. are options providers.
 		/// </summary>
-		public abstract void RegisterSettingsEventHandlers(IBsPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
+		public override void RegisterSettingsEventHandlers(IBsSettingsProvider.SettingsSavedDelegate onSettingsSavedDelegate)
 
 
 		/// <summary>

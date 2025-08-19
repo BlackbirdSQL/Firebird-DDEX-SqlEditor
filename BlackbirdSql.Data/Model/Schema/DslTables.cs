@@ -20,8 +20,10 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using FirebirdSql.Data.FirebirdClient;
 
 
 
@@ -50,25 +52,25 @@ internal class DslTables : AbstractDslSchema
 			@"SELECT
 					null AS TABLE_CATALOG,
 					null AS TABLE_SCHEMA,
-					rfr.rdb$relation_name AS TABLE_NAME,
+					rfr.RDB$RELATION_NAME AS TABLE_NAME,
 					null AS TABLE_TYPE,
-					(CASE WHEN rfr.rdb$system_flag <> 1 THEN
+					(CASE WHEN rfr.RDB$SYSTEM_FLAG <> 1 THEN
                         0
 					ELSE
                         1
 					END) IS_SYSTEM_FLAG,
-					rfr.rdb$owner_name AS OWNER_NAME,
-					rfr.rdb$description AS DESCRIPTION,
-					rfr.rdb$view_source AS VIEW_SOURCE,
-					(SELECT COUNT(*) FROM rdb$triggers trg WHERE trg.rdb$relation_name = rfr.rdb$relation_name) AS TRIGGER_COUNT,
-					(SELECT COUNT(*) FROM rdb$indices idx WHERE idx.rdb$relation_name = rfr.rdb$relation_name) AS INDEX_COUNT,
-					(SELECT COUNT(*) FROM rdb$relation_constraints con
-						INNER JOIN rdb$ref_constraints ref ON ref.rdb$constraint_name = con.rdb$constraint_name
-						INNER JOIN rdb$indices tempidx ON tempidx.rdb$index_name = con.rdb$index_name
-						INNER JOIN rdb$indices refidx ON refidx.rdb$index_name = tempidx.rdb$foreign_key
-						WHERE con.rdb$relation_name = rfr.rdb$relation_name) AS FOREIGNKEY_COUNT
-				FROM rdb$relations rfr
-				WHERE rfr.rdb$view_source IS NULL");
+					rfr.RDB$OWNER_NAME AS OWNER_NAME,
+					rfr.RDB$DESCRIPTION AS DESCRIPTION,
+					rfr.RDB$VIEW_SOURCE AS VIEW_SOURCE,
+					(SELECT COUNT(*) FROM RDB$TRIGGERS trg WHERE trg.RDB$RELATION_NAME = rfr.RDB$RELATION_NAME) AS TRIGGER_COUNT,
+					(SELECT COUNT(*) FROM RDB$INDICES idx WHERE idx.RDB$RELATION_NAME = rfr.RDB$RELATION_NAME) AS INDEX_COUNT,
+					(SELECT COUNT(*) FROM RDB$RELATION_CONSTRAINTS con
+						INNER JOIN RDB$REF_CONSTRAINTS ref ON ref.RDB$CONSTRAINT_NAME = con.RDB$CONSTRAINT_NAME
+						INNER JOIN RDB$INDICES tempidx ON tempidx.RDB$INDEX_NAME = con.RDB$INDEX_NAME
+						INNER JOIN RDB$INDICES refidx ON refidx.RDB$INDEX_NAME = tempidx.RDB$FOREIGN_KEY
+						WHERE con.RDB$RELATION_NAME = rfr.RDB$RELATION_NAME) AS FOREIGNKEY_COUNT
+				FROM RDB$RELATIONS rfr
+				WHERE rfr.RDB$VIEW_SOURCE IS NULL");
 
 		if (restrictions != null)
 		{
@@ -89,7 +91,7 @@ internal class DslTables : AbstractDslSchema
 			{
 				where.Append(" AND ");
 
-				where.AppendFormat("rdb$relation_name = @p{0}", index++);
+				where.Append($"RDB$RELATION_NAME = @p{index++}");
 			}
 
 			/* TABLE_TYPE */
@@ -100,12 +102,12 @@ internal class DslTables : AbstractDslSchema
 				switch (restrictions[3].ToString())
 				{
 					case "SYSTEM TABLE":
-						where.Append("rdb$system_flag = 1");
+						where.Append("RDB$SYSTEM_FLAG = 1");
 						break;
 
 					case "TABLE":
 					default:
-						where.Append("rdb$system_flag = 0");
+						where.Append("RDB$SYSTEM_FLAG = 0");
 						break;
 				}
 			}
@@ -134,6 +136,7 @@ internal class DslTables : AbstractDslSchema
 			foreach (DataRow row in schema.Rows)
 			{
 				row["TABLE_TYPE"] = "TABLE";
+
 				if (Convert.ToInt32(row["IS_SYSTEM_FLAG"]) == 1)
 				{
 					row["TABLE_TYPE"] = "SYSTEM_TABLE";

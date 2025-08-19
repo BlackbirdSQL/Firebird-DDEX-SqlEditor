@@ -16,8 +16,10 @@
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using FirebirdSql.Data.FirebirdClient;
 
 
 
@@ -41,27 +43,28 @@ internal class DslProcedures : AbstractDslSchema
 		StringBuilder sql = new();
 		StringBuilder where = new();
 
-		sql.AppendFormat(
-			@"SELECT
+		string packageNameColumn = MajorVersionNumber >= 3 ? "RDB$PACKAGE_NAME" : "null";
+
+		sql.Append(
+			$@"SELECT
 					null AS PROCEDURE_CATALOG,
 					null AS PROCEDURE_SCHEMA,
-					rdb$procedure_name AS PROCEDURE_NAME,
-					rdb$procedure_inputs AS INPUTS,
-					rdb$procedure_outputs AS OUTPUTS,
-					(CASE WHEN rdb$system_flag <> 1 THEN
+					RDB$PROCEDURE_NAME AS PROCEDURE_NAME,
+					RDB$PROCEDURE_INPUTS AS INPUTS,
+					RDB$PROCEDURE_OUTPUTS AS OUTPUTS,
+					(CASE WHEN RDB$SYSTEM_FLAG <> 1 THEN
 						 0
 					ELSE
 						 1
 					END) AS IS_SYSTEM_FLAG,
-					(CASE WHEN rdb$procedure_source IS NULL AND rdb$procedure_blr IS NOT NULL THEN
-						 cast(rdb$procedure_blr as blob sub_type 1)
+					(CASE WHEN RDB$PROCEDURE_SOURCE IS NULL AND RDB$PROCEDURE_BLR IS NOT NULL THEN
+						 cast(RDB$PROCEDURE_BLR as blob sub_type 1)
 					ELSE
-						 rdb$procedure_source
+						 RDB$PROCEDURE_SOURCE
 					END) AS SOURCE,
-					rdb$description AS DESCRIPTION,
-					{0} AS PACKAGE_NAME
-				FROM rdb$procedures",
-			MajorVersionNumber >= 3 ? "rdb$package_name" : "null");
+					RDB$DESCRIPTION AS DESCRIPTION,
+					{packageNameColumn} AS PACKAGE_NAME
+				FROM RDB$PROCEDURES"); 
 
 		if (restrictions != null)
 		{
@@ -80,13 +83,13 @@ internal class DslProcedures : AbstractDslSchema
 			/* PROCEDURE_NAME */
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
-				where.AppendFormat("rdb$procedure_name = @p{0}", index++);
+				where.Append($"RDB$PROCEDURE_NAME = @p{index++}");
 			}
 		}
 
 		if (where.Length > 0)
 		{
-			sql.AppendFormat(" WHERE {0} ", where.ToString());
+			sql.Append($" WHERE {where} ");
 		}
 
 		sql.Append(" ORDER BY PACKAGE_NAME, PROCEDURE_NAME");

@@ -233,7 +233,7 @@ internal class MultilineToolTip : ToolTip
 		Draw += OnToolTipDraw;
 	}
 
-	internal new void SetToolTip(Control control, string text)
+	public new void SetToolTip(Control control, string text)
 	{
 		ControlData controlData = GetControlData(control);
 		controlData.Text = text;
@@ -248,12 +248,12 @@ internal class MultilineToolTip : ToolTip
 		}
 	}
 
-	internal new string GetToolTip(Control control)
+	public new string GetToolTip(Control control)
 	{
 		return GetControlData(control).Text;
 	}
 
-	internal new void RemoveAll()
+	public new void RemoveAll()
 	{
 		Hide();
 		foreach (ControlData controlData in controlDataList)

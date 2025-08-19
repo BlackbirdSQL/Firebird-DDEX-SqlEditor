@@ -45,7 +45,8 @@ internal class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNa
 		if (obj == null)
 			return Resources.ScriptNoObject;
 
-		string prop = GetNodeScriptProperty(obj).ToUpper();
+		// UCASE: Made ToUpper() ToString()
+		string prop = GetNodeScriptProperty(obj).ToString();
 		string src = ((string)obj.Properties[prop]).Replace("\r\n", "\n").Replace("\r", "\n");
 
 		string dirtysrc = "";
@@ -208,7 +209,8 @@ internal class DbServerExplorerService : SBsNativeDbServerExplorerService, IBsNa
 
 	private static string GetDecoratedDdlSourceTable(string src)
 	{
-		src = $"SELECT * FROM {src.ToUpperInvariant()}";
+		// UCASE: Made ToUpperInvariant() ToString()
+		src = $"SELECT * FROM \"{src}\"";
 		return src;
 	}
 

@@ -19,7 +19,12 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System.Collections.Generic;
+using System.Data;
+using System.IO.Packaging;
 using System.Text;
+using FirebirdSql.Data.FirebirdClient;
+using FirebirdSql.Data.Isql;
 
 namespace BlackbirdSql.Data.Model.Schema;
 
@@ -33,6 +38,14 @@ internal class DslRawGenerators : AbstractDslSchema
 	}
 
 
+	protected override void InitializeParameters(IDbConnection connection)
+	{
+		InitializeColumnsList(connection, "RDB$GENERATORS");
+	}
+
+
+
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
@@ -41,8 +54,12 @@ internal class DslRawGenerators : AbstractDslSchema
 
 		StringBuilder sql = new();
 
-		sql.Append(
-@"EXECUTE BLOCK
+		string bigInt = Dialect != 1 ? "bigint" : "int";
+
+		string increment = HasColumn("RDB$GENERATOR_INCREMENT") ? "RDB$GENERATOR_INCREMENT" : "1";
+		string seed = HasColumn("RDB$INITIAL_VALUE") ? "RDB$INITIAL_VALUE" : "0";
+
+		sql.Append($@"EXECUTE BLOCK
 	RETURNS (
 		GENERATOR_CATALOG varchar(50),
 		GENERATOR_SCHEMA varchar(50),
@@ -50,28 +67,29 @@ internal class DslRawGenerators : AbstractDslSchema
 		IS_SYSTEM_FLAG int,
 		GENERATOR_ID smallint,
 		GENERATOR_IDENTITY int,
-		IDENTITY_SEED bigint,
+		IDENTITY_SEED {bigInt},
 		IDENTITY_INCREMENT int,
-		IDENTITY_CURRENT bigint)
+		IDENTITY_CURRENT {bigInt})
 AS
 BEGIN
 	FOR SELECT
-		null, null, rdb$generator_name, (CASE WHEN rdb$system_flag <> 1 THEN 0 ELSE 1 END),
-		rdb$generator_id, rdb$initial_value, rdb$generator_increment 
-	FROM rdb$generators
-	ORDER BY rdb$generator_name
+		null, null, RDB$GENERATOR_NAME, (CASE WHEN RDB$SYSTEM_FLAG <> 1 THEN 0 ELSE 1 END),
+		RDB$GENERATOR_ID, {seed}, {increment} 
+	FROM RDB$GENERATORS
+	ORDER BY RDB$GENERATOR_NAME
 	INTO :GENERATOR_CATALOG, :GENERATOR_SCHEMA, :SEQUENCE_GENERATOR, :IS_SYSTEM_FLAG, :GENERATOR_ID, :IDENTITY_SEED, :IDENTITY_INCREMENT
 	DO BEGIN
-		EXECUTE STATEMENT 'SELECT gen_id(' || SEQUENCE_GENERATOR || ', 0) FROM rdb$database' INTO :IDENTITY_CURRENT;
-		:IDENTITY_CURRENT = :IDENTITY_CURRENT - :IDENTITY_INCREMENT;
+		EXECUTE STATEMENT 'SELECT gen_id(""' || :SEQUENCE_GENERATOR || '"", 0) FROM RDB$DATABASE' INTO :IDENTITY_CURRENT;
+		IDENTITY_CURRENT = :IDENTITY_CURRENT - :IDENTITY_INCREMENT;
 		IF (:IDENTITY_CURRENT < :IDENTITY_SEED - 1) THEN
 		BEGIN
-			:IDENTITY_CURRENT = :IDENTITY_SEED - 1;
+			IDENTITY_CURRENT = :IDENTITY_SEED - 1;
 		END
         SUSPEND;
     END
 END");
 
+		// Evs.Trace(GetType(), nameof(GetCommandText), $"Sql: {sql}");
 
 		return sql;
 	}

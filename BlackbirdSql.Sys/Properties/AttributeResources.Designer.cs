@@ -29,7 +29,7 @@ namespace BlackbirdSql.Sys.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        public AttributeResources() {
+        internal AttributeResources() {
         }
         
         /// <summary>
@@ -133,7 +133,7 @@ namespace BlackbirdSql.Sys.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The client library for embedded databases..
+        ///   Looks up a localized string similar to The client library for embedded databases. Built in engines include fbembed for version 3.0 and fbembed25 for version 2.5..
         /// </summary>
         internal static string PropertyDescriptionClientLibrary {
             get {

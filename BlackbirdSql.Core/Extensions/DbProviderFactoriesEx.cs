@@ -353,7 +353,7 @@ internal static class DbProviderFactoriesEx
 
 						if (badCount == 0)
 						{
-							Diag.OutputPaneWriteLineAsyui(Resources.DbProviderFactoriesEx_Recovery.Fmt(validationCount), false);
+							Diag.OutputPaneWriteLineAsyup(Resources.DbProviderFactoriesEx_Recovery.Fmt(validationCount), false);
 
 							// Give output time to breath.
 							System.Threading.Thread.Sleep(10);
@@ -362,7 +362,7 @@ internal static class DbProviderFactoriesEx
 
 						badCount++;
 
-						Diag.OutputPaneWriteLineAsyui(Resources.DbProviderFactoriesEx_RecoveryInvariantFaulted.Fmt(invariant), false);
+						Diag.OutputPaneWriteLineAsyup(Resources.DbProviderFactoriesEx_RecoveryInvariantFaulted.Fmt(invariant), false);
 					}
 
 
@@ -405,7 +405,7 @@ internal static class DbProviderFactoriesEx
 							else
 								fmt = Resources.DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated;
 
-							Diag.OutputPaneWriteLineAsyui(fmt.Fmt(invariant), false);
+							Diag.OutputPaneWriteLineAsyup(fmt.Fmt(invariant), false);
 
 
 							continue;
@@ -443,7 +443,7 @@ internal static class DbProviderFactoriesEx
 					{
 						invariant = (string)pair.Value.GetProperty("InvariantName");
 
-						Diag.OutputPaneWriteLineAsyui(Resources.DbProviderFactoriesEx_RecoveryInvariantFailed.Fmt(invariant), false);
+						Diag.OutputPaneWriteLineAsyup(Resources.DbProviderFactoriesEx_RecoveryInvariantFailed.Fmt(invariant), false);
 					}
 				}
 
@@ -463,7 +463,7 @@ internal static class DbProviderFactoriesEx
 
 				fmt += "\n" + sb + "\n";
 
-				Diag.OutputPaneWriteLineAsyui(fmt, false);
+				Diag.OutputPaneWriteLineAsyup(fmt, false);
 			}
 
 		}

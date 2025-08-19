@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="14.5.4.001" Language="en-US" Publisher="BlackbirdSql" />
+        <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="14.6.0.0" Language="en-US" Publisher="BlackbirdSql" />
         <DisplayName>BlackbirdSql DDEX and SqlEditor for Firebird</DisplayName>
         <Description xml:space="preserve">The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the "look and feel" of Microsoft's SqlServer extensions</Description>
         <License>Properties\license.txt</License>
@@ -12,13 +12,13 @@
         <Tags>DDEX;Firebird;FirebirdSql;DDEX 2.0;SqlEditor</Tags>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.10, 18.0)">
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.14, 18.0)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
-        <InstallationTarget Version="[17.10,18.0)" Id="Microsoft.VisualStudio.Pro">
+        <InstallationTarget Version="[17.14,18.0)" Id="Microsoft.VisualStudio.Pro">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
-        <InstallationTarget Version="[17.10,18.0)" Id="Microsoft.VisualStudio.Community">
+        <InstallationTarget Version="[17.14,18.0)" Id="Microsoft.VisualStudio.Community">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
     </Installation>

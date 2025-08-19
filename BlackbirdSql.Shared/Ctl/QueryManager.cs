@@ -463,7 +463,7 @@ public sealed class QueryManager : IBsQueryManager
 			IDbConnection existingConnection = connection;
 
 			SetStateValue(EnQueryState.Connecting, true);
-			await RdtManager.InvalidateToolbarAsync(DocCookie);
+			await RdtManager.InvalidateToolbarEuiAsync(DocCookie);
 
 			try
 			{
@@ -479,8 +479,8 @@ public sealed class QueryManager : IBsQueryManager
 					SetStateValue(EnQueryState.Faulted, true);
 					SetStateValue(EnQueryState.Prompting, true);
 
-					await RdtManager.InvalidateToolbarAsync(DocCookie);
-					await RdtManager.ShowWindowFrameAsync(DocCookie);
+					await RdtManager.InvalidateToolbarEuiAsync(DocCookie);
+					await RdtManager.ShowWindowFrameEuiAsync(DocCookie);
 
 					string str = Strategy?.DisplayServerName;
 					if (!string.IsNullOrWhiteSpace(str))
@@ -588,7 +588,6 @@ public sealed class QueryManager : IBsQueryManager
 
 
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD003:Avoid awaiting foreign Tasks", Justification = "<Pending>")]
 	public bool Cancel(bool synchronous)
 	{
 		if (!IsExecuting && !IsConnecting)
@@ -780,7 +779,7 @@ public sealed class QueryManager : IBsQueryManager
 				{
 					SetStateValue(EnQueryState.Faulted, true);
 					SetStateValue(EnQueryState.Prompting, true);
-					await RdtManager.ShowWindowFrameAsync(DocCookie);
+					await RdtManager.ShowWindowFrameEuiAsync(DocCookie);
 
 					string server = Strategy?.MdlCsb?.DataSource;
 					if (!string.IsNullOrWhiteSpace(server))
@@ -861,12 +860,12 @@ public sealed class QueryManager : IBsQueryManager
 		if (!IsConnected && state == EnNotifyConnectionState.ConfirmedOpen)
 		{
 			SetStateValue(EnQueryState.Connected, true);
-			RdtManager.InvalidateToolbarAsyeu(DocCookie);
+			RdtManager.InvalidateToolbarEui(DocCookie);
 		}
 		else if (IsConnected && state == EnNotifyConnectionState.ConfirmedClosed)
 		{
 			SetStateValue(EnQueryState.Connected, false);
-			RdtManager.InvalidateToolbarAsyeu(DocCookie);
+			RdtManager.InvalidateToolbarEui(DocCookie);
 		}
 
 
@@ -1192,7 +1191,7 @@ public sealed class QueryManager : IBsQueryManager
 		}
 
 		SetStateValue(EnQueryState.Executing, true);
-		RdtManager.InvalidateToolbarAsyeu(DocCookie);
+		RdtManager.InvalidateToolbarEui(DocCookie);
 
 		return true;
 	}
@@ -1256,7 +1255,7 @@ public sealed class QueryManager : IBsQueryManager
 		}
 
 		if (invalidateToolbar)
-			RdtManager.InvalidateToolbarAsyeu(DocCookie);
+			RdtManager.InvalidateToolbarEui(DocCookie);
 
 		return true;
 	}
@@ -1475,7 +1474,7 @@ public sealed class QueryManager : IBsQueryManager
 		EventExecutingExit();
 		SetStateValue(EnQueryState.Cancelling, false);
 
-		RdtManager.InvalidateToolbarAsync(DocCookie).Forget();
+		RdtManager.InvalidateToolbarEuiAsync(DocCookie).Forget();
 
 		return result;
 	}

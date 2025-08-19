@@ -4,15 +4,21 @@
 using System;
 using System.ComponentModel.Design;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using BlackbirdDsl;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Sys.Enums;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
+using C5;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Threading;
+
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -101,7 +107,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 	{
 		get
 		{
-			Evs.Trace(GetType(), "get_ConnectionString");
+			// Evs.Trace(GetType(), "get_ConnectionString");
 
 			return Connection.ConnectionString;
 		}
@@ -135,7 +141,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 	{
 		get
 		{
-			lock(_LockLocal)
+			lock (_LockLocal)
 				return _PasswordPromptCancelled;
 		}
 		set
@@ -201,10 +207,13 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(IServiceContainer container, Type serviceType)
 	{
-		Evs.Trace(GetType(), nameof(CreateService), $"Service requested: {serviceType.Name}");
+		// Evs.Trace(GetType(), nameof(CreateService), $"Service requested: {serviceType.Name}");
 
 		if (serviceType == typeof(IVsDataCommand))
 			return new VxiCommand(Site);
+
+		if (serviceType == typeof(IVsDataAsyncCommand))
+			return new VxiAsyncCommand(Site);
 
 
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
@@ -261,7 +270,7 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 	// ---------------------------------------------------------------------------------
 	public override bool Open(bool doPromptCheck)
 	{
-		Evs.Trace(GetType(), nameof(Open), $"doPromptCheck: {doPromptCheck}");
+		// Evs.Trace(GetType(), nameof(Open), $"doPromptCheck: {doPromptCheck}");
 
 		if (State == DataConnectionState.Open || PasswordPromptCancelled)
 			return true;
@@ -301,20 +310,41 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 
 		try
 		{
-			Connection.Open();
-			/*
-			// Fire and wait.
-			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await Cmd.AwaitableAsync();
-				NativeDb.DatabaseEngineSvc.OpenConnection_(Connection);
-				return true;
-			});
-			*/
+			Connection.OpenDb();
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex, $"\nConnectionString: {Connection?.ConnectionString}");
+			bool exceptionHandled = false;
+
+			if (ex is DbException exd && exd.HasSqlException())
+			{
+				if (exd.GetErrorCode() == 335544325)
+				{
+					if (exd.Message.IndexOf("CHARACTER SET", StringComparison.OrdinalIgnoreCase) != -1)
+					{
+						exceptionHandled = true;
+						string msg = Resources.ExceptionDbCharacterSet.Fmt(exd.Message);
+						MessageCtl.ShowX(msg, Resources.ExceptionDbCharacterSetCaption, MessageBoxButtons.OK);
+					}
+				}
+				else if (exd.GetErrorCode() == 335545004)
+				{
+					if (exd.Message.IndexOf("Error loading plugin", StringComparison.OrdinalIgnoreCase) != -1)
+					{
+						exceptionHandled = true;
+						string msg = Resources.ExceptionLoadingPlugin.Fmt(exd.Message);
+						MessageCtl.ShowX(msg, Resources.ExceptionLoadingPluginCaption, MessageBoxButtons.OK);
+					}
+				}
+				else if (exd.GetErrorCode() == 335544379)
+				{
+					exceptionHandled = true;
+					string msg = Resources.ExceptionDbVersionMismatch.Fmt(exd.Message);
+					MessageCtl.ShowX(msg, Resources.ExceptionDbVersionMismatchCaption, MessageBoxButtons.OK);
+				}
+			}
+			if (!exceptionHandled)
+				Diag.Expected(ex, $"\nConnectionString: {Connection?.ConnectionString}");
 			throw;
 		}
 
@@ -354,41 +384,325 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 
 		public override IVsDataParameter CreateParameter()
 		{
-			// Evs.Trace(GetType(), nameof(CreateParameter));
-			return ConnectionSupport.CreateParameterCore();
+			/// Evs.Trace(GetType(), "CreateParameter");
+			IVsDataParameter parameter = ConnectionSupport.CreateParameterCore();
+
+			// Evs.Trace(GetType(), "CreateParameter", $"{parameter.Name}:{parameter.Type}:{parameter.Value}: {parameter.ToString()}");
+
+			return parameter;
 		}
 
 		public override IVsDataParameter[] DeriveParameters(string command, DataCommandType commandType, int commandTimeout)
 		{
-			// Evs.Trace(GetType(), nameof(DeriveParameters), "commandType: {0}, command: {1}", commandType, command);
-			return ConnectionSupport.DeriveParametersCore(command, commandType, commandTimeout);
+			/// Evs.Trace(GetType(), "DeriveParameters", $"commandType: {commandType}, command: {command}");
+			IVsDataParameter[] parameters = ConnectionSupport.DeriveParametersCore(command, commandType, commandTimeout);
+			// Evs.Trace(GetType(), "DeriveParameters", $"commandType: {commandType}, command: {command}\n{DataParametersToString(parameters)}");
+			return parameters;
 		}
 
 		public override string Prepare(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Evs.Trace(GetType(), nameof(Prepare), $"commandType: {commandType}, command: {command}");
+			// Evs.Trace(GetType(), "Prepare", $"commandType: {commandType}, command: {command}");
 
-			return ConnectionSupport.PrepareCore(command, commandType, parameters, commandTimeout);
+			string retval = ConnectionSupport.PrepareCore(command, commandType, parameters, commandTimeout);
+
+			// Evs.Trace(GetType(), "Prepare", $"commandType: {commandType}, command: {command}\n{retval}");
+
+			return retval;
 		}
 
 		public override IVsDataReader DeriveSchema(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			// Evs.Trace(GetType(), nameof(DeriveSchema), "commandType: {0}, command: {1}", commandType, command);
+			// Evs.Trace(GetType(), "DeriveSchema", $"commandType: {commandType}, command: {command}\n{DataParametersToString(parameters)}");
 			return ConnectionSupport.DeriveSchemaCore(command, commandType, parameters, commandTimeout);
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+		private string DataParametersToString(IVsDataParameter[] parameters)
+		{
+			if (parameters == null)
+				return "null";
+
+			string retval = "";
+			foreach (IVsDataParameter parameter in parameters)
+			{
+				retval += $"{parameter.Name}:{parameter.Type}:{parameter.Value}: {parameter.ToString()},  ";
+			}
+
+			return retval;
 		}
 
 		public override IVsDataReader Execute(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Evs.Trace(GetType(), nameof(Execute), $"commandType: {commandType}, command: {command}");
+			// Evs.Trace(GetType(), "Execute", $"commandType: {commandType}, command: {command}\n{DataParametersToString(parameters)}");
+
+			// Basic hack to get past mixed and lower case Firebird identifiers.
+			// Composite tokens of the form "identifier1".identifier2."identifier3".identifier4 are handled
+			// Composite tokens beginning and ending with double quotes will be skipped.
+			// eg. "identifier1".identifier2."identifier3" will not detect identifier2 is unquoted.
+			// "identifier1".identifier2."identifier3".identifier4 will convert
+			// to "identifier1"."identifier2"."identifier3"."identifier4"
+
+			if (command != null && command != command.ToUpper())
+			{
+				// Use the C++ parser to tokenize.
+				Parser DslParser = new Parser(EnParserOptions.TOKENIZE_ONLY);
+
+				StringCell tokens = DslParser.Execute(command);
+				string[] identifiers;
+				string composite;
+				string token;
+				string str = "";
+
+
+				foreach (StringCell tokenCell in tokens.Enumerator)
+				{
+					token = tokenCell.ToString().Trim();
+
+					if (String.IsNullOrEmpty(token))
+						continue;
+
+					if (token == token.ToUpper() || token.StartsWith("'") ||
+						(token.StartsWith("\"") && token.EndsWith("\"")))
+					{
+						str += (token == "," || token == ";" ? "" : " ") + token;
+						continue;
+					}
+
+					identifiers = token.Split('.');
+
+					composite = "";
+
+					foreach (string identifier in identifiers)
+					{
+						if (composite != "")
+							composite += ".";
+
+						if (identifier == identifier.ToUpper() || identifier.StartsWith("'") || identifier.StartsWith("\""))
+						{
+							composite += identifier;
+							continue;
+						}
+
+						composite += "\"" + identifier + "\"";
+					}
+
+
+
+
+					str += " " + composite;
+				}
+
+				command = str.Trim();
+
+				// Evs.Trace(GetType(), "Execute", $"Converted command: {command}");
+			}
+
+
+
 
 			return ConnectionSupport.ExecuteCore(command, commandType, parameters, commandTimeout);
 		}
 
 		public override int ExecuteWithoutResults(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Evs.Trace(GetType(), nameof(ExecuteWithoutResults), $"commandType: {commandType}, command: {command}");
+			// Evs.Trace(GetType(), "ExecuteWithoutResults", $"commandType: {commandType}, command: {command}\n{DataParametersToString(parameters)}");
 
 			return ConnectionSupport.ExecuteWithoutResultsCore(command, commandType, parameters, commandTimeout);
+		}
+	}
+
+
+
+
+	private class VxiAsyncCommand : DataAsyncCommand
+	{
+		private VxbConnectionSupport ConnectionSupport => base.Site.GetService(typeof(IVsDataConnectionSupport)) as VxbConnectionSupport;
+
+		public VxiAsyncCommand(IVsDataConnection connection)
+			: base(connection)
+		{
+		}
+
+
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+		private string DataParametersToString(IVsDataParameter[] parameters)
+		{
+			if (parameters == null)
+				return "null";
+
+			string retval = "";
+			foreach (IVsDataParameter parameter in parameters)
+			{
+				retval += $"{parameter.Name}:{parameter.Type}:{parameter.Value}: {parameter.ToString()},  ";
+			}
+
+			return retval;
+		}
+
+
+
+		protected override IVsDataParameter[] OnDeriveParameters(string command, DataCommandType commandType, int commandTimeout)
+		{
+			Reflect.SetFieldValue(ConnectionSupport, "_inAsyncMode", true);
+
+			try
+			{
+				IVsDataParameter[] parameters = base.OnDeriveParameters(command, commandType, commandTimeout);
+				// Evs.Trace(GetType(), "OnDeriveParameters", $"commandType: {commandType}, command: {command}\n{DataParametersToString(parameters)}");
+				return parameters;
+			}
+			finally
+			{
+				Reflect.SetFieldValue(ConnectionSupport, "_inAsyncMode", false);
+			}
+		}
+
+		protected override string OnPrepare(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Reflect.SetFieldValue(ConnectionSupport, "_inAsyncMode", true);
+
+			try
+			{
+				string retval = base.OnPrepare(command, commandType, parameters, commandTimeout);
+
+				// Evs.Trace(GetType(), "OnPrepare", $"commandType: {commandType}, command: {command}\n{retval}");
+
+				return retval;
+			}
+			finally
+			{
+				Reflect.SetFieldValue(ConnectionSupport, "_inAsyncMode", false);
+			}
+		}
+
+		protected override IVsDataReader OnDeriveSchema(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Reflect.SetFieldValue(ConnectionSupport, "_inAsyncMode", true);
+
+			// Evs.Trace(GetType(), "OnDeriveSchema", $"commandType: {commandType}, command: {command}\n{DataParametersToString(parameters)}");
+
+			return base.OnDeriveSchema(command, commandType, parameters, commandTimeout);
+		}
+
+		protected override void OnDeriveSchemaCompleted(DataAsyncCommandCompletedEventArgs<IVsDataReader> e)
+		{
+			AdoDotNetConnectionSupport connectionSupport = ConnectionSupport;
+			try
+			{
+				base.OnDeriveSchemaCompleted(e);
+			}
+			finally
+			{
+				Reflect.SetFieldValue(connectionSupport, "_currentCommand", null);
+				Reflect.SetFieldValue(connectionSupport, "_inAsyncMode", false);
+			}
+		}
+
+		protected override IVsDataReader OnExecute(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Reflect.SetFieldValue(ConnectionSupport, "_inAsyncMode", true);
+
+			// Evs.Trace(GetType(), "OnExecute", $"commandType: {commandType}, command: {command}\n{DataParametersToString(parameters)}");
+
+			// Basic hack to get past mixed and lower case Firebird identifiers.
+			// Composite tokens of the form "identifier1".identifier2."identifier3".identifier4 are handled
+			// Composite tokens beginning and ending with double quotes will be skipped.
+			// eg. "identifier1".identifier2."identifier3" will not detect identifier2 is unquoted.
+			// "identifier1".identifier2."identifier3".identifier4 will convert
+			// to "identifier1"."identifier2"."identifier3"."identifier4"
+
+			if (command != null && command != command.ToUpper())
+			{
+				// Use the C++ parser to tokenize.
+				Parser DslParser = new Parser(EnParserOptions.TOKENIZE_ONLY);
+
+				StringCell tokens = DslParser.Execute(command);
+				string[] identifiers;
+				string composite;
+				string token;
+				string str = "";
+
+
+				foreach (StringCell tokenCell in tokens.Enumerator)
+				{
+					token = tokenCell.ToString().Trim();
+
+					if (String.IsNullOrEmpty(token))
+						continue;
+
+					if (token == token.ToUpper() || token.StartsWith("'") ||
+						(token.StartsWith("\"") && token.EndsWith("\"")))
+					{
+						str += (token == "," || token == ";" ? "" : " ") + token;
+						continue;
+					}
+
+					identifiers = token.Split('.');
+
+					composite = "";
+
+					foreach (string identifier in identifiers)
+					{
+						if (composite != "")
+							composite += ".";
+
+						if (identifier == identifier.ToUpper() || identifier.StartsWith("'") || identifier.StartsWith("\""))
+						{
+							composite += identifier;
+							continue;
+						}
+
+						composite += "\"" + identifier + "\"";
+					}
+
+
+
+
+					str += " " + composite;
+				}
+
+				command = str.Trim();
+
+				// Evs.Trace(GetType(), "Execute", $"Converted command: {command}");
+			}
+
+			return base.OnExecute(command, commandType, parameters, commandTimeout);
+		}
+
+		protected override void OnExecuteCompleted(DataAsyncCommandCompletedEventArgs<IVsDataReader> e)
+		{
+			AdoDotNetConnectionSupport connectionSupport = ConnectionSupport;
+			try
+			{
+				base.OnExecuteCompleted(e);
+			}
+			finally
+			{
+				Reflect.SetFieldValue(connectionSupport, "_currentCommand", null);
+				Reflect.SetFieldValue(connectionSupport, "_inAsyncMode", false);
+			}
+		}
+
+		protected override int OnExecuteWithoutResults(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Reflect.SetFieldValue(ConnectionSupport, "_inAsyncMode", true);
+			try
+			{
+				// Evs.Trace(GetType(), "OnExecuteWithoutResults", $"commandType: {commandType}, command: {command}\n{DataParametersToString(parameters)}");
+
+				return base.OnExecuteWithoutResults(command, commandType, parameters, commandTimeout);
+			}
+			finally
+			{
+				Reflect.SetFieldValue(ConnectionSupport, "_inAsyncMode", false);
+			}
+		}
+
+		protected override void OnCancel(object userState)
+		{
+			base.OnCancel(userState);
 		}
 	}
 

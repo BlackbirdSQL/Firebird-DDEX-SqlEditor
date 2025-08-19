@@ -3,13 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using BlackbirdSql.Core.Ctl.Config;
-using System.Runtime.CompilerServices;
 using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Sys;
-using BlackbirdSql.Sys.Enums;
-using BlackbirdSql.Sys.Interfaces;
-using Microsoft.VisualStudio.Shell;
 
 
 
@@ -138,11 +132,11 @@ internal abstract class RunningConnectionTable : AbstractRunningConnectionTable
 				if (_InternalDatabases != null)
 					return _InternalDatabases;
 
-				if (_Instance == null)
+				if (_InternalInstance == null)
 					return null;
 			}
 
-			InternalResolveDeadlocksAndEnsureLoaded(false);
+			InternalEnsureLoaded(false);
 
 			if (_LoadDataCardinal > 0)
 			{
@@ -215,28 +209,6 @@ internal abstract class RunningConnectionTable : AbstractRunningConnectionTable
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Returns a strings enumerable of the Rct's registered DatasetKeys'
-	/// AdornedQualifiedName's.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected IEnumerable<string> InternalAdornedQualifiedNames
-	{
-		get
-		{
-			object adornedQualifiedName;
-
-			return InternalDatabases.Select()
-					.Where(x => (adornedQualifiedName = x[CoreConstants.C_KeyExAdornedQualifiedName]) != DBNull.Value
-						&& !string.IsNullOrWhiteSpace((string)adornedQualifiedName))
-					.OrderBy(x => (string)x[CoreConstants.C_KeyExAdornedQualifiedName])
-					.Select(x => (string)x[CoreConstants.C_KeyExAdornedQualifiedName]);
-		}
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns a strings enumerable of the Rct's registered DatasetKeys'
 	/// AdornedQualifiedTitle's.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -268,41 +240,6 @@ internal abstract class RunningConnectionTable : AbstractRunningConnectionTable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Adds a synonym DatasetKey to the synonyms dictionary.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected void AddSynonym(string synonym, string key)
-	{
-		if (_Instance == null)
-			return;
-
-		DataRow[] rows = null;
-
-		lock (_LockObject)
-			rows = _InternalConnectionsTable.Select().Where(x => key.Equals(x[CoreConstants.C_KeyExDatasetKey])).ToArray();
-
-		if (rows.Length == 0)
-		{
-			ArgumentException ex = new($"DatasetKey '{key}' not found for synonym '{synonym}.");
-			Diag.Ex(ex);
-			throw ex;
-		}
-
-		try
-		{
-			Add(synonym, Convert.ToInt32(rows[0]["Id"]));
-		}
-		catch (Exception ex)
-		{
-			Diag.Ex(ex, $"Failed to add Synonym {synonym} for DatsetKey: {key}.");
-			throw ex;
-		}
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Gets the registered connection data row given the ConnectionUrl,
 	/// ConnectionString, DatasetKey or DatsetKey synonym.
 	/// </summary>
@@ -318,7 +255,7 @@ internal abstract class RunningConnectionTable : AbstractRunningConnectionTable
 
 		// Evs.Debug(GetType(), nameof(TryGetHybridRowValue), $"hybridKey: {hybridKey}");
 
-		InternalResolveDeadlocksAndEnsureLoaded(false);
+		InternalEnsureLoaded(false);
 
 		if (_LoadDataCardinal > 0)
 		{

@@ -143,6 +143,13 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 	[DefaultValue(true)]
 	public bool EnableTaskLog { get; set; } = true;
 
+	[GlobalizedCategory("OptionCategoryDiagnostics")]
+	[GlobalizedDisplayName("OptionDisplayGeneralActivateOutputPane")]
+	[GlobalizedDescription("OptionDescriptionGeneralActivateOutputPane")]
+	[TypeConverter(typeof(GlobalYesNoConverter))]
+	[DefaultValue(false)]
+	public bool ActivateOutputPane { get; set; } = false;
+
 
 	[GlobalizedCategory("OptionCategoryEntityFramework")]
 	[GlobalizedDisplayName("OptionDisplayGeneralValidateSessionConnectionOnFormAccept")]

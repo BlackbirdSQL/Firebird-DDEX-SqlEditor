@@ -1519,9 +1519,9 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 
 
 
-	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
+	private async Task<bool> OnQueryExecutionCompletedEuiAsync(object sender, ExecutionCompletedEventArgs args)
 	{
-		// Evs.Trace(GetType(), nameof(OnQueryExecutionCompletedAsync));
+		// Evs.Trace(GetType(), nameof(OnQueryExecutionCompletedEuiAsync));
 
 		/* Moved to OnBatchDataLoaded(()
 		if (!args.IsParseOnly && AuxDocData.ClientStatisticsEnabled && _ClientStatisticsCtl != null)
@@ -1725,7 +1725,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		{
 			_QryMgr = qryMgr;
 			_QryMgr.ExecutionStartedEventAsync += OnQueryExecutionStartedAsync;
-			_QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
+			_QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedEuiAsync;
 			_QryMgr.ErrorMessageEvent += OnErrorMessage;
 			// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
 			_QryMgr.BatchScriptParsedEvent += OnBatchScriptParsed;
@@ -1742,7 +1742,7 @@ public class ResultsHandler : IBsQueryExecutionHandler, IBsExecutionHandler, IDi
 		if (_QryMgr != null)
 		{
 			_QryMgr.ExecutionStartedEventAsync -= OnQueryExecutionStartedAsync;
-			_QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
+			_QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedEuiAsync;
 			_QryMgr.ErrorMessageEvent -= OnErrorMessage;
 			// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
 			_QryMgr.BatchScriptParsedEvent -= OnBatchScriptParsed;

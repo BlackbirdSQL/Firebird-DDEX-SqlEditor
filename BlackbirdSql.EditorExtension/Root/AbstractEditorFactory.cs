@@ -224,7 +224,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				___(vsUserData2.SetData(ref clsidDetectLang, false));
 
 				if (isClone)
-					Task.Run(tabbedEditor.CloseCloneAsync).Forget();
+					Task.Run(tabbedEditor.CloseCloneEuiAsync).Forget();
 			}
 			catch (Exception ex)
 			{

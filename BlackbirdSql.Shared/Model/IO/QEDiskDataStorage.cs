@@ -16,8 +16,12 @@ internal class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDat
 	public QEDiskDataStorage()
 	{
 		// Evs.Trace(GetType(), "QEDiskDataStorage.QEDiskDataStorage", "", null);
-		_DataStorageEnabled = true;
+		_IsWriting = true;
 	}
+
+
+	public new bool IsClosed => _IsClosed;
+	
 
 
 
@@ -26,7 +30,7 @@ internal class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDat
 		// Evs.Trace(GetType(), "QEDiskDataStorage.SerializeData", "", null);
 		try
 		{
-			// Evs.Trace(GetType(), Tracer.EnLevel.Verbose, "QEDiskDataStorage.SerializeData", "_DataStorageEnabled = {0}", _DataStorageEnabled);
+			// Evs.Trace(GetType(), Tracer.EnLevel.Verbose, "QEDiskDataStorage.SerializeData", "_IsWriting = {0}", _IsWriting);
 			await base.SerializeDataAsync(cancelToken);
 		}
 		catch (Exception e)
@@ -47,16 +51,12 @@ internal class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDat
 		return !cancelToken.Cancelled();
 	}
 
-	internal new bool IsClosed()
-	{
-		return _IsClosed;
-	}
 
-	internal new async Task<bool> StartStoringDataAsync(CancellationToken cancelToken)
+	public new async Task<bool> StartStoringDataAsync(CancellationToken cancelToken)
 	{
 		if (!_IsClosed)
 		{
-			throw new InvalidOperationException(Resources.ExceptionStorageAlreadyStoring);
+			throw new InvalidOperationException(Resources.ExceptionStartAlreadyStoring.Fmt(nameof(QEDiskDataStorage)));
 		}
 		_IsClosed = false;
 
@@ -67,7 +67,7 @@ internal class QEDiskDataStorage : AbstractDiskDataStorage, IBsQEStorage, IBsDat
 
 	public void InitiateStopStoringData()
 	{
-		_DataStorageEnabled = false;
+		_IsWriting = false;
 	}
 
 	public override IBsStorageView GetStorageView()

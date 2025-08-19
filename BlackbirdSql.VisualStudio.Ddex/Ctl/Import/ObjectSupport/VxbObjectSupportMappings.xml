@@ -201,8 +201,10 @@
 				<Property name="IsDisabled" underlyingMember="IS_INACTIVE" />
 				<Property name="Priority" underlyingMember="PRIORITY" />
 				<Property name="Expression" underlyingMember="EXPRESSION" />
+				<Property name="BLR" underlyingMember="BLR" />
 				<Property name="Description" underlyingMember="DESCRIPTION" />
 				<Property name="IsIdentity" underlyingMember="IS_IDENTITY" />
+				<Property name="IsIncrement" underlyingMember="IS_INCREMENT" />
 				<Property name="SequenceGenerator" underlyingMember="SEQUENCE_GENERATOR" />
 				<Property name="Dependencies" underlyingMember="DEPENDENCY_COUNT" />
 				<Property name="DependencyFields" underlyingMember="DEPENDENCY_FIELDS" />

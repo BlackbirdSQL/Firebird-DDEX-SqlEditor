@@ -25,7 +25,7 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 
 	private const int C_ExtendedWidthExtra = 5;
 
-	internal new BlackbirdSql.Shared.Controls.Graphing.Edge EdgeOriginal => (BlackbirdSql.Shared.Controls.Graphing.Edge)base.EdgeOriginal;
+	public new BlackbirdSql.Shared.Controls.Graphing.Edge EdgeOriginal => (BlackbirdSql.Shared.Controls.Graphing.Edge)base.EdgeOriginal;
 
 	internal virtual int Width
 	{
@@ -51,9 +51,9 @@ internal class EdgeDisplay : Microsoft.AnalysisServices.Graphing.EdgeDisplay, IR
 
 	internal int ExtendedWidth => Width + C_ExtendedWidthExtra;
 
-	internal new BlackbirdSql.Shared.Controls.Graphing.NodeDisplay NodeFrom => base.NodeFrom as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
+	public new BlackbirdSql.Shared.Controls.Graphing.NodeDisplay NodeFrom => base.NodeFrom as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
 
-	internal new BlackbirdSql.Shared.Controls.Graphing.NodeDisplay NodeTo => base.NodeTo as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
+	public new BlackbirdSql.Shared.Controls.Graphing.NodeDisplay NodeTo => base.NodeTo as BlackbirdSql.Shared.Controls.Graphing.NodeDisplay;
 
 	internal override string Name
 	{

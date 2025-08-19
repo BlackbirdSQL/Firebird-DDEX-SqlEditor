@@ -46,7 +46,7 @@ internal class PropertiesWindowManager : IDisposable
 	{
 		EditorUIControl editorUI = TabbedEditorUiCtl;
 		editorUI.OnFocusHandler = (EventHandler)Delegate.Combine(editorUI.OnFocusHandler, new EventHandler(OnFocusReceived));
-		QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedAsync;
+		QryMgr.ExecutionCompletedEventAsync += OnQueryExecutionCompletedEuiAsync;
 		QryMgr.StatusChangedEvent += OnConnectionChanged;
 		TabbedEditorUiCtl.TabActivatedEvent += OnTabActivated;
 		ResultsHandler displaySQLResultsControl = TabbedEditor.EnsureDisplayResultsControl();
@@ -58,7 +58,7 @@ internal class PropertiesWindowManager : IDisposable
 	{
 		EditorUIControl editorUI = TabbedEditorUiCtl;
 		editorUI.OnFocusHandler = (EventHandler)Delegate.Remove(editorUI.OnFocusHandler, new EventHandler(OnFocusReceived));
-		QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedAsync;
+		QryMgr.ExecutionCompletedEventAsync -= OnQueryExecutionCompletedEuiAsync;
 		QryMgr.StatusChangedEvent -= OnConnectionChanged;
 		TabbedEditorUiCtl.TabActivatedEvent -= OnTabActivated;
 		ResultsHandler displaySQLResultsControl = TabbedEditor.EnsureDisplayResultsControl();
@@ -76,12 +76,12 @@ internal class PropertiesWindowManager : IDisposable
 		EnsurePropertyWindowObjectIsLatest();
 	}
 
-	private async Task<bool> OnQueryExecutionCompletedAsync(object sender, ExecutionCompletedEventArgs args)
+	private async Task<bool> OnQueryExecutionCompletedEuiAsync(object sender, ExecutionCompletedEventArgs args)
 	{
 		if (!args.Launched || args.SyncToken.Cancelled())
 			return true;
 
-		await RefreshPropertyWindowAsync();
+		await RefreshPropertyWindowEuiAsync();
 
 		return await Task.FromResult(true);
 	}
@@ -170,7 +170,7 @@ internal class PropertiesWindowManager : IDisposable
 
 
 
-	private async Task RefreshPropertyWindowAsync()
+	private async Task RefreshPropertyWindowEuiAsync()
 	{
 		lock (_LockLocal)
 		{

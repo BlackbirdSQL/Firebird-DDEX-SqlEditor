@@ -132,6 +132,19 @@
   <data name="ExceptionInvalidPrebuiltMetadataCall" xml:space="preserve">
     <value>The metadata collection {0} is pre-built and may not be called from here.</value>
   </data>
+  <data name="ExceptionLoadingPlugin" xml:space="preserve">
+    <value>Error loading Firebird client plugin.
+
+If you are connecting to multiple versions of embedded databases then note that you CAN connect to a Firebird 2 embedded database after connecting to a Firebird 3, 4 or 5 embedded database.
+The inverse may NOT always hold true.
+If the problem persists, connect to a Firebiird 3, 4 or 5 database first.
+
+The database engine returned the following message:
+{0}</value>
+  </data>
+  <data name="ExceptionLoadingPluginCaption" xml:space="preserve">
+    <value>Error Loading Firebird Client Plugin</value>
+  </data>
   <data name="ExceptionResourceNotFound" xml:space="preserve">
     <value>Resource not found: {0}</value>
   </data>
@@ -146,6 +159,10 @@
   </data>
   <data name="ExceptionUnsupportedPopulationMechanism" xml:space="preserve">
     <value>Unsupported population mechanism: {0}</value>
+  </data>
+  <data name="ExecutionPlanUnavailable" xml:space="preserve">
+    <value>Could not extract execution plan.
+This may be due to the server version and/or server type and/or database version.</value>
   </data>
   <data name="ScriptNoObject" xml:space="preserve">
     <value>Node has no object</value>

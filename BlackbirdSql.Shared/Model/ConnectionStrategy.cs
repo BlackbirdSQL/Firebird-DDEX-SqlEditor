@@ -319,7 +319,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 			if (!cancelToken.Cancelled())
 			{
 
-				await RdtManager.InvalidateToolbarAsync(DocCookie);
+				await RdtManager.InvalidateToolbarEuiAsync(DocCookie);
 				RaiseNotifyConnectionState(EnNotifyConnectionState.NotifyDead, hasTransactions);
 			}
 
@@ -373,7 +373,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 
 
 				if (!cancelToken.Cancelled())
-					await RdtManager.InvalidateToolbarAsync(DocCookie);
+					await RdtManager.InvalidateToolbarEuiAsync(DocCookie);
 
 				KeepAliveConnectionStartTimeEpoch = long.MinValue;
 				validationCardinal = 0L;
@@ -432,7 +432,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 					}
 
 					if (!cancelToken.Cancelled())
-						await RdtManager.InvalidateToolbarAsync(DocCookie);
+						await RdtManager.InvalidateToolbarEuiAsync(DocCookie);
 
 					return (!cancelToken.Cancelled(), connectionId, validationCardinal);
 				}
@@ -466,7 +466,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		{
 			bool onScreen = false;
 
-			_Frame ??= await RdtManager.GetWindowFrameAsync(DocCookie);
+			_Frame ??= await RdtManager.GetWindowFrameEuiAsync(DocCookie);
 
 			try
 			{
@@ -515,7 +515,7 @@ public class ConnectionStrategy : AbstractConnectionStrategy
 		}
 		else if (hasTransactions != HasTransactions)
 		{ 
-			await RdtManager.InvalidateToolbarAsync(DocCookie);
+			await RdtManager.InvalidateToolbarEuiAsync(DocCookie);
 		}
 
 		return (!cancelToken.Cancelled(), connectionId, validationCardinal);

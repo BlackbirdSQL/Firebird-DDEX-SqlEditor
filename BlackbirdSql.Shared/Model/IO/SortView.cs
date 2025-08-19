@@ -108,7 +108,7 @@ internal class SortView : IBsSortView, IDisposable
 	{
 		while (m_bKeepSortingData)
 		{
-			bool flag = m_StorageView.IsStorageClosed();
+			bool closedflag = m_StorageView.IsStorageClosed;
 			if (GetNextRowNumber())
 			{
 				InsertNextRow();
@@ -117,7 +117,7 @@ internal class SortView : IBsSortView, IDisposable
 			}
 			else
 			{
-				if (flag)
+				if (closedflag)
 				{
 					break;
 				}

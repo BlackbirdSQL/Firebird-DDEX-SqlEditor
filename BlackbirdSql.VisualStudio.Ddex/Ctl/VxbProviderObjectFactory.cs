@@ -57,7 +57,7 @@ public sealed class VxbProviderObjectFactory : DataProviderObjectFactory, IBsPro
 	// ---------------------------------------------------------------------------------
 	public override object CreateObject(Type objType)
 	{
-		Evs.Trace(GetType(), "CreateObject", $"objType: {objType.Name}");
+		// Evs.Trace(GetType(), "CreateObject", $"objType: {objType.Name}");
 
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
 		 * Don't forget to do the same for VxbConnectionSupport if you do.

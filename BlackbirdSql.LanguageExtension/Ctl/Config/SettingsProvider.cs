@@ -3,6 +3,7 @@
 
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Controls.Config;
+using BlackbirdSql.LanguageExtension.Model.Config;
 using BlackbirdSql.Sys.Interfaces;
 using Microsoft.VisualStudio.Shell;
 

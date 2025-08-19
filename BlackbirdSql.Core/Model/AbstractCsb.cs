@@ -510,13 +510,16 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 
 
 	/// <summary>
-	/// The DatasetKey if ConnectionName is null else the DisplayName qualified with the server name.
+	/// The fully qualified DatasetKey if ConnectionName is null else the DisplayName qualified with the server name.
 	/// </summary>
 	[Browsable(false)]
 	public string QualifiedName => string.IsNullOrEmpty(ConnectionName) ? DatasetKey : S_DatasetKeyFormat.Fmt(ServerName, DisplayName);
 
 
 
+	/// <summary>
+	/// The QualifiedName adorned with glyphs. See also <see cref="AdornedQualifiedTitle"/>.
+	/// </summary>
 	[Browsable(false)]
 	public string AdornedQualifiedName
 	{
@@ -543,6 +546,12 @@ public abstract class AbstractCsb : NativeDbCsbProxy
 	}
 
 
+	/// <summary>
+	/// The QualifiedName adorned with glyphs for title and dropdown displays where
+	/// the glyph is not rendered correctly using <see cref="AdornedQualifiedName"/>.
+	/// AdornedQualified title is preferred over AdornedQualifiedName as the access key
+	/// to datasets in SqlEditor.
+	/// </summary>
 	[Browsable(false)]
 	public string AdornedQualifiedTitle
 	{

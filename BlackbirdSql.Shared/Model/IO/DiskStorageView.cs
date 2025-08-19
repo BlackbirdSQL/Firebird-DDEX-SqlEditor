@@ -28,21 +28,24 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 
 	protected long _TotalRowCount;
 
-	protected int m_iPrevCol;
+	protected int _IPrevCol;
 
-	protected long m_i64PrevRow;
+	protected long _I64PrevRow;
 
-	protected long m_i64CurrentRow;
+	protected long _I64CurrentRow;
 
-	private bool readerClosed;
+	private bool _ReaderClosed;
 
 	public int Depth => 0;
 
-	public bool IsClosed => readerClosed;
+	public bool IsClosed => _ReaderClosed;
 
 	public int RecordsAffected => 0;
 
 	public int FieldCount => _DiskDataStorage.ColumnCount;
+
+	public override bool IsStorageClosed => _DiskDataStorage.IsClosed;
+	
 
 	public object this[int i] => GetValue(i);
 
@@ -59,8 +62,8 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 		_CurrentOffset = 0L;
 		_StartRow = 0L;
 		_TotalRowCount = 0L;
-		m_iPrevCol = -1;
-		m_i64PrevRow = 0L;
+		_IPrevCol = -1;
+		_I64PrevRow = 0L;
 	}
 
 	protected void InitFileReader()
@@ -123,7 +126,7 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 		{
 			throw new Exception(Resources.ExceptionInvalidArgument);
 		}
-		if (iCol == 0 || iCol != m_iPrevCol + 1 || i64Row != m_i64PrevRow)
+		if (iCol == 0 || iCol != _IPrevCol + 1 || i64Row != _I64PrevRow)
 		{
 			_CurrentOffset = _DiskDataStorage.GetRowOffset(i64Row);
 			for (int i = 0; i < iCol; i++)
@@ -131,8 +134,8 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 				SequentialReadColumn(i, bSkipValue: true);
 			}
 		}
-		m_iPrevCol = iCol;
-		m_i64PrevRow = i64Row;
+		_IPrevCol = iCol;
+		_I64PrevRow = i64Row;
 	}
 
 	public override object GetCellData(long i64Row, int iCol)
@@ -430,14 +433,10 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 		_DiskDataStorage.DeleteRow(iRow);
 	}
 
-	public override bool IsStorageClosed()
-	{
-		return _DiskDataStorage.IsClosed();
-	}
 
 	public void Close()
 	{
-		readerClosed = true;
+		_ReaderClosed = true;
 	}
 
 	public DataTable GetSchemaTable()
@@ -464,15 +463,15 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 	{
 		while (true)
 		{
-			if (m_i64CurrentRow < _DiskDataStorage.RowCount)
+			if (_I64CurrentRow < _DiskDataStorage.RowCount)
 			{
-				m_i64CurrentRow++;
+				_I64CurrentRow++;
 				return true;
 			}
-			if (IsStorageClosed())
-			{
+
+			if (IsStorageClosed)
 				break;
-			}
+
 			Thread.Sleep(100);
 		}
 		return false;
@@ -480,28 +479,28 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 
 	public bool GetBoolean(int i)
 	{
-		return (bool)GetCellData(m_i64CurrentRow - 1, i);
+		return (bool)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public byte GetByte(int i)
 	{
-		return (byte)GetCellData(m_i64CurrentRow - 1, i);
+		return (byte)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
 	{
-		Buffer.BlockCopy((byte[])GetCellData(m_i64CurrentRow - 1, i), (int)fieldOffset, buffer, bufferoffset, length);
+		Buffer.BlockCopy((byte[])GetCellData(_I64CurrentRow - 1, i), (int)fieldOffset, buffer, bufferoffset, length);
 		return length;
 	}
 
 	public char GetChar(int i)
 	{
-		return (char)GetCellData(m_i64CurrentRow - 1, i);
+		return (char)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
 	{
-		Buffer.BlockCopy((char[])GetCellData(m_i64CurrentRow - 1, i), (int)fieldoffset, buffer, bufferoffset, length);
+		Buffer.BlockCopy((char[])GetCellData(_I64CurrentRow - 1, i), (int)fieldoffset, buffer, bufferoffset, length);
 		return length;
 	}
 
@@ -512,52 +511,52 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 
 	public DateTime GetDateTime(int i)
 	{
-		return (DateTime)GetCellData(m_i64CurrentRow - 1, i);
+		return (DateTime)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public decimal GetDecimal(int i)
 	{
-		return (decimal)GetCellData(m_i64CurrentRow - 1, i);
+		return (decimal)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public double GetDouble(int i)
 	{
-		return (double)GetCellData(m_i64CurrentRow - 1, i);
+		return (double)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public float GetFloat(int i)
 	{
-		return (float)GetCellData(m_i64CurrentRow - 1, i);
+		return (float)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public Guid GetGuid(int i)
 	{
-		return (Guid)GetCellData(m_i64CurrentRow - 1, i);
+		return (Guid)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public short GetInt16(int i)
 	{
-		return (short)GetCellData(m_i64CurrentRow - 1, i);
+		return (short)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public int GetInt32(int i)
 	{
-		return (int)GetCellData(m_i64CurrentRow - 1, i);
+		return (int)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public long GetInt64(int i)
 	{
-		return (long)GetCellData(m_i64CurrentRow - 1, i);
+		return (long)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public string GetString(int i)
 	{
-		return (string)GetCellData(m_i64CurrentRow - 1, i);
+		return (string)GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public bool IsDBNull(int i)
 	{
-		return GetCellData(m_i64CurrentRow - 1, i) == null;
+		return GetCellData(_I64CurrentRow - 1, i) == null;
 	}
 
 	public string GetDataTypeName(int i)
@@ -591,7 +590,7 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 
 	public object GetValue(int i)
 	{
-		return GetCellData(m_i64CurrentRow - 1, i);
+		return GetCellData(_I64CurrentRow - 1, i);
 	}
 
 	public int GetValues(object[] values)
@@ -606,12 +605,12 @@ internal class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, 
 
 	internal void WriteInt32(int i, int value)
 	{
-		if (m_i64CurrentRow - 1 >= RowCount || i >= ColumnCount)
+		if (_I64CurrentRow - 1 >= RowCount || i >= ColumnCount)
 		{
 			throw new Exception(Resources.ExceptionInvalidArgument);
 		}
 		InitFileWriter();
-		_CurrentOffset = _DiskDataStorage.GetRowOffset(m_i64CurrentRow - 1);
+		_CurrentOffset = _DiskDataStorage.GetRowOffset(_I64CurrentRow - 1);
 		for (int j = 0; j < i; j++)
 		{
 			_CurrentOffset += _FsWriter.ReadLength(_CurrentOffset, out int iLen);

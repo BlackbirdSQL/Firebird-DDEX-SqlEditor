@@ -200,9 +200,9 @@ Linkage completed in {2}ms.</value>
 Extend the allotted linkage time by {0} seconds?</value>
   </data>
   <data name="LinkageParser_Updating" xml:space="preserve">
-    <value>Updating sequence linkage.</value>
+    <value>Building trigger sequence linkage.</value>
   </data>
   <data name="LinkageParser_UpdatingCatalog" xml:space="preserve">
-    <value>Updating {0} sequence linkage.</value>
+    <value>Building {0} trigger sequence linkage.</value>
   </data>
 </root>
