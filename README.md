@@ -2,7 +2,7 @@
 
 The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"* of Microsoft's SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.6.0.0](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v14.6.0.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
+[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.6.0.0](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v14.6.0.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](Docs/CHANGELOG.md))
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/e22c80d4-56d9-4982-ac17-15a7a73eef76)
@@ -53,7 +53,7 @@ All access of this nature takes place in the BlackbirdSql.Sys.Reflect class. As 
 </br></br>
 
 ### Deconstructing connection naming, equivalency and SE integration
-For a clearer understanding of BlackbirdSql's RunningConnectionTable management of connections, insight into it's basic rules of operation can be found [here...](GettingStartedGuide.md)
+For a clearer understanding of BlackbirdSql's RunningConnectionTable management of connections, insight into it's basic rules of operation can be found [here...](Docs/GettingStartedGuide.md)
 </br></br>
 
 ## Known issues and limitations
@@ -67,7 +67,7 @@ For a clearer understanding of BlackbirdSql's RunningConnectionTable management 
 ## Documentation
 
 * [ADO.NET provider](Docs/ado-net.md)
-* [Using ADO.NET edmx with .NET](edmx-NET.md)
+* [Using ADO.NET edmx with .NET](Docs/edmx-NET.md)
 </br>
 
 ## FirebirdSQL Packages
