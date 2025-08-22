@@ -117,6 +117,8 @@ internal class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInf
 		uint dataLen;
 		ulong result;
 
+		FbConnectionStringBuilder csb = new(connection.ConnectionString);
+		FbServerType serverType = csb.ServerType;
 
 		foreach (byte brequest in iscValues)
 		{
@@ -125,11 +127,20 @@ internal class DatabaseInfoService : SBsNativeDatabaseInfo, IBsNativeDatabaseInf
 
 			try
 			{
-				Reflect.InvokeMethodBaseType(database, "DatabaseInfo", 4,
-					BindingFlags.Default, [requestBuffer, responseBuffer, responseBuffer.Length], false);
+				if (serverType == FbServerType.Default)
+				{
+					Reflect.InvokeMethodBaseType(database, "DatabaseInfo", 4,
+						BindingFlags.Default, [requestBuffer, responseBuffer, responseBuffer.Length], false);
+				}
+				else
+				{
+					Reflect.InvokeMethod(database, "DatabaseInfo", BindingFlags.Default,
+						[requestBuffer, responseBuffer, responseBuffer.Length], false);
+				}
 			}
-			catch
+			catch (Exception ex)
 			{
+				Diag.Expected(ex);
 				return null;
 			}
 

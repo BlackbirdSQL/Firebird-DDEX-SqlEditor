@@ -187,7 +187,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.10.40170" />
-		<PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="17.14.40254" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers" Version="17.7.79">
 			<PrivateAssets>all</PrivateAssets>

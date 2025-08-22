@@ -134,6 +134,8 @@ internal class DbStatementWrapper : IBsNativeDbStatementWrapper
 		if (CurrentAction != EnSqlStatementAction.ProcessQuery)
 			return -1;
 
+		DatabaseEngineService.Instance_.EnsureVersionDependencyCache_(_Owner.Connection);
+
 
 		if (ExecutionType == EnSqlExecutionType.PlanOnly)
 		{
@@ -143,6 +145,7 @@ internal class DbStatementWrapper : IBsNativeDbStatementWrapper
 
 		// Start up the payload launcher with tracking.
 		// Fire and remember
+
 
 		int rowsSelected = 0;
 		SqlStatementType statementType = (SqlStatementType)StatementType;
@@ -764,6 +767,7 @@ internal class DbStatementWrapper : IBsNativeDbStatementWrapper
 	{
 		if (_RenewConnection)
 		{
+			DatabaseEngineService.Instance_.EnsureVersionDependencyCache_(_Csb.ServerType, _Csb.ClientLibrary);
 			return (FbConnection)_Owner.RenewConnection(_Csb.ToString());
 		}
 

@@ -40,6 +40,22 @@ internal static class DbProviderFactoriesEx
 
 
 
+
+
+	// ---------------------------------------------------------------------------------
+	#region Fields - DbProviderFactoriesEx
+	// ---------------------------------------------------------------------------------
+
+
+	private static bool _ProviderFactoriesRecovered = false;
+
+
+	#endregion Constants
+
+
+
+
+
 	// =====================================================================================================
 	#region Property accessors - DbProviderFactoriesEx
 	// =====================================================================================================
@@ -241,11 +257,13 @@ internal static class DbProviderFactoriesEx
 	{
 		// Evs.Trace(typeof(DbProviderFactoriesEx), nameof(InvalidatedProviderFactoryRecovery));
 
-		if (!PersistentSettings.ValidateProviderFactories)
+		if (_ProviderFactoriesRecovered || !PersistentSettings.ValidateProviderFactories)
 			return true;
 
 		// Only allowed to run in thread pool
 		Diag.ThrowIfOnUIThread();
+
+		_ProviderFactoriesRecovered = true;
 
 		int waitTime = 0;
 

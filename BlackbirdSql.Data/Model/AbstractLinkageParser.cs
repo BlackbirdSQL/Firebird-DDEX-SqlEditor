@@ -14,6 +14,7 @@ using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Shell;
 
 
 namespace BlackbirdSql.Data.Model;
@@ -50,8 +51,11 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 		_ConnectionString = connectionString;
+
 		FbConnectionStringBuilder csb = new(connectionString);
 		_ServerType = csb.ServerType;
+		_ClientLibrary = csb.ClientLibrary.ToLower();
+
 		_ConnectionUrl = ApcManager.CreateConnectionUrl(_ConnectionString);
 		_TransientRestrictions = (string[])restrictions.Clone();
 
@@ -76,6 +80,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_IsIntransient = rhs._IsIntransient;
 		_ConnectionString = rhs._ConnectionString;
 		_ServerType = rhs._ServerType;
+		_ClientLibrary = rhs._ClientLibrary;
 		_ConnectionUrl = rhs._ConnectionUrl;
 		_Sequences = rhs._Sequences.Copy();
 		_Triggers = rhs._Triggers.Copy();
@@ -114,6 +119,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			_ConnectionString = root.DecryptedConnectionString();
 			FbConnectionStringBuilder csb = new(_ConnectionString);
 			_ServerType = csb.ServerType;
+			_ClientLibrary = csb.ClientLibrary;
 			_ConnectionUrl = ApcManager.CreateConnectionUrl(_ConnectionString);
 
 			CreateLinkTables();
@@ -123,6 +129,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			_IsIntransient = rhs._IsIntransient;
 			_ConnectionString = rhs._ConnectionString;
 			_ServerType = rhs._ServerType;
+			_ClientLibrary = rhs._ClientLibrary;
 			_ConnectionUrl = rhs._ConnectionUrl;
 			_Sequences = rhs._Sequences.Copy();
 			_Triggers = rhs._Triggers.Copy();
@@ -315,6 +322,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	protected string _ConnectionString = null;
 
+	protected string _ClientLibrary = "";
 	protected FbServerType _ServerType = FbServerType.Default;
 	private readonly string _ConnectionUrl = null;
 	protected bool _Disabling = false;
@@ -835,6 +843,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		Requesting = true;
 
+
 		try
 		{
 			_RawGenerators = await SchemaFactory.GetSchemaAsync(connection, "RawGenerators", null, cancelToken);
@@ -868,6 +877,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	protected async Task<DataTable> GetRawTriggerDependenciesSchemaAsync(IDbConnection connection, CancellationToken cancelToken)
 	{
 		Requesting = true;
+
 
 		try
 		{
@@ -908,6 +918,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	protected async Task<DataTable> GetRawTriggerSchemaAsync(IDbConnection connection, CancellationToken cancelToken)
 	{
 		Requesting = true;
+
 
 		try
 		{

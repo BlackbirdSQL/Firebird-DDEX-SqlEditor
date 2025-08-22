@@ -108,12 +108,11 @@ namespace BlackbirdSql.Data.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Error loading Firebird client plugin.
         ///
-        ///If you are connecting to multiple versions of embedded databases then note that you CAN connect to a Firebird 2 embedded database after connecting to a Firebird 3, 4 or 5 embedded database.
-        ///The inverse may NOT always hold true.
-        ///If the problem persists, connect to a Firebiird 3, 4 or 5 database first.
+        ///If you are connecting to multiple versions of embedded databases then note that Firebird 4 and 5 embedded databases cannot be accessed during the same session as Firebird  2 and 3 embedded databases.
+        ///To access this database you will need to restart your Visual Studio session.
         ///
-        ///The database engine returned the following message:
-        ///{0}.
+        ///The database engine returned the following message at {0}:
+        ///{1}.
         /// </summary>
         internal static string ExceptionLoadingPlugin {
             get {

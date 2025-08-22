@@ -969,7 +969,7 @@ internal sealed class RctManager : RunningConnectionTable
 	/// Loads server explorer models.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static bool InitializeServerExplorerModels()
+	private static bool InitializeServerExplorerModels(bool isAsync)
 	{
 		if (ApcManager.IdeShutdownState)
 			return false;
@@ -1005,7 +1005,10 @@ internal sealed class RctManager : RunningConnectionTable
 		}
 		catch (Exception ex)
 		{
-			Diag.Ex(ex);
+			if (!isAsync)
+				Diag.Expected(ex);
+			else
+				Diag.Ex(ex);
 		}
 		finally
 		{
@@ -1015,6 +1018,19 @@ internal sealed class RctManager : RunningConnectionTable
 				"InitializeServerExplorerModelsAsync", _InitializeServerExplorerModelsEvsIndex);
 		}
 
+		_ServerExplorerModelsInitialized = result;
+
+		if (!result && !isAsync)
+		{
+			CancellationToken cancelToken = default;
+
+			async Task<bool> payloadAsync() => await InitializeServerExplorerModelsEuiAsync(cancelToken);
+
+			// Run on new thread in thread pool.
+			// Fire and forget.
+
+			_ = Task.Factory.StartNew(payloadAsync, default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+		}
 
 		DbProviderFactoriesEx.InvalidatedProviderFactoryRecovery();
 
@@ -1039,7 +1055,7 @@ internal sealed class RctManager : RunningConnectionTable
 
 		CancellationToken cancelToken = default;
 
-		async Task<bool> payloadAsync() => await InitializeServerExplorerModelsAsync(cancelToken);
+		async Task<bool> payloadAsync() => await InitializeServerExplorerModelsEuiAsync(cancelToken);
 
 		// Run on new thread in thread pool.
 		// Fire and forget.
@@ -1053,60 +1069,17 @@ internal sealed class RctManager : RunningConnectionTable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// [Async launch]: Loads server explorer models on thread pool.
+	/// [Ensure UI Async launch]: Loads server explorer models on thread pool.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static async Task<bool> InitializeServerExplorerModelsAsync(CancellationToken cancelToken)
+	private static async Task<bool> InitializeServerExplorerModelsEuiAsync(CancellationToken cancelToken)
 	{
 		if (cancelToken.Cancelled() || ApcManager.IdeShutdownState || _ServerExplorerModelsInitialized)
 			return false;
 
-		_ServerExplorerModelsInitialized = true;
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		bool result = false;
-
-		_InitializingExplorerModelsCardinal++;
-
-		_InitializeServerExplorerModelsEvsIndex = Evs.Start(typeof(RctManager),
-			"InitializeServerExplorerModelsAsync", "", "InitializeServerExplorerModelsAsync",
-			_InitializeServerExplorerModelsEvsIndex);
-
-		try
-		{
-
-			IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
-
-			Guid clsidProvider = new(SystemData.C_ProviderGuid);
-			IVsDataExplorerConnection explorerConnection;
-
-			foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
-			{
-				if (!(clsidProvider == pair.Value.Provider))
-					continue;
-
-				explorerConnection = pair.Value;
-
-				RctEventSink.InitializeServerExplorerModel(explorerConnection);
-			}
-
-			result = true;
-		}
-		catch (Exception ex)
-		{
-			Diag.Ex(ex);
-		}
-		finally
-		{
-			_InitializingExplorerModelsCardinal--;
-
-			Evs.Stop(typeof(RctManager), "InitializeServerExplorerModelsAsync", "",
-				"InitializeServerExplorerModelsAsync", _InitializeServerExplorerModelsEvsIndex);
-		}
-
-
-		DbProviderFactoriesEx.InvalidatedProviderFactoryRecovery();
-
-		return await Task.FromResult(result);
+		return InitializeServerExplorerModels(true);
 
 	}
 
@@ -1127,7 +1100,7 @@ internal sealed class RctManager : RunningConnectionTable
 		{
 			CancellationToken cancelToken = default;
 
-			async Task<bool> payloadAsync() => await InitializeServerExplorerModelsAsync(cancelToken);
+			async Task<bool> payloadAsync() => await InitializeServerExplorerModelsEuiAsync(cancelToken);
 
 			// Run on new thread in thread pool.
 			// Fire and forget.
@@ -1139,7 +1112,7 @@ internal sealed class RctManager : RunningConnectionTable
 
 		_ServerExplorerModelsInitialized = true;
 
-		return InitializeServerExplorerModels();
+		return InitializeServerExplorerModels(false);
 	}
 
 

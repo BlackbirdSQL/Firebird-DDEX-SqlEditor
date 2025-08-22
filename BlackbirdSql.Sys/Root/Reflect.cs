@@ -455,6 +455,67 @@ internal abstract class Reflect
 	/// on error
 	/// </returns>
 	// ---------------------------------------------------------------------------------
+	internal static object GetFieldValue(string containerClassName, string fieldName,
+		BindingFlags bindingFlags = BindingFlags.Default)
+	{
+		// Evs.Trace(typeof(Reflect), nameof(GetFieldValue), "Container class: {0}, field: {1}.", containerClassInstance.GetType().FullName, fieldName);
+
+		if (bindingFlags == BindingFlags.Default)
+			bindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
+
+		Type typeContainerClass;
+
+		try
+		{
+			typeContainerClass = Type.GetType(containerClassName);
+		}
+		catch (Exception ex)
+		{
+			Diag.Ex(ex);
+			return null;
+		}
+
+		if (typeContainerClass == null)
+		{
+			TypeLoadException ex = new(Resources.ExceptionGetTypeAbort.Fmt(containerClassName));
+			Diag.Ex(ex);
+			return null;
+		}
+
+
+		FieldInfo fieldInfo = GetFieldInfo(typeContainerClass, fieldName, bindingFlags);
+
+		if (fieldInfo == null)
+		{
+			COMException ex = new($"Could not get FieldInfo for static field '{fieldName}' in container class '{typeContainerClass}'.");
+			Diag.Ex(ex);
+			return null;
+		}
+
+		try
+		{
+			return fieldInfo.GetValue(null);
+		}
+		catch (Exception ex)
+		{
+			Diag.Ex(ex, $"Could not get Field Value for static field '{fieldInfo.Name}' in container class '{typeContainerClass}'.");
+			return false;
+		}
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Get a class static field's value given the containing class type, the field
+	/// name and access modifier binding flags.
+	/// </summary>
+	/// <returns>
+	/// Returns the field's value else logs a diagnostics exception and returns null
+	/// on error
+	/// </returns>
+	// ---------------------------------------------------------------------------------
 	internal static object GetFieldValue(Type typeContainerClass, string fieldName,
 		BindingFlags bindingFlags = BindingFlags.Default)
 	{

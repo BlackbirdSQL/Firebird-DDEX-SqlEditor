@@ -316,14 +316,20 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 		{
 			bool exceptionHandled = false;
 
-			if (ex is DbException exd && exd.HasSqlException())
+			if (ex is EntryPointNotFoundException)
+			{
+				exceptionHandled = true;
+				string msg = Resources.ExceptionLoadingPlugin.Fmt("VxbConnectionSupport::Open", ex.Message);
+				MessageCtl.ShowX(msg, Resources.ExceptionLoadingPluginCaption, MessageBoxButtons.OK);
+			}
+			else if (ex is DbException exd && exd.HasSqlException())
 			{
 				if (exd.GetErrorCode() == 335544325)
 				{
 					if (exd.Message.IndexOf("CHARACTER SET", StringComparison.OrdinalIgnoreCase) != -1)
 					{
 						exceptionHandled = true;
-						string msg = Resources.ExceptionDbCharacterSet.Fmt(exd.Message);
+						string msg = Resources.ExceptionDbCharacterSet.Fmt("VxbConnectionSupport::Open", exd.Message);
 						MessageCtl.ShowX(msg, Resources.ExceptionDbCharacterSetCaption, MessageBoxButtons.OK);
 					}
 				}
@@ -332,14 +338,14 @@ public class VxbConnectionSupport : AdoDotNetConnectionSupport, IBsDataConnectio
 					if (exd.Message.IndexOf("Error loading plugin", StringComparison.OrdinalIgnoreCase) != -1)
 					{
 						exceptionHandled = true;
-						string msg = Resources.ExceptionLoadingPlugin.Fmt(exd.Message);
+						string msg = Resources.ExceptionLoadingPlugin.Fmt("VxbConnectionSupport::Open", exd.Message);
 						MessageCtl.ShowX(msg, Resources.ExceptionLoadingPluginCaption, MessageBoxButtons.OK);
 					}
 				}
 				else if (exd.GetErrorCode() == 335544379)
 				{
 					exceptionHandled = true;
-					string msg = Resources.ExceptionDbVersionMismatch.Fmt(exd.Message);
+					string msg = Resources.ExceptionDbVersionMismatch.Fmt("VxbConnectionSupport::Open", exd.Message);
 					MessageCtl.ShowX(msg, Resources.ExceptionDbVersionMismatchCaption, MessageBoxButtons.OK);
 				}
 			}

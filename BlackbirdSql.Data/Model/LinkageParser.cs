@@ -833,6 +833,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 		FbConnection connection = null;
 
+
 		try
 		{
 			// Evs.Trace(GetType(), nameof(PopulateLinkageTablesAsync), $"ParserId:[{Id}] {idType}[{id}] ENTER - _LinkStage: {_LinkStage}");
@@ -858,16 +859,29 @@ internal class LinkageParser : AbstractLinkageParser
 				{
 					connection = new(ConnectionString);
 
+					// Going to attempt a delay to avoid FirebirdClient issues.
+					/*
+					if (_ServerType == FbServerType.Embedded && _ClientLibrary == "fbclient" && !IsTransient)
+					{
+						Thread.Sleep(250);
+						Thread.Yield();
+					}
+					*/
+
 					try
 					{
-						await connection.OpenDbAsync(cancelToken);
+						if (_ServerType == FbServerType.Embedded && _ClientLibrary == "fbclient" && !IsTransient)
+							await connection.OpenDbEuiAsync(cancelToken);
+						else
+							await connection.OpenDbAsync(cancelToken);
 					}
 					catch (Exception ex)
 					{
-						if (ex is DbException exd && exd.HasSqlException() && exd.GetErrorCode() == 335545004
+						if ((ex is DbException exd && exd.HasSqlException() && exd.GetErrorCode() == 335545004
 							&& exd.Message.IndexOf("Error loading plugin", StringComparison.OrdinalIgnoreCase) != -1)
+							|| ex is EntryPointNotFoundException)
 						{
-							string msg = Resources.ExceptionLoadingPlugin.Fmt(exd.Message);
+							string msg = Resources.ExceptionLoadingPlugin.Fmt("LinkageParser::PopulateLinkageTablesAsync.OpenDbAsync", ex.Message);
 							MessageCtl.ShowX(msg, Resources.ExceptionLoadingPluginCaption, MessageBoxButtons.OK);
 						}
 						else
@@ -878,7 +892,25 @@ internal class LinkageParser : AbstractLinkageParser
 					}
 				}
 
+				try
+				{ 
 				await GetRawGeneratorSchemaAsync(connection, cancelToken);
+				}
+				catch (Exception ex)
+				{
+					if ((ex is DbException exd && exd.HasSqlException() && exd.GetErrorCode() == 335545004
+						&& exd.Message.IndexOf("Error loading plugin", StringComparison.OrdinalIgnoreCase) != -1)
+						|| ex is EntryPointNotFoundException)
+					{
+						string msg = Resources.ExceptionLoadingPlugin.Fmt("LinkageParser::PopulateLinkageTablesAsync.GetRawGeneratorSchemaAsync", ex.Message);
+						MessageCtl.ShowX(msg, Resources.ExceptionLoadingPluginCaption, MessageBoxButtons.OK);
+					}
+					else
+					{
+						Diag.Ex(ex);
+					}
+					throw ex;
+				}
 
 
 				if (cancelToken.Cancelled())

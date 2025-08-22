@@ -256,7 +256,7 @@
     <value>acceptButton</value>
   </data>
   <data name="&gt;&gt;acceptButton.Type" xml:space="preserve">
-    <value>BlackbirdSql.Core.Controls.Widgets.ExceptionSafeButton, BlackbirdSql.Core, Version=14.6.0.0, Culture=neutral, PublicKeyToken=92bb64ec985b4c9d</value>
+    <value>BlackbirdSql.Core.Controls.Widgets.ExceptionSafeButton, BlackbirdSql.Core, Version=14.6.1.0, Culture=neutral, PublicKeyToken=92bb64ec985b4c9d</value>
   </data>
   <data name="&gt;&gt;acceptButton.Parent" xml:space="preserve">
     <value>buttonsTableLayoutPanel</value>

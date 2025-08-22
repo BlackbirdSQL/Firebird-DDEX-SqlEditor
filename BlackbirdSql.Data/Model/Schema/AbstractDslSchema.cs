@@ -95,8 +95,11 @@ internal abstract class AbstractDslSchema
 	{
 		// Evs.Trace(GetType(), "GetSchema", "collectionName: {0}", collectionName);
 
+		DatabaseEngineService.Instance_.EnsureVersionDependencyCache_(connection);
+
 		DataTable dataTable = new (collectionName);
 		FbCommand command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
+
 
 		try
 		{
@@ -123,6 +126,8 @@ internal abstract class AbstractDslSchema
 	internal async Task<DataTable> GetSchemaAsync(IDbConnection connection, string collectionName, string[] restrictions, CancellationToken cancelToken = default)
 	{
 		// Evs.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
+
+		DatabaseEngineService.Instance_.EnsureVersionDependencyCache_(connection);
 
 		DataTable dataTable = new (collectionName);
 		FbCommand command = await BuildCommandAsync(connection, collectionName, ParseRestrictions(restrictions), cancelToken);

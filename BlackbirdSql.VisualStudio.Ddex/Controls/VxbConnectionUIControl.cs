@@ -1183,7 +1183,43 @@ public partial class VxbConnectionUIControl : DataConnectionUIControl
 		}
 		catch (Exception ex)
 		{
-			Diag.Expected(ex, $"\nConnectionString: {connection?.ConnectionString}");
+			bool exceptionHandled = false;
+
+			if (ex is EntryPointNotFoundException)
+			{
+				exceptionHandled = true;
+				string msg = Resources.ExceptionLoadingPlugin.Fmt("VxbConnectionUIControl::OnAccept", ex.Message);
+				MessageCtl.ShowX(msg, Resources.ExceptionLoadingPluginCaption, MessageBoxButtons.OK);
+			}
+			else if (ex is DbException exd && exd.HasSqlException())
+			{
+				if (exd.GetErrorCode() == 335544325)
+				{
+					if (exd.Message.IndexOf("CHARACTER SET", StringComparison.OrdinalIgnoreCase) != -1)
+					{
+						exceptionHandled = true;
+						string msg = Resources.ExceptionDbCharacterSet.Fmt("VxbConnectionUIControl::OnAccept", exd.Message);
+						MessageCtl.ShowX(msg, Resources.ExceptionDbCharacterSetCaption, MessageBoxButtons.OK);
+					}
+				}
+				else if (exd.GetErrorCode() == 335545004)
+				{
+					if (exd.Message.IndexOf("Error loading plugin", StringComparison.OrdinalIgnoreCase) != -1)
+					{
+						exceptionHandled = true;
+						string msg = Resources.ExceptionLoadingPlugin.Fmt("VxbConnectionUIControl::OnAccept", exd.Message);
+						MessageCtl.ShowX(msg, Resources.ExceptionLoadingPluginCaption, MessageBoxButtons.OK);
+					}
+				}
+				else if (exd.GetErrorCode() == 335544379)
+				{
+					exceptionHandled = true;
+					string msg = Resources.ExceptionDbVersionMismatch.Fmt("VxbConnectionUIControl::OnAccept", exd.Message);
+					MessageCtl.ShowX(msg, Resources.ExceptionDbVersionMismatchCaption, MessageBoxButtons.OK);
+				}
+			}
+			if (!exceptionHandled)
+				Diag.Expected(ex, $"\nConnectionString: {connection?.ConnectionString}");
 			throw;
 		}
 		finally

@@ -133,7 +133,7 @@ namespace BlackbirdSql.Sys.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The client library for embedded databases. Built in engines include fbembed for version 3.0 and fbembed25 for version 2.5..
+        ///   Looks up a localized string similar to Embedded database client library. Use &apos;fbembed&apos; for Firebird 2, &apos;fbclient&apos; for 3 and &apos;fbembed45\fbclient&apos; for 4 and 5..
         /// </summary>
         internal static string PropertyDescriptionClientLibrary {
             get {
@@ -205,7 +205,7 @@ namespace BlackbirdSql.Sys.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The database server name..
+        ///   Looks up a localized string similar to The database server name. Leave as &apos;localhost&apos; for embedded databases..
         /// </summary>
         internal static string PropertyDescriptionDataSource {
             get {
@@ -331,7 +331,7 @@ namespace BlackbirdSql.Sys.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The TCP/IP port for server connections..
+        ///   Looks up a localized string similar to The TCP/IP port for server connections. Leave as &apos;3050&apos; for embedded databases..
         /// </summary>
         internal static string PropertyDescriptionPort {
             get {
@@ -358,7 +358,7 @@ namespace BlackbirdSql.Sys.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The physical server type..
+        ///   Looks up a localized string similar to The physical server type. For embedded remember to set the &apos;ClientLibrary&apos; as described in it&apos;s Description..
         /// </summary>
         internal static string PropertyDescriptionServerType {
             get {

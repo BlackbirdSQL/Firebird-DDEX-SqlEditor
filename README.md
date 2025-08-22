@@ -2,7 +2,7 @@
 
 The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"* of Microsoft's SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.6.0.0](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v14.6.0.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](Docs/CHANGELOG.md))
+[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.6.1.0](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v14.6.1.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](Docs/CHANGELOG.md))
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/e22c80d4-56d9-4982-ac17-15a7a73eef76)
@@ -14,9 +14,9 @@ The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"*
 * Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.3.3.0. 
 * Microsoft SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions, SQL scripts and `.fbsql` files.
 </br>__Note:__ The Firebird Language Service is a phased implementation of Microsoft's Transaction-SQL SSDT language service. Intellisense may report Firebird specific grammar as errors or warnings but still successfully execute.
-</br>__New:__ Full support for multi-statement SQL scripts and iSql.
-* Trigger/Generator auto-increment linkage. Linkage can be set to *On Demand* in user options. If enabled linkage will only take place when actually required.
+* __New:__ Full support for multi-statement SQL scripts and iSql.
 * __New:__ Built-in support for Firebird 2, 3, 4 and 5 embedded databases.
+* Trigger/Generator auto-increment linkage. Linkage can be set to *On Demand* in user options. If enabled linkage will only take place when actually required.
 * Full integration of Server Explorer with asynchronous loading. Connection dialogs include Host and Database drop-down selection; derived from Server Explorer, FlameRobin and the current solution projects' settings and EDM connection strings.
 * SqlEditor text-based execution plans and statistics snapshot comparer.
 * Configurable connection equivalency keys under `BlackbirdSql Server Tools` DDEX user options.
@@ -38,8 +38,7 @@ The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"*
 
 
 ### Using Embedded Databases
-- Support for Firebird versions 3 and 4/5 is exclusive. By default Firebird 3 is installed. To activate support for versions 4 and 5, shutdown Visual Studio and run Setup.bat in the FbSetup45 folder in the Blackbird extension folder from within Windows Explorer. To then reactivate support for version 3, shutdown Visual Studio and run Setup.bat in the FbSetup3 folder.
-- When setting up an embedded connection for Firebird 2 set the ServerType to 'Embedded' and use ClientLibrary 'fbembed'. For Firebird 3, 4 and 5 use the ClientLibrary 'fbclient'.
+- When setting up an embedded connection using ServerType 'Embedded', use ClientLibrary 'fbembed' for Firebird version 2, 'fbclient' for version 3, and 'fbembed45\fbclient' for versions 4 and 5.
 
 
 ### AutoIncrement Identity Fields

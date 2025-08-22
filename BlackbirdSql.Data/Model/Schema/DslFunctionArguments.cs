@@ -15,11 +15,14 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
+using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -40,7 +43,7 @@ internal class DslFunctionArguments : DslColumns
 
 		string packageName;
 
-		if (!HasColumn("r.RDB$SYSTEM_FLAG"))
+		if (!HasColumn("RDB$SYSTEM_FLAG"))
 			_SystemFlagColName = "r_func.RDB$SYSTEM_FLAG";
 
 		if (HasColumn("RDB$PACKAGE_NAME"))
@@ -49,8 +52,7 @@ internal class DslFunctionArguments : DslColumns
 				(CASE WHEN {_SystemFlagColName} <> 1 THEN 'USER' ELSE 'SYSTEM' END)
 			ELSE
 				r.RDB$PACKAGE_NAME
-			END)
-		END)";
+			END)";
 		}
 		else
 		{
@@ -61,8 +63,7 @@ internal class DslFunctionArguments : DslColumns
 		_ObjectType = "FunctionParameter";
 		_ParentColName = "r.RDB$FUNCTION_NAME";
 
-		_ChildColName = HasColumn("r.RDB$ARGUMENT_NAME") ? "r.RDB$ARGUMENT_NAME" : "CAST(r.RDB$ARGUMENT_POSITION AS varchar(50))";
-		_FieldNameColName = HasColumn("r.RDB$FIELD_NAME") ? "r.RDB$FIELD_NAME" : "null";
+		_ChildColName = HasColumn("RDB$ARGUMENT_NAME") ? "r.RDB$ARGUMENT_NAME" : "CAST(r.RDB$ARGUMENT_POSITION AS varchar(50))";
 
 		_OrderingColumn = "r.RDB$FUNCTION_NAME";
 		_FromClause = @"RDB$FUNCTION_ARGUMENTS r
@@ -78,7 +79,7 @@ internal class DslFunctionArguments : DslColumns
 		_AdditionalColumns.Add("FUNCTION_SCHEMA", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("FUNCTION_NAME", new("r.RDB$FUNCTION_NAME", "varchar(50)"));
 
-		string argumentClause = HasColumn("r.RDB$ARGUMENT_NAME")
+		string argumentClause = HasColumn("RDB$ARGUMENT_NAME")
 			? "r.RDB$ARGUMENT_NAME IS NULL" : "r.RDB$ARGUMENT_POSITION = 0";
 
 
@@ -86,7 +87,7 @@ internal class DslFunctionArguments : DslColumns
 			new($"(CASE WHEN {argumentClause} THEN '' ELSE {_ChildColName} END)", "varchar(50)"));
 
 		_AdditionalColumns.Add("PSEUDO_NAME",
-			new($"(CASE WHEN {argumentClause} THEN '@RETURN_VALUE' ELSE {_ChildColName} END)", "varchar(50)"));
+			new($"(CASE WHEN {argumentClause} THEN '___RETURN_VALUE___' ELSE {_ChildColName} END)", "varchar(50)"));
 		_AdditionalColumns.Add("PACKAGE_NAME", new(packageName, "varchar(10)"));
 
 	}
@@ -98,6 +99,26 @@ internal class DslFunctionArguments : DslColumns
 	#region Protected Methods
 
 
+	protected override void ProcessResult(DataTable schema, string connectionString, string[] restrictions)
+	{
+		base.ProcessResult(schema, connectionString, restrictions);
+
+
+		schema.BeginLoadData();
+
+
+		foreach (DataRow row in schema.Rows)
+		{
+			if (row["PSEUDO_NAME"].ToString().Trim() == "___RETURN_VALUE___")
+				row["PSEUDO_NAME"] = "@RETURN_VALUE";
+		}
+
+
+		schema.EndLoadData();
+
+	}
+
 
 	#endregion Protected Methods
+
 }

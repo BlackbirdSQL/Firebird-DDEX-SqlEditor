@@ -600,7 +600,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 			SetDatabaseCsb(mdlCsb, true);
 
-			bool result = Task.Run(async delegate { await _MdlCsb.OpenOrVerifyConnectionAsync(new()); return true; }).AwaiterResult();
+			bool result = Task.Run(async delegate { await _MdlCsb.OpenOrVerifyConnectionAsync(default); return true; }).AwaiterResult();
 			// _MdlCsb.OpenOrVerifyConnection();
 
 			return true;

@@ -142,7 +142,7 @@
     <value>The database character set encoding.</value>
   </data>
   <data name="PropertyDescriptionClientLibrary" xml:space="preserve">
-    <value>The client library for embedded databases. Built in engines include fbembed for version 3.0 and fbembed25 for version 2.5.</value>
+    <value>Embedded database client library. Use 'fbembed' for Firebird 2, 'fbclient' for 3 and 'fbembed45\fbclient' for 4 and 5.</value>
   </data>
   <data name="PropertyDescriptionCommandTimeout" xml:space="preserve">
     <value>The timeout (in seconds) to wait for a command to complete execution or zero for no limit.</value>
@@ -166,7 +166,7 @@
     <value>The local path or alias on the server to the database file.</value>
   </data>
   <data name="PropertyDescriptionDataSource" xml:space="preserve">
-    <value>The database server name.</value>
+    <value>The database server name. Leave as 'localhost' for embedded databases.</value>
   </data>
   <data name="PropertyDescriptionDbCachePages" xml:space="preserve">
     <value>The number of cache buffers to allocate to this session.</value>
@@ -208,7 +208,7 @@
     <value>If true then identical connections will use a common connection from the appropriate pool.</value>
   </data>
   <data name="PropertyDescriptionPort" xml:space="preserve">
-    <value>The TCP/IP port for server connections.</value>
+    <value>The TCP/IP port for server connections. Leave as '3050' for embedded databases.</value>
   </data>
   <data name="PropertyDescriptionReturnRecordsAffected" xml:space="preserve">
     <value>Includes the number of rows affected in the result set if set to true.</value>
@@ -217,7 +217,7 @@
     <value>The user role.</value>
   </data>
   <data name="PropertyDescriptionServerType" xml:space="preserve">
-    <value>The physical server type.</value>
+    <value>The physical server type. For embedded remember to set the 'ClientLibrary' as described in it's Description.</value>
   </data>
   <data name="PropertyDescriptionUserID" xml:space="preserve">
     <value>The database user login ID.</value>

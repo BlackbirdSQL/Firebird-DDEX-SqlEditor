@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
 using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
@@ -69,30 +70,7 @@ internal class DslColumns : AbstractDslSchema
 	/// </remarks>
 	protected string _ParentColName = "r.RDB$RELATION_NAME";
 	protected string _ChildColName = "r.RDB$FIELD_NAME";
-	protected string _FieldNameColName = "r.RDB$FIELD_NAME";
 	protected string _SystemFlagColName = "r.RDB$SYSTEM_FLAG";
-
-	/// <summary>
-	/// The identity type column for >= v3 Firebird.
-	/// If the RDB$RELATIONS alias is not 'r' then replace r with the correct alias
-	/// else null if it cannot be derived.
-	/// </summary>
-	/// <remarks>
-	/// If <see cref="_GeneratorColName"/> is set to null, then _IdentityTypeColName will
-	/// be assumed to be null;
-	/// </remarks>
-	protected string _IdentityTypeColName = "r.RDB$IDENTITY_TYPE";
-
-	/// <summary>
-	/// The identity generator selector for >= v3 Firebird.
-	/// If the RDB$RELATIONS alias is not 'r' then replace r with the correct alias
-	/// </summary>
-	/// <remarks>
-	/// If the sequence generator name cannot be derived, as for example on procedures
-	/// and functions, set the selector variable null.
-	/// </remarks>
-	protected string _GeneratorColName = "r.RDB$GENERATOR_NAME";
-
 
 	/// <summary>
 	/// The column alias to be used for the owner or parent order
@@ -169,14 +147,10 @@ internal class DslColumns : AbstractDslSchema
 		{clause.Key} {clause.Value.Type}";
 		}
 
+		string fieldNameColName = HasColumn("RDB$FIELD_NAME") ? "r.RDB$FIELD_NAME" : "null";
+		string generatorColName = HasColumn("RDB$GENERATOR_NAME") ? "r.RDB$GENERATOR_NAME" : "null";
 
-		if (MajorVersionNumber < 3 || _GeneratorColName == null)
-		{
-			_GeneratorColName = "null";
-			_IdentityTypeColName = "null";
-		}
 
-		_IdentityTypeColName ??= "null";
 
 		string clauseValue;
 		string columnsClause = "";
@@ -400,7 +374,7 @@ BEGIN
 	FOR
 		SELECT
 			-- :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME
-			null, null, {relationNameColumn}, {_FieldNameColName},
+			null, null, {relationNameColumn}, {fieldNameColName},
 			-- :IS_SYSTEM_FLAG,
 			(CASE WHEN {_SystemFlagColName} <> 1 THEN 0 ELSE 1 END),
 			-- :FIELD_SUB_TYPE
@@ -456,7 +430,7 @@ BEGIN
 			-- :SEGMENT_FIELD
 			r_seg.RDB$FIELD_NAME,
 			-- :SEQUENCE_GENERATOR,
-			{_GeneratorColName},
+			{generatorColName},
 			-- :PARENT_TYPE - [Table|'ParentType']~4~
 			-- [, r_dep.RDB$DEPENDENT_NAME]~5~ (for additional columns)
 			'{_ParentType}'{columnsClause}
@@ -472,7 +446,7 @@ BEGIN
         LEFT OUTER JOIN RDB$RELATION_CONSTRAINTS r_con
 			ON r_con.RDB$RELATION_NAME = {relationNameColumn} AND r_con.RDB$CONSTRAINT_TYPE = 'PRIMARY KEY'
         LEFT OUTER JOIN RDB$INDEX_SEGMENTS r_seg 
-            ON r_seg.RDB$INDEX_NAME = r_con.RDB$INDEX_NAME AND r_seg.RDB$FIELD_NAME = {_FieldNameColName}
+            ON r_seg.RDB$INDEX_NAME = r_con.RDB$INDEX_NAME AND r_seg.RDB$FIELD_NAME = {fieldNameColName}
         LEFT OUTER JOIN RDB$TRIGGERS r_trg
             ON r_trg.RDB$RELATION_NAME = r_con.RDB$RELATION_NAME AND r_trg.RDB$TRIGGER_SEQUENCE = 1 AND r_trg.RDB$TRIGGER_TYPE = 1
         LEFT OUTER JOIN RDB$DEPENDENCIES r_dep
@@ -516,7 +490,7 @@ BEGIN
 END");
 
 
-		// Evs.Trace(GetType(), nameof(GetCommandText), $"Sql: {sql}");
+		// Evs.Debug(GetType(), "GetCommandText", $"Sql: {sql}");
 
 		return sql;
 

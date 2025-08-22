@@ -25,8 +25,6 @@ namespace BlackbirdSql.Data;
 // =========================================================================================================
 internal static class LibraryData
 {
-	internal static int C_PreRequisiteLoadVersion = 3;
-
 	internal const string C_Invariant = "FirebirdSql.Data.FirebirdClient";
 	internal const string C_ProviderFactoryName = "FirebirdClient Data Provider";
 	internal const string C_ProviderFactoryClassName = "FirebirdSql.Data.FirebirdClient.FirebirdClientFactory";

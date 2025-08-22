@@ -150,12 +150,11 @@
   <data name="ExceptionDbCharacterSet" xml:space="preserve">
     <value>Character set is not defined.
 
-If you are sure the character set exists and you are connecting to embedded databases then note that you CAN connect to a Firebird 2 embedded database after connecting to a Firebird 3, 4 or 5 embedded database.
-The inverse may NOT always hold true.
-If the problem persists, connect to a Firebiird 3, 4 or 5 database first.
+If you are sure the character set exists and you are connecting to multiple versions of embedded databases then note that Firebird 4 and 5 embedded databases cannot be accessed during the same session as Firebird  2 and 3 embedded databases.
+To access this database you will need to restart your Visual Studio session.
 
-The database engine returned the following message:
-{0}</value>
+The database engine returned the following message at {0}:
+{1}</value>
   </data>
   <data name="ExceptionDbCharacterSetCaption" xml:space="preserve">
     <value>Character Set not Defined</value>
@@ -163,11 +162,10 @@ The database engine returned the following message:
   <data name="ExceptionDbVersionMismatch" xml:space="preserve">
     <value>Incorrect database client active for this database. 
 
-If you are connecting to an embedded database, then for Firebird version 3 or 4 and 5 run the applicable Setup.bat batch file from Windows Explorer copy the correct 'fbclient.dll' from the FbSetup3 or FbSetup45 folders in the BlackbirdSql extension folder and ensure you have the 'Client Library' in the advanced connection settings set to 'fbclient'. The Firebird 3 client is initially installed by default.
-For Firebird version 2 ensure the 'Client Library' is set to 'fbembed'.
+If you are connecting to an embedded database, then for Firebird version 2 set the 'ClientLibrary' to 'fbembed', for version 3 to 'fbclient', and for versions 4 and 5 to 'fbembed45\fbclient'.
 
-The database engine returned the following message:
-{0}</value>
+The database engine returned the following message at {0}:
+{1}</value>
   </data>
   <data name="ExceptionDbVersionMismatchCaption" xml:space="preserve">
     <value>Database Version Mismatch</value>
@@ -202,13 +200,11 @@ The database engine returned the following message:
   <data name="ExceptionLoadingPlugin" xml:space="preserve">
     <value>Error loading Firebird client plugin.
 
-If you are connecting to multiple versions of embedded databases then note that you CAN connect to a Firebird 2 embedded database after connecting to a Firebird 3, 4 or 5 embedded database.
-The inverse does NOT hold true.
+If you are connecting to multiple versions of embedded databases then note that Firebird 4 and 5 embedded databases cannot be accessed during the same session as Firebird  2 and 3 embedded databases.
+To access this database you will need to restart your Visual Studio session.
 
-The database engine returned the following message:
-{0}
-
-</value>
+The database engine returned the following message at {0}:
+{1}</value>
   </data>
   <data name="ExceptionLoadingPluginCaption" xml:space="preserve">
     <value>Error Loading Firebird Client Plugin</value>

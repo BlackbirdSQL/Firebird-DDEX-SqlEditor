@@ -11,6 +11,7 @@ using BlackbirdSql.Sys.Enums;
 using BlackbirdSql.Sys.Interfaces;
 using BlackbirdSql.Sys.Model;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Shell;
 
 
 
@@ -377,6 +378,16 @@ internal static class NativeDbExtensionMembers
 
 	internal static async Task<bool> OpenDbAsync(this IDbConnection @this, CancellationToken cancelToken)
 	{
+		return await NativeDb.DatabaseEngineSvc.OpenDbAsync_(@this, cancelToken);
+	}
+
+
+	internal static async Task<bool> OpenDbEuiAsync(this IDbConnection @this, CancellationToken cancelToken)
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancelToken);
+		if (cancelToken.IsCancellationRequested)
+			return false;
+
 		return await NativeDb.DatabaseEngineSvc.OpenDbAsync_(@this, cancelToken);
 	}
 

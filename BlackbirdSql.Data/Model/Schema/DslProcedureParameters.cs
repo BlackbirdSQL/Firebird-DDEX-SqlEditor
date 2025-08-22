@@ -44,8 +44,7 @@ internal class DslProcedureParameters : DslColumns
 				(CASE WHEN r.RDB$SYSTEM_FLAG <> 1 THEN 'USER' ELSE 'SYSTEM' END)
 			ELSE
 				r.RDB$PACKAGE_NAME
-			END)
-		END)";
+			END)";
 		}
 		else
 		{
@@ -56,7 +55,6 @@ internal class DslProcedureParameters : DslColumns
 		_ObjectType = "StoredProcedureParameter";
 		_ParentColName = "r.RDB$PROCEDURE_NAME";
 		_ChildColName = "r.RDB$PARAMETER_NAME";
-		_GeneratorColName = null;
 		_OrderingColumn = "r.RDB$PARAMETER_TYPE";
 		_FromClause = "RDB$PROCEDURE_PARAMETERS r";
 
