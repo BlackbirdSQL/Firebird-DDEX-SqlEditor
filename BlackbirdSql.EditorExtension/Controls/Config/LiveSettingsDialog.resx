@@ -131,6 +131,6 @@
     <value>LiveSettingsDialog</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>BlackbirdSql.Core.Controls.Config.AbstractTransientSettingsDialog, BlackbirdSql.Core, Version=14.6.1.0, Culture=neutral, PublicKeyToken=92bb64ec985b4c9d</value>
+    <value>BlackbirdSql.Core.Controls.Config.AbstractTransientSettingsDialog, BlackbirdSql.Core, Version=14.6.2.0, Culture=neutral, PublicKeyToken=92bb64ec985b4c9d</value>
   </data>
 </root>

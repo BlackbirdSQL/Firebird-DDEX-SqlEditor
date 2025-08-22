@@ -3,6 +3,23 @@
 ## Change log
 
 
+### v14.6.2.0 Improved built-in support for Firebird 2, 3, 4 and 5 embedded databases. (Version bump)
+
+#### New / Enhancements
+- Embedded databases no longer require a setup before accessing different versions.
+- Access to Firebird 2, 3, 4 and 5 embedded database versions within a single Visual Studio session is now supported.
+#### Fixes
+- Fixed an issue where accessing a version of an embedded database would fail on the latest FirebirdClient version 3.3.1.
+- Fixed bug where retrieving the SqlEditor read/update/insert/delete/expunge/purge statistics would fail on embedded databases.
+- Fixed bug introduced in 14.6.0.0 where function arguments and procedure parameters failed to load.
+- Fixed issue where newer versions of DataAdapter used the '@ReturnValue' function return argument name as a parameter and converted it to '?'.
+
+
+#### Tips
+- When setting up an embedded connection using ServerType 'Embedded', use ClientLibrary 'fbembed' for Firebird version 2, 'fbclient' for version 3, and 'fbembed45\fbclient' for versions 4 and 5. Leave the Server set to `localhost` and Port to `3050`.
+
+ 
+
 ### v14.6.1.0 Improved built-in support for Firebird 2, 3, 4 and 5 embedded databases.
 
 #### New / Enhancements

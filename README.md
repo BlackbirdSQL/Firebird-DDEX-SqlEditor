@@ -2,7 +2,7 @@
 
 The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"* of Microsoft's SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.6.1.0](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v14.6.1.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](Docs/CHANGELOG.md))
+[Download BlackbirdSql DDEX with SqlEditor Extension (Release v14.6.2.0](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v14.6.2.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](Docs/CHANGELOG.md))
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/e22c80d4-56d9-4982-ac17-15a7a73eef76)
@@ -38,7 +38,7 @@ The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"*
 
 
 ### Using Embedded Databases
-- When setting up an embedded connection using ServerType 'Embedded', use ClientLibrary 'fbembed' for Firebird version 2, 'fbclient' for version 3, and 'fbembed45\fbclient' for versions 4 and 5.
+- When setting up an embedded connection using ServerType 'Embedded', use ClientLibrary 'fbembed' for Firebird version 2, 'fbclient' for version 3, and 'fbembed45\fbclient' for versions 4 and 5. Leave the Server set to `localhost` and Port to `3050`.
 
 
 ### AutoIncrement Identity Fields
